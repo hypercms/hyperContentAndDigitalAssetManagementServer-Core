@@ -150,10 +150,10 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
   // create data and repository file structure
   if ($mgmt_config['abs_path_data'] != "" && $mgmt_config['abs_path_rep'] != "" && $publ_config['abs_path_mypublication'] != "")
   {   
-    if (!is_writeable ($mgmt_config['abs_path_cms']."config/")) $show .= "<li>Write permission for config-directory is missing (".$mgmt_config['abs_path_cms']."config/)!</li>\n";
-    if (!is_writeable ($mgmt_config['abs_path_data'])) $show .= "<li>Write permission for data-directory is missing (".$mgmt_config['abs_path_data'].")!</li>\n";
-    if (!is_writeable ($mgmt_config['abs_path_rep'])) $show .= "<li>Write permission for repository-directory is missing (".$mgmt_config['abs_path_rep'].")!</li>\n";
-    if (!is_writeable ($publ_config['abs_path_mypublication'])) $show .= "<li>Write permissions for publication-directory is missing (".$publ_config['abs_path_mypublication'].")!</li>\n";
+    if (!is_writeable ($mgmt_config['abs_path_cms']."config/")) $show .= "<li>Write permission for config-directory is missing (".$mgmt_config['abs_path_cms']."config/)! Please make the Webserver user the owner of this directory.</li>\n";
+    if (!is_writeable ($mgmt_config['abs_path_data'])) $show .= "<li>Write permission for data-directory is missing (".$mgmt_config['abs_path_data'].")! Please make the Webserver user the owner of this directory.</li>\n";
+    if (!is_writeable ($mgmt_config['abs_path_rep'])) $show .= "<li>Write permission for repository-directory is missing (".$mgmt_config['abs_path_rep'].")! Please make the Webserver user the owner of this directory.</li>\n";
+    if (!is_writeable ($publ_config['abs_path_mypublication'])) $show .= "<li>Write permissions for publication-directory is missing (".$publ_config['abs_path_mypublication'].")! Please make the Webserver user the owner of this directory.</li>\n";
 
     // copy to internal repository
     if ($show == "")
@@ -171,68 +171,85 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
   }
 
   // create database
-  if ($show == "" && $db_host != "" && $db_username != "" && $db_password != "" && $db_name != "")
+  if ($show == "")
   {
-    // check for whitespaces
-    if (preg_match ('/\s/', $db_host) > 0) $show .= "<li>Whitespaces in '".$db_host."' are not allowed!</li>";
-    if (preg_match ('/\s/', $db_username) > 0) $show .= "<li>Whitespaces in '".$db_username."' are not allowed!</li>";
-    if (preg_match ('/\s/', $db_name) > 0) $show .= "<li>Whitespaces in '".$db_name."' are not allowed!</li>";
-  
-    if ($show == "")
+    if (trim ($db_host) != "" && trim ($db_username) != "" && trim ($db_password) != "" && trim ($db_name) != "")
     {
-      // connect to MySQL
-      $mysqli = new mysqli ($db_host, $db_username, $db_password);      
-      if ($mysqli->connect_errno) $show .= "<li>DB error (".$mysqli->connect_errno."): ".$mysqli->connect_error."</li>\n";
-      
+      // check for whitespaces
+      if (preg_match ('/\s/', $db_host) > 0) $show .= "<li>Whitespaces in '".$db_host."' are not allowed!</li>";
+      if (preg_match ('/\s/', $db_username) > 0) $show .= "<li>Whitespaces in '".$db_username."' are not allowed!</li>";
+      if (preg_match ('/\s/', $db_name) > 0) $show .= "<li>Whitespaces in '".$db_name."' are not allowed!</li>";
+    
       if ($show == "")
       {
-        // select and create database
-        if (!$mysqli->select_db ($db_name))
+        // connect to MySQL
+        try
         {
-          $sql = "CREATE DATABASE ".$db_name;
-        
-          if (!$mysqli->query ($sql)) $show .= "<li>DB error (".$mysqli->errno."): ".$mysqli->error."</li>\n";
-          elseif (!$mysqli->select_db ($db_name)) $show .= "<li>DB error (".$mysqli->errno."): ".$mysqli->error."</li>\n";
+          $mysqli = new mysqli (trim ($db_host), trim ($db_username), trim ($db_password));      
+          if ($mysqli->connect_errno) $show .= "<li>DB error (".$mysqli->connect_errno."): ".$mysqli->connect_error."</li>\n";
+        }
+        catch (Exception $e)
+        {
+          $show .= "<li>DB error: Connection failed ".$e->getMessage()."</li>\n";
         }
         
-        // create tables
         if ($show == "")
         {
-          // check if objects exist already
-          if ($result = $mysqli->query ('SELECT count(*) AS count FROM `object`'))
+          // select and create database
+          if (!$mysqli->select_db (trim ($db_name)))
           {
-            if ($row = $result->fetch_assoc()) $count = $row['count'];
-            $result->free();
+            $sql = "CREATE DATABASE ".trim ($db_name);
+          
+            if (!$mysqli->query ($sql)) $show .= "<li>DB error (".$mysqli->errno."): ".$mysqli->error."</li>\n";
+            elseif (!$mysqli->select_db ($db_name)) $show .= "<li>DB error (".$mysqli->errno."): ".$mysqli->error."</li>\n";
           }
-          else $count = 0;
           
           // create tables
-          if ($show == "" && $count < 1)
+          if ($show == "")
           {
-            $sql = loadfile ($mgmt_config['abs_path_cms']."database/rdbms/", "createtables.sql");
-            
-            if ($sql != "")
+            // check if objects exist already
+            if ($result = $mysqli->query ('SELECT count(*) AS count FROM `object`'))
             {
-              if (!$mysqli->multi_query ($sql)) $show .= "<li>Error creating tables: (".$mysqli->errno.") ".$mysqli->error."</li>\n";
+              if ($row = $result->fetch_assoc()) $count = $row['count'];
+              $result->free();
             }
-            else $show .= "<li>Error creating tables: createtables.sql is missing</li>\n";
+            else $count = 0;
             
-            $mysqli->close();
+            // create tables
+            if ($show == "" && $count < 1)
+            {
+              $sql = loadfile ($mgmt_config['abs_path_cms']."database/rdbms/", "createtables.sql");
+              
+              if ($sql != "")
+              {
+                if (!$mysqli->multi_query ($sql)) $show .= "<li>Error creating tables: (".$mysqli->errno.") ".$mysqli->error."</li>\n";
+              }
+              else $show .= "<li>Error creating tables: createtables.sql is missing</li>\n";
+              
+              $mysqli->close();
+            }
           }
         }
       }
+    }
+    else
+    {
+      $show .= "<li>Error creating database: Please provide all database credentials</li>\n";
     }
   }
   
   sleep (1);
   
   // edit admin user
-  if ($show == "" && $password != "" && $confirm_password != "" && $language != "" && $email != "")
+  if ($show == "")
   {
-    $result = edituser ("*Null*", "admin", "", $password, $confirm_password, "1", $realname, $language, "standard", $email, "", "", "", $user);
-    if ($result['result'] == false) $show .= "<li>".$result['message']."</li>\n";
+    if (trim ($password) != "" && trim ($confirm_password) != "" && trim ($language) != "" && trim ($email) != "")
+    {
+      $result = edituser ("*Null*", "admin", "", trim ($password), trim ($confirm_password), "1", $realname, $language, "standard", trim ($email), "", "", "", $user);
+      if ($result['result'] == false) $show .= "<li>".strip_tags ($result['message'])."</li>\n";
+    }
+    else $show .= "<li>Please provide all information for the Administrator Account</li>\n";
   }
-  else $show .= "<li>Please provide all information for the Administrator Account</li>\n";
 
   // create configs
   if ($show == "" && $os_cms != "" && $mgmt_config['url_path_cms'] != "" && $mgmt_config['abs_path_cms'] != "")
@@ -321,7 +338,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
       
       // create publication
       $result = createpublication ($site, "admin");
-      if (!$result['result']) $show .= "<li>".$result['message']."</li>\n"; 
+      if (!$result['result']) $show .= "<li>".strip_tags ($result['message'])."</li>\n"; 
 
       // edit publication settings
       if ($show == "")
@@ -394,7 +411,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
         }
         
         $result = editpublication ($site, $setting, "admin");
-        if (!$result['result']) $show .= "<li>".$result['message']."</li>\n"; 
+        if (!$result['result']) $show .= "<li>".strip_tags ($result['message'])."</li>\n"; 
       }
     }
   }
@@ -417,185 +434,199 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
   {
     // load publication config
     require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-      
-    // create folders
-    if (!is_dir (deconvertpath ("%comp%/".$site."/Multimedia")))
+    
+    // connect to MySQL
+    try
     {
-      $result = createfolder ($site, "%comp%/".$site."/", "Multimedia", $user);
-         
-      if (isset ($result['result']) && !$result['result']) $show .= "<li>Multimedia folder could not be created:<br/>".$result['message']."</li>\n";
+      $mysqli = new mysqli ($db_host, $db_username, $db_password);      
+      if ($mysqli->connect_errno) $show .= "<li>DB error (".$mysqli->connect_errno."): ".$mysqli->connect_error."</li>\n";
+    }
+    catch (Exception $e)
+    {
+      $show .= "<li>DB error: Connection failed ".$e->getMessage()."</li>\n";
     }
     
-    if (!is_dir (deconvertpath ("%page%/".$site."/AboutUs")))
-    {
-      $result = createfolder ($site, "%page%/".$site."/", "AboutUs", $user);
-         
-      if (isset ($result['result']) && $result['result'])
-      {
-        $contentdata = settext ($site, $result['container_content'], $result['container'], array('NavigationSortOrder'=>'2'), "u", "no", $user, $user, "UTF-8");
-        
-        // save working xml content container
-        if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
-      }
-      else $show .= "<li>About us folder could not be created:<br/>".$result['message']."</li>\n";
-    }
-    
-    if (!is_dir (deconvertpath ("%page%/".$site."/Products")))
-    {
-      $result = createfolder ($site, "%page%/".$site."/", "Products", $user);
-      
-      if (isset ($result['result']) && $result['result'])
-      {
-        $contentdata = settext ($site, $result['container_content'], $result['container'], array('NavigationSortOrder'=>'3'), "u", "no", $user, $user, "UTF-8");
-        
-        // save working xml content container
-        if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
-      }
-      else $show .= "<li>Products folder could not be created:<br/>".$result['message']."</li>\n";
-    }
-    
-    if (!is_dir (deconvertpath ("%page%/".$site."/Contact")))
-    {
-      $result = createfolder ($site, "%page%/".$site."/", "Contact", $user);
-      
-      if (isset ($result['result']) && $result['result'])
-      {
-        $contentdata = settext ($site, $result['container_content'], $result['container'], array('NavigationSortOrder'=>'4'), "u", "no", $user, $user, "UTF-8");
-        
-        // save working xml content container
-        if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
-      }
-      else $show .= "<li>Contact folder could not be created:<br/>".$result['message']."</li>\n";
-    }
-    
-    // create objects
     if ($show == "")
     {
-      if (!is_file (deconvertpath ("%comp%/".$site."/Multimedia/Slider1.jpg")))
+      // create folders
+      if (!is_dir (deconvertpath ("%comp%/".$site."/Multimedia")))
       {
-        $result = createmediaobject ($site, "%comp%/".$site."/Multimedia/", "Slider1.jpg", $mgmt_config['abs_path_rep']."media_tpl/".$site."/Slider1.jpg", $user);
-        
-        if (isset ($result['result']) && $result['result']) { $mediafile_1 = $site."/".$result['mediafile']; $mediaobject_1 = "%comp%/".$site."/Multimedia/".$result['object']; }
-        else $show .= "<li>Slider image file could not be created:<br/>".$result['message']."</li>\n";
+        $result = createfolder ($site, "%comp%/".$site."/", "Multimedia", $user);
+           
+        if (isset ($result['result']) && !$result['result']) $show .= "<li>Multimedia folder could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
       }
       
-      if (!is_file (deconvertpath ("%comp%/".$site."/Multimedia/Slider2.jpg")))
+      if (!is_dir (deconvertpath ("%page%/".$site."/AboutUs")))
       {
-        $result = createmediaobject ($site, "%comp%/".$site."/Multimedia/", "Slider2.jpg", $mgmt_config['abs_path_rep']."media_tpl/".$site."/Slider2.jpg", $user);
-        
-        if (isset ($result['result']) && $result['result']) { $mediafile_2 = $site."/".$result['mediafile']; $mediaobject_2 = "%comp%/".$site."/Multimedia/".$result['object']; }
-        else $show .= "<li>Slider image file could not be created:<br/>".$result['message']."</li>\n";
-      }
-      
-      if (!is_file (deconvertpath ("%comp%/".$site."/Multimedia/Slider3.jpg")))
-      {
-        $result = createmediaobject ($site, "%comp%/".$site."/Multimedia/", "Slider3.jpg", $mgmt_config['abs_path_rep']."media_tpl/".$site."/Slider3.jpg", $user);
-        
-        if (isset ($result['result']) && $result['result']) { $mediafile_3 = $site."/".$result['mediafile']; $mediaobject_3 = "%comp%/".$site."/Multimedia/".$result['object']; }
-        else $show .= "<li>Slider image file could not be created:<br/>".$result['message']."</li>\n";
-      }
-    
-      if (!is_file (deconvertpath ("%comp%/".$site."/configuration.php")))
-      {
-        $result = createobject ($site, "%comp%/".$site."/", "configuration", "Configuration", $user);
-              
+        $result = createfolder ($site, "%page%/".$site."/", "AboutUs", $user);
+           
         if (isset ($result['result']) && $result['result'])
         {
-          $contentdata = settext ($site, $result['container_content'], $result['container'], array('title'=>'Your Name', 'slogan'=>'Your Slogan ...'), "u", "no", $user, $user, "UTF-8");
-        
-          // save working xml content container
-          if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
-        }
-        else $show .= "<li>Configuration component could not be created:<br/>".$result['message']."</li>\n";
-        
-        // publish object so the configuration will be activated
-        publishobject ($site, "%comp%/".$site."/", "configuration.php", $user);
-      }
-      
-      if (!is_file (deconvertpath ("%page%/".$site."/index.php")))
-      {
-        $result = createobject ($site, "%page%/".$site."/", "index", "Home", $user);
-        
-        if (isset ($result['result']) && $result['result'])
-        {
-          $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Home', 'NavigationSortOrder'=>'1'), "u", "no", $user, $user, "UTF-8");
-          $contentdata = setmedia ($site, $contentdata, $result['container'], array('slide_1'=>$mediafile_1, 'slide_2'=>$mediafile_2, 'slide_3'=>$mediafile_3, 'slide_4'=>$mediafile_2, 'slide_5'=>$mediafile_1), "", array('slide_1'=>$mediaobject_1, 'slide_2'=>$mediaobject_2, 'slide_3'=>$mediaobject_3, 'slide_4'=>$mediaobject_2, 'slide_5'=>$mediaobject_1), "", "", "", "", "no", $user, $user, "UTF-8");
+          $contentdata = settext ($site, $result['container_content'], $result['container'], array('NavigationSortOrder'=>'2'), "u", "no", $user, $user, "UTF-8");
           
           // save working xml content container
           if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
         }
-        else $show .= "<li>Homepage could not be created:<br/>".$result['message']."</li>\n";
-        
-        // publish object so the item will be displayed in the navigation 
-        publishobject ($site, "%page%/".$site."/", "index.php", $user);
+        else $show .= "<li>About us folder could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
       }
       
-      if (!is_file (deconvertpath ("%page%/".$site."/search.php")))
+      if (!is_dir (deconvertpath ("%page%/".$site."/Products")))
       {
-        $result = createobject ($site, "%page%/".$site."/", "search", "SearchResult", $user);
+        $result = createfolder ($site, "%page%/".$site."/", "Products", $user);
         
         if (isset ($result['result']) && $result['result'])
         {
-          $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Search result', 'NavigationHide'=>'yes'), "u", "no", $user, $user, "UTF-8");
-        
-          // save working xml content container
-          if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
-        }
-        else $show .= "<li>Search page could not be created:<br/>".$result['message']."</li>\n";
-        
-        // publish object so the item will be displayed in the navigation 
-        publishobject ($site, "%page%/".$site."/", "search.php", $user);
-      }
-      
-      if (!is_file (deconvertpath ("%page%/".$site."/AboutUs/index.php")))
-      {
-        $result = createobject ($site, "%page%/".$site."/AboutUs/", "index", "Detail", $user);
-        
-        if (isset ($result['result']) && $result['result'])
-        {
-          $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'About us', 'NavigationSortOrder'=>'2'), "u", "no", $user, $user, "UTF-8");
+          $contentdata = settext ($site, $result['container_content'], $result['container'], array('NavigationSortOrder'=>'3'), "u", "no", $user, $user, "UTF-8");
           
           // save working xml content container
           if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
         }
-        else $show .= "<li>About us page could not be created:<br/>".$result['message']."</li>\n";
-        
-        // publish object so the item will be displayed in the navigation 
-        publishobject ($site, "%page%/".$site."/AboutUs/", "index.php", $user);
+        else $show .= "<li>Products folder could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
       }
       
-      if (!is_file (deconvertpath ("%page%/".$site."/Products/index.php")))
+      if (!is_dir (deconvertpath ("%page%/".$site."/Contact")))
       {
-        $result = createobject ($site, "%page%/".$site."/Products/", "index", "Detail", $user);
+        $result = createfolder ($site, "%page%/".$site."/", "Contact", $user);
         
         if (isset ($result['result']) && $result['result'])
         {
-          $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Products', 'NavigationSortOrder'=>'3'), "u", "no", $user, $user, "UTF-8");
-        
+          $contentdata = settext ($site, $result['container_content'], $result['container'], array('NavigationSortOrder'=>'4'), "u", "no", $user, $user, "UTF-8");
+          
           // save working xml content container
           if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
         }
-        else $show .= "<li>Products page could not be created:<br/>".$result['message']."</li>\n";
-        
-        // publish object so the item will be displayed in the navigation 
-        publishobject ($site, "%page%/".$site."/Products/", "index.php", $user);
+        else $show .= "<li>Contact folder could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
       }
       
-      if (!is_file (deconvertpath ("%page%/".$site."/Contact/index.php")))
+      // create objects
+      if ($show == "")
       {
-        $result = createobject ($site, "%page%/".$site."/Contact/", "index", "ContactUs", $user);
-        
-        if (isset ($result['result']) && $result['result'])
+        if (!is_file (deconvertpath ("%comp%/".$site."/Multimedia/Slider1.jpg")))
         {
-          $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Contact', 'NavigationSortOrder'=>'4'), "u", "no", $user, $user, "UTF-8");
-        
-          // save working xml content container
-          if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+          $result = createmediaobject ($site, "%comp%/".$site."/Multimedia/", "Slider1.jpg", $mgmt_config['abs_path_rep']."media_tpl/".$site."/Slider1.jpg", $user);
+          
+          if (isset ($result['result']) && $result['result']) { $mediafile_1 = $site."/".$result['mediafile']; $mediaobject_1 = "%comp%/".$site."/Multimedia/".$result['object']; }
+          else $show .= "<li>Slider image file could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
         }
-        else $show .= "<li>Contact page could not be created:<br/>".$result['message']."</li>\n";
         
-        // publish object so the item will be displayed in the navigation 
-        publishobject ($site, "%page%/".$site."/Contact/", "index.php", $user);
+        if (!is_file (deconvertpath ("%comp%/".$site."/Multimedia/Slider2.jpg")))
+        {
+          $result = createmediaobject ($site, "%comp%/".$site."/Multimedia/", "Slider2.jpg", $mgmt_config['abs_path_rep']."media_tpl/".$site."/Slider2.jpg", $user);
+          
+          if (isset ($result['result']) && $result['result']) { $mediafile_2 = $site."/".$result['mediafile']; $mediaobject_2 = "%comp%/".$site."/Multimedia/".$result['object']; }
+          else $show .= "<li>Slider image file could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+        }
+        
+        if (!is_file (deconvertpath ("%comp%/".$site."/Multimedia/Slider3.jpg")))
+        {
+          $result = createmediaobject ($site, "%comp%/".$site."/Multimedia/", "Slider3.jpg", $mgmt_config['abs_path_rep']."media_tpl/".$site."/Slider3.jpg", $user);
+          
+          if (isset ($result['result']) && $result['result']) { $mediafile_3 = $site."/".$result['mediafile']; $mediaobject_3 = "%comp%/".$site."/Multimedia/".$result['object']; }
+          else $show .= "<li>Slider image file could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+        }
+      
+        if (!is_file (deconvertpath ("%comp%/".$site."/configuration.php")))
+        {
+          $result = createobject ($site, "%comp%/".$site."/", "configuration", "Configuration", $user);
+                
+          if (isset ($result['result']) && $result['result'])
+          {
+            $contentdata = settext ($site, $result['container_content'], $result['container'], array('title'=>'Your Name', 'slogan'=>'Your Slogan ...'), "u", "no", $user, $user, "UTF-8");
+          
+            // save working xml content container
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+          }
+          else $show .= "<li>Configuration component could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+          
+          // publish object so the configuration will be activated
+          publishobject ($site, "%comp%/".$site."/", "configuration.php", $user);
+        }
+        
+        if (!is_file (deconvertpath ("%page%/".$site."/index.php")))
+        {
+          $result = createobject ($site, "%page%/".$site."/", "index", "Home", $user);
+          
+          if (isset ($result['result']) && $result['result'])
+          {
+            $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Home', 'NavigationSortOrder'=>'1'), "u", "no", $user, $user, "UTF-8");
+            $contentdata = setmedia ($site, $contentdata, $result['container'], array('slide_1'=>$mediafile_1, 'slide_2'=>$mediafile_2, 'slide_3'=>$mediafile_3, 'slide_4'=>$mediafile_2, 'slide_5'=>$mediafile_1), "", array('slide_1'=>$mediaobject_1, 'slide_2'=>$mediaobject_2, 'slide_3'=>$mediaobject_3, 'slide_4'=>$mediaobject_2, 'slide_5'=>$mediaobject_1), "", "", "", "", "no", $user, $user, "UTF-8");
+            
+            // save working xml content container
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+          }
+          else $show .= "<li>Homepage could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+          
+          // publish object so the item will be displayed in the navigation 
+          publishobject ($site, "%page%/".$site."/", "index.php", $user);
+        }
+        
+        if (!is_file (deconvertpath ("%page%/".$site."/search.php")))
+        {
+          $result = createobject ($site, "%page%/".$site."/", "search", "SearchResult", $user);
+          
+          if (isset ($result['result']) && $result['result'])
+          {
+            $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Search result', 'NavigationHide'=>'yes'), "u", "no", $user, $user, "UTF-8");
+          
+            // save working xml content container
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+          }
+          else $show .= "<li>Search page could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+          
+          // publish object so the item will be displayed in the navigation 
+          publishobject ($site, "%page%/".$site."/", "search.php", $user);
+        }
+        
+        if (!is_file (deconvertpath ("%page%/".$site."/AboutUs/index.php")))
+        {
+          $result = createobject ($site, "%page%/".$site."/AboutUs/", "index", "Detail", $user);
+          
+          if (isset ($result['result']) && $result['result'])
+          {
+            $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'About us', 'NavigationSortOrder'=>'2'), "u", "no", $user, $user, "UTF-8");
+            
+            // save working xml content container
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+          }
+          else $show .= "<li>About us page could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+          
+          // publish object so the item will be displayed in the navigation 
+          publishobject ($site, "%page%/".$site."/AboutUs/", "index.php", $user);
+        }
+        
+        if (!is_file (deconvertpath ("%page%/".$site."/Products/index.php")))
+        {
+          $result = createobject ($site, "%page%/".$site."/Products/", "index", "Detail", $user);
+          
+          if (isset ($result['result']) && $result['result'])
+          {
+            $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Products', 'NavigationSortOrder'=>'3'), "u", "no", $user, $user, "UTF-8");
+          
+            // save working xml content container
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+          }
+          else $show .= "<li>Products page could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+          
+          // publish object so the item will be displayed in the navigation 
+          publishobject ($site, "%page%/".$site."/Products/", "index.php", $user);
+        }
+        
+        if (!is_file (deconvertpath ("%page%/".$site."/Contact/index.php")))
+        {
+          $result = createobject ($site, "%page%/".$site."/Contact/", "index", "ContactUs", $user);
+          
+          if (isset ($result['result']) && $result['result'])
+          {
+            $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Contact', 'NavigationSortOrder'=>'4'), "u", "no", $user, $user, "UTF-8");
+          
+            // save working xml content container
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+          }
+          else $show .= "<li>Contact page could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+          
+          // publish object so the item will be displayed in the navigation 
+          publishobject ($site, "%page%/".$site."/Contact/", "index.php", $user);
+        }
       }
     }
   }
@@ -623,7 +654,7 @@ $token_new = createtoken ($user);
 </style>
 </head>
 
-<body class="hcmsWorkplaceGeneric">
+<body class="hcmsStartScreen" style="font-size:12px;">
 
 <script type="text/javascript" src="http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js"></script>
 <script type="text/javascript">
@@ -680,12 +711,12 @@ $(document).ready(function(){
 <?php if (!empty ($mgmt_config['version'])) echo showtopbar ("Installation of ".$mgmt_config['version'], "en"); else echo "Version information is missing"; ?>
 
 <!-- content area -->
-<div id="content" style="width:480px; margin:0 auto;">
+<div id="content" style="width:500px; margin:0 auto;">
 
 <div id="error" style="padding:4px; border:1px solid red; background:#ffdcd5;">There were errors on the form!</div>
 
 <div style="margin:10px 0px;">
-<img src="<?php echo $mgmt_config['url_path_cms']."theme/standard/img/logo.png"; ?>" style="width:466px; border:0; margin:10px 0px;" align="absmiddle" /><br />
+<img src="<?php echo $mgmt_config['url_path_cms']."theme/standard/img/logo.png"; ?>" style="width:466px; border:0; margin:10px 0px 20px 0px;" align="absmiddle" /><br />
 Welcome to the one-step hyper Content &amp; Digital Asset Management Server installation. 
 You may want to read the <a href="<?php echo $mgmt_config['url_path_cms']; ?>help/installationguide_en.pdf" target="_blank">installation guide</a> or watch the <a href="https://youtu.be/qR_wZBSw9Ao" target="_blank">installation tutorial</a> at your leisure.<br/>
 Otherwise just provide the information below and install the most powerful Content and Digital Asset Management System.
@@ -697,11 +728,28 @@ Otherwise just provide the information below and install the most powerful Conte
   <input type="hidden" name="action" value="install">
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
-  <table border="0" cellspacing="0" cellpadding="3">
-    
+  <table border="0" cellspacing="0" cellpadding="3"> 
+  
+    <!-- Main Purpose of first Publication -->
+    <tr>
+      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">Set up your first Publication</td>
+    </tr>
+    <tr>
+      <td colspan="2" nowrap="nowrap"><label><input name="setup_publication" value="cms" type="radio" <?php if (empty ($setup_publication) || $setup_publication == "cms") echo "checked=\"checked\""; ?> /> as a Content Management Solution (Manage content of a website)</label></td>
+    </tr>
+    <tr>
+      <td colspan="2" nowrap="nowrap"><label><input name="setup_publication" value="dam" type="radio" <?php if ($setup_publication == "dam") echo "checked=\"checked\""; ?> /> as a Digital Asset Management Solution (Manage and share multimedia files)</label></td>
+    </tr>
+    <tr>
+      <td colspan="2" nowrap="nowrap">You can create additional Publications any time after the successful installation.</td>
+    </tr>
+    <tr>
+      <td colspan="2" nowrap="nowrap"><hr /></td>
+    </tr>
+       
     <!-- User -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline">hyperCMS Administrator Account</td>
+      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">hyperCMS Administrator Account</td>
     </tr>
     <tr>
       <td colspan="2" nowrap="nowrap">You will need this account to log in to the system after installation.</td>
@@ -762,12 +810,12 @@ Otherwise just provide the information below and install the most powerful Conte
       </td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">&nbsp;</td>
+      <td colspan="2" nowrap="nowrap"><hr /></td>
     </tr>
     
     <!-- Database -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline">MySQL Database</td>
+      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">MySQL Database</td>
     </tr>
     <tr>
       <td colspan="2" nowrap="nowrap">Please make sure that a database with the same name does not already exist.</td>
@@ -797,12 +845,12 @@ Otherwise just provide the information below and install the most powerful Conte
       </td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">&nbsp;</td>
+      <td colspan="2" nowrap="nowrap"><hr /></td>
     </tr>
     
     <!-- SMTP -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline">SMTP/Mail Server</td>
+      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">SMTP/Mail Server</td>
     </tr>
     <tr>
       <td colspan="2" nowrap="nowrap">Please provide a valid SMTP host for features like task management, <br/>
@@ -839,12 +887,12 @@ Otherwise just provide the information below and install the most powerful Conte
       </td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">&nbsp;</td>
+      <td colspan="2" nowrap="nowrap"><hr /></td>
     </tr>
 
     <!-- OS -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline">Operating System</td>
+      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">Operating System</td>
     </tr>
     <tr>
       <td colspan="2" nowrap="nowrap">Please specify the operating system.</td>
@@ -859,7 +907,7 @@ Otherwise just provide the information below and install the most powerful Conte
       </td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">&nbsp;</td>
+      <td colspan="2" nowrap="nowrap"><hr /></td>
     </tr>
     
     <!-- Executables -->
@@ -868,14 +916,14 @@ Otherwise just provide the information below and install the most powerful Conte
     @ini_set ("open_basedir" , NULL);
     ?>
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline">Additional Software</td>
+      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">Additional Software</td>
     </tr>
     <tr>
       <td colspan="2" nowrap="nowrap">In order to use the full set of Digital Asset Management features<br/>
-      of hyperCMS, additional software packages are required.<br/>
+      of the system, additional software packages are required.<br/>
       The following settings provide typical examples of pathes to the <br/>
       executables on Linux, if available. Please adopt them if not suitable.<br/>
-      Attention: The open_basedir restriction might effect the check for executables.</td>
+      Attention: The open_basedir restriction might effect the search for executables.</td>
     </tr>
     <tr>
       <td nowrap="nowrap">Define path to XPDF (pdftotext): </td>
@@ -944,29 +992,12 @@ Otherwise just provide the information below and install the most powerful Conte
       </td>
     </tr> 
     <tr>
-      <td colspan="2" nowrap="nowrap">&nbsp;</td>
-    </tr>
-    
-    <!-- Main Purpose of first Publication -->
-    <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline">Set up your first Publication</td>
-    </tr>
-    <tr>
-      <td colspan="2" nowrap="nowrap">You can create additional Publications any time after successful installation.</td>
-    </tr>
-    <tr>
-      <td colspan="2" nowrap="nowrap"><label><input name="setup_publication" value="cms" type="radio" <?php if (empty ($setup_publication) || $setup_publication == "cms") echo "checked=\"checked\""; ?> /> as a Content Management Solution (Manage content of a website)</label></td>
-    </tr>
-    <tr>
-      <td colspan="2" nowrap="nowrap"><label><input name="setup_publication" value="dam" type="radio" <?php if ($setup_publication == "dam") echo "checked=\"checked\""; ?> /> as a Digital Asset Management Solution (Manage and share multimedia files)</label></td>
-    </tr>
-    <tr>
-      <td colspan="2" nowrap="nowrap">&nbsp;</td>
+      <td colspan="2" nowrap="nowrap"><hr /></td>
     </tr>
     
     <!-- Scheduled Tasks -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline">Scheduled Tasks</td>
+      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">Scheduled Tasks</td>
     </tr>
     <tr>
       <td colspan="2" nowrap="nowrap">
@@ -974,7 +1005,7 @@ Otherwise just provide the information below and install the most powerful Conte
       or scheduled Tasks (MS Windows) need to be created manually:<br/>
       <strong>cms/job/daily.php</strong> ... needs to be executed daily (e.g. midnight)<br/>
       <strong>cms/job/minutely.php</strong> ... needs to be executed every minute<br/>
-      <br/>
+      <hr />
       Please make sure that the .htaccess files of the system are supported by adding<br/>
       these directives to your Apache 2.4 configuration of your virtual host:<br/>
   		<strong>Require all granted<br/>

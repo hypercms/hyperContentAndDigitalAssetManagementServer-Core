@@ -68,7 +68,7 @@ if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
   if (($action == "delete" || $action == "deletemark" || $action == "restore") && (($page != "" && $setlocalpermission['delete'] == 1) || ($folder != "" && $setlocalpermission['folderdelete'] == 1))) $authorized = true;
   elseif (($action == "cut" || $action == "copy") && (($page != "" && $setlocalpermission['rename'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1))) $authorized = true;
   elseif ($action == "linkcopy" && (($page != "" && $setlocalpermission['rename'] == 1 && $setlocalpermission['create'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['foldercreate'] == 1))) $authorized = true;
-  elseif ($action == "page_favorites_delete" && $setlocalpermission['create'] == 1) $authorized = true;
+  elseif (($action == "page_favorites_create" || $action == "page_favorites_delete") && $setlocalpermission['create'] == 1) $authorized = true;
   elseif ($action == "page_unlock" && $setlocalpermission['create'] == 1) $authorized = true;
   elseif ($action == "paste" && ($setlocalpermission['rename'] == 1 || $setlocalpermission['folderrename'] == 1)) $authorized = true;
   elseif (($action == "publish" || $action == "unpublish") && $setlocalpermission['publish'] == 1) $authorized = true;
@@ -273,7 +273,7 @@ if ($authorized == true)
     }
   }
   // delete objects from favorites
-  elseif ($action == "page_favorites_delete" && $setlocalpermission['root'] == 1)
+  elseif (($action == "page_favorites_create" || $action == "page_favorites_delete") && $setlocalpermission['root'] == 1)
   {
     if ($multiobject != "")
     {
@@ -292,18 +292,21 @@ if ($authorized == true)
             $location = getlocation ($multiobject_item);
             $location = deconvertpath ($location, "file");
   
-            $result['result'] = deletefavorite ($site, $location, $page, "", $user);
+            if ($action == "page_favorites_create") $result['result'] = createfavorite ($site, $location, $page, "", $user);
+            elseif ($action == "page_favorites_delete") $result['result'] = deletefavorite ($site, $location, $page, "", $user);
           }
         }   
       } 
     }
     elseif ($folder != "" && is_dir ($location.$folder))
     {
-      $result['result'] = deletefavorite ($site, $location.$folder."/", ".folder", "", $user);
+      if ($action == "page_favorites_create") $result['result'] = createfavorite ($site, $location.$folder."/", ".folder", "", $user);
+      elseif ($action == "page_favorites_delete") $result['result'] = deletefavorite ($site, $location.$folder."/", ".folder", "", $user);
     }
     elseif ($page != "" && $page != ".folder" && is_file ($location.$page))
     {
-      $result['result'] = deletefavorite ($site, $location, $page, "", $user);
+      if ($action == "page_favorites_create") $result['result'] = createfavorite ($site, $location, $page, "", $user);
+      elseif ($action == "page_favorites_delete") $result['result'] = deletefavorite ($site, $location, $page, "", $user);
     }
   
     // check result

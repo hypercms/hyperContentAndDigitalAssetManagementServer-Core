@@ -236,7 +236,7 @@ foreach ($multiobject_array as $object)
     $mediafile = $oinfo['media'];
     $media_info = getfileinfo ($site, $mediafile, "comp");
     $thumbnail = $media_info['filename'].".thumb.jpg";
-    $mediadir = getmedialocation ($site, $oinfo['media'], "abs_path_media");
+    $mediadir = getmedialocation ($site, $oinfo['media'], "abs_path_media").$site."/";
     
     // check media
     if (!is_image ($media_info['ext'])) $is_image = false;
@@ -244,23 +244,25 @@ foreach ($multiobject_array as $object)
     if (!is_audio ($media_info['ext'])) $is_audio = false;
     
     // prepare media file
-    $temp = preparemediafile ($site, $mediadir.$site."/", $thumbnail, $user);
+    $temp = preparemediafile ($site, $mediadir, $thumbnail, $user);
     
-    if ($temp['result'] && $temp['crypted'])
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && is_file ($temp['templocation'].$temp['tempfile']))
     {
-      $media_root = $temp['templocation'];
-      $mediafile = $temp['tempfile'];
+      $mediadir = $temp['templocation'];
+      $thumbnail = $temp['tempfile'];
     }
-    elseif ($temp['restored'])
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && is_file ($temp['location'].$temp['file']))
     {
-      $media_root = $temp['location'];
-      $mediafile = $temp['file'];
+      $mediadir = $temp['location'];
+      $thumbnail = $temp['file'];
     }
     
     // thumbnails preview
-    if (is_file ($mediadir.$site."/".$thumbnail))
+    if (is_file ($mediadir.$thumbnail))
     {
-      $imgsize = getimagesize ($mediadir.$site."/".$thumbnail);
+      $imgsize = getimagesize ($mediadir.$thumbnail);
       
       // calculate image ratio to define CSS for image container div-tag
       if (is_array ($imgsize))

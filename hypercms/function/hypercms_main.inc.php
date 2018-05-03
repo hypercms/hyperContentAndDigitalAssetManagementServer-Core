@@ -892,6 +892,33 @@ function is_video ($file)
   else return false;
 }
 
+// -------------------------------- is_rawvideo --------------------------------
+// function: is_rawvideo()
+// input: file name or file extension [string]
+// output: true / false
+
+// description:
+// This function determines if a certain file is a RAW video
+
+function is_rawvideo ($file)
+{
+  global $mgmt_config, $hcms_ext;
+  
+  if ($file != "")
+  {
+    // load file extensions
+    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+    
+    // get file extension
+    if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
+    else $ext = $file;
+    
+    if (substr_count (strtolower ($hcms_ext['rawvideo']).".", ".".$ext.".") > 0) return true;
+    else return false;
+  }
+  else return false;
+}
+
 // -------------------------------- is_audio --------------------------------
 // function: is_audio()
 // input: file name or file extension [string]
@@ -1160,7 +1187,7 @@ function correctfile ($abs_path, $filename, $user="")
     }
     
     // if given file or directory exists
-    if (file_exists ($abs_path.$filename))
+    if (is_file ($abs_path.$filename) || is_dir ($abs_path.$filename) || is_link ($abs_path.$filename))
     {
       return $filename;
     }
@@ -2152,7 +2179,7 @@ function createversion ($site, $file, $user="sys")
         // get the file extension of the version file
         $ext_v = strrchr ($file_v, ".");
           
-        // create thumbnail
+        // thumbnail
         $thumb = $file_info['filename'].".thumb.jpg";
         $thumb_v = $thumb.$ext_v;
         
@@ -2170,10 +2197,13 @@ function createversion ($site, $file, $user="sys")
         
         // create new version of original file
         // copy media file (important for image editing!)
-        if (is_file ($media_root.$file) && filesize ($media_root.$file) > 0)
+        if (is_file ($media_root.$file) || is_link ($media_root.$file))
         {
+          if (is_link ($media_root.$file)) $symlinktarget_path = readlink ($media_root.$file);
+          else $symlinktarget_path = $media_root.$file;
+          
           // copy to media repository in case media file has been exported
-          @copy ($media_root.$file, $thumb_root.$file_v);
+          @copy ($symlinktarget_path, $thumb_root.$file_v);
         }
 
         // copy in cloud storage
@@ -2254,6 +2284,9 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   
   if (empty ($lang)) $lang = "en";
   
+  // restore files to the media repository if requested
+  if (!isset ($mgmt_config['restore_exported_media'])) $mgmt_config['restore_exported_media'] = true;
+  
   // deconvert location
   $location = deconvertpath ($location, "file");
   
@@ -2284,8 +2317,14 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
       {
         $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
         $thumbdir = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
+        
+        // if current version is a symbolic link to an external media file without an ID
+        if (is_link ($thumbdir.$mediafile)  && strpos (readlink ($thumbdir.$mediafile), "_hcm".$container_id) < 1)
+        {
+          $currentversion_path = readlink ($thumbdir.$mediafile);
+        }
       }
-      
+
       // change version
       if ($versiondir != "")
       {
@@ -2295,7 +2334,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
         {
           // create version of current container and media file
           $createversion = createversion ($site, $mediafile, $user);
-          
+
           // remove original files (that will be kept by function createversion for image editing)
           if (!empty ($createversion)) deletefile ($thumbdir, $mediafile, 0);
         }
@@ -2327,17 +2366,69 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
             // get file extension
             $ext_version = strrchr ($container_version, ".");
           
-            // get media file name from container version
+            // get media file name from container version that will be used for the restored media file
             $mediafile_current = substr ($container_version, 0, strrpos ($container_version, "."));
             
             // get media file extension
             $ext_current = strrchr ($mediafile_current, ".");
-            
-            // move media file to media repository in case media file has been exported
-            $rename_2 = @rename ($mediadir.$container_version, $thumbdir.$mediafile_current);
-        
-            // remove symbolic link (if exported media file)
-            if (is_link ($thumbdir.$container_version)) deletefile ($thumbdir, $container_version, 0);
+
+            // if older version is a symbolic link
+            if (is_link ($thumbdir.$container_version))
+            {
+              $oldversion_path = readlink ($thumbdir.$container_version);
+            }
+            else
+            {
+              $oldversion_path = $thumbdir.$container_version;
+            }
+
+            if (is_file ($oldversion_path))
+            {
+              // media file has _hcm in its file name will be moved to media repository
+              if (empty ($currentversion_path))
+              {
+                // restore old media file
+                $rename_2 = @rename ($oldversion_path, $thumbdir.$mediafile_current);
+
+                // retry using copy and delete
+                if ($rename_2 == false)
+                {
+                  $rename_2 = @copy ($oldversion_path, $thumbdir.$mediafile_current);
+                  @unlink ($oldversion_path);
+                }
+              
+                // delete restored file
+                deletefile ($thumbdir, $container_version, 0);
+              }
+              // imported/linked external media file without container ID in its file name
+              // will be restorted in the external location
+              elseif (!empty ($currentversion_path))
+              {
+                // restored media file will be saved in same external location
+                $target_location = getlocation ($currentversion_path);
+                $target_file = getobject ($currentversion_path);
+                $target_file = substr ($target_file, 0, strrpos ($target_file, ".")).$ext_current;
+                
+                // restore old media file
+                $rename_2 = @rename ($oldversion_path, $target_location.$target_file);
+
+                // retry using copy and delete
+                if ($rename_2 == false)
+                {
+                  $rename_2 = @copy ($oldversion_path, $target_location.$target_file);
+                  @unlink ($oldversion_path);
+                }
+              
+                // delete restored file
+                deletefile ($thumbdir, $container_version, 0);
+  
+                // create new symbolic link
+                if (is_file ($target_location.$target_file))
+                {
+                  @symlink ($target_location.$target_file, $thumbdir.$mediafile_current);
+                }
+              }
+            }
 
             // rename in cloud storage
             if (function_exists ("renamecloudobject")) renamecloudobject ($site, $thumbdir, $container_version, $mediafile_current, $user);  
@@ -2475,10 +2566,10 @@ function deleteversion ($site, $container_version, $user="sys")
       // delete media file version
       if (is_file ($mediadir.$container_version) || is_cloudobject ($container_version))
       {
-        // delete media file
+        // delete media file and symbolic link to media file (if exported file)
         if (is_file ($mediadir.$container_version)) $media_result = deletefile ($mediadir, $container_version, 0);
 
-        // delete symbolic link to media file (if exported file)
+        // fallback delete of symbolic link to media file (if exported file)
         if (is_link ($thumbdir.$container_version)) deletefile ($thumbdir, $container_version, 0);
         
         // cloud storage
@@ -2541,10 +2632,10 @@ function deleteversions ($type, $report, $user="sys")
         $report_str = deleteversions ($versiondir.$entry."/", $report, $user);
       }
       // suitable for templates and containers
-      elseif ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/.v_/i", $entry) || @preg_match ("/_hcm/i", $entry)))
+      elseif ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/.v_/i", $entry) || preg_match ("/_hcm/i", $entry)))
       {
         // remove container and media file version
-        if (@preg_match ("/_hcm/i", $entry))
+        if (preg_match ("/_hcm/i", $entry))
         {
           $entrydata = loadfile ($versiondir, $entry);
           
@@ -2615,6 +2706,18 @@ function loadfile_header ($abs_path, $filename)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // symbolic link
+    if (is_link ($abs_path.$filename))
+    {
+      $symlinktarget_path = readlink ($abs_path.$filename);
+      
+      if (is_file ($symlinktarget_path))
+      {
+        $abs_path = getlocation ($symlinktarget_path);
+        $filename = getobject ($symlinktarget_path);
+      }
+    }
     
     // check and correct file
     $filename = correctfile ($abs_path, $filename, $user);
@@ -2670,9 +2773,21 @@ function loadfile_fast ($abs_path, $filename)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // symbolic link
+    if (is_link ($abs_path.$filename))
+    {
+      $symlinktarget_path = readlink ($abs_path.$filename);
+      
+      if (is_file ($symlinktarget_path))
+      {
+        $abs_path = getlocation ($symlinktarget_path);
+        $filename = getobject ($symlinktarget_path);
+      }
+    }
     
     // check and correct file
-    $filename = correctfile ($abs_path, $filename, $user);    
+    $filename = correctfile ($abs_path, $filename, $user);
     
     // load file
     if ($filename != false)
@@ -2715,6 +2830,18 @@ function loadfile ($abs_path, $filename)
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
+    }
+
+    // symbolic link
+    if (is_link ($abs_path.$filename))
+    {
+      $symlinktarget_path = readlink ($abs_path.$filename);
+      
+      if (is_file ($symlinktarget_path))
+      {
+        $abs_path = getlocation ($symlinktarget_path);
+        $filename = getobject ($symlinktarget_path);
+      }
     }
 
     // check and correct file
@@ -2799,6 +2926,18 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // symbolic link
+    if (is_link ($abs_path.$filename))
+    {
+      $symlinktarget_path = readlink ($abs_path.$filename);
+      
+      if (is_file ($symlinktarget_path))
+      {
+        $abs_path = getlocation ($symlinktarget_path);
+        $filename = getobject ($symlinktarget_path);
+      }
+    }
     
     // check and correct file name
     if (substr_count ($filename, ".@".$user) == 1) $filename = str_replace (".@".$user, "", $filename);
@@ -2850,7 +2989,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
       while (time() <= $end)
       {
         $filename = $filename_unlocked;
-        $filename = correctfile ($abs_path, $filename, $user);  
+        $filename = correctfile ($abs_path, $filename, $user);
           
         if ($filename !== false)
         {
@@ -2936,6 +3075,18 @@ function savefile ($abs_path, $filename, $filedata)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+    
+    // symbolic link
+    if (is_link ($abs_path.$filename))
+    {
+      $symlinktarget_path = readlink ($abs_path.$filename);
+      
+      if (is_file ($symlinktarget_path))
+      {
+        $abs_path = getlocation ($symlinktarget_path);
+        $filename = getobject ($symlinktarget_path);
+      }
+    }
 
     // if file is locked by the same user file can be saved
     if (is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user;
@@ -2983,6 +3134,18 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
+    }
+    
+    // symbolic link
+    if (is_link ($abs_path.$filename))
+    {
+      $symlinktarget_path = readlink ($abs_path.$filename);
+      
+      if (is_file ($symlinktarget_path))
+      {
+        $abs_path = getlocation ($symlinktarget_path);
+        $filename = getobject ($symlinktarget_path);
+      }
     }
     
     // check and define unlocked file name
@@ -3043,6 +3206,18 @@ function appendfile ($abs_path, $filename, $filedata)
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
+    }
+    
+    // symbolic link
+    if (is_link ($abs_path.$filename))
+    {
+      $symlinktarget_path = readlink ($abs_path.$filename);
+      
+      if (is_file ($symlinktarget_path))
+      {
+        $abs_path = getlocation ($symlinktarget_path);
+        $filename = getobject ($symlinktarget_path);
+      }
     }
     
     // check and correct file
@@ -3124,6 +3299,18 @@ function lockfile ($user, $abs_path, $filename)
       $abs_path = deconvertpath ($abs_path, "file");
     }
     
+    // symbolic link
+    if (is_link ($abs_path.$filename))
+    {
+      $symlinktarget_path = readlink ($abs_path.$filename);
+      
+      if (is_file ($symlinktarget_path))
+      {
+        $abs_path = getlocation ($symlinktarget_path);
+        $filename = getobject ($symlinktarget_path);
+      }
+    }
+    
     // check and correct file name
     if (strpos ($filename, ".@") > 0) $filename = substr ($filename, 0, strpos ($filename, ".@"));
     
@@ -3165,6 +3352,18 @@ function unlockfile ($user, $abs_path, $filename)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+    
+    // symbolic link
+    if (is_link ($abs_path.$filename))
+    {
+      $symlinktarget_path = readlink ($abs_path.$filename);
+      
+      if (is_file ($symlinktarget_path))
+      {
+        $abs_path = getlocation ($symlinktarget_path);
+        $filename = getobject ($symlinktarget_path);
+      }
+    }  
     
     // check and correct file name
     if (strpos ($filename, ".@") > 0) $filename = substr ($filename, 0, strpos ($filename, ".@"));    
@@ -3208,8 +3407,45 @@ function deletefile ($abs_path, $filename, $recursive=false)
       $abs_path = deconvertpath ($abs_path, "file");
     }
 
+    // if selected file is a symbolic link
+    if (is_link ($abs_path.$filename))
+    {
+      // delete target file
+      if (!empty ($recursive))
+      {
+        $symlinktarget_path = readlink ($abs_path.$filename);
+        deletefile (getlocation ($symlinktarget_path), getobject ($symlinktarget_path), $recursive);
+      }
+      
+      // remove symbolic link
+      $test = unlink ($abs_path.$filename);
+      
+      if ($test == false)
+      {
+        $errcode = "10110";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for symbolic link ".$abs_path.$filename;
+      }
+    }
+    // if selected file is a file
+    elseif (is_file ($abs_path.$filename) || is_file ($abs_path.$filename.".off") || is_file ($abs_path.$filename.".@".$user))
+    {   
+      // if file is offline (for objects)
+      if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off"; 
+        
+      // if file is locked (for containers)
+      if (is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user;   
+
+      // remove selected file
+      $test = unlink ($abs_path.$filename);
+    
+      if ($test == false)
+      {
+        $errcode = "10110";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for file ".$abs_path.$filename;
+      }
+    }
     // if selected file is a directory
-    if (is_dir ($abs_path.$filename))
+    elseif (is_dir ($abs_path.$filename))
     { 
       $test = true;
           
@@ -3254,49 +3490,12 @@ function deletefile ($abs_path, $filename, $recursive=false)
       if ($test != false && is_dir ($abs_path.$filename))
       {
         $test = @rmdir ($abs_path.$filename);
-        
+      
         if ($test == false)
         {
           $errcode = "10109";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for directory ".$abs_path.$filename;
         }
-      }
-    }
-    // if selected file is a file
-    elseif (is_file ($abs_path.$filename) || is_file ($abs_path.$filename.".off") || is_file ($abs_path.$filename.".@".$user))
-    {    
-      // if file is offline (for objects)
-      if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off"; 
-        
-      // if file is locked (for containers)
-      if (is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user;   
-        
-      // remove selected file
-      $test = unlink ($abs_path.$filename);
-      
-      if ($test == false)
-      {
-        $errcode = "10110";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for file ".$abs_path.$filename;
-      }
-    }
-    // if selected file is a symbolic link
-    elseif (is_link ($abs_path.$filename))
-    {
-      // delete target file
-      if (!empty ($recursive))
-      {
-        $targetpath = readlink ($abs_path.$filename);
-        deletefile ($abs_path, $filename, $recursive);
-      }
-      
-      // remove symbolic link
-      $test = unlink ($abs_path.$filename);
-      
-      if ($test == false)
-      {
-        $errcode = "10110";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for symbolic link ".$abs_path.$filename;
       }
     }
     else $test = false;
@@ -3318,7 +3517,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
 // output: result array
 
 // description:
-// Moves an exported media file back to the media repository
+// Moves an exported media file back to the media repository.
 
 function restoremediafile ($site, $mediafile)
 {
@@ -3333,25 +3532,36 @@ function restoremediafile ($site, $mediafile)
 
   if (valid_publicationname ($site) && valid_objectname ($mediafile) && !empty ($mgmt_config['abs_path_media']))
   {  
-    // get media location
-    $medialocation = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
-    
-    // get media repository directory by using a dummy media file with same ID
+    // get media repository directory by using a dummy media file name with same ID
     $mediaroot = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
+    
+    // get media file location (can be outside of repository if a symbolic link is used)
+    $medialocation = getmedialocation ($site, $mediafile, "abs_path_media", true);
+
+    // if symbolic link is used,the full file path will be returned
+    if (is_file ($medialocation))
+    {
+      $targetfile = $medialocation;
+    }
+    else
+    {
+      $medialocation = $medialocation.$site."/";
+      $targetfile = $medialocation.$mediafile;
+    }
 
     // move media file back to repository
-    if ($mediaroot != $medialocation && is_file ($mediaroot.$mediafile) && !empty ($mgmt_config['restore_exported_media']))
+    if ($mediaroot != $medialocation && is_file ($targetfile) && !empty ($mgmt_config['restore_exported_media']))
     {
       // rename symbolic link
       if (is_link ($mediaroot.$mediafile)) rename ($mediaroot.$mediafile, $mediaroot.$mediafile.".tmp");
       
       // use copy since cross partition move/rename of files is not supported by PHP!
-      $copy = copy ($medialocation.$mediafile, $mediaroot.$mediafile);
+      $copy = copy ($targetfile, $mediaroot.$mediafile);
 
       if (!$copy)
       {
         // rename/restore the original name of the symbolic link
-        if (is_link ($mediaroot.$mediafile.".tmp")) rename ($mediaroot.$mediafile.".tmp", $mediaroot.$mediafile);
+        if (is_link ($mediaroot.$mediafile.".tmp")) rename ($mediaroot.$mediafile.".tmp", $targetfile);
       
         $errcode = 10602;
         $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|could not restore exported media file '.$mediafile.' to repository';
@@ -3365,17 +3575,20 @@ function restoremediafile ($site, $mediafile)
         
         // remove external media file outside repository
         // cross partition move/rename of files is not supported by PHP!
-        if (is_file ($medialocation.$mediafile)) deletefile ($medialocation, $mediafile, 0);
-    
+        if (is_file ($targetfile)) deletefile (getlocation ($targetfile), getobject ($targetfile), 0);
+
         avoidfilecollision();
         
         // reset location path
         $medialocation = $mediaroot;
         $restored = true;
+        
+        $errcode = 00602;
+        $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|information|'.$errcode.'|restored exported media file '.$mediafile.' to repository';
       }
     }
   }
-  
+
   // write log
   savelog (@$error);
 
@@ -3405,22 +3618,24 @@ function preparemediafile ($site, $medialocation, $mediafile, $user="")
   {
     // restore exported media file
     $restoremediafile = restoremediafile ($site, $mediafile);
-    
+
+    // if media file has been restored
     if (!empty ($restoremediafile['result']) && !empty ($restoremediafile['restored']))
     {
+      // set new values
       $site = $restoremediafile['publication'];
       $medialocation = $restoremediafile['location'];
       $mediafile = $restoremediafile['mediafile'];
     }
-    
+
     // load from cloud storage
     if (function_exists ("loadcloudobject")) loadcloudobject ($site, $medialocation, $mediafile, $user);
 
     // create temp file if file is encrypted
     $createtempfile = createtempfile ($medialocation, $mediafile);
     
-    // if media file has been restored
-    if (!empty ($restoremediafile['restored'])) $createtempfile['restored'] = true;
+    // set restore array element
+    if (!empty ($restoremediafile['result']) && !empty ($restoremediafile['restored'])) $createtempfile['restored'] = true;
     else $createtempfile['restored'] = false;
     
     return $createtempfile;
@@ -3450,11 +3665,11 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
     {
       // define media location of original file (may have been exported)
       $medialocation_orig = getmedialocation ($site, $mediafile, "abs_path_media");
-    
+
       // local media file
       $deletefile = deletefile ($medialocation_orig.$site."/", $mediafile, 0);
-      // remove symbolic link of exported media file
-      if ($deletefile && is_link ($medialocation.$site."/".$mediafile)) unlink ($medialocation.$site."/".$mediafile);
+      // remove symbolic link of exported media file (deprecated since version 7.0.7)
+      // if ($deletefile && is_link ($medialocation.$site."/".$mediafile)) unlink ($medialocation.$site."/".$mediafile);
       // cloud storage
       if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile, $user);
       // remote client
@@ -3487,13 +3702,14 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
     
     if (is_file ($medialocation.$site."/".$docfile_annotation."-0.jpg") || is_cloudobject ($medialocation.$site."/".$docfile_annotation."-0.jpg"))
     { 
-      for ($p=0; $p<=10000; $p++)
+      for ($p=0; $p<=100000; $p++)
       {
         $temp = $docfile_annotation."-".$p.".jpg";
         // local media file
         $delete_1 = deletefile ($medialocation.$site."/", $temp, 0);
         // cloud storage
         if (function_exists ("deletecloudobject")) $delete_2 = deletecloudobject ($site, $medialocation.$site."/", $temp, $user);
+        else $delete_2 = false;
         // remote client
         remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $temp, "");
         // break if no more page is available
@@ -3751,7 +3967,8 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted'])
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
       $location = $temp['templocation'];
       $media = $temp['tempfile'];
@@ -3759,7 +3976,8 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       // set new file path
       $filepath = $location.$media;
     }
-    elseif ($temp['restored'])
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
     {
       $location = $temp['location'];
       $media = $temp['file'];
@@ -7228,29 +7446,29 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]."!</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
   }
-  // check if submitted passwords has at least 8 digits
-  elseif (strlen ($password) < 8 || strlen ($confirm_password) < 8)
-  {  
-    $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['your-submitted-passwords-has-less-than-8-digits'][$lang]."</span><br />\n".$hcms_lang['please-select-a-password-with-at-least-8-digits'][$lang]."\n";
-  }    
   // test if login name contains special characters
   elseif (specialchr ($login, "-_") == true)
   {
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['onhcms_lang'][$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
+  }
+  // check for strong password (if enabled)
+  elseif (!empty ($mgmt_config['strongpassword']) && checkpassword ($password) !== true)
+  {
+    $add_onload = "";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['password-insufficient'][$lang]."</span><br />\n".checkpassword ($password)."\n";
+  }
+  // check if submitted passwords has at least 8 digits
+  elseif (strlen ($password) < 10 || strlen ($confirm_password) < 10)
+  {  
+    $add_onload = "";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['your-submitted-passwords-has-less-than-digits'][$lang]."</span><br />\n".$hcms_lang['please-select-a-password-with-at-least-digits'][$lang]."\n";
   }
   // check if submitted passwords are equal
   elseif ($password != $confirm_password)
   {  
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['your-submitted-passwords-are-not-equal'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-it-again-'][$lang]."\n";
-  }    
-  // check for strong password (if enabled)
-  elseif (!empty ($mgmt_config['strongpassword']) && strlen (checkpassword ($password)) > 1)
-  {
-    $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['password-insufficient'][$lang]."</span><br />\n".checkpassword ($password)."\n";
   }
   else
   {     
@@ -7350,7 +7568,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
             if ($eventsystem['oncreateuser_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
               oncreateuser_post ($login, $user);              
           
-            $add_onload = "window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes,width=500,height=540'); parent.frames['mainFrame'].location.reload(); ";
+            $add_onload = "window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes,width=520,height=660'); parent.frames['mainFrame'].location.reload(); ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-user-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-user'][$lang]."<br />\n";              
             $error_switch = "no";
           }
@@ -7462,14 +7680,23 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           $add_onload = "";
           $show = "<span class=hcmsHeadline>".$hcms_lang['the-old-password-is-not-valid'][$lang]."</span>\n";
         }
-        // check if submitted passwords has at least 8 digits
-        elseif (strlen ($password) < 8)
+        // check for strong password (if enabled)
+        elseif (!empty ($mgmt_config['strongpassword']) && checkpassword ($password) !== true)
+        {
+          //unlock file
+          unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
+                  
+          $add_onload = "";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['password-insufficient'][$lang]."</span><br />\n".checkpassword ($password)."\n";
+        } 
+        // check if submitted passwords has at least 10 digits
+        elseif (strlen ($password) < 10)
         {
           //unlock file
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
                 
           $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$hcms_lang['the-password-has-less-than-8-digits'][$lang]."</span><br />".$hcms_lang['please-select-a-password-with-at-least-8-digits'][$lang]."\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-password-has-less-than-digits'][$lang]."</span><br />".$hcms_lang['please-select-a-password-with-at-least-digits'][$lang]."\n";
         }  
         // check if submitted passwords are equal
         elseif ($password != $confirm_password)
@@ -7479,16 +7706,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
                 
           $add_onload = "";
           $show = "<span class=hcmsHeadline>".$hcms_lang['your-submitted-passwords-are-not-equal'][$lang]."</span><br />".$hcms_lang['please-try-it-again'][$lang]."\n";
-        }
-        // check for strong password (if enabled)
-        elseif (!empty ($mgmt_config['strongpassword']) && strlen (checkpassword ($password)) > 1)
-        {
-          //unlock file
-          unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
-                  
-          $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['password-insufficient'][$lang]."</span><br />\n".checkpassword ($password)."\n";
-        }        
+        }       
         // password is correct
         else
         {
@@ -9303,7 +9521,7 @@ function collectfolders ($site, $location, $folder)
 // output: result array equal to createfolder
 
 // description:
-// This function copies/creates all folders of the source location using mkdir (only directories will be created!). used for pasteobject function.
+// This function copies/creates all folders of the source location using mkdir (only directories will be created!). Used by pasteobject function.
 
 function copyfolders ($site, $location, $locationnew, $folder, $user)
 {   
@@ -10744,10 +10962,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               {
                 $errcode = 20509;
                 $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$zipfilename."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
-                  
-                // write log
-                savelog (@$error);
-      
+
                 $show = $result_createobject['message'];
               }
             }
@@ -10820,7 +11035,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           // temporary directory for extracting files
           $temp_dir = $mgmt_config['abs_path_temp'].$session_id."/";
 
-          if ($file_ext == ".jpg" || $file_ext == ".jpeg")
+          if ($file_ext != "")
           {
             // create temporary directory for extraction
             $test = @mkdir ($temp_dir, $mgmt_config['fspermission']);
@@ -10830,7 +11045,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               // copy to temporary directory
               if ($is_remote_file)
               {
-                $result_upload = @rename ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg");
+                $result_upload = @rename ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.$file_ext);
                 
                 if (!$result_upload)
                 {
@@ -10839,17 +11054,17 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               }
               else
               {
-                $result_upload = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg");
+                $result_upload = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.$file_ext);
                 
                 if (!$result_upload)
                 {
                   $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
                 }
               }
-              
+
               if ($result_upload == true)
               {
-                $result_createthumb = createmedia ($site, $temp_dir, getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/", $file_name.".jpg", "", "thumbnail");
+                $result_createthumb = createmedia ($site, $temp_dir, getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/", $file_name.$file_ext, "jpg", "thumbnail");
 
                 // if thumbnail creation failed use uploaded image as thumbnail image
                 if ($result_createthumb == false)
@@ -10869,27 +11084,41 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         // update multimedia file
         else
         {
+          // get container id
+          $container_id = getmediacontainerid ($media_update);
+          $contentfile = $container_id.".xml";
+          
           // get media root directory
           $media_root = getmedialocation ($site, $media_update, "abs_path_media").$site."/";
           $thumb_root = getmedialocation ($site, "dummy.".$media_update, "abs_path_media").$site."/";
+          
+          // force a restore if media file has been exported (on any chnage of the media file it should be restored)
+          $mgmt_config['restore_exported_media'] = true;
           
           // prepare media file (in case it has been exported)
           $temp = preparemediafile ($site, $media_root, $media_update, $user);
           
           // reset location if restored
-          if ($temp['restored'])
+          if (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
           {
             $media_root = $temp['location'];
             $media_update = $temp['file'];
           }
 
-          // get container id
-          $container_id = getmediacontainerid ($media_update);
-          $contentfile = $container_id.".xml";
-
           // create version of previous content and media file
           if (!empty ($versioning)) $createversion = createversion ($site, $media_update);
           else $createversion = true;
+                
+          // check if symbolic link
+          if (is_link ($media_root.$media_update)) 
+          {
+            // get the real file path
+            $symlinktarget_path = readlink ($media_root.$media_update);
+          }
+          else
+          {
+            $symlinktarget_path = $media_root.$media_update;
+          }
 
           // if versioning was successful
           $result_save = false;
@@ -10897,8 +11126,9 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           if ($createversion && !empty ($media_root))
           {
             // delete old file and symbolic link
-            deletefile ($media_root, $media_update, 0);
-            deletefile ($thumb_root, $media_update, 0);
+            deletefile (getlocation ($symlinktarget_path), getobject ($symlinktarget_path), 0);
+            if (is_file ($media_root.$media_update)) deletefile ($media_root, $media_update, 0);
+            if (is_file ($thumb_root.$media_update)) deletefile ($thumb_root, $media_update, 0);
           
             // remember original file name
             $media_orig = $media_update;
@@ -10910,27 +11140,49 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             $file_ext_new = strtolower (strrchr ($global_files['Filedata']['name'], "."));
             // define new file name
             $media_update = $file_name_old.$file_ext_new;
+            $symlinktarget_path = substr_replace ($symlinktarget_path, $file_ext_new, strrpos ($symlinktarget_path , "."));
             // get object name without extension
             $page_nameonly = specialchr_decode (strrev (substr (strstr (strrev ($page), "."), 1)));
             // get converted location
             $location_conv = convertpath ($site, $location, $cat);
-            
+
             // save new multimedia file
-            // move uploaded file
+            // move uploaded file for standard file upload
             if (!$is_remote_file)
             {
-              $result_save = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$media_update);
+              $result_save = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $symlinktarget_path);
             }
 
             // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
             if ($is_remote_file || $result_save == false)
             {
-              $result_save = @rename ($global_files['Filedata']['tmp_name'], $media_root.$media_update);
+              // move
+              $result_save = @rename ($global_files['Filedata']['tmp_name'], $symlinktarget_path);
+              
+              // if move fails try copy and delete
+              if (!$result_save)
+              {
+                $result_save = @copy ($global_files['Filedata']['tmp_name'], $symlinktarget_path);
+                @unlink ($global_files['Filedata']['tmp_name']);
+              }
             }
           }
 
           if ($result_save == true)
           {
+            // update symbolic link
+            if (is_link ($media_root.$media_orig)) 
+            {
+              unlink ($media_root.$media_orig);
+              $symlink = symlink ($symlinktarget_path, $thumb_root.$media_update);
+              
+              if (!$symlink)
+              {
+                $errcode = 10521;
+                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the symbolic link for '".$media_update."' could not be created";
+              }
+            }
+          
             // write stats for upload
             if ($container_id != "" && !is_thumbnail ($media_update, false))
             {
@@ -10938,7 +11190,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             }
 
             // get media size
-            $media_size = @getimagesize ($media_root.$media_update);
+            $media_size = @getimagesize ($symlinktarget_path);
             
             if (!empty ($media_size[0]) && !empty ($media_size[1]))
             {
@@ -11080,6 +11332,9 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     
     // include object name or object paths (uncompressed ZIP files) in message
     if (empty ($show_command) && !empty ($result['object'])) $show_command = "[".$result['object']."]";
+           
+    // write log
+    savelog (@$error);
 
     // return message and command to flash object
     $result['result'] = true;
@@ -11098,16 +11353,18 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
 // ---------------------------------------- createmediaobject --------------------------------------------
 // function: createmediaobject()
-// input: publication name [string], destination location [string], file name [string], path to source multimedia file (uploaded file in temp directory) [string], user name [string], resize original image (100%) by percentage [integer] (optional)
+// input: publication name [string], destination location [string], file name [string], path to source multimedia file (uploaded file in temp directory) [string], user name [string], resize original image (100%) by percentage [integer] (optional), leave file in the directory and create a symbolic link to the file [true,false] (optional)
 // output: result array
 
 // description:
 // This function creates an asset (multimedia object) by reading a given source file. The file name must not match the temp file patterns defined in include/tempfilepatterns.inc.php and .recycle for recycled files.
 // The metadata template is based on the template of the folder the objects resides in.
 
-function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0)
+function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0, $leavefile=false)
 {
-  global $mgmt_config, $mgmt_imageoptions, $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;     
+  global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, 
+            $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, 
+            $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "" && !is_tempfile ($file))
   {
@@ -11166,12 +11423,22 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
         // define media location
         $medialocation = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
         
-        // move multimedia file to content media repository
-        // case "upload": move uploaded file from temp directory
-        $result_move = @move_uploaded_file ($path_source_file, $medialocation.$mediafile);
-        
-        // case "import": move import file from source directory 
-        if (!$result_move) $result_move = @rename ($path_source_file, $medialocation.$mediafile);
+        // leave media file and create a symbolic link to the file
+        if (!empty ($leavefile))
+        {
+          // create symbolic link
+          $result_move = symlink ($path_source_file, $medialocation.$mediafile);
+        }
+        // move media file to repository
+        else
+        {
+          // move multimedia file to content media repository
+          // case "upload": move uploaded file from temp directory
+          $result_move = @move_uploaded_file ($path_source_file, $medialocation.$mediafile);
+          
+          // case "import": move import file from source directory 
+          if (!$result_move) $result_move = @rename ($path_source_file, $medialocation.$mediafile);
+        }
 
         if ($result_move)
         {
@@ -11180,9 +11447,6 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           {
             rdbms_insertdailystat ("upload", $container_id, $user);
           }
-          
-          // index content
-          indexcontent ($site, $medialocation, $mediafile, $container_id, $container_content, $user);
 
           // resize original image if requested
           if (!empty ($mediafile) && $imagepercentage > 0 && $imagepercentage <= 200)
@@ -11236,6 +11500,9 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           // remote client
           remoteclient ("save", "abs_path_media", $site, $medialocation, "", $mediafile, "");
           
+          // index content
+          indexcontent ($site, $medialocation, $mediafile, $container_id, $container_content, $user);
+          
           // encrypt data
           if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
           {
@@ -11252,7 +11519,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
         else
         {
           $errcode = "10501";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createmediaobject failed to move '".$path_source_file."' to  '".getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile."', return value: ".$result_move; 
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createmediaobject failed to move '".$path_source_file."' to '".getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile."' or create the symbolic link"; 
           
           $result['result'] = false;
         }
@@ -12284,7 +12551,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             // delete media file derivates
             if (!empty ($mediafile_self)) deletemediafiles ($site, $mediafile_self, true);
 
-            // delete thumbnail file (versions before 5.0)
+            // delete thumbnail file (for versions before 5.0)
             $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));
             
             if (is_file ($location.$object_thumb))
@@ -12894,14 +13161,18 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             // copy media files
             if ($mediafile_self != false && $mediafile_new != "")
             {
-              @copy (getmedialocation ($site, $mediafile_self, "abs_path_media").$site."/".$mediafile_self, getmedialocation ($site, $mediafile_new, "abs_path_media").$site."/".$mediafile_new);
+              // copy original media file
+              if (is_link (getmedialocation ($site, $mediafile_self, "abs_path_media").$site."/".$mediafile_self)) $temp_path = readlink (getmedialocation ($site, $mediafile_self, "abs_path_media").$site."/".$mediafile_self);
+              else $temp_path = getmedialocation ($site, $mediafile_self, "abs_path_media").$site."/".$mediafile_self;
+              
+              @copy ($temp_path, getmedialocation ($site, $mediafile_new, "abs_path_media").$site."/".$mediafile_new);
               $mediafile_self_thumb = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".thumb.jpg";
               $mediafile_new_thumb = substr ($mediafile_new, 0, strrpos ($mediafile_new, ".")).".thumb.jpg";
 
               // remote client
-              remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self, "abs_path_media").$site."/", "", $mediafile_self, $mediafile_new);                 
+              remoteclient ("copy", "abs_path_media", $site, getlocation ($temp_path), "", getobject ($temp_path), $mediafile_new);                 
               
-              // copy thumbnail images
+              // copy thumbnail images (always in media repository)
               if (is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
               {
                 @copy (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
@@ -12922,7 +13193,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                   {
                     if ($video_ext != "" && $video_ext != "thumbnail-video" && $video_ext != "thumbnail-audio")
                     {
-                      // thumbnail video files
+                      // thumbnail video files (is always in media repository)
                       $mediafile_self_thumb = $mediafile_self_name.".thumb".$video_ext;
                       $mediafile_new_thumb = $mediafile_new_name.".thumb".$video_ext;
   
@@ -12934,16 +13205,19 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                         remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/", "", $mediafile_self_thumb, $mediafile_new_thumb);                     
                       }
                       
-                      // individiual video files
+                      // individiual video files (can 
                       $mediafile_self_video = $mediafile_self_name.".video".$video_ext;
                       $mediafile_new_video = $mediafile_new_name.".video".$video_ext;
                       
                       if (is_file (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video))
                       {
-                        @copy (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
+                        if (is_link (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video)) $temp_path = readlink (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video);
+                        else $temp_path = getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video;
+                        
+                        @copy ($temp_path, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
                         
                         // remote client
-                        remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/", "", $mediafile_self_video, $mediafile_new_video);                     
+                        remoteclient ("copy", "abs_path_media", $site, getlocation ($temp_path), "", getobject ($temp_path), $mediafile_new_video);                     
                       }
                       
                       // individiual video config files
@@ -12952,10 +13226,13 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                       
                       if (is_file (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video))
                       {
-                        @copy (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
+                        if (is_link (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video)) $temp_path = readlink (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video);
+                        else $temp_path = getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video;
+                      
+                        @copy ($temp_path, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
                         
                         // remote client
-                        remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/", "", $mediafile_self_video, $mediafile_new_video);                     
+                        remoteclient ("copy", "abs_path_media", $site, getlocation ($temp_path), "", getobject ($temp_path), $mediafile_new_video);                     
                       }
                     }
                   }
@@ -12967,10 +13244,13 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                 
                 if (is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
                 {
-                  @copy (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
+                  if (is_link (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb)) $temp_path = readlink (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb);
+                  else $temp_path = getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb;
+                        
+                  @copy ($temp_path, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
                   
                   // remote client
-                  remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/", "", $mediafile_self_thumb, $mediafile_new_thumb);                     
+                  remoteclient ("copy", "abs_path_media", $site, getlocation ($temp_path), "", getobject ($temp_path), $mediafile_new_thumb);                     
                 }
               }
             }                 
@@ -14811,10 +15091,7 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
     $location_esc = convertpath ($site, $location, "");
 
     // define object file name
-    if (!file_exists ($location.$file))
-    {
-      $file = correctfile ($location, $file, $user);
-    }
+    $file = correctfile ($location, $file, $user);
 
     // -------------------------- process objects -------------------------------
     // if folder
@@ -15646,19 +15923,18 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
       $data_string = "";
       
       if (is_array ($data))
-      {    
-        foreach ($data as $key => $value) $values[] = $key."=".urlencode ($value);
-        $data_string = implode ("&", $values);
+      {
+        $data_string = http_build_query ($data);
       }
-        
-      $request .= "POST ".$URL_Info["path"]." HTTP/1.1\n";
-      $request .= "Host: ".$URL_Info["host"]."\n";
-      $request .= "Referer: ".$referrer."\n";
-      $request .= "Content-type: ".$contenttype."; charset=".$charset."\n";
-      $request .= "Content-length: ".strlen ($data_string)."\n";
-      $request .= "Connection: close\n";
-      $request .= "\n";
-      $request .= $data_string."\n";
+
+      $request .= "POST ".$URL_Info["path"]." HTTP/1.1\r\n";
+      $request .= "Host: ".$URL_Info["host"]."\r\n";
+      $request .= "Referer: ".$referrer."\r\n";
+      $request .= "Content-type: ".$contenttype."; charset=".$charset."\r\n";
+      $request .= "Content-length: ".strlen ($data_string)."\r\n";
+      $request .= "Connection: close\r\n";
+      $request .= "\r\n";
+      $request .= $data_string;
     }
     // for content-type = multipart/form-data
     elseif ($contenttype == "multipart/form-data")
@@ -15674,56 +15950,56 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
         {
           if ($key != "content")
           {
-            $data_string .= "--$boundary\n";
-            $data_string .= "Content-Disposition: form-data; name=\"".$key."\"\n\n".$val."\n";
+            $data_string .= "--$boundary\r\n";
+            $data_string .= "Content-Disposition: form-data; name=\"".$key."\"\r\n\r\n".$val."\r\n";
           }
         }
        
-        $data_string .= "--$boundary\n";
+        $data_string .= "--$boundary\r\n";
       }    
       
-      $request .= "POST ".$URL_Info["path"]." HTTP/1.0\n";
-      $request .= "Host: ".$URL_Info["host"]."\n";
-      $request .= "Referer: ".$referrer."\n";
+      $request .= "POST ".$URL_Info["path"]." HTTP/1.0\r\n";
+      $request .= "Host: ".$URL_Info["host"]."\r\n";
+      $request .= "Referer: ".$referrer."\r\n";
       //$request .= "Keep-Alive: 300\n";
       //$request .= "Connection: keep-alive\n";
-      $request .= "Content-type: multipart/form-data; boundary=".$boundary."\n";
+      $request .= "Content-type: multipart/form-data; boundary=".$boundary."\r\n";
     
       // collect FILE data
       if ($data['page'] != "")
       {      
-        $data_string .= "Content-Disposition: form-data; name=\"Filedata\"; filename=\"".$data['page']."\"\n";
-        $data_string .= "Content-Type: ".getmimetype ($data['page'])."\n";
-        $data_string .= "Content-Transfer-Encoding: binary\n\n";
-        $data_string .= $data['content']."\n";
-        $data_string .= "--$boundary--\n";
+        $data_string .= "Content-Disposition: form-data; name=\"Filedata\"; filename=\"".$data['page']."\"\r\n";
+        $data_string .= "Content-Type: ".getmimetype ($data['page'])."\r\n";
+        $data_string .= "Content-Transfer-Encoding: binary\r\n\r\n";
+        $data_string .= $data['content']."\r\n";
+        $data_string .= "--$boundary--\r\n";
       }
       
-      $request .= "Content-length: ".strlen($data_string)."\n";
-      $request .= "\n";
+      $request .= "Content-length: ".strlen($data_string)."\r\n";
+      $request .= "\r\n";
       $request .= $data_string;
     }
    
     $fp = @fsockopen ($Host_protocol.$URL_Info["host"], $URL_Info["port"]);
-    
+
     $result = "";
           
     if ($fp)
     {
-      @fputs ($fp, $request);
+      @fwrite ($fp, $request);
       
       while (!feof ($fp)) 
       {
-        $result .= @fgets ($fp, 128);
+        $result .= @fgets ($fp, 1024);
       }
       
       // remove header information from the xml/html-document
       if (strpos ($result, "<") > 0) $result = substr ($result, strpos ($result, "<"), strrpos ($result, ">") - strpos ($result, "<") + 1);
-      
+
       @fclose ($fp);
     }
     else $result = false;
-    
+
     return $result;
   }
   else return false;
@@ -16617,7 +16893,7 @@ function createfavorite ($site="", $location="", $page="", $id="", $user)
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
     {
       // define category if undefined
-      if ($cat == "") $cat = getcategory ($site, $location);
+      $cat = getcategory ($site, $location);
       
       // add slash if not present at the end of the location string
       if (substr ($location, -1) != "/") $location = $location."/";  
@@ -16693,7 +16969,7 @@ function deletefavorite ($site="", $location="", $page="", $id="", $user)
     }
     
     // remove object id from favorite file
-    if ($object_id > 0)
+    if (!empty ($object_id))
     {
       if (is_file ($dir.$file))
       {

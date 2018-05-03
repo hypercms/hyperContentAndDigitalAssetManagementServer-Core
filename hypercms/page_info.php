@@ -124,8 +124,15 @@ if ($pagestore != false)
       elseif (is_file ($mediadir.$media))
       {
         $last_updated[0] = date ("Y-m-d H:i", filemtime ($mediadir.$media));
-        $fileMD5 = md5_file ($mediadir.$site."/".$media);
-        $filesize = filesize ($mediadir.$site."/".$media) / 1024;
+        $fileMD5 = md5_file ($mediadir.$media);
+        $filesize = filesize ($mediadir.$media) / 1024;
+      }
+      
+      // symbolic link
+      if (is_link ($mediadir.$media))
+      {
+        $is_link = true;
+        $symlink = readlink ($mediadir.$media);
       }
     }
     // folder objects
@@ -238,6 +245,9 @@ if ($pagestore != false)
  
     // MD5 Checksum of media file
     if (!empty ($fileMD5)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['md5-code-of-the-file'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$fileMD5."</td></tr>\n";
+    
+    // symbolic link to external media file
+    if (!empty ($is_link)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['multimedia-file'][$lang]." - ".$hcms_lang['export'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".(!empty ($symlink) ? $symlink : getescapedtext ($hcms_lang['error'][$lang]))."</td></tr>\n";
     
     // show connected objects button
     if ($cat == "comp" && $mgmt_config[$site]['linkengine'] == true)

@@ -159,21 +159,25 @@ if (checktoken ($token, $user))
     // prepare media file
     $temp_source = preparemediafile ($site, $media_root_source, $mediafile_raw, $user);
     
-    if ($temp_source['result'] && $temp_source['crypted'] && is_file ($temp_source['templocation'].$temp_source['tempfile']))
+    // if encrypted
+    if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && is_file ($temp_source['templocation'].$temp_source['tempfile']))
     {
       $media_root_source = $temp_source['templocation'];
       $mediafile = $temp_source['tempfile'];
     }
-    elseif ($temp_source['restored'] && is_file ($temp_source['location'].$temp_source['file']))
+    // if restored
+    elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && is_file ($temp_source['location'].$temp_source['file']))
     {
       $media_root_source = $temp_source['location'];
       $mediafile = $temp_source['file'];
     }
+    // if JPEG of RAW file exists
     elseif (is_file ($media_root_source.$mediafile_raw))
     {
       // reset media file
       $mediafile = $mediafile_raw;
     }
+    // use RAW file
     else
     {
       // reset media file
@@ -189,12 +193,13 @@ if (checktoken ($token, $user))
     $temp_source = preparemediafile ($site, $media_root_source, $mediafile, $user);
   }
 
-  // get file information of new original media file
-  if ($temp_source['result'] && $temp_source['crypted'])
+  // if encrypted
+  if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && is_file ($temp_source['templocation'].$temp_source['tempfile']))
   {
     $media_size = @getimagesize ($temp_source['templocation'].$temp_source['tempfile']);
   }
-  elseif ($temp_source['restored'])
+  // if restored
+  elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && is_file ($temp_source['location'].$temp_source['file']))
   {
     $media_size = @getimagesize ($temp_source['location'].$temp_source['file']);
   }
@@ -426,11 +431,11 @@ if (!empty ($result))
     $temp_target = preparemediafile ($site, $media_root_target, $resultthumb, $user);
     
     // get file information of new original media file
-    if ($temp_target['result'] && $temp_target['crypted'])
+    if (!empty ($temp_target['result']) && !empty ($temp_target['crypted']) && is_file ($temp_target['templocation'].$temp_target['tempfile']))
     {
       $media_size = @getimagesize ($temp_target['templocation'].$temp_target['tempfile']);
     }
-    elseif ($temp_target['restored'])
+    elseif (!empty ($temp_target['result']) && !empty ($temp_target['restored']) && is_file ($temp_target['location'].$temp_target['file']))
     {
       $media_size = @getimagesize ($temp_target['location'].$temp_target['file']);
     }

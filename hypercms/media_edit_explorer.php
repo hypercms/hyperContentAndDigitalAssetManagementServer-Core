@@ -208,7 +208,7 @@ if ($sender == "search")
   if ($mediaformat != "")
   {
     if ($mediaformat == "audio") $format_ext = strtolower ($hcms_ext['audio']);
-    elseif ($mediaformat == "video") $format_ext = strtolower ($hcms_ext['video']);
+    elseif ($mediaformat == "video") $format_ext = strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']);
     elseif ($mediaformat == "text") $format_ext = strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']);
     elseif ($mediaformat == "flash") $format_ext = strtolower ($hcms_ext['flash']);
     elseif ($mediaformat == "image") $format_ext = strtolower ($hcms_ext['image']);

@@ -94,7 +94,7 @@ if ($action != "page_create")
   }
 }
 
-// get object ID (requires for favorites)
+// get object ID (required for favorites)
 if ($folder != "") $object_id = rdbms_getobject_id ($location_esc.$folder);
 else $object_id = rdbms_getobject_id ($location_esc.$page);
 
@@ -353,6 +353,20 @@ function imgConvert (type, config)
   else return false; 
 }
 
+function vidConvert (type)
+{
+  if (document.forms['download'])
+  {
+    var form = document.forms['download'];
+      
+    form.elements['convert_type'].value = type;
+    
+    submitToSelf ('download');
+    hcms_showHideLayers('downloadLayer','','show');
+  }
+  else return false; 
+}
+
 function openobjectview (location, object, view)
 {
   if (location != "" && object != "" && parent.document.getElementById('objectview'))
@@ -491,6 +505,7 @@ else
     
     $doc_rendering = false;
     $img_rendering = false;
+    $vid_rendering = false;
     
     foreach ($mgmt_docpreview as $docpreview_ext => $docpreview)
     {
@@ -524,12 +539,14 @@ else
       }      
     }
     
+    $vid_rendering = is_supported ($mgmt_mediapreview, $media);
+    
     // rendering options
     $perm_rendering = $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1;
     $lock_rendering = ($usedby == "" || $usedby == $user);
     $dropbox_rendering = (is_array ($mgmt_config) && array_key_exists ("dropbox_appkey", $mgmt_config) && !empty ($mgmt_config['dropbox_appkey']));
     
-    if ($perm_rendering && $lock_rendering && $page != "" && !empty ($media) && ($doc_rendering || $img_rendering || $dropbox_rendering))
+    if ($perm_rendering && $lock_rendering && $page != "" && !empty ($media) && ($doc_rendering || $img_rendering || $vid_rendering || $dropbox_rendering))
     {
       echo "
       <div class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"hcms_switchSelector('select_obj_convert');\">
@@ -559,7 +576,7 @@ else
             if ((empty ($downloadformats) || !empty ($downloadformats['document'][$doc_type])) && in_array ($ext, $mgmt_docconvert[$media_info['ext']]))
             {
               echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('".$doc_type."'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$doc_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />".$doc_info['type']." (".strtoupper($doc_type).")&nbsp;</div>\n";
+          <div class=\"hcmsSelectorItem\" onclick=\"docConvert('".$doc_type."'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$doc_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />".$doc_info['type']." (".strtoupper($doc_type).")&nbsp;</div>\n";
             }
           }
         }
@@ -581,11 +598,19 @@ else
               if ((empty ($downloadformats) || !empty ($downloadformats['image'][$image_type][$config_name])) && $config_name != "thumbnail" && $config_name != "original") 
               {
                 echo "
-           <div class=\"hcmsSelectorItem\" onclick=\"imgConvert ('".$image_type."', '".$config_name."'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$img_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />".strtoupper($image_type)." ".$config_name."&nbsp;</div>\n";
+           <div class=\"hcmsSelectorItem\" onclick=\"imgConvert('".$image_type."', '".$config_name."'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$img_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />".strtoupper($image_type)." ".$config_name."&nbsp;</div>\n";
               }
             }
           }
         }
+      }
+      
+      // video download options
+      if ($vid_rendering)
+      {
+        echo "
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('jpg'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['images'][$lang])." (JPG)&nbsp;</div>
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['images'][$lang])." (PNG)&nbsp;</div>\n";
       }
       
       //save to dropbox
@@ -913,7 +938,7 @@ function downloadFile()
   location.replace('<?php echo $downloadlink; ?>');
 }
 
-setTimeout('downloadFile()', 500);
+setTimeout('downloadFile()', 2000);
 </script>  
 <?php
   }

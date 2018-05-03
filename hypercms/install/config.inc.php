@@ -126,22 +126,32 @@ $mgmt_config['abs_path_media'] = $mgmt_config['abs_path_rep']."media_cnt/";
 // $mgmt_config['aws_secret_access_key'] = "";
 // Provide region code, see also: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions
 // $mgmt_config['aws_region'] = "";
-// Provide the name of your AWS S3 bucket
+// Provide the name of your AWS S3 bucket (mandatory for cloud storage)
 // $mgmt_config['aws_bucket'] = "";
 
 // For Google Cloud Platform use:
-// Provide credentials for access
-// $mgmt_config['gs_client_id'] = "";
-// $mgmt_config['gs_client_secret'] = "";
-// Provide region code, see also: https://cloud.google.com/compute/docs/zones
+// Provide credentials for Google API access (path to Google API JSON key file)
+// $mgmt_config['gs_access_json'] = "";
+// Analyze images (Google Vision) and videos (Google Video Intelligence)
+// $mgmt_config['gs_analyze_image'] = true;
+// $mgmt_config['gs_analyze_video'] = true;
+// Enable Google Cloud Speech-to-Text
+// $mgmt_config['gs_speech2text'] = true;
+// Define default language code to be used for speech-to-text in general or per publication
+// See all the supported lanuage codes here: https://cloud.google.com/speech-to-text/docs/languages
+// $mgmt_config['gs_speech2text_langcode'] = "en-US";
+// $mgmt_config['publication']['gs_speech2text_langcode'] = "en-US";
+// Provide region code for the storage, see also: https://cloud.google.com/compute/docs/zones
 // $mgmt_config['gs_region'] = "";
-// Provide the name of your AWS S3 bucket
+// Provide the name of your Google Cloud Storage bucket (mandatory for cloud storage)
 // $mgmt_config['gs_bucket'] = "";
+// Optionally provide the path to autoload.php of the Google Cloud API (https://github.com/GoogleCloudPlatform/google-cloud-php) if you are not using the included API
+// $mgmt_config['google_cloud_api'] = "vendor/autoload.php";
 
 // For MS Azure use:
 // Provide credentials for access (connection statement: DefaultEndpointsProtocol=https;AccountName=myAccount;AccountKey=myKey;)
 // $mgmt_config['azure_access_key'] = "";
-// Provide the name of your Azure container
+// Provide the name of your Azure container (mandatory for cloud storage)
 // $mgmt_config['azure_container'] = "";
 
 // Define daily synchronization for delayed saving of media files in cloud storage (true) or save media files immediately (false)
@@ -178,7 +188,7 @@ $mgmt_config['videoplayer'] = "";
 $mgmt_config['objectview'] = "inlineview";
 
 // Define standard view for explorer object list ("detail" = detail view; "small", "medium", "large" = thumbnail gallery view)
-$mgmt_config['explorerview'] = "detail";
+$mgmt_config['explorerview'] = "medium";
 
 // How many items (folders and objects) should be displayed in the explorer object list initally
 $mgmt_config['explorer_list_maxitems'] = 500;
@@ -502,7 +512,7 @@ $mgmt_config['search_synonym'] = true;
 // Strong Passwords
 // Enable (true) or disable (false) strong passwords for users
 // If enabled, passwords will be checked regarding minimum security requirements
-$mgmt_config['strongpassword'] = false;
+$mgmt_config['strongpassword'] = true;
 
 // Encryption
 // Encryption strength (weak, standard, strong)
@@ -779,7 +789,8 @@ $mgmt_config['smtp_sender']   = "%smtp_sender%";
 // Define password for Import and Export REST API
 $mgmt_config['passcode'] = "";
 
-// Restore exported media files to the media repository if requested (true) or leave the media file at their curent export location (false)
+// Restore exported media files to the media repository if requested (true) or leave the media file at their current export location (false)
+// The media file will always be restored if any change will be applied
 $mgmt_config['restore_exported_media'] = true;
 
 // --------------------------------------- App Keys --------------------------------------------

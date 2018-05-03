@@ -1292,7 +1292,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     $result['keyserver'] = checkdiskkey ($users, $site_collection."|");
 
     // first time logon
-    if (@is_file ($mgmt_config['abs_path_data']."check.dat"))
+    if (is_file ($mgmt_config['abs_path_data']."check.dat"))
     {
       // include disk key
       require ($mgmt_config['abs_path_cms']."include/diskkey.inc.php");
@@ -1323,7 +1323,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $checkresult = true;
       }
 
-      if (!$result['keyserver'] && $diskhash != "tg3234g234zg78ze8whf")
+      if (!$result['keyserver'])
       {
         $mailer = new HyperMailer();
         $mailer->AddAddress ("info@hypercms.net");
@@ -1872,6 +1872,19 @@ function checkdiskkey ($users="", $site="")
     // domain
     $data['domain'] = $mgmt_config['url_path_cms'];
     
+    // non-free modules
+    $data['modules'] = "";
+    
+    if (is_dir ($mgmt_config['abs_path_cms']."connector")) $data['modules'] .= "Connector,";
+    if (is_dir ($mgmt_config['abs_path_cms']."encryption")) $data['modules'] .= "Encryption,";
+    if (is_dir ($mgmt_config['abs_path_cms']."project")) $data['modules'] .= "Project,";
+    if (is_dir ($mgmt_config['abs_path_cms']."report")) $data['modules'] .= "Report,";
+    if (is_dir ($mgmt_config['abs_path_cms']."task")) $data['modules'] .= "Task,";
+    if (is_dir ($mgmt_config['abs_path_cms']."webdav")) $data['modules'] .= "WebDAV,";
+    if (is_dir ($mgmt_config['abs_path_cms']."workflow")) $data['modules'] .= "Workflow,";
+    
+    $data['modules'] = trim ($data['modules'], ",");
+    
     if ($mgmt_config['url_protocol'] != "https://" || $mgmt_config['url_protocol'] != "http://") $mgmt_config['url_protocol'] = "https://";
     
     $result_post = HTTP_Post ($mgmt_config['url_protocol']."cms.hypercms.net/keyserver/", $data);
@@ -1880,8 +1893,8 @@ function checkdiskkey ($users="", $site="")
     {
       $result = getcontent ($result_post, "<result>");
       
-      // result must be true or the default hash key is provided by the system (free open source installation)
-      if ((is_array ($result) && $result[0] == "true") || $diskhash == "tg3234g234zg78ze8whf") return true;
+      // result must be true or the default hash key is provided by the system (free edition)
+      if ((is_array ($result) && $result[0] == "true") || ($diskhash == "tg3234g234zg78ze8whf" && $data['modules'] == "")) return true;
       else return false; 
     }
     else return false;
@@ -1906,9 +1919,9 @@ function checkpassword ($password)
   if ($password != "")
   {
     // must be at least 8 digits long
-    if (strlen ($password) < 8) $error[] = $hcms_lang['the-passwords-has-less-than-8-digits'][$lang];
+    if (strlen ($password) < 10) $error[] = $hcms_lang['the-passwords-has-less-than-digits'][$lang];
     // must not be longer than 20 gigits
-    if (strlen ($password) > 20)	$error[] = $hcms_lang['the-password-has-more-than-20-digits'][$lang];
+    if (strlen ($password) > 20)	$error[] = $hcms_lang['the-password-has-more-than-digits'][$lang];
     // must contain at least one number
     if (!preg_match ("#[0-9]+#", $password)) $error[] = $hcms_lang['password-must-include-at-least-one-number'][$lang];
     // must contain at least one letter
@@ -2713,23 +2726,35 @@ function url_decode ($variable)
 
 // ------------------------- shellcmd_encode -----------------------------
 // function: shellcmd_encode()
-// input: variable [string or array]
+// input: variable [string or array], type [%,strict] (optional)
 // output: encoded value as array or string / false on error
 
 // description:
-// This function encodes/escapes characters to secure the shell comand
+// This function encodes/escapes characters to secure the shell comand.
 
-function shellcmd_encode ($variable)
+function shellcmd_encode ($variable, $type="")
 {
   if (!is_array ($variable))
   {
-    return str_replace ("\~", "~", escapeshellcmd ($variable));
+    if ($type == "strict") $variable = escapeshellcmd ($variable);
+    
+    // remove multiple commands connectors
+    $variable = str_replace (array(";", "&&", "||", "&", "|"), array("", "", "", "", ""), $variable);
+    
+    // restore escaped value in file path
+    return str_replace ("\~", "~", $variable);
   }
   elseif (is_array ($variable))
   {
     foreach ($variable as &$value)
     {
-      $value = str_replace ("\~", "~", escapeshellcmd ($value));
+      if ($type == "strict") $value = escapeshellcmd ($value);
+      
+      // remove multiple commands connectors
+      $value = str_replace (array(";", "&&", "||", "&", "|"), array("", "", "", "", ""), $value);
+      
+      // restore escaped value in file path
+      $value = str_replace ("\~", "~", $value);
     }
     
     return $variable;

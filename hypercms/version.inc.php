@@ -1500,7 +1500,7 @@ Release 05/2016
 - Bug fix: Function cleantext in external website search engine API used wrong variable for character replacements in content string
 - Update of browser window features for new windows in control_objectlist_menu and control_content_menu
 - Added new text for annotations to all language files
-- Implementation of annotion image support in function createmedia of media API
+- Implementation of annotation image support in function createmedia of media API
 - Redesign of popup information windows
 - Improvements in various functions in set API
 - Bug fix: Removed replacement of comma from function cleancontent in order to support keyword extraction by function rdbms_getkeywords
@@ -1514,7 +1514,7 @@ Release 05/2016
 - Bug fix: Project management did not allow reset of start and finish date of task if it has been left empty when the task has been created
 - Implementation of support to remove objects from projects and tasks
 - Implementation of project ID memory to open last edited project automatically
-- Bug fix: Function getprojectstructure did not properly evalute start date of main project
+- Bug fix: Function getprojectstructure did not properly evaluate start date of main project
 - Various improvements in task management
 - Improvements in popup_upload_html regarding ZIP files
 - Bug fix: Function uploadfile added location to objectpath again for unzipped files
@@ -1870,7 +1870,7 @@ Version 6.1.24
 Release 09/2016
 - Implementation of annotation feature for documents
 - Implementation of redndering of pages from documents in function createmedia in media API
-- Implementation of annotion tool for documents in function showmedia in UI API 
+- Implementation of annotation tool for documents in function showmedia in UI API 
 - Implementation of new function getpdfinfo in media API
 - Bug fix: Mobile Edition did call undefined minNavFrame and maxNavFrame JS function
 - Modifications in viewport of frameset_content
@@ -2049,7 +2049,7 @@ Release 03/2017
 - Modification of function showmedia in UI API in order to set width and height of annotation canvas
 - Update of annotions JS library
 - Implementation of download function for annotations in UI API
-- Implementation of annotation tools looking (select no tool)
+- Implementation of annotation tools locking (select no tool)
 - Renamed JS function hcms_sortObject to hcms_sortObjectKey in main.js
 - Implementation of new JS function hcms_sortObjectValue in main.js
 
@@ -2529,8 +2529,8 @@ Release 03/2017
 - Implementation of scaling of the face/object markers on images and videos in the template engine in case the image or video size has been changed
 - Implementation of phone number field as new user parameter
 - Implementation of new function update_users_706 in Update API in order to add new XML node "phone" to the users
-- Modfications in user_edit_form, function edituser in Main API, and all functions calls in order to support the new phone parameter
-- Modfications in user XML schemas in order to support the new phone parameter
+- Modifications in user_edit_form, function edituser in Main API, and all functions calls in order to support the new phone parameter
+- Modifications in user XML schemas in order to support the new phone parameter
 - Updates of all language files to support the new text parameters
 - Implementation of Google Authenticator library in Connector Module
 - Implementation of new function getpreviewwidth in Get API
@@ -2551,18 +2551,18 @@ Release 03/2017
 - Modifications in default multimedia template
 - Design modifications in black design theme
 - Implementation of new preview attribute for text nodes in template engine in order to enable previews windows in form views
-- Impementation of template includes and component templates for the DAM configuration of the system
+- Implementation of template includes and component templates for the DAM configuration of the system
 - Modifications in the group_edit_form in order to provide access to the permissions for publishing components and to the template media permissions
 - Modifications in the template engine in order to load default template if the assigned template does not exist
 - Modifications in function cleancontent in Main API in order to remove script and other html tags and their content
-- Modifications in the template engine in order to enbale the sys user to execute function buildview for a DAM configuration
+- Modifications in the template engine in order to enable the sys user to execute function buildview for a DAM configuration
 - Update of the Template Designer Guide
 - Design modifications in page_multiedit
 - Implementation of labels in the template engine and checkbox editor for the checkbox tags
 - Modifications in function rdbms_searchcontent in DB Connect in order to look for any expression in file names or content if the order of the epxressions is the same (spaces between expressions must be used)
 - Implementation of support for AND / OR logical operator in search expressions in function rdbms_searchcontent in DB Connect
-- Modifications in template engine in order to initalize face markers after saving the asset
-- Implementation of annotion/marker toolbar for vidoes
+- Modifications in template engine in order to initialize face markers after saving the asset
+- Implementation of annotion/marker toolbar for videos
 - Modifications in face/object markers for images and videos in order to display the input field on create
 - Implementation of textareas instead of input fields for the markers
 - Implementations and modifications in template engine and annotion.js in order to highlight selected annotation tool in toolbar 
@@ -2580,13 +2580,13 @@ Release 03/2017
 - Modifications in task management in order to support and display tasks without a user
 - Modifications in GUI of installation script
 - Modifications in search_form in order to support scrolling in the form
-- Modifications in function showmedia in UI API in order to skip fileswhich does not meet the file size max. limits for the preview process
+- Modifications in function showmedia in UI API in order to skip files which do not meet the file size max. limits for the preview process
 - Design modifications in task management
 - Design modifications in plugin management
 - Improvements in main CSS of standard design theme
 - Modifications in Export module in Connector in order to support detailed error messages and error color coding
-- Bug fix: Drag button in WYSIWYG interface for components did not use the the proper size in the template engine
-- Bug fix: Favorites and recent objects home boxes did not initalize object array
+- Bug fix: Drag button in WYSIWYG interface for components did not use the proper size in the template engine
+- Bug fix: Favorites and recent objects home boxes did not initialize object array
 - Bug fix: Function checkworkflow in Main API did not extract the content node from the template
 - Bug fix: Function viewinclusions in template engine did return an empty code as result if the included code was empty
 - Bug fix: Function setmetadata in Meta API did not use proper variable name for splitting mapping value into text type and text ID
@@ -2594,27 +2594,27 @@ Release 03/2017
 - Bug fix: The sendmail adn site_admin publication config parameter has not been verified in explorer_objectlist, search_objectlist, and group_edit_form
 - Bug fix: Function showmedia in UI API did not reset document view for annotations if the document had only one page
 - Bug fix: Function showmedia in UI API did not disable face/object marking for all other views except preview
-- Bug fix: The temlpate editor did not use a width for the content identificiation field
+- Bug fix: The template editor did not use a width for the content identification field
 - Bug fix: Class hcmsIconOff in navigator.css of flat designtheme did use a size and caused display issues
-- Bug fix: The temlpate engine did use an undeclared variable in a JS function
+- Bug fix: The template engine did use an undeclared variable in a JS function
 - Bug fix: Function rdbms_getmedia in DB connect did not convert the container ID to an integer provide the geolocation for non-multimedia objects
 - Bug fix: control_content_menu did not verify if the published key exists 
 - Bug fix: Some variables have not been initalized in template_change if no template has been assigned to an object
 - Bug fix: Function checkworkflow in Main API did not return the standard workflow role if no workflow has been assigned to an object
-- Bug fix: The template engine and checkbox editor did not evalute the saved value of checkboxes properly
+- Bug fix: The template engine and checkbox editor did not evaluate the saved value of checkboxes properly
 - Bug fix: JS function openBrWindowMedia in media _edit_page did not access proper URL variables
 - Bug fix: The contextmenu did not mark the proper objects if a sort has been applied on any column other the name (changes in contextmenu.js, explorer_objectlist, search_objectlist, queue_objectlist)
 - Bug fix: Function rdbms_searchcontent in DB Connect did search for case sensitive object names
 - Bug fix: Function convertpath did remove the domain name from any URL without verification if the domain is managed by the system
 - Bug fix: JS function collectFaces in template engine did not remove the last face marker
-- Bug fix: JS function createFaceOnImage in temlpate engine did not set borders for markers based on the annotation drawing area
-- Bug fix: Annotion click event has not been fired in annotate.js when activating an annotation tool
+- Bug fix: JS function createFaceOnImage in template engine did not set borders for markers based on the annotation drawing area
+- Bug fix: Annotation click event has not been fired in annotate.js when activating an annotation tool
 - Bug fix: Function rdbms_searchcontent in DB Connect did not remove double quotes in search expression (used for exact search)
 - Bug fix: JS function openBrWindowLink in template engine did not create a proper object reference for the link input field
 - Bug fix: Function createmedia in Media API set a high image density for all vector based images, this has now been limited to SVG graphics due to issues with ImageMagick
 
 Version 7.0.7
-Release 04/2017
+Release 05/2017
 - Implementation of a new Home screen box for the latest uploads including the download/access links for the objects
 - Implementation of compress feature for the HTML5 file upload (only HTML5 file upload, Flash-Plugin based file upload will not receive the new feature)
 - Modifications in CSS of the file upload for all design themes
@@ -2634,10 +2634,10 @@ Release 04/2017
 - Modifications in function getobjectcontainer in Get API  in order to support an new input parameter type to define if the working or published container should be loaded
 - Modifications in function getobjectcontainer in Get API  in order to verify the provided object name using function valid_objectname
 - Modifications in template engine in order to enable manipulation of content by a template script for views "publish", "cmsview", and "inlineview"
-- Added variable types to the description of the input paramaters of all function for all system APIs
-- Update of the Programers Guide
+- Added variable types to the description of the input parameters of all function for all system APIs
+- Update of the Programmers Guide
 - Implementation of new replace attribute for hyperCMS text tags in template engine in order to search and replace content
-- Update of the Template Designers  Guide
+- Update of the Template Designers Guide
 - Implementation of logon logging in function userlogin in Security API
 - Implementation of loading screen for the search
 - Modifications in function rewrite_targetURI in Main API in order to disable search history log entries
@@ -2646,17 +2646,82 @@ Release 04/2017
 - Modifications in function createmedia in Media API in order to extract image width and height from file source as attribute values (used for SVG)
 - Design modifications in colorful design theme
 - Implementation of support for video metadata formats QuickTime (by Apple, mostly used for MOV and MP4), RIFF (Resource Interchange File Format), ASF (for WMA, WMV, DIVX) in function getmapping and setmetadata in Meta API
-- Modifications in media_mapping in order to exclude siongle quotes for metadata tag names
+- Modifications in media_mapping in order to exclude single quotes for metadata tag names
 - Minor changes in all language files
 - Implementation of the latest Google Cloud API for PHP in Connector
 - Updates in all functions of the Google Cloud Connector
-- Implementation of Google video intelligence service in Connector and function setmetadata in Meta API
+- Implementation of Google Video Intelligence service in Connector and in function setmetadata in Meta API
 - Added support for Google JSON key file to main configuration
 - Removed Google Translater API in Connector
+- Implementation of auto class loader for Google Vision and Google Translate API in Connector libraries
+- Implementation of Google Vision service in Connector and in function setmetadata in Meta API
+- Implementation of new main configuration settings for the Google Cloud Services
+- Implementation of the new text for the new import features in all language files
+- Update of the Import/Export Guide
+- Implementation of the import of assets by file scan based on a source directory
+- Implementation of new import parameters in the Connector Module
+- Modifications in function importobjects in Import API of Connector Module
+- Implementation of new function importxmlfiles, importmediafiles, and exportxmlfiles in Im/Export API of the Connector Module
+- Modifications in function createmediaobject in Main API in order to support a new input parameter to leave the media file at its location and use a symbolic link
+- Modifications in function getmedialocation in Get API in order to return the full file location
+- Modifications in service savecontent in order to support media files in external media file storage
+- Modifications in function getmedialocation in Get API in order to resolve symbolic links by a new input parameter
+- Modifications in function getChildsForLocation of Workplace Intagration (WebDAV) in order to hide recycled assets and folders
+- Modifications in function deletemediafiles in Main API in order to support up to 100.000 page files
+- Modifications in function createmediaobject in Main API in order to call indexcontent after createmedia
+- Modifications in function showmedia in UI API in order to use provided with or height for the videoplayer instead of the preview video dimensions
+- Modifications in JS functions in userlogin in order to return boolean
+- Modifications in frameset_content, frameset_objectlist, and explorer_objectview in order to support preview and live view window
+- Modifications in public function getRealFileName in Functions.php of WebDAV Module
+- Modifications in function loadfile_header, loadfile_fast, loadfile, loadlockfile, savefile, savelockfile, appendfile, and deletefile in Main API in order to support symbolic links
+- Modifications in function restoremediafile, correctfile, manipulateobject, restoremediafile, and processobjects in Main API in order to support symbolic links
+- Modifications in function edituser in Main API in order to set 10 digits as min. password length
+- Modifications in function shellcmd_encode in Security API in order to support a second input parameter "type" and to remove multiple commands connectors in any case
+- Modifications in popup_upload_html and popup_upload_swf regarding checkbox controls
+- Modifications in page_info in order to display the export location of a media file (for symbolic links)
+- Modifications in user_edit in order to verify group and publication data of a user
+- Modifications in function createuser and edituser in order to apply function checkpassword first
+- Modifications in standard main config file for the installation inn order to use strong passwords and medium thumbnail view
+- Modifications in installation script in order to make database credentials mandatory and verify them
+- Modifications in control_user_menu in order to remember the user name when createuser failed
+- Modifications in user_sendlink in order to support the new password rules
+- Modifications in media_rendering in order to set playertime to zero for the preview image if the video has not been started
+- Implementation of new function createimages_video in Media API in order to create images from a video file
+- Implementation of a new file format definition for RAW videos and implementation of the new format definition into various functions
+- Added Canon RAW video format CRM as video file extension
+- Implementation of new function is_rawvideo in Main API
+- Modifications in function convertmedia in Media API in order to support the extraction of miages from a video
+- Implementation of new download options for videos in control_content_menu and control_objectlist_menu
+- Implementation of new JS function hideFaceOnVideo in template engine and UI API in order to hide face/object markers if the video is playing
+- Modifications in imexport_explorer in order to apply a natural case sort for the folders and objects
+- Implementation of new Google Cloud Speech libarary in Connector Module
+- Implementation of new function GCspeech2text in Cloud API in order to extract text from the audio stream of audio and video files
+- Implementation of new main config parameter $mgmt_config['gs_speech2text'] in order to enable and disable the speech-to-text service
+- Implementation of new main config parameter $mgmt_config['gs_speech2text_langcode'] for the default language code to be used for speech-to-text
+- Update of Google-Cloud-API
+- Modifications in function setmetadata in Meta API in order to support the speech-to-text service and creating the VTT
+- Implementation of new function sec2time in Media API
+- Modifications in function createmedia in Media API in order to exclude options for audio files and remove unset options
+- Removed FLAC file extension from videos in file format_ext.inc.php
+- Implementation of new favorites contextmenu action in order to add new favorites without opening the object in explorer_objectlist and search_objectlist
+- Minor improvements in function createmedia in Media API
+- Implementation of new function splitmedia in Media API in order to split audio and video files in segments
+- Modifiation of FFMPEG EQ filter options in function createmedia in Media API due to changes of the filter names in FFMPEG
+- Design modifications in the installation form
 - Bug fix: popup_ftp did not assign CSS class to file icons 
 - Bug fix: popup_ftp did not perform a proper FTP logout
 - Bug fix: Function indexcontent in Media API did not assign an error variable when creating the TIF file for OCR
 - Bug fix: Undefined variable temp_operator in DB Connect
+- Bug fix: popup_upload_html used wrong variable name for the storage factor of a publication
+- Bug fix: Template engine did not correct input marker text box position using the scaling factor
+- Bug fix: JS function html5support was missing in home screen
+- Bug fix: explorer_objectview did not assign id to iframe for the preview of pages and components
+- Bug fix: JS function openBrWindowLink in explorer_objectview has been blocked by browsers and has been removed
+- Bug fix: page_info did not use roper media path in case the database is not available
+- Bug fix: The user_edit window size was not set correctly in function createuser in Main API
+- Bug fix: Function HTTP_Post did use \n instead of \r\n for HTTP headers
+- Bug fix: Function createthumbnail_video in Media API did not delete the old destination file
+- bug fix: Function createfavorite in Main API did verify unasissgned variable $cat 
 */
 
 // current version

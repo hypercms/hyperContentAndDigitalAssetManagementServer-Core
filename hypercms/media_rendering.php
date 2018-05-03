@@ -430,7 +430,8 @@ function activate ()
 
 function updateField (field)
 {
-  field.value = getplayertime();
+  if (getplayertime() !== false) field.value = getplayertime();
+  else field.value = "00:00:00.00";
 }
 
 function getplayertime ()

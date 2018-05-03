@@ -78,7 +78,7 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
   else $filesize['filesize'] = loadfile ($mgmt_config['abs_path_temp'], $site.".filesize.dat");
   
   // factor to correct used storage due to annotation files, video previews, and so on
-  if (!empty ($mgmt_config[$publication]['storagefactor'])) $factor = $mgmt_config[$publication]['storagefactor'];
+  if (!empty ($mgmt_config[$site]['storagefactor'])) $factor = $mgmt_config[$site]['storagefactor'];
   elseif  (!empty ($mgmt_config['storagefactor'])) $factor = $mgmt_config['storagefactor'];
   else $factor = 1.2;
 
@@ -1073,11 +1073,12 @@ $(document).ready(function ()
       opener.parent.frames['navFrame2'].location.reload();
     }
     // reload object frame (upload by control content)
-    else if (parent.frames['objFrame'])
+    else if (parent.document.getElementById('objFrame'))
     {
       if (objectpath == "")
       {
-        parent.frames['objFrame'].location.reload();
+        var iframe = parent.document.getElementById('objFrame');
+        iframe.src = iframe.src;
       }
       else
       {
@@ -1085,10 +1086,10 @@ $(document).ready(function ()
         var index = objectpath.lastIndexOf("/") + 1;
         var location = objectpath.substring(0, index);
         var newpage = objectpath.substr(index);
-  
-        parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
+
+        parent.document.getElementById('objFrame').src='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
       }
-      
+
       setTimeout('parent.closeobjectview()', timeout);
     }
   }
@@ -1227,6 +1228,22 @@ function switchzip ()
     document.getElementById("checkduplicates").disabled = false;
   }
 }
+
+function switchthumbnail ()
+{
+  if (document.getElementById("createthumbnail").checked)
+  {
+    document.getElementById("versioning").checked = false;
+    document.getElementById("versioning").disabled = true;
+    document.getElementById("checkduplicates").checked = false;
+    document.getElementById("checkduplicates").disabled = true;
+  }
+  else
+  {
+    document.getElementById("versioning").disabled = false;
+    document.getElementById("checkduplicates").disabled = false;
+  }
+}
 </script>
 </head>
 
@@ -1285,7 +1302,7 @@ echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name
       </div>
         <?php } ?> 
       <div class="row">
-        <label><input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" /> <?php echo getescapedtext ($hcms_lang['thumbnail-image-jpeg-file'][$lang]); ?></label>
+        <label><input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" onclick="switchthumbnail() " /> <?php echo getescapedtext ($hcms_lang['thumbnail-image'][$lang]); ?></label>
       </div>
       <?php } ?>
       <?php if ($cat == "comp" && $uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>

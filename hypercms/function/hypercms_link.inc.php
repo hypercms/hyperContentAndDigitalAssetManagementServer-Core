@@ -1055,9 +1055,8 @@ function extractlinks ($textcontent, $identifier)
 // output: object links [array] / false on error
 
 // description:
-// This function returns an array of objects by a given media link (used in formatted text)
-// This function can be used to transform all links to media file of the repository into 
-// components links.
+// This function returns an array of objects by a given media link (used in formatted text).
+// The function can be used to transform all links to media files in the repository into components links.
 
 function medialinks_to_complinks ($link_array)
 {

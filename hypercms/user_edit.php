@@ -517,15 +517,18 @@ if ($login != "" && $login != false)
                           
                 foreach ($grouprecord_array as $grouprecord)
                 {
-                  // unselected groups      
-                  if (substr_count ($usergroup, "|".$grouprecord."|") == 0)
+                  if ($grouprecord != "")
                   {
-                    echo "<option value=\"".$grouprecord."\">".$grouprecord."</option>\n";
-                  }
-                  // selected groups
-                  else
-                  {
-                    $list2_array[] = "<option value=\"".$grouprecord."\">".$grouprecord."</option>\n";
+                    // unselected groups      
+                    if (substr_count ($usergroup, "|".$grouprecord."|") == 0)
+                    {
+                      echo "<option value=\"".$grouprecord."\">".$grouprecord."</option>\n";
+                    }
+                    // selected groups
+                    else
+                    {
+                      $list2_array[] = "<option value=\"".$grouprecord."\">".$grouprecord."</option>\n";
+                    }
                   }
                 }
               }
@@ -576,7 +579,7 @@ if ($login != "" && $login != false)
                 foreach ($inherit_db as $inherit_db_record)
                 {
                   // check if user has siteaccess
-                  if (in_array ($inherit_db_record['parent'], $siteaccess))
+                  if ($inherit_db_record['parent'] != "" && is_array ($siteaccess) && in_array ($inherit_db_record['parent'], $siteaccess))
                   {
                     // unselected sites
                     if (substr_count ($usersite, "|".$inherit_db_record['parent']."|") == 0)

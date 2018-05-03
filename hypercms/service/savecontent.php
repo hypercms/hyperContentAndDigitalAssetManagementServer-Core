@@ -287,17 +287,22 @@ if ($usedby == "" || $usedby == $user)
         if (isset ($textk) && is_array ($textk)) $textmeta = array_merge ($textmeta, $textk);
 
         // get media file location and name
-        $mediafile_location = getmedialocation ($site, $object_info['media'], "abs_path_media").$site."/";
+        $mediafile_location = getmedialocation ($site, $object_info['media'], "abs_path_media");
         $mediafile_name = $object_info['media'];
+        
+        // correct path to media file
+        if (!is_file ($mediafile_location.$mediafile_name)) $mediafile_location = $mediafile_location.$site."/";
 
         // prepare media file
         $temp = preparemediafile ($site, $mediafile_location, $mediafile_name, $user);
         
-        if ($temp['result'] && $temp['crypted'])
+        // if encrypted
+        if (!empty ($temp['result']) && !empty ($temp['crypted']))
         {
           $object_mediafile = $temp['templocation'].$temp['tempfile'];
         }
-        elseif ($temp['restored'])
+        // if restored
+        elseif (!empty ($temp['result']) && !empty ($temp['restored']))
         {
           $object_mediafile = $temp['location'].$temp['file'];
         }
@@ -312,10 +317,20 @@ if ($usedby == "" || $usedby == $user)
 
           if (!empty ($medianame) && !empty ($mediadata))
           {
-            $annotationfile = base64_to_file ($mediadata, $mediafile_location, $medianame);
+            $thumbfile_location = getmedialocation ($site, "dummy.".$object_info['media'], "abs_path_media").$site."/";
+            
+            // if symbolic link
+            if (is_link ($thumbfile_location.$medianame))
+            {
+              $target_path = readlink ($thumbfile_location.$medianame);
+              $target_location = getlocation ($target_path);
+            }
+            else $target_location = $thumbfile_location;
+            
+            $annotationfile = base64_to_file ($mediadata, $target_location, $medianame);
             
             // save to cloud storage
-            if (!empty ($annotationfile) && function_exists ("savecloudobject")) savecloudobject ($site, $mediafile_location, $medianame, $user);
+            if (!empty ($annotationfile) && function_exists ("savecloudobject")) savecloudobject ($site, $thumbfile_location, $medianame, $user);
           }
         
           // ----------------------------------- write metadata --------------------------------------  
@@ -373,8 +388,6 @@ if ($usedby == "" || $usedby == $user)
           if (!empty ($result_iptc) || !empty ($result_xmp) || !empty ($result_id3))
           {
             // write updated media information to DB
-            $container_id = getmediacontainerid ($object_mediafile);
-            
             if (!empty ($container_id))
             {
               $md5_hash = md5_file ($object_mediafile);
@@ -464,7 +477,7 @@ if ($usedby == "" || $usedby == $user)
       
       // save working xml content container file
       $savefile = savecontainer ($container_id, "work", $contentdatanew, $user);
-  
+
       // test if file could be saved
       if ($savefile == false)
       {

@@ -211,7 +211,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
         $user_login[] = $login;
         
         // generate password from upper case letter and session ID
-        $password = $confirm_password = "P".substr (session_id(), 0, 7);
+        $password = $confirm_password = "P".substr (session_id(), 0, 9);
            
         $result = createuser ($site, $login, $password, $confirm_password, $user);
         
@@ -467,11 +467,13 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                           // prepare media file
                           $temp_source = preparemediafile ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
                           
-                          if ($temp_source['result'] && $temp_source['crypted'])
+                          // if encrypted
+                          if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty ($temp_source['tempfile']))
                           {
                             $attachment = $temp_source['templocation'].$temp_source['tempfile'];
                           }
-                          elseif ($temp_source['restored'])
+                          // if restored
+                          elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && !empty ($temp_source['location']) && !empty ($temp_source['file']))
                           {
                             $attachment = $temp_source['location'].$temp_source['file'];
                           } 
@@ -789,11 +791,13 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                               // prepare media file
                               $temp_source = preparemediafile ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
                               
-                              if ($temp_source['result'] && $temp_source['crypted'])
+                              // if encrypted
+                              if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty ($temp_source['tempfile']))
                               {
                                 $attachment = $temp_source['templocation'].$temp_source['tempfile'];
                               }
-                              elseif ($temp_source['restored'])
+                              // if restored
+                              elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && !empty ($temp_source['location']) && !empty ($temp_source['file']))
                               {
                                 $attachment = $temp_source['location'].$temp_source['file'];
                               }

@@ -90,7 +90,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   // page or component preview (no multimedia file)
   else
   {
-    $objectview = "<div id=\"objectcontainer\" style=\"width:".($screenwidth - 100)."px; height:".($screenheight - 100)."px; border:1px #000000 solid;\"><iframe scrolling=\"auto\" src=\"page_preview.php?location=".url_encode($location_esc)."&page=".url_encode($page)."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>";
+    $objectview = "<div id=\"objectcontainer\" style=\"width:".($screenwidth - 100)."px; height:".($screenheight - 100)."px; border:1px #000000 solid;\"><iframe id=\"objectiframe\" scrolling=\"auto\" src=\"page_preview.php?location=".url_encode($location_esc)."&page=".url_encode($page)."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>";
   }
 }
 ?>
@@ -181,17 +181,6 @@ function closeselectors ()
     selector[i].style.visibility = 'hidden';
   }
 }
-
-function openBrWindowLink (winName, features)
-{
-  if (document.getElementById('objectiframe'))
-  {
-    var theURL = document.getElementById('objectiframe').src;
-
-    if (theURL != "") hcms_openWindow (theURL, winName, features, <?php echo windowwidth ("object"); ?>, <?php echo windowheight ("object"); ?>);
-  }
-  else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang]); ?>'));
-}
 </script>
 </head>
 
@@ -226,7 +215,7 @@ if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt
 }
 ?>
 <?php if ($cat == "page") { ?>
-  <div onClick="openBrWindowLink('preview', 'scrollbars=yes,resizable=yes')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
+  <div onClick="if (document.getElementById('objectiframe')) var url = document.getElementById('objectiframe').src; else url=''; parent.openBrWindowLink(url, 'preview', 'scrollbars=yes,resizable=yes')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
 <?php } ?>
 </div>
 

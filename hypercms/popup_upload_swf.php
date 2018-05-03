@@ -357,6 +357,22 @@ function cal_on_autoclose (cal)
 {
 	cal_obj = null;
 }
+
+function switchthumbnail ()
+{
+  if (document.getElementById("createthumbnail").checked)
+  {
+    document.getElementById("versioning").checked = false;
+    document.getElementById("versioning").disabled = true;
+    document.getElementById("checkduplicates").checked = false;
+    document.getElementById("checkduplicates").disabled = true;
+  }
+  else
+  {
+    document.getElementById("versioning").disabled = false;
+    document.getElementById("checkduplicates").disabled = false;
+  }
+}
 </script>
 </head>
 
@@ -394,7 +410,7 @@ echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name
           <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
           <input type="checkbox" name="versioning" id="versioning" value="1" onchange="setpost_single();" />&nbsp;<?php echo getescapedtext ($hcms_lang['keep-existing-file-as-old-version'][$lang]); ?><br />
           <?php } ?> 
-          <input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" onchange="setpost_single();" />&nbsp;<?php echo getescapedtext ($hcms_lang['thumbnail-image-jpeg-file'][$lang]); ?><br />
+          <input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" onchange="setpost_single(); switchthumbnail();" />&nbsp;<?php echo getescapedtext ($hcms_lang['thumbnail-image'][$lang]); ?><br />
         <?php } ?> 
         <?php if ($uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) {  ?>
           <input type="checkbox" name="imageresize" id="imageresize" value="percentage" onchange="setpost_multi();" />

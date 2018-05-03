@@ -164,9 +164,9 @@ function objectfilter ($file)
     foreach ($objectfilter as $filter => $value)
     {
       if ($filter == "comp" && $value == 1) $ext .= strtolower ($hcms_ext['cms']);
-      elseif ($filter == "image" && $value == 1) $ext .= strtolower ($hcms_ext['image']);
+      elseif ($filter == "image" && $value == 1) $ext .= strtolower ($hcms_ext['image'].$hcms_ext['rawimage']);
       elseif ($filter == "document" && $value == 1) $ext .= strtolower ($hcms_ext['bintxt'].$hcms_ext['cleartxt']);
-      elseif ($filter == "video" && $value == 1) $ext .= strtolower ($hcms_ext['video']);
+      elseif ($filter == "video" && $value == 1) $ext .= strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']);
       elseif ($filter == "audio" && $value == 1) $ext .= strtolower ($hcms_ext['audio']);
       elseif ($filter == "flash" && $value == 1) $ext .= strtolower ($hcms_ext['flash']);
       elseif ($filter == "compressed" && $value == 1) $ext .= strtolower ($hcms_ext['compressed']);
@@ -754,12 +754,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // prepare media file
         $temp = preparemediafile ($site, $media_root, $mediafile, $user);
         
-        if ($temp['result'] && $temp['crypted'])
+        // if encrypted
+        if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
         {
           $media_root = $temp['templocation'];
           $mediafile = $temp['tempfile'];
         }
-        elseif ($temp['restored'])
+        // if restored
+        elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
         {
           $media_root = $temp['location'];
           $mediafile = $temp['file'];
@@ -802,12 +804,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // prepare media file
         $temp = preparemediafile ($site, $thumb_root, $mediafile_thumb, $user);
         
-        if ($temp['result'] && $temp['crypted'])
+        // if encrypted
+        if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
         {
           $thumb_root = $temp['templocation'];
           $mediafile_thumb = $temp['tempfile'];
         }
-        elseif ($temp['restored'])
+        // if restored
+        elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
         {
           $thumb_root = $temp['location'];
           $mediafile_thumb = $temp['file'];
@@ -967,12 +971,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             // prepare media file
             $temp = preparemediafile ($site, $thumb_root, $mediafile_thumb, $user);
             
-            if ($temp['result'] && $temp['crypted'])
+            // if encrypted
+            if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
             {
               $thumb_root = $temp['templocation'];
               $mediafile_thumb = $temp['tempfile'];
             }
-            elseif ($temp['restored'])
+            // if restored
+            elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
             {
               $thumb_root = $temp['location'];
               $mediafile_thumb = $temp['file'];
@@ -1261,12 +1267,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // prepare media file
           $temp = preparemediafile ($site, $thumb_root, $thumbfile, $user);
           
-          if ($temp['result'] && $temp['crypted'])
+          // if encrypted
+          if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
           {
             $thumb_root = $temp['templocation'];
             $thumbfile = $temp['tempfile'];
           }
-          elseif ($temp['restored'])
+          // if restored
+          elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
           {
             $thumb_root = $temp['location'];
             $thumbfile = $temp['file'];
@@ -1416,11 +1424,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 $width_annotation = $width;
                 $height_annotation = $height;
               }
+              
+              $annotation_image = createviewlink ($site, $annotation_file, $annotation_file, true);
 
               $mediaview .= "
               <div id=\"annotationFrame\" style=\"margin-top:40px; width:".intval($width_annotation)."px; height:".intval($height_annotation + 8)."px;\">
                 <div style=\"position:relative; left:0; top:0; width:0; height:0;\">
-                  <img src=\"".createviewlink ($site, $mediafile, $medianame, true)."\" id=\"".$id."\" style=\"position:absolute; left:0; top:0; z-index:-10; visibility:hidden;\" />
+                  <img src=\"".$annotation_image."\" id=\"".$id."\" style=\"position:absolute; left:0; top:0; z-index:-10; visibility:hidden;\" />
                 </div>
                 <div id=\"annotation\" style=\"position:relative;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, 'annotation');\" onmousedown=\"$('.hcmsFace').hide(); $('.hcmsFaceName').hide();\" onmouseup=\"$('.hcmsFace').show(); $('.hcmsFaceName').show();\"" : "")." class=\"".$class."\"></div>
               </div>";
@@ -1582,7 +1592,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 				color: 'red',
 				bootstrap: false,
         unselectTool: true,
-				images: ['".createviewlink ($site, $annotation_file, $annotation_file)."?ts=".time()."']
+				images: ['".$annotation_image."']
       });
 
       // set images for buttons
@@ -1798,10 +1808,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if (!empty ($config['width']) && !empty ($config['height'])) $mediaratio = $config['width'] / $config['height'];
 
         // use provided width and corrected height
-        if (!empty ($width) && !empty ($height) && !empty ($mediaratio)) 
+        if (!empty ($width) && !empty ($mediaratio)) 
         {
           $mediawidth = $width;
           $mediaheight = round (($mediawidth / $mediaratio), 0);
+        }
+        // use provided height and corrected width
+        elseif (!empty ($height) && !empty ($mediaratio)) 
+        {
+          $mediaheight = $height;
+          $mediawidth = round (($mediaheight * $mediaratio), 0);
         }
         // use config values if no width and height has been provided
         elseif (!empty ($config['width']) && $config['width'] > 0 && !empty ($config['height']) && $config['height'] > 0)
@@ -2045,12 +2061,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // prepare media file
         $temp = preparemediafile ($site, $media_root, $mediafile, $user);
         
-        if ($temp['result'] && $temp['crypted'])
+        // if encrypted
+        if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
         {
           $media_root = $temp['templocation'];
           $mediafile = $temp['tempfile'];
         }
-        elseif ($temp['restored'])
+        // if restored
+        elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
         {
           $media_root = $temp['location'];
           $mediafile = $temp['file'];
@@ -2200,12 +2218,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // prepare media file
           $temp = preparemediafile ($site, $media_root, $mediafile, $user);
           
-          if ($temp['result'] && $temp['crypted'])
+          // if encrypted
+          if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
           {
             $media_root = $temp['templocation'];
             $mediafile = $temp['tempfile'];
           }
-          elseif ($temp['restored'])
+          // if restored
+          elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
           {
             $media_root = $temp['location'];
             $mediafile = $temp['file'];
@@ -2296,12 +2316,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   // prepare media file
                   $temp = preparemediafile ($site, $thumb_root, $video_thumbfile, $user);
       
-                  if ($temp['result'] && $temp['crypted'])
+                  // if encrypted
+                  if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
                   {
                     $thumb_root = $temp['templocation'];
                     $video_thumbfile = $temp['tempfile'];
                   }
-                  elseif ($temp['restored'])
+                  // if restored
+                  elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
                   {
                     $thumb_root = $temp['location'];
                     $video_thumbfile = $temp['file'];
@@ -2574,10 +2596,10 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     
     // media format
     if ($mediatype == "audio") $format_ext = strtolower ($hcms_ext['audio']);
-    elseif ($mediatype == "video") $format_ext = strtolower ($hcms_ext['video']);
+    elseif ($mediatype == "video") $format_ext = strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']);
     elseif ($mediatype == "text") $format_ext = strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']);
     elseif ($mediatype == "flash") $format_ext = strtolower ($hcms_ext['flash']);
-    elseif ($mediatype == "image") $format_ext = strtolower ($hcms_ext['image']);
+    elseif ($mediatype == "image") $format_ext = strtolower ($hcms_ext['image'].$hcms_ext['rawimage']);
     elseif ($mediatype == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
     elseif ($mediatype == "binary") $format_ext = strtolower ($hcms_ext['binary']);
     else $format_ext = "";
@@ -3870,7 +3892,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
     if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")
     {
       $return = '
-  <video id="'.$id.'" class="projekktor"'.(($loop) ? ' loop ' : ' ').(($muted) ? ' muted ' : ' ').((!empty($logo_url)) ? ' poster="'.$logo_url.'" ' : ' ').((!empty($title)) ? ' title="'.$title.'" ' : ' ').'width="'.$width.'" height="'.$height.'" '.($fullscreen ? 'allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" ' : '').(($controls) ? ' controls' : '').'>'."\n";
+  <video id="'.$id.'" class="projekktor"'.(($loop) ? ' loop ' : ' ').(($muted) ? ' muted ' : ' ').((!empty($logo_url)) ? ' poster="'.$logo_url.'" ' : ' ').((!empty($title)) ? ' title="'.$title.'" ' : ' ').'width="'.$width.'" height="'.$height.'" '.($fullscreen ? 'allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" ' : '').(($controls) ? ' controls' : '').' onplay=\"if (typeof hideFaceOnVideo === \'function\') hideFaceOnVideo();\">'."\n";
 
       $return .= $sources;
     
@@ -3914,9 +3936,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       if (isset ($user_client['msie']) && $user_client['msie'] > 0) $fallback = ", \"playerFallbackOrder\":[\"flash\", \"html5\", \"links\"]";
       else $fallback = "";
     
-      $return = "  <video id=\"".$id."\" class=\"video-js vjs-default-skin\" ".(($controls) ? " controls" : "").(($loop) ? " loop" : "").(($muted) ? " muted" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" 
-    width=\"".intval($width)."\" height=\"".intval($height)."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "")."
-    data-setup='{\"loop\":".(($loop) ? "true" : "false").$fallback."}' title=\"".$title."\"".($fullscreen ? " allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "").">\n";
+      $return = "  <video id=\"".$id."\" class=\"video-js vjs-default-skin\" ".(($controls) ? " controls" : "").(($loop) ? " loop" : "").(($muted) ? " muted" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" width=\"".intval($width)."\" height=\"".intval($height)."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "")." data-setup='{\"loop\":".(($loop) ? "true" : "false").$fallback."}' title=\"".$title."\"".($fullscreen ? " allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "")." onplay=\"if (typeof hideFaceOnVideo === 'function') hideFaceOnVideo();\">\n";
     
       $return .= $sources;
       

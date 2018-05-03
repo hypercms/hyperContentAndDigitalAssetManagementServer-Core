@@ -55,6 +55,15 @@ function closeobjectview ()
   document.getElementById('objectview').src = '';
   hcms_hideInfo('objectviewLayer');
 }
+
+function openBrWindowLink (url, winName, features)
+{
+  if (url != "")
+  {
+    hcms_openWindow (url, winName, features, <?php echo windowwidth ("object"); ?>, <?php echo windowheight ("object"); ?>);
+  }
+  else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang]); ?>'));
+}
 </script>
 </head>
 

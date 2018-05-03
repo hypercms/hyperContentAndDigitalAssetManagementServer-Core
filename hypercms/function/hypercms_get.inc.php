@@ -2910,7 +2910,7 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_type = "Text";
         }        
         // image files 
-        elseif (@substr_count (strtolower ($hcms_ext['image']).".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['image'].$hcms_ext['rawimage']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_image.png";
           $file_type = "Image";
@@ -2934,7 +2934,7 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_type = "Quicktime Video";
         }
         // Video files  
-        elseif (@substr_count (strtolower ($hcms_ext['video']).".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_mpg.png";
           $file_type = "Video";
@@ -3316,8 +3316,8 @@ function getfiletype ($file_ext)
     if (substr_count (strtolower ($hcms_ext['audio']).".", $file_ext.".") > 0) $filetype = "audio";
     elseif (substr_count (strtolower ($hcms_ext['bintxt'].$hcms_ext['cleartxt']).".", $file_ext.".") > 0) $filetype = "document";
     elseif (substr_count (strtolower ($hcms_ext['cms'].$hcms_ext['cleartxt']), $file_ext.".") > 0) $filetype = "text";
-    elseif (substr_count (strtolower ($hcms_ext['image']).".", $file_ext.".") > 0) $filetype = "image";
-    elseif (substr_count (strtolower ($hcms_ext['video']).".", $file_ext.".") > 0) $filetype = "video";
+    elseif (substr_count (strtolower ($hcms_ext['image'].$hcms_ext['rawimage']).".", $file_ext.".") > 0) $filetype = "image";
+    elseif (substr_count (strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']).".", $file_ext.".") > 0) $filetype = "video";
     elseif (substr_count (strtolower ($hcms_ext['flash']).".", $file_ext.".") > 0) $filetype = "flash";
     elseif (substr_count (strtolower ($hcms_ext['compressed']).".", $file_ext.".") > 0) $filetype = "compressed";
     elseif (substr_count (strtolower ($hcms_ext['binary']).".", $file_ext.".") > 0) $filetype = "binary";
@@ -3438,7 +3438,8 @@ function getpdfinfo ($filepath, $box="MediaBox")
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted'])
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
       $location = $temp['templocation'];
       $media = $temp['tempfile'];
@@ -3446,7 +3447,8 @@ function getpdfinfo ($filepath, $box="MediaBox")
       // set new file path
       $filepath = $location.$media;
     }
-    elseif ($temp['restored'])
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
     {
       $location = $temp['location'];
       $media = $temp['file'];
@@ -3527,13 +3529,14 @@ function getvideoinfo ($mediafile)
     $temp = preparemediafile ($site, $location, $media, $user);
     
     // reset location if restored
-    if ($temp['restored'])
+    if (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
     {
       $location = $temp['location'];
       $media = $temp['file'];
     }
     
-    if ($temp['result'] && $temp['crypted'])
+    // path of media file if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
       $mediafile = $temp['templocation'].$temp['tempfile'];
     }
@@ -3853,15 +3856,15 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 
 // ---------------------- getmedialocation -----------------------------
 // function: getmedialocation()
-// input: publication name [string], multimedia file name (including hcm-ID) [string], type [url_path_media,abs_path_media,url_publ_media,abs_publ_media]
+// input: publication name [string], multimedia file name (including hcm-ID) [string], type [url_path_media,abs_path_media,url_publ_media,abs_publ_media], resolve symbolik links [true,false] (optional)
 // output: location of the multimedia file / false on error
 
 // description:
-// Gets the media repsitory location from $mgmt_config array.
-// The function supports up to 10 media repositories.
+// Gets the media repsitory location from $mgmt_config array. The function supports up to 10 media repositories.
 // Any other rules for splitting the media files on multiple devices can be implemented as well by the function getmedialocation_rule.
+// If the file resides outside the repository (symbolic link is used in the repository), the full path including the file name can be returned.
 
-function getmedialocation ($site, $file, $type)
+function getmedialocation ($site, $file, $type, $resolve_symlink=false)
 {
   global $mgmt_config, $publ_config;
   
@@ -3898,13 +3901,12 @@ function getmedialocation ($site, $file, $type)
             if ($result != "")
             {
               // symbolic link
-              if (is_link ($result.$site."/".$file))
+              if (is_link ($result.$site."/".$file) && !empty ($resolve_symlink))
               {
                 // get link target
                 $targetpath = readlink ($result.$site."/".$file);
-                $targetroot = getlocation (getlocation ($targetpath));
                 
-                return $targetroot;
+                return $targetpath;
               } 
               // directory path
               else
@@ -3931,13 +3933,12 @@ function getmedialocation ($site, $file, $type)
                 if ($mgmt_config[$type][$j] != "")
                 {
                   // symbolic link
-                  if (is_link ($mgmt_config[$type][$j].$site."/".$file))
+                  if (is_link ($mgmt_config[$type][$j].$site."/".$file) && !empty ($resolve_symlink))
                   {
                     // get link target
                     $targetpath = readlink ($mgmt_config[$type][$j].$site."/".$file);
-                    $targetroot = getlocation (getlocation ($targetpath));
                     
-                    return $targetroot;
+                    return $targetpath;
                   }
                   // file
                   else
@@ -3956,11 +3957,11 @@ function getmedialocation ($site, $file, $type)
         else
         {
           // symbolic link
-          if (is_link ($mgmt_config[$type].$site."/".$file))
+          if (is_link ($mgmt_config[$type].$site."/".$file) && !empty ($resolve_symlink))
           {
             // get link target
             $targetpath = readlink ($mgmt_config[$type].$site."/".$file);
-            $targetroot = getlocation (getlocation ($targetpath));
+            $targetroot = $targetpath;
             
             return $targetroot;
           }

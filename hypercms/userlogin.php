@@ -539,17 +539,32 @@ function focusform()
 
 function is_mobilebrowser()
 {
-  if (eval (document.forms['login']) && hcms_mobileBrowser()) document.forms['login'].elements['is_mobile'].value = '1';
+  if (eval (document.forms['login']) && hcms_mobileBrowser())
+  {
+    document.forms['login'].elements['is_mobile'].value = '1';
+    return true;
+  }
+  else return false;
 }
 
 function is_iphone()
 {
-  if (eval (document.forms['login']) && hcms_iOS()) document.forms['login'].elements['is_iphone'].value = '1';
+  if (eval (document.forms['login']) && hcms_iOS())
+  {
+    document.forms['login'].elements['is_iphone'].value = '1';
+    return true;
+  }
+  else return false;
 }
 
 function html5support()
 {
-  if (eval (document.forms['login']) && hcms_html5file()) document.forms['login'].elements['html5support'].value = '1';
+  if (eval (document.forms['login']) && hcms_html5file())
+  {
+    document.forms['login'].elements['html5support'].value = '1';
+    return true;
+  }
+  else return false;
 }
 
 function submitlogin()

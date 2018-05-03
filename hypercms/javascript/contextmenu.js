@@ -553,6 +553,13 @@ function hcms_createContextmenuItem (action)
         document.forms['contextmenu_object'].elements['force'].value = 'start';
         hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no', 400, 400);
       }
+      else if (action == "favorites_create")
+      {
+        document.forms['contextmenu_object'].attributes['action'].value = "popup_action.php";
+        document.forms['contextmenu_object'].elements['action'].value = "page_favorites_create";
+        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no' ,400, 180);
+        allow_tr_submit = false;
+      }
       else if (action == "favorites_delete")
       {
         document.forms['contextmenu_object'].attributes['action'].value = "popup_action.php";

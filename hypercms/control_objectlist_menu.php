@@ -150,17 +150,6 @@ $location_down_esc = getlocation ($location_esc);
 $ownergroup_down = accesspermission ($site, $location_down_esc, $cat);
 $setlocalpermission_down = setlocalpermission ($site, $ownergroup_down, $cat);
 
-// define message if object is checked out by another user
-if (!empty ($contentfile))
-{
-  $usedby_array = getcontainername ($contentfile);
-  
-  if (is_array ($usedby_array) && !empty ($usedby_array['user'])) $usedby = $usedby_array['user'];
-  else $usedby = "";
-  
-  if ($usedby != "" && $usedby != $user) $show = getescapedtext ($hcms_lang['object-is-checked-out-by-user'][$lang])." '".$usedby."'";
-  else $show = "";
-}
 
 // execute action
 if (checktoken ($token, $user))
@@ -232,6 +221,30 @@ if (checktoken ($token, $user))
       $show = getescapedtext ($hcms_lang['the-file-'][$lang].$pagenew.str_replace ("%filesize%", $mgmt_config['maxzipsize'], $hcms_lang['zip-could-not-be-created-max'][$lang]));
     }
   }
+  // add to favorites
+  elseif (($action == "page_favorite_add" || $action == "page_favorite_delete") && $setlocalpermission['root'] == 1) 
+  {
+    if ($multiobject != "")
+    {
+      $multiobject_array = link_db_getobject ($multiobject);
+    }
+    elseif ($folder != "" && is_dir ($location.$folder))
+    {
+      $multiobject_array[0] = $location.$folder;
+    }
+    elseif ($page != "" && $page != ".folder" && is_file ($location.$page))
+    {
+      $multiobject_array[0] = $location.$page;
+    }
+    
+    foreach ($multiobject_array as $temp)
+    {
+      if ($action == "page_favorite_add") createfavorite (getpublication ($temp), getlocation ($temp), getobject ($temp), "", $user);
+      elseif ($action == "page_favorite_delete") deletefavorite (getpublication ($temp), getlocation ($temp), getobject ($temp), "", $user);
+    }
+
+    $show = "";
+  }
   // import metadata from CSV file
   elseif ($action == "import" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
   {
@@ -269,6 +282,17 @@ if (checktoken ($token, $user))
     // CSV export
     create_csv ($assoc_array, "export.csv");
   }
+}
+
+// define message if object is checked out by another user
+if (!empty ($contentfile))
+{
+  $usedby_array = getcontainername ($contentfile);
+  
+  if (is_array ($usedby_array) && !empty ($usedby_array['user'])) $usedby = $usedby_array['user'];
+  
+  if ($usedby != "" && $usedby != $user) $show = getescapedtext ($hcms_lang['object-is-checked-out-by-user'][$lang])." '".$usedby."'";
+  else $show = "";
 }
 
 // get file info
@@ -530,6 +554,21 @@ function imgConvert (type, config)
     form.elements['convert_type'].value = type;
     form.elements['convert_cfg'].value = config;
 
+    submitToSelf ('download');
+    hcms_showHideLayers('downloadLayer','','show');
+  }
+  else return false; 
+}
+
+function vidConvert (type)
+{
+  if (parent.frames['mainFrame'].document.forms['contextmenu_object'])
+  {
+    var form = parent.frames['mainFrame'].document.forms['contextmenu_object'];
+    
+    form.attributes['action'].value = '<?php echo $_SERVER['PHP_SELF']; ?>';
+    form.elements['convert_type'].value = type;
+    
     submitToSelf ('download');
     hcms_showHideLayers('downloadLayer','','show');
   }
@@ -1054,6 +1093,7 @@ else
     
     $doc_rendering = false;
     $img_rendering = false;
+    $vid_rendering = false;
     
     foreach ($mgmt_docpreview as $docpreview_ext => $docpreview)
     {
@@ -1085,6 +1125,8 @@ else
   			}
   		}      
     }
+    
+    $vid_rendering = is_supported ($mgmt_mediapreview, $media);
     
     // rendering options
     $perm_rendering = $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1;
@@ -1148,6 +1190,14 @@ else
             }
           }
         }
+      }
+      
+      // video download options
+      if ($vid_rendering)
+      {
+        echo "
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('jpg'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['images'][$lang])." (JPG)&nbsp;</div>
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['images'][$lang])." (PNG)&nbsp;</div>\n";
       }
 			
 			//save to dropbox
@@ -1663,7 +1713,7 @@ function downloadFile()
   location.replace('<?php echo $downloadlink; ?>');
 }
 
-setTimeout('downloadFile()', 500);
+setTimeout('downloadFile()', 2000);
 </script>  
 <?php
   }

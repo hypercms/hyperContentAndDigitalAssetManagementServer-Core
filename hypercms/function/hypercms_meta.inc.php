@@ -537,11 +537,13 @@ function copymetadata ($file_source, $file_dest)
         // prepare source media file
         $temp_source = preparemediafile ($site_source, $location_source, $media_source, $user);
         
-        if ($temp_source['crypted'])
+        // if encrypted
+        if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty ($temp_source['tempfile']))
         {
           $file_source = $temp_source['templocation'].$temp_source['tempfile'];
         }
-        elseif ($temp_source['restored'])
+        // if restored
+        elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && !empty ($temp_source['location']) && !empty ($temp_source['file']))
         {
           $file_source = $temp_source['location'].$temp_source['file'];
         }
@@ -557,11 +559,13 @@ function copymetadata ($file_source, $file_dest)
         // prepare destination media file
         $temp_dest = preparemediafile ($site_dest, $location_dest, $media_dest, $user);
         
-        if ($temp_dest['crypted'])
+        // if encrypted
+        if (!empty ($temp_dest['result']) && !empty ($temp_dest['crypted']) && !empty ($temp_dest['templocation']) && !empty ($temp_dest['tempfile']))
         {
           $file_dest = $temp_dest['templocation'].$temp_dest['tempfile'];
         }
-        elseif ($temp_dest['restored'])
+        // if restored
+        elseif (!empty ($temp_dest['result']) && !empty ($temp_dest['restored']) && !empty ($temp_dest['location']) && !empty ($temp_dest['file']))
         {
           $file_dest = $temp_dest['location'].$temp_dest['file'];
         }
@@ -628,12 +632,14 @@ function extractmetadata ($file)
     
         // prepare media file
         $temp = preparemediafile ($site, $location, $media, $user);
-        
-        if ($temp['result'] && $temp['crypted'])
+
+        // if encrypted
+        if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
         {
           $file = $temp['templocation'].$temp['tempfile'];
         }
-        elseif ($temp['restored'])
+        // if restored
+        elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
         {
           $file = $temp['location'].$temp['file'];
         }
@@ -910,6 +916,9 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
     
     $result = false;
     
+    // get container ID
+    $container_id = getmediacontainerid ($file);
+    
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
     
@@ -924,11 +933,13 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted'])
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
       $file = $temp['templocation'].$temp['tempfile'];
     }
-    elseif ($temp['restored'])
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
     {
       $file = $temp['location'].$temp['file'];
     }
@@ -1003,8 +1014,6 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
           if ($movetempfile)
           {
             // write media information to DB
-            $container_id = getmediacontainerid ($file);
-            
             if (!empty ($container_id))
             {
               $md5_hash = md5_file ($file);
@@ -1111,12 +1120,14 @@ function xmp_getdata ($file)
     
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
-    
-    if ($temp['result'] && $temp['crypted'])
+
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
       $file = $temp['templocation'].$temp['tempfile'];
     }
-    elseif ($temp['restored'])
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
     {
       $file = $temp['location'].$temp['file'];
     }
@@ -1167,6 +1178,9 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
   {
     if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     
+    // get container ID
+    $container_id = getmediacontainerid ($file);
+    
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
     
@@ -1181,11 +1195,13 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
         
-    if ($temp['result'] && $temp['crypted'])
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
       $file = $temp['templocation'].$temp['tempfile'];
     }
-    elseif ($temp['restored'])
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
     {
       $file = $temp['location'].$temp['file'];
     }
@@ -1237,8 +1253,6 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
           if ($movetempfile && (empty ($errorCode) || $errorCode < 1))
           {
             // write media information to DB
-            $container_id = getmediacontainerid ($file);
-            
             if (!empty ($container_id))
             {
               $md5_hash = md5_file ($file);
@@ -1355,11 +1369,13 @@ function exif_getdata ($file)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted'])
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
       $file = $temp['templocation'].$temp['tempfile'];
-		}
-    elseif ($temp['restored'])
+    }
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
     {
       $file = $temp['location'].$temp['file'];
     }
@@ -1619,11 +1635,13 @@ function iptc_getdata ($file)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted'])
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
       $file = $temp['templocation'].$temp['tempfile'];
     }
-    elseif ($temp['restored'])
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
     {
       $file = $temp['location'].$temp['file'];
     }
@@ -1866,6 +1884,9 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
   {
     // set default encoding to UTF-8
     $encoding = "UTF-8";
+    
+    // get container ID
+    $container_id = getmediacontainerid ($file);
 
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
@@ -1881,11 +1902,13 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted'])
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
       $file = $temp['templocation'].$temp['tempfile'];
     }
-    elseif ($temp['restored'])
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
     {
       $file = $temp['location'].$temp['file'];
     }
@@ -1979,8 +2002,6 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
           if ($movetempfile)
           {
             // write media information to DB
-            $container_id = getmediacontainerid ($file);
-    
             if (!empty ($container_id))
             {
               $md5_hash = md5_file ($file);
@@ -2367,7 +2388,7 @@ id3:band => ''
 // Image Resolution defines Quality [Print, Web]
 hcms:quality => 'textl:Quality'
 
-// Google Video Intelligence (requires a Google Cloud Account)
+// Google Video Intelligence (auto tagging for videos) and Google Vision (auto tagging for images)
 google:description => 'textu:Description'
 google:keywords => 'textk:Keywords'";
   }
@@ -2419,22 +2440,30 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       if ($objectdata != "") $mediafile = getfilename ($objectdata, "media");
       else return false;
     }
-       
+
     // get the file extension
     $mediafile_ext = strtolower (@strrchr ($mediafile, "."));
 
     // check file extension
     if (substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $mediafile_ext.".") > 0)
     {
-      // media location
-      $medialocation = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
-
-      // load multimedia file   
-      $mediadata = decryptfile ($medialocation, $mediafile);
-
       // get container information
       $container_id = getmediacontainerid ($mediafile);
       $container = getmediacontainername ($mediafile);
+      
+      // media location
+      $medialocation = getmedialocation ($site, $mediafile, "abs_path_media");
+
+      // if symbolic link is used,the full file path will be returned
+      if (is_file ($medialocation))
+      {
+        $mediafile = getobject ($medialocation);
+        $medialocation = getlocation ($medialocation);
+      }
+      else $medialocation = $medialocation.$site."/";
+
+      // load multimedia file
+      $mediadata = decryptfile ($medialocation, $mediafile);
       
       // load container if not provided
       if ($containerdata == "")
@@ -2457,24 +2486,171 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         $text_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "text.schema.xml.php"));
         
         // prepare media file
-        $temp = preparemediafile ($site, $location, $mediafile, $user);
+        $temp = preparemediafile ($site, $medialocation, $mediafile, $user);
         
-        if ($temp['result'] && $temp['crypted'])
+        // if encrypted
+        if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
         {
           $medialocation = $temp['templocation'];
           $mediafile = $temp['tempfile'];
         }
-        elseif ($temp['restored'])
+        // if restored
+        elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
         {
           $medialocation = $temp['location'];
           $mediafile = $temp['file'];
         }
         
+        // ------------------- use Google Speech Service -------------------
+        if (is_audio ($mediafile) || is_video ($mediafile))
+        {
+          if (function_exists ("GCspeech2text")) $google_data = GCspeech2text ($site, $medialocation.$mediafile);
+          else $google_data = "";
+        
+          if (!empty ($google_data) && is_array ($google_data))
+          {
+            // source charset
+            $charset_source = "UTF-8";
+            
+            $vtt_str = "";
+            
+            // create VTT
+            foreach ($google_data as $record)
+            {
+              // only for tags
+              if (!empty ($record['description']))
+              {
+                if (empty ($langcode)) $langcode = $record['language'];
+              
+                $temp_str = $record['description'];
+                
+                // remove tags
+                $temp_str = strip_tags ($temp_str);
+
+                // convert string for container
+                if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+                {
+                  $temp_str = convertchars ($temp_str, $charset_source, $charset_dest);
+                }
+                elseif ($charset_dest == "UTF-8")
+                {
+                  // encode to UTF-8
+                  if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
+                }
+                
+                $vtt_str .= sec2time ($record['starttime'])." --> ".sec2time ($record['endtime'])."\n";
+                $vtt_str .= $temp_str."\n\n";
+              }
+            }
+            
+            if (!empty ($langcode) && !empty ($vtt_str))
+            {
+              $text_id = "VTT-".$langcode;
+              $vtt_str = "WEBVTT\n\n".$vtt_str;
+            
+              // textnodes search index in database
+              $text_array[$text_id] = $vtt_str;
+                                              
+              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$vtt_str."]]>", "<text_id>", $text_id);
+        
+              if ($containerdata_new == false)
+              {
+                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$vtt_str."]]>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+              }
+
+              if ($containerdata_new != false) $containerdata = $containerdata_new;
+              else return false;
+            }
+          }
+        }
+
+        // ------------------- use Google Vision Cloud Service -------------------
+        if (is_image ($mediafile))
+        {
+          if (function_exists ("GCanalyzeimage")) $google_data = GCanalyzeimage ($medialocation.$mediafile);
+          else $google_data = "";
+        
+          if (!empty ($google_data) && is_array ($google_data))
+          {
+            // source charset
+            $charset_source = "UTF-8";
+            
+            // inject meta data based on mapping
+            reset ($mapping);
+            
+            foreach ($mapping as $key => $text_id)
+            {
+              // only for tags
+              if (strpos ("_".$key, "google:") > 0 && $text_id != "")
+              {          
+                // get tag name
+                list ($namespace, $key) = explode (":", $key);              
+                $key = trim ($key);
+
+                // get type and text ID
+                if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+                elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
+                else $type = "textu";
+                
+                if (!empty ($type)) $type_array[$text_id] = $type;
+                
+                // get data
+                if (!empty ($google_data[$key])) $temp_str = $google_data[$key];
+                else $temp_str = "";
+
+                if ($temp_str != "")
+                {                
+                  // clean keywords
+                  if ($type == "textk")
+                  {
+                    $keywords = splitkeywords ($temp_str, $charset_dest);
+                    
+                    if (is_array ($keywords)) $temp_str = implode (",", $keywords);
+                    else $temp_str = "";
+                  }
+
+                  // remove tags
+                  $temp_str = strip_tags ($temp_str);
+  
+                  // convert string for container
+                  if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+                  {
+                    $temp_str = convertchars ($temp_str, $charset_source, $charset_dest);
+                  }
+                  elseif ($charset_dest == "UTF-8")
+                  {
+                    // encode to UTF-8
+                    if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
+                  }
+                  
+                  // textnodes search index in database
+                  $text_array[$text_id] = $temp_str;
+                                                  
+                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+            
+                  if ($containerdata_new == false)
+                  {
+                    $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                  }
+  
+                  if ($containerdata_new != false) $containerdata = $containerdata_new;
+                  else return false;
+                }
+              }
+            }
+          }
+        }
+
         // ------------------- use Google Video Intelligence Cloud Service -------------------
         if (is_video ($mediafile))
         {
-          $google_data = GSanalyzevideo ($medialocation.$mediafile);
-          
+          if (function_exists ("GCanalyzevideo")) $google_data = GCanalyzevideo ($medialocation.$mediafile);
+          else $google_data = "";
+
           if (!empty ($google_data) && is_array ($google_data))
           {
             // source charset
@@ -2483,10 +2659,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             // thumbnail file is always in repository
             $thumb_root = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
             $file_info = getfileinfo ($site, $mediafile, "comp");
-            $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
             
-            if (empty ($config['width'])) $config['width'] = 576;
-            if (empty ($config['height'])) $config['height'] = 324;
+            // get video dimensions
+            avoidfilecollision ();
+            $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
+
+            if (empty ($config['width'])) $config['width'] = 360;
+            if (empty ($config['height'])) $config['height'] = 240;
             
             $faces_array = array();
             $google_data_collect = array();
@@ -2495,23 +2674,26 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             {
               if (is_array ($temp_array))
               {
+                // remove tags
+                $temp_array['description'] = strip_tags ($temp_array['description']);
+                $temp_array['keywords'] = strip_tags ($temp_array['keywords']);
+ 
                 // convert string for container
                 if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
                 {
+                  $temp_array['description'] = convertchars ($temp_array['description'], $charset_source, $charset_dest);
                   $temp_array['keywords'] = convertchars ($temp_array['keywords'], $charset_source, $charset_dest);
                 }
                 elseif ($charset_dest == "UTF-8")
                 {
                   // encode to UTF-8
-                  if (!is_utf8 ($temp_str)) $temp_array['keywords'] = utf8_encode ($temp_array['keywords']);
-                }
-                
-                $temp_array['description'] = strip_tags ($temp_array['description']);
-                $temp_array['keywords'] = strip_tags ($temp_array['keywords']);
+                  if (!is_utf8 ($temp_array['description'] )) $temp_array['description'] = utf8_encode ($temp_array['description']);
+                  if (!is_utf8 ($temp_array['keywords'] )) $temp_array['keywords'] = utf8_encode ($temp_array['keywords']);
+                } 
 
                 // JSON substring
-                $faces_array[] = "{\"videowidth\":".$config['width'].", \"videoheight\":".$config['height'].", \"".$temp_array['starttime'].", \"x\":10, \"y\":10, \"width\":".(intval ($config['width']) - 20).", \"height\":".(intval ($config['height']) - 80).", \"name\":\"".$temp_array['keywords']."\"}";
-                
+                $faces_array[] = "{\"videowidth\":".$config['width'].", \"videoheight\":".$config['height'].", \"time\":".$temp_array['starttime'].", \"x\":10, \"y\":10, \"width\":".(intval ($config['width']) - 20).", \"height\":".(intval ($config['height']) - 120).", \"name\":\"".$temp_array['keywords']."\"}";
+
                 // collect data
                 if (!empty ($google_data_collect['description'])) $google_data_collect['description'] .= ", ".$temp_array['description'];
                 else $google_data_collect['description'] = $temp_array['description'];
@@ -2525,10 +2707,10 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             if (sizeof ($faces_array) > 0)
             {
               $text_id = "Faces-JSON";
-              $faces_json = "[".implode (", ", $$faces_array)."]";
+              $faces_json = "[".implode (", ", $faces_array)."]";
               
               // textnodes search index in database
-              $text_array[$text_id] = $faces;
+              $text_array[$text_id] = $faces_json;
                                               
               $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
         
@@ -2575,6 +2757,20 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                     
                     if (is_array ($keywords)) $temp_str = implode (",", $keywords);
                     else $temp_str = "";
+                  }
+                  
+                  // remove tags
+                  $temp_str = strip_tags ($temp_str);
+  
+                  // convert string for container
+                  if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+                  {
+                    $temp_str = convertchars ($temp_str, $charset_source, $charset_dest);
+                  }
+                  elseif ($charset_dest == "UTF-8")
+                  {
+                    // encode to UTF-8
+                    if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
                   }
                   
                   // textnodes search index in database

@@ -8028,7 +8028,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           imageface_id.push(i);
           var offset = (216 - faces[i].width) / 2;
           
-          $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'>\" + faces[i].name + \"</textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
+          $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height * scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'>\" + faces[i].name + \"</textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
         }
       }
     }
@@ -8120,7 +8120,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               videoface_id.push(id);
               var offset = (216 - faces[i].width) / 2;
     
-              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'>\" + faces[i].name + \"</textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height *scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'>\" + faces[i].name + \"</textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
             }
           }
         }
@@ -8230,6 +8230,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           $('#hcmsFace' + videoface_id[i]).css ('visibility', 'visible');
         }
       }
+    }
+  }
+  
+  function hideFaceOnVideo ()
+  {
+    // find video ID
+    if ($('#hcms_mediaplayer_asset_html5_api').length > 0) var video = $('#hcms_mediaplayer_asset_html5_api');
+    else if ($('#hcms_mediaplayer_asset_flash_api').length > 0) var video = $('#hcms_mediaplayer_asset_flash_api');
+    else var video = false;
+    
+    // hide all visible face markers
+    if (!video[0].paused)
+    {
+      $('.hcmsFace').css('visibility', 'hidden');
+      $('.hcmsFaceName').css('visibility', 'hidden');
     }
   }
   

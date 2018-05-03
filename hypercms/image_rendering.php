@@ -146,21 +146,25 @@ if (is_rawimage ($mediafile_info['ext']))
   // prepare media file
   $temp = preparemediafile ($site, $media_root, $mediafile_raw, $user);
   
-  if ($temp['result'] && $temp['crypted'] && is_file ($temp['templocation'].$temp['tempfile']))
+  // if encrypted
+  if (!empty ($temp['result']) && !empty ($temp['crypted']) && is_file ($temp['templocation'].$temp['tempfile']))
   {
     $media_root = $temp['templocation'];
     $mediafile = $temp['tempfile'];
   }
-  elseif ($temp['restored'] && is_file ($temp['location'].$temp['file']))
+  // if restored
+  elseif (!empty ($temp['result']) && !empty ($temp['restored']) && is_file ($temp['location'].$temp['file']))
   {
     $media_root = $temp['location'];
     $mediafile = $temp['file'];
   }
+  // if JPEG of RAW file exists
   elseif (is_file ($media_root.$mediafile_raw))
   {
     // reset media file
     $mediafile = $mediafile_raw;
   }
+  // use RAW file
   else
   {
     // reset media file
@@ -177,11 +181,13 @@ if (!is_rawimage ($mediafile_info['ext']) || !empty ($mediafile_failed))
 }
 
 // get image dimensions
-if ($temp['result'] && $temp['crypted'])
+// if encrypted
+if (!empty ($temp['result']) && !empty ($temp['crypted']) && is_file ($temp['templocation'].$temp['tempfile']))
 {
   $media_size = getimagesize ($temp['templocation'].$temp['tempfile']);
 }
-elseif ($temp['restored'])
+// if restored
+elseif (!empty ($temp['result']) && !empty ($temp['restored']) && is_file ($temp['location'].$temp['file']))
 {
   $media_size = getimagesize ($temp['location'].$temp['file']);
 }

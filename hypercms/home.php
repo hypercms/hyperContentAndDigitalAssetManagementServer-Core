@@ -208,6 +208,15 @@ function submitHomeBoxes ()
   form.submit();
 }
 
+function html5support()
+{
+  if (eval (document.forms['login']) && hcms_html5file())
+  {
+    return true;
+  }
+  else return false;
+}
+
 function setwallpaper ()
 {
   <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
