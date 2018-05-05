@@ -3078,7 +3078,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
 // description:
 // Splits a video or audio file in segments measured in seconds. Used for synchronous Google Cloud Speech Service that only supports max. 1 minute audio files.
-// The varibale %count% in the file is used as a placeholder for the enumeration of the files and start with 0.
 
 function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $format="", $force_no_encrypt=false)
 {

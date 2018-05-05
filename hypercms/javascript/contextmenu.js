@@ -294,6 +294,7 @@ function hcms_showContextmenu ()
         if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOn hcmsIconList";
         if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOn hcmsIconList";
         if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_fav_create"))) document.getElementById("img_fav_create").className = "hcmsIconOn hcmsIconList";
         if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn hcmsIconList";
         if (eval (document.getElementsByName("img_plugin")))
         {
@@ -315,6 +316,7 @@ function hcms_showContextmenu ()
         if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOn hcmsIconList";
         if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOn hcmsIconList";
         if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_fav_create"))) document.getElementById("img_fav_create").className = "hcmsIconOn hcmsIconList";
         if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn hcmsIconList";
         if (eval (document.getElementsByName("img_plugin")))
         {
@@ -336,6 +338,7 @@ function hcms_showContextmenu ()
         if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOff hcmsIconList";
         if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOff hcmsIconList";
         if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_fav_create"))) document.getElementById("img_fav_create").className = "hcmsIconOff hcmsIconList";
         if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOff hcmsIconList";
         if (eval (document.getElementsByName("img_plugin")))
         {
