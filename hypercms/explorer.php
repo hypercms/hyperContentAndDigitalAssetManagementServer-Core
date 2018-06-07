@@ -660,6 +660,17 @@ else
 
   // create secure token
   $token_new = createtoken ($user);
+  
+  // redefine siteaccess if linking is used
+  if (isset ($hcms_linking['publication']) && valid_publicationname ($hcms_linking['publication']))
+  {
+    $siteaccess = array ($hcms_linking['publication']);
+  }
+  elseif (is_array ($siteaccess))
+  {
+    natcasesort ($siteaccess);
+    reset ($siteaccess);
+  }
 
   // create main Menu points
   // ---------------------------------------- logout ---------------------------------------------
@@ -742,6 +753,33 @@ else
       $point->addSubPoint($subpoint);
     }
     
+    $messageaccess = false;
+
+    if (is_array ($siteaccess))
+    {
+      reset ($siteaccess);
+      
+      foreach ($siteaccess as $site_name)
+      {
+        // include configuration file of publication if not included already
+        if (valid_publicationname ($site_name) && is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
+        {
+          @require ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");  
+        }
+
+        if (!empty ($mgmt_config[$site_name]['sendmail'])) $messageaccess = true;
+      }
+    }
+
+    if ($messageaccess == true)
+    {
+      $subpoint = new hcms_menupoint($hcms_lang['messages'][$lang], "frameset_message.php", 'button_user_sendlink.png');
+      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setTarget('workplFrame');
+      $subpoint->setOnMouseOver('hcms_resetContext();');
+      $point->addSubPoint($subpoint);
+    }
+    
     if ($mgmt_config['db_connect_rdbms'])
     {
       $subpoint = new hcms_menupoint($hcms_lang['publishing-queue'][$lang], "frameset_queue.php?queueuser=".$user, 'queue.png');
@@ -776,29 +814,20 @@ else
       }
     }
   }
-  
-  // redefine siteaccess if linking is used
-  if (isset ($hcms_linking['publication']) && valid_publicationname ($hcms_linking['publication']))
-  {
-    $siteaccess = array ($hcms_linking['publication']);
-  }
-  elseif (is_array ($siteaccess))
-  {
-    natcasesort ($siteaccess);
-    reset ($siteaccess);
-  }
 
   $set_site_admin = false;
 
   if (is_array ($siteaccess))
   {
+    reset ($siteaccess);
+    
     // loop through all publications
     foreach ($siteaccess as $site)  
-    { 
+    {
       if (valid_publicationname ($site) || $site == "hcms_empty")
       {
-        // include configuration file of site
-        if (valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+        // include configuration file of publication if not included already
+        if ((empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
         {
           @require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");  
         }
@@ -807,7 +836,7 @@ else
         {
           $mgmt_config[$site]['site_admin'] = true;
         }
-      
+
         // Publication specific Menu Points
         // ----------------------------------------- main administration ----------------------------------------------  
         if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && $set_site_admin == false && $mgmt_config[$site]['site_admin'] == true)
@@ -950,7 +979,7 @@ else
                   
             $publication->addSubPoint($point);
           }
-          
+
           // ------------------------------------------ personalization -------------------------------------------------
           if (empty ($hcms_assetbrowser) && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'pers') && empty ($mgmt_config[$site]['dam']))
           {
@@ -1923,7 +1952,6 @@ else
       <form name="searchform_advanced" method="post" action="search_objectlist.php" target="mainFrame">
         <input type="hidden" name="action" value="base_search" />
         <input type="hidden" name="search_dir" value="" />
-        <input type="hidden" name="maxhits" value="300" />
 
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></span>
@@ -2019,11 +2047,21 @@ else
               
               foreach ($template_array as $value)
               {
-                if (strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"))." (".getescapedtext ($hcms_lang['page'][$lang]).")";
-                elseif (strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"))." (".getescapedtext ($hcms_lang['component'][$lang]).")";
-                elseif (strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"))." (".getescapedtext ($hcms_lang['meta-data'][$lang]).")";
- 
-                if (!empty ($tpl_name)) echo "<option value=\"".$value."\">".$tpl_name."</option>\n";
+                if (trim ($value) != "")
+                {
+                  $tpl_name = "";
+                  
+                  if (strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"))." (".getescapedtext ($hcms_lang['page'][$lang]).")";
+                  elseif (strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"))." (".getescapedtext ($hcms_lang['component'][$lang]).")";
+                  elseif (strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"))." (".getescapedtext ($hcms_lang['meta-data'][$lang]).")";
+                  
+                  if ($tpl_name != "")
+                  {
+                    $tpl_name = str_replace ("/", " &gt; ", $tpl_name);
+   
+                    if (!empty ($tpl_name)) echo "<option value=\"".$value."\">".$tpl_name."</option>\n";
+                  }
+                }
               }
             }
           }

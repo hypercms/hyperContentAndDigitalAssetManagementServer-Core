@@ -56,26 +56,41 @@ if (sizeof ($config_files) > 0)
     
         foreach ($queue_array as $queue)
         {    
-          if ($queue['queue_id'] != "" && $queue['action'] != "" && $queue['objectpath'] != "" && $queue['published_only'] != "" && $queue['user'] != "")
-          {   
-            $queue_id = $queue['queue_id'];
-            $action = $queue['action']; 
-            $site = getpublication ($queue['objectpath']);
-            $location = getlocation ($queue['objectpath']);
-            $file = getobject ($queue['objectpath']);
-            $published_only = $queue['published_only'];
-            $user = $queue['user'];
-    
-            // if folder object remove .folder
-            if ($file == ".folder")
+          if ($queue['queue_id'] != "" && $queue['action'] != "" && ($queue['object_id'] != "" || $queue['objectpath'] != "") && $queue['published_only'] != "" && $queue['user'] != "")
+          {
+            // mail
+            if ($queue['action'] == "mail" && $queue['object_id'] != "")
             {
-              $location = getlocation ($location);
-              $file = getobject ($location);
+              $queue_id = $queue['queue_id'];
+              $action = $queue['action'];
+              $mail_id = $queue['object_id'];
+              $user = $queue['user'];
+              
+              // process objects
+              $result = processobjects ($action, "", "", $mail_id, "", $user);
             }
-            
-            // process objects
-            $result = processobjects ($action, $site, $location, $file, $published_only, $user);
-    
+            // object
+            elseif ($queue['objectpath'] != "")
+            { 
+              $queue_id = $queue['queue_id'];
+              $action = $queue['action']; 
+              $site = getpublication ($queue['objectpath']);
+              $location = getlocation ($queue['objectpath']);
+              $file = getobject ($queue['objectpath']);
+              $published_only = $queue['published_only'];
+              $user = $queue['user'];
+      
+              // if folder object remove .folder
+              if ($file == ".folder")
+              {
+                $location = getlocation ($location);
+                $file = getobject ($location);
+              }
+              
+              // process objects
+              $result = processobjects ($action, $site, $location, $file, $published_only, $user);
+            }
+
             // remove entry from queue
             if ($result == true)
             {
@@ -88,6 +103,25 @@ if (sizeof ($config_files) > 0)
         }
       }
     }
+  }
+}
+
+// save server load in log
+$report = getserverload();
+
+if (!empty ($report) && is_array ($report))
+{
+  $serverload = $mgmt_config['today']."|".$report['load']."|".$report['cpu']."|".$report['memory'];
+  
+  savelog (array ($serverload), "serverload");
+  
+  // warning in system event log
+  if ($report['load'] > 0.9)
+  {
+    $errcode = "00911";
+    $error = $mgmt_config['today']."|minutely.php|warning|$errcode|server load is ".round ($report['load'] * 100)."%";
+    
+    savelog (array ($error));
   }
 }
 ?>

@@ -75,7 +75,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         // check access permission
         $ownergroup = accesspermission ($item_site, $item_location, $item_cat);
         $setlocalpermission = setlocalpermission ($item_site, $ownergroup, $item_cat);
-        
+
         if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($item_location) && valid_objectname ($item_object))
         {
           // open on double click

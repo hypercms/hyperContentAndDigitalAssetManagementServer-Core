@@ -93,7 +93,6 @@ $token_new = createtoken ($user);
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
-<!--
 function warning_delete()
 {
   var form = document.forms['tpl_delete'];
@@ -179,7 +178,6 @@ function checkForm_file_upload()
   form.submit();
   return true;
 }
-//-->
 </script>
 </head>
 

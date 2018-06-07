@@ -34,7 +34,7 @@ else
 <head>
 <title>hyperCMS</title>
 <meta charset="utf-8" />
-<meta name="theme-color" content="#464646" />
+<meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=380; initial-scale=0.9; maximum-scale=1.0; user-scalable=0;">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>

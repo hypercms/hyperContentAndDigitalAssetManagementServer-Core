@@ -1621,6 +1621,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   
   // enable search log by default if not set
   if (!isset ($mgmt_config['search_log'])) $mgmt_config['search_log'] = true;
+  
+  // define default search query syntax "like" or "match"
+  if (!isset ($mgmt_config['search_query_match'])) $mgmt_config['search_query_match'] = "match";
 
   // set object_type if the search is image or video related
   if (!is_array ($object_type) && (!empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype)))
@@ -2032,15 +2035,19 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   $synonym_expression = trim ($synonym_expression);
                   $synonym_expression = html_decode ($synonym_expression, convert_dbcharset ($mgmt_config['dbcharset']));
                   
-                  // transform wild card characters for search
-                  $synonym_expression = str_replace ("%", '\%', $synonym_expression);
-                  $synonym_expression = str_replace ("_", '\_', $synonym_expression);          
-                  $synonym_expression = str_replace ("*", "%", $synonym_expression);
-                  $synonym_expression = str_replace ("?", "_", $synonym_expression);
-                  if (substr_count ($synonym_expression, "\"") < 2) $synonym_expression_2 = str_replace (" ", "%", $synonym_expression);
+                  // deprecated since version 7.0.8 due to migration to MATCH AGAINST
+                  if ($mgmt_config['search_query_match'] == "like")
+                  {
+                    // transform wild card characters for search
+                    $synonym_expression = str_replace ("%", '\%', $synonym_expression);
+                    $synonym_expression = str_replace ("_", '\_', $synonym_expression);          
+                    $synonym_expression = str_replace ("*", "%", $synonym_expression);
+                    $synonym_expression = str_replace ("?", "_", $synonym_expression);
+                    if (substr_count ($synonym_expression, "\"") < 2) $synonym_expression_2 = str_replace (" ", "%", $synonym_expression);
                   
-                  // remove double quotes
-                  $synonym_expression = str_replace ("\"", "", $synonym_expression);
+                    // remove double quotes
+                    $synonym_expression = str_replace ("\"", "", $synonym_expression);
+                  }
                   
                   $synonym_expression = $db->escape_string ($synonym_expression);
                   if (!empty ($synonym_expression_2)) $synonym_expression_2 = $db->escape_string ($synonym_expression_2);
@@ -2056,8 +2063,24 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   // look for expression in content
                   else
                   {
-                    if (!empty ($synonym_expression_2)) $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression.'%" OR tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression_2.'%"))';
-                    else $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression.'%")';
+                    // search for path in textcontent
+                    if (strpos ("_".$synonym_expression, "/") > 0) $mgmt_config['search_query_match'] = "like";
+                    else $mgmt_config['search_query_match'] = "match";
+                    
+                    // deprecated since version 7.0.8 due to migration to MATCH AGAINST
+                    if ($mgmt_config['search_query_match'] == "like")
+                    {
+                      if (!empty ($synonym_expression_2)) $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression.'%" OR tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression_2.'%"))';
+                      else $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression.'%")';
+                    }
+                    else
+                    {
+                      if (preg_match('/["*()@~<>+-]/', $synonym_expression)) $boolean_mode = " IN BOOLEAN MODE";
+                      else $boolean_mode = "";
+                      
+                      if (!empty ($synonym_expression_2)) $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.') OR MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression_2.'"'.$boolean_mode.'))';
+                      else $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.'))';
+                    }
                   }
  
                   $r++;
@@ -2106,15 +2129,19 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                     {
                       $synonym_expression = html_decode ($synonym_expression, convert_dbcharset ($mgmt_config['dbcharset']));
                     
-                      // transform wild card characters for search
-                      $synonym_expression = str_replace ("%", '\%', $synonym_expression);
-                      $synonym_expression = str_replace ("_", '\_', $synonym_expression);        
-                      $synonym_expression = str_replace ("*", "%", $synonym_expression);
-                      $synonym_expression = str_replace ("?", "_", $synonym_expression);
-                      if (substr_count ($synonym_expression, "\"") < 2) $synonym_expression_2 = str_replace (" ", "%", $synonym_expression);
+                      // deprecated since version 7.0.8 due to migration to MATCH AGAINST
+                      if ($mgmt_config['search_query_match'] == "like")
+                      {
+                        // transform wild card characters for search
+                        $synonym_expression = str_replace ("%", '\%', $synonym_expression);
+                        $synonym_expression = str_replace ("_", '\_', $synonym_expression);        
+                        $synonym_expression = str_replace ("*", "%", $synonym_expression);
+                        $synonym_expression = str_replace ("?", "_", $synonym_expression);
+                        if (substr_count ($synonym_expression, "\"") < 2) $synonym_expression_2 = str_replace (" ", "%", $synonym_expression);
                       
-                      // remove double quotes
-                      $synonym_expression = str_replace ("\"", "", $synonym_expression);
+                        // remove double quotes
+                        $synonym_expression = str_replace ("\"", "", $synonym_expression);
+                      }
     
                       $synonym_expression = $db->escape_string ($synonym_expression);
                       if (!empty ($synonym_expression_2)) $synonym_expression_2 = $db->escape_string ($synonym_expression_2);
@@ -2133,8 +2160,24 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                       // look for expression in content
                       else
                       {
-                        if (!empty ($synonym_expression_2)) $sql_where_textnodes .= '(tng.textcontent LIKE _utf8"%'.$synonym_expression.'%" OR tng.textcontent LIKE _utf8"%'.$synonym_expression_2.'%")';
-                        else $sql_where_textnodes .= 'tng.textcontent LIKE _utf8"%'.$synonym_expression.'%"';
+                        // search for path in textcontent
+                        if (strpos ("_".$synonym_expression, "/") > 0) $mgmt_config['search_query_match'] = "like";
+                        else $mgmt_config['search_query_match'] = "match";
+                    
+                        // deprecated since version 7.0.8 due to migration to MATCH AGAINST
+                        if ($mgmt_config['search_query_match'] == "like")
+                        {
+                          if (!empty ($synonym_expression_2)) $sql_where_textnodes .= '(tng.textcontent LIKE _utf8"%'.$synonym_expression.'%" OR tng.textcontent LIKE _utf8"%'.$synonym_expression_2.'%")';
+                          else $sql_where_textnodes .= 'tng.textcontent LIKE _utf8"%'.$synonym_expression.'%"';
+                        }
+                        else
+                        {
+                          if (preg_match('/["*()@~<>+-]/', $synonym_expression)) $boolean_mode = " IN BOOLEAN MODE";
+                          else $boolean_mode = "";
+                      
+                          if (!empty ($synonym_expression_2)) $sql_where_textnodes .= '(MATCH (tng.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.') OR MATCH (tng.textcontent) AGAINST ("%'.$synonym_expression_2.'%"'.$boolean_mode.'))';
+                          else $sql_where_textnodes .= 'MATCH (tng.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.')';
+                        }
                       }
                       
                       $r++;
@@ -2423,7 +2466,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     // build SQL statement
     $sql = 'SELECT DISTINCT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr .' FROM object AS obj ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
-    $sql .= 'WHERE deleteuser="" ';
+    $sql .= 'WHERE obj.deleteuser="" ';
     if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
     // removed "order by" due to poor DB performance and moved to array sort
     // $sql .= ' ORDER BY SUBSTRING_INDEX(obj.objectpath,"/",-1)';
@@ -2460,7 +2503,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     {
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj';
       if (is_array ($sql_table)) $sql .= ' '.implode (" ", $sql_table);
-      $sql .= ' WHERE deleteuser="" ';
+      $sql .= ' WHERE obj.deleteuser="" ';
       if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' AND '.implode (' AND ', $sql_where);
       
       $errcode = "50081";
@@ -2592,7 +2635,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     
     $sql = 'SELECT obj.objectpath, obj.hash, cnt.id, cnt.container, tn1.text_id, tn1.textcontent FROM object AS obj INNER JOIN container AS cnt ON cnt.id=obj.id INNER JOIN textnodes AS tn1 ON tn1.id=cnt.id';
     if (is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (" ", $sql_table);
-    $sql .= ' WHERE deleteuser="" AND obj.id=cnt.id AND cnt.id=tn1.id AND';    
+    $sql .= ' WHERE obj.deleteuser="" AND obj.id=cnt.id AND cnt.id=tn1.id AND';    
     if (is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' '.implode (" AND ", $sql_where);
 
     $errcode = "50063";
@@ -4057,12 +4100,14 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only=0, $us
 {
   global $mgmt_config;
 
-  if ($action != "" && $object != "" && is_date ($date, "Y-m-d H:i") && $user != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0))
+  if ($action != "" && $object != "" && is_date ($date, "Y-m-d H:i") && $user != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0 || $object > 0))
   {
     // correct object name 
     if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
  
-    $object_id = rdbms_getobject_id ($object);
+    // get object ID
+    if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) $object_id = rdbms_getobject_id ($object);
+    else $object_id = $object;
     
     if ($object_id != false)
     {
@@ -4103,9 +4148,9 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
-    // check object (can be valid path or ID)
+    // check object (can be valid path or mail ID)
     if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) $object_id = rdbms_getobject_id ($object);
-    elseif (is_numeric ($object)) $object_id = $object; 
+    elseif (is_numeric ($object)) $object_id = intval ($object); 
     elseif ($object != "") return false;  
     
     // clean input
@@ -4116,17 +4161,17 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
     if (!empty ($object_id)) $object_id = $db->escape_string ($object_id);
 
     // get recipients
-    $sql = 'SELECT que.queue_id, que.action, que.date, que.published_only, que.user, obj.objectpath FROM queue AS que, object AS obj WHERE obj.object_id=que.object_id';
+    $sql = 'SELECT que.queue_id, que.action, que.date, que.published_only, que.user, que.object_id, obj.objectpath FROM queue AS que LEFT JOIN object AS obj ON obj.object_id=que.object_id WHERE 1=1';
     if (!empty ($action)) $sql .= ' AND que.action="'.$action.'"';
     if (!empty ($site)) $sql .= ' AND (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
     if (!empty ($date)) $sql .= ' AND que.date<="'.$date.'"'; 
     if (!empty ($user)) $sql .= ' AND que.user="'.$user.'"';
     if (!empty ($object_id)) $sql .= ' AND que.object_id="'.$object_id.'"';
     $sql .= ' ORDER BY que.date';
-  
+
     $errcode = "50034";
     $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
-    
+
     $queue = array();
           
     if ($done)
@@ -4138,6 +4183,7 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
       {
         $queue[$i]['queue_id'] = $row['queue_id'];
         $queue[$i]['action'] = $row['action'];
+        $queue[$i]['object_id'] = $row['object_id'];
         $queue[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
         $queue[$i]['date'] = $row['date'];
         $queue[$i]['published_only'] = $row['published_only'];
@@ -4162,20 +4208,38 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
 function rdbms_deletequeueentry ($queue_id)
 {
   global $mgmt_config;
-  
+
   if ($queue_id != "")
   {   
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
     // clean input
-    $queue_id = $db->escape_string ($queue_id);
+    $queue_id = intval ($queue_id);
     
+    // query
+    $sql = 'SELECT action, object_id, user FROM queue WHERE queue_id='.$queue_id;
+    
+    $errcode = "50035";
+    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    
+    if ($done)
+    {
+      $row = $db->getResultRow ("select");
+      
+      // remove queue file
+      if ($row['action'] == "mail") 
+      {
+        $mailfile = $row['object_id'].".".$row['user'].".mail.php";
+        deletefile ($mgmt_config['abs_path_data']."queue/", $mailfile, 0);
+      }
+    }
+
     // query
     $sql = 'DELETE FROM queue WHERE queue_id='.$queue_id;
      
-    $errcode = "50035";
+    $errcode = "50036";
     $db->query ($sql, $errcode, $mgmt_config['today']);
-    
+
     // save log
     savelog ($db->getError ());
 

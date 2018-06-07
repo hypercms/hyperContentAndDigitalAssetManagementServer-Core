@@ -182,8 +182,8 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // read multimedia file (publication/file) and submit data
 if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || !$mgmt_config[$site]['dam'])) || $media_approved))
 {
-  // check IP access
-  if ($user == "" && !allowuserip ($site))
+  // check IP and public access
+  if ($user == "" && (!allowuserip ($site) || !mediapublicaccess ($media)))
   {
     header ('HTTP/1.0 403 Forbidden', true, 403);
     exit;

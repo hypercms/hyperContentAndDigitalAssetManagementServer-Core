@@ -24,7 +24,7 @@ else $mgmt_plugin = array();
   
 // input parameters
 $action = getrequest ("action");
-$active = getrequest ("active");
+$active = getrequest ("active", "array");
 
 // ------------------------------ permission section --------------------------------
 
@@ -45,12 +45,7 @@ if ($action)
     case "reparse":
       $mgmt_plugin = plugin_parse ($mgmt_plugin);
       plugin_saveconfig ($mgmt_plugin);
-      
-      // reload plugin config
-      if (is_file($mgmt_config['abs_path_data'].'config/plugin.conf.php'))
-      {
-        require ($mgmt_config['abs_path_data'].'config/plugin.conf.php');
-      }
+      avoidfilecollision ("temp", true);
       break;
       
     case "change":
@@ -58,16 +53,12 @@ if ($action)
 
       foreach ($mgmt_plugin as $key => &$data)
       {
-        $data['active'] = (is_array ($active) && array_key_exists ($key, $active) && $active[$key] == 1); 
+        $data['active'] = (is_array ($active) && array_key_exists ($key, $active) && $active[$key] == "1"); 
       }
-      
+
       plugin_saveconfig ($mgmt_plugin);
-      
-      // reload plugin config
-      if (is_file ($mgmt_config['abs_path_data'].'config/plugin.conf.php'))
-      {
-        require ($mgmt_config['abs_path_data'].'config/plugin.conf.php');
-      }
+      avoidfilecollision ("temp", true);
+
       break;
       
     default:
@@ -107,7 +98,9 @@ if ($action)
   <!-- content -->
   <div style="width:100%; height:calc(100% - 42px); overflow:auto;">
     <div class="hcmsWorkplaceFrame">
-    <form action="?action=change" method="POST" name="editplugins">
+    <form action="" method="POST" name="editplugins">
+      <input type="hidden" name="action" value="change" />
+      
       <table cellspacing="2" cellpadding="2" border="0" width="95%">
         <tbody>
           <tr>
@@ -123,18 +116,18 @@ if ($action)
         
         if (is_array ($mgmt_plugin) && sizeof ($mgmt_plugin) > 0)
         {
-          foreach ($mgmt_plugin as $key => $data)
+          foreach ($mgmt_plugin as $temp_name => $temp_array)
           {
             $cnt++;
           ?>
           <tr class="hcmsRowData<?php echo ($cnt%2)+1; ?>">
             <td nowrap="nowrap"><?php echo $cnt; ?></td>
-            <td><?php echo $data['name']; ?></td>
-            <td><?php echo $data['author']; ?></td>
-            <td nowrap="nowrap"><?php echo $data['version']; ?></td>
-            <td><?php echo $data['description']; ?></td>
+            <td><?php echo $temp_array['name']; ?></td>
+            <td><?php echo $temp_array['author']; ?></td>
+            <td nowrap="nowrap"><?php echo $temp_array['version']; ?></td>
+            <td><?php echo $temp_array['description']; ?></td>
             <td align="center" valign="middle">
-              <input type="checkbox" name="active[<?php echo $key; ?>]" value="1" <?php if ($data['active'] == true) echo "checked=\"checked\""; ?>/>
+              <input type="checkbox" name="active[<?php echo $temp_name; ?>]" value="1" <?php if (!empty ($temp_array['active'])) echo "checked=\"checked\""; ?>/>
             </td>
           </tr>
         <?php

@@ -14,7 +14,7 @@
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center center; 
-  background-color: #B2CDFA;
+  background-color: #ABC7F1;
   font-size: 18px;
   text-align: left;
   padding: 0;
@@ -24,16 +24,9 @@
 .hcmsLogonScreen
 {
   width: 260px;
-  background-color: #D5E6FF;
-  border: 1px solid #FFFFFF;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  box-shadow: 3px 3px 12px #000000;
-  -webkit-box-shadow: 3px 3px 12px #000000;
-  -moz-box-shadow: 3px 3px 12px #000000;
   margin: auto;
-  padding: 20px 20px 20px 20px; 
+  padding: 20px;
+  font-size: 14px;
   text-align: left; 
 }
 
@@ -667,8 +660,14 @@
   color: #FFFFFF; 
 }
 
+.hcmsTextShadow
+{
+  text-shadow: 0px 0px 2px #000000;
+}
+
 .hcmsRequiredInput
 {
+  border: 1px solid red;
   color: red;
 }
 
@@ -686,8 +685,8 @@
 
 input, select, textarea, button
 {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 15px;
+  font-family: inherit;
+  font-size: inherit;
   font-weight: normal;
   color: #000000;
   text-decoration: none;
@@ -701,8 +700,8 @@ input, select, textarea, button
 
 a 
 {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 15px;
+  font-family: inherit;
+  font-size: inherit;
   font-weight: bold;
   text-decoration: none;
   color: #000000;

@@ -11,10 +11,10 @@
 
 // ---------------------- getserverload -----------------------------
 // function: getserverload()
-// input: %
-// output: Returns the average system load (the number of processes in the system run queue) over the last minute and the number of CPU cores as array
+// input: intervall for average system load can be 1, 5 or 15 minutes [0,1,2] (optional)
+// output: Returns the average system load (the number of processes in the system run queue) over the last minute, the number of CPU cores, and the memory usage as array
 
-function getserverload ()
+function getserverload ($interval=0)
 {
   $cpu_num = 2;
   $load_total = 0;
@@ -63,20 +63,47 @@ function getserverload ()
       
       $load = round ($load_total / $cpu_num);
     }
+    
+    // server total memory
+    exec ('wmic memorychip get capacity', $totalmem);
+    array_sum ($totalmem);
+    
+    // server memory usage
+    $output = array();
+    exec ('tasklist /FI "PID eq '.getmypid().'" /FO LIST', $output);
+    $usedmem = preg_replace ( '/[^0-9]/', '', $output[5]);
+    
+    $memory_usage = $usedmem / $totalmem;
   }
   // for UNIX
   elseif (function_exists ('sys_getloadavg'))
   {
-    $sys_load = sys_getloadavg ();
-    $load = $sys_load[0];
-    
+    // server CPU cores
     exec ("cat /proc/cpuinfo | grep processor | wc -l", $processors);
     $cpu_num = $processors[0];
+    
+    // server load
+    $sys_load = sys_getloadavg ();
+    $load = $sys_load[$interval];
+    
+    // 
+    if ($cpu_num > 0) $load = $load / $cpu_num;
+    
+    // server memory usage
+    exec ('free', $free_array);
+    //$free = trim (imlpode ("\n", $free));
+    //$free_arr = explode ("\n", $free);
+    $mem = explode (" ", $free_array[1]);
+    $mem = array_filter ($mem);
+    $mem = array_merge ($mem);
+    if (!empty ($mem[1])) $memory_usage = $mem[2] / $mem[1];
+    else $memory_usage = 0;
   }
  
   $result = array();
   $result['load'] = $load;
   $result['cpu'] = $cpu_num;
+  $result['memory'] = $memory_usage;
   
   return $result;
 }
@@ -1916,8 +1943,8 @@ function getlocationname ($site, $location, $cat, $source="path")
   
   if (valid_locationname ($location))
   {
-    // load config is not available
-    if (valid_publicationname ($site) && (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    // publication management config
+    if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
@@ -2751,7 +2778,7 @@ function gettemplateversions ($site, $template)
 //    $result['icon']: file name of the file icon
 //    $result['type']: file type
 //    $result['ext']: file extension incl. dot in lower case
-//    $result['published']: if file is published = true else = false
+//    $result['published']: if page or component is published (true) or not (false), true in all other cases
 //    $result['deleted']: if file is deleted = true else = false
 
 function getfileinfo ($site, $file, $cat="comp")
@@ -2820,6 +2847,16 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_published = false;
           $file_deleted = false;
         }
+        // mail files 
+        elseif ($file_ext == ".mail")
+        {
+          $file_name = "Message";
+          // get file name without extensions
+          $file_nameonly = "Message";
+          
+          $file_published = false;
+          $file_deleted = false;
+        }
         // objects in recycle bin 
         elseif ($file_ext == ".recycle")
         {
@@ -2855,8 +2892,14 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_deleted = false;
         }
         
+        // E-mail
+        if ($file_ext == ".mail")
+        {
+          $file_icon = "button_user_sendlink.png";
+          $file_type = "E-mail";
+        }
         // MS Word
-        if ($file_ext == ".doc" || $file_ext == ".docx" || $file_ext == ".docm" || $file_ext == ".dot" || $file_ext == ".dotx")
+        elseif ($file_ext == ".doc" || $file_ext == ".docx" || $file_ext == ".docm" || $file_ext == ".dot" || $file_ext == ".dotx")
         {
           $file_icon = "file_doc.png";
           $file_type = "MS Word";

@@ -494,7 +494,8 @@ $mgmt_config['contentversions_all'] = false;
 
 // Public Download
 // Allow access to download and wrapper links without logon session (true) or not (false)
-// This setting must be enabled if users want to provide wrapper or download links to the public
+// This setting must be enabled if users want to provide wrapper or download links to the public.
+// Otherwise the object need to be published in order to provide public access.
 $mgmt_config['publicdownload'] = true;
 
 // FTP Upload
@@ -509,10 +510,24 @@ $mgmt_config['docviewer'] = true;
 // Enable synonyms (true) or not (false)
 $mgmt_config['search_synonym'] = true;
 
+// Operator for text based search queries
+// Only AND or OR are allowed as possible values or leave empty for default setting
+$mgmt_config['search_operator'] = "";
+
+// Use "like" or "match" syntax for full-text search queries
+// "match" has performance advantages if not wildcard-character is used
+$mgmt_config['search_query_match'] = "match";
+
+// Maximum number of search results
+$mgmt_config['search_max_results'] = 300;
+
 // Strong Passwords
 // Enable (true) or disable (false) strong passwords for users
 // If enabled, passwords will be checked regarding minimum security requirements
 $mgmt_config['strongpassword'] = true;
+
+// Enable (true) or disable (false) password reset on logon screen
+$mgmt_config['resetpassword'] = true;
 
 // Encryption
 // Encryption strength (weak, standard, strong)
@@ -770,10 +785,6 @@ $mgmt_config['dbcharset'] = "utf8";
 // RDBMS Log
 // Log queries and their executing time in logs/sql.log
 $mgmt_config['rdbms_log'] = false;
-
-// Operator for text based search queries
-// Only AND or OR are allowed as possible values or leave empty for default setting
-$mgmt_config['search_operator'] = "";
 
 // --------------------------------- SMTP Mail System Configuration -----------------------------------
 

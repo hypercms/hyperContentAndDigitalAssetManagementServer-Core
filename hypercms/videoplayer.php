@@ -68,7 +68,7 @@ if ($user != "")
   checkusersession ($user, false);
 }
 // check ip access if public access (no user available)
-elseif (allowuserip ($site) == false)
+elseif (!allowuserip ($site) || !mediapublicaccess ($media))
 {
   echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
   exit;

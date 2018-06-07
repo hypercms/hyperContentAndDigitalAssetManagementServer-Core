@@ -455,7 +455,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td width="100" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?> </td>
       <td>
-        <input type="text" name="login" style="width:150px;" maxlength="60" value="<?php echo $login; ?>" tabindex="1" />
+        <input type="text" name="login" style="width:150px;" maxlength="60" value="<?php if ($action == "create") echo $login; ?>" tabindex="1" />
       </td>
     </tr>
     <tr>

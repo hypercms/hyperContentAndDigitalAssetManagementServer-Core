@@ -28,6 +28,7 @@ $token = getrequest ("token");
 // get publication and category
 $site = getpublication ($location);
 $cat = getcategory ($site, $location);
+if (empty ($cat)) $cat = "comp";
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -111,7 +112,6 @@ $token_new = createtoken ($user);
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
-<!--
 function warning_delete()
 {
   check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue'][$lang]); ?>"));
@@ -158,7 +158,6 @@ function jumpTo (target)
   
   eval (target + ".location='queue_objectlist.php?site=" + site + "&queueuser=" + queueuser + "'");
 }
-//-->
 </script>
 </head>
 
@@ -177,7 +176,7 @@ function jumpTo (target)
       <td>
         <b>
         <?php 
-        if ($page != "") 
+        if ($page != "" || $multiobject != "") 
         {
           // define object category name and check directory and component access rights of user
           if ($filetype == "Page")
@@ -199,10 +198,10 @@ function jumpTo (target)
         }
         ?>&nbsp;</b>
         <span class="hcmsHeadlineTiny">
-        <?php 
-        if ($page != "") 
+        <?php
+        if ($page != "" || $multiobject != "") 
         {
-          if ($multiobject)
+          if ($multiobject != "")
           {
             $multiobject_count = sizeof (link_db_getobject ($multiobject));
           }
@@ -245,6 +244,7 @@ function jumpTo (target)
     ?>
     <?php
     // QUEUE EDIT BUTTON
+    // object
     if ($multiobject_count <= 1 && $page != "" && 
       ((empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || (empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1))
     )
@@ -253,7 +253,15 @@ function jumpTo (target)
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
              "onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" ".
              "name=\"media_edit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />\n";
-    }    
+    }
+    // mail
+    elseif ($multiobject_count <= 1 && $page != "" && !empty ($mgmt_config['db_connect_rdbms']))
+    {
+      echo "<img ".
+             "class=\"hcmsButton hcmsButtonSizeSquare\" ".
+             "onClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($page)."&token=".$token_new."', '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);\" ".
+             "name=\"media_edit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />\n";
+    }  
     else
     {
       echo "<img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";

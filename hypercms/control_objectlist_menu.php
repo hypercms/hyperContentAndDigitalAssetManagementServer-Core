@@ -1142,7 +1142,7 @@ else
         <div id=\"select_obj_convert\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:40px; visibility:hidden; z-index:999; width:180px; max-height:70px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
         
       // original file
-      if (empty ($downloadformats) || (!is_document ($media_info['ext']) && !is_image ($media_info['ext'])) || (is_document ($media_info['ext']) && !empty ($downloadformats['document']['original'])) || (is_image ($media_info['ext']) && !empty ($downloadformats['image']['original'])))
+      if (empty ($downloadformats) || (!is_document ($media_info['ext']) && !is_image ($media_info['ext']) && !is_video ($media_info['ext'])) || (is_document ($media_info['ext']) && !empty ($downloadformats['document']['original'])) || (is_image ($media_info['ext']) && !empty ($downloadformats['image']['original'])) || (is_video ($media_info['ext']) && !empty ($downloadformats['video']['original'])))
       {
         // function imgConvert must be used in order to reset the rendering options
         echo "
@@ -1193,11 +1193,16 @@ else
       }
       
       // video download options
-      if ($vid_rendering)
+      if ($vid_rendering && is_video ($media))
       {
-        echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('jpg'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['images'][$lang])." (JPG)&nbsp;</div>
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['images'][$lang])." (PNG)&nbsp;</div>\n";
+        if (empty ($downloadformats) || !empty ($downloadformats['video']['origthumb'])) echo "
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('origthumb'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['preview'][$lang])."&nbsp;</div>";
+          
+        if (empty ($downloadformats) || !empty ($downloadformats['video']['jpg'])) echo "
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('jpg'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['images'][$lang])." (JPG)&nbsp;</div>";
+          
+        if (empty ($downloadformats) || !empty ($downloadformats['video']['png'])) echo "
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['images'][$lang])." (PNG)&nbsp;</div>";
       }
 			
 			//save to dropbox
@@ -1315,10 +1320,10 @@ else
   <div class="hcmsToolbarBlock">       
     <?php    
     // SendMail Button
-    if ($container_id > 0 && $from_page != "recyclebin" && $page != "" && $mgmt_config[$site]['sendmail'] && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && $mgmt_config['db_connect_rdbms'] != "")
+    if ($container_id > 0 && $from_page != "recyclebin" && $page != "" && !empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && !empty ($mgmt_config['db_connect_rdbms']))
     {
       echo "
-    <img onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'scrollbars=yes,resizable=no', 600, 780);\" ".
+    <img onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'scrollbars=yes,resizable=no', 600, 800);\" ".
       "class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" ".
       "src=\"".getthemelocation()."img/button_user_sendlink.png\" ".
       "alt=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" title=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" />";

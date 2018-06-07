@@ -28,7 +28,7 @@ checkusersession ($user, false);
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="theme-color" content="#464646" />
+<meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=1024, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
@@ -193,9 +193,8 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
         <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
           <input type="hidden" name="action" value="base_search" />
           <input type="hidden" name="search_dir" value="" />
-          <input type="hidden" name="maxhits" value="300" />
           <input type="text" name="search_expression" id="search_expression" style="position:fixed; top:3px; right:40px; width:200px; height:20px; padding:2px;" maxlength="200" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="" />
-          <img src="<?php echo getthemelocation(); ?>img/button_search.png" style="cursor:pointer; position:fixed; top:5px; right:40px; width:22px; height:22px;" onClick="submitForm();" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+          <img src="<?php echo getthemelocation(); ?>img/button_search.png" style="cursor:pointer; position:fixed; top:5px; right:42px; width:22px; height:22px;" onClick="submitForm();" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
         </form>
       <?php } ?>
       <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>

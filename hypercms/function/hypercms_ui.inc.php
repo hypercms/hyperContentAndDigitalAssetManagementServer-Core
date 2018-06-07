@@ -377,7 +377,7 @@ function showinfopage ($show, $lang="en", $onload="")
   </head>  
   <body class=\"hcmsWorkplaceGeneric\" onload=\"".$onload."\">
     <div style=\"padding:20px;\">
-      <img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" align=\"absmiddle\" /><span class=\"hcmsHeadline\">Info</span><br \>
+      <img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" align=\"absmiddle\" /> <span class=\"hcmsHeadline\">Info</span><br \>
       <div style=\"display:block; padding:0px 0px 0px 32px;\">".$show."</div>
     </div>
   </body>
@@ -620,7 +620,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 {
   // $mgmt_imageoptions is used for image rendering (in case the format requires the rename of the object file extension)	 
   global $site, $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docpreview, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
-         $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions, $is_mobile, $is_iphone;
+         $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $downloadformats, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions, $is_mobile, $is_iphone;
 
   // Path to PDF.JS
   $pdfjs_path = $mgmt_config['url_path_cms']."javascript/pdfpreview/web/viewer.html?file=";
@@ -746,8 +746,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $width_orig = $media_info['width'];
         $height_orig = $media_info['height'];
       }
-      // get media file information from media file
-      elseif (is_file ($media_root.$mediafile))
+      
+      // get media file information from media file (fallback)
+      if (empty ($mediafilesize) && is_file ($media_root.$mediafile))
       {
         $mediafiletime = date ("Y-m-d H:i", filemtime ($thumb_root.$mediafile));
         
@@ -1141,45 +1142,75 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     // set annotation buttons
     function setAnnoationButtons ()
     {
-      document.getElementById('annotationStop').src = '".getthemelocation()."img/button_file_lock.png';
-      document.getElementById('annotationStop').title = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationStop').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationStop'))
+      {
+        document.getElementById('annotationStop').src = '".getthemelocation()."img/button_file_lock.png';
+        document.getElementById('annotationStop').title = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationStop').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationRectangle').src = '".getthemelocation()."img/button_rectangle.png';
-      document.getElementById('annotationRectangle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationRectangle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationRectangle'))
+      {
+        document.getElementById('annotationRectangle').src = '".getthemelocation()."img/button_rectangle.png';
+        document.getElementById('annotationRectangle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationRectangle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationCircle').src = '".getthemelocation()."img/button_circle.png';
-      document.getElementById('annotationCircle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationCircle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationCircle'))
+      {
+        document.getElementById('annotationCircle').src = '".getthemelocation()."img/button_circle.png';
+        document.getElementById('annotationCircle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationCircle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationText').src = '".getthemelocation()."img/button_textu.png';
-      document.getElementById('annotationText').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationText').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationText'))
+      {
+        document.getElementById('annotationText').src = '".getthemelocation()."img/button_textu.png';
+        document.getElementById('annotationText').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationText').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationArrow').src = '".getthemelocation()."img/button_arrow.png';
-      document.getElementById('annotationArrow').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationArrow').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationArrow'))
+      {
+        document.getElementById('annotationArrow').src = '".getthemelocation()."img/button_arrow.png';
+        document.getElementById('annotationArrow').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationArrow').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationPen').src = '".getthemelocation()."img/button_pen.png';
-      document.getElementById('annotationPen').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationPen').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationPen'))
+      {
+        document.getElementById('annotationPen').src = '".getthemelocation()."img/button_pen.png';
+        document.getElementById('annotationPen').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationPen').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationDownload').src = '".getthemelocation()."img/button_file_download.png';
-      document.getElementById('annotationDownload').title = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationDownload').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationDownload'))
+      {
+        document.getElementById('annotationDownload').src = '".getthemelocation()."img/button_file_download.png';
+        document.getElementById('annotationDownload').title = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationDownload').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationUndo').src = '".getthemelocation()."img/button_history_back.png';
-      document.getElementById('annotationUndo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationUndo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationUndo'))
+      {
+        document.getElementById('annotationUndo').src = '".getthemelocation()."img/button_history_back.png';
+        document.getElementById('annotationUndo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationUndo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationRedo').src = '".getthemelocation()."img/button_history_forward.png';
-      document.getElementById('annotationRedo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationRedo'))
+      {
+        document.getElementById('annotationRedo').src = '".getthemelocation()."img/button_history_forward.png';
+        document.getElementById('annotationRedo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_info.png';
-      document.getElementById('annotationHelp').title = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationHelp').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationHelp'))
+      {
+        document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_info.png';
+        document.getElementById('annotationHelp').title = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationHelp').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
+      }
     }
 
     // annotation paging
@@ -1435,11 +1466,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <div id=\"annotation\" style=\"position:relative;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, 'annotation');\" onmousedown=\"$('.hcmsFace').hide(); $('.hcmsFaceName').hide();\" onmouseup=\"$('.hcmsFace').show(); $('.hcmsFaceName').show();\"" : "")." class=\"".$class."\"></div>
               </div>";
             }
-            // image without annotations
+            // image with makers only (no annotations) 
             else
             {
               $mediaview .= "
-              <div style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, '".$id."');\"" : "")."><img src=\"".createviewlink ($site, $mediafile, $medianame, true)."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></div>";
+              <div id=\"annotation\" style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, '".$id."');\"" : "")."><img src=\"".createviewlink ($site, $mediafile, $medianame, true)."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></div>";
             }
             
             $mediaview .= "
@@ -1536,48 +1567,78 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     // set annotation buttons
     function setAnnoationButtons ()
     {
-      document.getElementById('annotationStop').src = '".getthemelocation()."img/button_file_lock.png';
-      document.getElementById('annotationStop').title = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationStop').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationStop'))
+      {
+        document.getElementById('annotationStop').src = '".getthemelocation()."img/button_file_lock.png';
+        document.getElementById('annotationStop').title = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationStop').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationRectangle').src = '".getthemelocation()."img/button_rectangle.png';
-      document.getElementById('annotationRectangle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationRectangle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationRectangle'))
+      {
+        document.getElementById('annotationRectangle').src = '".getthemelocation()."img/button_rectangle.png';
+        document.getElementById('annotationRectangle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationRectangle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationCircle').src = '".getthemelocation()."img/button_circle.png';
-      document.getElementById('annotationCircle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationCircle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationCircle'))
+      {
+        document.getElementById('annotationCircle').src = '".getthemelocation()."img/button_circle.png';
+        document.getElementById('annotationCircle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationCircle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationText').src = '".getthemelocation()."img/button_textu.png';
-      document.getElementById('annotationText').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationText').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationText'))
+      {
+        document.getElementById('annotationText').src = '".getthemelocation()."img/button_textu.png';
+        document.getElementById('annotationText').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationText').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationArrow').src = '".getthemelocation()."img/button_arrow.png';
-      document.getElementById('annotationArrow').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationArrow').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationArrow'))
+      {
+        document.getElementById('annotationArrow').src = '".getthemelocation()."img/button_arrow.png';
+        document.getElementById('annotationArrow').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationArrow').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationPen').src = '".getthemelocation()."img/button_pen.png';
-      document.getElementById('annotationPen').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationPen').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationPen'))
+      {
+        document.getElementById('annotationPen').src = '".getthemelocation()."img/button_pen.png';
+        document.getElementById('annotationPen').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationPen').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationDownload').src = '".getthemelocation()."img/button_file_download.png';
-      document.getElementById('annotationDownload').title = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationDownload').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationDownload'))
+      {
+        document.getElementById('annotationDownload').src = '".getthemelocation()."img/button_file_download.png';
+        document.getElementById('annotationDownload').title = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationDownload').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationUndo').src = '".getthemelocation()."img/button_history_back.png';
-      document.getElementById('annotationUndo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationUndo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationUndo'))
+      {
+        document.getElementById('annotationUndo').src = '".getthemelocation()."img/button_history_back.png';
+        document.getElementById('annotationUndo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationUndo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationRedo').src = '".getthemelocation()."img/button_history_forward.png';
-      document.getElementById('annotationRedo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationRedo'))
+      {
+        document.getElementById('annotationRedo').src = '".getthemelocation()."img/button_history_forward.png';
+        document.getElementById('annotationRedo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
+      }
       
-      document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_info.png';
-      document.getElementById('annotationHelp').title = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
-      document.getElementById('annotationHelp').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
+      if (document.getElementById('annotationHelp'))
+      {
+        document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_info.png';
+        document.getElementById('annotationHelp').title = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('annotationHelp').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
+      }
       
       // display zoom feature (disabled)
-      // document.getElementById('zoomlayer').style.display='inline';
+      document.getElementById('zoomlayer').style.display='inline';
     }
     
 		$(document).ready(function(){
@@ -2253,7 +2314,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $download_link = "top.location.href='".createviewlink ($site, $mediafile_orig, $medianame, false, "download")."'; return false;";
          
           // download button
-          if ($viewtype == "preview" || $viewtype == "preview_download") 
+          if (($viewtype == "preview" || $viewtype == "preview_download") && (empty ($downloadformats) || !empty ($downloadformats['video']['original'])))
           {
             $downloads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;">
@@ -2261,7 +2322,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               </td>';
             
             // Youtube upload
-            if (!empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
+            if (!empty ($mgmt_config['youtube_oauth2_client_id']) && !empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
             {		
               $youtube_uploads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;"> 
@@ -2354,7 +2415,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   $download_link = "top.location.href='".createviewlink ($site, $video_thumbfile, $video_filename, false, "download")."'; return false;";
                  
                   // download button
-                  if ($viewtype == "preview" || $viewtype == "preview_download")
+                  if (($viewtype == "preview" || $viewtype == "preview_download") && (empty ($downloadformats) || !empty ($downloadformats['video']['original'])))
                   {
                     $downloads[$media_extension] = '
                       <td class="hcmsHeadlineTiny" style="text-align:left;">
@@ -2362,7 +2423,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                       </td>'; 
                     
                     // Youtube upload
-                    if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
+                    if (!empty ($mgmt_config['youtube_oauth2_client_id']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
                     {	
                       $youtube_uploads[$media_extension] = '
                       <td class="hcmsHeadlineTiny" style="text-align:left;"> 
@@ -5034,6 +5095,118 @@ function showmapping ($site, $lang="en")
   }
   
   if (!empty ($content)) return $content;
+  else return false;
+}
+
+// ------------------------- showgallery -----------------------------
+// function: showgallery()
+// input: multiobjects represented by their path or object ID [array], thumbnail size in pixels [integer] (optional), open object on click [true,false] (optional), user name [string] (optional)
+// output: gallery view / false
+
+// description:
+// Presents all objects in a gallery with their thumbnails.
+
+function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys")
+{
+  global $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
+
+  if (is_array ($multiobject) && $thumbsize > 0 && valid_objectname ($user))
+  {
+    $count = 0;
+    $galleryview = "";
+    
+    // create secure token
+    $token = createtoken ($user);
+    
+    // run through each object
+    foreach ($multiobject as $object) 
+    {
+      $object = trim ($object);
+    
+      // convert ID to path
+      if (is_numeric ($object)) $object = rdbms_getobject ($object);
+
+      // ignore empty entries     
+      if (empty ($object)) continue;
+
+      $count++;
+      
+      $site = getpublication ($object);
+      $location_esc = getlocation ($object);
+      $location = deconvertpath ($location_esc, "file");
+      $cat = getcategory ($site, $object);
+      $page = getobject ($object);
+
+      $objectinfo = getobjectinfo ($site, $location, $page);
+      
+      if (!empty ($openlink))
+      {
+        // check access permissions
+        $ownergroup = accesspermission ($site, $location, $cat);
+        $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
+        if ($setlocalpermission['root'] == 1)
+        {
+          // open on double click
+          $openobject = "onclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
+        }
+      }
+      else $openobject = "";
+      
+      // media asset
+      if (!empty ($objectinfo['media']))
+      {
+        $mediafile = $objectinfo['media'];
+        $mediainfo = getfileinfo ($site, $mediafile, "comp");
+        $thumbnail = $mediainfo['filename'].".thumb.jpg";
+        $mediadir = getmedialocation ($site, $objectinfo['media'], "abs_path_media").$site."/";
+        
+        // thumbnails preview
+        if (is_file ($mediadir.$thumbnail))
+        {
+          $imgsize = getimagesize ($mediadir.$thumbnail);
+          
+          // calculate image ratio to define CSS for image container div-tag
+          if (is_array ($imgsize))
+          {
+        		$imgwidth = $imgsize[0];
+        		$imgheight = $imgsize[1];
+            $imgratio = $imgwidth / $imgheight;   
+            
+            // image width >= height
+            if ($imgratio >= 1) $ratio = "width:".$thumbsize."px;";
+            // image width < height
+            else $ratio = "height:".$thumbsize."px;";
+          }
+          // default value
+          else
+          {
+            $ratio = "width:".$thumbsize."px;";
+          }
+          
+          // if thumbnail is smaller than defined thumbnail size
+          if ($imgwidth < $thumbsize && $imgheight < $thumbsize) $style_size = "";
+          else $style_size = $ratio;
+          
+          $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$objectinfo['name']."\" title=\"".$objectinfo['name']."\" /></div>";;
+        }
+        // no thumbnail available
+        else
+        {                 
+           $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$mediainfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$objectinfo['name']."\" /></div>";
+        }
+      }
+      // object or folder
+      else
+      {
+        $fileinfo = getfileinfo ($site, $location_esc.$page, $cat);
+        
+        $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$objectinfo['name']."\" /></div>";
+      }
+    }
+    
+    return $galleryview;
+  }
   else return false;
 }
 ?>

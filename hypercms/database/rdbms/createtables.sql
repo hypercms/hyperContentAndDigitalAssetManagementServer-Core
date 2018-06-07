@@ -96,10 +96,12 @@ CREATE TABLE `task` (
 DROP TABLE IF EXISTS `taxonomy`;
 
 CREATE TABLE `taxonomy` (
+  `taxonomykey_id` int(11) NOT NULL auto_increment,
   `id` int(11) NOT NULL,
   `text_id` char(120) NOT NULL default '',
   `taxonomy_id` int(11) NOT NULL default '0',
   `lang` char(6) NOT NULL default '',
+  PRIMARY KEY  (`taxonomykey_id`),
   KEY `taxonomy` (`id`,`taxonomy_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -122,12 +124,14 @@ CREATE TABLE `keywords_container` (
 DROP TABLE IF EXISTS `textnodes`;
 
 CREATE TABLE `textnodes` (
+  `textnodes_id` int(11) NOT NULL auto_increment,
   `id` int(11) NOT NULL default '0',
   `text_id` char(120) NOT NULL default '',
   `textcontent` text,
   `object_id` int(11) DEFAULT NULL,
   `type` char(6) NOT NULL default '',
   `user` char(60) DEFAULT NULL,
+  PRIMARY KEY  (`textnodes_id`),
   KEY `textnodes_id` (`id`),
   KEY `textnodes_text_id` (`text_id`),
   KEY `textnodes_object_id` (`object_id`),

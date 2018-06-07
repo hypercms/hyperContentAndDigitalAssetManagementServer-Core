@@ -77,7 +77,7 @@ $location_name = getlocationname ($site, $dir_esc, "page", "path");
 <title>Page Browser</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="theme-color" content="#464646" />
+<meta name="theme-color" content="#000000" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="../javascript/click.js" type="text/javascript"></script>
 <script src="../javascript/main.js" type="text/javascript"></script>

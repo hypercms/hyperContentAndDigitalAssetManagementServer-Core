@@ -344,7 +344,6 @@ $(document).ready(function()
   <div id="searchtab_general" style="position:absolute; width:520px; height:580px; z-index:1; left:8px; top:22px; visibility:visible;"> 
     <form name="searchform_general" method="post" action="search_objectlist.php">
       <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
-      <input type="hidden" name="maxhits" value="300" />
       <?php if ($cat == "page") { ?><input type="hidden" name="search_format[]" value="page" /><?php } ?>
        
       <table cellpadding="3" style="width:100%; border:1px solid #000000; border-collapse:collapse; border-spacing:0;">
@@ -442,7 +441,6 @@ $(document).ready(function()
   <div id="searchtab_advanced" style="position:absolute; width:520px; height:580px; z-index:1; left:8px; top:22px; visibility:hidden;"> 
     <form name="searchform_advanced" method="post" action="search_objectlist.php">
       <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
-      <input type="hidden" name="maxhits" value="300" />
       <?php if ($cat == "page") { ?><input type="hidden" name="search_format[]" value="page" /><?php } ?>
   
       <table cellpadding="3" style="width:100%; border:1px solid #000000; border-collapse:collapse; border-spacing:0;">
@@ -691,7 +689,6 @@ $(document).ready(function()
   <div id="searchtab_images" style="position:absolute; width:520px; height:580px; z-index:1; left:8px; top:22px; visibility:hidden;"> 
     <form name="searchform_images" method="post" action="search_objectlist.php">
       <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
-      <input type="hidden" name="maxhits" value="300" />
   
       <table cellpadding="3" style="width:100%; border:1px solid #000000; border-collapse:collapse; border-spacing:0;">
         <tr align="left" valign="middle" class="hcmsWorkplaceExplorer">

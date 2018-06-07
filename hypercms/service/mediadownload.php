@@ -69,15 +69,21 @@ if ($dl != "" && !empty ($mgmt_config['db_connect_rdbms']))
 
       if (is_document ($objectpath_esc))
       {
-        // get first element in document array   
+        // get first element in array   
         $type = getfirstkey ($hcms_objformats['document']);
         $media_config = "";
       }
       elseif (is_image ($objectpath_esc))
       {
-        // get first element in document array    
+        // get first element in array    
         $type = getfirstkey ($hcms_objformats['image']);
         $media_config = getfirstkey ($hcms_objformats['image'][$type]);
+      }
+      elseif (is_video ($objectpath_esc))
+      {
+        // get first element in array    
+        $type = getfirstkey ($hcms_objformats['video']);
+        $media_config = "";
       }
     }
   }
@@ -243,7 +249,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || !$mgmt_config[$site]['dam'])) || $media_approved == true))
 {
   // check ip access if public access
-  if ($user == "" && !allowuserip ($site))
+  if ($user == "" && (!allowuserip ($site) || !mediapublicaccess ($media)))
   {
     header ('HTTP/1.0 403 Forbidden', true, 403);
     echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
@@ -271,8 +277,21 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
 
   if ($media_root != "")
   {
+    // provide thumbnail video file
+    if (!empty ($type) && strtolower ($type) == "origthumb")
+    {
+      $media_info = getfileinfo ($site, getobject ($media), "comp");
+      $media_new = $site."/".$media_info['filename'].".orig.mp4";
+      
+      // check media file
+      if ($media_new != "" && is_file ($media_root.$media_new))
+      {
+        $media = $media_new;
+        $media_info_new = getfileinfo ($site, getobject ($media_new), "comp");
+      } 
+    }
     // convert file if requested
-    if ($type != "" && strtolower ($type) != "original")
+    elseif (!empty ($type) && strtolower ($type) != "original")
     {
       // target path for the temporary file
       $media_target = $mgmt_config['abs_path_temp'];

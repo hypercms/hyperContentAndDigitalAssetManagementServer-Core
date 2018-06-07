@@ -1115,14 +1115,14 @@ function toggle_options (caller, element)
     caller.addClass('hcmsButtonMenuActive');
     document.forms['mediaconfig'].crop.checked = true;
     activate();
-    options.fadeIn(time);
+    options.slideDown(time);
     window.scrollTo(0,0);
   }
   else
   {
     caller.removeClass('hcmsButtonMenuActive');
     destroyJcrop();
-    options.fadeOut(time);
+    options.slideUp(time);
   }
 }
 

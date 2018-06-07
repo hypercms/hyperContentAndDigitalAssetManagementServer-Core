@@ -628,7 +628,8 @@ function hcms_createContextmenuItem (action)
     
     if (action == "edit")
     {
-      hcms_openWindow('frameset_content.php?site=' + site + '&ctrlreload=yes&cat=' + cat + '&location=' + location + '&page=' + page + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 800, 1000);
+      if (site != "" && location != "") hcms_openWindow('frameset_content.php?site=' + site + '&ctrlreload=yes&cat=' + cat + '&location=' + location + '&page=' + page + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 800, 1000);
+      else if (page != "") hcms_openWindow('user_sendlink.php?mailfile=' + page + '&cat=' + cat + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);
     }
     else if (action == "delete")
     {
@@ -640,6 +641,31 @@ function hcms_createContextmenuItem (action)
         document.forms['contextmenu_queue'].attributes['target'].value = "controlFrame";
         document.forms['contextmenu_queue'].elements['action'].value = action;
         document.forms['contextmenu_queue'].submit();
+        allow_tr_submit = false;
+      }
+    }
+  }
+  else if (eval (document.forms['contextmenu_message']))
+  {
+    var messageuser = document.forms['contextmenu_message'].elements['messageuser'].value;
+    var message_id = document.forms['contextmenu_message'].elements['message_id'].value;
+    var multiobject = document.forms['contextmenu_message'].elements['multiobject'].value;
+    var token = document.forms['contextmenu_message'].elements['token'].value;
+    
+    if (action == "edit")
+    {
+      hcms_openWindow('user_sendlink.php?mailfile=' + message_id + '&cat=comp&messageuser=' + messageuser + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);
+    }
+    else if (action == "delete")
+    {
+      check = confirm_delete ();
+    
+      if (check == true)
+      {
+        document.forms['contextmenu_message'].attributes['action'].value = "control_message_menu.php";
+        document.forms['contextmenu_message'].attributes['target'].value = "controlFrame";
+        document.forms['contextmenu_message'].elements['action'].value = action;
+        document.forms['contextmenu_message'].submit();
         allow_tr_submit = false;
       }
     }
@@ -753,6 +779,26 @@ function hcms_setQueuecontext(site, cat, location, page, pagename, filetype, que
   return true;
 }
 
+function hcms_setMessagecontext(messageuser, message_id, token)
+{
+  if (eval (document.forms['contextmenu_message']) && hcms_isLockedContext() == false)
+  {
+    // hide and reset context menu
+    hcms_hideContextmenu();
+  
+    var contextmenu_form = document.forms['contextmenu_message'];
+    
+    // set values   
+    contextmenu_form.elements['xpos'].value = tempX;
+    contextmenu_form.elements['ypos'].value = tempY;
+    contextmenu_form.elements['messageuser'].value = messageuser;   
+    contextmenu_form.elements['message_id'].value = message_id;
+    contextmenu_form.elements['token'].value = token;
+  }
+  
+  return true;
+}
+
 // replace string
 function hcms_replace (string, text, by) 
 {
@@ -784,8 +830,7 @@ function hcms_selectObject (row_id, event)
   var contextmenu_form = false;
   
   // extract number from td ID
-  if (row_id != ''
-  )
+  if (row_id != '')
   {
     // for tr and td in list view
     row_id = row_id.replace ('g', '');
@@ -808,6 +853,10 @@ function hcms_selectObject (row_id, event)
   else if (document.forms['contextmenu_queue'])
   {
     contextmenu_form = document.forms['contextmenu_queue'];
+  }
+  else if (document.forms['contextmenu_message'])
+  {
+    contextmenu_form = document.forms['contextmenu_message'];
   }
   
   // no contextmenu to use
@@ -998,6 +1047,23 @@ function hcms_updateControlQueueMenu()
   }
 }
 
+// update control message menu
+function hcms_updateControlMessageMenu()
+{
+  document.forms['contextmenu_message'].attributes['action'].value = 'control_message_menu.php';
+  document.forms['contextmenu_message'].attributes['target'].value = 'controlFrame';
+  document.forms['contextmenu_message'].elements['action'].value = '';
+   
+  if (allow_tr_submit)
+  {
+    document.forms['contextmenu_message'].submit();
+  }
+  else
+  {
+    allow_tr_submit = true;
+  }
+}
+
 // unselect all objects
 function hcms_unselectAll()
 {
@@ -1037,6 +1103,11 @@ function hcms_unselectAll()
   {
     document.forms['contextmenu_queue'].elements['multiobject'].value = '';
     hcms_updateControlQueueMenu();
+  }
+  else if (document.forms['contextmenu_message'] && document.forms['contextmenu_message'].elements['multiobject'].value)
+  {
+    document.forms['contextmenu_message'].elements['multiobject'].value = '';
+    hcms_updateControlMessageMenu();
   }
   
   return true; 
@@ -1102,6 +1173,11 @@ function hcms_leftClick(e)
   {
     object = document.forms['contextmenu_queue'].elements['page'].value;
     multiobject = document.forms['contextmenu_queue'].elements['multiobject'].value;
+  }
+  else if (eval (document.forms['contextmenu_message']))
+  {
+    object = document.forms['contextmenu_message'].elements['message_id'].value;
+    multiobject = document.forms['contextmenu_message'].elements['multiobject'].value;
   }
   
   // count objects stored in multiobject
@@ -1367,6 +1443,7 @@ function hcms_endSelectArea()
         if (document.forms['contextmenu_object']) setTimeout (hcms_updateControlObjectListMenu, 300);
         else if (document.forms['contextmenu_user']) setTimeout (hcms_updateControlUserMenu, 300);
         else if (document.forms['contextmenu_queue']) setTimeout (hcms_updateControlQueueMenu, 300);
+        else if (document.forms['contextmenu_message']) setTimeout (hcms_updateControlMessageMenu, 300);
       }
     }
   }

@@ -295,11 +295,11 @@ function accessgeneral ($site, $location, $cat)
 
   if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
   {
-    // load config if not available
-    if ((empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    // publication management config
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-    }     
+    } 
    
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location);     
@@ -385,8 +385,8 @@ function accesspermission ($site, $location, $cat)
 
   if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
   {
-    // load config if not available
-    if ((empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    // publication management config
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     } 
@@ -448,7 +448,7 @@ function accesspermission ($site, $location, $cat)
           // access locations
           foreach ($value_array as $value)
           {
-            if (@substr_count ($location, $value) >= 1)
+            if (@substr_count ($location, $value) > 0)
             {
               $points[$i] = strlen ($value);
               $groups[$i] = $group;
@@ -474,7 +474,7 @@ function accesspermission ($site, $location, $cat)
           // access locations
           foreach ($value_array as $value)
           {
-            if (@substr_count ($location, $value) >= 1)
+            if (@substr_count ($location, $value) > 0)
             {
               $points[$i] = strlen ($value);
               $groups[$i] = $group;
@@ -892,17 +892,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     if ($userdata != false)
     {
       // updates
-      update_tasks_v584 ();
-      update_database_v586 ();
-      update_database_v601 ();
-      update_database_v614 ();
-      update_database_v6113 ();
-      update_container_v6118 ();
-      update_database_v6139 ();
-      update_database_v625 ();
-      $update = update_database_v705 ($mgmt_config['abs_path_comp'], true);
-      if ($update) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.5|updated to version 7.0.5"), "update");
-      update_users_706 ();
+      updates_all ();
     
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 
@@ -1058,7 +1048,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                     $excludefolders = $mgmt_config[$site_name]['exclude_folders'];
                   }
                   
-                  if (substr_count ($excludefolders, ";") >= 1)
+                  if (substr_count ($excludefolders, ";") > 0)
                   {
                     $result['hiddenfolder'][$site_name] = explode (";", $excludefolders);
                   }
@@ -1074,10 +1064,11 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                 }
               }
                
-              $result['siteaccess'][] = $site_name;
-              $result['pageaccess'][$site_name][$group_name_admin] = deconvertpath ("%page%/".$site_name."/|", "file");
-              $result['compaccess'][$site_name][$group_name_admin] = deconvertpath ("%comp%/".$site_name."/|", "file");
-  
+              // access permissions to publications and folders
+              $result['siteaccess'][] = $site_name;              
+              $result['compaccess'][$site_name][$group_name_admin] = deconvertpath ("%comp%/".$site_name."/|", "file");              
+              if (empty ($mgmt_config[$site_name]['dam'])) $result['pageaccess'][$site_name][$group_name_admin] = deconvertpath ("%page%/".$site_name."/|", "file");
+
               // deseralize the permission string and define root, global and local permissions
               $permission_str[$site_name][$group_name_admin] = $permission_str_admin;
 
@@ -1140,7 +1131,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                     $excludefolders = $mgmt_config[$site_name]['exclude_folders'];
                   }
                   
-                  if (substr_count ($excludefolders, ";") >= 1)
+                  if (substr_count ($excludefolders, ";") > 0)
                   {
                     $result['hiddenfolder'][$site_name] = explode (";", $excludefolders);
                   }
@@ -1194,7 +1185,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                         }
 
                         // page accsess
-                        if ($userpageaccess != false && strlen ($userpageaccess[0]) >= 1)
+                        if ($userpageaccess != false && strlen ($userpageaccess[0]) > 0)
                         {
                           // versions before 5.6.3 used folder path instead of object id
                           if (substr_count ($userpageaccess[0], "/") == 0)
@@ -1225,7 +1216,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                         }
                         
                         // component access
-                        if ($usercompaccess != false && strlen ($usercompaccess[0]) >= 1)
+                        if ($usercompaccess != false && strlen ($usercompaccess[0]) > 0)
                         {
                           // versions before 5.6.3 used folder path instead of object id
                           if (substr_count ($usercompaccess[0], "/") == 0)
@@ -1323,7 +1314,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $checkresult = true;
       }
 
-      if (!$result['keyserver'])
+      if (empty ($result['keyserver']) && (is_dir ($mgmt_config['abs_path_cms']."connector") || is_dir ($mgmt_config['abs_path_cms']."project") || is_dir ($mgmt_config['abs_path_cms']."report") || is_dir ($mgmt_config['abs_path_cms']."task") || is_dir ($mgmt_config['abs_path_cms']."webdav") || is_dir ($mgmt_config['abs_path_cms']."workflow")))
       {
         $mailer = new HyperMailer();
         $mailer->AddAddress ("info@hypercms.net");
@@ -2142,7 +2133,7 @@ function allowuserip ($site)
   global $mgmt_config;
   
   // publication management config
-  if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['allow_ip'])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['allow_ip'])) require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
   // check ip access
   if (valid_publicationname ($site) && isset ($mgmt_config[$site]['allow_ip']) && $mgmt_config[$site]['allow_ip'] != "")
@@ -3142,6 +3133,31 @@ function createuniquetoken ($length=16)
   if ($length > 0 && $length <= 32)
   {
     $characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+    $string = "";
+    
+    for ($i = 0; $i < $length; $i++)
+    {
+      $string .= substr ($characters, rand_secure(0, strlen($characters) - 1), 1);
+    }
+    
+    if ($string != "") return $string;
+    else return false;
+  }
+  else return false;
+}
+
+// ---------------------- createpassword -----------------------------
+// function: createpassword()
+// input: password length [integer] (optional)
+// output: password as string / false
+
+function createpassword ($length=10)
+{
+  global $mgmt_config;
+  
+  if ($length > 0 && $length <= 16)
+  {
+    $characters = "ABCDEFGHIJKLMNMOPQRSTUVWZYZabcdefghijklmnopqrstuvwxyz0123456789";
     $string = "";
     
     for ($i = 0; $i < $length; $i++)

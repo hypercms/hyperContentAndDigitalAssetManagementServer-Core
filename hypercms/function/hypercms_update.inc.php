@@ -807,7 +807,7 @@ function update_database_v625 ()
   else return false;
 }
 
-// ------------------------------------------ update_database_v625 ----------------------------------------------
+// ------------------------------------------ update_database_v705 ----------------------------------------------
 // function: update_database_v705()
 // input: path to component directory [string], alter table [true,false]
 // output: true / false
@@ -915,5 +915,73 @@ function update_users_706 ()
     else return false;
   }
   else return false;
+}
+
+// ------------------------------------------ update_database_v708 ----------------------------------------------
+// function: update_database_v708()
+// input: %
+// output: true / false
+
+// description: 
+// Adds primary keys to table taxonomy and textnodes for support of version 7.0.8
+
+function update_database_v708 ()
+{
+  global $mgmt_config;
+  
+  $logdata = loadlog ("update", "string");
+  
+  if (empty ($logdata) || strpos ($logdata, "|7.0.8|") < 1)
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    // alter table
+    $sql = "ALTER TABLE textnodes ADD COLUMN textnodes_id INT NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (textnodes_id);";
+    $errcode = "50085";
+    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    // alter table
+    $sql = "ALTER TABLE taxonomy ADD COLUMN taxonomykey_id INT NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (taxonomykey_id);";
+    $errcode = "50085";
+    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->getError ());
+    savelog (@$error);
+    $db->close();
+    
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.8|updated to version 7.0.8"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ updates_all ----------------------------------------------
+// function: updates_all()
+// input: %
+// output: true / false
+
+// description: 
+// Calls all update functions
+
+function updates_all ()
+{
+  global $mgmt_config;
+  
+  update_tasks_v584 ();
+  update_database_v586 ();
+  update_database_v601 ();
+  update_database_v614 ();
+  update_database_v6113 ();
+  update_container_v6118 ();
+  update_database_v6139 ();
+  update_database_v625 ();
+  $update = update_database_v705 ($mgmt_config['abs_path_comp'], true);
+  if ($update) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.5|updated to version 7.0.5"), "update");
+  update_users_706 ();
+  update_database_v708();
 }
 ?>

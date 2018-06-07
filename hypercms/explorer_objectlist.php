@@ -265,8 +265,8 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
             }
           }
           
-          // link for copy & paste of download links
-          if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1)
+          // link for copy & paste of download links (not if an access link is used)
+          if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
           {
             $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$folder."/.folder\" data-href=\"\">";
             $dlink_end = "</a>";
@@ -498,8 +498,8 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             if (!empty ($mgmt_config['explorer_list_metadata']) && !$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
             else $metadata = "";
             
-            // link for copy & paste of download links
-            if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1)
+            // link for copy & paste of download links (not if an access link is used)
+            if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
             {
               $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$object."\" data-href=\"\">";
               $dlink_end = "</a>";
@@ -521,8 +521,8 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             if ($file_size == 0) $file_size = 1;
             $file_size = number_format ($file_size, 0, "", ".");
 
-            // link for copy & paste of download links
-            if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1)
+            // link for copy & paste of download links (not if an access link is used)
+            if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
             {
               $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-location=\"".$location_esc.$object."\" data-href=\"\">";
               $dlink_end = "</a>";

@@ -46,6 +46,10 @@ $search_execute = getrequest ("search_execute");
 
 $cat = "";
 
+// set default value
+if (empty ($maxhits) && !empty ($mgmt_config['search_max_results'])) $maxhits = $mgmt_config['search_max_results'];
+else $maxhits = 300;
+
 // extract publication and template name
 if (substr_count ($template, "/") == 1) list ($site, $template) = explode ("/", $template);
 
@@ -319,11 +323,13 @@ elseif ($action == "base_search" || $search_dir != "")
         foreach ($value as $group_name => $pathes)
         {
           // split access-string into an array
-          $pathes = substr ($pathes, 0, strlen ($pathes)-1);
-          $path_array = explode ("|", $pathes);
+          $path_array = link_db_getobject ($pathes);
           
           foreach ($path_array as $path)
           {
+            // add slash if missing
+            if (substr ($path, -1) != "/") $path = $path."/";
+
             // check access permission
             if (!empty ($localpermission[$site_name][$group_name]['page'])) $search_dir_esc[] = convertpath ($site_name, $path, "page");
             else $exclude_dir_esc[] = convertpath ($site_name, $path, "page");
@@ -337,11 +343,13 @@ elseif ($action == "base_search" || $search_dir != "")
         foreach ($value as $group_name => $pathes)
         {
           // split access-string into an array
-          $pathes = substr ($pathes, 0, strlen ($pathes)-1);
-          $path_array = explode ("|", $pathes);
+          $path_array = link_db_getobject ($pathes);
           
           foreach ($path_array as $path)
           {
+            // add slash if missing
+            if (substr ($path, -1) != "/") $path = $path."/";
+
             // check access permission
             if (!empty ($localpermission[$site_name][$group_name]['component'])) $search_dir_esc[] = convertpath ($site_name, $path, "comp");
             else $exclude_dir_esc[] = convertpath ($site_name, $path, "comp");
@@ -483,8 +491,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 }
               }
               
-              // link for copy & paste of download links
-              if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1)
+              // link for copy & paste of download links (not if an access link is used)
+              if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
               {
                 $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$folder."/.folder\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
                 $dlink_end = "</a>";
@@ -559,11 +567,11 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   {
                     if ($key == 'createdate')
                     {
-                      $title = $file_created;
+                      $title = date ("Y-m-d H:i", strtotime ($file_created));
                     }
                     elseif ($key == 'modifieddate')
                     {
-                      $title = $file_modified;
+                      $title = date ("Y-m-d H:i", strtotime ($file_modified));
                     }
                     elseif ($key == 'filesize')
                     {
@@ -705,8 +713,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 // get metadata for media file
                 if (!empty ($mgmt_config['explorer_list_metadata']) && !$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
                 
-                // link for copy & paste of download links
-                if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1)
+                // link for copy & paste of download links (not if an access link is used)
+                if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
                 {
                   $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
                   $dlink_end = "</a>";
@@ -728,8 +736,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 // get file time
                 $file_modified = date ("Y-m-d H:i", @filemtime ($location.$object));
                 
-                // link for copy & paste of download links
-                if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1)
+                // link for copy & paste of download links (not if an access link is used)
+                if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
                 {
                   $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-location=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?wl=".$hash."\">";
                   $dlink_end = "</a>";
@@ -798,11 +806,11 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     
                     if ($key == 'createdate')
                     {
-                      $title = $file_created;
+                      $title = date ("Y-m-d H:i", strtotime ($file_created));
                     }
                     elseif ($key == 'modifieddate')
                     {
-                      $title = $file_modified;
+                      $title = date ("Y-m-d H:i", strtotime ($file_modified));
                     }
                     elseif ($key == 'filesize')
                     {

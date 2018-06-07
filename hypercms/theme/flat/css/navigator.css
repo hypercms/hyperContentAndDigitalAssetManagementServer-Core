@@ -357,7 +357,7 @@ img
 
 input, select, textarea 
 {
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: inherit; 
   font-size: 12px; 
   font-weight: normal;
   color: #000000;
@@ -371,7 +371,7 @@ input, select, textarea
 
 a 
 {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-family: inherit;
   font-size: 11px;
   line-height: 16px !important;
   font-style: normal;

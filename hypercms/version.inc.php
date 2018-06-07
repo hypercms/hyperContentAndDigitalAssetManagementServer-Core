@@ -2706,7 +2706,7 @@ Release 05/2017
 - Implementation of new favorites contextmenu action in order to add new favorites without opening the object in explorer_objectlist and search_objectlist
 - Minor improvements in function createmedia in Media API
 - Implementation of new function splitmedia in Media API in order to split audio and video files in segments
-- Modifiation of FFMPEG EQ filter options in function createmedia in Media API due to changes of the filter names in FFMPEG
+- Modification of FFMPEG EQ filter options in function createmedia in Media API due to changes of the filter names in FFMPEG
 - Design modifications in the installation form
 - Bug fix: popup_ftp did not assign CSS class to file icons 
 - Bug fix: popup_ftp did not perform a proper FTP logout
@@ -2721,9 +2721,92 @@ Release 05/2017
 - Bug fix: The user_edit window size was not set correctly in function createuser in Main API
 - Bug fix: Function HTTP_Post did use \n instead of \r\n for HTTP headers
 - Bug fix: Function createthumbnail_video in Media API did not delete the old destination file
-- bug fix: Function createfavorite in Main API did verify unasissgned variable $cat 
+- Bug fix: Function createfavorite in Main API did verify unasissgned variable $cat
+
+Version 7.0.8
+Release 06/2017
+- Implementation of PhotoSwipe JS library into the system
+- Implementation of PhotoSwipe template for the automatic creation of responsive image galleries (code snippet)
+- Modification of field types in user_sendlink
+- Implementation of new checkbox and date selector for mail delivery in user_sendlink
+- Implementation of new queue directory in internal repository in order to support queue documents
+- Implementation of date and time triggered e-mail notifications
+- Modifications in function rdbms_createqueueentry and rdbms_getqueueentries in DB Connect in order to support numeric objects (IDs) as input
+- Modifications in control_content_menu and control_objectlist_menu in order to resize new mail window (user_sendlink)
+- Modifications in queue_objectlist in order to support the new mail queue entries
+- Modifications in daily job in order to support mail queue entries
+- Modifications in function processobjects in Main API in order to support the processing of mail queue entries
+- Modifications in control_queue_menu in order to support mail queue entries
+- Modifications in function rdbms_deletequeueentry in DB Connect in order to remove queue files
+- Modifications in function getfileinfo in Get API in order to support mail files
+- Implementation of new function createqueueentry in Main API
+- Modifications in JS function hcms_createContextmenuItem in contextmenu.js
+- Implementation of new service sendmail for sending mail messages and links
+- Updates in Installation Guide
+- Implementation of video download formats in user_sendlink and download actions in control_content_menu and control_objectlist_menu
+- Implementation of support for original thumbnail video download (preview video) in service mediadownload
+- Implementation of new function sendresetpassword in Main API
+- Implementation of new function createpassword in Security API
+- Modifications in function sendmessage in Main API in order to support empty from_user
+- Modifications in userlogin in order to support the password reset
+- Modifications in function showmedia in UI API in order to support download formats of access links
+- Modifications in explorer_objectlist and search_objectlist in order to disable download links if access link has been used to access the system
+- Implementation of new main configuration setting $mgmt_config['resetpassword'] to enable and disable the password reset
+- Implementation of new function showgallery in UI API
+- Implementation of object thumbnail view in user_sendlink
+- Modifications in CSS class hcmsRequiredInput of all themes
+- Implementation of message directory in internal repository
+- Implementation of new function savemessage in Main API
+- Modifications in function edituser in Main API in order to support *Leave* values to keep existing user values 
+- Design modifications in the logon form
+- Design modifications in image_rendering and media_rendering
+- Change of browser bar color to black of the Mobile Edition
+- Modifications in function createpublication in Main API to look for forbidden publication names due to main configuration key names
+- Modifications in all APIs in order to verify the include of the publication management configuration file based on new parameters
+- Minor improvements in DB Connect
+- Minor design modifications in task_list
+- Implementation of project ownership verification in project_list
+- Minor design modifications in project_list
+- Modifications in Security API in order to exlude pageaccess for DAM publications for special user accounts
+- Implementation of new template variable %phpmailer% in template engine
+- Implementation of views, download and upload counter of each asset in the template engine
+- Implementation of "view" as new activity for dailystats
+- Implementation of "view" for statistics in function downloadfile in Main API
+- Design modifications in explorer
+- Modifications in function rdbms_searchcontent in DB Connect in order to support MATCH AGAINST with automatic BOOLEAN MODE on full text index alternatively to LIKE (new config setting $mgmt_config['search_query_match'])
+- Implementation of new main configuration settings for search queries ($mgmt_config['search_query_match'] and $mgmt_config['search_max_results'])
+- Modifications in explorer, frameset_main, search_form, and search_objectlist in order to support the new main configuration setting $mgmt_config['search_query_match']
+- Modifications in plugin_management, search statistics plugin, and simlpe statistics plugin
+- Implementation of new function update_database_v708 in Update API
+- Implementation of new function updates_all in Update API
+- Modifications in function userlogin in Security API in order to call update_all instead of individual updates
+- Modifications in createtables.sql
+- Modifications in function rewrite_targetURI in Main API in order to use "like" search query mode
+- Modifications in function getserverload in Get API in order to support memory usage and new input parameter for interval
+- Imlpementation of getserverload in minutely job in order to log server performance
+- Implementation of new server performance home box
+- Implementation of the new zoom feature with automatic resizing of annotation elements for images 
+- Removed pen annotation support for MS IE and Edge
+- Modifications in function unpublishobject in Main API in order to support execute of template code and saving the unpublish date and time in the container
+- Modifications in template engine in order to support "unpublish" as buildview parameter (execute code for the unpublishing of objects)
+- Updates in all language files
+- Modifications in function deletecontent and delteicontent in XML API
+- Implementation of new function mediapublicaccess in Main API
+- Implementation of function mediapublicaccess in mediadownload, and mediawrapper services
+- Implementation of function mediapublicaccess in videoplayer
+- Bug fix: Download options of video have been applied for audio files as well in control_content_menu and control_objectlist_menu
+- Bug fix: Function createmedia in Media API did not set the path to the source file for RAW images
+- Bug fix: Wrong JS function call has been used for setSaveType in single components form view
+- Bug fix: Dates provided by the search results have not been formatted
+- Bug fix: task_list used wrong JS function name to openthe edit window
+- Bug fix: userlogin did not save logon credentials (remember me) in browser
+- Bug fix: Function showmedia in UI API did not provide media properties if the database did not provide them (fallback to file system information)
+- Bug fix: Function deletereport in Report API used wrong language variable key for success message
+- Bug fix: queue_objectlist did kill user session for DAM publications if a valid publication name has been provided
+- Bug fix: Fixed issue with annotation toolbar action selector in MS IE
+- Bug fix: Annotations library has not been verified in template engine (issue only related to Free Edition)
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.7";
+$mgmt_config['version'] = "Version 7.0.8";
 ?>

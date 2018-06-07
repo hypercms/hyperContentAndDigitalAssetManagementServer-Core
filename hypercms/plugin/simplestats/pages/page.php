@@ -47,8 +47,17 @@ checkusersession ($user, false);
 
 <body class="hcmsWorkplaceGeneric">
 
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" stlye="display:inline;"></div>
+
 <!-- top bar -->
-<?php echo showtopbar ($hcms_lang['simple-statistics'][$lang], $lang); ?>
+<?php
+echo showtopbar ($hcms_lang['simple-statistics'][$lang], $lang); 
+
+ob_flush();
+flush();
+ob_end_flush();
+?>
 
 <div class="hcmsWorkplaceFrame" style="padding:0; width:100%; height:100%; overflow:auto;">
 
@@ -112,7 +121,7 @@ checkusersession ($user, false);
       
       if ($show == "")
       {
-        $sql = "SELECT dailystat.id, object.objectpath, SUM(dailystat.count) count, SUM(media.filesize) filesize FROM dailystat, object, media WHERE dailystat.activity='download' AND dailystat.id=object.id AND dailystat.id=media.id GROUP BY dailystat.id ORDER BY count DESC LIMIT 0,20";
+        $sql = "SELECT dailystat.id, object.objectpath, SUM(dailystat.count) count, SUM(media.filesize) filesize FROM dailystat, object, media WHERE dailystat.activity='download' AND dailystat.id=object.id AND dailystat.id=media.id GROUP BY dailystat.id ORDER BY count DESC LIMIT 0,10";
       
         if ($result = $mysqli->query ($sql))
         { 
@@ -165,7 +174,7 @@ checkusersession ($user, false);
       
       if ($show == "")
       {
-        $sql = "SELECT dailystat.id, object.objectpath, SUM(dailystat.count) count, SUM(media.filesize) filesize FROM dailystat, object, media WHERE dailystat.activity='upload' AND dailystat.id=object.id AND dailystat.id=media.id GROUP BY dailystat.id ORDER BY count DESC LIMIT 0,20";
+        $sql = "SELECT dailystat.id, object.objectpath, SUM(dailystat.count) count, SUM(media.filesize) filesize FROM dailystat, object, media WHERE dailystat.activity='upload' AND dailystat.id=object.id AND dailystat.id=media.id GROUP BY dailystat.id ORDER BY count DESC LIMIT 0,10";
       
         if ($result = $mysqli->query ($sql))
         { 
@@ -199,6 +208,12 @@ checkusersession ($user, false);
   </div>
   
 </div>
+
+<!-- initalize -->
+<script>
+// load screen
+if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';
+</script>
 
 </body>
 </html>

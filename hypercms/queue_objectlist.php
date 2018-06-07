@@ -28,8 +28,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // check permissions
 if (
      ($queueuser != "" && !checkrootpermission ('desktop')) || 
-     ($queueuser == "" && !checkrootpermission ('site')) || 
-     (valid_publicationname ($site) && $mgmt_config[$site]['dam'] == true)
+     ($queueuser == "" && !checkrootpermission ('site'))
    ) killsession ($user);
 
 // check session of user
@@ -56,71 +55,114 @@ $items_row = 0;
 $queue_array = rdbms_getqueueentries ("", $site, "", $queueuser);
 
 // write object entries
-if (is_array ($queue_array) && @sizeof ($queue_array) >= 1)
+if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
 {
   $objects_total = sizeof ($queue_array); 
 
   foreach ($queue_array as $queue)
   {
-    if ($queue['queue_id'] != "" && $queue['action'] != "" && $queue['objectpath'] != "" && $queue['user'] != "" && $items_row < $next_max)
+    if ($queue['queue_id'] != "" && $queue['action'] != "" && ($queue['object_id'] > 0 || $queue['objectpath'] != "") && $queue['user'] != "" && $items_row < $next_max)
     {  
       $queue_id = $queue['queue_id'];
-      $action = $queue['action']; 
+      $action = $queue['action'];
       $queueuser = $queue['user'];
       $date = substr ($queue['date'], 0, -3);
 
-      $site = getpublication ($queue['objectpath']);
-
-      $location_esc = getlocation ($queue['objectpath']);
-      $cat = getcategory ($site, $location_esc);
-      $location = deconvertpath ($location_esc, "file");
-      $location_name = getlocationname ($site, $location_esc, $cat, "path");
-      
-      $object = getobject ($queue['objectpath']);
-      $object = correctfile ($location, $object, $user);
-      
-      // if objet exists based on correctfile
-      if (valid_locationname ($location) && valid_objectname ($object))
-      {              
-        $file_info = getfileinfo ($site, $location.$object, $cat);
+      // object
+      if ($queue['objectpath'] != "")
+      {
+        $site = getpublication ($queue['objectpath']);
+  
+        $location_esc = getlocation ($queue['objectpath']);
+        $cat = getcategory ($site, $location_esc);
+        $location = deconvertpath ($location_esc, "file");
+        $location_name = getlocationname ($site, $location_esc, $cat, "path");
         
-        // transformation for folders
-        if ($object == ".folder") 
-        {
-          $object_name = getobject ($location_name);
-          $location_name = getlocation ($location_name);
+        $object = getobject ($queue['objectpath']);
+        $object = correctfile ($location, $object, $user);
+        
+        // if objet exists based on correctfile
+        if (valid_locationname ($location) && valid_objectname ($object))
+        {              
+          $file_info = getfileinfo ($site, $location.$object, $cat);
+          
+          // transformation for folders
+          if ($object == ".folder") 
+          {
+            $object_name = getobject ($location_name);
+            $location_name = getlocation ($location_name);
+          }
+          else $object_name = $file_info['name'];
+  
+          // open on double click
+          $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
+          
+          // onclick for marking objects
+          $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlQueueMenu();\"";
+          
+          // set context
+          $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('".$site."', '".$cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$queueuser."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
+  
+          // listview - view option for un/published objects
+          if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+          else $class_image = "class=\"hcmsIconList\"";
+    
+          $listview .= "
+                <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
+                  <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
+                    <input id=\"queue_id\" type=\"hidden\" value=\"".$queue_id."\" />
+                    <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
+                        <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." align=\"absmiddle\" />&nbsp;
+                        <span title=\"".$object_name."\">".$object_name."</span>&nbsp;
+                    </div>
+                  </td>
+                  <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$site."\">&nbsp;&nbsp;".$site."</span></td>
+                  <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$location_name."\">&nbsp;&nbsp;".$location_name."</span></td>
+                  <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$date."</span></td>
+                  <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
+                  <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>
+                </tr>";
+      
+          $items_row++;  
         }
-        else $object_name = $file_info['name'];
-
+      }
+      // mail
+      elseif ($queue['object_id'] > 0)
+      {
+        $mailfile = $queue['object_id'].".".$queueuser.".mail";
+        $cat = "comp";
+        
+        $file_info = getfileinfo ("", $mailfile, $cat);
+        $object_name = $file_info['name'];
+        
         // open on double click
-        $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
+        $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', 600, 800);\"";
         
         // onclick for marking objects
         $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlQueueMenu();\"";
         
         // set context
-        $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('".$site."', '".$cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$queueuser."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
+        $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('', '".$cat."', '', '".$mailfile."', '".$object_name."', 'mail', '".$queueuser."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
-        // listview - view option for un/published objects
-        if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
-        else $class_image = "class=\"hcmsIconList\"";
-  
+        // listview
+        $class_image = "class=\"hcmsIconList\"";
+    
         $listview .= "
               <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
                 <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                   <input id=\"queue_id\" type=\"hidden\" value=\"".$queue_id."\" />
                   <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
                       <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." align=\"absmiddle\" />&nbsp;
-                      <span title=\"".$object_name."\">".$object_name."</span>&nbsp;
+                      <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>&nbsp;
                   </div>
                 </td>
-                <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$site."\">&nbsp;&nbsp;".$site."</span></td>
-                <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$location_name."\">&nbsp;&nbsp;".$location_name."</span></td>
+                <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"\">&nbsp;&nbsp;</span></td>
+                <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"\">&nbsp;&nbsp;</span></td>
                 <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$date."</span></td>
                 <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
                 <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>
               </tr>";
-    
+              
         $items_row++;  
       }
     }

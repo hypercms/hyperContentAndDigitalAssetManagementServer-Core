@@ -945,10 +945,10 @@ function errorhandler ($source_code, $return_code, $error_identifier)
 // function: viewinclusions()
 // input: view of object, hypertag to create view of inlcuded objects, view parameter, application, character set used (optional)
 //        view-parameter explanation:
-//        $view = "template or any other word" -> the standard text (in table) will be included for the view
-//        $view = "preview" -> preview of the content of the included file
-//        $view = "publish" -> view the content of the included file as ist is (for publishing)
-// output: view on the content including the content of included objects
+//        "template or any other word": the standard text (in table) will be included for the view
+//        "preview": preview of the content of the included file
+//        "publish": view the content of the included file as it is (for publishing)
+// output: view of the content including the content of included objects
 // requirements: $mgmt_config (set as global variables inside function)
 
 // generate view of included objects
@@ -1108,14 +1108,15 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
 //
 // description:
 // buildview parameter may have the following values:
-// $buildview = "formedit": use form for content editing
-// $buildview = "formmeta": use form for content viewing only for meta informations (tag-type must be meta)
-// $buildview = "formlock": use form for content viewing
-// $buildview = "cmsview": view of page based on template, includes hyperCMS specific code (buttons)
-// $buildview = "inlineview": view of page based on template, includes hyperCMS specific code (buttons) and inline text editing
-// $buildview = "publish": view of page for publishing based on template without CMS specific code (buttons)
-// $buildview = "preview": view of page based on template for preview (inactive hyperlinks) without CMS specific code (buttons)
-// $buildview = "template": view of template based on template for preview (inactive hyperlinks) without CMS specific code (buttons)
+// "formedit": use form for content editing
+// "formmeta": use form for content viewing only for meta informations (tag-type must be meta)
+// "formlock": use form for content viewing
+// "cmsview": view of page based on template, includes hyperCMS specific code (buttons)
+// "inlineview": view of page based on template, includes hyperCMS specific code (buttons) and inline text editing
+// "publish": view of page for publishing based on template without CMS specific code (editing)
+// "unpublish": execution of the code for unpublishing an object
+// "preview": view of page based on template for preview (inactive hyperlinks) without CMS specific code (buttons)
+// "template": view of template based on template for preview (inactive hyperlinks) without CMS specific code (buttons)
 
 function buildview ($site, $location, $page, $user, $buildview="template", $ctrlreload="no", $template="", $container="", $force_cat="", $execute_code=true)
 { 
@@ -1148,7 +1149,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   $show_meta = false;
   
   // set default view values
-  $valid_views = array ("formedit", "formmeta", "formlock", "cmsview", "inlineview", "publish", "preview", "template");
+  $valid_views = array ("formedit", "formmeta", "formlock", "cmsview", "inlineview", "publish", "unpublish", "preview", "template");
   
   // validate required input parameters
   if ($buildview == "" || !in_array ($buildview, $valid_views) || !valid_publicationname ($site)) return false;
@@ -1171,7 +1172,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   else $fieldwidth = 350;
 
   // validate publication access for all views except publish
-  if ($buildview != "publish")
+  if ($buildview != "publish" || $buildview != "unpublish")
   {
     // validate inheritance if site is outside of users publication access scope
     $valid_publicationaccess = checkpublicationpermission ($site, false);
@@ -1192,9 +1193,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   // format file extensions
   require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");  
-  
+
   // publication management config
-  if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+  {
+    require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  }
   
   // create unique ID for temporary pageview file
   $unique_id = uniqid ();
@@ -1260,7 +1264,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   $url_publ_tplmedia = $publ_config['url_publ_tplmedia'];
   $abs_publ_tplmedia = $publ_config['abs_publ_tplmedia'];
   
-  if (in_array ($buildview, array ("formedit", "formmeta", "formlock", "cmsview", "inlineview", "publish", "preview")))
+  if (in_array ($buildview, array ("formedit", "formmeta", "formlock", "cmsview", "inlineview", "publish", "unpublish", "preview")))
   {
     // collect object info and get associated template and content  
     // get file info
@@ -1488,7 +1492,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     {
       foreach ($hypertag_array as $hypertag)
       {
-        if ($buildview != "publish" && $buildview != "preview" && $buildview != "template")
+        if ($buildview != "publish" && $buildview != "unpublish" && $buildview != "preview" && $buildview != "template")
         {
           // last objectview entry will set the view option
           $objectview = $buildview = getattribute ($hypertag, "name"); 
@@ -1536,7 +1540,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     
     // ==================================== remove hyperCMS stylesheet tags in template ==================================
     
-    if ($buildview == "publish" || $buildview == "template" || ($buildview == "preview" && $ctrlreload != "yes"))
+    if ($buildview == "publish" || $buildview == "unpublish" || $buildview == "template" || ($buildview == "preview" && $ctrlreload != "yes"))
     {  
       $hypertag_array = gethypertag ($viewstore, "compstylesheet", 0);
 
@@ -1606,6 +1610,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // create view of php file inclusions
           $inclview = "publish"; 
         }
+        elseif ($buildview == "unpublish")
+        {
+          // create view of php file inclusions
+          $inclview = "unpublish"; 
+        }
         else $inclview = "preview";
 
         $viewstore = viewinclusions ($site, $viewstore, $hypertag, $inclview, $application, $charset);                    
@@ -1637,6 +1646,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         {
           // create view of php file inclusions
           $inclview = "publish";
+        }
+        elseif ($buildview == "unpublish")
+        {
+          // create view of php file inclusions
+          $inclview = "unpublish";
         }
         else $inclview = "preview";
         
@@ -1699,7 +1713,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     
     $usedby = "";
     
-    if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview" || $buildview == "publish" || $buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
+    if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview" || $buildview == "publish" || $buildview == "unpublish" || $buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
     {  
       // load working container for none-live-view
       if ($container_collection != "live" && $container == "")
@@ -1909,7 +1923,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (isset ($url_tplmedia)) $viewstore = str_replace ("%tplmedia%", $url_tplmedia.$templatesite, $viewstore);
       
       // replace the media variables in the template with the images-url
-      if ($buildview == "publish") 
+      if ($buildview == "publish" || $buildview == "unpublish") 
       {
         $url_media = $publ_config['url_publ_media'];
         $abs_media = $publ_config['abs_publ_media'];
@@ -1950,7 +1964,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (isset ($templatefile)) $viewstore = str_replace ("%template%", $templatefile, $viewstore);
       
       // replace the page/comp variables in the template
-      if ($buildview == "publish") 
+      if ($buildview == "publish" || $buildview == "unpublish") 
       {
         $url_page = $publ_config['url_publ_page'];
         $abs_page = $publ_config['abs_publ_page'];
@@ -2010,6 +2024,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // replace the publication varibales in the template with the used publication
       if (isset ($site)) $viewstore = str_replace ("%publication%", $site, $viewstore);
       
+      // PHPmailer path 
+      $viewstore = str_replace ("%phpmailer%", $mgmt_config['abs_path_cms']."library/phpmailer/class.phpmailer.php", $viewstore);
       
       // ========================================== replace template variables =============================================
       
@@ -2021,13 +2037,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $viewstore = str_replace ("%view%", $buildview_tplvar, $viewstore);
 
       // replace the template media variables in the template with the template images-url
-      if ($buildview == "publish") $url_tplmedia = $publ_config['url_publ_tplmedia'];
+      if ($buildview == "publish" || $buildview == "unpublish") $url_tplmedia = $publ_config['url_publ_tplmedia'];
       else $url_tplmedia = $mgmt_config['url_path_tplmedia'];
       
       if (isset ($url_tplmedia)) $viewstore = str_replace ("%tplmedia%", $url_tplmedia.$templatesite, $viewstore);
       
       // replace the media variables in the template with the images-url
-      if ($buildview == "publish") 
+      if ($buildview == "publish" || $buildview == "unpublish") 
       {
         $url_media = $publ_config['url_publ_media'];
         $abs_media = $publ_config['abs_publ_media'];
@@ -2068,7 +2084,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (isset ($templatefile)) $viewstore = str_replace ("%template%", $templatefile, $viewstore);
       
       // replace the page/comp variables in the template
-      if ($buildview == "publish") 
+      if ($buildview == "publish" || $buildview == "unpublish") 
       {
         $url_page = $publ_config['url_publ_page'];
         $abs_page = $publ_config['abs_publ_page'];
@@ -2376,7 +2392,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 if ($label == "") $labelname = $metaname;
                 else $labelname = $label;
               
-                if ($contentbot[0] != "" && $buildview == "publish") 
+                if ($contentbot[0] != "" && ($buildview == "publish" || $buildview == "unpublish")) 
                 {
                   $pagetracking_name = $contentbot[0];
                   $contentbot[0] = loadfile ($mgmt_config['abs_path_data']."customer/".$site."/", $pagetracking_name.".track.dat");
@@ -5646,7 +5662,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) $formitem[$key] .= "
                                   <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]'],'','scrollbars=yes,resizable=yes,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.png\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\">                          
                                   <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['temp_".$hypertagname."_".$id."']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.png\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" />
-                                  <img onClick=\"ssetSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr=".url_encode($contentbot)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.png\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" />\n";
+                                  <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr=".url_encode($contentbot)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.png\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" />\n";
                           
                         $formitem[$key] .= "
                                 </td>
@@ -6560,7 +6576,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             }        
           }
           // Publish
-          elseif ($mgmt_config['application']['php'] == true && $buildview == "publish" && (preg_match ("/\[hypercms:scriptbegin/i", $viewstore) || strtoupper ($mgmt_config['os_cms']) == "WIN"))
+          elseif ($mgmt_config['application']['php'] == true && ($buildview == "publish" || $buildview == "unpublish") && (preg_match ("/\[hypercms:scriptbegin/i", $viewstore) || strtoupper ($mgmt_config['os_cms']) == "WIN"))
           {
             // execute hyperCMS scripts for preprocessing
             // transform 
@@ -6675,7 +6691,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         if (strpos ("_".$viewstore, "<!-- hyperCMS:ErrorCodeBegin -->") < 1)
         {
           // reload content container in case it has been manipulated by the template script
-          if ($container_collection != "live" && ($buildview == "publish" || $buildview == "cmsview" || $buildview == "inlineview"))
+          if ($container_collection != "live" && ($buildview == "publish" || $buildview == "unpublish" || $buildview == "cmsview" || $buildview == "inlineview"))
           {
             $contentdata = loadcontainer ($contentfile, "work", $user);
           }
@@ -6960,13 +6976,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $viewstore = str_replace ("hypercms_href=", "href=", $viewstore);
           }
           // for all other views excluding component preview inclusions (transform protected hyper references)
-          elseif ($buildview == "publish" || $buildview == "template" || $buildview == "preview")
+          elseif ($buildview == "publish"  || $buildview == "unpublish" || $buildview == "template" || $buildview == "preview")
           {
             $viewstore = str_replace ("hypercms_href=", "href=", $viewstore);
           }        
 
           // ======================================== add header information =============================================
-          if ($buildview == "publish" && $application != "media")
+          if (($buildview == "publish" || $buildview == "unpublish") && $application != "media")
           {          
             // define template and content file pointer
             $sourcefiles = "\n<!-- hyperCMS:template file=\"".$templatefile."\" -->\n<!-- hyperCMS:content file=\"".$contentfile."\" -->\n";
@@ -7139,9 +7155,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <!-- Tagging -->
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tag-it.min.js\"></script>
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/jquery.tagit.css\" />
-  <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tagit.ui-zendesk.css\" />
+  <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tagit.ui-zendesk.css\" />";
+  
+  // only include if annotations library is available
+  if (is_file ($mgmt_config['abs_path_cms']."javascript/annotate/annotate.css")) $viewstore .= "
   <!-- Annotations -->
-  <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.css\">
+  <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.css\">";
+  
+   $viewstore .= "
   <!-- Google Maps -->
   <script src=\"https://maps.googleapis.com/maps/api/js?v=3&key=".$mgmt_config['googlemaps_appkey']."&libraries=places\"></script>
   <!-- Face detetction -->
@@ -7672,7 +7693,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     if (document.forms['hcms_formview'])
     {
       // write annotation image to hidden input
-      if (document.getElementById('annotation')) $('#annotation').annotate('flatten');
+      if (document.getElementById('annotation') && typeof annotate === 'function') $('#annotation').annotate('flatten');
     
       document.forms['hcms_formview'].submit();
     }
@@ -7764,7 +7785,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $(\"#savetype\").val('auto');
         
         // write annotation image to hidden input
-        if (document.getElementById('annotation')) $('#annotation').annotate('flatten');
+        if (document.getElementById('annotation') && typeof annotate === 'function') $('#annotation').annotate('flatten');
             
         $.ajax({
           type: 'POST',
@@ -7935,12 +7956,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }
   
   // ----- Face detection -----
-  // stored faces definition
+  // stored face definitions
   var faces_json = ".$faces_json.";
     
   // memory for all face IDs
   var videoface_id = [];
   var imageface_id = [];
+  
+  // scaling of markers if the image size has been changed
+  var scale = 1;
   
   // click event memory to prevent other events from firing
   var clickevent = '';
@@ -8001,16 +8025,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     {
       if (typeof faces_json === 'string') var faces = JSON.parse (faces_json);
       else var faces = faces_json;
-      
-      var scale = 1;
-      
+
+      if (document.getElementById('annotation') && document.getElementById('annotation').offsetWidth) var mediawidth = document.getElementById('annotation').offsetWidth;
+      else var mediawidth = ".(!empty ($mediawidth) ? intval ($mediawidth) : "0").";
+
       for (var i = 0; i < faces.length; i++)
       {
         if (faces[i].name != '')
         {
           // scaling of markers if the image size has been changed
-          ".(!empty ($mediawidth) ? "if (faces[i].imagewidth) var scale = parseInt(".$mediawidth.") / parseInt(faces[i].imagewidth);" : "")."
-  
+          if (parseInt(mediawidth) > 0 && parseInt(faces[i].imagewidth) > 0) scale = parseInt(mediawidth) / parseInt(faces[i].imagewidth);
+
           $('<div>', {
             'id': 'hcmsFace' + i,
             'class': 'hcmsFace',
@@ -8070,8 +8095,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       
       if (videotag_id != '' && faces.length > 0)
       {
-        var scale = 1;
-      
         // display face name selector
         var html = '<div id=\"hcmsFaceSelector\" style=\"width:' + videowidth + 'px; max-height:100px; margin-bottom:4px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\"><div style=\"float:left; padding:2px;\">".getescapedtext ($hcms_lang['search'][$lang], $charset, $lang)." <img src=\"".getthemelocation()."img/button_history_forward.png\" class=\"hcmsIconList\" align=\"absmiddle\" /></div>';
   
@@ -8100,7 +8123,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               var id = i + '_' + time_id;
       
               // scaling of markers if the video size has been changed
-              ".(!empty ($mediawidth) ? "if (faces[i].videowidth) var scale = parseInt(".$mediawidth.") / parseInt(faces[i].videowidth);" : "")."
+              ".(!empty ($mediawidth) ? "if (faces[i].videowidth) scale = parseInt(".$mediawidth.") / parseInt(faces[i].videowidth);" : "")."
                     
               $('<div>', {
                 'id': 'hcmsFace' + id,
@@ -8233,6 +8256,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
   }
   
+  function hideFaceOnImage ()
+  {
+    $('.hcmsFace').css('visibility', 'hidden');
+    $('.hcmsFaceName').css('visibility', 'hidden');
+  }
+  
+  function showFaceOnImage ()
+  {
+    $('.hcmsFace').css('visibility', 'visible');
+  }
+  
   function hideFaceOnVideo ()
   {
     // find video ID
@@ -8250,8 +8284,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   
   function createFaceOnImage (event, tag_id)
   {
-    var width = 70;
-    var height = 70;
+    var width = 70 * scale;
+    var height = 70 * scale;
     
     if (imageface_id.length > 0) var id = imageface_id[imageface_id.length - 1] + 1;
     else var id = 0;
@@ -8270,7 +8304,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       var pos_y = event.offsetY?(event.offsetY):event.pageY-document.getElementById(tag_id).offsetTop;
 
       // verify limits for click on annotion toolbar buttons
-      if (pos_x > 30 && pos_y > 30)
+      if (pos_x > 35 && pos_y > 35)
       {
         // verify borders
         if (pos_x < (width / 2)) pos_x = width / 2;
@@ -8301,7 +8335,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           imageface_id.push(id);
           var offset = (216 - width) / 2;
       
-          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><textarea type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'></textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"x\\\":\" + Math.round(pos_x / scale) + \", \\\"y\\\":\" + Math.round(pos_y / scale) + \", \\\"width\\\":\" + Math.round(width / scale) + \", \\\"height\\\":\" + Math.round(height / scale) + \"' /><textarea type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'></textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
         }
       }
     }
@@ -8339,7 +8373,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       var pos_y = event.offsetY?(event.offsetY):event.pageY-document.getElementById(videotag_id).offsetTop;
 
       // verify limits for click on annotion toolbar buttons
-      if (pos_x > 30 && pos_y > 30)
+      if (pos_x > 35 && pos_y > 35)
       {
         // verify borders
         if (pos_x < (width / 2)) pos_x = width / 2;
@@ -8476,7 +8510,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // save faces in hidden field
       $('#faces').val(faces_json);
     }
-    // remove faces defintions
+    // remove face defintions
     else
     {
       faces_json = [];
@@ -8641,9 +8675,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           if ($buildview == "formedit" || $buildview == "formmeta") $mediaview = "preview";
           else $mediaview = "preview_no_rendering";
           
+          $views = rdbms_externalquery ('SELECT SUM(dailystat.count) AS count FROM dailystat WHERE id='.intval($container_id).' AND activity="view"');
+          $downloads = rdbms_externalquery ('SELECT SUM(dailystat.count) AS count FROM dailystat WHERE id='.intval($container_id).' AND activity="download"');
+          $uploads = rdbms_externalquery ('SELECT SUM(dailystat.count) AS count FROM dailystat WHERE id='.intval($container_id).' AND activity="upload"');
+          
+          if (empty ($views[0]['count'])) $views[0]['count'] = 0;
+          if (empty ($downloads[0]['count'])) $downloads[0]['count'] = 0;
+          if (empty ($uploads[0]['count'])) $uploads[0]['count'] = 0;
+          
           $viewstore .= "
           <div class=\"hcmsFormRowLabel\">
             <b>".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."</b>
+            &nbsp;&nbsp;&nbsp;<img src=\"".getthemelocation()."img/button_file_liveview.png\" class=\"hcmsIconList\" /> <span class=\"hcmsTextSmall\">".$views[0]['count']." ".getescapedtext ($hcms_lang['views'][$lang], $charset, $lang)."</span>
+            &nbsp;&nbsp;&nbsp;<img src=\"".getthemelocation()."img/button_file_download.png\" class=\"hcmsIconList\" /> <span class=\"hcmsTextSmall\">".$downloads[0]['count']." ".getescapedtext ($hcms_lang['downloads'][$lang], $charset, $lang)."</span>
+            &nbsp;&nbsp;&nbsp;<img src=\"".getthemelocation()."img/button_file_upload.png\" class=\"hcmsIconList\" /> <span class=\"hcmsTextSmall\">".$uploads[0]['count']." ".getescapedtext ($hcms_lang['uploads'][$lang], $charset, $lang)."</span>
           </div>
           <div class=\"hcmsFormRowContent\">
             ".showmedia ($site."/".$mediafile, convertchars ($name_orig, $hcms_lang_codepage[$lang], $charset), $mediaview, "hcms_mediaplayer_asset", $mediawidth)."
@@ -8731,6 +8776,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     @include_once ($mgmt_config['abs_path_data']."eventsystem/hypercms_eventsys.inc.php");
     oneditobject_post ($site, $cat, $location, $page, $user);    
   }
+  
+  // error occured if error comments can be found
+  if (isset ($viewstore) && strpos ("_".$viewstore, "<!-- hyperCMS:Error") > 0) $result['result'] = false;
+  else $result['result'] = true;
 
   // return result array
   $result['view'] = $viewstore;

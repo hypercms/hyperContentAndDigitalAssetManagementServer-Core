@@ -569,7 +569,7 @@ function is_cloudstorage ($site="")
       // load publication config if not available
       if (!isset ($mgmt_config[$site]['storage_type']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
       {
-        require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+        require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
       }
 
       // if the cloud storage is disabled for the publication
@@ -1260,11 +1260,18 @@ function convertpath ($site, $path, $cat="")
     return $path;
   }
   elseif (valid_publicationname ($site) && $path != "" && is_array ($mgmt_config))
-  {  
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($path, -1) != "/")
+    {
+      $path = $path."/";
+      $remove_slash = true;
+    }
+
     if (@substr_count ($path, "%page%") == 0 && @substr_count ($path, "%comp%") == 0)
     {
       // load config if not available
-      if ((!isset ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+      if (!isset ($mgmt_config[$site]['url_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
       {
         require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
       }
@@ -1276,15 +1283,15 @@ function convertpath ($site, $path, $cat="")
       if (strtolower ($cat) == "page" && is_array ($mgmt_config[$site])) 
       {
         // URL can be with our without http://domain
-        $path_page_url = $mgmt_config[$site]['url_path_page'];
-        $path_page_abs = $mgmt_config[$site]['abs_path_page'];
+        $path_page_url = trim ($mgmt_config[$site]['url_path_page']);
+        $path_page_abs = trim ($mgmt_config[$site]['abs_path_page']);
         
-        if ($path_page_url[strlen ($path_page_url)-1] == "/") $root_var_url = "%page%/".$site."/";
+        if (substr ($path_page_url, -1) == "/") $root_var_url = "%page%/".$site."/";
         else $root_var_url = "%page%/".$site;
         
-        if ($path_page_abs[strlen ($path_page_abs)-1] == "/") $root_var_abs = "%page%/".$site."/";
+        if (substr ($path_page_abs, -1) == "/") $root_var_abs = "%page%/".$site."/";
         else $root_var_abs = "%page%/".$site;
-        
+
         // abs path
         if (substr_count ($path, "://") == 0 && substr_count ($path, $path_page_abs) > 0)
         {
@@ -1309,13 +1316,13 @@ function convertpath ($site, $path, $cat="")
       elseif (strtolower ($cat) == "comp") 
       {
         // URL can be with our without http://domain
-        $path_comp_url = $mgmt_config['url_path_comp'];
-        $path_comp_abs = $mgmt_config['abs_path_comp']; 
+        $path_comp_url = trim ($mgmt_config['url_path_comp']);
+        $path_comp_abs = trim ($mgmt_config['abs_path_comp']); 
         
-        if ($path_comp_url[strlen ($path_comp_url)-1] == "/") $root_var_url = "%comp%/";
+        if (substr ($path_comp_url, -1) == "/") $root_var_url = "%comp%/";
         else $root_var_url = "%comp%";  
         
-        if ($path_comp_abs[strlen ($path_comp_abs)-1] == "/") $root_var_abs = "%comp%/";
+        if (substr ($path_comp_abs, -1) == "/") $root_var_abs = "%comp%/";
         else $root_var_abs = "%comp%";         
       
         // abs. path
@@ -1339,6 +1346,9 @@ function convertpath ($site, $path, $cat="")
           }
         }     
       }
+
+      // remove added slash
+      if (!empty ($remove_slash) && substr ($path, -1) == "/") $path = substr ($path, 0, -1);
   
       if ($path != "") return $path;
       else return false;
@@ -1361,7 +1371,14 @@ function convertlink ($site, $path, $cat)
   global $user, $mgmt_config, $publ_config, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && $path != "" && is_array ($mgmt_config))
-  {  
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($path, -1) != "/")
+    {
+      $path = $path."/";
+      $remove_slash = true;
+    }
+    
     if (substr_count ($path, "%page%") == 0 && substr_count ($path, "%comp%") == 0 && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
     {
       // load ini
@@ -1374,13 +1391,13 @@ function convertlink ($site, $path, $cat)
       if (strtolower ($cat) == "page") 
       {
         // URL can be with our without http://domain
-        $path_page_url = $publ_config['url_publ_page'];
-        $path_page_abs = $publ_config['abs_publ_page'];
+        $path_page_url = trim ($publ_config['url_publ_page']);
+        $path_page_abs = trim ($publ_config['abs_publ_page']);
         
-        if ($path_page_url[strlen ($path_page_url)-1] == "/") $root_var_url = "%page%/".$site."/";
+        if (substr ($path_page_url, -1) == "/") $root_var_url = "%page%/".$site."/";
         else $root_var_url = "%page%/".$site;
         
-        if ($path_page_abs[strlen ($path_page_abs)-1] == "/") $root_var_abs = "%page%/".$site."/";
+        if (substr ($path_page_abs, -1) == "/") $root_var_abs = "%page%/".$site."/";
         else $root_var_abs = "%page%/".$site;
         
         // abs path
@@ -1408,13 +1425,13 @@ function convertlink ($site, $path, $cat)
       elseif (strtolower ($cat) == "comp") 
       {
         // URL can be with our without http://domain
-        $path_comp_url = $publ_config['url_pupl_comp'];
-        $path_comp_abs = $publ_config['abs_publ_comp']; 
+        $path_comp_url = trim ($publ_config['url_pupl_comp']);
+        $path_comp_abs = trim ($publ_config['abs_publ_comp']);
         
-        if ($path_comp_url[strlen ($path_comp_url)-1] == "/") $root_var_url = "%comp%/";
+        if (substr ($path_comp_url, -1) == "/") $root_var_url = "%comp%/";
         else $root_var_url = "%comp%";  
         
-        if ($path_comp_abs[strlen ($path_comp_abs)-1] == "/") $root_var_abs = "%comp%/";
+        if (substr ($path_comp_abs, -1) == "/") $root_var_abs = "%comp%/";
         else $root_var_abs = "%comp%";         
       
         // abs. path
@@ -1438,6 +1455,9 @@ function convertlink ($site, $path, $cat)
           }
         }     
       }
+
+      // remove added slash
+      if (!empty ($remove_slash) && substr ($path, -1) == "/") $path = substr ($path, 0, -1);
   
       if ($path != "") return $path;
       else return false;
@@ -1500,7 +1520,7 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
             // load publication config if not available
             if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
             {
-              require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+              require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
             }        
           }
         
@@ -1627,6 +1647,47 @@ function deconvertlink ($path, $type="url")
       return $path;
     }
     else return $path;    
+  }
+  else return false;
+}
+
+// ---------------------- mediapublicaccess -----------------------------
+// function: mediapublicaccess()
+// input: media file name [string]
+// output: true / false
+
+// description:
+// Is the media file public accessible (has it been published or has publicdownload in main configuration been enabled).
+// This function does not include direct links to the media files (used in websites).
+
+function mediapublicaccess ($mediafile)
+{
+  global $mgmt_config;
+
+  if ($mediafile != "")
+  {
+    // if public download is enabled the asset does not need to be published
+    if (!empty ($mgmt_config['publicdownload'])) return true;
+  
+    // if mediafile is provided as path, extract the media file name
+    if (substr_count ($mediafile, "/") > 0) $mediafile = getobject ($mediafile);
+    
+    $container_id = getmediacontainerid ($mediafile);
+    
+    if ($container_id != "")
+    {
+      $contentdata = loadcontainer ($container_id, "published", "sys");
+      
+      if ($contentdata != "")
+      {
+        $published = getcontent ($contentdata, "<contentpublished>");
+
+        if (!empty ($published[0])) return true;
+        else return false;
+      }
+      else return false;
+    }
+    else return false;
   }
   else return false;
 }
@@ -3267,7 +3328,7 @@ function appendfile ($abs_path, $filename, $filedata)
           }
           else return false;
         }
-        // sleep for 0 - 100 milliseconds, to avoid collision and CPU load
+        // sleep for 0 - 100 milliseconds, to avoid colission and CPU load
         else usleep (round (rand (0, 100) * 1000));
       }
     }
@@ -4148,7 +4209,12 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     if (!is_thumbnail ($location.$media) && (($range && ($start == 0 || $end == ($size - 1))) || !$range))
     {
       $container_id = getmediacontainerid ($media);
-      if ($container_id > 0) rdbms_insertdailystat ("download", $container_id, $user);
+      
+      if ($container_id > 0)
+      {
+        if ($force == "download") rdbms_insertdailystat ("download", $container_id, $user);
+        else rdbms_insertdailystat ("view", $container_id, $user);
+      }
     }
     
     // eventsystem
@@ -5618,11 +5684,14 @@ function createpublication ($site_name, $user="sys")
   // set default language
   if ($lang == "") $lang = "en";
   
+  // forbidden publication names since used for main config settings
+  $forbidden = array_keys ($mgmt_config);
+  
   // check if sent data is available
-  if (!valid_publicationname ($site_name) || strlen ($site_name) > 100 || !valid_objectname ($user))
+  if (!valid_publicationname ($site_name) || strlen ($site_name) > 100 || in_array ($site_name, $forbidden) || !valid_objectname ($user))
   {
     $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['required-publication-name-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['the-input-is-not-valid'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
   }
   // test if site name includes special characters
   elseif (specialchr ($site_name, "-_") == true)
@@ -7415,10 +7484,10 @@ function deletetemplate ($site, $template, $cat)
 // ---------------------------------------- createuser --------------------------------------------
 // function: createuser()
 // input: publication name [string] (optional), user login name [string], password [string], confirmed password [string], user name [string]
-// output: array
+// output: result array
 
 // description:
-// This function creates a new user
+// This function creates a new user. Use *Null* for publication name to remove access to all publications.
 
 function createuser ($site, $login, $password, $confirm_password, $user="sys")
 {
@@ -7613,10 +7682,10 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 // function: edituser()
 // input: publication name [string], user login name [string], new login name [string], password [string], confirmed password [string], super administrator [0,1], real name [string], language setting [en,de,...], 
 //        theme name (optional), email, phone, usergroup string [group1|group2], member of site(s) string [site1|site2]], user name
-// output: array
+// output: result array
 
 // description:
-// This function edits a user
+// This function edits a user. Use *Leave* as input if a value should not be changed. Use *Null* for publication name to remove access to all publications. Use *Null* for user group to remove user from all user groups of the publication.
 
 function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="", $language="en", $theme="", $email="", $phone="", $signature="", $usergroup="", $usersite="", $user="sys")
 {
@@ -7661,7 +7730,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }         
  
       // check if password was changed
-      if ($password != "")
+      if ($password != "" && $password != "*Leave*")
       {        
         // check if submitted old password is valid if user changes his own password
         if ($login == $user)
@@ -7732,7 +7801,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }     
 
       // check if realname was changed
-      if (isset ($realname) && $show == "")
+      if (isset ($realname) && $realname != "*Leave*" && $show == "")
       {
         // escape special characters
         $realname = strip_tags ($realname);
@@ -7743,7 +7812,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }
 
       // check if lanuage was changed
-      if (valid_objectname ($language) && $show == "")
+      if (valid_objectname ($language) && $language != "*Leave*" && $show == "")
       {
         // escape special characters
         $language = strip_tags ($language);
@@ -7754,7 +7823,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }
 
       // check if theme was changed
-      if (valid_objectname ($theme) && $show == "")
+      if (valid_objectname ($theme) && $theme != "*Leave*" && $show == "")
       {
         // escape special characters
         $theme = strip_tags ($theme);
@@ -7765,7 +7834,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }      
 
       // check if email was changed
-      if (isset ($email) && $show == "")
+      if (isset ($email) && $email != "*Leave*" && $show == "")
       {
         // escape special characters
         $email = strip_tags ($email);
@@ -7775,7 +7844,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }
 
       // check if phone was changed
-      if (isset ($phone) && $show == "")
+      if (isset ($phone) && $phone != "*Leave*" && $show == "")
       {
         // escape special characters
         $phone = strip_tags ($phone);
@@ -7785,7 +7854,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }  
 
       // check if email was changed
-      if (isset ($signature) && $show == "")
+      if (isset ($signature) && $signature != "*Leave*" && $show == "")
       {
         // escape special characters
         $signature = strip_tags ($signature);
@@ -7795,7 +7864,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }      
 
       // check if usergroup was changed
-      if (isset ($usergroup) && valid_objectname ($usergroup) && $show == "")
+      if (isset ($usergroup) && valid_objectname ($usergroup) && $usergroup != "*Leave*" && $show == "")
       {
         if ($usergroup == "*Null*") $usergroup = "";
         
@@ -7806,7 +7875,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }  
 
       // check if usersite was changed
-      if (isset ($usersite) && $usersite != "" && $show == "")
+      if (isset ($usersite) && $usersite != "" && $usersite != "*Leave*" && $show == "")
       {
         if ($usersite == "*Null*") 
         {
@@ -7936,7 +8005,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
   $result['message'] = $show;
   
   return $result;  
-}    
+}
 
 // ---------------------------------------- deleteuser --------------------------------------------
 // function: deleteuser()
@@ -9307,7 +9376,10 @@ function createfolder ($site, $location, $foldernew, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && !strpos ($foldernew, ".recycle") && accessgeneral ($site, $location, "") && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user) && !is_tempfile ($foldernew))
   {
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     // deconvertpath location
     $location = deconvertpath ($location, "file");
@@ -9445,10 +9517,12 @@ function createfolders ($site, $location, $foldernew, $user)
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && accessgeneral ($site, $location, $cat) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
-  {        
-        
+  {
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     // deconvertpath location
     $location = deconvertpath ($location, "file");
@@ -9639,7 +9713,10 @@ function deletefolder ($site, $location, $folder, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
   {
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     // deconvertpath location
     $location = deconvertpath ($location, "file");
@@ -9770,7 +9847,10 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && !strpos ($foldernew, ".recycle") && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
   
     $show = "";
     
@@ -9840,10 +9920,10 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
       // loop for each site
       foreach ($site_array as $site)
       {
-        // include configuration
-        if ((!isset ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+        // publication management config
+        if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
         {
-          include_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");  
+          require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
         }
         
         // convert folder locations
@@ -10080,7 +10160,10 @@ function createobject ($site, $location, $page, $template, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && !strpos ($page, ".recycle") && accessgeneral ($site, $location, "") && strlen ($page) <= $mgmt_config['max_digits_filename'] && valid_objectname ($template) && valid_objectname ($user))
   {
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";  
@@ -10554,7 +10637,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
   if (valid_publicationname ($site) && valid_locationname ($location) && $cat != "" && accessgeneral ($site, $location, $cat) && is_array ($global_files) && valid_objectname ($user))
   {
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
@@ -11371,7 +11457,10 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
     if (!valid_objectname ($user)) $user = "sys";
     
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     // deconvert path
     if (substr_count ($path_source_file, "%page%") == 1 || substr_count ($path_source_file, "%comp%") == 1)
@@ -11568,7 +11657,10 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
     if (!valid_objectname ($user)) $user = "sys";
     
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    } 
     
     // deconvert path
     if (substr_count ($location_source, "%page%") == 1 || substr_count ($location_source, "%comp%") == 1)
@@ -11837,7 +11929,10 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
  
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
 
     // convert location
     $location = deconvertpath ($location, "file");
@@ -12235,11 +12330,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           
           // loop for each site
           foreach ($site_array as $site)
-          {    
-            // include configurations
-            if ((!isset ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+          {
+            // publication management config
+            if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
             {
-              include_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");  
+              require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
             }
           
             // lock and read link management file
@@ -12442,12 +12537,12 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       // get original site from buffer
       $site = $site_buffer;
       
-      // reload the configuration of the current publication
-      if ((!isset ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+      // publication management config
+      if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
       {
-        include_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");  
+        require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
       }   
-   
+     
       // --------------------------------- update content container status ------------------------------
       // if an object is copied and pasted leave the container as it is
       if (($method != "copy" || $method != "linkcopy") && $contentfile_self != "")
@@ -13359,7 +13454,10 @@ function deletemarkobject ($site, $location, $page, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
@@ -13435,7 +13533,10 @@ function deleteunmarkobject ($site, $location, $page, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {  
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
@@ -13489,7 +13590,10 @@ function deleteobject ($site, $location, $page, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
       
     if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
       $location = deconvertpath ($location, "file");
@@ -13530,7 +13634,10 @@ function renameobject ($site, $location, $page, $pagenew, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && !strpos ($pagenew, ".recycle")  && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   { 
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
        
     if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
       $location = deconvertpath ($location, "file");
@@ -13572,8 +13679,11 @@ function renamefile ($site, $location, $page, $pagenew, $user)
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {    
-      // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    // publication management config
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
       $location = deconvertpath ($location, "file");
@@ -13624,7 +13734,10 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
     }
     
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";          
@@ -13721,7 +13834,10 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
     }
     
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";           
@@ -13823,7 +13939,10 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
     }
     
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");    
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    } 
     
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location);
@@ -13910,7 +14029,10 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
   {  
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1) $location = deconvertpath ($location, "file");
 
@@ -13959,7 +14081,10 @@ function lockobject ($site, $location, $page, $user)
     $file = $user.".dat";
     
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }   
     
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location);
@@ -14093,7 +14218,10 @@ function unlockobject ($site, $location, $page, $user)
     $file = $user.".dat";
       
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }  
     
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location);  
@@ -14228,7 +14356,10 @@ function publishobject ($site, $location, $page, $user)
     require_once ($mgmt_config['abs_path_cms']."function/hypercms_tplengine.inc.php");
   
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
       
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location);        
@@ -14853,7 +14984,7 @@ function publishlinkedobject ($site, $location, $page, $user)
 // output: array
 
 // description:
-// This function unpublishes a page or component and calls the function manipulateobject
+// This function unpublishes a page, component, or asset and calls the function manipulateobject
 
 function unpublishobject ($site, $location, $page, $user)
 {      
@@ -14864,8 +14995,14 @@ function unpublishobject ($site, $location, $page, $user)
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && substr ($page, -8) != ".recycle" && valid_objectname ($user))
   {
+    // load template engine (it is not included by API and needs to be loaded seperately!)
+    require_once ($mgmt_config['abs_path_cms']."function/hypercms_tplengine.inc.php");
+    
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
     
     $cat = getcategory ($site, $location);    
     $location = deconvertpath ($location, "file");
@@ -14887,7 +15024,7 @@ function unpublishobject ($site, $location, $page, $user)
       $media = getfilename ($pagedata, "media");
       
       // check template
-      $templatedata = loadtemplate ($site, $template);
+      /*$templatedata = loadtemplate ($site, $template);
         
       if (is_array ($templatedata))
       {
@@ -14899,7 +15036,7 @@ function unpublishobject ($site, $location, $page, $user)
           else $application = "";
         }
       }
-      else $template = false;
+      else $template = false;*/
       
       // delete all VTT files of videos
       if ($container_id != "")
@@ -14919,21 +15056,22 @@ function unpublishobject ($site, $location, $page, $user)
         }
       }
 
-      // if object is a page or component and not a multimedia file
-      if ($container != false && $template != false && ($media == false || $application == "generator") && $page != ".folder")
+      // if object is a page, component, or multimedia file (and not a folder)
+      if ($container != false && $template != false && $page != ".folder")
       {
         $object_array = getconnectedobject ($container);
         
         if ($object_array == false)
         {    
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['error-occured'][$lang]."</span><br />
           ".$hcms_lang['information-about-connected-items-of-the-container-is-missing'][$lang]."\n";
       
           $errcode = "20897";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|object reference in link management is missing for container $container used by ".$location_esc.$page;     
         
-          // define current object for publishing
+          // define current object for unpublishing
+          $object_array = array();
           $object_array[0]['publication'] = $site;
           $object_array[0]['location'] = $location;
           $object_array[0]['object'] = $page;
@@ -14944,9 +15082,8 @@ function unpublishobject ($site, $location, $page, $user)
         // one object reference were found in container
         elseif (is_array ($object_array) && sizeof ($object_array) == 1)
         {
-          $object_array = null;
-          
-          // redefine current object for publishing
+          // redefine current object for unpublishing
+          $object_array = array();
           $object_array[0]['publication'] = $site;
           $object_array[0]['location'] = $location;
           $object_array[0]['object'] = $page;
@@ -14979,44 +15116,130 @@ function unpublishobject ($site, $location, $page, $user)
               // if object file exists
               if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && is_file ($location.$page))
               {
-                $result = manipulateobject ($site, $location, $page, "", $user, "page_unpublish");  
-            
-                if ($result['result'] != false)
-                {      
-                  // check application, if no dynamic inclusion of components is possible publish also all 
-                  // objects which use the given object.
-                  if ($cat == "comp")
+                // ---------------------------- call template engine ---------------------------
+                $result = buildview ($site, $location, $page, $user, "unpublish", "no");    
+
+                if (is_array ($result))
+                {
+                  $application = $result['application'];
+                  $contentdata = $result['containerdata'];
+
+                  // error occured if error comments can be found
+                  if (isset ($result['view']) && strpos ("_".$result['view'], "<!-- hyperCMS:Error") > 0)
                   {
-                    $test = publishlinkedobject ($site, $location, $page, $user);
+                    // save object file with errors
+                    $error_file = date("Y-m-d-H-i-s").".".$page.".error";
+                    savefile ($mgmt_config['abs_path_temp'], $error_file, $viewstore);
                     
-                    if ($test['result'] == false)
-                    {
-                      $errcode = "20198";
-                      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|publishlinkedobject failed for ".convertpath ($site, $location, $cat).$page; 
-                    }                
+                    $errcode = "20301";
+                    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|error in code of object ".$location_esc.$page.", see temp file: ".$error_file; 
+                    
+                    $viewstore = false;
+                    $release = false;
+                    $add_onload = "";
+                    $show = $hcms_lang['an-error-occurred-in-building-the-view'][$lang]."<br/>Error file: ".$error_file;
                   }
                   
-                  // log entry
+                  // update information in content container
+                  $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentpublished>", "", "", "");
+                  
+                  // write content container
+                  if ($contentdata != false)
+                  {
+                    // save working xml content container file
+                    $test = savecontainer ($container, "work", $contentdata, $user, true);
+                    
+                    if ($test == false)
+                    {
+                      $errcode = "10980";
+                      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|working container $container.wrk could not be saved";                
+                    }
+          
+                    // remove content
+                    $contentdata = deletecontent ($contentdata, "<text>");
+                    $contentdata = deletecontent ($contentdata, "<media>");
+                    $contentdata = deletecontent ($contentdata, "<link>");
+                    $contentdata = deletecontent ($contentdata, "<component>");
+                    $contentdata = deletecontent ($contentdata, "<article>");
+                    
+                    // save published xml content container file     
+                    if ($contentdata != "") $test = savecontainer ($container, "published", $contentdata, $user, true);
+                    else $test = false;
+          
+                    // on error
+                    if ($test == false)
+                    {
+                      $errcode = "10881";
+                      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|published container $container could not be saved";                
+                    }
+                  }
+                }
+                // on error
+                else
+                {
+                  $errcode = "20302";
+                  $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|error in code of object ".$location_esc.$page.", no error code available"; 
+                    
+                  $viewstore = false;
+                  $release = false;
+                  $add_onload = "";
+                  $show = $hcms_lang['an-error-occurred-in-building-the-view'][$lang];
+                }
+                
+                // ---------------------------- unpublish object ---------------------------
+                // only for pages, components, and generated multimedia files
+                if ($media == false || $application == "generator")
+                {
+                  $result = manipulateobject ($site, $location, $page, "", $user, "page_unpublish");
+              
+                  if ($result['result'] != false)
+                  {  
+                    // check application, if no dynamic inclusion of components is possible publish also all 
+                    // objects which use the given object.
+                    if ($cat == "comp")
+                    {
+                      $test = publishlinkedobject ($site, $location, $page, $user);
+                      
+                      if ($test['result'] == false)
+                      {
+                        $errcode = "20198";
+                        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|publishlinkedobject failed for ".convertpath ($site, $location, $cat).$page; 
+                      }                
+                    }
+                  }
+                  // on error
+                  else
+                  {
+                    $add_onload = "";
+                    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['error-occured'][$lang]."</span><br />
+                    ".$hcms_lang['you-do-not-have-write-permissions-for-the-item'][$lang]."\n";
+                    
+                    break;
+                  }
+                }
+                
+                // log entry
+                if ($result['result'] == true)
+                {
                   $errcode = "00198";
                   $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|user '".$user."' unpublished the object ".$location_esc.$page;
                 }
-                else
-                {
-                  $add_onload = "";
-                  $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
-                  ".$hcms_lang['you-do-not-have-write-permissions-for-the-item'][$lang]."\n";
-                  
-                  break;
-                }
-              }      
+              }     
             }
+          }
+          
+          // result on success
+          if ($result['result'] == true)
+          { 
+            $result['add_onload'] = "";
+            $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-unpublished'][$lang]."</span>";
           }
         }
         else
         {
           $result['result'] = false; 
           $result['add_onload'] = "";
-          $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+          $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['error-occured'][$lang]."</span><br />
           ".$hcms_lang['information-about-connected-items-of-the-container-is-missing'][$lang]."\n";
       
           $errcode = "20878";
@@ -15027,7 +15250,7 @@ function unpublishobject ($site, $location, $page, $user)
       {
         $result['result'] = true; 
         $result['add_onload'] = "";
-        $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['published-item-successfully'][$lang]."</span>";
+        $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-unpublished'][$lang]."</span>";
       } 
       
       // eventsystem
@@ -15039,7 +15262,7 @@ function unpublishobject ($site, $location, $page, $user)
     {
       $result['result'] = false;
       $result['add_onload'] = "";
-      $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+      $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['error-occured'][$lang]."</span><br />
       ".$hcms_lang['you-do-not-have-write-permissions-for-the-item'][$lang]."\n";    
     } 
   }
@@ -15048,15 +15271,15 @@ function unpublishobject ($site, $location, $page, $user)
   {
     $result['result'] = true;
     $result['add_onload'] = "";
-    $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['published-item-successfully'][$lang]."</span>";    
+    $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-unpublished'][$lang]."</span>";    
   }
   // input parameters are invalid
   else
   {
     $result['result'] = false;
     $result['add_onload'] = "";
-    $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
-    ".$hcms_lang['the-parameters-for-publishing-are-missing'][$lang]."\n";    
+    $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['error-occured'][$lang]."</span><br />
+    ".$hcms_lang['required-parameters-are-missing'][$lang]."\n";    
   }           
          
   // return results 
@@ -15064,13 +15287,13 @@ function unpublishobject ($site, $location, $page, $user)
 }    
 
 
-// ------------------------------------------- processqueueobjects -------------------------------------------
+// ------------------------------------------- processobjects -------------------------------------------
 // function: processobjects()
-// input: action [publish,unpublish,delete], publication name [string], location [string], object name [string], only published objects [pub,all], user name [string]
+// input: action [publish,unpublish,delete], publication name [string], location [string], object name or mail ID [string], only published objects [pub,all], user name [string]
 // output: true/false on error
 
 // description:
-// Publish, unpublish or delete all objects recursively. This function is used by the job 'minutely' to process all objects of the queue.
+// Publish, unpublish or delete all objects recursively, and send mails stored in the queue. This function is used by the job 'minutely' to process all objects of the queue.
 // In order to process all objects recursively a folder name need to be provided and not the .folder file.
 // This function should not be used for the graphical user interface since it does not provide feedback about the process state!
 
@@ -15078,10 +15301,27 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
 {
   global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
-  if ($action != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
+  if ($action == "mail" && is_numeric ($file) && valid_objectname ($user))
+  {
+    // post data
+    $data = array();
+    $data['service'] = true;
+    $data['mailfile'] = $file.".".$user.".mail";
+    $data['intention'] = "sendmail";
+    $data['token'] = createtoken ($user);
+  
+    // call user_sendlink
+    HTTP_Post ($mgmt_config['url_path_cms']."service/sendlink.php", $data, "application/x-www-form-urlencoded", "UTF-8");
+    
+    return true;
+  }
+  elseif ($action != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
   {
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
    
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
@@ -15151,7 +15391,7 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|processing ($action) failed for ".$location_esc.$file;
           
           // save log
-          savelog (@$error);          
+          savelog (@$error); 
           
           return false;
         }
@@ -15777,7 +16017,102 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
   }
   
   return $result;
-}   
+}
+
+// ---------------------- createqueueentry -----------------------------
+// function: createqueueentry()
+// input: action [publish,unpublish,delete,mail], object path [string] or object ID [integer], date and time [YYY-MM-DD HH:MM], publish only published objects [0,1], data to be saved in queue [array] (optional), user name [string]
+// output: true / false
+
+// description:
+// Creates a new item in the queue
+
+function createqueueentry ($action, $object, $date, $published_only, $data="", $user)
+{
+  global $mgmt_config;
+
+  if ($action != "" && ($object == "" || substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0 || $object > 0) && is_date ($date, "Y-m-d H:i") && valid_objectname ($user))
+  {
+    // queue entry with additional queue data
+    if (!empty ($data) && is_array ($data))
+    {
+      // define php variables
+      $data_str = "";
+      
+      foreach ($data as $key=>$value)
+      {
+        $data_str  .= "\$".$key." = ".var_export ($value, true).";\n";
+      }
+      
+      if ($data_str != "")
+      {
+        $data_str = "<?php\n".$data_str."?>";
+      
+        // create document ID
+        if (intval ($object) < 1) $queue_id = rand_secure (10000, 99999999);
+        else $queue_id = intval ($object);
+      
+        // create queue directory
+        if (!is_dir ($mgmt_config['abs_path_data']."queue/")) mkdir ($mgmt_config['abs_path_data']."queue/", $mgmt_config['fspermission']);
+        
+        // save file in queue
+        $queue_file = $queue_id.".".$user.".".strtolower($action).".php";
+        $savefile = savefile ($mgmt_config['abs_path_data']."queue/", $queue_file, $data_str);
+        
+        // create queue entry
+        if ($savefile) return rdbms_createqueueentry ($action, $queue_id, $date, $published_only, $user);
+        else return false;
+      }
+    }
+    // queue entry with no additional data
+    else
+    {
+      return rdbms_createqueueentry ($action, $object, $date, $published_only, $user);
+    }
+  }
+  else return false;
+}
+
+// ---------------------- savemessage -----------------------------
+// function: savemessage()
+// input: data to be saved in queue [array], message type [mail,chat] (optional), user name [string]
+// output: true / false
+
+// description:
+// Saves the data of a sent e-mail message.
+
+function savemessage ($data, $type="mail", $user)
+{
+  global $mgmt_config;
+
+  if (!empty ($data) && is_array ($data) && (strtolower ($type) == "mail" || strtolower ($type) == "chat") && valid_objectname ($user))
+  {
+    // define php variables
+    $data_str = "";
+    
+    foreach ($data as $key=>$value)
+    {
+      $data_str  .= "\$".$key." = ".var_export ($value, true).";\n";
+    }
+    
+    if ($data_str != "")
+    {
+      $data_str = "<?php\n".$data_str."?>";
+    
+      // create mail document ID
+      $mail_id = time ();
+    
+      // create mail directory
+      if (!is_dir ($mgmt_config['abs_path_data']."message/")) mkdir ($mgmt_config['abs_path_data']."message/", $mgmt_config['fspermission']);
+      
+      // save file
+      $mail_file = $mail_id.".".$user.".".strtolower ($type).".php";
+      return savefile ($mgmt_config['abs_path_data']."message/", $mail_file, $data_str);
+    }
+    else return false;
+  }
+  else return false;
+}
 
 // ---------------------- remoteclient -----------------------------
 // function: remoteclient()
@@ -16794,6 +17129,56 @@ function licensenotification ()
   }
 }
 
+// --------------------------------------- sendresetpassword ------------------------------------------------
+// function: sendresetpassword()
+// input: user name [string]
+// output: message as string
+
+// description:
+// Send a new password to the users e-mail address.
+
+function sendresetpassword ($login)
+{
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
+  
+  if (empty ($lang)) $lang = "en";
+  if ($login == "") return $hcms_lang['a-user-name-is-required'][$lang];
+  
+  // create new password
+  $password = createpassword (10);
+
+  // get e-mail and first publication of user
+  $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+  $usernode = selectcontent ($userdata, "<user>", "<login>", $login);
+  
+  if (!empty ($usernode[0]))
+  {
+    $email = getcontent ($usernode[0], "<email>");    
+    $site = getcontent ($usernode[0], "<publication>");
+  }
+
+  if (empty ($email[0]))
+  {
+    return str_replace ("%user%", $login, $hcms_lang['e-mail-address-of-user-s-is-missing'][$lang]);
+  }
+  elseif (!empty ($email[0]) && !empty ($site[0]))
+  {
+    // change password
+    $mgmt_config['strongpassword'] = false;
+    $result = edituser ($site, $login, "", $password, $password, "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "sys");
+
+    if ($result['result'] == false) return $result['message'];
+  
+    // send mail
+    $message = $hcms_lang['password'][$lang].": ".$password."\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang];
+
+    $mail = sendmessage ("", $login, $hcms_lang['password'][$lang]." ".$hcms_lang['reset'][$lang], $message);
+
+    if ($mail == false) return $hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang].$email[0];
+    else return $hcms_lang['e-mail-was-sent-successfully-to-'][$lang].$email[0];
+  }
+}
+
 // ====================================== TEXT DIFF =========================================
 
 // --------------------------------------- html_diff -------------------------------------------
@@ -17011,10 +17396,16 @@ function rewrite_targetURI ($site, $text_id, $uri, $exclude_dir_esc="", $rewrite
       if ($id != "")
       {
         $search_textnode = array();
-        $search_textnode[$id] = $uri;
+        $search_textnode[$id] = trim ($uri);
         
         // disable search history log
         $mgmt_config['search_log'] = false;
+        
+        // search for exact term
+        $mgmt_config['search_exact'] = true;
+        
+        // force "like" match (will be also set in function rdbms_searchcontent for search expressions which include / as character)
+        $mgmt_config['search_query_match'] = "like";
         
         // search for objectpath for the provided permanenent link (only first valid result will be used, disable search log)
         $object_array = rdbms_searchcontent ("%page%/".$site."/", $exclude_dir_esc, "", "", "", "", $search_textnode, "", "", "", "", "", "", "", "", 1, false, false);
@@ -17164,24 +17555,27 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
 
 // ---------------------------------------------- sendmessage ----------------------------------------------
 // function: sendmessage()
-// input: from user name [string], to user name [string], title [string], message [string], object ID or object path [string] (optional)
+// input: from user name [string] (optional), to user name [string], title [string], message [string], object ID or object path [string] (optional), publication name [string] (optional)
 // output: true/false
 // requires: config.inc.php
 
 // description:
-// Sends a message via e-mail to a user
+// Sends a message via e-mail to a user.
 
-function sendmessage ($from_user, $to_user, $title, $message, $object_id="")
+function sendmessage ($from_user="", $to_user, $title, $message, $object_id="", $site="")
 {
   global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
   
   // include hypermailer class
   if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
 
-  if ($from_user != "" && $to_user != "" && $title != "" && strlen ($title) < 360 && $message != ""  && strlen ($message) < 3600)
+  if ($to_user != "" && $title != "" && strlen ($title) < 360 && $message != ""  && strlen ($message) < 3600)
   {
     $result = false;
     $object_link = "";
+    
+    // set default user name
+    if ($from_user == "") $from_user = "hyper Content & Digital Asset Management Server";
     
     // get local date today (jjjj-mm-dd hh:mm)
     $mgmt_config['today'] = date ("Y-m-d H:i", time());
@@ -17190,7 +17584,7 @@ function sendmessage ($from_user, $to_user, $title, $message, $object_id="")
     if ($object_id != "" && intval ($object_id) < 1)
     {
       // convert object path if necessary
-      if ($site != "") $object_id = convertpath ($site, $object_id, "");
+      if (valid_publicationname ($site)) $object_id = convertpath ($site, $object_id, "");
       
       // get object id
       $object_id = rdbms_getobject_id ($object_id);
@@ -17204,21 +17598,24 @@ function sendmessage ($from_user, $to_user, $title, $message, $object_id="")
     
     // get e-mail and language of user
     if ($userdata != "")
-    {       
-      // get user node and extract required information    
-      $usernode = selectcontent ($userdata, "<user>", "<login>", $from_user);
-
-      if (!empty ($usernode[0]))
+    {
+      if ($from_user != "")
       {
-        // email
-        $temp = getcontent ($usernode[0], "<email>");
-        if (!empty ($temp[0])) $from_email = $temp[0];
-        else $from_email = "";
-
-        // language
-        $temp = getcontent ($usernode[0], "<language>");            
-        if (!empty ($temp[0])) $from_lang = $temp[0];
-        else $from_lang = "en";
+        // get user node and extract required information    
+        $usernode = selectcontent ($userdata, "<user>", "<login>", $from_user);
+  
+        if (!empty ($usernode[0]))
+        {
+          // email
+          $temp = getcontent ($usernode[0], "<email>");
+          if (!empty ($temp[0])) $from_email = $temp[0];
+          else $from_email = "";
+  
+          // language
+          $temp = getcontent ($usernode[0], "<language>");            
+          if (!empty ($temp[0])) $from_lang = $temp[0];
+          else $from_lang = "en";
+        }
       }
       
       // get user node and extract required information    
@@ -17235,6 +17632,13 @@ function sendmessage ($from_user, $to_user, $title, $message, $object_id="")
         $temp = getcontent ($usernode[0], "<language>");            
         if (!empty ($temp[0])) $to_lang = $temp[0];
         else $to_lang = "en";
+        
+        // publication
+        if ($site == "")
+        {
+          $temp = getcontent ($usernode[0], "<publication>");
+          if (!empty ($temp[0])) $site = $temp[0];
+        }
       }
     }
   
@@ -17257,12 +17661,27 @@ function sendmessage ($from_user, $to_user, $title, $message, $object_id="")
     ".nl2br ($message)."<br/><br/>
     ".$object_link."
   </span>";
-  
+
       $mailer = new HyperMailer();
       $mailer->IsHTML(true);
       $mailer->AddAddress ($to_email, $to_user);
-      $mailer->AddReplyTo ($from_email, $from_user);
-      $mailer->From = $from_email;
+
+      if ($from_email != "" && $from_user != "")
+      {
+        $mailer->AddReplyTo ($from_email, $from_user);
+        $mailer->From = $from_email;
+      }
+      elseif (!empty ($mgmt_config[$site]['mailserver']))
+      {
+        $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
+        $mailer->FromName = "hyperCMS Automailer";
+      }
+      else
+      {
+        $mailer->From = "automailer@hypercms.net";
+        $mailer->FromName = "hyperCMS Automailer";
+      }
+      
       $mailer->Subject = "hyperCMS: ".$title;
       $mailer->CharSet = $hcms_lang_codepage[$to_lang];
       $mailer->Body = html_decode ($body, $hcms_lang_codepage[$to_lang]);

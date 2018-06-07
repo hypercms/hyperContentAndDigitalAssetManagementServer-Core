@@ -22,7 +22,7 @@ than all mediafiles of this location.
 @param string site/publication 
 @param string containerid 
 @param string mediaTagId
-@param string allowedFileExtensions e.g. ".jpg.gif.png"
+@param string allowedFileExtensions e.g. ".jpg.jpeg.gif.png"
 @param string abs_comp
 @return array array of array where each array contains name / link / thumb_link of a mediafile
 */	
@@ -91,7 +91,7 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
         $abspath = $medialocation.$item_site."/";
         
         // create thumbnail link
-        if (@is_file ($thumbnail_path=$medialocation.$item_site."/".$mediafileinfo['filename'].".thumb.jpg") && @filesize ($medialocation.$item_site."/".$mediafileinfo['filename'].".thumb.jpg") > 400)
+        if (is_file ($thumbnail_path=$medialocation.$item_site."/".$mediafileinfo['filename'].".thumb.jpg") && filesize ($medialocation.$item_site."/".$mediafileinfo['filename'].".thumb.jpg") > 400)
         {	
           $thumb_link = createviewlink ($item_site, $mediafileinfo['filename'].".thumb.jpg");
         }
@@ -99,6 +99,9 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
         {
           $thumb_link = $picture_link;
         }
+        
+        // retrieve image size
+        list ($width, $height, $rest) = getimagesize ($medialocation.$item_site."/".$objectinfo['media']);
 
         // retrieve additional
         $contentdata = loadcontainer ($objectinfo['container_id'], "work", "sys");
@@ -130,7 +133,7 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
         // return array
         if (!is_array ($filter) || (!empty ($filter['name']) && strpos ("_".$filtervalue, $filter['value']) > 0))
         {
-          $files[] = array("name" => $fileinfo['name'], "title"=>$title, "description"=>$desc, "link" => $link, "thumb_link" => $thumb_link, "abspath"  => $abspath, "filename" => $objectinfo['media']);
+          $files[] = array("name" => $fileinfo['name'], "title"=>$title, "description"=>$desc, "link" => $link, "thumb_link" => $thumb_link, "abspath"  => $abspath, "filename" => $objectinfo['media'], "width" => $width, "height" => $height);
         }
 
         // sort result via usort and helperfunction

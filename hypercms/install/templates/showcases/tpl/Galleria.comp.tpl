@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template>
-<name>Gallery</name>
+<name>Galleria</name>
 <user>admin</user>
 <category>comp</category>
 <extension>php</extension>

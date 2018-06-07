@@ -1080,7 +1080,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // ------------------------------- deletecontent -------------------------------------------
 
 // function: deletecontent()
-// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string], conditional value [string]
+// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string] (optional), conditional value [string] (optional)
 // output: XML content container / false on error
 
 // description:
@@ -1091,7 +1091,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // Deletes the whole xml content including <tagname>.
 // Wild card character "*" can be used at begin and end of $condvalue.
 
-function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
+function deletecontent ($xmldata, $starttagname, $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
   if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
@@ -1132,7 +1132,7 @@ function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // ------------------------------- deleteicontent -------------------------------------------
 
 // function: deleteicontent()
-// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string], conditional value [string]
+// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string] (optional), conditional value [string] (optional)
 // output: XML content container / false on error
 
 // description:
@@ -1145,7 +1145,7 @@ function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // Deletes the whole xml content including <tagname>.
 // Wild card character "*" can be used at begin and end of $condvalue.
   
-function deleteicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
+function deleteicontent ($xmldata, $starttagname, $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
   if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))

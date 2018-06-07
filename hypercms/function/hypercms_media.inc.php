@@ -1243,9 +1243,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    } 
     
     $converted = false;
     $skip = false;
@@ -1381,8 +1384,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         // verify local media file
         if (!is_file ($location_source.$file)) return false;
       }
+      
+      // reset source path to JPG file of RAW image
+      $path_source = $location_source.$file;
     }
-    
+
     // get file width and heigth in pixels
     $imagesize_orig = @getimagesize ($location_source.$file);
     
@@ -1886,7 +1892,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // create buffer file
                     $buffer_file = $location_temp.$file_name.".temp".strrchr ($file, ".");;
                     copy ($path_source, $buffer_file);
-  
+
                     // delete the old file if we overwrite the original file
                     if ($type == "original")
                     {
@@ -2205,14 +2211,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($type == "thumbnail")
                     {
                       $newfile = $file_name.".thumb.jpg";
-                      $result = @imagejpeg ($imgresized, $location_dest.$newfile);
+                      $result = @imagejpeg ($imgresized, $location_dest.$newfile, 95);
                     }
                     else
                     {
                       if ($type == "original") $newfile = $file_name.".jpg";
                       else $newfile = $file_name.".".$type.".jpg";
                       
-                      $result = @imagejpeg ($imgresized, $location_dest.$newfile);
+                      $result = @imagejpeg ($imgresized, $location_dest.$newfile, 95);
                     }
                   }
                   elseif ($imageformat == "png" && function_exists ("imagepng"))
@@ -3092,7 +3098,10 @@ function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $f
     $format = strtolower ($format);
 
     // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    } 
 
     // add slash if not present at the end of the location string
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";

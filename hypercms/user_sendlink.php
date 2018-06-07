@@ -6,1051 +6,9 @@
  *
  * You should have received a copy of the License along with hyperCMS.
  */
-
-// session
-define ("SESSION", "create");
-// management configuration
-require ("config.inc.php");
-// hyperCMS API
-require ("function/hypercms_api.inc.php");
-// mailer class
-require ("function/hypermailer.class.php");
-
-
-// input parameters
-$site = getrequest_esc ("site", "publicationname");
-$cat = getrequest_esc ("cat", "objectname");
-$location = getrequest_esc ("location", "locationname");
-$folder = getrequest_esc ("folder", "objectname");
-$page = getrequest_esc ("page", "objectname");
-$pagename = getrequest_esc ("pagename");
-$multiobject = getrequest ("multiobject");
-// recipients
-$intention = getrequest ("intention");
-$language = getrequest ("language");
-$user_login = getrequest_esc ("user_login");
-$group_login = getrequest_esc ("group_login");
-$user_group_dummy = getrequest ("user_group_dummy");
-$user_group = getrequest_esc ("user_group");
-// mail
-$email_to = getrequest ("email_to");
-$email_cc = getrequest ("email_cc");
-$email_bcc = getrequest ("email_bcc");
-$mail_title = getrequest_esc ("mail_title");
-$mail_body = getrequest_esc ("mail_body");
-// download
-$download_type = getrequest ("download_type");
-$format_img = getrequest ("format_img", "array");
-$format_doc = getrequest ("format_doc", "array");
-$valid_active = getrequest_esc ("valid_active");
-$valid_days = getrequest_esc ("valid_days");
-$valid_hours = getrequest_esc ("valid_hours");
-$include_metadata = getrequest ("include_metadata");
-// task
-$create_task = getrequest ("create_task");
-$priority = getrequest ("priority");
-$startdate = getrequest ("startdate");
-$finishdate = getrequest ("finishdate");
-
-$token = getrequest ("token");
-
-// publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-
-// convert location
-$location = deconvertpath ($location, "file");
-$location_esc = convertpath ($site, $location, $cat);
-
-// ------------------------------ permission section --------------------------------
-   
-// check access permissions
-$ownergroup = accesspermission ($site, $location, $cat);
-$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
-if ($mgmt_config[$site]['sendmail'] == false || $ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['sendlink'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location)) killsession ($user);
-
-// check session of user
-checkusersession ($user);
-
-// --------------------------------- logic section ----------------------------------
-
-$add_onload = "";
-$groupdata = "";
-$userdata = "";
-$allgroup_array = array();
-$alluseritem_array = array();
-$allrealname_array = array();
-$alluser_array = array();
-$allemail_array = array();
-
-// ---------------------------------- getallusers ----------------------------------
-// function: getallusers()
-// input: location, object
-// output: global arrays
-
-function getallusers ()
-{
-  global $groupdata, $userdata, $alluseritem_array, $alluser_array, $allemail_array, $allrealname_array, $allgroup_array, $mgmt_config, $site;
-  
-  // load usergroup data
-  if (empty ($groupdata) && valid_publicationname ($site)) $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");  
-  
-  if ($groupdata != false) $allgroup_array = getcontent ($groupdata, "<groupname>");  
-  
-  // load user data
-  if (empty ($userdata)) $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");  
-                    
-  if ($userdata != false)
-  {
-    $alluseritem_array = selectxmlcontent ($userdata, "<user>", "<publication>", "$site");
-    
-    if ($alluseritem_array != false)
-    {    
-      $i = 0;
-      
-      foreach ($alluseritem_array as $useritem)
-      {  
-        $buffer_array = getcontent ($useritem, "<login>");
-        $alluser_array[$i] = $buffer_array[0];
-        $buffer_array = getcontent ($useritem, "<realname>");
-        $allrealname_array[$i] = $buffer_array[0];
-        $buffer_array = getcontent ($useritem, "<email>");
-        $allemail_array[$i] = $buffer_array[0];
-        $i++;
-      }
-    }
-  }
-}
-
-// get all users
-getallusers ();
-
-// define array if $user_login is not an array
-if (!is_array ($user_login) && $user_login != "")
-{
-  $user_login = array ($user_login);
-}
-// define array if $user_login is false
-elseif (!$user_login)
-{
-  $user_login = array();
-}
-
-// create multiobject_array if more than one file is selected
-if ($multiobject != "")
-{
-  $multiobject_array = explode ("|", trim ($multiobject, "|"));
-}
-
-$mail_error = array();
-$mail_success = array();
-$general_error = array();
-$ccsent = false;
-$bccsent = false;
-$metadata_str = "";
-
-// send mail
-if ($intention == "sendmail" && checktoken ($token, $user))
-{
-  if (valid_publicationname ($site) && valid_locationname ($location) && $mgmt_config['db_connect_rdbms'] != "")
-  {
-    // --------------------------------- download formats ------------------------------
-    
-    $format_array = array();
-    
-    if (!empty ($format_img) && is_array ($format_img))
-    {
-      foreach ($format_img as $value)
-      {
-        // image format and config provided
-        if (substr_count ($value, "|") > 0)
-        {
-          list ($ext, $config) = explode ("|", $value);        
-          $format_array['image'][$ext][$config] = 1;
-        }
-        // only image format
-        else
-        {
-          $format_array['image'][$value] = 1;
-        }
-      }
-    }
-    
-    if (!empty ($format_doc) && is_array ($format_doc))
-    {
-      foreach ($format_doc as $ext)
-      {
-        // document format
-        $format_array['document'][$ext] = 1;
-      }
-    }
-    
-    if (sizeof ($format_array) > 0) $formats = json_encode ($format_array);
-    else $formats = "";
-
-    // --------------------------- lifetime / period of validity ------------------------
-    
-    if ($valid_active == "yes")
-    {
-      // transform to seconds
-      if ($valid_days != "") $valid_days = intval ($valid_days) * 24 * 60 * 60;
-      if ($valid_hours != "") $valid_hours = intval ($valid_hours) * 60 * 60;
-      
-      // lifetime of token in seconds
-      $lifetime = $valid_days + $valid_hours;
-    }
-    else $lifetime = 0;
-  
-    // ------------------------------------ to new user ---------------------------------
-
-    if (is_array ($email_to) && !empty ($email_to) && $user_group != "" && $language != "")
-    {
-      // create new user if link will be send
-      if (!empty ($page) || is_array ($multiobject_array))
-      {
-        $login = "User".date ("YmdHis", time());
-        $user_login[] = $login;
-        
-        // generate password from upper case letter and session ID
-        $password = $confirm_password = "P".substr (session_id(), 0, 9);
-           
-        $result = createuser ($site, $login, $password, $confirm_password, $user);
-        
-        if ($result['result'] == true)
-        {
-          // create names form e-mails
-          $realnames = array();
-          
-          foreach ($email_to as $buffer)
-          {
-            $realnames[] = substr ($buffer, 0, strpos ($buffer, "@"));
-          }
-          
-          $usergroup = "|".$user_group."|";
-          $result = edituser ($site, $login, "", "", "", "", implode(", ", $realnames), $language, "", implode(", ", $email_to), "", "", $usergroup, "", $user);
-        }
-        else
-        {
-          $general_error[] = $result['message'];
-        }
-        
-        getallusers ();
-      }
-      else
-      {
-        $result['result'] = true;
-      }
-       
-      if ($result['result'] == true)
-      {
-        // email and signature of sender
-        if ($userdata != false)
-        {
-          $mail_sender_array = selectcontent ($userdata, "<user>", "<login>",getsession ('hcms_user'));
-          
-          if ($mail_sender_array != false)
-          {
-            // real name
-            $buffer_array = getcontent ($mail_sender_array[0], "<realname>");
-            
-            if (!empty ($buffer_array[0]))
-            {
-              $realname_from = $buffer_array[0];
-            }
-            else $realname_from = "";
-            
-            // email
-            $buffer_array = getcontent ($mail_sender_array[0], "<email>");
-            
-            if (!empty ($buffer_array[0]))
-            {
-              $email_from = $buffer_array[0];
-            }
-            elseif (!empty ($mgmt_config[$site]['mailserver']))
-            {
-              $email_from = "automailer@".$mgmt_config[$site]['mailserver'];
-            }
-            else $email_from = "automailer@hypercms.net";
-            
-            // signature
-            $buffer_array = getcontent ($mail_sender_array[0], "<signature>");
-            
-            if (!empty ($buffer_array[0]))
-            {
-              $mail_signature = $buffer_array[0];              
-            }
-            else $mail_signature = "";
-          }
-        }
-        
-        $mailer = new HyperMailer();
-        $mailer->IsHTML(true);
-        $mailer->CharSet = $hcms_lang_codepage[$lang];
-        
-        // if the mailserver config entry is empty, the email address of the user will be used for FROM
-        if (!empty ($email_from) && $mgmt_config[$site]['mailserver'] == "")
-        {
-          $mailer->From = $email_from;
-          $mailer->FromName = $realname_from;
-        }
-        elseif (!empty ($mgmt_config[$site]['mailserver']))
-        {
-          $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
-          $mailer->FromName = "hyperCMS Automailer";
-        }
-        else
-        {
-          $mailer->From = "automailer@hypercms.net";
-          $mailer->FromName = "hyperCMS Automailer";
-        }
-        
-        // Reply-To
-        if ($email_from != "")
-        {
-          $mailer->AddReplyTo ($email_from);
-        }
-        
-        // CC
-        if ($email_cc != "")
-        {
-          $ccsent = true;
-          $mails = splitstring ($email_cc);
-          
-          if (is_array ($mails))
-          {          
-            foreach ($mails as $mail)
-            {
-              $mailer->AddCC ($mail);
-            }
-          }
-        }
-        
-        // BCC
-        if ($email_bcc != "")
-        {
-          $bccsent = true;
-          $mails = splitstring ($email_bcc);
-          
-          if (is_array ($mails))
-          {
-            foreach ($mails as $mail)
-            {
-              $mailer->AddBCC ($mail);
-            }
-          }
-        }
-        
-        $metadata = "";
-        $mail_link = "";
-      
-        // create links
-        if (!empty ($page) || !empty ($multiobject_array))
-        {        
-          // send file as download or access link
-          if ($download_type == "link" || $download_type == "download")
-          {
-            // transform single object to multi object
-            if (empty ($multiobject_array) && $location_esc != "" && $page != "")
-            {
-              if ($folder != "") $multiobject_array[0] = $location_esc.$folder."/".$page;
-              else $multiobject_array[0] = $location_esc.$page;
-            }
-  
-            $mail_links = array();
-            
-            // multi object
-            if (isset ($multiobject_array) && is_array ($multiobject_array))
-            {
-              foreach ($multiobject_array as $multiobject_entry)
-              {  
-                if (valid_locationname ($multiobject_entry))
-                {                  
-                  $siteTemp = getpublication ($multiobject_entry);                   
-                  $locationTemp = getlocation ($multiobject_entry);
-                  $catTemp = getcategory ($siteTemp, $locationTemp);
-                  $locationTemp = deconvertpath ($locationTemp, "file");
-                  $pageTemp = getobject ($multiobject_entry);
-
-                  // create link for hyperCMS access
-                  if ($download_type == "link")
-                  {
-                    $link = createaccesslink ($siteTemp, $locationTemp, $pageTemp, $catTemp, "", $login, "al", $lifetime, $formats);
-                  }
-                  // create download link
-                  elseif ($download_type == "download")
-                  {
-                    $link = createaccesslink ($siteTemp, $locationTemp, $pageTemp, $catTemp, "", $login, "dl", $lifetime, $formats);
-                  } 
-                  
-                  if ($link != "")
-                  {
-                    if ($include_metadata == "yes")
-                    {
-                      $metadata = $hcms_lang['meta-data'][$lang].":\n".getmetadata ($locationTemp, $pageTemp);
-                    }
-                    else
-                    {
-                      $metadata = "";
-                    }
-                  }
-                  else $link = $hcms_lang['error-object-id-is-missing-for-'][$lang].$multiobject_entry;
-                  
-                  // links to send
-                  $mail_link .= $link."\n\n".$metadata."\n\n";
-                  // for mail report
-                  $mail_links[] = $link;                   
-                }
-              }
-            }
-          }
-          // send file as attachment in mail (no folders allowed!)
-          else
-          {
-            // transform single object to multi object (folders cant be attached!)
-            if (empty ($multiobject_array) && $location_esc != "" && $page != "" && $folder == "")
-            {
-              $multiobject_array[0] = $location_esc.$page;
-            }
-            
-            // multi object
-            if (isset ($multiobject_array) && is_array ($multiobject_array))
-            {
-              foreach ($multiobject_array as $multiobject_entry)
-              {
-                if (valid_locationname ($multiobject_entry))
-                {
-                  $siteTemp = getpublication ($multiobject_entry);
-                  $locationTemp = getlocation ($multiobject_entry);
-                  $catTemp = getcategory ($siteTemp, $locationTemp);
-                  $locationTemp = deconvertpath ($locationTemp, "file");
-                  $pageTemp = getobject ($multiobject_entry);
-                  
-                  if ($pageTemp != ".folder" && @is_file ($locationTemp.$pageTemp))
-                  {
-                    $objectdata = loadfile ($locationTemp, $pageTemp);
-                    
-                    if ($objectdata != false)
-                    {
-                      $mediafile = getfilename ($objectdata, "media");
-                      $mediadir = getmedialocation ($siteTemp, $mediafile, "abs_path_media");
-                      
-                      if ($mediafile != false)
-                      {
-                        $mediafile_conv = false;
-                        
-                        // temp location
-                        $location_conv = $mgmt_config['abs_path_temp'];
-                        
-                        // convert file if format is not original (try image)
-                        if ($format_img[0] != "original")
-                        {
-                          list ($format, $media_config) = explode ("|", $format_img[0]);
-                          $mediafile_conv = convertmedia ($siteTemp, $mediadir.$siteTemp."/", $location_conv, $mediafile, $format, $media_config, true);
-                        }
-                        
-                        // convert file if format is not original (try document)
-                        if (!$mediafile_conv && $format_doc[0] != "original")
-                        {
-                          $mediafile_conv = convertmedia ($siteTemp, $mediadir.$siteTemp."/", $location_conv, $mediafile, $format_doc[0], "", true);
-                        }
-
-                        // if converted
-                        if ($mediafile_conv != "")
-                        {
-                          $attachment = $location_conv.$mediafile_conv;
-                        }
-                        // use original file
-                        else
-                        {
-                          // load from cloud storage
-                          if (function_exists ("loadcloudobject")) loadcloudobject ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
-                        
-                          // prepare media file
-                          $temp_source = preparemediafile ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
-                          
-                          // if encrypted
-                          if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty ($temp_source['tempfile']))
-                          {
-                            $attachment = $temp_source['templocation'].$temp_source['tempfile'];
-                          }
-                          // if restored
-                          elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && !empty ($temp_source['location']) && !empty ($temp_source['file']))
-                          {
-                            $attachment = $temp_source['location'].$temp_source['file'];
-                          } 
-                          else $attachment = $mediadir.$siteTemp."/".$mediafile;
-                        }
-                        
-                        // define file name for attachment
-                        $page_info = getfileinfo ($siteTemp, $pageTemp, $catTemp);
-                        $attachment_ext = strtolower (strrchr ($attachment, "."));
-                        $attachment_name = substr ($page_info['name'], 0, strrpos ($page_info['name'], ".")).$attachment_ext;
-                        
-                        // attach file
-                        $mailer->AddAttachment ($attachment, $attachment_name);
-                        
-                        // delete temp file
-                        if (!empty ($temp_source['result']) && !empty ($temp_source['created'])) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
-   
-                        if ($include_metadata == "yes")
-                        {
-                          $metadata_str .= specialchr_decode ($pageTemp)."\n-------------------\n".$hcms_lang['meta-data'][$lang].":\n".getmetadata ($locationTemp, $pageTemp)."\n\n";
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        
-        // mail body
-        $mail_fullbody = $mail_body."\n\n";
-        
-        if ($include_metadata == "yes")
-        {
-          $mail_fullbody .= $metadata_str."\n";
-        }
-        
-        if ($mail_link != "")
-        {
-          $mail_fullbody .= $hcms_lang['please-click-the-links-below-to-access-the-files'][$language].":\n".$mail_link."\n\n";
-        }
-        
-        $mail_fullbody .= $mail_signature;
-        $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
-
-        // subject and body
-        $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
-        $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang]);        
-        
-        foreach ($email_to as $mail_address)
-        {
-          $mailer->AddAddress ($mail_address);
-        }
-        
-        // send mail
-        if ($mailer->Send())
-        {
-          $mail_success[] = implode (",", $email_to);
-        }
-        else
-        {
-          $mail_error[] = implode (",", $email_to);
-        }
-        
-        $email_to = "";
-      }
-    } 
-    
-    // ------------------------------ to existing user or group ---------------------------
-    
-    if (is_array ($user_login) && (!empty ($user_login) || $group_login != ""))
-    {        
-      // get users of group
-      if ($group_login != "")
-      {
-        foreach ($alluseritem_array as $useritem)
-        {
-          $buffer_array = selectcontent ($useritem, "<memberof>", "<usergroup>", "*|".$group_login."|*");
-          
-          if (is_array ($buffer_array))
-          {
-            foreach ($buffer_array as $buffer)
-            {
-              $site_array = getcontent ($buffer, "<publication>");
-              
-              if ($site_array != false && $site_array[0] == $site)
-              {
-                $buffer = getcontent ($useritem, "<login>");
-                $user_login[] = $buffer[0];
-              }
-            }
-          }
-        }
-      }
-      
-      // email of sender
-      if (!empty ($_SESSION['hcms_user']))
-      {
-        $mail_sender_array = selectcontent ($userdata, "<user>", "<login>", getsession ('hcms_user'));
-        
-        if ($mail_sender_array != false)
-        {
-          // real name
-          $buffer_array = getcontent ($mail_sender_array[0], "<realname>");
-          
-          if (!empty ($buffer_array[0]))
-          {
-            $realname_from = $buffer_array[0];
-          }
-          else $realname_from = "";
-          
-          // email
-          $buffer_array = getcontent ($mail_sender_array[0], "<email>");
-          
-          if (!empty ($buffer_array[0]))
-          {
-            $email_from = $buffer_array[0];
-          }
-          elseif (!empty ($mgmt_config[$site]['mailserver']))
-          {
-            $email_from = "automailer@".$mgmt_config[$site]['mailserver'];
-          }
-          else $email_from = "automailer@hypercms.net";
-          
-          // signature
-          $buffer_array = getcontent ($mail_sender_array[0], "<signature>");
-          
-          if (!empty ($buffer_array[0]))
-          {
-            $mail_signature = $buffer_array[0];           
-          }
-          else $mail_signature = "";
-        }
-      }
-      // email of receivers 
-      if (is_array ($user_login) && $userdata != false)
-      {
-        array_unique ($user_login);
-        
-        foreach ($user_login as $user_to)
-        {
-          // get user node and extract required information
-          $mail_receiver_array = selectcontent ($userdata, "<user>", "<login>", $user_to);
-          
-          if ($mail_receiver_array != false)
-          {
-            // real name
-            $buffer_array = getcontent ($mail_receiver_array[0], "<realname>");
-            
-            if (!empty ($buffer_array[0]))
-            {
-              $realname_to = $buffer_array[0];
-            }
-            
-            // email
-            $buffer_array = getcontent ($mail_receiver_array[0], "<email>");
-            
-            if (!empty ($buffer_array[0]))
-            {
-              $email_to = $buffer_array[0];
-            }
-            else
-            {
-              $general_error[] = sprintf ($hcms_lang['e-mail-address-of-user-s-is-missing'][$lang], $realname_to);
-            }
-            
-            // language
-            $buffer_array = getcontent ($mail_receiver_array[0], "<language>");
-            
-            if (!empty ($buffer_array[0]))
-            {
-              $user_lang = $buffer_array[0];
-
-              if ($user_lang != $lang) require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($user_lang));
-            }
-            else
-            {
-              $user_lang = $lang;            
-            }
-          }
-          
-          // send mail to receiver
-          $mailer = new HyperMailer();
-          $mailer->IsHTML(true);
-          $mailer->CharSet = $hcms_lang_codepage[$lang];
-          
-          $metadata = "";
-          $mail_link = "";
-          
-          if ($email_to != "")
-          {   
-            // create links
-            if (!empty ($page) || !empty ($multiobject_array))
-            { 
-              // send file as link
-              if ($download_type == "link" || $download_type == "download")
-              {
-                // transform single object to multi object
-                if (empty ($multiobject_array) && $location_esc != "" && $page != "")
-                {
-                  if ($folder != "") $multiobject_array[0] = $location_esc.$folder."/".$page;
-                  else $multiobject_array[0] = $location_esc.$page;
-                }
-            
-                $mail_links = array();
-                
-                // multi object
-                if (isset ($multiobject_array) && is_array ($multiobject_array))
-                {
-                  foreach ($multiobject_array as $multiobject_entry)
-                  {
-                    if (valid_locationname ($multiobject_entry))
-                    {
-                      $siteTemp = getpublication ($multiobject_entry);
-                      $locationTemp = getlocation ($multiobject_entry);
-                      $catTemp = getcategory ($siteTemp, $locationTemp);
-                      $locationTemp = deconvertpath ($locationTemp, "file");
-                      $pageTemp = getobject ($multiobject_entry);
-                      
-                      // create link for hyperCMS access
-                      if ($download_type == "link")
-                      {
-                        $link = createaccesslink ($siteTemp, $locationTemp, $pageTemp, $catTemp, "", $user_to, "al", $lifetime, $formats);
-                      }
-                      // create download link
-                      elseif ($download_type == "download")
-                      {
-                        $link = createaccesslink ($siteTemp, $locationTemp, $pageTemp, $catTemp, "", $user_to, "dl", $lifetime, $formats);
-                      }                     
-                              
-                      if ($link != "")
-                      {
-                        if ($include_metadata == "yes")
-                        {
-                          $metadata = $hcms_lang['meta-data'][$user_lang].":\n".getmetadata ($locationTemp, $pageTemp);
-                        }
-                        else
-                        {
-                          $metadata = "";
-                        }
-                      }
-                      else $link = $hcms_lang['error-object-id-is-missing-for-'][$lang].$multiobject_entry;
-                      
-                      // links to send
-                      $mail_link .= $link."\n\n".$metadata."\n\n";
-                      // for mail report
-                      $mail_links[] = $link;
-                    }
-                  }
-                }
-              }
-              // send attachments (no folders allowed!)
-              else
-              {
-                // transform single object to multi object (folders cant be attached!)
-                if (empty ($multiobject_array) && $location_esc != "" && $page != "" && $folder == "")
-                {
-                  $multiobject_array[0] = $location_esc.$page;
-                }
-                
-                // multi object
-                if (isset ($multiobject_array) && is_array ($multiobject_array))
-                {
-                  foreach ($multiobject_array as $multiobject_entry)
-                  {
-                    if (valid_locationname ($multiobject_entry))
-                    {
-                      $siteTemp = getpublication ($multiobject_entry);
-                      $locationTemp = getlocation ($multiobject_entry);
-                      $catTemp = getcategory ($siteTemp, $locationTemp);
-                      $locationTemp = deconvertpath ($locationTemp, "file");
-                      $pageTemp = getobject ($multiobject_entry);
-                      
-                      if ($pageTemp != ".folder" && @is_file ($locationTemp.$pageTemp))
-                      {
-                        $objectdata = loadfile ($locationTemp, $pageTemp);
-                        
-                        if ($objectdata != false)
-                        {
-                          $mediafile = getfilename ($objectdata, "media");
-                          $mediadir = getmedialocation ($siteTemp, $mediafile, "abs_path_media");
-                          
-                          if ($mediafile != false)
-                          {
-                            $mediafile_conv = false;
-                            
-                            // temp location
-                            $location_conv = $mgmt_config['abs_path_temp'];
-                            
-                            // convert file if format is not original (try image)
-                            if ($format_img[0] != "original")
-                            {
-                              list ($format, $media_config) = explode ("|", $format_img[0]);
-                              $mediafile_conv = convertmedia ($siteTemp, $mediadir.$siteTemp."/", $location_conv, $mediafile, $format, $media_config, true);
-                            }
-                            
-                            // convert file if format is not original (try document)
-                            if (!$mediafile_conv && $format_doc[0] != "original")
-                            {
-                              $mediafile_conv = convertmedia ($siteTemp, $mediadir.$siteTemp."/", $location_conv, $mediafile, $format_doc[0], "", true);
-                            }
-
-                            // if converted
-                            if ($mediafile_conv != "")
-                            {
-                              $attachment = $location_conv.$mediafile_conv;
-                            }
-                            // use original file
-                            else
-                            {
-                              // load from cloud storage
-                              if (function_exists ("loadcloudobject")) loadcloudobject ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
-
-                              // prepare media file
-                              $temp_source = preparemediafile ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
-                              
-                              // if encrypted
-                              if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty ($temp_source['tempfile']))
-                              {
-                                $attachment = $temp_source['templocation'].$temp_source['tempfile'];
-                              }
-                              // if restored
-                              elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && !empty ($temp_source['location']) && !empty ($temp_source['file']))
-                              {
-                                $attachment = $temp_source['location'].$temp_source['file'];
-                              }
-                              else $attachment = $mediadir.$siteTemp."/".$mediafile;
-                            }
-                            
-                            // define file name for attachment
-                            $page_info = getfileinfo ($siteTemp, $pageTemp, $catTemp);
-                            $attachment_ext = strtolower (strrchr ($attachment, "."));
-                            $attachment_name = substr ($page_info['name'], 0, strrpos ($page_info['name'], ".")).$attachment_ext;
-
-                            // attach file
-                            $mailer->AddAttachment ($attachment, $attachment_name);
-                            
-                            // delete temp file
-                            if (!empty ($temp_source['result']) && !empty ($temp_source['created'])) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
-                            
-                            if ($include_metadata == "yes")
-                            {
-                              $metadata_str .= specialchr_decode ($pageTemp)."\n-------------------\n".$hcms_lang['meta-data'][$user_lang].":\n".getmetadata ($locationTemp, $pageTemp)."\n\n";
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            
-            // mail body
-            $mail_fullbody = $mail_body."\n\n";
-            
-            if ($include_metadata == "yes")
-            {
-              $mail_fullbody .= $metadata_str."\n";
-            }
-            
-            if ($mail_link != "")
-            {
-              $mail_fullbody .= $hcms_lang['please-click-the-links-below-to-access-the-files'][$user_lang].":\n".$mail_link."\n\n";
-            }
-            
-            $mail_fullbody .= $mail_signature;
-            $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
-            
-            // mail header
-            // if the mailserver config entry is empty, the email address of the user will be used for FROM
-            $mail_header = "";
-            
-            if (!empty ($email_from) && $mgmt_config[$site]['mailserver'] == "")
-            {
-              $mailer->From = $email_from;
-              $mailer->FromName = $realname_from;
-            }
-            elseif (!empty ($mgmt_config[$site]['mailserver']))
-            {
-              $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
-              $mailer->FromName = "hyperCMS Automailer";
-            }
-            else
-            {
-              $mailer->From = "automailer@hypercms.net";
-              $mailer->FromName = "hyperCMS Automailer";
-            }
-            
-            // Reply-To
-            if ($email_from != "")
-            {
-              $mailer->AddReplyTo ($email_from);
-            }
-            
-            // CC
-            if ($email_cc != "" && !$ccsent)
-            {
-              $ccsent = true;
-              $mails = splitstring ($email_cc);
-              
-              if (is_array ($mails))
-              {
-                foreach ($mails as $mail)
-                {
-                  $mailer->AddCC ($mail);
-                }
-              }
-            }
-            
-            // BCC
-            if ($email_bcc != "" && !$bccsent)
-            {
-              $bccsent = true;
-              $mails1 = splitstring ($email_bcc);
-              
-              if (is_array ($mails))
-              {              
-                foreach ($mails as $mail)
-                {
-                  $mailer->AddBCC ($mail);
-                }
-              }
-            }
-            
-            // subject and body
-            $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
-            $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang]);
-            
-            // create email recipient array
-            $email_to_array = splitstring ($email_to);
-            
-            if (is_array ($email_to_array))
-            {
-              foreach ($email_to_array as $email_to_entry)
-              {
-                $mailer->AddAddress ($email_to_entry);
-              }
-            }
-            
-            // send mail
-            if ($mailer->Send())
-            {
-              $mail_success[] = $email_to;
-            }
-            else
-            {
-              $mail_error[] = $email_to;
-            }
-          }
-        }
-      }
-    }
-  }
-  else
-  {
-    $general_error[] = $hcms_lang['object-is-not-defined'][$lang];
-  }
-  
-  // ------------ save recipients and create new task for user on success --------------
-  
-  if (is_array ($mail_success))
-  {
-    // multi object
-    if (isset ($multiobject_array) && is_array ($multiobject_array))
-    {
-      foreach ($multiobject_array as $multiobject_entry)
-      {
-        if (valid_locationname ($multiobject_entry))
-        {
-          $siteTemp = getpublication ($multiobject_entry);
-          $locationTemp = getlocation ($multiobject_entry);
-          $catTemp = getcategory ($siteTemp, $locationTemp);
-          $locationTemp = deconvertpath ($locationTemp, "file");
-          $pageTemp = getobject ($multiobject_entry);
-          $objectpath = convertpath ($siteTemp, $locationTemp.$pageTemp, $catTemp);
-          
-          rdbms_createrecipient ($objectpath, $user, implode(',', $user_login), $email_to);
-          
-          // create new task for each user
-          if ($create_task == true)
-          {
-            foreach ($user_login as $user_to)
-            {
-              if (function_exists ("createtask")) createtask ($site, $user, $email_from, $user_to, "", $startdate, $finishdate, "user", $objectpath, $mail_title, $mail_body, false, $priority);
-            }
-          }
-        }
-      }
-    }
-    // single object
-    elseif ($location != "" && $page != "")
-    {  
-      if ($folder != "")
-      {
-        $locationTemp = $location.$folder."/";
-      }
-      else $locationTemp = $location;
-      
-      $objectpath = convertpath ($site, $locationTemp.$page, $cat);
-             
-      rdbms_createrecipient ($objectpath, $user, implode(',', $user_login), $email_to);
-      
-      // create new task for each user
-      if ($create_task == "yes")
-      {
-        foreach ($user_login as $user_to)
-        {
-          if (function_exists ("createtask")) createtask ($site, $user, $email_from, $user_to, "", $startdate, $finishdate, "user", $objectpath, $mail_title."\n\n".$mail_body, false, $priority);
-        }
-      }      
-    }
-  }
-  
-  // reset mail address
-  $email_to = "";  
-}
-
-// check if attachment can be added or files can be downloaded
-// folders can not be send as attachments and can only be provided as download link of original files
-$allow_attachment = true;
-$allow_download = true;
-
-if ($page != "" || is_array ($multiobject_array))
-{
-  // we only check components
-  if ($cat == "comp")
-  {
-    // multiobjects
-    if (!empty ($multiobject_array) && is_array ($multiobject_array))
-    {
-      foreach ($multiobject_array as $multiobject_entry)
-      {
-        $filePath = deconvertpath ($multiobject_entry, "file");
-        
-        // folder
-        if (getobject ($multiobject_entry) == ".folder" || is_dir ($filePath))
-        {
-          $allow_attachment = false;
-          break;
-        }
-        // component
-        elseif (is_file ($filePath))
-        {
-          $filedata = loadfile (getlocation ($filePath), getobject ($filePath));
-          $media = getfilename ($filedata, "media");
-          
-          if ($media == "" || $media == false)
-          {
-            $allow_attachment = false;
-            break;
-          }
-        }
-      }
-    }
-    // folder
-    elseif (getobject ($location.$page) == ".folder" || is_dir ($location.$page))
-    {
-      $allow_attachment = false;
-    }
-    // component
-    elseif (is_file ($location.$page))
-    {
-      $filedata = loadfile ($location, $page);
-      $media = getfilename ($filedata, "media");
-      
-      if ($media == "" || $media == false)
-      {
-        $allow_attachment = false;
-        $allow_download = false;
-      }
-    }
-  }
-  // no pages allowed
-  else $allow_attachment = false;
-}
+ 
+// include service
+include ("service/sendmail.php");
 
 // security token
 $token_new = createtoken ($user);
@@ -1074,12 +32,13 @@ $token_new = createtoken ($user);
     <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
     <script src="javascript/rich_calendar/domready.js"></script>
     <script type="text/javascript">
+    
     var cal_obj = null; 
     var cal_format = '%Y-%m-%d';
     var cal_field = null;
     
     // show calendar
-    function show_cal (el, field_id, format)
+    function show_cal (el, field_id, format, time)
     {
       if (cal_obj) return;
       
@@ -1089,7 +48,7 @@ $token_new = createtoken ($user);
     
     	cal_obj = new RichCalendar();
     	cal_obj.start_week_day = 1;
-    	cal_obj.show_time = false;
+    	cal_obj.show_time = time;
     	cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
       cal_obj.user_onchange_handler = cal_on_change;
       cal_obj.user_onclose_handler = cal_on_close;
@@ -1121,11 +80,7 @@ $token_new = createtoken ($user);
     {
     	cal_obj = null;
     }
-    //-->
-    </script>
-    
-    <script type="text/javascript">
-    <!--
+
     var maxoptions = <?php if (($maxoptions = max (array (sizeof ($mgmt_docoptions), sizeof ($mgmt_imageoptions)))) > 0) echo $maxoptions+1; else "1"; ?>;
     var singleselect = false;
     var folderincluded = <?php if ($allow_attachment) echo "0"; else echo "1"; ?>;
@@ -1174,13 +129,24 @@ $token_new = createtoken ($user);
         singleselect = true;
         selectCheckbox('format_img', 'format_img1');
         selectCheckbox('format_doc', 'format_doc1');
+        selectCheckbox('format_vid', 'format_vid1');
         
+        // if a folder has been selected
         if (folderincluded)
         {
           // disable checkboxes except original
           for (var i=2; i<=maxoptions; i++)
           {
             if (document.getElementById('format_img' + i)) document.getElementById('format_img' + i).disabled = true;
+            if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = true;
+            if (document.getElementById('format_vid' + i)) document.getElementById('format_vid' + i).disabled = true;
+          }
+        }
+        else
+        {
+          // disable checkboxes except original and PDF for documents
+          for (var i=3; i<=maxoptions; i++)
+          {
             if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = true;
           }
         }
@@ -1202,12 +168,14 @@ $token_new = createtoken ($user);
         singleselect = false;
         selectCheckbox('format_img', 'all');
         selectCheckbox('format_doc', 'all');
+        selectCheckbox('format_vid', 'all');
         
         // enable all checkboxes
         for (var i=1; i<=maxoptions; i++)
         {
           if (document.getElementById('format_img' + i)) document.getElementById('format_img' + i).disabled = false;
           if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = false;
+          if (document.getElementById('format_vid' + i)) document.getElementById('format_vid' + i).disabled = false;
         }
         
         if (document.getElementById('valid_active'))
@@ -1227,12 +195,14 @@ $token_new = createtoken ($user);
         singleselect = true;
         selectCheckbox('format_img', 'format_img1');
         selectCheckbox('format_doc', 'format_doc1');
+        selectCheckbox('format_vid', 'format_vid1');
         
         // enable all checkboxes
         for (var i=1; i<=maxoptions; i++)
         {
           if (document.getElementById('format_img' + i)) document.getElementById('format_img' + i).disabled = false;
           if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = false;
+          if (document.getElementById('format_vid' + i)) document.getElementById('format_vid' + i).disabled = false;
         }
         
         if (document.getElementById('valid_active'))
@@ -1242,6 +212,15 @@ $token_new = createtoken ($user);
           document.getElementById('valid_days').disabled = true;
           document.getElementById('valid_hours').disabled = true;
         }
+      }
+    }
+    
+    function enablefield(id, enable)
+    {
+      if (document.getElementById(id))
+      {
+        if (enable == true) document.getElementById(id).disabled = false;
+        else document.getElementById(id).disabled = true;
       }
     }
     
@@ -1281,7 +260,13 @@ $token_new = createtoken ($user);
             return false;
           }
         }
-      }       
+      }
+      
+      if (document.getElementById("ondate") && document.getElementById("intention"))       
+      {
+        if (document.getElementById("ondate").checked == true && document.getElementById("maildate").value != "") document.getElementById("intention").value = "savequeue";
+        else document.getElementById("intention").value = "sendmail";
+      }
       
       return true;
     }
@@ -1324,9 +309,22 @@ $token_new = createtoken ($user);
       $("input#selector").autocomplete( "close" );
     }
     
+    function openobjectview ()
+    {
+      var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+      var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+
+      hcms_showInfo('objectviewLayer',0);
+    }
+    
+    function closeobjectview ()
+    {
+      hcms_hideInfo('objectviewLayer');
+    }
+    
     $(document).ready(function()
     {
-      initLinkType();
+      <?php if (empty ($format_img) && empty ($format_doc) && empty ($format_vid)) echo "initLinkType();"; ?>
       hcms_setViewportScale();
       
       <?php 
@@ -1334,12 +332,12 @@ $token_new = createtoken ($user);
       
       if (is_array ($alluser_array))
       {
-        foreach ($alluser_array as $user_id => $user_login)
+        foreach ($alluser_array as $temp_id => $temp_user)
         {
-          if (array_key_exists ($user_id, $allemail_array) && !empty ($allemail_array[$user_id]))
+          if (array_key_exists ($temp_id, $allemail_array) && !empty ($allemail_array[$temp_id]))
           {
-            $username = (array_key_exists ($user_id, $allrealname_array) && !empty ($allrealname_array[$user_id])) ? $allrealname_array[$user_id] : $user_login;
-            $tmpuser[] = "{ loginname: \"{$user_login}\", id: \"{$user_id}\", username:\"{$username}\", email:\"{$allemail_array[$user_id]}\", label: \"{$username} ({$allemail_array[$user_id]})\" }"; 
+            $temp_realname = (array_key_exists ($temp_id, $allrealname_array) && !empty ($allrealname_array[$temp_id])) ? $allrealname_array[$temp_id] : $temp_user;
+            $tmpuser[] = "{ loginname: \"{$temp_user}\", id: \"{$temp_id}\", username:\"{$temp_realname}\", email:\"{$allemail_array[$temp_id]}\", label: \"{$temp_realname} ({$allemail_array[$temp_id]})\" }"; 
           }
         }
       }
@@ -1389,7 +387,7 @@ $token_new = createtoken ($user);
                   var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.png\',1);" title="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_close.png" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
                   var input = '<input type="hidden" name="email_to[]" id="'+inputid+'" value="'+inputval+'"/>';
                   var divtext =  '<div id="'+divtextid+'"style="float:left">'+inputval+'&nbsp;</div>';
-                  $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"</br></div>");
+                  $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"<br /></div>");
                   showHideLayers("attention_settings", 'visible');
                   $(this).val("");
                 }
@@ -1418,8 +416,8 @@ $token_new = createtoken ($user);
                 var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.png\',1);" title="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_close.png" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
                 var input = '<input type="hidden" name="user_login[]" id="'+inputid+'" value="'+ui.item.loginname+'"/>';
                 var divtext =  '<div id="'+divtextid+'" style="float:left" title="'+ui.item.email+'">'+ui.item.username+'&nbsp;</div>';
-                $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"</br></div>");
-              } 
+                $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"<br /></div>");
+              }
               else
               {
                 alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['recipient-already-added'][$lang]); ?>"));
@@ -1465,12 +463,24 @@ $token_new = createtoken ($user);
   
   <body class="hcmsWorkplaceGeneric" style="overflow:auto" onload="<?php echo $add_onload; ?>">
   
+    <!-- preview/live-view --> 
+    <div id="objectviewLayer" class="hcmsWorkplaceExplorer" style="display:none; overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:8000;">
+      <div style="position:fixed; right:18px; top:10px; z-index:9000;">
+        <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closeobjectview();" />
+      </div>
+      <div id="objectview" style="width:100%; height:100%; overflow:auto;">
+      <?php
+      echo showgallery ($multiobject_array, 140, true, $user);
+      ?>
+      </div>
+    </div>
+  
     <!-- top bar -->
     <?php
-    if (isset ($multiobject_array) && is_array ($multiobject_array)) $title = sizeof ($multiobject_array).$hcms_lang['-files-selected'][$lang];
+    if (isset ($multiobject_array) && is_array ($multiobject_array)) $title = sizeof ($multiobject_array)." ".$hcms_lang['objects-selected'][$lang];
     else $title = $pagename;
                 
-    echo showtopbar ($hcms_lang['selected-object'][$lang].": ".$title, $lang);
+    echo showtopbar ($hcms_lang['message'][$lang].": <a href=\"#\" onclick=\"openobjectview()\">".$title."</a>", $lang);
     ?>
   
     <form id="mailForm" name="mailForm" action="" method="post">
@@ -1482,7 +492,7 @@ $token_new = createtoken ($user);
       <input type="hidden" name="pagename" value="<?php echo $pagename; ?>" />
       <input type="hidden" name="multiobject" value="<?php echo $multiobject; ?>" />
       <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
-      <input type="hidden" name="intention" value="sendmail" />
+      <input type="hidden" name="intention" id="intention" value="sendmail" />
      
       <?php
       if (!empty ($mail_error) || !empty ($mail_success) || !empty ($general_error))
@@ -1508,7 +518,7 @@ $token_new = createtoken ($user);
         }
               
         // links
-        if (($download_type == 'download') && is_array ($mail_links))
+        if (($download_type == 'download') && !empty ($mail_links) && is_array ($mail_links))
         {
           foreach ($mail_links as $link)
           {
@@ -1553,6 +563,26 @@ $token_new = createtoken ($user);
               </td>
               <td align="left" valign="top">
                 <div style="overflow:auto; max-height:120px;" id="emails">
+                <?php
+                if (!empty ($user_login) && is_array ($user_login))
+                {
+                  foreach ($user_login as $temp_user)
+                  {
+                    // find user_id in alluser_array
+                    if (!empty ($alluser_array) && is_array ($alluser_array)) $user_id = array_search ($temp_user, $alluser_array);
+                    else $user_id = false;
+
+                    if ($user_id && !empty ($allrealname_array[$user_id])) $temp_realname = $allrealname_array[$user_id];
+                    else $temp_realname = $temp_user;
+                    
+                    if ($user_id && !empty ($allemail_array[$user_id])) $temp_email = $allemail_array[$user_id];
+                    else $temp_email = "";
+                    
+                    echo "
+                    <div id=\"main_".$temp_user."\" style=\"width:355px; height:16px;\"><input type=\"hidden\" name=\"user_login[]\" id=\"user_login_".$temp_user."\" value=\"".$temp_user."\"/><div id=\"divtext_".$temp_user."\" style=\"float:left\" title=\"".$temp_email."\">".$temp_realname."&nbsp;</div><div><img onclick=\"remove_element('main_".$temp_user."');\" onmouseout=\"hcms_swapImgRestore();\" onmouseover=\"hcms_swapImage('delete_".$temp_user."', '', '".getthemelocation()."img/button_close_over.png', 1);\" title=\"".getescapedtext ($hcms_lang['delete-recipient'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['delete-recipient'][$lang])."\" src=\"".getthemelocation()."img/button_close.png\" name=\"delete_".$temp_user."\" style=\"width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;\"></div><br /></div>";
+                  } 
+                }
+                ?>
                 </div>
               </td>
             </tr>
@@ -1575,16 +605,17 @@ $token_new = createtoken ($user);
               </td>
               <td align="left" valign="top">
                 <select name="group_login" id="group_login" style="width:350px;">
-                  <option value="" selected="selected">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+                  <option value="">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
                   <?php 
                   if ($allgroup_array != false && sizeof ($allgroup_array) > 0)
                   {
-                    natcasesort($allgroup_array);
-                    reset($allgroup_array);
+                    natcasesort ($allgroup_array);
+                    reset ($allgroup_array);
                     
                     foreach ($allgroup_array as $allgroup)
                     {
-                      echo "<option value=\"".$allgroup."\">".$allgroup."</option>\n";
+                      echo "
+                      <option value=\"".$allgroup."\" ".($allgroup == $group_login ? "selected=\"selected\"" : "").">".$allgroup."</option>";
                     }
                   }
                   ?>
@@ -1611,14 +642,8 @@ $token_new = createtoken ($user);
                 <?php
                 foreach ($hcms_lang_shortcut as $lang_opt)
                 {
-                  if ($language == $lang_opt)
-                  {
-                    echo "<option value=\"".$lang_opt."\" selected=\"selected\">".$hcms_lang_name[$lang_opt]."</option>\n";
-                  }
-                  else
-                  {
-                    echo "<option value=\"".$lang_opt."\">".$hcms_lang_name[$lang_opt]."</option>\n";
-                  }
+                  echo "
+                  <option value=\"".$lang_opt."\" ".($language == $lang_opt ? "selected=\"selected\"" : "").">".$hcms_lang_name[$lang_opt]."</option>";
                 }
                 ?>
                 </select>            
@@ -1658,12 +683,9 @@ $token_new = createtoken ($user);
                       reset ($allgroup_array);
                         
                       foreach ($allgroup_array as $allgroup)
-                      { 
-                        if ($allgroup == $user_group) $selected = "selected=\"selected\"";
-                        else $selected = "";
-                        ?>
-                        <option value="<?php echo $allgroup; ?>" <?php echo $selected; ?>><?php echo $allgroup; ?></option>
-                        <?php               
+                      {
+                        echo "
+                        <option value=\"".$allgroup."\" ".($allgroup == $user_group ? "selected=\"selected\"" : "").">".$allgroup."</option>";          
                       }
                     }
                     ?>
@@ -1691,7 +713,10 @@ $token_new = createtoken ($user);
                 {
                   $i = 1;
                   
-                  echo "<label><input id=\"format_img".$i."\" name=\"format_img[]\" onclick=\"selectCheckbox('format_img', this.id)\" type=\"checkbox\" value=\"original\"> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
+                  if (!empty ($format_img) && is_array ($format_img) && in_array ("original", $format_img)) $checked = "checked=\"checked\"";
+                  else $checked = "";
+                  
+                  echo "<label><input id=\"format_img".$i."\" name=\"format_img[]\" onclick=\"selectCheckbox('format_img', this.id)\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
                   $i++;
                   
                   foreach ($mgmt_imageoptions as $ext => $imageconfig_array)
@@ -1706,7 +731,12 @@ $token_new = createtoken ($user);
                         if ($image_config != "original" && $image_config != "thumbnail")
                         {
                           $file_info = getfileinfo ($site, "file".$ext, "comp");
-                          echo "<label><input id=\"format_img".$i."\" name=\"format_img[]\" onclick=\"selectCheckbox('format_img', this.id)\" type=\"checkbox\" value=\"".$image_type."|".$image_config."\"> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".strtoupper($image_type)." ".$file_info['type']." ".$image_config."</label><br />\n";
+                          
+                          if (!empty ($format_img) && is_array ($format_img) && in_array ($image_type."|".$image_config, $format_img)) $checked = "checked=\"checked\"";
+                          else $checked = "";
+                          
+                          echo "<label><input id=\"format_img".$i."\" name=\"format_img[]\" onclick=\"selectCheckbox('format_img', this.id)\" type=\"checkbox\" value=\"".$image_type."|".$image_config."\" ".$checked." /> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".strtoupper($image_type)." ".$file_info['type']." ".$image_config."</label><br />\n";
+                          
                           $i++;
                         }
                       }
@@ -1720,9 +750,14 @@ $token_new = createtoken ($user);
                 <?php 
                 if (is_array ($mgmt_docoptions) && sizeof ($mgmt_docoptions) > 0)
                 {
+                  $print_first = "";
+                  $print_next = "";
                   $i = 1;
+                  
+                  if (!empty ($format_doc) && is_array ($format_doc) && in_array ("original", $format_doc)) $checked = "checked=\"checked\"";
+                  else $checked = "";
                                    
-                  echo "<label><input id=\"format_doc".$i."\" name=\"format_doc[]\" onclick=\"selectCheckbox('format_doc', this.id)\" type=\"checkbox\" value=\"original\"> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
+                  echo "<label><input id=\"format_doc".$i."\" name=\"format_doc[]\" onclick=\"selectCheckbox('format_doc', this.id)\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_txt.png\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
                   $i++;
                   
                   foreach ($mgmt_docoptions as $ext => $value)
@@ -1733,10 +768,53 @@ $token_new = createtoken ($user);
                       $doc_type = $ext_array[0];
                         
                       $file_info = getfileinfo ($site, "file".$ext, "comp");
-                      echo "<label><input id=\"format_doc".$i."\" name=\"format_doc[]\" onclick=\"selectCheckbox('format_doc', this.id)\" type=\"checkbox\" value=\"".$doc_type."\"> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".$file_info['type']." (".strtoupper($doc_type).")</label><br />\n";
+                      
+                      if (!empty ($format_doc) && is_array ($format_doc) && in_array ($doc_type, $format_doc)) $checked = "checked=\"checked\"";
+                      else $checked = "";
+                      
+                      $temp = "<label><input id=\"format_doc".$i."\" name=\"format_doc[]\" onclick=\"selectCheckbox('format_doc', this.id)\" type=\"checkbox\" value=\"".$doc_type."\" ".$checked." /> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".$file_info['type']." (".strtoupper($doc_type).")</label><br />\n";
+                      
+                      if (strtolower ($ext) == ".pdf") $print_first .= $temp;
+                      else $print_next .= $temp;
+                      
                       $i++;
                     }
                   }
+                  
+                  echo $print_first.$print_next;
+                }
+                ?>
+              </td>
+              <td align="left" valign="top" nowrap="nowrap">
+                <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></span><br/>
+                <?php 
+                if (is_array ($mgmt_mediaoptions) && sizeof ($mgmt_mediaoptions) > 0)
+                {
+                  $i = 1;
+                  
+                  if (!empty ($format_vid) && is_array ($format_vid) && in_array ("original", $format_vid)) $checked = "checked=\"checked\"";
+                  else $checked = "";
+                  
+                  echo "<label><input id=\"format_vid".$i."\" name=\"format_vid[]\" onclick=\"selectCheckbox('format_vid', this.id)\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_mpg.png\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
+                  $i++;
+                  
+                  if (!empty ($format_vid) && is_array ($format_vid) && in_array ("origthumb", $format_vid)) $checked = "checked=\"checked\"";
+                  else $checked = "";
+                  
+                  echo "<label><input id=\"format_vid".$i."\" name=\"format_vid[]\" onclick=\"selectCheckbox('format_vid', this.id)\" type=\"checkbox\" value=\"origthumb\" ".$checked." /> <img src=\"".getthemelocation()."img/file_mpg.png\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['preview'][$lang])."</label><br />\n";
+                  $i++;
+                  
+                  if (!empty ($format_vid) && is_array ($format_vid) && in_array ("jpg", $format_vid)) $checked = "checked=\"checked\"";
+                  else $checked = "";
+                  
+                  echo "<label><input id=\"format_vid".$i."\" name=\"format_vid[]\" onclick=\"selectCheckbox('format_vid', this.id)\" type=\"checkbox\" value=\"jpg\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (JPG)</label><br />\n";
+                  $i++;
+                  
+                  if (!empty ($format_vid) && is_array ($format_vid) && in_array ("png", $format_vid)) $checked = "checked=\"checked\"";
+                  else $checked = "";
+                  
+                  echo "<label><input id=\"format_vid".$i."\" name=\"format_vid[]\" onclick=\"selectCheckbox('format_vid', this.id)\" type=\"checkbox\" value=\"png\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (PNG)</label><br />\n";
+                  $i++;
                 }
                 ?>
               </td>
@@ -1818,11 +896,11 @@ $token_new = createtoken ($user);
               <td align="left" valign="top">
                 <table border="0" cellpadding="0" cellspacing="0">
                   <?php if ($allow_download) { ?>
-                  <tr><td nowrap="nowrap"><label><input type="checkbox" name="download_type" id="type_download" onclick="selectLinkType(this.id); initLinkType();" value="download" <?php if ($mgmt_config['maillink'] == "download" || $mgmt_config['maillink'] == "") echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['download-link'][$lang]); ?></label>&nbsp;</td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();"> <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
+                  <tr><td nowrap="nowrap"><label><input type="checkbox" name="download_type" id="type_download" onclick="selectLinkType(this.id); initLinkType();" value="download" <?php if ($download_type == "download" || ($download_type == "" && ($mgmt_config['maillink'] == "download" || $mgmt_config['maillink'] == ""))) echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['download-link'][$lang]); ?></label>&nbsp;</td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();"> <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
                   <?php } ?>
-                  <tr><td nowrap="nowrap"><label><input type="checkbox" name="download_type" id="type_access" onclick="selectLinkType(this.id); initLinkType();" value="link" <?php if ($mgmt_config['maillink'] == "access") echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['access-link'][$lang]); ?></label>&nbsp;</td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();">  <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
+                  <tr><td nowrap="nowrap"><label><input type="checkbox" name="download_type" id="type_access" onclick="selectLinkType(this.id); initLinkType();" value="link" <?php if ($download_type == "link" || ($download_type == "" && $mgmt_config['maillink'] == "access")) echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['access-link'][$lang]); ?></label>&nbsp;</td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();">  <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
                   <?php if ($allow_attachment) { ?>
-                  <tr><td nowrap="nowrap"><label><input type="checkbox" name="download_type" id="type_attachment" onclick="selectLinkType(this.id); initLinkType();" value="attachment" />&nbsp;<?php echo getescapedtext ($hcms_lang['attachment'][$lang]); ?></label>&nbsp;</td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();">  <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
+                  <tr><td nowrap="nowrap"><label><input type="checkbox" name="download_type" id="type_attachment" onclick="selectLinkType(this.id); initLinkType();" value="attachment" <?php if ($download_type == "attachment") echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['attachment'][$lang]); ?></label>&nbsp;</td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();">  <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
                   <?php } ?>
                 </table>
               </td>
@@ -1831,8 +909,8 @@ $token_new = createtoken ($user);
               <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['period-of-validity'][$lang]); ?> </td>
               <td align="left" valign="top">
                 <label><input type="checkbox" name="valid_active" id="valid_active" value="yes" onclick="if (this.checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; } else { document.getElementById('valid_days').disabled=true; document.getElementById('valid_hours').disabled=true; }" />&nbsp;<?php echo getescapedtext ($hcms_lang['valid-for'][$lang]); ?></label>
-                <input type="text" name="valid_days" id="valid_days" value="" style="width:40px;" disabled="disabled" />&nbsp;<?php echo getescapedtext ($hcms_lang['days-and'][$lang]); ?>&nbsp;
-                <input type="text" name="valid_hours" id="valid_hours" value="" style="width:40px;" disabled="disabled" />&nbsp;<?php echo getescapedtext ($hcms_lang['hours'][$lang]); ?>
+                <input type="number"  min="0" max="1000" name="valid_days" id="valid_days" value="" style="width:40px;" disabled="disabled" />&nbsp;<?php echo getescapedtext ($hcms_lang['days-and'][$lang]); ?>&nbsp;
+                <input type="number"  min="0" max="24" name="valid_hours" id="valid_hours" value="" style="width:40px;" disabled="disabled" />&nbsp;<?php echo getescapedtext ($hcms_lang['hours'][$lang]); ?>
               </td>
             </tr>
             <tr>
@@ -1846,19 +924,19 @@ $token_new = createtoken ($user);
             <tr>
               <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['create-new-task'][$lang]); ?> </td>
               <td align="left" valign="top">
-                <label><input type="checkbox" name="create_task" value="yes" onclick="selectLinkType('type_access'); initLinkType();" <?php if ($create_task == "yes") echo "checked=\"checked\""; ?>/> 
+                <label><input type="checkbox" name="create_task" value="yes" onclick="selectLinkType('type_access'); initLinkType(); enablefield('startdate', this.checked); enablefield('finishdate', this.checked);" <?php if ($create_task == "yes") echo "checked=\"checked\""; ?>/> 
                 <?php echo getescapedtext ($hcms_lang['for-the-recipients-with-priority'][$lang]); ?></label>
                 <select name="priority">
-                  <option value="low" selected="selected"><?php echo getescapedtext ($hcms_lang['low'][$lang]); ?></option>
-                  <option value="medium"><?php echo getescapedtext ($hcms_lang['medium'][$lang]); ?></option>
-                  <option value="high"><?php echo getescapedtext ($hcms_lang['high'][$lang]); ?></option>
+                  <option value="low" <?php if ($priority == "low" || $priority == "") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['low'][$lang]); ?></option>
+                  <option value="medium" <?php if ($priority == "medium") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['medium'][$lang]); ?></option>
+                  <option value="high" <?php if ($priority == "high") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['high'][$lang]); ?></option>
                 </select>
                 <div style="margin:2px 0px 2px 0px;">
                   <div style="float:left;">
-                    <?php echo getescapedtext ($hcms_lang['start'][$lang]); ?> <input type="text" name="startdate" id="startdate" value="" readonly="readonly" style="width:80px;" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'startdate', '%Y-%m-%d');" class="hcmsButtonTiny hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;<?php echo getescapedtext ($hcms_lang['start'][$lang]); ?> <input type="text" name="startdate" id="startdate" readonly="readonly" style="width:80px;" value="<?php echo $startdate; ?>" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'startdate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" />
                   </div>
                   <div style="float:left;">
-                    &nbsp;&nbsp;<?php echo getescapedtext ($hcms_lang['end'][$lang]); ?> <input type="text" name="finishdate" id="finishdate" value="" readonly="readonly" style="width:80px;" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'finishdate', '%Y-%m-%d');" class="hcmsButtonTiny hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" />
+                    &nbsp;&nbsp;<?php echo getescapedtext ($hcms_lang['end'][$lang]); ?> <input type="text" name="finishdate" id="finishdate" readonly="readonly" style="width:80px;" value="<?php echo $finishdate; ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'finishdate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" />
                   </div>
                 </div>
               </td>
@@ -1866,8 +944,14 @@ $token_new = createtoken ($user);
             <?php } ?>        
           <?php } ?>
             <tr>
+              <td colspan="2" height="3" valign="bottom">
+                <hr />
+              </td>
+            </tr>
+            <tr>
               <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </td>
               <td align="left" valign="top">
+                <?php if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?><label><input type="checkbox" name="ondate" id="ondate" value="yes" onclick="enablefield('maildate', this.checked);" <?php if ($ondate == "yes") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?></label> <input type="text" name="maildate" id="maildate" readonly="readonly" style="width:120px;" value="<?php echo $maildate; ?>" /><img name="datepicker3" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'maildate', '%Y-%m-%d %H:%i', true);" class="hcmsButtonTiny hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /><?php } ?>
                 <img name="ButtonSubmit" src="<?php echo getthemelocation(); ?>img/button_ok.png" onClick="if (checkForm()) document.forms['mailForm'].submit();" onMouseOver="hcms_swapImage('ButtonSubmit','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" onMouseOut="hcms_swapImgRestore()"  class="hcmsButtonTinyBlank hcmsButtonSizeSquare" align="absmiddle" title="OK" alt="OK" />
               </td>
             </tr>

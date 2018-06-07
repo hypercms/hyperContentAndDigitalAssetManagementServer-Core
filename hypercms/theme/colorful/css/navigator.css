@@ -381,7 +381,7 @@ img
 
 input, select, textarea, button
 {
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: inherit; 
   font-size: 12px; 
   font-weight: normal;
   color: #000000;
@@ -395,7 +395,7 @@ input, select, textarea, button
 
 a 
 {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-family: inherit;
   font-size: 11px;
   line-height: 16px !important;
   font-style: normal;
@@ -508,9 +508,9 @@ html, body, span
 hr
 {
   height: 1px;
-  border-width :0;
+  border-width: 0;
   color: #0ACA03;
-  background-color: #8EA9EC;
+  background-color: #E36C04;
 }
 
 .hcmsRowHead1

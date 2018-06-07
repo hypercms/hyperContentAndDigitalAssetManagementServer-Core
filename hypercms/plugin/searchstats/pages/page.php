@@ -60,7 +60,7 @@ function showkeywordlist ($keywords, $sort_type="value", $css="hcmsButtonGreen")
       if ($count > 0) $count = "(".number_format ($count, 0, ",", ".").")";
       else $count = "";
       
-      $show .= "<tr><td><button class=\"".$css."\" style=\"max-width:240px;\" onclick=\"location='frameset_objectlist.php?action=base_search&search_expression=".urlencode($value)."&maxhits=1000';\">".$value." ".$count."</button></td></tr>\n";
+      $show .= "<tr><td><button class=\"".$css."\" style=\"max-width:420px; overflow:hidden; text-overflow:ellipsis;\" onclick=\"location='../../../frameset_objectlist.php?action=base_search&search_expression=".urlencode($value)."';\">".$value." ".$count."</button></td></tr>\n";
     }
       
     return $show;

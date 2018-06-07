@@ -65,7 +65,7 @@ function settaxonomy ($site, $container_id, $langcode="")
   if (valid_publicationname ($site) && intval ($container_id) > 0 && is_array ($mgmt_config))
   {
     // load publication management config
-    if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['taxonomy']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    if (!isset ($mgmt_config[$site]['taxonomy']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
       require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
@@ -256,8 +256,12 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
     
     // load publication config
     if (!is_array ($publ_config)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
+
     // publication management config
-    if (!isset ($mgmt_config[$site]['url_path_page'])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");    
+    if (!isset ($mgmt_config[$site]['url_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    } 
 
     // load xml schema
     $text_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "text.schema.xml.php"));

@@ -407,13 +407,13 @@ function toggle_options (caller, element)
   {
     caller.addClass('hcmsButtonMenuActive');
     activate();
-    options.fadeIn(time);
+    options.slideDown(time);
     window.scrollTo(0,0);
   }
   else
   {
     caller.removeClass('hcmsButtonMenuActive');
-    options.fadeOut(time);
+    options.slideUp(time);
   }
 }
 

@@ -223,7 +223,7 @@ if ($pagestore != false)
     if (!empty ($media) && $mgmt_config[$site]['dam'] != true) $filedirectlink = getmedialocation ($site, $media, "url_path_media").$site."/".$media;
   
     // links
-    if ($mgmt_config['publicdownload'] == true && ($cat == "page" || $setlocalpermission['download'] == 1))
+    if (!empty ($mgmt_config['publicdownload']) && ($cat == "page" || $setlocalpermission['download'] == 1))
     {
       // wrapper link
       if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperlink = createwrapperlink ($site, $location, $page, $cat);

@@ -88,7 +88,7 @@ if (is_file ($mgmt_config['abs_path_data']."check.dat"))
 <head>
 <title>hyperCMS</title>
 <meta charset=UTF-8" />
-<meta name="theme-color" content="#464646" />
+<meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="../theme/standard/css/main.css" />
 </head>
