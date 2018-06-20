@@ -529,6 +529,9 @@ $mgmt_config['strongpassword'] = true;
 // Enable (true) or disable (false) password reset on logon screen
 $mgmt_config['resetpassword'] = true;
 
+// Enable (true) or disable (false) multi-factor authentication
+$mgmt_config['multifactorauth'] = false;
+
 // Encryption
 // Encryption strength (weak, standard, strong)
 $mgmt_config['crypt_level'] = "strong";

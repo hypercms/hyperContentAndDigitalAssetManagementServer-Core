@@ -1243,13 +1243,6 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         annotatestatus = false;
       }
     }
-    
-    // annotions download event
-    $('#annotationDownload').click(function(event) {
-      $('#annotation').annotate('export', {type: 'image/jpeg', quality: 0.2}, function(data){
-      	downloadAnnotations ('annotation.jpg', data);
-      });
-    });
   
 		$(document).ready(function(){
       // set annotation image file name
@@ -1271,7 +1264,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // annotations download event
       $('#annotationDownload').click(function(event) {
         $('#annotation').annotate('export', {type: 'image/jpeg', quality: 0.95}, function(data){
-          hcms_openWindow (data, 'annotionDownload', '', ".windowwidth ("object").", ".windowheight ("object").");
+          hcms_downloadURI (data, 'annotation.jpg');
         });
       });
 		});
@@ -1662,7 +1655,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // annotations download event
       $('#annotationDownload').click(function(event) {
         $('#annotation').annotate('export', {type: 'image/jpeg', quality: 0.95}, function(data){
-          hcms_openWindow (data, 'annotionDownload', '', ".windowwidth ("object").", ".windowheight ("object").");
+          hcms_downloadURI (data, 'annotation.jpg');
         });
       });
 		});
@@ -4960,9 +4953,11 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
 
     if ($langcode_array != false)
     {
+      reset ($langcode_array);
+      
       foreach ($langcode_array as $code => $lang_short)
       {
-        if (substr_count  (",".$mgmt_config[$site]['translate'].",", ",".$code.",") > 0) $result .= "
+        if (is_activelanguage ($site, $code)) $result .= "
       <option value=\"".$code."\">".$lang_short."</option>";
       }
     }
@@ -4972,13 +4967,13 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
     &#10095;
     <select id=\"targetLang_".$id."\" style=\"width:55px;\">";
 
-    $langcode_array = getlanguageoptions();
-    
     if ($langcode_array != false)
     {
+      reset ($langcode_array);
+      
       foreach ($langcode_array as $code => $lang_short)
       {
-        if (substr_count  (",".$mgmt_config[$site]['translate'].",", ",".$code.",") > 0) $result .= "
+        if (is_activelanguage ($site, $code)) $result .= "
       <option value=\"".$code."\">".$lang_short."</option>";
       }
     }

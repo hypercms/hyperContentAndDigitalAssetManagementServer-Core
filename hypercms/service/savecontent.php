@@ -328,7 +328,7 @@ if ($usedby == "" || $usedby == $user)
             else $target_location = $thumbfile_location;
             
             $annotationfile = base64_to_file ($mediadata, $target_location, $medianame);
-            
+
             // save to cloud storage
             if (!empty ($annotationfile) && function_exists ("savecloudobject")) savecloudobject ($site, $thumbfile_location, $medianame, $user);
           }

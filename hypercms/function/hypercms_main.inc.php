@@ -1026,6 +1026,32 @@ function is_iOS ()
   else return false;
 }
 
+
+// -------------------------------- is_activelanguage --------------------------------
+// function: is_activelanguage()
+// input: publication name [string], 2-digits language code [string]
+// output: true / false
+
+// description:
+// This function determines if a language has been enabled for automatic translation in the publication settings
+
+function is_activelanguage ($site, $langcode)
+{
+  global $mgmt_config;
+  
+  if (valid_publicationname ($site) && empty ($mgmt_config[$site]['translate']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+  {
+    require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  }
+  
+  if (valid_publicationname ($site) && $langcode != "")
+  {
+    if (substr_count  (",".$mgmt_config[$site]['translate'].",", ",".$langcode.",") > 0) return true;
+    else return false;
+  }
+  else return false;
+}
+
 // -------------------------------- copyrecursive --------------------------------
 // function: copyrecursive()
 // input: source directory [string], destination directory [string]
@@ -7483,13 +7509,13 @@ function deletetemplate ($site, $template, $cat)
 
 // ---------------------------------------- createuser --------------------------------------------
 // function: createuser()
-// input: publication name [string] (optional), user login name [string], password [string], confirmed password [string], user name [string]
+// input: publication name [string] (optional), user login name [string], password [string], confirmed password [string], user name [string] (optional)
 // output: result array
 
 // description:
 // This function creates a new user. Use *Null* for publication name to remove access to all publications.
 
-function createuser ($site, $login, $password, $confirm_password, $user="sys")
+function createuser ($site="", $login, $password, $confirm_password, $user="sys")
 {
   global $eventsystem, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_lang, $lang;
  
@@ -7680,8 +7706,8 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 
 // ------------------------------------------- edituser --------------------------------------------
 // function: edituser()
-// input: publication name [string], user login name [string], new login name [string], password [string], confirmed password [string], super administrator [0,1], real name [string], language setting [en,de,...], 
-//        theme name (optional), email, phone, usergroup string [group1|group2], member of site(s) string [site1|site2]], user name
+// input: publication name [string], user login name [string], new login name [string] (optional), password [string] (optional), confirmed password [string] (optional), super administrator [0,1] (optional), real name [string] (optional), language setting [en,de,...] (optional), 
+//        theme name (optional), email [string] (optional), phone (optional), usergroup string [group1|group2] (optional), member of publication(s) string [site1|site2] (optional), user name [string] (optional)
 // output: result array
 
 // description:
@@ -7879,11 +7905,11 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       {
         if ($usersite == "*Null*") 
         {
-          $new_usersite[0] = "";
+          $new_usersite = array();
         }  
         else
         { 
-          $usersite = substr ($usersite, 1, strlen ($usersite) - 2);
+          $usersite = trim ($usersite, "|");
           $new_usersite = explode ("|", $usersite);
         }
         
@@ -7911,7 +7937,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
             }
           }
         }
-        
+
         // membership of publications
         $memberof_node = "";
         
@@ -16746,6 +16772,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   
   // set default language
   if ($lang == "") $lang = "en";
+  $lang_to = "en";
   
   $location = deconvertpath ($location, "file"); 
       
@@ -17131,13 +17158,13 @@ function licensenotification ()
 
 // --------------------------------------- sendresetpassword ------------------------------------------------
 // function: sendresetpassword()
-// input: user name [string]
+// input: user name [string],provide logon link [true,false] (optional), instance name [string] (optional)
 // output: message as string
 
 // description:
 // Send a new password to the users e-mail address.
 
-function sendresetpassword ($login)
+function sendresetpassword ($login, $link=false, $instance="")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
   
@@ -17169,9 +17196,14 @@ function sendresetpassword ($login)
 
     if ($result['result'] == false) return $result['message'];
   
-    // send mail
-    $message = $hcms_lang['password'][$lang].": ".$password."\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang];
+    // message
+    $message = "";
+    
+    if ($link == true) $message .= $hcms_lang['link'][$lang].": <a href=\"".$mgmt_config['url_path_cms']."?login=".url_encode($login)."&instance=".url_encode($instance)."\">".$hcms_lang['access-link'][$lang]."</a>\n\n";
+    
+    $message .= $hcms_lang['password'][$lang].": ".$password."\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang];
 
+    // send mail
     $mail = sendmessage ("", $login, $hcms_lang['password'][$lang]." ".$hcms_lang['reset'][$lang], $message);
 
     if ($mail == false) return $hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang].$email[0];
@@ -17500,21 +17532,182 @@ function rewrite_homepage ($site, $rewrite_type="forward")
   else return false;
 }
 
+// --------------------------------------- load_csv -------------------------------------------
+// function: load_csv ()
+// input: path to CSV file [string], delimiter [string] (optional), enclosure [string] (optional), character set [string] (optional)
+// output: array / false on error
+
+// description:
+// Analyzes the content from the CSV file and detects delimiter and enclosure characters if left empty. On success the data will be returned as array starting with row index of 1.
+
+function load_csv ($file, $delimiter=";", $enclosure='"', $charset="utf-8")
+{
+  global $mgmt_config, $eventsystem;
+  
+  // define delimiters and enclosures
+  $delimiters_csv = array (",", ";", "\t", "|");
+  $enclosures_csv = array ('"', "'");
+  
+  $result = array();
+
+  if ($file != "" && is_file ($file))
+  {
+    // convert to input character set
+    $data = file_get_contents ($file);
+    
+    if ($data != "")
+    {
+      // detect
+      $charset_csv = mb_detect_encoding ($data, mb_detect_order(), true);
+
+      // convert if not the same character set
+      if ($charset_csv != "" && strtolower ($charset_csv) != strtolower ($charset))
+      {
+        $data = convertchars ($data, "", $charset);
+        if ($data != "") $save = file_put_contents ($file, $data);
+      }
+    }
+  
+    $row = 0;
+    $header = false;
+    
+    if (($handle = fopen ($file, "r")) !== false)
+    {
+      // analyze CSV file
+      if ($delimiter == "" || $enclosure == "")
+      {
+        $filedata = @fread ($handle, filesize ($file));
+        
+        if ($filedata != "")
+        {
+          // find delimiter
+          if ($delimiter == "")
+          {
+            $count = array();
+            reset ($delimiters_csv);
+            
+            foreach ($delimiters_csv as $key)
+            {
+              $count[$key] = substr_count ($filedata, $key);
+            }
+            
+            if (max ($count) > 0)
+            {
+              // use highest count for delimiter
+              $temp = array_keys ($count, max ($count));
+              
+              if (!empty ($temp[0])) $delimiter = $temp[0];
+            }
+          }
+          
+          // find enclosure
+          if ($enclosure == "")
+          {
+            $count = array();
+            reset ($enclosures_csv);
+            
+            foreach ($enclosures_csv as $key)
+            {
+              $count[$key] = substr_count ($filedata, $key);
+            }
+            
+            if (max ($count) > 0)
+            {
+              // use highest count for delimiter
+              $temp = array_keys ($count, max ($count));
+              
+              if (!empty ($temp[0])) $enclosure = $temp[0];
+            }
+          }
+        }
+      }
+      
+      // define standard enclosure if not found
+      if (empty ($enclosure)) $enclosure = '"';
+
+      rewind ($handle);
+      $i = 0;
+    
+      // delimiter has been identififed or provided
+      if ($delimiter != "")
+      {
+        while (($data = fgetcsv ($handle, 0, $delimiter, $enclosure)) !== false)
+        {
+          // get number of colums
+          $cols = count ($data);
+
+          // verify if row holds columns
+          if (is_array ($data) && $cols > 1)
+          {
+            // use values of first row as key values
+            if ($i == 0)
+            {
+              $names = $data;
+            }
+            else
+            {
+              foreach ($data as $key => $value)
+              {
+                $k = $names[$key];
+                $result[$i][$k] = $value;
+              }
+            }
+
+            $i++;
+          }
+        }
+      }
+      // no delimiter
+      else
+      {
+        while (($data = fgetcsv ($handle)) !== false)
+        {
+          // verify if row holds columns
+          if (is_array ($data))
+          {
+            // use values of first row as key values
+            if ($i == 0)
+            {
+              $names = $data;
+            }
+            else
+            {
+              foreach ($data as $key => $value)
+              {
+                $k = $names[$key];
+                $result[$i][$k] = $value;
+              }
+            }
+            
+            $i++;
+          }
+        }
+      }
+    }
+  }
+  
+  if (sizeof ($result) > 0) return $result;
+  else return false;
+}
+
 // ------------------------------------- create_csv ------------------------------------------
 
 // function: create_csv ()
-// input: associative data [array], file name [string] (optonal), file path for saving the CSV file [string] (optional), delimiter [string] (optional), enclosure [string] (optional), character set [string] (optional)
+// input: associative data with row-id and column name as keys [array], file name [string] (optonal), file path for saving the CSV file [string] (optional), delimiter [string] (optional), enclosure [string] (optional), character set [string] (optional)
 // output: true / false on error
 
 // description:
-// Creates a CSV file from an associative data array and returns the file as download or writes the file to the file system if a valid path to a directory has been provided
+// Creates a CSV file from an associative data array and returns the file as download or writes the file to the file system if a valid path to a directory has been provided.
 
 function create_csv ($assoc_array, $filename="export.csv", $filepath="php://output", $delimiter=";", $enclosure='"', $charset="utf-8")
 {
   if (is_array ($assoc_array) && sizeof ($assoc_array) > 0)
   {
+    // remember input path
+    $mempath = $filepath;
+    
     // http header for file download
-    if (!is_dir ($filepath))
+    if (!is_dir ($mempath))
     {
       ob_clean();
       header('Pragma: public');
@@ -17523,6 +17716,12 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
       header('Cache-Control: private', false);
       header('Content-Type: text/csv; charset='.$charset);
       header('Content-Disposition: attachment;filename='.$filename);
+    }
+    // absolute path to file
+    else
+    {
+      if (substr ($filepath, -1) != "/") $filepath .= "/";
+      $filepath .= $filename;
     }
 
     $fp = fopen ($filepath, 'w');
@@ -17542,7 +17741,7 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
     }
     else return false;
     
-    if (!is_dir ($filepath))
+    if (!is_dir ($mempath))
     {
       ob_flush ();
       exit;
@@ -17652,7 +17851,7 @@ function sendmessage ($from_user="", $to_user, $title, $message, $object_id="", 
       }
 
       // email schema
-      if ($from_email != "") $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
+      if (!empty ($from_email)) $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
       else $email_schema = "";
       
       $body = "
@@ -17666,7 +17865,7 @@ function sendmessage ($from_user="", $to_user, $title, $message, $object_id="", 
       $mailer->IsHTML(true);
       $mailer->AddAddress ($to_email, $to_user);
 
-      if ($from_email != "" && $from_user != "")
+      if (!empty ($from_email) && !empty ($from_user))
       {
         $mailer->AddReplyTo ($from_email, $from_user);
         $mailer->From = $from_email;

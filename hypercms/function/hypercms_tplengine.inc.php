@@ -7139,7 +7139,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <!-- JQuery -->
   <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.1.1.min.js\" type=\"text/javascript\"></script>
   <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
-  <link  rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.css\" />
+  <link  rel=\"stylesheet\" href=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.css\" type=\"text/css\" />
   <!-- Editor -->
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."editor/ckeditor/ckeditor.js\"></script>
   <script type=\"text/javascript\">CKEDITOR.disableAutoInline = true;</script>
@@ -7693,7 +7693,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     if (document.forms['hcms_formview'])
     {
       // write annotation image to hidden input
-      if (document.getElementById('annotation') && typeof annotate === 'function') $('#annotation').annotate('flatten');
+      if (document.getElementById('annotation') && typeof $('#annotation').annotate !== 'undefined')
+      {
+        $('#annotation').annotate('flatten');
+      }
     
       document.forms['hcms_formview'].submit();
     }
@@ -7785,7 +7788,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $(\"#savetype\").val('auto');
         
         // write annotation image to hidden input
-        if (document.getElementById('annotation') && typeof annotate === 'function') $('#annotation').annotate('flatten');
+        if (document.getElementById('annotation') && typeof $('#annotation').annotate !== 'undefined')
+        {
+          $('#annotation').annotate('flatten');
+        }
             
         $.ajax({
           type: 'POST',

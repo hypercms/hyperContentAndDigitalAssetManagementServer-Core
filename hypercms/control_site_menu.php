@@ -222,12 +222,12 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <select name="site_name" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
         <?php
-          if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ($user);
+          if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ();
           
           $item_option_delete = array();
           $item_option_edit = array();
 
-          if ($inherit_db != false && sizeof ($inherit_db) >= 1)
+          if ($inherit_db != false && sizeof ($inherit_db) > 0)
           {
             foreach ($inherit_db as $inherit_db_record)
             {

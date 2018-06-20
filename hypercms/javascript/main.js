@@ -34,6 +34,40 @@ function hcms_extractDomain (url)
   else return false;
 }
 
+// ------------------------ download base64 encoded data URI ----------------------------
+
+function hcms_downloadURI (uri, filename)
+{
+  if (uri != '')
+  {
+    var link = document.createElement('a');
+    
+    if (typeof link.download === 'string')
+    {
+      link.href = uri;
+      link.download = filename;
+  
+      // Firefox requires the link to be in the body
+      document.body.appendChild(link);
+      
+      // simulate click
+      link.click();
+  
+      // remove the link when done
+      document.body.removeChild(link);
+    }
+    else if (typeof window.open !== 'undefined') 
+    {
+      var parts = uri.split(';');
+      if (parts[1]) uri = 'data:application/octet-stream;' + parts[1];
+      window.open(uri);
+    }
+    
+    return false;
+  }
+  else return false;
+}
+
 // ------------------------ convert get to post request ----------------------------
 
 function hcms_convertGet2Post (link)
@@ -406,18 +440,21 @@ function hcms_openWindow (theURL, winName, features, width, height)
   var popup = window.open(theURL, winName, features + ',width=' + width + ',height=' + height);
   
   // use different window positioning if width and height matches the size for object windows
-  if (localStorage.getItem('windowwidth') !== null && localStorage.getItem('windowwidth') == width && localStorage.getItem('windowheight') !== null && localStorage.getItem('windowheight') == height)
+  if (typeof popup.moveTo !== 'undefined')
   {
-    windowcounter++;
-    var offsetX = 35 * windowcounter;
-    var offsetY = 25 * windowcounter;
-    if (screen.width > width * 1.8) offsetX = offsetX + 280;
-    popup.moveTo(offsetX, offsetY);
-  }
-  // center window
-  else if (screen.width > width && screen.height > height)
-  {
-    popup.moveTo(screen.width/2 - width/2, screen.height/2 - height/2);
+    if (localStorage.getItem('windowwidth') !== null && localStorage.getItem('windowwidth') == width && localStorage.getItem('windowheight') !== null && localStorage.getItem('windowheight') == height)
+    {
+      windowcounter++;
+      var offsetX = 35 * windowcounter;
+      var offsetY = 25 * windowcounter;
+      if (screen.width > width * 1.8) offsetX = offsetX + 280;
+      popup.moveTo(offsetX, offsetY);
+    }
+    // center window
+    else if (screen.width > width && screen.height > height)
+    {
+      popup.moveTo(screen.width/2 - width/2, screen.height/2 - height/2);
+    }
   }
   
   popup.focus();
@@ -838,6 +875,29 @@ function hcms_entity_encode(str)
   // html element to convert special characters
   ta.innerHTML = str;
   return ta.innerHTML;
+}
+
+// ------------------------------ add table row --------------------------------
+
+function hcms_addTableRow (id, position, values)
+{
+  if (document.getElementById(id) && position >= 0 && values instanceof Array)
+  {
+    var table = document.getElementById(id).getElementsByTagName('tbody')[0];
+    var tr = table.insertRow(position);
+    
+    // create td then text, append
+    for (var i = 0; i < values[i].length; i++)
+    {
+      // Insert a cell in the row
+      var td  = newRow.insertCell(i);
+      
+      // Append a text node to the cell
+      var content  = document.createTextNode(values[i]);
+      td.appendChild(content);
+    }
+  }
+  else return false;
 }
 
 // ------------------------------ sort table data --------------------------------

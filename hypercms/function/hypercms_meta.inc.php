@@ -342,15 +342,212 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
   else return false;
 }
 
-// --------------------------------------- createtaxonomy -------------------------------------------
-// function: createtaxonomy ()
-// input: recreate taxonomy file [true,false] (optional)
+// --------------------------------------- loadtaxonomy -------------------------------------------
+// function: loadtaxonomy ()
+// input: publication name [string], return rows starting with row number [integer] (optional), return number of rows [integer] (optional)
 // output: true / false
 
 // description:
-// Generates a PHP array from a taxonomy defintion file and saves the PHP file in data/include/publication-name.taxonomy.inc.php
+// Generates an array from a taxonomy definition file located in data/include/ to be used for presentation or CSV export.
 
-function createtaxonomy ($recreate=false)
+function loadtaxonomy ($site, $start=1, $perpage=100000)
+{
+  global $mgmt_config;
+
+  // load languages
+  $languages = getlanguageoptions ();
+  
+  // load taxonomy of publication (CSV source)
+  if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv"))
+  {
+    // load CSV file
+    $taxonomy = load_csv ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv", ";", '"', "utf-8");
+
+    // prepare taxonomy
+    if (!empty ($taxonomy) && is_array ($taxonomy))
+    {
+      // collect rows from existing taxonomy
+      $result = array();
+      
+      reset ($taxonomy);
+
+      foreach ($taxonomy as $row => $col_array)
+      {   
+        // paging
+        if ($row > ($start + $perpage - 1)) break;
+        
+        if ($row >= $start)
+        {
+          $result[$row]  = $col_array;
+        }
+      }
+    }
+  }
+  // load taxonomy of publication (PHP source)
+  elseif (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+  {
+    // load PHP file
+    include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+    
+    // prepare taxonomy
+    if (!empty ($taxonomy) && is_array ($taxonomy))
+    {
+      // collect rows from existing taxonomy
+      $result = array();
+      
+      reset ($taxonomy);
+      $i = 1;
+      $langcode = getfirstkey ($taxonomy);
+
+      foreach ($taxonomy[$langcode] as $levelpath => $label)
+      {
+        // paging
+        if ($i > ($start + $perpage - 1)) break;
+        
+        if ($i >= $start)
+        {
+          $level = substr_count ($levelpath, "/") - 1;
+          $result[$i]['level'] = $level;
+        }
+
+        $i++;
+      }
+  
+      reset ($taxonomy);
+
+      foreach ($languages as $langcode => $langname)
+      {
+        // cells with values
+        if (!empty ($taxonomy[$langcode]) && is_array ($taxonomy[$langcode]))
+        {
+          $i = 1;
+          
+          foreach ($taxonomy[$langcode] as $levelpath => $label)
+          {
+            // paging
+            if ($i > ($start + $perpage - 1)) break;
+            
+            if ($i >= $start)
+            {
+              $result[$i][$langcode] = $label;
+            }
+
+            $i++;
+          }
+        }
+      }
+    }
+  }
+  
+  if (!empty ($result) && sizeof ($result) > 0) return $result;
+  else return false;
+}
+
+// --------------------------------------- savetaxonomy -------------------------------------------
+// function: savetaxonomy ()
+// input: publication name [string], taxonomy with rows and languages as keys [array], replace rows starting with row number [integer], replace rows ending with row number [integer]
+// output: true / false
+
+// description:
+// Generates an array from a taxonomy definition file located in data/include/ to be used for presentation or CSV export.
+
+function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
+{
+  global $mgmt_config;
+
+  // load taxonomy
+  $taxonomy_old = loadtaxonomy ($site);
+
+  // update taxonomy
+  if (valid_publicationname ($site) && is_array ($taxonomy) && $saveindex_start >= 0 && $saveindex_stop >= 0)
+  {
+    // merge old and new taxonomy definition
+    if (is_array ($taxonomy_old))
+    {
+      $id = 1;
+      
+      foreach ($taxonomy_old as $row => $old_array)
+      {
+        // untouched rows (outside of saveindex)
+        if ($row < $saveindex_start || $row > $saveindex_stop)
+        {
+          $taxonomy_new[$id] = $old_array;
+          $id++;
+        }
+        // edited/changed rows
+        elseif (is_array ($taxonomy) && empty ($updated))
+        {
+          foreach ($taxonomy as $new_array)
+          {
+            $taxonomy_new[$id] = $new_array;
+            $id++;
+          }
+          
+          $updated = true;
+        }
+      }
+    }
+    // no old taxonomy definition
+    else
+    {
+      $taxonomy_new = $taxonomy;
+    }
+
+    // verify taxonomy languages
+    if (is_array ($taxonomy_new))
+    {
+      // keep language
+      $keep = array();
+      
+      reset ($taxonomy_new);
+      
+      foreach ($taxonomy_new as $row => $temp_array)
+      {
+        foreach ($temp_array as $langcode => $label)
+        {
+          if (trim ($label) != "" && is_activelanguage ($site, $langcode)) $keep[$langcode] = true;
+        }
+      }
+      
+      // remove empty language columns
+      if (sizeof ($keep) > 0)
+      {
+        reset ($taxonomy_new);
+        
+        foreach ($taxonomy_new as $row => $temp_array)
+        {
+          foreach ($temp_array as $langcode => $label)
+          {
+            if (empty ($keep[$langcode]) && $langcode != "level") unset ($taxonomy_new[$row][$langcode]);
+          }
+        }
+      }
+ 
+      // save data
+      return create_csv ($taxonomy_new, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8");
+    }
+    // nothing to update
+    else return true;
+  }
+  // save new taxonomy
+  elseif (valid_publicationname ($site) && is_array ($taxonomy))
+  {
+    // save data
+    return create_csv ($taxonomy, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8");
+  }
+  else return false;
+}
+
+// --------------------------------------- createtaxonomy -------------------------------------------
+// function: createtaxonomy ()
+// input: publication name [string] (optional), recreate taxonomy file [true,false] (optional)
+// output: true / false
+
+// description:
+// Generates an array from a taxonomy defintion file (CSV) and saves the PHP file in data/include/publication-name.taxonomy.inc.php.
+// Recreates the taxonomy for all objects if the taxonomy defintion has been uodated.
+
+function createtaxonomy ($site_name="", $recreate=false)
 {
   global $mgmt_config;
 
@@ -358,103 +555,127 @@ function createtaxonomy ($recreate=false)
   $dir = $mgmt_config['abs_path_data']."include/";
 
   $file_array = array();
+  $site_memory = array();
+  
   $scandir = scandir ($dir);
   
   if ($scandir)
   {
     foreach ($scandir as $file)
     {
-      // only taxonomy defintion files
-      if ($file != "." && $file != ".." && is_file ($dir.$file) && strpos ($file, ".taxonomy.dat") > 0)
+      // only taxonomy definition files
+      if ($file != "." && $file != ".." && is_file ($dir.$file) && strpos ($file, ".taxonomy.csv") > 0)
       {
-        list ($site, $lang, $rest) = explode (".", $file);
+        list ($site, $rest) = explode (".", $file);
         
-        // if defintion file is younger than generated PHP file
-        if (!is_file ($dir.$site.".taxonomy.inc.php") || (is_file ($dir.$site.".taxonomy.inc.php") && filemtime ($dir.$file) > filemtime ($dir.$site.".taxonomy.inc.php")))
+        if (empty ($site_name) || $site == $site_name)
         {
-          $recreate = true;
+          // if definition file is younger than generated PHP file
+          if (!is_file ($dir.$site.".taxonomy.inc.php") || (is_file ($dir.$site.".taxonomy.inc.php") && filemtime ($dir.$file) > filemtime ($dir.$site.".taxonomy.inc.php")))
+          {
+            $recreate = true;
+          }
+          
+          // define file
+          $file_array[$site]= $dir.$file;
+          $site_memory[] = $site;
         }
-        
-        // define file
-        $file_array[$site][$lang] = $dir.$file;
       }
     }
   }
 
 	// create taxonomy
-  if ($recreate == true && is_array ($file_array) && sizeof ($file_array) > 0)
+  if (is_array ($file_array) && sizeof ($file_array) > 0)
   {
-    foreach ($file_array as $site => $lang_array)
+    foreach ($file_array as $site => $file)
     {
       $result = array();
-      
-      foreach ($lang_array as $lang => $file)
+
+      if (valid_publicationname ($site) && is_file ($file))
       {
-        if ($site != "" && $lang != "" && is_file ($file))
+        // load CSV file
+        $data = load_csv ($file, ";", '"', "utf-8");
+
+        if (is_array ($data) && sizeof ($data) > 0)
         {
-          $data = file ($file);
+          // taxonomy ID of each taxonomy element must be unique
+          $id = 1;
           
-          if (is_array ($data) && sizeof ($data) > 0)
+          // rows
+          foreach ($data as $row => $temp_array)
           {
-            $result[] = "// -------------- ".$lang." --------------";
-            $result[] = "\$taxonomy['".$lang."'] = array();";
-            
-            $id = 1;
-            
-            foreach ($data as $record)
+            // columns
+            foreach ($temp_array as $lang => $label)
             {
-              // count tab spaces which define the hierarchy level of the keyword item
-              $level = substr_count ($record, "\t") + 1;
-              
-              // define parent ID based on level comparison
-              if ($level == 1)
+              // hierarchy level of the keyword item
+              if ($lang == "level")
               {
-                $path = "";
-              }
-              // next level
-              elseif ($level > $level_prev)
-              {
-                $path = $path."/".$id_prev;
-              }
-              // previous level
-              elseif ($level < $level_prev)
-              {
-                $diff = $level_prev - $level;
-                for ($i=1; $i<=$diff; $i++) $path = substr ($path, 0, strrpos ($path, "/"));
-              }
-              
-              // clean text record
-              $record = str_replace (array("\"", "(", ")", "[", "]", "{", "}"), array(""), $record);
-              
-              // create array element
-              $result[] = "\$taxonomy['".$lang."']['".$path."/".$id."/'] = \"".trim ($record)."\";";
-      
-              // set prevous memory
-              $level_prev = $level;
-              $id_prev = $id;
+                $level = $label;
                 
-              $id++;
+                // define parent ID based on level comparison
+                if ($level == 1)
+                {
+                  $path = "";
+                }
+                // next level
+                elseif ($level > $level_prev)
+                {
+                  $path = $path."/".$id_prev;
+                }
+                // previous level
+                elseif ($level < $level_prev)
+                {
+                  $diff = $level_prev - $level;
+                  for ($i=1; $i<=$diff; $i++) $path = substr ($path, 0, strrpos ($path, "/"));
+                }
+                
+                // set previous memory
+                $level_prev = $level;
+                $id_prev = $id;
+              }
+              else
+              {
+                // clean text
+                $label = str_replace (array("\"", "(", ")", "[", "]", "{", "}"), array(""), $label);
+  
+                // create array element
+                $result[] = "\$taxonomy['".$lang."']['".$path."/".$id."/'] = \"".trim ($label)."\";";
+              }
+            }
+            
+            // id of next row
+            $id++;
+          }
+
+          // save result for publication
+          if (sizeof ($result) > 0)
+          {
+            $resultdata = "<?php\n\$taxonomy = array();\n".implode ("\n", $result)."\n?>";
+    
+            $savefile = savefile ($dir, $site.".taxonomy.inc.php", $resultdata);
+            
+            if (!empty ($recreate) && $savefile == true)
+            {
+              // remove and recreate the taxonomy for all objects of the publication
+              if (in_array ("default", $site_memory) && empty ($done_setpublicationtaxonomy))
+              {
+                rdbms_setpublicationtaxonomy ("", true);
+                $done_setpublicationtaxonomy = true;
+              }
+              elseif ($site != "default")
+              {
+                rdbms_setpublicationtaxonomy ($site, true);
+              }
+            
+              $errcode = "00209";
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|$errcode|Taxonomy of publication '".$site."' has been created";
+            }
+            else
+            {
+              $errcode = "10209";
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Taxonomy of publication '".$site."' could not be created";
             }
           }
-        }
-      }
-
-      // result for publication
-      if (sizeof ($result) > 0)
-      {
-        $resultdata = "<?php\n".implode ("\n", $result)."\n?>";
-
-        $savefile = savefile ($dir, $site.".taxonomy.inc.php", $resultdata);
-        
-        if ($savefile == true)
-        {
-          $errcode = "00209";
-          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|$errcode|Taxonomy of publication '".$site."' has been created";
-        }
-        else
-        {
-          $errcode = "10209";
-          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Taxonomy of publication '".$site."' could not be created";
         }
       }
     }

@@ -120,11 +120,16 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
 
-  <div class="hcmsHeadline" style="width:740px; padding-top:8px; text-align:center;">
-    <input class="hcmsButtonBlue" type="button" name="previous" value="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" onclick="document.forms['previousform'].submit();" style="width:150px;" />&nbsp;&nbsp;&nbsp;
-    <?php echo getescapedtext ($hcms_lang['time-frame'][$lang]).": ".$date_month."/".$date_year; ?>&nbsp;&nbsp;&nbsp;
-    <input class="hcmsButtonBlue" type="button" name="next" value="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" onclick="document.forms['nextform'].submit();" style="width:150px;" <?php if ($date_month == date ("m", time()) && $date_year == date ("Y", time())) echo "disabled=\"disabled\""; ?> />
+  <div class="hcmsHeadline" style="width:240px; padding:8px 0px 0px 290px; text-align:center;">
+    <img src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" class="hcmsButton hcmsButtonSizeSquare" onclick="document.forms['previousform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" />
+    <div style="float:left; width:140px; padding:2px;">&nbsp;<?php echo getescapedtext ($hcms_lang['time-frame'][$lang]).":<br />".$date_month."/".$date_year; ?>&nbsp;</div>
+    <?php if ($date_month != date ("m", time()) || $date_year != date ("Y", time())) { ?>
+    <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButton hcmsButtonSizeSquare" onclick="document.forms['nextform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>"/>
+    <?php } else { ?>
+    <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
+    <?php } ?>
   </div>
+  <div style="clear:both;"></div>
 
 <?php 
 // show results

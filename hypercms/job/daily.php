@@ -46,12 +46,7 @@ if (sizeof ($config_files) > 0)
     require ("../".$config_file);
     
     if (!empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_data']))
-    {
-      // ------------------------------------------- TAXONOMY DEFINITIONS -------------------------------------------
-      
-      // create taxonomy defintion files
-      if (function_exists ("createtaxonomy")) createtaxonomy (false);
-      
+    {      
       // ----------------------------------------------- DISK KEY ---------------------------------------------------
       
       // check disk key
@@ -121,10 +116,10 @@ if (sizeof ($config_files) > 0)
 
           // ---------------------------------------------- UPDATE TAXONOMY ----------------------------------------------
           
-          // remove taxonomies from DB
+          // remove disabled taxonomies from DB
           if (function_exists ("rdbms_deletepublicationtaxonomy")) rdbms_deletepublicationtaxonomy ($site, false);
 
-          // set taxonomies in DB
+          // set taxonomies in DB for objects with no taxonomy references
           if (function_exists ("rdbms_setpublicationtaxonomy")) rdbms_setpublicationtaxonomy ($site, false);
 
           // ----------------------------------------------- STORAGE SPACE -----------------------------------------------

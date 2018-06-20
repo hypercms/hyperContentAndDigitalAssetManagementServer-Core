@@ -35,6 +35,7 @@ $html5support = getrequest ("html5support");
 $lang = getrequest ("lang", "objectname", $mgmt_lang_shortcut_default);
 $token = getrequest ("token");
 $action = getrequest ("action");
+$require = getrequest ("require");
 $theme = getrequest ("theme");
 // input parameters (assetbrowser)
 $sentinstance = getrequest ("instance", "publicationname");
@@ -239,7 +240,12 @@ if (checkuserip (getuserip ()) == true)
   // reset password
   if ($action == "reset")
   {
-    $show = sendresetpassword ($sentuser);
+    $show = sendresetpassword ($sentuser, false);
+  }
+  // reset password and send login link
+  elseif ($action == "request")
+  {
+    $show = sendresetpassword ($sentuser, true);
   }
   // login
   else
@@ -412,17 +418,20 @@ if (checkuserip (getuserip ()) == true)
     // login or password are false
     elseif (isset ($login_result) && is_array ($login_result) && ($login_result['auth'] == false || $login_result['writesession'] == false))
     {
-      $show = "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".str_replace ("%timeout%", $mgmt_config['logon_timeout'], $login_result['message'])."</div>\n";
+      $show = str_replace ("%timeout%", $mgmt_config['logon_timeout'], $login_result['message']);
     }
   }
 
   // login form
   if ((!isset ($login_result) || $login_result['auth'] != true))
-  {    
+  {
+    if ($show != "") $show = "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".$show."</div>\n";
+  
     $show = "
-      <form name=\"login\" method=\"post\" onsubmit=\"return submitlogin();\" action=\"\">
+      <form name=\"login\" method=\"post\" onsubmit=\"return ".((empty ($mgmt_config['multifactorauth']) || $require == "password") ? "submitlogin()" : "requestpassword()").";\" action=\"\">
         <input type=\"hidden\" name=\"token\" value=\"".$token_new."\" />
         <input type=\"hidden\" name=\"action\" value=\"login\" />
+        <input type=\"hidden\" name=\"require\" value=\"\" />
         <input type=\"hidden\" name=\"is_mobile\" value=\"0\" />
         <input type=\"hidden\" name=\"is_iphone\" value=\"0\" />
         <input type=\"hidden\" name=\"html5support\" value=\"0\" />
@@ -430,14 +439,19 @@ if (checkuserip (getuserip ()) == true)
         ".$show;
           
     if (!empty ($mgmt_config['instances']) && is_dir ($mgmt_config['instances'])) $show .= "
-        <div id=\"sentinstance_container\">
+        <div id=\"sentinstance_container\" ".($require == "password" ? "style=\"position:absolute; visibility:hidden;\"" :  "").">
           <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" placeholder=\"".getescapedtext ($hcms_lang['instance'][$lang])."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"1\" /><br/>
         </div>";
           
     $show .= "
-        <div>
-          <input type=\"text\" id=\"sentuser\" name=\"sentuser\" placeholder=\"".getescapedtext ($hcms_lang['user'][$lang])."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"2\" /><br/>
-          <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" placeholder=\"".getescapedtext ($hcms_lang['password'][$lang])."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"3\" />
+        <div id=\"sentuser_container\">
+          <input type=\"".($require == "password" ? "hidden" : "text")."\" id=\"sentuser\" name=\"sentuser\" placeholder=\"".getescapedtext ($hcms_lang['user'][$lang])."\" value=\"".$sentuser."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"2\" />";
+          
+    if (empty ($mgmt_config['multifactorauth']) || $require == "password") $show .= "
+         <br/>
+         <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" placeholder=\"".getescapedtext ($hcms_lang['password'][$lang])."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"3\" />";
+    
+    $show .= "
         </div>
 
         <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 2px;\">
@@ -445,13 +459,13 @@ if (checkuserip (getuserip ()) == true)
         </div>
 
         <div style=\"padding:4px 0px;\">
-          <button type=\"submit\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:260px;\" onClick=\"submitlogin()\" tabindex=\"4\">Log in</button>
+          <button type=\"submit\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:260px;\" tabindex=\"4\">".((empty ($mgmt_config['multifactorauth']) || $require == "password") ? "Log in" : getescapedtext ($hcms_lang['send-e-mail'][$lang]))."</button>
         </div>
 
         <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal;\">Popups must be allowed</div>";
         
-      if (!empty ($mgmt_config['resetpassword'])) $show .= "
-        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"resetpassword();\">Reset Password</div>";
+      if (!empty ($mgmt_config['resetpassword']) && empty ($mgmt_config['multifactorauth'])) $show .= "
+        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"resetpassword()\">Reset Password</div>";
 
       $show .= "
       </form>\n";
@@ -474,7 +488,7 @@ if (checkuserip (getuserip ()) == true)
 // client ip is banned
 else
 {
-  $show .= "<p class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".str_replace ("%timeout%", $mgmt_config['logon_timeout'], $hcms_lang['you-have-been-banned'][$lang])."</p>\n";
+  $show = "<p class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".str_replace ("%timeout%", $mgmt_config['logon_timeout'], $hcms_lang['you-have-been-banned'][$lang])."</p>\n";
 }
 ?>
 <!DOCTYPE html>
@@ -583,42 +597,82 @@ function html5support()
 
 function submitlogin()
 {
-  document.forms['login'].elements['action'].value = 'login';
-  
-  if (document.getElementById('sentinstance')) var instance = document.getElementById('sentinstance').value;
-  var username = document.getElementById('sentuser').value;
-  var password = document.getElementById('sentpasswd').value;
-  
-  if (username == "") document.getElementById('sentuser').className = 'hcmsRequiredInput';
-  else document.getElementById('sentuser').className = '';
-  
-  if (password == "") document.getElementById('sentpasswd').className = 'hcmsRequiredInput';
-  else document.getElementById('sentpasswd').className = '';
-
-  if ((instance != "" || username != "" || password != "") && document.getElementById('remember').checked == true)
+  if (document.forms['login'])
   {
-    if (document.getElementById('sentinstance')) localStorage.setItem('instance', instance);
-    localStorage.setItem('username', username);
-    localStorage.setItem('password', password);
+    document.forms['login'].elements['action'].value = 'login';
+    
+    if (document.getElementById('sentinstance')) var instance = document.getElementById('sentinstance').value;
+    else var instance = '';
+    if (document.getElementById('sentuser')) var username = document.getElementById('sentuser').value;
+    else var username = '';
+    if (document.getElementById('sentpasswd')) var password = document.getElementById('sentpasswd').value;
+    else var password = '';
+    
+    if (username.trim() == "") document.getElementById('sentuser').className = 'hcmsRequiredInput';
+    else document.getElementById('sentuser').className = '';
+    
+    if (password.trim() == "") document.getElementById('sentpasswd').className = 'hcmsRequiredInput';
+    else document.getElementById('sentpasswd').className = '';
+  
+    if ((instance != "" || username != "" || password != "") && document.getElementById('remember').checked == true)
+    {
+      if (document.getElementById('sentinstance')) localStorage.setItem('instance', instance);
+      localStorage.setItem('username', username);
+      localStorage.setItem('password', password);
+    }
+  
+    if (username.trim() != "" && password.trim() != "") return true;
+    else return false;
   }
-
-  if (username.trim() != "" && password.trim() != "") return true;
   else return false;
 }
 
 function resetpassword()
 {
-  document.forms['login'].elements['action'].value = 'reset';
-  
-  if (document.getElementById('sentinstance')) var instance = document.getElementById('sentinstance').value;
-  var username = document.getElementById('sentuser').value;
-  
-  if (username == "") document.getElementById('sentuser').className = 'hcmsRequiredInput';
-  else document.getElementById('sentuser').className = '';
-  
-  document.getElementById('sentpasswd').className = '';
-  
-  if (username.trim() != "") document.forms['login'].submit();
+  if (document.forms['login'])
+  {
+    document.forms['login'].elements['action'].value = 'reset';
+    
+    if (document.getElementById('sentinstance')) var instance = document.getElementById('sentinstance').value;
+    else var instance = '';
+    if (document.getElementById('sentuser')) var username = document.getElementById('sentuser').value;
+    else var username = '';
+    
+    if (username.trim() == "") document.getElementById('sentuser').className = 'hcmsRequiredInput';
+    else document.getElementById('sentuser').className = '';
+    
+    if (document.getElementById('sentpasswd')) document.getElementById('sentpasswd').className = '';
+    
+    if (username.trim() != "")
+    {
+      document.forms['login'].submit();
+    }
+    else return false;
+  }
+  else return false;
+}
+
+function requestpassword()
+{
+  if (document.forms['login'])
+  {
+    document.forms['login'].elements['action'].value = 'request';
+    document.forms['login'].elements['require'].value = 'password';
+    
+    if (document.getElementById('sentinstance')) var instance = document.getElementById('sentinstance').value;
+    else var instance = '';
+    if (document.getElementById('sentuser')) var username = document.getElementById('sentuser').value;
+    else var username = '';
+    
+    if (username.trim() == "") document.getElementById('sentuser').className = 'hcmsRequiredInput';
+    else document.getElementById('sentuser').className = '';
+    
+    if (document.getElementById('sentpasswd')) document.getElementById('sentpasswd').className = '';
+    
+    if (username.trim() != "") return true;
+    else return false;
+  }
+  else return false;
 }
 
 function setwallpaper ()

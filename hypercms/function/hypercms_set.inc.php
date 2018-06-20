@@ -51,16 +51,15 @@ function setsession ($variable, $content="", $write=false)
 
 // ----------------------------------------- settaxonomy ------------------------------------------
 // function: settaxonomy()
-// input: publication name [string], container ID [string], 2-digit language code [string] (optional)
+// input: publication name [string], container ID [string], 2-digit language code [string] (optional), taxonomy definition [array] (optional)
 // output: result array / false on error
 
 // description:
 // Analyzes the content regarding all taxonomy keywords, saves results in database and returns an array (multilingual support based on taxonomies).
-// Global variable $taxonomy can be used to pass the taxonomy as array.
 
-function settaxonomy ($site, $container_id, $langcode="")
+function settaxonomy ($site, $container_id, $langcode="", $taxonomy="")
 {
-  global $mgmt_config, $taxonomy;
+  global $mgmt_config;
   
   if (valid_publicationname ($site) && intval ($container_id) > 0 && is_array ($mgmt_config))
   {
@@ -94,7 +93,7 @@ function settaxonomy ($site, $container_id, $langcode="")
         
         if (is_array ($text_array) && sizeof ($text_array) > 0)
         {
-          foreach ($text_array as $text_id=>$text)
+          foreach ($text_array as $text_id => $text)
           {
             $langcount = array();
             
@@ -107,25 +106,25 @@ function settaxonomy ($site, $container_id, $langcode="")
               reset ($taxonomy);
               
               // return key = taxonomy ID and value = keyword
-              foreach ($taxonomy as $lang=>$tax_array)
+              foreach ($taxonomy as $lang => $tax_array)
               {
                 // language restriction
                 if ($lang == strtolower ($langcode) || $langcode == "")
                 {
                   $langcount[$lang] = 0;
     
-                  foreach ($tax_array as $path=>$keyword)
+                  foreach ($tax_array as $path => $keyword)
                   {
                     // find taxonomy keyword in text
                     if ($keyword != "" && strpos (" ".$text." ", strtolower (" ".$keyword)) > 0)
                     {
-                      // get ID
+                      // get taxonomy ID from taxonomy path (last item in path)
                       $path_temp = substr ($path, 0, -1);
                       $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
-                      
+
                       // result array
                       $result[$text_id][$lang][$id] = $keyword;
-                                    
+          
                       // count number of found expressions per language and text ID if keyword has more than 5 digits
                       if (strlen ($keyword) > 5) $langcount[$lang]++;
                     }
@@ -145,7 +144,7 @@ function settaxonomy ($site, $container_id, $langcode="")
                 // remove other languages
                 if (!empty ($langcode))
                 {
-                  foreach ($result[$text_id] as $lang_delete=>$array)
+                  foreach ($result[$text_id] as $lang_delete => $array)
                   {
                     if ($lang_delete != $langcode) unset ($result[$text_id][$lang_delete]);
                   }

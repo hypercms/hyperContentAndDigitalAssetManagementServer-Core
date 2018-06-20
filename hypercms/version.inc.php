@@ -2794,6 +2794,27 @@ Release 06/2017
 - Implementation of new function mediapublicaccess in Main API
 - Implementation of function mediapublicaccess in mediadownload, and mediawrapper services
 - Implementation of function mediapublicaccess in videoplayer
+- Implementation of multi-factor authentication as new option besides the standard login using user name and password (requires a valid e-mail address and e-mail access of user)
+- Modifications in userlogin in order to support the multi-factor authentication
+- Implementation of new main configuration settings $mgmt_config['multifactorauth']
+- Modifications in JS function hcms_openWindow in main.js in order to verify moveto support of browsers
+- Implementation of new JS function hcms_downloadURI in main.js
+- Implementation of new JS function hcms_addTableRow in main.js
+- Modifications in function createtaxonomy in Main API in order to recreate the taxonomy for all objects in case the taxonomy definition has been changed
+- Modifications in function createtaxonomy in Main API in order to process new taxonomy file format (CSV) instead of single taxonomy files for each language and select a specific publication (new input)
+- Removed automatic execution of function createtaxonomy in daily job
+- Modifications in function rdbms_setpublicationtaxonomy in DB Connect in order to support empty publication input value and recreate the taxonomy for all publications
+- Design modifications in media_hierarchy
+- Implementation of new function load_csv in Main API
+- Implementation of new function loadtaxonomy and savetaxonomy in Meta API
+- Implementation of new function is_activelanguage in Main API
+- Modifications in function showtranslator in UI API in order to call function is_activelanguage
+- Implementation of taxonomy upload and download as CSV file in control_template_menu
+- Implementation of multilingual taxonomy viewer and editor
+- Modifications in template_info in order to display template owner
+- Design modifications in page_info_stats
+- Modifications in contextmenu.js in order to disable select area and use the browsers standard marking of content
+- Modifications in function settaxonomy in Set API in order to force loading the taxonomy defintion
 - Bug fix: Download options of video have been applied for audio files as well in control_content_menu and control_objectlist_menu
 - Bug fix: Function createmedia in Media API did not set the path to the source file for RAW images
 - Bug fix: Wrong JS function call has been used for setSaveType in single components form view
@@ -2805,6 +2826,7 @@ Release 06/2017
 - Bug fix: queue_objectlist did kill user session for DAM publications if a valid publication name has been provided
 - Bug fix: Fixed issue with annotation toolbar action selector in MS IE
 - Bug fix: Annotations library has not been verified in template engine (issue only related to Free Edition)
+- Bug fix: function rdbms_setpublicationtaxonomy in DB connect di use wrong variable name for container ID in settaxnomy function call
 */
 
 // current version

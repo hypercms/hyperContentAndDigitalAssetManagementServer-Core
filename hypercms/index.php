@@ -22,6 +22,16 @@ $forward = "";
 // call on access event to analyze request
 if ($eventsystem['onaccess'] == 1) onaccess ($_REQUEST);
 
+// ------ login link parameters for 2 factor authentication --------
+
+$login = getrequest ("login", "url");
+$instance = getrequest ("instance", "url");
+
+if ($login != "")
+{
+  $forward = "userlogin.php?require=password&sentuser=".url_encode($login)."&sentinstance=".url_encode($instance);
+}
+
 // ------------------- access link parameters -------------------
 
 //   new hash parameter for mail-link (accesslink)

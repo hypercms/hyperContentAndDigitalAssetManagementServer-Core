@@ -815,7 +815,7 @@ function rdbms_setkeywords ($site, $container_id)
 // output: true / false
 
 // description:
-// Saves all keywords of a publication in database.
+// Saves all keywords of a publication in the database.
 
 function rdbms_setpublicationkeywords ($site, $recreate=false)
 {
@@ -908,7 +908,7 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
               // insert new taxonomy entries    
               $sql = 'INSERT INTO taxonomy (id, text_id, taxonomy_id, lang) ';      
               $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", "'.$taxonomy_id.'", "'.$lang.'")';  
-      
+
               $errcode = "50202";
               $db->query ($sql, $errcode, $mgmt_config['today'], 'insert');
             }
@@ -931,55 +931,95 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
 // ----------------------------------------- set taxonomy for a publication --------------------------------------------
 
 // function: rdbms_setpublicationtaxonomy()
-// input: publication name, recreate [true,false]
+// input: publication name [string] (optional), recreate [true,false] (optional)
 // output: true / false
 
 // description:
 // Saves all taxonomy keywords of a publication in the database.
 
-function rdbms_setpublicationtaxonomy ($site, $recreate=false)
+function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
 {
   global $mgmt_config;
+ 
+  $site_array = array();
   
-  // load publication management config
-  if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['taxonomy']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+  if (valid_publicationname ($site))
   {
-    require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    $site_array[0] = $site; 
   }
-  
-  // if taxonomy is enabled
-  if (!empty ($mgmt_config[$site]['taxonomy']))
+  elseif ($site == "")
   {
-    // remove all taxonomy entries from publication
-    if ($recreate == true) rdbms_deletepublicationtaxonomy ($site, true);
+    $inherit_db = inherit_db_read ();
     
-    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
-    // select containers of publication
-    if ($recreate == true)
+    if ($inherit_db != false && sizeof ($inherit_db) > 0)
     {
-      $sql = 'SELECT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/" COLLATE utf8_bin';
-    }
-    else
-    {
-      $sql = 'SELECT object.id FROM object INNER JOIN textnodes ON textnodes.id=object.id LEFT JOIN taxonomy ON taxonomy.id=object.id WHERE (object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin) AND textnodes.textcontent!="" AND taxonomy.id IS NULL';
-    }
-    
-    $errcode = "50353";
-    $containers = $db->query($sql, $errcode, $mgmt_config['today'], 'containers');
-    
-    if ($containers)
-    {
-      while ($row = $db->getResultRow ('containers'))
+      foreach ($inherit_db as $site => $array)
       {
-        // set taxonomy for container
-        if (!empty ($row1['id'])) settaxonomy ($site, $row1['id']);
+        if ($site != "") $site_array[] = trim ($site);            
       }
     }
+  }
+
+  if (sizeof ($site_array) > 0)
+  {
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    // save log
-    savelog ($db->getError ());    
-    $db->close();
+    $site_array = array_unique ($site_array);
+    
+    foreach ($site_array as $site)
+    {
+      // load publication management config
+      if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['taxonomy']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+      {
+        require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+      }
+      
+      // if taxonomy is enabled
+      if (!empty ($mgmt_config[$site]['taxonomy']))
+      {
+        // remove all taxonomy entries from publication
+        if ($recreate == true) rdbms_deletepublicationtaxonomy ($site, true);
+
+        $site = $db->escape_string ($site);
+        
+        // select containers of publication
+        if ($recreate == true)
+        {
+          $sql = 'SELECT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin';
+        }
+        else
+        {
+          $sql = 'SELECT object.id FROM object INNER JOIN textnodes ON textnodes.id=object.id LEFT JOIN taxonomy ON taxonomy.id=object.id WHERE (object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin) AND textnodes.textcontent!="" AND taxonomy.id IS NULL';
+        }
+        
+        $errcode = "50353";
+        $containers = $db->query($sql, $errcode, $mgmt_config['today'], 'containers');
+        
+        if ($containers)
+        {
+          // load taxonomy of publication
+          if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+          {
+            include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+          }
+          // load default taxonomy
+          elseif (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+          {
+            include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
+          }
+      
+          while ($row = $db->getResultRow ('containers'))
+          {
+            // set taxonomy for container
+            if (!empty ($row['id'])) settaxonomy ($site, $row['id'], "", $taxonomy);
+          }
+        }
+      }
+      
+      // save log
+      savelog ($db->getError ());    
+      $db->close();
+    }
         
     return true;
   }
@@ -1524,8 +1564,10 @@ function rdbms_deletepublicationkeywords ($site)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
+    $site = $db->escape_string ($site);
+    
     // select containers of publication
-    $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/" COLLATE utf8_bin';
+    $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin';
        
     $errcode = "50053";
     $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
@@ -1569,15 +1611,17 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
   {
     require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
   }
-  
+
   // if taxonomy is disabled
   if (empty ($mgmt_config[$site]['taxonomy']) || $force == true)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
+    $site = $db->escape_string ($site);
+    
     // select containers of publication
-    $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/" COLLATE utf8_bin';
-       
+    $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin';
+
     $errcode = "50053";
     $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
     
@@ -1587,7 +1631,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
       {
         // delete taxonomy
         $sql = 'DELETE FROM taxonomy WHERE id="'.$row['id'].'"';
-           
+
         $errcode = "50054";
         $db->query ($sql, $errcode, $mgmt_config['today']);
       }

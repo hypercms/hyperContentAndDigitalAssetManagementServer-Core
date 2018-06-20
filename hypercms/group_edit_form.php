@@ -543,7 +543,7 @@ elseif ($preview == "yes")
       <td align="center"><img onClick="goToAccess('comp');" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/folder_comp.png" name="go_compaccess" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <?php if (!empty ($mgmt_config[$site]['sendmail'])) { ?>
-    <tr class="hcmsRowData2"> 
+    <tr class="hcmsRowData2">
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-mail-link'][$lang]); ?></td>
       <td align="center"><input type="checkbox" name="permission[compsendlink]" value="1" <?php if ($compsendlink==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr >

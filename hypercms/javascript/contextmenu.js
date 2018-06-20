@@ -1140,9 +1140,9 @@ function hcms_rightClick(e)
     {
       hcms_showContextmenu();
     }
+    
+    hcms_startSelectArea(e);
   }
-
-  hcms_startSelectArea(e);
   
   return true;
 }
@@ -1348,21 +1348,23 @@ function hcms_activateLinks(e)
 function hcms_startSelectArea(e)
 {
   if (!e) var e = window.event;
-      
+
+  // if alt-key is not pressed
   // start select area on left mouse button down
-  if (selectarea && (e.which == 0 || e.which == 1 || e.button == 0 || e.button == 1))
+  if (activatelinks == false && selectarea && (e.which == 0 || e.which == 1 || e.button == 0 || e.button == 1))
   {
     x1 = e.clientX;
     y1 = e.clientY;
     return true;
   }
-  
+
   return false;
 }
 
 function hcms_drawSelectArea()
 {
-  if (selectarea && x1 > 0 && y1 > 0)
+  // if alt-key is not pressed
+  if (activatelinks == false && selectarea && x1 > 0 && y1 > 0)
   {
     x3 = Math.min(x1,x2);
     x4 = Math.max(x1,x2);
@@ -1396,8 +1398,9 @@ function hcms_endSelectArea()
 {
   var selected = false;
 
+  // if alt-key is not pressed and
   // if select area is used
-  if (selectarea && x1 > 0 && y1 > 0 && x3 != 0 && y3 != 0 && x4 != 0 && y4 != 0 && (x4-x3) > 5 && (y4-y3) > 5)
+  if (activatelinks == false && selectarea && x1 > 0 && y1 > 0 && x3 != 0 && y3 != 0 && x4 != 0 && y4 != 0 && (x4-x3) > 5 && (y4-y3) > 5)
   {    
     // unselect all
     hcms_unselectAll ();

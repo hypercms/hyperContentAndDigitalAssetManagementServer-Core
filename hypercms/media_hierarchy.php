@@ -224,6 +224,14 @@ function deletehierarchy ()
     document.location='?site=<?php echo url_encode ($site); ?>&deletename=' + form.elements['hierarchyname'].options[form.elements['hierarchyname'].selectedIndex].value + '&token=<?php echo $token_new; ?>';
   }
 }
+
+function setlevel (e)
+{
+ if (e)
+ {
+   e.style.marginLeft = ((e.value - 1) * 20) + "px";
+ }
+}
 </script>
 </head>
 
@@ -328,9 +336,9 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
             if ($i % 2 == 0) $rowcolor = "hcmsRowData2";
             else $rowcolor = "hcmsRowData1";
           ?>
-          <tr class="<?php echo $rowcolor; ?>">
-            <td align="center">
-              <select name="hierarchy[<?php echo $i; ?>][level]" class="<?php echo $rowcolor; ?>">
+          <tr>
+            <td style="width:160px; text-align:left; white-space:nowrap;">
+              <select name="hierarchy[<?php echo $i; ?>][level]" class="<?php echo $rowcolor; ?>" onchange="setlevel(this)" style="<?php if (!empty ($record_array[$i]['level'])) echo "margin-left:".(($record_array[$i]['level'] - 1) * 20)."px"; elseif ($i != 1) echo "margin-left:20px;"; ?>">
                 <?php
                 if ($i == 1)
                 {
@@ -346,10 +354,10 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
                   }
                 }
                 ?>
-              </select>
+              </select><img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" align="absmiddle" class="hcmsButtonSizeSquare" />
             </td>
             <td>
-              <select name="hierarchy[<?php echo $i; ?>][text_id]" style="width:300px;" class="<?php echo $rowcolor; ?>">
+              <select name="hierarchy[<?php echo $i; ?>][text_id]" style="width:160px;" class="<?php echo $rowcolor; ?>">
                 <option value="">&nbsp;</option>
               <?php
               if (!empty ($attributes_all) && is_array ($attributes_all))
@@ -367,7 +375,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
               </select>
             </td>
             <td>
-              <input type="text" name="hierarchy[<?php echo $i; ?>][label]" value="<?php echo @$record_array[$i]['label']; ?>" style="width:300px;" class="<?php echo $rowcolor; ?>"/>
+              <input type="text" name="hierarchy[<?php echo $i; ?>][label]" value="<?php echo @$record_array[$i]['label']; ?>" style="width:360px;" class="<?php echo $rowcolor; ?>"/>
             </td>
           </tr>
           <?php
