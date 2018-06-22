@@ -1155,7 +1155,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   if ($buildview == "" || !in_array ($buildview, $valid_views) || !valid_publicationname ($site)) return false;
   elseif ($buildview == "template" && (!valid_publicationname ($site) || !valid_objectname ($user))) return false;
   elseif ($buildview != "template" && (!valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page) || !valid_objectname ($user))) return false;
-  
+
   // check for temp view directory (new since version 5.6.2)
   if (!is_dir ($mgmt_config['abs_path_view']))
   {
@@ -1171,8 +1171,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   if ($maxwidth > 0 && 350 > $maxwidth) $fieldwidth = $maxwidth;
   else $fieldwidth = 350;
 
-  // validate publication access for all views except publish
-  if ($buildview != "publish" || $buildview != "unpublish")
+  // validate publication access for all views except for publish and unpublish
+  if ($buildview != "publish" && $buildview != "unpublish")
   {
     // validate inheritance if site is outside of users publication access scope
     $valid_publicationaccess = checkpublicationpermission ($site, false);
@@ -1195,7 +1195,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");  
 
   // publication management config
-  if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+  if ((empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
   {
     require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
   }
@@ -1236,7 +1236,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   // ----------------------------------- build view of page -----------------------------------------
   
   // include publication target settings
-  if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
+  if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini")) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
   
   // eventsystem
   if ($eventsystem['oneditobject_pre'] == 1 && $eventsystem['hide'] == 0 && ($buildview == "cmsview" || $buildview == "inlineview")) 
