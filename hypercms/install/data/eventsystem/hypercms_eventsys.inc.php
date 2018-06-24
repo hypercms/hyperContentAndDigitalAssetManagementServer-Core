@@ -503,9 +503,9 @@ function ondeleteobject_pre ($site, $cat, $location, $object, $user)
       include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
 
       $objectdata = loadfile ($location, $object);
-      if ($objectdata != "") $mediafile = getfilename ($objectdata, "media");
-      if ($mediafile != "") $url = getmedialocation ($site, $mediafile, "url_path_media").$site."/".$mediafile;
-      if ($url != "") removeindex ($url);
+      if (!empty ($objectdata)) $mediafile = getfilename ($objectdata, "media");
+      if (!empty ($mediafile)) $url = getmedialocation ($site, $mediafile, "url_path_media").$site."/".$mediafile;
+      if (!empty ($url)) removeindex ($url);
     }
 
     if ($cat == "page")
@@ -514,7 +514,7 @@ function ondeleteobject_pre ($site, $cat, $location, $object, $user)
 
       $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
       $url = str_replace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$object;
-      if ($url != "") removeindex ($url);
+      if (!empty ($url)) removeindex ($url);
     }
   } 
   
@@ -747,10 +747,10 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
   if ($cat == "comp" && (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false))
   {
     $objectdata = loadfile ($location, $object);
-    if ($objectdata != "") $mediafile = getfilename ($objectdata, "media");
+    if (!empty ($objectdata)) $mediafile = getfilename ($objectdata, "media");
 
     // get the file extension of the file
-    if ($mediafile != "") $mediafile_ext = strtolower (strrchr ($mediafile, "."));
+    if (!empty ($mediafile)) $mediafile_ext = strtolower (strrchr ($mediafile, "."));
     else $mediafile_ext = "";
 
     if ($mediafile_ext == ".pdf" && ($container_name != "" || $container_content != ""))
@@ -777,7 +777,7 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
         if (!empty ($eventsystem ['searchcharset'][$site])) $charset = $eventsystem ['searchcharset'][$site];
         else $charset = "UTF-8";
 
-        if ($language_suffix != "") $language = array (str_replace ("_", "", strtolower ($language_suffix)));
+        if (!empty ($language_suffix)) $language = array (str_replace ("_", "", strtolower ($language_suffix)));
         else $language = Null;
 
         if (!empty ($content)) createindex ($url, $title, $description, $content, $charset, $language);
@@ -833,10 +833,10 @@ function onpublishobject_post ($site, $cat, $location, $object, $container_name,
       if (!empty ($eventsystem ['searchcharset'][$site])) $charset = $eventsystem ['searchcharset'][$site];
       else $charset = "UTF-8";
 
-      if ($language_suffix != "") $language = array (str_replace ("_", "", strtolower ($language_suffix)));
+      if (!empty ($language_suffix)) $language = array (str_replace ("_", "", strtolower ($language_suffix)));
       else $language = Null;
 
-      if ($content != "") createindex ($url, $title, $description, $content, $charset, $language);
+      if (!empty ($content)) createindex ($url, $title, $description, $content, $charset, $language);
     }
   }
     
@@ -858,17 +858,18 @@ function onunpublishobject_pre ($site, $cat, $location, $object, $user)
     if ($cat == "comp")
     {
       $objectdata = loadfile ($location, $object);
-      if ($objectdata != "") $mediafile = getfilename ($objectdata, "media");
+      if (!empty ($objectdata)) $mediafile = getfilename ($objectdata, "media");
 
       // get the file extension of the file
       if ($mediafile != "") $mediafile_ext = strtolower (strrchr ($mediafile, "."));
+      else $mediafile_ext = "";
 
       if ($mediafile_ext == ".pdf" && substr_count ($eventsystem['searchsites'], ";".$site.";") == 1)
       {
         include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
 
         $url = getmedialocation ($site, $mediafile, "url_path_media").$site."/".$mediafile;
-        if ($url != "") removeindex ($url);
+        if (!empty ($url)) removeindex ($url);
       }
     }
 
@@ -878,7 +879,7 @@ function onunpublishobject_pre ($site, $cat, $location, $object, $user)
 
       $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
       $url = str_replace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$object;
-      if ($url != "") removeindex ($url);
+      if (!empty ($url)) removeindex ($url);
     }
   }
   
