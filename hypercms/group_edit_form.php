@@ -83,6 +83,9 @@ function goToAccess (target)
 
 <body class="hcmsWorkplaceGeneric" onload="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png')">
 
+<!-- saving --> 
+<div id="savelayer" class="hcmsLoadScreen"></div>
+
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 <?php
 // check if login is an attribute of a sent string
@@ -640,7 +643,7 @@ elseif ($preview == "yes")
     {
       echo "<tr>
         <td rowspan=\"2\"><strong>".getescapedtext ($hcms_lang['save-group-settings'][$lang])."</strong>
-          <img name=\"Button\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"document.forms['groupform'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />
+          <img name=\"Button\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"hcms_showInfo ('savelayer', 0); document.forms['groupform'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />
         </td>
       </tr>";
     }

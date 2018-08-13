@@ -3,7 +3,7 @@
 $hcms_lang_name['so'] = "Somali";
 $hcms_lang_shortcut['so'] = "so";
 $hcms_lang_codepage['so'] = "utf-8";
-$hcms_lang_date['so'] = 'y-m-d H:i:s';
+$hcms_lang_date['so'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['so'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['so'] = "Banaanaanta
 $hcms_lang['monthly']['so'] = "Bishii";
 $hcms_lang['weekly']['so'] = "Waa Todobaadle";
 $hcms_lang['daily']['so'] = "Maalin Walba";
-$hcms_lang['user-comma-seperated']['so'] = "Ujuurada (hakad (') seperated)";
+$hcms_lang['comma-seperated']['so'] = "(hakad)";
 $hcms_lang['text-id-expiration-date-to-monitor']['so'] = "Qoraal-bari (dhamaad mudada taariikhda) wuxuu dejistay hab";
 $hcms_lang['date-format-eg']['so'] = "Meelaynta qoraalka Taariikhda (sida %Y-%m-%d ama %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['so'] = "Ujuurada uu magaca loo baahan yahay";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['so'] = "Bandhig magac (optional)";
 $hcms_lang['language-session-setting']['so'] = "Af Soomaaliga kal-fadhiga fadhiyay";
 $hcms_lang['session-name-and-values']['so'] = "Kal-Fadhiga magaca iyo qiimo";
 $hcms_lang['valid-language-value-optional']['so'] = "Maraggaygu af qiimaha (optional)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['so'] = "Ficilladaas/ku qor ruqso qaarkood isticmaale kooxaha (optional)";
+$hcms_lang['permission-for-certain-user-groups-optional']['so'] = "Ficilladaas/ku qor ruqso qaarkood isticmaale kooxaha (optional)";
 $hcms_lang['date-format-optional']['so'] = "Taariikhda Aad meelaynta qoraalka (optional)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['so'] = "Dpi qiimo autoscale suurooyin (optional)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['so'] = "Autoconvert lyaga hooskoodii bayse ahaayeen in ay la siiyey colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (optional)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['so'] = "Telefoonka";
 $hcms_lang['optical-character-recognition']['so'] = "Aqoonsiga Aqoonsiga Jilidda";
 $hcms_lang['delete-imported-files']['so'] = "Tirtir faylasha la keeno";
 $hcms_lang['leave-files-in-import-directory']['so'] = "Ka tag faylasha diiwaan-gelinta dib-u-dejinta (ha u magacaabo ama ha u wareejin ka dib marka la dhoofiyo)";
+$hcms_lang['timezone']['so'] = "Aag saacad";
+$hcms_lang['registration-of-new-users']['so'] = "Diiwaangelinta Isticmaalayaasha Cusub";
+$hcms_lang['assign-registered-users-to-group']['so'] = "Dooro user users diiwaangashan";
+$hcms_lang['notify-users']['so'] = "Ogeysii dadka isticmaala";
+$hcms_lang['sign-in']['so'] = "Sign in";
+$hcms_lang['sign-up']['so'] = "Sign up";
+$hcms_lang['please-sign-in']['so'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['so'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['so'] = "Popups must be allowed";
+$hcms_lang['reset-password']['so'] = "Reset password";
 ?>

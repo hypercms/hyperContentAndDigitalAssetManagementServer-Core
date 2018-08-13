@@ -246,11 +246,15 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
 
 function specialchr ($expression, $accept="")
 {
-  // escape chars:  . \ + * ? [ ^ ] $ ( ) { } = ! < > | : -
-  $accept = preg_quote ($accept);
-  
-  // check if expression is on watch list 
-  if (preg_match ("/^[a-zA-Z0-9".$accept."]+$/", $expression)) return false;
+  if ($expression != "")
+  {
+    // escape chars:  . \ + * ? [ ^ ] $ ( ) { } = ! < > | : -
+    $accept = preg_quote ($accept);
+    
+    // check if expression is on watch list 
+    if (preg_match ("/^[a-zA-Z0-9".$accept."]+$/", $expression)) return false;
+    else return true;
+  }
   else return true;
 }
 
@@ -337,6 +341,52 @@ function specialchr_decode ($expression)
   }
   else return false;
 }
+
+// ------------------------- convertdate -----------------------------
+// function: convertdate()
+// input: date and time [string], time zone source [string], source date format [string] (optional), time zone target [string], target date format [string] (optional)
+// output: converted date as tring / false
+
+// description:
+// This function converts a date to a different time zone and format.
+
+function convertdate ($date, $timezone1, $dateformat1="Y-m-d H:i:s", $timezone2, $dateformat2="Y-m-d H:i:s")
+{
+  // try to correct date 
+  if (!is_date ($date, $dateformat1)) $date = date ($dateformat1, strtotime ($date));
+
+  // verify input
+  if ($date != "" && is_date ($date, $dateformat1) && in_array ($timezone1, timezone_identifiers_list()) && in_array ($timezone2, timezone_identifiers_list()))
+  {
+    // create DateTime object
+    $result = DateTime::createFromFormat ($dateformat1, $date, new DateTimeZone ($timezone1));
+    // convert timezone
+    $result -> setTimeZone (new DateTimeZone ($timezone2));
+    // convert dateformat
+    return $result -> format ($dateformat2);
+  }
+  else return false;
+}
+
+// ------------------------- offsettime -----------------------------
+// function: offsettime()
+// input: %
+// output: offset time in ±hh:mm from UTC
+
+// description:
+// This function calculates the offset time from UTC (Coordinated Universal Time).
+
+function offsettime ()
+{
+  // set time zone
+  $now = new DateTime();
+  $mins = $now->getOffset() / 60;
+  $sgn = ($mins < 0 ? -1 : 1);
+  $mins = abs ($mins);
+  $hrs = floor ($mins / 60);
+  $mins -= $hrs * 60;
+  return $offset = sprintf ('%+d:%02d', $hrs*$sgn, $mins);
+}   
 
 // ------------------------- object_exists -----------------------------
 // function: object_exists()
@@ -985,7 +1035,7 @@ function is_mobilebrowser ()
 {
   global $user, $mgmt_config;
 
-  if ($_SERVER['HTTP_USER_AGENT'])
+  if (!empty ($_SERVER['HTTP_USER_AGENT']))
   {
     $useragent = $_SERVER['HTTP_USER_AGENT'];
     
@@ -1013,7 +1063,7 @@ function is_iOS ()
 {
   global $user, $mgmt_config;
   
-  if ($_SERVER['HTTP_USER_AGENT'])
+  if (!empty ($_SERVER['HTTP_USER_AGENT']))
   {
     $useragent = $_SERVER['HTTP_USER_AGENT'];
     
@@ -3986,12 +4036,16 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
     
     // eventsystem
     if ($eventsystem['onfiledownload_pre'] == 1) onfiledownload_pre ($site, $location, $media, $name, $user);
-
+    
+    // session ID
+    if (!session_id()) $add = "?PHPSESSID=".session_id();
+    else $add = "";
+    
     // copy to temp/view and execute
     copy ($location.$object, $mgmt_config['abs_path_view'].$prefix."_".$object);
     
     // get content via HTTP in order ro render page
-    $content = @file_get_contents ($mgmt_config['url_path_view'].$prefix."_".$object);
+    $content = @file_get_contents ($mgmt_config['url_path_view'].$prefix."_".$object.$add);
     
     // remove temp file
     unlink ($mgmt_config['abs_path_view'].$prefix."_".$object);
@@ -5441,7 +5495,7 @@ function createinstance ($instance_name, $settings, $user="sys")
       // edit admin user
       if ($show == "")
       {
-        $result = edituser ("*Null*", $username, "", $settings['password'], $settings['confirm_password'], "1", $settings['realname'], $settings['language'], "standard", $settings['email'], "", "", "", "", $user);
+        $result = edituser ("*Null*", $username, "", $settings['password'], $settings['confirm_password'], "1", $settings['realname'], $settings['language'], "standard", $settings['email'], "", "", "", "", "", $user);
         if ($result['result'] == false) $show = "<span class=hcmsHeadline>".$result['message']."</span><br />\n";
       }
     }
@@ -5710,11 +5764,14 @@ function createpublication ($site_name, $user="sys")
   // set default language
   if ($lang == "") $lang = "en";
   
+  $forbidden = array();
   // forbidden publication names since used for main config settings
-  $forbidden = array_keys ($mgmt_config);
+  if (is_array ($mgmt_config)) $forbidden = array_keys ($mgmt_config);  
+  // plugin.conf.php is the configuration file for the plugins and is saved in the same config-directory
+  $forbidden[] = "plugin";
   
   // check if sent data is available
-  if (!valid_publicationname ($site_name) || strlen ($site_name) > 100 || in_array ($site_name, $forbidden) || !valid_objectname ($user))
+  if (!is_array ($mgmt_config) || !valid_publicationname ($site_name) || strlen ($site_name) > 100 || in_array ($site_name, $forbidden) || !valid_objectname ($user))
   {
     $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['the-input-is-not-valid'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
@@ -6086,11 +6143,11 @@ function createpublication ($site_name, $user="sys")
 
 // ------------------------- editpublication -----------------------------
 // function: editpublication()
-// input: publication name [string], publication settings [array], user name [string]
+// input: publication name [string], publication settings with setting name as key and paramater as value [array], user name [string]
 // output: result array
 
 // description:
-// This function saves the settings of a publication
+// This function saves all settings of a publication. It is a good avice to load the settings of a publication and minpulate the values in order to provide all settings as input.
 
 function editpublication ($site_name, $setting, $user="sys")
 {
@@ -6252,9 +6309,21 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists('translate', $setting)) $translate_new = $setting['translate'];
     else $translate_new = "";
     
-        // set languages for OCR
+    // set languages for OCR
     if (array_key_exists('ocr', $setting)) $ocr_new = $setting['ocr'];
     else $ocr_new = "";
+    
+     // set registration of new users
+    if (array_key_exists('registration', $setting) && $setting['registration'] == true) $registration_new = "true";
+    else $registration_new = "false";
+    
+     // set user group assignment for newly registered users
+    if (array_key_exists('registration_group', $setting)) $registrationgroup_new = $setting['registration_group'];
+    else $registrationgroup_new = "";
+    
+     // set user notification if a new user has been registered
+    if (array_key_exists('registration_notify', $setting)) $registrationnotify_new = $setting['registration_notify'];
+    else $registrationnotify_new = "";
     
     // config file of management system
     $site_mgmt_config = "<?php
@@ -6380,7 +6449,7 @@ function editpublication ($site_name, $setting, $user="sys")
 
 ";
   $site_mgmt_config .= "
-// Theme
+// Design theme
 \$mgmt_config['".$site_name."']['theme'] = \"".$theme_new."\";
 
 // Set component inclusion type:
@@ -6401,6 +6470,14 @@ function editpublication ($site_name, $setting, $user="sys")
 // Enable (true) or disable (false) Remote Client 
 \$mgmt_config['".$site_name."']['remoteclient'] = \"".$remoteclient_new."\";
 
+// Enable (true) or disable (false) registration of new users
+\$mgmt_config['".$site_name."']['registration'] = ".$registration_new.";
+
+// Set user group assignment for newly registered users
+\$mgmt_config['".$site_name."']['registration_group'] = \"".$registrationgroup_new."\";
+
+// Set user notification if a new user has been registered (comma-speratated list of users)
+\$mgmt_config['".$site_name."']['registration_notify'] = \"".$registrationnotify_new."\";
 ";
 
   // publication management config
@@ -6638,19 +6715,19 @@ allow_ip = ".$allow_ip_new;
 
 // ------------------------- editpublicationsetting -----------------------------
 // function: editpublicationsetting()
-// input: publication name [string], publication settings name (see publication config file for details) [string], value [string], user name [string]  
-// output: true/false
+// input: publication name [string], publication settings with setting name as key and setting paramater as value  (see publication config file for details) [array], user name [string]  
+// output: result array
 
 // description:
 // This function can be used to edit a single settings of a publication
 
-function editpublicationsetting ($site_name, $setting, $value, $user="sys")
+function editpublicationsetting ($site_name, $setting, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   $result_ok = false;
   
-  if (valid_publicationname ($site_name) && is_string ($setting) && valid_objectname ($user))
+  if (valid_publicationname ($site_name) && is_array ($setting) && valid_objectname ($user))
   {        
     // load Management Config
     $site_mgmt_config = loadfile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php");
@@ -6666,11 +6743,21 @@ function editpublicationsetting ($site_name, $setting, $value, $user="sys")
       
       foreach ($site_mgmt_records as $record)
       {
-        if (substr_count ($record, "\$mgmt_config['".$site_name."']['".$setting."']") == 1)
+        $found = false;
+        
+        foreach ($setting as $key=>$value)
         {
-          $site_mgmt_config .= "\$mgmt_config['".$site_name."']['".$setting."'] = \"".str_replace ("\"", "\\\"", $value)."\";\n";
+          if (substr_count ($record, "\$mgmt_config['".$site_name."']['".$key."']") == 1)
+          {
+            if ((is_bool ($value) && $value === true) || $value == "true") $site_mgmt_config .= "\$mgmt_config['".$site_name."']['".$key."'] = true;\n";
+            elseif (((is_bool ($value) && $value === false) || $value == "false") && $value != "") $site_mgmt_config .= "\$mgmt_config['".$site_name."']['".$key."'] = false;\n";
+            else $site_mgmt_config .= "\$mgmt_config['".$site_name."']['".$key."'] = \"".str_replace ("\"", "\\\"", $value)."\";\n";
+            
+            $found = true;
+          }
         }
-        else $site_mgmt_config .= $record."\n";
+        
+        if (empty ($found)) $site_mgmt_config .= $record."\n";
       }
   
       if ($site_mgmt_config != "")
@@ -7706,14 +7793,14 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
 
 // ------------------------------------------- edituser --------------------------------------------
 // function: edituser()
-// input: publication name [string], user login name [string], new login name [string] (optional), password [string] (optional), confirmed password [string] (optional), super administrator [0,1] (optional), real name [string] (optional), language setting [en,de,...] (optional), 
+// input: publication name [string], user login name [string], new login name [string] (optional), password [string] (optional), confirmed password [string] (optional), super administrator [0,1] (optional), real name [string] (optional), language setting [en,de,...] (optional), time zone [string] (optional)
 //        theme name (optional), email [string] (optional), phone (optional), usergroup string [group1|group2] (optional), member of publication(s) string [site1|site2] (optional), user name [string] (optional)
 // output: result array
 
 // description:
 // This function edits a user. Use *Leave* as input if a value should not be changed. Use *Null* for publication name to remove access to all publications. Use *Null* for user group to remove user from all user groups of the publication.
 
-function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="", $language="en", $theme="", $email="", $phone="", $signature="", $usergroup="", $usersite="", $user="sys")
+function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="", $language="en", $timezone="", $theme="", $email="", $phone="", $signature="", $usergroup="", $usersite="", $user="sys")
 {
   global $eventsystem, $login_cat, $group, $mgmt_config, $hcms_lang, $lang;
 
@@ -7847,6 +7934,16 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         // insert values into xml schema
         $userdata = setcontent ($userdata, "<user>", "<language>", $language, "<login>", $login);
       }
+      
+      // check if phone was changed
+      if (isset ($timezone) && $timezone != "*Leave*" && $show == "")
+      {
+        // escape special characters
+        $timezone = strip_tags ($timezone);
+              
+        // insert values into xml schema
+        $userdata = setcontent ($userdata, "<user>", "<timezone>", "<![CDATA[".$timezone."]]>", "<login>", $login);
+      }  
 
       // check if theme was changed
       if (valid_objectname ($theme) && $theme != "*Leave*" && $show == "")
@@ -7893,6 +7990,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       if (isset ($usergroup) && valid_objectname ($usergroup) && $usergroup != "*Leave*" && $show == "")
       {
         if ($usergroup == "*Null*") $usergroup = "";
+        else $usergroup = "|".trim ($usergroup, "|")."|";
         
         // insert values into xml schema
         $user_node = selectcontent ($userdata, "<user>", "<login>", $login);
@@ -10647,7 +10745,7 @@ function createobject ($site, $location, $page, $template, $user)
 function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="", $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false, $zipfilename="", $zipfilecount=0)
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_compress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $eventsystem,
-         $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang;
+            $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang;
 
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
@@ -10904,7 +11002,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         return $result;
       }
     }
-  
+
     // error if file isn't certain type
     if ($mgmt_config['exclude_files'] != "")
     {
@@ -13734,7 +13832,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
 // function: cutobject()
 // input: publication name [string], location [string], object name [string], user name [string], 
 //        add to existing clipboard entries [true,false] (optional), save clipboard in session [true,false] (optional)
-// output: array
+// output: result array
 
 // description:
 // This function cuts a page or component
@@ -15336,8 +15434,8 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
     $data['intention'] = "sendmail";
     $data['token'] = createtoken ($user);
   
-    // call user_sendlink
-    HTTP_Post ($mgmt_config['url_path_cms']."service/sendlink.php", $data, "application/x-www-form-urlencoded", "UTF-8");
+    // call service
+    HTTP_Post ($mgmt_config['url_path_cms']."service/sendmail.php", $data, "application/x-www-form-urlencoded", "UTF-8");
     
     return true;
   }
@@ -16059,8 +16157,15 @@ function createqueueentry ($action, $object, $date, $published_only, $data="", $
 
   if ($action != "" && ($object == "" || substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0 || $object > 0) && is_date ($date, "Y-m-d H:i") && valid_objectname ($user))
   {
+    // correct date and time based on users time zone
+    if ($date != "" && !empty ($_SESSION['hcms_timezone']) && ini_get ('date.timezone'))
+    {
+      $datenew = convertdate ($date, $_SESSION['hcms_timezone'], "Y-m-d H:i", ini_get ('date.timezone'), "Y-m-d H:i");
+      if (!empty ($datenew)) $date = $datenew;
+    }
+  
     // queue entry with additional queue data
-    if (!empty ($data) && is_array ($data))
+    if (!empty ($data) && is_array ($data) && sizeof ($data) > 0)
     {
       // define php variables
       $data_str = "";
@@ -16344,7 +16449,7 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
     $fp = @fsockopen ($Host_protocol.$URL_Info["host"], $URL_Info["port"]);
 
     $result = "";
-          
+
     if ($fp)
     {
       @fwrite ($fp, $request);
@@ -16360,7 +16465,7 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
       @fclose ($fp);
     }
     else $result = false;
-
+   
     return $result;
   }
   else return false;
@@ -17192,7 +17297,7 @@ function sendresetpassword ($login, $link=false, $instance="")
   {
     // change password
     $mgmt_config['strongpassword'] = false;
-    $result = edituser ($site, $login, "", $password, $password, "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "sys");
+    $result = edituser ($site, $login, "", $password, $password, "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "sys");
 
     if ($result['result'] == false) return $result['message'];
   

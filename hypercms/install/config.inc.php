@@ -532,6 +532,10 @@ $mgmt_config['resetpassword'] = true;
 // Enable (true) or disable (false) multi-factor authentication
 $mgmt_config['multifactorauth'] = false;
 
+// Registration of new users
+// Enable (true) or disable (false) the registration link for new users in the sign-in mask
+$mgmt_config['userregistration'] = false;
+
 // Encryption
 // Encryption strength (weak, standard, strong)
 $mgmt_config['crypt_level'] = "strong";
@@ -687,9 +691,11 @@ $mgmt_imagepreview['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.
 $mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 220x220 -q 95 -f jpg";
 
 // Define the supported target formats for image editing:
-$mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
+$mgmt_imageoptions['.bmp']['original'] = "-f bmp";
 $mgmt_imageoptions['.gif']['original'] = "-f gif";
+$mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
 $mgmt_imageoptions['.png']['original'] = "-f png";
+$mgmt_imageoptions['.tif.tiff']['original'] = "-f tiff";
 
 // Define additional download formats besides the original image:
 $mgmt_imageoptions['.jpg.jpeg']['1920x1080px'] = '-s 1920x1080 -q 95 -f jpg';

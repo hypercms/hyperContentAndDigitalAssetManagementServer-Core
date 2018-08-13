@@ -3,7 +3,7 @@
 $hcms_lang_name['nl'] = "Dutch";
 $hcms_lang_shortcut['nl'] = "nl";
 $hcms_lang_codepage['nl'] = "utf-8";
-$hcms_lang_date['nl'] = 'y-m-d H:i:s';
+$hcms_lang_date['nl'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['nl'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['nl'] = "Meldinginst
 $hcms_lang['monthly']['nl'] = "Maandelijks";
 $hcms_lang['weekly']['nl'] = "Wekelijks";
 $hcms_lang['daily']['nl'] = "Dagelijks";
-$hcms_lang['user-comma-seperated']['nl'] = "Gebruiker (komma gescheiden)";
+$hcms_lang['comma-seperated']['nl'] = "(komma gescheiden)";
 $hcms_lang['text-id-expiration-date-to-monitor']['nl'] = "Tekst-ID (vervaldatum) te controleren";
 $hcms_lang['date-format-eg']['nl'] = "Datumnotatie (bv.  %Y- %m- %d en %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['nl'] = "EEN gebruikersnaam is een verplicht veld";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['nl'] = "Naam (optioneel)";
 $hcms_lang['language-session-setting']['nl'] = "Taal instelling zitting";
 $hcms_lang['session-name-and-values']['nl'] = "Sessienaam en waarden";
 $hcms_lang['valid-language-value-optional']['nl'] = "Geldige taal waarde (optioneel)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['nl'] = "Bewerken/schrijfrechten voor bepaalde gebruikersgroepen (optioneel)";
+$hcms_lang['permission-for-certain-user-groups-optional']['nl'] = "Bewerken/schrijfrechten voor bepaalde gebruikersgroepen (optioneel)";
 $hcms_lang['date-format-optional']['nl'] = "Datumnotatie (optioneel)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['nl'] = "Dpi-waarde voor automatisch schalen beelden (optioneel)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['nl'] = "Autoconvert beelden aan de kleurruimte heeft gegeven [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (optioneel)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['nl'] = "Telefoon";
 $hcms_lang['optical-character-recognition']['nl'] = "Optische karakter erkenning";
 $hcms_lang['delete-imported-files']['nl'] = "Verwijder geïmporteerde bestanden";
 $hcms_lang['leave-files-in-import-directory']['nl'] = "Laat bestanden in de importdirectory staan (hernoem ze niet of verplaats ze niet na het importeren)";
+$hcms_lang['timezone']['nl'] = "Tijdzone";
+$hcms_lang['registration-of-new-users']['nl'] = "Registratie van nieuwe gebruikers";
+$hcms_lang['assign-registered-users-to-group']['nl'] = "Ken geregistreerde gebruikers toe aan groep";
+$hcms_lang['notify-users']['nl'] = "Laat gebruikers weten";
+$hcms_lang['sign-in']['nl'] = "Aanmelden";
+$hcms_lang['sign-up']['nl'] = "Registreren";
+$hcms_lang['please-sign-in']['nl'] = "Log in alstublieft.";
+$hcms_lang['please-wait-for-the-approval']['nl'] = "Wacht alstublieft op de goedkeuring.";
+$hcms_lang['popups-must-be-allowed']['nl'] = "Popups moeten worden toegestaan";
+$hcms_lang['reset-password']['nl'] = "Reset wachtwoord";
 ?>

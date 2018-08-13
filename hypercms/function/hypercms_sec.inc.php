@@ -304,7 +304,7 @@ function accessgeneral ($site, $location, $cat)
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location);     
     
-    if (@substr_count ($location, "://") > 0)
+    if (substr_count ($location, "://") > 0)
     {
       if ($cat == "page") $location = str_replace ($mgmt_config[$site]['url_path_page'], $mgmt_config[$site]['abs_path_page'], $location);
       elseif ($cat == "comp") $location = str_replace ($mgmt_config['url_path_comp'], $mgmt_config['abs_path_comp'], $location);
@@ -315,11 +315,11 @@ function accessgeneral ($site, $location, $cat)
     }
     
     // cut off file name 
-    if (@is_file ($location) && $location[strlen ($location)-1] != "/")
+    if (is_file ($location) && $location[strlen ($location)-1] != "/")
     {
       $location = substr ($location, 0, strrpos ($location, "/") + 1);
     }
-    elseif (@is_dir ($location) && $location[strlen ($location)-1] != "/")
+    elseif (is_dir ($location) && $location[strlen ($location)-1] != "/")
     {
       $location = $location."/";
     }
@@ -346,7 +346,7 @@ function accessgeneral ($site, $location, $cat)
     {   
       foreach ($hiddenfolder[$site] as $exclude_folder)
       {
-        if (@substr_count ($location_esc, $exclude_folder) > 0) return false;
+        if (substr_count ($location_esc, $exclude_folder) > 0) return false;
       }
     }
 
@@ -775,6 +775,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       'html' => '',
       'rootpermission' => array(),
       'lang' => '',
+      'timezone' => '',
       'user' => '',
       'passwd' => '',
       'userhash' => '',
@@ -963,6 +964,11 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         if (!empty ($userlanguage[0])) $result['lang'] = $userlanguage[0];
         else $result['lang'] = "en";
         
+        // language
+        $usertimezone = getcontent ($usernode[0], "<timezone>");
+        if (!empty ($usertimezone[0])) $result['timezone'] = $usertimezone[0];
+        else $result['timezone'] = "";
+        
         // set language of user and load language file
         $lang = $result['lang'];        
         require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
@@ -1115,9 +1121,9 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
               $usergroupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site_name.".usergroup.xml.php");
 
               // include configuration of site
-              if (@is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
+              if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
               {
-                @require_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
+                require_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
                 
                 // define array of excluded/hidden folders
                 if (!empty($mgmt_config[$site_name]['exclude_folders']))
@@ -1147,7 +1153,9 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                 
                 if ($usergroupdata != false && strlen ($group_string) > 0)
                 {
-                  $group_array = explode ("|", substr ($group_string, 1, strlen ($group_string) - 2));
+                  // user group names as array
+                  if (strpos ("_".$group_string, "|") > 0) $group_array = explode ("|", trim ($group_string, "|"));
+                  else $group_array = array($group_string);
              
                   // if object linking is used assign group "default" if existing.
                   // user must have at least one group assigned to have access to the system!
@@ -1276,6 +1284,9 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       }
     }
   }
+  
+  // in case hash code has been provided
+  if (empty ($user)) $user = $fileuser;
 
   if ($auth)
   {
@@ -1305,7 +1316,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         
         // information
         $errcode = "00221";
-        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|$errcode|hyperCMS started first time by publication: ".$site_name;       
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|hyperCMS started first time by publication: ".$site_name;       
         
         $checkresult = true;       
       }
@@ -1328,7 +1339,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
 
         // warning
         $errcode = "00222";
-        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|$errcode|license limits exceeded";            
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|license limits exceeded";            
       }
     }
     else
@@ -1343,7 +1354,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       
       // warning
       $errcode = "00223";
-      $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|$errcode|check.dat is missing for ".$mgmt_config['url_path_cms'];       
+      $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|check.dat is missing for ".$mgmt_config['url_path_cms'];       
     }
   }
   
@@ -1370,7 +1381,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         
         // warning
         $errcode = "00101";
-        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|$errcode|client IP $client_ip is banned due to 10 failed logon attempts";      
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|client IP ".$client_ip." is banned due to 10 failed logon attempts";      
               
         // reset counter
         $_SESSION['temp_ip_counter'][$user] = 1;
@@ -1482,7 +1493,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   
   // log
   if (!empty ($result['auth']))
-  {
+  { 
     // information
     $errcode = "00102";
     $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|user '".$user."' with client IP ".$client_ip." is logged in";
@@ -1524,6 +1535,9 @@ function registerinstance ($instance, $load_config=true)
 
   if (!empty ($mgmt_config['instances']) && $instance != "")
   {
+    // create session if it doesn not exist
+    createsession ();
+     
     if (valid_publicationname ($instance) && is_file ($mgmt_config['instances'].$instance.".inc.php"))
     {
       $_SESSION['hcms_instance'] = $instance;
@@ -1535,6 +1549,167 @@ function registerinstance ($instance, $load_config=true)
     }
     else return false;
   }
+}
+
+// ---------------------- registeruser -----------------------------
+// function: registerinstance()
+// input: instance name [string] (optional), result array of function userlogin [array], access link [array] (optional), download formats of access link provided by function rdbms_getaccessinfo [array] (optional), mobile browser result of client [0,1] (optional), is iOS browser result of client [0,1] (optional), HTML5 file support result of client [0,1] (optional)
+// output: result array / false on error
+// requires: hypercms_api.inc.php
+
+function registeruser ($instance="", $login_result, $accesslink=false, $hcms_objformats=false, $is_mobile=0, $is_iphone=0, $html5support=1)
+{
+  global $mgmt_config, $hcms_lang, $lang;
+
+  if (!empty ($mgmt_config) && !empty ($login_result['auth']))
+  {	
+    // create session if it doesn not exist
+    createsession ();
+    
+    // regenerate session id after successful logon
+    session_regenerate_id ();
+
+    // register instance in session without loading main config
+    registerinstance ($instance, false);
+
+    // register root, global and local pemissions
+    if (!empty ($login_result['rootpermission']))
+    {
+      setsession ('hcms_rootpermission', $login_result['rootpermission']);
+    }
+    
+    if (!empty ($login_result['globalpermission']))
+    {
+      setsession ('hcms_globalpermission', $login_result['globalpermission']);
+    }
+    
+    if (!empty ($login_result['localpermission']))
+    {
+      setsession ('hcms_localpermission', $login_result['localpermission']);
+    }
+      
+    // register values for this session
+    setsession ('hcms_user', $login_result['user']);
+    setsession ('hcms_passwd', md5 ($login_result['passwd']));
+    setsession ('hcms_realname', $login_result['realname']);
+    setsession ('hcms_email', $login_result['email']);
+    setsession ('hcms_siteaccess', $login_result['siteaccess']);
+    setsession ('hcms_pageaccess', $login_result['pageaccess']);
+    setsession ('hcms_compaccess', $login_result['compaccess']);
+    setsession ('hcms_superadmin', $login_result['superadmin']);
+    setsession ('hcms_lang', $login_result['lang']);
+    setsession ('hcms_timezone', $login_result['timezone']);
+    setsession ('hcms_hiddenfolder', $login_result['hiddenfolder']);
+
+    // register download formats in case of an access link
+    if (!empty ($hcms_objformats)) setsession ('hcms_downloadformats', $hcms_objformats);
+    
+    // reset mobile settings by values of client side browser detection (JavaScript)
+    if (is_mobilebrowser () || $is_mobile == 1 || $is_mobile == "yes")
+    {
+      $login_result['mobile'] = true;
+      $login_result['themename'] = "mobile";
+    }
+    else $login_result['mobile'] = false;
+    
+    // iphone setting
+    if (is_iOS() || $is_iphone == 1 || $is_iphone == "yes")
+    {
+      $login_result['iphone'] = true;
+    }
+    else $login_result['iphone'] = false;
+    
+    // register permanent view settings
+    setsession ('hcms_mobile', $login_result['mobile']);
+    setsession ('hcms_iphone', $login_result['iphone']);      
+    // register temporary view settings
+    setsession ('hcms_temp_explorerview', $mgmt_config['explorerview']);
+    setsession ('hcms_temp_objectview', $mgmt_config['objectview']);
+    setsession ('hcms_temp_sidebar', $mgmt_config['sidebar']);
+    // register chat state after logon
+    setsession ('hcms_temp_chatstate', $login_result['chatstate']);
+    // register theme settings
+    setsession ('hcms_themename', $login_result['themename']);
+    setsession ('hcms_themelocation', getthemelocation ($login_result['themename']));    
+    // register HTML5 file support in session
+    setsession ('hcms_html5file', $html5support);    
+    // register server feedback
+    setsession ('hcms_keyserver', $login_result['keyserver']);
+    // register current timestamp in session
+    setsession ('hcms_temp_sessiontime', time());
+    // register objectlist column defintions
+    setsession ('hcms_objectlistcols', $login_result['objectlistcols']);
+    // register template label defintions
+    setsession ('hcms_labels', $login_result['labels']);
+    
+    // set object linking information in session
+    if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']))
+    {
+      setsession ('hcms_linking', $login_result['hcms_linking']);
+      setsession ('hcms_temp_explorerview', "medium");
+    }
+    elseif (!empty ($accesslink['hcms_linking']) && is_array ($accesslink['hcms_linking']))
+    {
+      setsession ('hcms_linking', $accesslink['hcms_linking']);
+      setsession ('hcms_temp_explorerview', "medium");
+    }
+    else
+    {
+      setsession ('hcms_linking', Null);
+    }
+  
+    // write hypercms session file
+    $login_result['writesession'] = writesession ($login_result['user'], $login_result['passwd'], $login_result['checksum']);
+
+    // session info could not be saved
+    if ($login_result['writesession'] == false)
+    {  
+      $login_result['message'] = getescapedtext ($hcms_lang['session-information-could-not-be-saved'][$lang]);
+    }
+    
+    return $login_result;
+  }
+  else return false;
+}
+
+// ---------------------- registerinstance -----------------------------
+// function: registerinstance()
+// input: user hash [string], object hash [string] (optional)
+// output: true/false
+// requires: hypercms_api.inc.php
+
+function registerassetbrowser ($userhash, $objecthash="")
+{
+  global $mgmt_config;
+
+  // user hash is provided for the assetbrowser or object access links
+  if (!empty ($userhash))
+  {
+    // create session if it doesn not exist
+    createsession ();
+    
+    // set assetbrowser mode information in session
+    setsession ('hcms_assetbrowser', true);
+    
+    // set assetbrowser location and object in session
+    if (!empty ($objecthash))
+    {
+      $objectpath = rdbms_getobject ($objecthash);
+      
+      if (!empty ($objectpath))
+      {
+        setsession ('hcms_assetbrowser_location', getlocation ($objectpath));
+        setsession ('hcms_assetbrowser_object', getobject ($objectpath));
+      }
+    }
+    
+    // reset temporary view settings
+    setsession ('hcms_temp_explorerview', "small");
+    setsession ('hcms_temp_sidebar', true);
+    
+    return true;
+  }
+  else return false;
 }
 
 // ---------------------- createchecksum -----------------------------
@@ -1582,7 +1757,7 @@ function writesession ($user, $passwd, $checksum)
 {
   global $mgmt_config;
 
-  if (valid_objectname ($user) && $passwd != "" && $checksum != "")
+  if (session_id() != "" && valid_objectname ($user) && $passwd != "" && $checksum != "")
   {
     // write session data for load balancer if required
     writesessiondata ();
@@ -1594,7 +1769,7 @@ function writesession ($user, $passwd, $checksum)
     $sessiondata = session_id()."|".$sessiontime."|".md5 ($passwd)."|".$checksum."\n";
   
     // if user session file exists (user didn't log out or same user logged in a second time)
-    if (@is_file ($mgmt_config['abs_path_data']."session/".$user.".dat"))
+    if (is_file ($mgmt_config['abs_path_data']."session/".$user.".dat"))
     {
      // write session file
       $test = appendfile ($mgmt_config['abs_path_data']."session/", $user.".dat", $sessiondata);
@@ -1686,14 +1861,17 @@ function createsession ()
   global $mgmt_config;
   
   // check user session and set session ID if required
-  if (!session_id() && !empty ($_REQUEST['PHPSESSID']))
+  if (!empty ($_REQUEST['PHPSESSID']))
   {
     session_id ($_REQUEST['PHPSESSID']);
   }
 
   // start session
-  session_name ("hyperCMS");
-  session_start ();
+  if (!session_id() || session_name() != "hyperCMS")
+  {
+    session_name ("hyperCMS");
+    session_start ();
+  }
 
   // session is not valid or data directory is missing
   if (!valid_objectname (session_id()))
@@ -1951,7 +2129,7 @@ function loguserip ($client_ip, $user="sys")
     // time stamp in seconds
     $now = time ();
     
-    if (@is_file ($loglocation.$logfile))
+    if (is_file ($loglocation.$logfile))
     {
       // append data to log if IP is not already locked
       return appendfile ($loglocation, $logfile, $client_ip."|".$user."|".$now."\n");
@@ -1988,7 +2166,7 @@ function checkuserip ($client_ip, $user="", $timeout=0)
     
     $valid = true;
     
-    if (@is_file ($loglocation.$logfile))
+    if (is_file ($loglocation.$logfile))
     {
       // load log data
       $logdata = file ($loglocation.$logfile);
@@ -2090,7 +2268,7 @@ function checkusersession ($user="sys", $CSRF_detection=true)
   
   $alarm = true;
 
-  if (valid_objectname ($user) && @is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && is_array ($_SESSION['hcms_siteaccess']) && is_array ($_SESSION['hcms_rootpermission']))
+  if (valid_objectname ($user) && is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && is_array ($_SESSION['hcms_siteaccess']) && !empty ($_SESSION['hcms_rootpermission']) && is_array ($_SESSION['hcms_rootpermission']))
   {
     $session_array = @file ($mgmt_config['abs_path_data']."session/".$user.".dat");
 

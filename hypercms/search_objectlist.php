@@ -47,7 +47,11 @@ $search_execute = getrequest ("search_execute");
 $cat = "";
 
 // set default value
-if (empty ($maxhits) && !empty ($mgmt_config['search_max_results'])) $maxhits = $mgmt_config['search_max_results'];
+if (empty ($maxhits) && !empty ($mgmt_config['search_max_results']))
+{
+  $maxhits = $mgmt_config['search_max_results'];
+  if ($maxhits > 1000) $maxhits = 1000;
+}
 else $maxhits = 300;
 
 // extract publication and template name
@@ -155,6 +159,14 @@ else
   }
 }
 
+// set default columns
+if (empty ($objectlistcols_reduced))
+{
+  $objectlistcols_reduced = array();
+  $objectlistcols_reduced['modifieddate'] = 1;
+  $objectlistcols_reduced['owner'] = 1;
+}
+
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
@@ -239,33 +251,33 @@ if ($search_operator == "AND" || $search_operator == "OR")
 // deleted objects of a user
 if ($action == "recyclebin" && $user != "")
 {
-  if (!empty ($adminpermission)) $object_array = rdbms_getdeletedobjects ();
-  else $object_array = rdbms_getdeletedobjects ($user);
+  if (!empty ($adminpermission)) $object_array = rdbms_getdeletedobjects ("", "", $maxhits, @array_keys ($objectlistcols_reduced));
+  else $object_array = rdbms_getdeletedobjects ($user, "", $maxhits, @array_keys ($objectlistcols_reduced));
 }
 // collect all objects of given user 
 elseif ($action == "user_files" && $login != "" && $site != "" && (($site == "*Null*" && checkrootpermission ('user')) || checkglobalpermission ($site, 'user')))
 {
-  $object_array = rdbms_searchuser ($site, $login, 500); 
-}
-// favorites of user
-elseif ($action == "favorites" && $user != "")
-{
-  $object_array = getfavorites ($user);
-}
-// checked out objects of user
-elseif ($action == "checkedout" && $user != "")
-{
-  $object_array = getlockedobjects ($user);
+  $object_array = rdbms_searchuser ($site, $login, $maxhits, @array_keys ($objectlistcols_reduced)); 
 }
 // search for sender, recipient or date sent
 elseif ($action == "recipient")
 {
-  $object_array = rdbms_searchrecipient ($site, $from_user, $to_user, $date_from, $date_to);
+  $object_array = rdbms_searchrecipient ($site, $from_user, $to_user, $date_from, $date_to, $maxhits, @array_keys ($objectlistcols_reduced));
+}
+// favorites of user
+elseif ($action == "favorites" && $user != "")
+{
+  $object_array = getfavorites ($user, "path", @array_keys ($objectlistcols_reduced));
+}
+// checked out objects of user
+elseif ($action == "checkedout" && $user != "")
+{
+  $object_array = getlockedobjects ($user, @array_keys ($objectlistcols_reduced));
 }
 // search for specific object ID or link ID
 elseif ($object_id != "")
 {
-  $object_info = rdbms_getobject_info ($object_id);
+  $object_info = rdbms_getobject_info ($object_id, @array_keys ($objectlistcols_reduced));
   
   if (is_array ($object_info) && !empty ($object_info['hash']))
   {
@@ -276,7 +288,7 @@ elseif ($object_id != "")
 // search for specific container ID
 elseif ($container_id != "")
 {
-  $object_array = rdbms_getobjects ($container_id, "");
+  $object_array = rdbms_getobjects ($container_id, "", @array_keys ($objectlistcols_reduced));
 }
 // search for expression in content
 elseif ($action == "base_search" || $search_dir != "")
@@ -371,10 +383,6 @@ elseif ($action == "base_search" || $search_dir != "")
       if (checkglobalpermission ($site, 'page')) $search_dir_esc[] = "%page%/".$site."/";
     }
     
-    // max. hits
-    if ($maxhits > 1000) $maxhits = 1000;
-    elseif (empty ($maxhits)) $maxhits = 100;
-
     // start search
     if ($replace_expression == "") $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $maxhits, @array_keys ($objectlistcols_reduced));
     // start search and replace
@@ -415,8 +423,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
     {
       if (!empty ($object_item['container_id'])) $container_id = $object_item['container_id'];
       if (!empty ($object_item['media'])) $mediafile = $object_item['media'];
-      if (!empty ($object_item['createdate'])) $file_created = $object_item['createdate'];
-      if (!empty ($object_item['date'])) $file_modified = $object_item['date'];
+      if (!empty ($object_item['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($object_item['createdate']));
+      if (!empty ($object_item['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($object_item['date']));
       if (!empty ($object_item['user'])) $file_owner = $object_item['user'];
       if (!empty ($object_item['filesize'])) $file_size = $object_item['filesize'];
       
@@ -536,7 +544,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             }
             
             // metadata
-            $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".$file_modified." \r\n".$metadata;             
+            $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
 
             $listview .= "
                          <tr id=g".$items_row." style=\"cursor:pointer\" align=\"left\" ".$selectclick.">
@@ -567,11 +575,11 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   {
                     if ($key == 'createdate')
                     {
-                      $title = date ("Y-m-d H:i", strtotime ($file_created));
+                      $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
                     }
                     elseif ($key == 'modifieddate')
                     {
-                      $title = date ("Y-m-d H:i", strtotime ($file_modified));
+                      $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_modified))."</span>".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang]);
                     }
                     elseif ($key == 'filesize')
                     {
@@ -765,7 +773,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
             // metadata
-            $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".$file_modified." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;
+            $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;
             
             // listview - view option for un/published objects
             if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
@@ -806,11 +814,11 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     
                     if ($key == 'createdate')
                     {
-                      $title = date ("Y-m-d H:i", strtotime ($file_created));
+                      $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
                     }
                     elseif ($key == 'modifieddate')
                     {
-                      $title = date ("Y-m-d H:i", strtotime ($file_modified));
+                      $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_modified))."</span>".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang]);
                     }
                     elseif ($key == 'filesize')
                     {

@@ -157,7 +157,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
       echo "
       <tr id=\"g".$items_row."\" align=\"left\" valign=\"top\">
         <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:105px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <a href=# onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', '600', '400');\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp; ".$type_name."</a></td>
-        <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$date."</td>\n";
+        <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>\n";
         if (!$is_mobile) echo "
         <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$source."</td>
         <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$errorcode."</td>

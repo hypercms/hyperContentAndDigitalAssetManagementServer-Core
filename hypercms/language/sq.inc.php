@@ -3,7 +3,7 @@
 $hcms_lang_name['sq'] = "Albanian";
 $hcms_lang_shortcut['sq'] = "sq";
 $hcms_lang_codepage['sq'] = "utf-8";
-$hcms_lang_date['sq'] = 'y-m-d H:i:s';
+$hcms_lang_date['sq'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['sq'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['sq'] = "Njoftimi u 
 $hcms_lang['monthly']['sq'] = "Mujore";
 $hcms_lang['weekly']['sq'] = "Javore";
 $hcms_lang['daily']['sq'] = "Agjenda";
-$hcms_lang['user-comma-seperated']['sq'] = "Përdorues (presje ndamë)";
+$hcms_lang['comma-seperated']['sq'] = "(presje ndamë)";
 $hcms_lang['text-id-expiration-date-to-monitor']['sq'] = "Tekst-ID (datë skadimi) për të vëzhguar";
 $hcms_lang['date-format-eg']['sq'] = "Formati Data (p.sh.  %Y- %m- %d ose %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['sq'] = "Një emër përdoruesi kërkohet";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['sq'] = "Shfaqje emri (opsionale)";
 $hcms_lang['language-session-setting']['sq'] = "Gjuha sesion vendosjen";
 $hcms_lang['session-name-and-values']['sq'] = "Sesioni emri dhe vlerat";
 $hcms_lang['valid-language-value-optional']['sq'] = "Gjuha vlefshme vlera (opsionale)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['sq'] = "Edit/shkruani leje për disa përdorues grupeve (opsionale)";
+$hcms_lang['permission-for-certain-user-groups-optional']['sq'] = "Edit/shkruani leje për disa përdorues grupeve (opsionale)";
 $hcms_lang['date-format-optional']['sq'] = "Formati Data (opsionale)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['sq'] = "dpi vlera të autoscale imazhe (opsionale)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['sq'] = "Autoconvert imazhe të dhënë colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (opsionale)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['sq'] = "Telefon";
 $hcms_lang['optical-character-recognition']['sq'] = "Njohja e Karakteristikës Optike";
 $hcms_lang['delete-imported-files']['sq'] = "Fshi dosjet e importuara";
 $hcms_lang['leave-files-in-import-directory']['sq'] = "Lini skedarët në dosjen e importit (mos riemëroni ose mos lëvizni pas importit)";
+$hcms_lang['timezone']['sq'] = "Zona kohore";
+$hcms_lang['registration-of-new-users']['sq'] = "Regjistrimi i përdoruesve të rinj";
+$hcms_lang['assign-registered-users-to-group']['sq'] = "Caktoni përdoruesit e regjistruar në grup";
+$hcms_lang['notify-users']['sq'] = "Njofto përdoruesit";
+$hcms_lang['sign-in']['sq'] = "Sign in";
+$hcms_lang['sign-up']['sq'] = "Sign up";
+$hcms_lang['please-sign-in']['sq'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['sq'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['sq'] = "Popups must be allowed";
+$hcms_lang['reset-password']['sq'] = "Reset password";
 ?>

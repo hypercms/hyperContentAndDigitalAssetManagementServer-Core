@@ -93,7 +93,8 @@ if ($mediaobject != "")
   
   // set character set
   if (!empty ($charset_array['charset'])) $charset = $charset_array['charset'];
-  else $charset = $mgmt_config[$site]['default_codepage'];
+  elseif ($site != "") $charset = $mgmt_config[$site]['default_codepage'];
+  else $charset = "UTF-8";
   
   $hcms_charset = $charset;
   

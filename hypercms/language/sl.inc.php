@@ -3,7 +3,7 @@
 $hcms_lang_name['sl'] = "Slovenian";
 $hcms_lang_shortcut['sl'] = "sl";
 $hcms_lang_codepage['sl'] = "utf-8";
-$hcms_lang_date['sl'] = 'y-m-d H:i:s';
+$hcms_lang_date['sl'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['sl'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['sl'] = "Nastavitve 
 $hcms_lang['monthly']['sl'] = "Mesečni";
 $hcms_lang['weekly']['sl'] = "Tedensko";
 $hcms_lang['daily']['sl'] = "Dnevno";
-$hcms_lang['user-comma-seperated']['sl'] = "Uporabnik (vejica ločenih)";
+$hcms_lang['comma-seperated']['sl'] = "(vejica ločenih)";
 $hcms_lang['text-id-expiration-date-to-monitor']['sl'] = "Besedilo-ID (veljavno do) za spremljanje";
 $hcms_lang['date-format-eg']['sl'] = "Oblika zapisa datuma (npr.  %Y %m- %d ali %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['sl'] = "Uporabniško ime je zahtevano";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['sl'] = "Prikazno ime (izbirno)";
 $hcms_lang['language-session-setting']['sl'] = "Jezik zasedanju nastavitev";
 $hcms_lang['session-name-and-values']['sl'] = "Zasedanje ime in vrednosti";
 $hcms_lang['valid-language-value-optional']['sl'] = "Veljaven jezik vrednost (izbirno)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['sl'] = "Uredi/dovoljenje za pisanje za določene skupine uporabnikov (dodatna možnost)";
+$hcms_lang['permission-for-certain-user-groups-optional']['sl'] = "Uredi/dovoljenje za pisanje za določene skupine uporabnikov (dodatna možnost)";
 $hcms_lang['date-format-optional']['sl'] = "Oblika zapisa datuma (dodatna možnost)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['sl'] = "DPI vrednost autoscale slik (izbirno)";
 $hcms_lang['autoconvert-images-to-the-given-icc-profile-']['sl'] = "Autoconvert slike na dano ICC profil [ICC Profiles: hypercms/library/ICC_Profiles] (izbirno)";
@@ -1403,4 +1403,14 @@ $hcms_lang['phone']['sl'] = "Telefon";
 $hcms_lang['optical-character-recognition']['sl'] = "Optično prepoznavanje znakov";
 $hcms_lang['delete-imported-files']['sl'] = "Brisanje uvoženih datotek";
 $hcms_lang['leave-files-in-import-directory']['sl'] = "Pustite datoteke v uvoznem imeniku (jih ne preimenujete ali premaknite po uvozu)";
+$hcms_lang['timezone']['sl'] = "Časovni pas";
+$hcms_lang['registration-of-new-users']['sl'] = "Registracija novih uporabnikov";
+$hcms_lang['assign-registered-users-to-group']['sl'] = "Dodeli registriranim uporabnikom v skupino";
+$hcms_lang['notify-users']['sl'] = "Obvesti uporabnike";
+$hcms_lang['sign-in']['sl'] = "Sign in";
+$hcms_lang['sign-up']['sl'] = "Sign up";
+$hcms_lang['please-sign-in']['sl'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['sl'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['sl'] = "Popups must be allowed";
+$hcms_lang['reset-password']['sl'] = "Reset password";
 ?>

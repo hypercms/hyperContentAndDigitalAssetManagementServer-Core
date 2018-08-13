@@ -9,6 +9,7 @@
 <phone></phone>
 <signature></signature>
 <language></language>
+<timezone></timezone>
 <theme>standard</theme>
 <memberof>
 <publication></publication>

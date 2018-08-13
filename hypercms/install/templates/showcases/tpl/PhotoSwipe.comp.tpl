@@ -5,8 +5,7 @@
 <category>comp</category>
 <extension>php</extension>
 <application>php</application>
-<content><![CDATA[
-[hyperCMS:objectview name='inlineview']
+<content><![CDATA[[hyperCMS:objectview name='inlineview']
 [hyperCMS:tplinclude file='ServiceCollectMedia.inc.tpl']
 [hyperCMS:scriptbegin
 global $mgmt_config;	
@@ -29,8 +28,8 @@ $metaTitleId = "Title";
 $metaDescriptionId = "Description";
 
 // USER ENTRIES
-$galleriaWidth = "[hyperCMS:textu id='galleriaWidth' onEdit='hidden' default='400']";
-$galleriaHeight = "[hyperCMS:textu id='galleriaHeight' onEdit='hidden' default='274']";
+$galleriaWidth = "[hyperCMS:textu id='galleriaWidth' onEdit='hidden']";
+$galleriaHeight = "[hyperCMS:textu id='galleriaHeight' onEdit='hidden']";
 $filtername = "[hyperCMS:textl id='filterName' onEdit='hidden']";
 $filtervalue = "[hyperCMS:textu id='filterValue' onEdit='hidden']";
 
@@ -71,14 +70,14 @@ scriptend]
         </tr>
       </table>
       <p>Please do not forget to publish this page after changing the parameters!</p>
-      <hr>
+      <hr/>
 [hyperCMS:scriptbegin
   //check if component is published
   $compinfo = getfileinfo ($site, $correctFile, "comp");
 
   if ($compinfo['published'])
   {
-    $embed_code = "<iframe id='frame_$uniqid' src='{$mgmt_config['url_path_cms']}?wl=$hash' scrolling='no' frameborder=0 border=0 width='$galleriaWidth' height='$galleriaHeight'></iframe>";
+    $embed_code = "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_cms']."?wl=$hash' scrolling='no' frameborder=0 border=0 width='".$galleriaWidth."' height='".$galleriaHeight."'></iframe>";
   }
   else
   {
@@ -96,11 +95,9 @@ scriptend]
 </html>
 [hyperCMS:scriptbegin
 }
-else
+elseif ($view == "publish" || $view == "preview")
 {
-  if ($view == "publish" || $view == "preview")
-  {
-    //published file should be a valid html
+  //published file should be a valid html
 scriptend]
 <!DOCTYPE html>
 <html>
@@ -537,7 +534,6 @@ scriptend]
   </body>
 </html>
 [hyperCMS:scriptbegin 
-  }
 }
 scriptend]
 ]]></content>

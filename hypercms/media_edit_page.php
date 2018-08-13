@@ -207,7 +207,8 @@ function checkType()
    
     if (mediaext.length > 2)
     {
-      if (mediatype == "audio") allowedext = "<?php echo strtolower ($hcms_ext['audio']); ?>";
+      if (mediatype == "watermark") allowedext = ".jpg.jpeg.png.gif";
+      else if (mediatype == "audio") allowedext = "<?php echo strtolower ($hcms_ext['audio']); ?>";
       else if (mediatype == "compressed") allowedext = "<?php echo strtolower ($hcms_ext['compressed']); ?>";
       else if (mediatype == "flash") allowedext = "<?php echo strtolower ($hcms_ext['flash']); ?>";
       else if (mediatype == "image") allowedext = "<?php echo strtolower ($hcms_ext['image']); ?>";
@@ -405,59 +406,36 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     </tr>";
   }
 
-  if ($mediaalign != "*Null*")
+  if ($id == "Watermark")
   {
     echo "
     <tr>
       <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>
-        <td valign=\"top\">
-          <select name=\"mediaalign\" style=\"width:220px;\">";
-          
-          $alignstandard = "";
-          $aligntop = "";
-          $alignmiddle = "";
-          $alignabsmiddle = "";
-          $alignbottom = "";
-          $alignleft = "";
-          $alignright = "";
-
-          if ($mediaalign == "")
-          {
-            $alignstandard="selected=\"selected\"";
-          }
-          elseif ($mediaalign == "top")
-          {
-            $aligntop="selected=\"selected\"";
-          }
-          elseif ($mediaalign == "middle")
-          {
-            $alignmiddle="selected=\"selected\"";
-          }
-          elseif ($mediaalign == "absmiddle")
-          {
-            $alignabsmiddle="selected=\"selected\"";
-          }
-          elseif ($mediaalign == "bottom")
-          {
-            $alignbottom="selected=\"selected\"";
-          }
-          elseif ($mediaalign == "left")
-          {
-            $alignleft="selected=\"selected\"";
-          }
-          elseif ($mediaalign == "right")
-          {
-            $alignright="selected=\"selected\"";
-          }
-
-          echo "
-          <option value=\"\" ".$alignstandard.">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>
-          <option value=\"top\" ".$aligntop.">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>
-          <option value=\"middle\" ".$alignmiddle.">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>
-          <option value=\"absmiddle\" ".$alignabsmiddle.">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>
-          <option value=\"bottom\" ".$alignbottom.">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>
-          <option value=\"left\" ".$alignleft.">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>
-          <option value=\"right\" ".$alignright.">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>
+      <td>
+        <select name=\"mediaalign\" style=\"width:220px;\">
+          <option value=\"topleft\"".($mediaalign == "topleft" ? " selected" : "").">".getescapedtext ($hcms_lang['top'][$lang]." ".$hcms_lang['left'][$lang], $charset, $lang)."</option>
+          <option value=\"topright\"".($mediaalign== "topright" ? " selected" : "").">".getescapedtext ($hcms_lang['top'][$lang]." ".$hcms_lang['right'][$lang], $charset, $lang)."</option>
+          <option value=\"bottomleft\"".($mediaalign == "bottomleft" ? " selected" : "").">".getescapedtext ($hcms_lang['bottom'][$lang]." ".$hcms_lang['left'][$lang], $charset, $lang)."</option>
+          <option value=\"bottomright\"".($mediaalign == "bottomright" ? " selected" : "").">".getescapedtext ($hcms_lang['bottom'][$lang]." ".$hcms_lang['right'][$lang], $charset, $lang)."</option>
+          <option value=\"center\"".($mediaalign == "center" ? " selected" : "").">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>
+        </select>
+      </td>
+    </tr>";
+  }
+  elseif ($mediaalign != "*Null*")
+  {
+    echo "
+    <tr>
+      <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>
+      <td valign=\"top\">
+        <select name=\"mediaalign\" style=\"width:220px;\">
+          <option value=\"\" ".($mediaalign == "" ? " selected" : "").">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>
+          <option value=\"top\" ".($mediaalign == "top" ? " selected" : "").">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>
+          <option value=\"middle\" ".($mediaalign == "middle" ? " selected" : "").">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>
+          <option value=\"absmiddle\" ".($mediaalign == "absmiddle" ? " selected" : "").">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>
+          <option value=\"bottom\" ".($mediaalign == "bottom" ? " selected" : "").">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>
+          <option value=\"left\" ".($mediaalign == "left" ? " selected" : "").">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>
+          <option value=\"right\" ".($mediaalign == "right" ? " selected" : "").">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>
         </select>
       </td>
     </tr>";

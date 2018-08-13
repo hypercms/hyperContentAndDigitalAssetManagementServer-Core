@@ -189,12 +189,17 @@ function submitForm ()
 {
   submitLanguage ('list2', 'setting[translate]');
   submitLanguage ('ocr2', 'setting[ocr]');
+  hcms_showInfo ('savelayer', 0);
   document.forms['siteform'].submit();
 }
 </script>
 </head>
 
 <body class="hcmsWorkplaceGeneric" onload="<?php if ($preview != "yes") echo "switchDAM();"; ?> hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png'); <?php if ($add_onload != "") echo $add_onload; ?>">
+
+<!-- saving --> 
+<div id="savelayer" class="hcmsLoadScreen"></div>
+
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
@@ -249,6 +254,9 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   <input type="hidden" name="setting[inherit_comp]" value="<?php echo $mgmt_config[$site_name]['inherit_comp']; ?>" />
   <input type="hidden" name="setting[inherit_tpl]" value="<?php echo $mgmt_config[$site_name]['inherit_tpl']; ?>" />
   <input type="hidden" name="setting[youtube_token]" value="<?php echo $mgmt_config[$site_name]['youtube_token']; ?>" />
+  <input type="hidden" name="setting[registration]" value="<?php if (!empty ($mgmt_config[$site_name]['registration'])) echo "true"; else echo "false"; ?>" />
+  <input type="hidden" name="setting[registration_group]" value="<?php echo $mgmt_config[$site_name]['registration_group']; ?>" />
+  <input type="hidden" name="setting[registration_notify]" value="<?php echo $mgmt_config[$site_name]['registration_notify']; ?>" />
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>">
   
   <table border="0" cellspacing="0" cellpadding="3" width="590">

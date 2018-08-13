@@ -56,16 +56,20 @@ $hcms_id_token = getrequest ("hcms_id_token");
 $al = getrequest ("al");
 $oal = getrequest ("oal");
 
-// detect browser and set theme
-if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes")
+// include language file
+if (!empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)))
 {
-  $themename = "mobile";
+  require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
 }
+
+// detect browser and set theme
+if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes") $themename = "mobile";
 elseif (!empty ($theme)) $themename = $theme;
 else $themename = "";
 
 // access link since version 5.6.2
 $ignore_password = false;
+$hcms_objformats = false;
 
 if ($al != "")
 {
@@ -92,6 +96,8 @@ if ($al != "")
 }
 
 // object access link since version 6.1.12
+$accesslink = false;
+    
 if ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
 {
   $objectpath_esc = rdbms_getobject ($oal);
@@ -274,169 +280,41 @@ if (checkuserip (getuserip ()) == true)
   
     if (!empty ($login_result['auth']))
     {	
-      // start session
-      session_name ("hyperCMS");
-      session_start ();
-  
-      // regenerate session id after successful logon
-      session_regenerate_id ();
-  
-      // register instance in session without loading main config
-      registerinstance ($sentinstance, false);
-  
-      // register root, global and local pemissions
-      if (!empty ($login_result['rootpermission']))
-      {
-        setsession ('hcms_rootpermission', $login_result['rootpermission']);
-      }
-      
-      if (!empty ($login_result['globalpermission']))
-      {
-        setsession ('hcms_globalpermission', $login_result['globalpermission']);
-      }
-      
-      if (!empty ($login_result['localpermission']))
-      {
-        setsession ('hcms_localpermission', $login_result['localpermission']);
-      }
-        
-      // register values for this session
-      setsession ('hcms_user', $login_result['user']);
-      setsession ('hcms_passwd', md5 ($login_result['passwd']));
-      setsession ('hcms_realname', $login_result['realname']);
-      setsession ('hcms_email', $login_result['email']);
-      setsession ('hcms_siteaccess', $login_result['siteaccess']);
-      setsession ('hcms_pageaccess', $login_result['pageaccess']);
-      setsession ('hcms_compaccess', $login_result['compaccess']);
-      setsession ('hcms_superadmin', $login_result['superadmin']);
-      setsession ('hcms_lang', $login_result['lang']);
-      setsession ('hcms_hiddenfolder', $login_result['hiddenfolder']);
-  
-      // register download formats in case of an access link
-      if (!empty ($hcms_objformats)) setsession ('hcms_downloadformats', $hcms_objformats);
-      
-      // reset mobile settings by values of client side browser detection (JavaScript)
-      if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes")
-      {
-        $login_result['mobile'] = true;
-        $login_result['themename'] = "mobile";
-      }
-      
-      // iphone setting
-      if (is_iOS() || $is_iphone == "1" || $is_iphone == "yes")
-      {
-        $login_result['iphone'] = true;
-      }
-      else $login_result['iphone'] = false;
-      
-      // register temporary view settings
-      setsession ('hcms_temp_explorerview', $mgmt_config['explorerview']);
-      setsession ('hcms_temp_objectview', $mgmt_config['objectview']);
-      setsession ('hcms_temp_sidebar', $mgmt_config['sidebar']);
-      // register permanent view settings
-      setsession ('hcms_mobile', $login_result['mobile']);
-      setsession ('hcms_iphone', $login_result['iphone']);
-      // register chat state after logon
-      setsession ('hcms_temp_chatstate', $login_result['chatstate']);
-      // register theme settings
-      setsession ('hcms_themename', $login_result['themename']);
-      setsession ('hcms_themelocation', getthemelocation ($login_result['themename']));    
-      // register HTML5 file support in session
-      setsession ('hcms_html5file', $html5support);    
-      // register server feedback
-      setsession ('hcms_keyserver', $login_result['keyserver']);
-      // register current timestamp in session
-      setsession ('hcms_temp_sessiontime', time());
-      // register objectlist column defintions
-      setsession ('hcms_objectlistcols', $login_result['objectlistcols']);
-      // register template label defintions
-      setsession ('hcms_labels', $login_result['labels']);
-      
-      // set object linking information in session
-      if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']))
-      {
-        setsession ('hcms_linking', $login_result['hcms_linking']);
-        setsession ('hcms_temp_explorerview', "medium");
-      }
-      elseif (!empty ($accesslink['hcms_linking']) && is_array ($accesslink['hcms_linking']))
-      {
-        setsession ('hcms_linking', $accesslink['hcms_linking']);
-        setsession ('hcms_temp_explorerview', "medium");
-      }
-      else
-      {
-        setsession ('hcms_linking', Null);
-      }
+      // register user in session
+      $login_result = registeruser ($sentinstance, $login_result, $accesslink, $hcms_objformats, $is_mobile, $is_iphone, $html5support);
       
       // user hash is provided for the assetbrowser or object access links
       if (!empty ($userhash) && empty ($oal))
       {
-        // set assetbrowser mode information in session
-        setsession ('hcms_assetbrowser', true);
-        
-        // set assetbrowser location and object in session
-        if (!empty ($objecthash))
-        {
-          $objectpath = rdbms_getobject ($objecthash);
-          
-          if (!empty ($objectpath))
-          {
-            setsession ('hcms_assetbrowser_location', getlocation ($objectpath));
-            setsession ('hcms_assetbrowser_object', getobject ($objectpath));
-          }
-        }
-        
-        // reset temporary view settings
-        setsession ('hcms_temp_explorerview', "small");
-        setsession ('hcms_temp_sidebar', true);
+        registerassetbrowser ($userhash, $objecthash);
       }
       
       // define frameset
-      if ($login_result['mobile']) $result_frameset = "frameset_mobile.php";
+      if (!empty ($login_result['mobile'])) $result_frameset = "frameset_mobile.php";
       else $result_frameset = "frameset_main.php";
-  
-      // write hypercms session file
-      $login_result['writesession'] = writesession ($login_result['user'], $login_result['passwd'], $login_result['checksum']);
-  
-      // session info could not be saved
-      if ($login_result['writesession'] == false)
-      {  
-        $login_result['message'] = getescapedtext ($hcms_lang['session-information-could-not-be-saved'][$lang]);  
-      }
     }
   
-    // user is logged in
-    if (isset ($login_result) && isset ($login_result['writesession']) && $login_result['writesession'] == true)
+    // user is logged in (forward)
+    if (!empty ($login_result['writesession']))
     {
       $show = "
       <script type=\"text/javascript\">
-      location='".$mgmt_config['url_path_cms'].$result_frameset."';
+      location.href='".$mgmt_config['url_path_cms'].$result_frameset."';
       </script>
     
       ".$login_result['message']."\n";
     }
-    // login or password are false
-    elseif (isset ($login_result) && is_array ($login_result) && ($login_result['auth'] == false || $login_result['writesession'] == false))
+    // login name or password are false
+    elseif (empty ($login_result['auth']) || empty ($login_result['writesession']))
     {
       $show = str_replace ("%timeout%", $mgmt_config['logon_timeout'], $login_result['message']);
     }
   }
 
   // login form
-  if ((!isset ($login_result) || $login_result['auth'] != true))
+  if (!isset ($login_result) || empty ($login_result['auth']))
   {
-    if ($show != "") $show = "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".$show."</div>\n";
-  
-    $show = "
-      <form name=\"login\" method=\"post\" onsubmit=\"return ".((empty ($mgmt_config['multifactorauth']) || $require == "password") ? "submitlogin()" : "requestpassword()").";\" action=\"\">
-        <input type=\"hidden\" name=\"token\" value=\"".$token_new."\" />
-        <input type=\"hidden\" name=\"action\" value=\"login\" />
-        <input type=\"hidden\" name=\"require\" value=\"\" />
-        <input type=\"hidden\" name=\"is_mobile\" value=\"0\" />
-        <input type=\"hidden\" name=\"is_iphone\" value=\"0\" />
-        <input type=\"hidden\" name=\"html5support\" value=\"0\" />
-
-        ".$show;
+    if ($show != "") $show .= "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".$show."</div>\n";
           
     if (!empty ($mgmt_config['instances']) && is_dir ($mgmt_config['instances'])) $show .= "
         <div id=\"sentinstance_container\" ".($require == "password" ? "style=\"position:absolute; visibility:hidden;\"" :  "").">
@@ -459,16 +337,16 @@ if (checkuserip (getuserip ()) == true)
         </div>
 
         <div style=\"padding:4px 0px;\">
-          <button type=\"submit\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:260px;\" tabindex=\"4\">".((empty ($mgmt_config['multifactorauth']) || $require == "password") ? "Log in" : getescapedtext ($hcms_lang['send-e-mail'][$lang]))."</button>
+          <button type=\"submit\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:260px;\" tabindex=\"4\">".((empty ($mgmt_config['multifactorauth']) || $require == "password") ? getescapedtext ($hcms_lang['sign-in'][$lang]) : getescapedtext ($hcms_lang['send-e-mail'][$lang]))."</button>
         </div>
 
-        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal;\">Popups must be allowed</div>";
+        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal;\">".getescapedtext ($hcms_lang['popups-must-be-allowed'][$lang])."</div>";
         
       if (!empty ($mgmt_config['resetpassword']) && empty ($mgmt_config['multifactorauth'])) $show .= "
-        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"resetpassword()\">Reset Password</div>";
-
-      $show .= "
-      </form>\n";
+        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"resetpassword()\">".getescapedtext ($hcms_lang['reset-password'][$lang])."</div>";
+        
+      if (!empty ($mgmt_config['userregistration'])) $show .= "
+        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"location.href='userregister.php';\">".getescapedtext ($hcms_lang['sign-up'][$lang])."</div>";
   }
   
   // wallpaper
@@ -545,54 +423,60 @@ function focusform()
 {
   <?php if (!empty ($mgmt_config['instances'])) { ?>
   // if instance parameter has been provided via GET
-  if (hcms_getURLparameter('i') !== null)
+  if (document.getElementById('sentinstance'))
   {
-    document.getElementById('sentinstance').value = hcms_getURLparameter('i');
-    document.getElementById('sentinstance_container').style.display = "none";
-  }
-  // if local storage saved instance
-  else if (localStorage.getItem('instance') !== null)
-  {
-    document.getElementById('sentinstance').value = localStorage.getItem('instance');
-    document.getElementById('sentinstance_container').style.display = "none";
+    if (hcms_getURLparameter('i') !== null)
+    {
+      document.getElementById('sentinstance').value = hcms_getURLparameter('i');
+      document.getElementById('sentinstance_container').style.display = "none";
+    }
+    // if local storage saved instance
+    else if (localStorage.getItem('instance') !== null)
+    {
+      document.getElementById('sentinstance').value = localStorage.getItem('instance');
+      document.getElementById('sentinstance_container').style.display = "none";
+    }
   }
   <?php } ?>
 
   // username and password from local storage
-  if (localStorage.getItem('username') !== null) document.getElementById('sentuser').value = localStorage.getItem('username'); 
-  if (localStorage.getItem('password') !== null) document.getElementById('sentpasswd').value = localStorage.getItem('password');
-  
-  document.forms['login'].elements['sentuser'].focus();
+  if (document.getElementById('sentuser'))
+  {
+    if (localStorage.getItem('username') !== null) document.getElementById('sentuser').value = localStorage.getItem('username'); 
+    if (localStorage.getItem('password') !== null && document.getElementById('sentpasswd')) document.getElementById('sentpasswd').value = localStorage.getItem('password');
+    
+    document.forms['login'].elements['sentuser'].focus();
+  }
 }
 
 function is_mobilebrowser()
 {
-  if (eval (document.forms['login']) && hcms_mobileBrowser())
+  if (hcms_mobileBrowser())
   {
-    document.forms['login'].elements['is_mobile'].value = '1';
-    return true;
+    if (document.forms['login']) document.forms['login'].elements['is_mobile'].value = '1';
+    return 1;
   }
-  else return false;
+  else return 0;
 }
 
-function is_iphone()
+function is_iOS()
 {
-  if (eval (document.forms['login']) && hcms_iOS())
+  if (hcms_iOS())
   {
-    document.forms['login'].elements['is_iphone'].value = '1';
-    return true;
+    if (document.forms['login']) document.forms['login'].elements['is_iphone'].value = '1';
+    return 1;
   }
-  else return false;
+  else return 0;
 }
 
 function html5support()
 {
-  if (eval (document.forms['login']) && hcms_html5file())
+  if (hcms_html5file())
   {
-    document.forms['login'].elements['html5support'].value = '1';
-    return true;
+    if (document.forms['login']) document.forms['login'].elements['html5support'].value = '1';
+    return 1;
   }
-  else return false;
+  else return 0;
 }
 
 function submitlogin()
@@ -693,22 +577,33 @@ function setwallpaper ()
 </script>
 </head>
 
-<body class="hcmsStartScreen" onload="focusform(); is_mobilebrowser(); is_iphone(); html5support(); setwallpaper();">
+<body class="hcmsStartScreen" onload="focusform(); is_mobilebrowser(); is_iOS(); html5support(); setwallpaper();">
 
-<?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-<video playsinline autoplay muted loop poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.png" id="videoScreen">
-  <source src="<?php echo $wallpaper; ?>" type="video/mp4">
-</video>
-<?php } ?>
-
-<div class="hcmsStartBar">
-  <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
-  <div style="position:absolute; top:15px; right:15px; text-align:right;"><?php echo $mgmt_config['version']; ?></div>
-</div>
-
-<div class="hcmsLogonScreen">
-  <?php echo $show; ?>
-</div>
+  <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+  <video playsinline autoplay muted loop poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.png" id="videoScreen">
+    <source src="<?php echo $wallpaper; ?>" type="video/mp4">
+  </video>
+  <?php } ?>
+  
+  <div class="hcmsStartBar">
+    <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
+    <div style="position:absolute; top:15px; right:15px; text-align:right;"><?php echo $mgmt_config['version']; ?></div>
+  </div>
+  
+  <div class="hcmsLogonScreen">
+    <?php
+    echo "
+    <form name=\"login\" method=\"post\" onsubmit=\"return ".((empty ($mgmt_config['multifactorauth']) || $require == "password") ? "submitlogin()" : "requestpassword()").";\" style=\"opacity:0.9;\" action=\"\">
+      <input type=\"hidden\" name=\"token\" value=\"".$token_new."\" />
+      <input type=\"hidden\" name=\"action\" value=\"login\" />
+      <input type=\"hidden\" name=\"require\" value=\"\" />
+      <input type=\"hidden\" name=\"is_mobile\" value=\"0\" />
+      <input type=\"hidden\" name=\"is_iphone\" value=\"0\" />
+      <input type=\"hidden\" name=\"html5support\" value=\"0\" />
+      ".$show."
+    </form>\n";
+   ?>
+  </div>
 
 </body>
 </html>

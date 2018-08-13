@@ -2406,7 +2406,7 @@ Release 11/2017
 - Option -noautorotate of FFMPEG can be disabled by the main configuration setting: $mgmt_mediaoptions['autorotate-video'] = false; This is required for older FFMPEG versions without noautorotate option support.
 - Hide Faces-JSON content in function getmetadata in Get API 
 - Implementation of new input parameter autorotate in function createthumbnail_video in Media API in order to control auto rotation
-- Implementation of default character set ini-setting in article_edit, page_multiedit, template_edit, temlpate_source, version_content_compare, and version_template_compare since browsers ignore the metadata character set definition (Apache 2.4 related)
+- Implementation of default character set ini-setting in article_edit, page_multiedit, template_edit, template_source, version_content_compare, and version_template_compare since browsers ignore the metadata character set definition (Apache 2.4 related)
 - Implementation of logging for deprecated access tokens in userlogin
 - Implementation of a fallback rule for encryption standards in function hcms_encrypt and hcms_decrypt in Security API
 - Improvements in installation routine
@@ -2783,7 +2783,7 @@ Release 06/2017
 - Modifications in createtables.sql
 - Modifications in function rewrite_targetURI in Main API in order to use "like" search query mode
 - Modifications in function getserverload in Get API in order to support memory usage and new input parameter for interval
-- Imlpementation of getserverload in minutely job in order to log server performance
+- Implementation of getserverload in minutely job in order to log server performance
 - Implementation of new server performance home box
 - Implementation of the new zoom feature with automatic resizing of annotation elements for images 
 - Removed pen annotation support for MS IE and Edge
@@ -2797,7 +2797,7 @@ Release 06/2017
 - Implementation of multi-factor authentication as new option besides the standard login using user name and password (requires a valid e-mail address and e-mail access of user)
 - Modifications in userlogin in order to support the multi-factor authentication
 - Implementation of new main configuration settings $mgmt_config['multifactorauth']
-- Modifications in JS function hcms_openWindow in main.js in order to verify moveto support of browsers
+- Modifications in JS function hcms_openWindow in main.js in order to verify support of the JS function moveto by browsers
 - Implementation of new JS function hcms_downloadURI in main.js
 - Implementation of new JS function hcms_addTableRow in main.js
 - Modifications in function createtaxonomy in Main API in order to recreate the taxonomy for all objects in case the taxonomy definition has been changed
@@ -2814,21 +2814,107 @@ Release 06/2017
 - Modifications in template_info in order to display template owner
 - Design modifications in page_info_stats
 - Modifications in contextmenu.js in order to disable select area and use the browsers standard marking of content
-- Modifications in function settaxonomy in Set API in order to force loading the taxonomy defintion
+- Modifications in function settaxonomy in Set API in order to force loading the taxonomy definition
 - Bug fix: Download options of video have been applied for audio files as well in control_content_menu and control_objectlist_menu
 - Bug fix: Function createmedia in Media API did not set the path to the source file for RAW images
 - Bug fix: Wrong JS function call has been used for setSaveType in single components form view
 - Bug fix: Dates provided by the search results have not been formatted
-- Bug fix: task_list used wrong JS function name to openthe edit window
+- Bug fix: task_list used wrong JS function name to open the edit window
 - Bug fix: userlogin did not save logon credentials (remember me) in browser
 - Bug fix: Function showmedia in UI API did not provide media properties if the database did not provide them (fallback to file system information)
 - Bug fix: Function deletereport in Report API used wrong language variable key for success message
 - Bug fix: queue_objectlist did kill user session for DAM publications if a valid publication name has been provided
 - Bug fix: Fixed issue with annotation toolbar action selector in MS IE
 - Bug fix: Annotations library has not been verified in template engine (issue only related to Free Edition)
-- Bug fix: function rdbms_setpublicationtaxonomy in DB connect di use wrong variable name for container ID in settaxnomy function call
+- Bug fix: function rdbms_setpublicationtaxonomy in DB connect did use the wrong variable name for container ID in settaxnomy function call
+
+Version 7.0.9
+Release 07/2017
+- Modifications and improvements in Workflow Management
+- Modifications in function getserverload in Get API in order to verify results on MS Windows OS and set default values
+- Modifications in event system in order to verify variables
+- Modifications in the default metadata template (new field for related assets)
+- Modifications in function rdbms_replacecontent, rdbms_searchuser, rdbms_searchrecipient, rdbms_getdeletedobjects, rdbms_getobject_info, and rdbms_getobjects in DB Connect in order to support text IDs to be included in the result
+- Modifications in function getfavorites and getlockedobjects in Get API in order to support text IDs to be included in the result
+- Modifications in search_objectlist in order to use the new input parameters for the DB Connect search functions
+- Implementation of loading screen for template_edit, site_edit_form, pers_form, group_edit_form, user_edit, workflow_script_form, report_form, and instance_edit
+- Implementation of new JavaScript code tag in template_edit
+- Modifications in template_edit in order to exclude spaces in content IDs
+- Modifications in template engine in order to verify content IDs (special characters)
+- Modifications in function specialchr in Main API in order to return true for empty strings
+- Implementation of JS functions in template engine for field control in form-views
+- Modifications in function showeditor and showinlineditor in order to support unescaped article IDs
+- Implementation of transparency effect in logon form
+- Implementation of time zone support based on the users time zone setting
+- Modifications in function edituser in Main API in order to support the new timezone parameter
+- Implementation of timezone attribute to various entities in createtables.sql
+- Modifications in user XML schemas in order to add the timezone
+- Modifications in user_edit in order to support the timezone
+- Modifications in function createinstance and sendresetpassword in Main API in order to support the timezone parameter
+- Modifications in function userlogin in Security API in order to support the timezone parameter
+- Modifications in userlogin in order to support the timezone parameter
+- Modifications in session.inc.php in order to support the timezone parameter
+- Implementation of the timezone in the clock of the top bar
+- Implementation of new function convertdate and offsettime in Main API
+- Implementation of new function showdate in UI API
+- Implementation of function showdate in the system (API functions, userinterfaces, services)
+- Migration from function rdbms_createqueueentry to createqueueentry in popup_publish, service uploadfile
+- Migration from escape to date function for all dates used in DB Connect
+- Modifications in function rdbms_createobject, rdbms_createqueueentry in DB Connect in order to convert the date and time to the servers time zone
+- Implementation of hidden date string for table sorting in all list views
+- Implementation of JS code removal from all views in template engine
+- Modifications in function getmetadata in Get API in order to order metadata entries according to appearance in the template
+- Modifications in function getimagecolors in Media API  in order to verify original file before creating an image from the file
+- Modifications in FTP uploader (popup_ftp) in order to use labels for the file selector checkboxes and use formatted dates
+- Modifications in Import/Export Connector module in order to support a specific publication with restrictions
+- Implementation of individual watermarks for assets based on media tag for watermarks
+- Modifications in template engine in order to support new watermark tag
+- Modifications in function createmedia in order to support centered watermarks
+- Modifications in media_view in order to set fallback character set (UTF-8)
+- Modifications in function showcompexplorer in UI API in order to support watermarks
+- Modifications in media_edit_page in order to support watermarks
+- Modifications in function convertmedia in Media API in order to force recreation of media if a watermark is used
+- Modifications in function showmedia in UI API in order to force recreation of media if a watermark is used
+- Modifications in template_edit in order to display error message if the template code could not be saved (due to missing write permissions)
+- Modifications in site_edit_inheritance in order to apply a natural case sort on the publication names
+- Modifications in import/export module in order to use labels for checkboxes
+- Modifications in function getuserinformation in order to return user group as result
+- Modifications in user management in order to search for users with no group membership
+- Implementation of sign up feature for unregistered users
+- Design modifications in template engine in the saving layer
+- Modifications in function editpublication in Main API in order to support new settings for the users registration
+- Modifications in function editpublicationsetting in order to use an array as input instead of key and value as string
+- Modifications in site_edit_form in order to support new settings for the users registration
+- Modifications in function createpublication in Main API in order to enhance the publication name verification
+- Modifications in function edituser in Main API in order to add separator to usergroup string
+- Implementation of new main configuration setting $mgmt_config['userregistration'] for the display of the registration link
+- Modifications in function userlogin in Security API in order to verify and convert usergroup string to array
+- Modifications in function gettaxonomy_sublevel and gettaxonomy_childs in Get API in order to use first language of taxonomy if the users language is not available
+- Removed .gif file extension from video files in include/formats_ext
+- Implementation of function update_users_709 in Update API in order to add the timezone to all existing users and the new settings for the registration in the publication management configurations
+- Implementation of EasySVG for the dynamic creation of SVG graphic files
+- Removed support of deprecated SWF file upload that required the Adobe Falsh browser plugin (popup_upload_swf)
+- Modifications in userlogin in order to include browser information in the forward link after the successful logon
+- Added TIFF and BMP image target format definitions to default main configuration file in install directory
+- Update of manuals
+- Update of all language files
+- Implementation of new showcase component template "Upload" in the install directory for public file uploads
+- Improvement in the showcase component templates Galleria and PhotoSwipe in the install directory
+- Implementation of new function registeruser and registerassetbrowser in Security API in order to set session parameters for the user and the assetbrowser
+- Modifications in function createsession in Security API in order to avoid creating a new session if a valid session exists already
+- Modifications in function is_mobilebrowser and is_iOS in Main API in order to verify the HTTP_USER_AGENT
+- Modifications in function downloadobject in Main API in order to support sessions
+- Modifications in various set-functions in Set API in order to set default input parameters and verify all inputs parameters
+- Bug fix: The readonly tag attribute has not been applied properly to components, comments, and geolocation maps in the template engine
+- Bug fix: Function processobjects did use the wrong name for the service call of sendmail
+- Bug fix: Service sendmail did use the wrong include path for the main configuration
+- Bug fix: The height of the control layer in frameset_edit_media was not sufficient to display all media fields
+- Bug fix: Function gettaxonomy_sublevel in Get API did only return taxonomy categories if the users language is supported by the taxonomy
+- Bug fix: Logon using access links did not provide information from browser regarding is_mobile, is_iphone, and html5support
+- Bug fix: The home screen did use a wrapper function instead of JS function hcms_html5file in order to verify HTML5 support
+- Bug fix: Function userlogin in Security API did not set the user name for log entries in case the users hash has been used for logon
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.8";
+$mgmt_config['version'] = "Version 7.0.9";
 ?>

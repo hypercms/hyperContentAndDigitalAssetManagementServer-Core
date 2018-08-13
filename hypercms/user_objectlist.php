@@ -74,7 +74,8 @@ if ($userdata != false && isset ($site))
         elseif ($group != "")
         {
           // check publication and group membership
-          $memberof_array = selectcontent ($usernode, "<memberof>", "<usergroup>", "*|".$group."|*");
+          if ($group != "_none") $memberof_array = selectcontent ($usernode, "<memberof>", "<usergroup>", "*|".$group."|*");
+          else $memberof_array = selectcontent ($usernode, "<memberof>", "<usergroup>", "");
           
           if (is_array ($memberof_array))
           {
@@ -209,7 +210,7 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
               </td>
               <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['name'][$key]."</span></td>
               <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['email'][$key]."</span></td>
-              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['date'][$key]."</span></td>
+              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp; <span style=\"display:none;\">".date ("Ymd", strtotime ($object_array['date'][$key]))."</span>".showdate ($object_array['date'][$key], "Y-m-d", $hcms_lang_date[$lang])."</span></td>
             </tr>";
   
       $items_row++;  

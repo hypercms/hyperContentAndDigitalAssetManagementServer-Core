@@ -3,7 +3,7 @@
 $hcms_lang_name['ko'] = "Korean";
 $hcms_lang_shortcut['ko'] = "ko";
 $hcms_lang_codepage['ko'] = "utf-8";
-$hcms_lang_date['ko'] = 'y-m-d H:i:s';
+$hcms_lang_date['ko'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ko'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['ko'] = "알림 설�
 $hcms_lang['monthly']['ko'] = "월간";
 $hcms_lang['weekly']['ko'] = "매주";
 $hcms_lang['daily']['ko'] = "매일";
-$hcms_lang['user-comma-seperated']['ko'] = "사용자( 쉼표로 구분된)";
+$hcms_lang['comma-seperated']['ko'] = "�( 쉼표로 구분된)";
 $hcms_lang['text-id-expiration-date-to-monitor']['ko'] = "모니터( 만료일) 텍스트-id";
 $hcms_lang['date-format-eg']['ko'] = "(예: date 형식 %y-%m-%d, %d.%m.%y)";
 $hcms_lang['a-user-name-is-required']['ko'] = "사용자 이름이 필요합니다.";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['ko'] = "표시 이름 (선택 사항)";
 $hcms_lang['language-session-setting']['ko'] = "언어는 세션 설정";
 $hcms_lang['session-name-and-values']['ko'] = "세션 이름 및 값";
 $hcms_lang['valid-language-value-optional']['ko'] = "(선택 사항) 유효한 언어 값";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['ko'] = "편집/ 권한(옵션) 특정 사용자 그룹에 대한 쓰기";
+$hcms_lang['permission-for-certain-user-groups-optional']['ko'] = "편집/ 권한(옵션) 특정 사용자 그룹에 대한 쓰기";
 $hcms_lang['date-format-optional']['ko'] = "(선택 사항) 날짜 형식";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['ko'] = "값(옵션) 이미지 AutoScale DPI";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['ko'] = "autoConvert 이미지에 있는 지정된 ColorSpace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV](옵션)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['ko'] = "전화";
 $hcms_lang['optical-character-recognition']['ko'] = "광학 문자 인식";
 $hcms_lang['delete-imported-files']['ko'] = "가져온 파일 삭제";
 $hcms_lang['leave-files-in-import-directory']['ko'] = "가져 오기 디렉토리에 파일을 남겨 두십시오 (가져온 후에 이름을 바꾸거나 이동하지 마십시오)";
+$hcms_lang['timezone']['ko'] = "시간대";
+$hcms_lang['registration-of-new-users']['ko'] ='신규 사용자 등록 ';
+$hcms_lang['assign-registered-users-to-group']['ko'] = "등록 된 사용자를 그룹에 지정";
+$hcms_lang['notify-users']['ko'] = "사용자에게 통지";
+$hcms_lang['sign-in']['ko'] = "로그인";
+$hcms_lang['sign-up']['ko'] = "레지스터";
+$hcms_lang['please-sign-in']['ko'] = "로그인 해주세요.";
+$hcms_lang['please-wait-for-the-approval']['ko'] = "승인을 기다려주십시오.";
+$hcms_lang['popups-must-be-allowed']['ko'] = "팝업을 허용해야합니다";
+$hcms_lang['reset-password']['ko'] = "암호를 재설정";
 ?>

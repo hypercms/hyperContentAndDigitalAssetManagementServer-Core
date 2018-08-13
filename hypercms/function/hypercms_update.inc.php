@@ -959,6 +959,94 @@ function update_database_v708 ()
   else return false;
 }
 
+// ------------------------------------------ update_users_709 ----------------------------------------------
+// function: update_users_709()
+// input: %
+// output: true / false
+
+// description:
+// Update to version 7.0.9 (add timezone to users and add new registration settings)
+
+function update_users_709 ()
+{
+  global $mgmt_config;
+
+  $logdata = loadlog ("update", "string");
+  
+  if (empty ($logdata) || strpos ($logdata, "|7.0.9|") < 1)
+  {
+    // update management config
+    $dir = $mgmt_config['abs_path_data']."config/";
+    $files = scandir ($dir);
+  
+    if (is_array ($files))
+    {
+      foreach ($files as $file)
+      {
+        // only publication config files and not the plugin config file
+        if (strpos ($file, ".conf.php") > 0 && $file != "plugin.conf.php")
+        {
+          $site_name = substr ($file, 0, strpos ($file, ".conf.php"));
+          
+          // load management config
+          $site_mgmt_config = loadfile ($dir, $file);
+          
+          // update/add settings for version 9.0.7
+          if ($site_mgmt_config != "" && strpos ($site_mgmt_config, "['registration']") < 1)
+          {
+            // new settings
+            $code_add = "
+// Enable (true) or disable (false) registration of new users
+\$mgmt_config['".$site_name."']['registration'] = false;
+
+// Set user group assignment for newly registered users
+\$mgmt_config['".$site_name."']['registration_group'] = \"\";
+
+// Set user notification if a new user has been registered (comma-speratated list of users)
+\$mgmt_config['".$site_name."']['registration_notify'] = \"\";
+";
+      
+            list ($code, $rest) = explode ("?>", $site_mgmt_config);
+            
+            // add new settings
+            if ($code != "") $site_mgmt_config = $code.$code_add."?>";
+            
+            // save management config
+            if ($site_mgmt_config != "") $savefile = savefile ($dir, $site_name.".conf.php", trim ($site_mgmt_config));
+            else $savefile = false;
+
+            // sys log
+            if ($savefile != true) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10101|update to version 7.0.9 failed for management configuration '".$file."'"));
+          }
+        }
+      }
+    }
+
+    // update users
+    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+    
+    if (!empty ($userdata) && strpos ($userdata, "</timezone>") < 1)
+    {
+      $datanew = str_replace ("</language>", "</language>\n<timezone></timezone>", $userdata);
+
+      if (!empty ($datanew))
+      {
+        $savefile = savefile ($mgmt_config['abs_path_data']."user/", "user.xml.php", $datanew);
+      
+        // update log
+        if ($savefile == true) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.9|updated to version 7.0.9"), "update");
+        // sys log
+        else savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10102|update to version 7.0.9 failed for 'user.xml.php'"));
+      
+        return $savefile;
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -983,5 +1071,6 @@ function updates_all ()
   if ($update) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.5|updated to version 7.0.5"), "update");
   update_users_706 ();
   update_database_v708();
+  update_users_709();
 }
 ?>

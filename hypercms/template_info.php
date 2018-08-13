@@ -82,12 +82,16 @@ if ($template != "")
     $temp = getcontent ($data['content'], "<user>");
     if (!empty ($temp[0])) $tpl_user = $temp[0];
   }
+  
+  // modified date
+  $date = date ("Y-m-d H:i", filemtime ($mgmt_config['abs_path_template'].$site."/".$template));
+  $date = showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang]);
 
   echo "
   <tr><td>".getescapedtext ($hcms_lang['template'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".$tpl_name."</td></tr>
   <tr><td>".getescapedtext ($hcms_lang['category'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".$pagecomp."</td></tr>
   <tr><td>".getescapedtext ($hcms_lang['owner'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".$tpl_user."</td></tr>
-  <tr><td>".getescapedtext ($hcms_lang['last-updated'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".date ("Y-m-d H:i", filemtime ($mgmt_config['abs_path_template'].$site."/".$template))."</td></tr>
+  <tr><td>".getescapedtext ($hcms_lang['last-updated'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".$date."</td></tr>
   <tr><td>".getescapedtext ($hcms_lang['file-size'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".filesize ($mgmt_config['abs_path_template'].$site."/".$template)." bytes</td></tr>";
 }
 ?>

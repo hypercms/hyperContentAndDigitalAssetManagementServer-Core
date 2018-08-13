@@ -3,7 +3,7 @@
 $hcms_lang_name['ro'] = "Romanian";
 $hcms_lang_shortcut['ro'] = "ro";
 $hcms_lang_codepage['ro'] = "utf-8";
-$hcms_lang_date['ro'] = 'y-m-d H:i:s';
+$hcms_lang_date['ro'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ro'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['ro'] = "Setări de 
 $hcms_lang['monthly']['ro'] = "Lunar";
 $hcms_lang['weekly']['ro'] = "Săptămânal";
 $hcms_lang['daily']['ro'] = "Zilnic";
-$hcms_lang['user-comma-seperated']['ro'] = "Utilizator (virgula separate)";
+$hcms_lang['comma-seperated']['ro'] = "(virgula separate)";
 $hcms_lang['text-id-expiration-date-to-monitor']['ro'] = "Text-ID (data de expirare) la monitor";
 $hcms_lang['date-format-eg']['ro'] = "Formatul datei (de ex. %Y- %m- %d sau %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['ro'] = "UN nume de utilizator este necesar";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['ro'] = "Numele de Afişare (opţional)";
 $hcms_lang['language-session-setting']['ro'] = "Sesiunea setare limbă";
 $hcms_lang['session-name-and-values']['ro'] = "Sesiune numele şi valori";
 $hcms_lang['valid-language-value-optional']['ro'] = "Valoarea valid limba (opţional)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['ro'] = "Editare/scriere permisiunea pentru anumite grupuri de utilizatori (opţional)";
+$hcms_lang['permission-for-certain-user-groups-optional']['ro'] = "Editare/scriere permisiunea pentru anumite grupuri de utilizatori (opţional)";
 $hcms_lang['date-format-optional']['ro'] = "Formatul datei (opţional)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['ro'] = "Dpi autoscale valoarea pentru imagini (opţional)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['ro'] = "Autoconvert imagini la dat colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (opţional)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['ro'] = "Telefon";
 $hcms_lang['optical-character-recognition']['ro'] = "Recunoaștere optică a caracterelor";
 $hcms_lang['delete-imported-files']['ro'] = "Ștergeți fișiere importate";
 $hcms_lang['leave-files-in-import-directory']['ro'] = "Lăsați fișierele din directorul de import (nu le redenumiți sau le mutați după import)";
+$hcms_lang['timezone']['ro'] = "Fus orar";
+$hcms_lang['registration-of-new-users']['ro'] = "Înregistrarea noilor utilizatori";
+$hcms_lang['assign-registered-users-to-group']['ro'] = "Atribuirea utilizatorilor înregistrați în grup";
+$hcms_lang['notificare-utilizatori']['ro'] = "Notificați utilizatorii";
+$hcms_lang['sign-in']['ro'] = "Sign in";
+$hcms_lang['sign-up']['ro'] = "Sign up";
+$hcms_lang['please-sign-in']['ro'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['ro'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['ro'] = "Popups must be allowed";
+$hcms_lang['reset-password']['ro'] = "Reset password";
 ?>-

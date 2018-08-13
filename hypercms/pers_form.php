@@ -180,6 +180,10 @@ function openHelp ()
 </head>
 
 <body class="hcmsWorkplaceGeneric">
+
+<!-- saving --> 
+<div id="savelayer" class="hcmsLoadScreen"></div>
+
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
@@ -199,7 +203,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"
   <table cellspacing="0" cellpadding="0" style="border:1px solid #000000; margin:2px;">
     <tr>
       <td align="left">
-        <?php if ($preview == "no") echo "<img onclick=\"document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>
+        <?php if ($preview == "no") echo "<img onclick=\"hcms_showInfo ('savelayer', 0); document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>
       </td>
       <td align="right" width="36">
         <img onClick="openHelp();" name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.png" class="hcmsButton hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" />

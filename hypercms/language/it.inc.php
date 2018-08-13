@@ -3,7 +3,7 @@
 $hcms_lang_name['it'] = "Italian";
 $hcms_lang_shortcut['it'] = "it";
 $hcms_lang_codepage['it'] = "utf-8";
-$hcms_lang_date['it'] = 'y-m-d H:i:s';
+$hcms_lang_date['it'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['it'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['it'] = "Le impostaz
 $hcms_lang['monthly']['it'] = "Mensile";
 $hcms_lang['weekly']['it'] = "Settimanale";
 $hcms_lang['daily']['it'] = "Ogni giorno";
-$hcms_lang['user-comma-seperated']['it'] = "Utente (separati da una virgola)";
+$hcms_lang['comma-seperated']['it'] = "(separati da una virgola)";
 $hcms_lang['text-id-expiration-date-to-monitor']['it'] = "Testo-ID (data di scadenza) per monitor";
 $hcms_lang['date-format-eg']['it'] = "Formato della data (ad es. %Y- %m- %d o %d. %m.%Y)";
 $hcms_lang['a-user-name-is-required']['it'] = "È richiesto un nome utente";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['it'] = "Nome visualizzato (facoltativo)";
 $hcms_lang['language-session-setting']['it'] = "Lingua impostazione della sessione";
 $hcms_lang['session-name-and-values']['it'] = "Nome della sessione e valori";
 $hcms_lang['valid-language-value-optional']['it'] = "Lingua valida valore (opzionale)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['it'] = "Modifica/scrittura per determinati gruppi di utenti (opzionale)";
+$hcms_lang['permission-for-certain-user-groups-optional']['it'] = "Modifica/scrittura per determinati gruppi di utenti (opzionale)";
 $hcms_lang['date-format-optional']['it'] = "Formato della data (opzionale)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['it'] = "Dpi valore di scalatura automatica delle immagini (opzionale)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['it'] = "Autoconvert immagini al dato colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (opzionale)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['it'] = "Telefono";
 $hcms_lang['optical-character-recognition']['it'] = "Riconoscimento ottico dei caratteri";
 $hcms_lang['delete-imported-files']['it'] = "Elimina i file importati";
 $hcms_lang['leave-files-in-import-directory']['it'] = "Lascia i file nella directory di importazione (non rinominarli o spostarli dopo l'importazione)";
+$hcms_lang['timezone']['it'] = "Fuso orario";
+$hcms_lang['registration-of-new-user']['it'] = "Registrazione di nuovi utenti";
+$hcms_lang['assign-registered-users-to-group']['it'] = "Assegna gli utenti registrati al gruppo";
+$hcms_lang['notify-users']['it'] = "Notifica agli utenti";
+$hcms_lang['sign-in']['it'] = "Registrati";
+$hcms_lang['sign-up']['it'] = "Iscriviti";
+$hcms_lang['please-sign-in']['it'] = "Per favore accedi.";
+$hcms_lang['please-wait-for-the-approval']['it'] = "Attendi l'approvazione.";
+$hcms_lang['popups-must-be-allowed']['it'] = "I popup devono essere autorizzati";
+$hcms_lang['reset-password']['it'] = "Resetta la password";
 ?>

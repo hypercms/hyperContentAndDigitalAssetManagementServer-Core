@@ -16,12 +16,14 @@ require ("function/hypercms_api.inc.php");
 // servertime class
 require ("function/servertime.class.php");
 
+
 // ------------------------------ permission section --------------------------------
 
 // check session of user
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
+
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -38,6 +40,12 @@ checkusersession ($user, false);
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
 <?php
+// set time zone for user
+if (!empty ($_SESSION['hcms_timezone']) && $_SESSION['hcms_timezone'] != "standard")
+{
+  date_default_timezone_set ($_SESSION['hcms_timezone']);
+}
+  
 $servertime = new servertime;
 $servertime->InstallClockHead();
 ?>

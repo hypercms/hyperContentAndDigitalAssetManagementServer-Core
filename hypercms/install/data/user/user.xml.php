@@ -11,6 +11,7 @@
 <phone></phone>
 <signature></signature>
 <language>en</language>
+<timezone></timezone>
 <theme>standard</theme>
 </user>
 <user>
@@ -24,6 +25,7 @@
 <phone></phone>
 <signature></signature>
 <language>en</language>
+<timezone></timezone>
 <theme>standard</theme>
 </user>
 </userlist>

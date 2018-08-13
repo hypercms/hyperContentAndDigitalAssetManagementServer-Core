@@ -3,7 +3,7 @@
 $hcms_lang_name['sv'] = "Swedish";
 $hcms_lang_shortcut['sv'] = "sv";
 $hcms_lang_codepage['sv'] = "utf-8";
-$hcms_lang_date['sv'] = 'y-m-d H:i:s';
+$hcms_lang_date['sv'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['sv'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['sv'] = "Anmälan in
 $hcms_lang['monthly']['sv'] = "Varje månad";
 $hcms_lang['weekly']['sv'] = "Varje vecka";
 $hcms_lang['daily']['sv'] = "Dagligen";
-$hcms_lang['user-comma-seperated']['sv'] = "Användare (kommat avskilt)";
+$hcms_lang['comma-seperated']['sv'] = "(kommat avskilt)";
 $hcms_lang['text-id-expiration-date-to-monitor']['sv'] = "Text-ID (utgångsdatum) att övervaka";
 $hcms_lang['date-format-eg']['sv'] = "Datumformat (t.ex.  %Y- %m- %d och %d. %m %Y)";
 $hcms_lang['a-user-name-is-required']['sv'] = "Användarnamn krävs";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['sv'] = "Display name (tillval)";
 $hcms_lang['language-session-setting']['sv'] = "Språk session inställning";
 $hcms_lang['session-name-and-values']['sv'] = "Session namn och värden";
 $hcms_lang['valid-language-value-optional']['sv'] = "Giltiga språk värde (tillval)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['sv'] = "Redigera/skrivbehörighet för vissa användargrupper (tillval)";
+$hcms_lang['permission-for-certain-user-groups-optional']['sv'] = "Redigera/skrivbehörighet för vissa användargrupper (tillval)";
 $hcms_lang['date-format-optional']['sv'] = "Datumformat (tillval)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['sv'] = "Dpi värde att autoscale bilder (tillval)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['sv'] = "Autoconvert bilder till den givna colourspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (tillval)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['sv'] = "Telefon";
 $hcms_lang['optical-character-recognition']['sv'] = "Optisk teckenigenkänning";
 $hcms_lang['delete-imported-files']['sv'] = "Ta bort importerade filer";
 $hcms_lang['leave-files-in-import-directory']['sv'] = "Lämna filer i importkatalogen (inte byta namn på eller flytta dem efter import)";
+$hcms_lang['timezone']['sv'] = "Tidszon";
+$hcms_lang['registration-of-new-users']['sv'] = "Registrering av nya användare";
+$hcms_lang['assign-registered-users-to-group']['sv'] = "Tilldela registrerade användare till grupp";
+$hcms_lang['notify-users']['sv'] = "Meddela användare";
+$hcms_lang['sign-in']['sv'] = "Sign in";
+$hcms_lang['sign-up']['sv'] = "Sign up";
+$hcms_lang['please-sign-in']['sv'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['sv'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['sv'] = "Popups must be allowed";
+$hcms_lang['reset-password']['sv'] = "Reset password";
 ?>

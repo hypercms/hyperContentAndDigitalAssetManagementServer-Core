@@ -3,7 +3,7 @@
 $hcms_lang_name['he'] = "Hebrew";
 $hcms_lang_shortcut['he'] = "he";
 $hcms_lang_codepage['he'] = "utf-8";
-$hcms_lang_date['he'] = 'y-m-d H:i:s';
+$hcms_lang_date['he'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['he'] = "rtl";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['he'] = "הגדרו�
 $hcms_lang['monthly']['he'] = "חודשי";
 $hcms_lang['weekly']['he'] = "שבועי";
 $hcms_lang['daily']['he'] = "מדי יום";
-$hcms_lang['user-comma-seperated']['he'] = "המשתמש (פסיק בנפרד)";
+$hcms_lang['comma-seperated']['he'] = "(פסיק בנפרד)";
 $hcms_lang['text-id-expiration-date-to-monitor']['he'] = "טקסט-ID (תאריך פקיעה) כדי לעקוב אחר";
 $hcms_lang['date-format-eg']['he'] = "תבנית תאריך (לדוגמא  %Y- %מ- %d או %d. %M. %Y)";
 $hcms_lang['a-user-name-is-required']['he'] = "שם משתמש דרוש";
@@ -1221,7 +1221,7 @@ $hcms_lang['display-name-optional']['he'] = "שם התצוגה (אופציונל
 $hcms_lang['language-session-setting']['he'] = "הפעלה הגדרת השפה";
 $hcms_lang['session-name-and-values']['he'] = "שם מושב, ערכים";
 $hcms_lang['valid-language-value-optional']['he'] = "ערך חוקי השפה (אופציונלי)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['he'] = "ערוך/הרשאת כתיבה עבור קבוצות משתמשים מסוימים (אופציונלי)";
+$hcms_lang['permission-for-certain-user-groups-optional']['he'] = "ערוך/הרשאת כתיבה עבור קבוצות משתמשים מסוימים (אופציונלי)";
 $hcms_lang['date-format-optional']['he'] = "תבנית תאריך (אופציונלי)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['he'] = "dpi ערך autoscale תמונות (אופציונלי)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['he'] = "תמונות autoconvert הנתון colorspace [cmy,- CMYK, אפור, Solaris HCL, hclp, ועסקים ביתיים וקטנים הדוברים צרפתית, אחד מאוצרות הטבע, hsl, hsv, hwb, מעבדה, lchab, lchuv, LMS, Log, luv, ohta, לפי רשומה601ycbcr, לפי רשומה709ycbcr, RGB, scrgb, sRGB, שקוף, xyz, ycbcr, ycc, ydbdr, yiq, YpbPr, yuv (אופציונלי)";
@@ -1405,4 +1405,14 @@ $hcms_lang['phone']['he'] = "טלפון";
 $hcms_lang['optical-character-recognition']['he'] = "זיהוי תווים אופטי";
 $hcms_lang['delete-imported-files']['he'] = "מחק קבצים מיובאים";
 $hcms_lang['leave-files-in-import-directory']['he'] = "השאר קבצים בספריית הייבוא (אל תשנה את שמו או העבר אותם לאחר הייבוא)";
+$hcms_lang['timezone']['he'] = "אזור זמן";
+$hcms_lang['registration-of-new-users']['he'] = "רישום משתמשים חדשים";
+$hcms_lang['assign-registered-users-to-group']['he'] = "הקצה משתמשים רשומים לקבוצה";
+$hcms_lang['notify-users']['he'] = "הודע למשתמשים";
+$hcms_lang['sign-in']['he'] = "היכנס";
+$hcms_lang['sign-up']['he'] = "הירשם";
+$hcms_lang['please-sign-in']['he'] = "אנא היכנס.";
+$hcms_lang['please-wait-for-the-approval']['he'] = "אנא המתן לאישור.";
+$hcms_lang['popups-must-be-allowed']['he'] = "חלונות קופצים חייבים להיות מותרים";
+$hcms_lang['reset-password']['he'] = "לאפס את הסיסמה";
 ?>

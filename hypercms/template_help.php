@@ -90,6 +90,14 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">[hyperCMS:textk id='...' list='...' file='...' onlylist='yes/no']</td>
     </tr>
     <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['unformatted-comment'][$lang]); ?></td>
+      <td class="hcmsRowData1">[hyperCMS:commentu id='...']</td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['formatted-comment'][$lang]); ?></td>
+      <td class="hcmsRowData1">[hyperCMS:commentf id='...']</td>
+    </tr>
+    <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['display-name-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">label='...'</td>
     </tr> 
@@ -142,7 +150,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">language='...'</td>
     </tr>
     <tr align="left" valign="top"> 
-      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['editwrite-permission-for-certain-user-groups-optional'][$lang]); ?></td>
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['permission-for-certain-user-groups-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">groups='...'</td>
     </tr>
     <tr align="left" valign="top"> 
@@ -164,7 +172,6 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['preview-window'][$lang]); ?> (textu)</td>
       <td class="hcmsRowData1">preview='url'</td>
-    </tr>
     
     <!-- media links -->
     <tr align="left" valign="top"> 
@@ -204,6 +211,10 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">onPublish='hidden'</td>
     </tr>
     <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['read-only-content'][$lang]); ?></td>
+      <td class="hcmsRowData1">readonly='readonly'</td>
+    </tr>
+    <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['media-type-'][$lang]); ?></td>
       <td class="hcmsRowData1">mediatype='...'</td>
     </tr>
@@ -224,7 +235,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">language='...'</td>
     </tr>
     <tr align="left" valign="top"> 
-      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['editwrite-permission-for-certain-user-groups-optional'][$lang]); ?></td>
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['permission-for-certain-user-groups-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">groups='...'</td>
     </tr>
     <tr align="left" valign="top"> 
@@ -270,6 +281,10 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">onPublish='hidden'</td>
     </tr>
     <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['read-only-content'][$lang]); ?></td>
+      <td class="hcmsRowData1">readonly='readonly'</td>
+    </tr>
+    <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['meta-information-type-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">infotype='meta'</td>
     </tr>
@@ -278,7 +293,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">language='...'</td>
     </tr>
     <tr align="left" valign="top"> 
-      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['editwrite-permission-for-certain-user-groups-optional'][$lang]); ?></td>
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['permission-for-certain-user-groups-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">groups='...'</td>
     </tr>
     
@@ -308,6 +323,10 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">onPublish='hidden'</td>
     </tr>
     <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['read-only-content'][$lang]); ?></td>
+      <td class="hcmsRowData1">readonly='readonly'</td>
+    </tr>
+    <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['static-include-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">include='static'</td>
     </tr>
@@ -328,7 +347,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">language='...'</td>
     </tr>
     <tr align="left" valign="top"> 
-      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['editwrite-permission-for-certain-user-groups-optional'][$lang]); ?></td>
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['permission-for-certain-user-groups-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">groups='...'</td>
     </tr>  
     <tr align="left" valign="top"> 
@@ -393,8 +412,12 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">default='...'</td>
     </tr>
     <tr align="left" valign="top"> 
-      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['editwrite-permission-for-certain-user-groups-optional'][$lang]); ?></td>
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['permission-for-certain-user-groups-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">groups='...'</td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['read-only-content'][$lang]); ?></td>
+      <td class="hcmsRowData1">readonly='readonly'</td>
     </tr>
     
     <!-- geo location --> 
@@ -418,7 +441,11 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">onPublish='hidden'</td>
     </tr>
     <tr align="left" valign="top"> 
-      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['editwrite-permission-for-certain-user-groups-optional'][$lang]); ?></td>
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['read-only-content'][$lang]); ?></td>
+      <td class="hcmsRowData1">readonly='readonly'</td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['permission-for-certain-user-groups-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">groups='...'</td>
     </tr>
     
@@ -457,7 +484,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">default='...'</td>
     </tr>
     <tr align="left" valign="top"> 
-      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['editwrite-permission-for-certain-user-groups-optional'][$lang]); ?></td>
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['permission-for-certain-user-groups-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">groups='...'</td>
     </tr>    
     
@@ -467,8 +494,12 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
         <?php echo getescapedtext ($hcms_lang['tag-set'][$lang]); ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['template-script'][$lang]); ?></td>
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['template-script'][$lang]." (PHP/API)"); ?></td>
       <td class="hcmsRowData1">[hyperCMS:scriptbegin ... scriptend]</td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ("JavaScript (form-views)"); ?></td>
+      <td class="hcmsRowData1">[JavaScript:scriptbegin ... scriptend]</td>
     </tr>
     
     <!-- dbconnect -->

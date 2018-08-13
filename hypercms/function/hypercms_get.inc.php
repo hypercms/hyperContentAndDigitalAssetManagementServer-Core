@@ -17,7 +17,8 @@
 function getserverload ($interval=0)
 {
   $cpu_num = 2;
-  $load_total = 0;
+  $load = 0;
+  $memory_usage = 0;
     
   // for Windows  
   if (stristr (PHP_OS, 'win'))
@@ -32,8 +33,6 @@ function getserverload ($interval=0)
         $cpu_num++;
         $load_total += $cpu->loadpercentage;
       }
-      
-      $load = round ($load_total / $cpu_num);
     }
     else
     {
@@ -46,10 +45,11 @@ function getserverload ($interval=0)
         pclose ($process);
       }
      
+      $output = array();
       $cmd = "wmic cpu get loadpercentage /all";
       @exec ($cmd, $output);
 
-      if ($output)
+      if (is_array ($output))
       {
         foreach ($output as $line)
         {
@@ -60,44 +60,48 @@ function getserverload ($interval=0)
           }
         }
       }
-      
-      $load = round ($load_total / $cpu_num);
     }
     
+    if (!empty ($load_total) && !empty ($cpu_num) && $load_total > 0 && $cpu_num > 0) $load = round ($load_total / $cpu_num);
+    
     // server total memory
-    exec ('wmic memorychip get capacity', $totalmem);
-    array_sum ($totalmem);
+    $output = array();
+    exec ('wmic memorychip get capacity', $output);
+    if (is_array ($output)) $totalmem = array_sum ($output);
     
     // server memory usage
     $output = array();
     exec ('tasklist /FI "PID eq '.getmypid().'" /FO LIST', $output);
-    $usedmem = preg_replace ( '/[^0-9]/', '', $output[5]);
+    if (!empty ($output[5])) $usedmem = preg_replace ( '/[^0-9]/', '', $output[5]);
     
-    $memory_usage = $usedmem / $totalmem;
+    if (!empty ($usedmem) && !empty ($totalmem) && $usedmem > 0 && $totalmem > 0) $memory_usage = $usedmem / $totalmem;
   }
   // for UNIX
   elseif (function_exists ('sys_getloadavg'))
   {
     // server CPU cores
-    exec ("cat /proc/cpuinfo | grep processor | wc -l", $processors);
-    $cpu_num = $processors[0];
+    $output = array();
+    exec ("cat /proc/cpuinfo | grep processor | wc -l", $output);
+    if (!empty ($output[0])) $cpu_num = $output[0];
     
     // server load
     $sys_load = sys_getloadavg ();
-    $load = $sys_load[$interval];
+    if (!empty ($sys_load[$interval])) $load_total = $sys_load[$interval];
     
-    // 
-    if ($cpu_num > 0) $load = $load / $cpu_num;
+    if (!empty ($load_total) && !empty ($cpu_num) && $load_total > 0 && $cpu_num > 0) $load = $load_total / $cpu_num;
     
     // server memory usage
-    exec ('free', $free_array);
-    //$free = trim (imlpode ("\n", $free));
-    //$free_arr = explode ("\n", $free);
-    $mem = explode (" ", $free_array[1]);
-    $mem = array_filter ($mem);
-    $mem = array_merge ($mem);
-    if (!empty ($mem[1])) $memory_usage = $mem[2] / $mem[1];
-    else $memory_usage = 0;
+    $output = array();
+    exec ('free', $output);
+    
+    if (!empty ($output[1]))
+    {
+      $mem = explode (" ", $output[1]);
+      $mem = array_filter ($mem);
+      $mem = array_merge ($mem);
+    }
+    
+    if (!empty ($mem[2]) && !empty ($mem[1]) && $mem[2] > 0 && $mem[1] > 0) $memory_usage = $mem[2] / $mem[1];
   }
  
   $result = array();
@@ -505,7 +509,7 @@ function getsynonym ($text, $lang="")
 
 function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
 {
-  global $mgmt_config, $mgmt_lang_shortcut_default, $taxonomy;
+  global $mgmt_config, $taxonomy;
 
   if ($lang != "" && intval ($tax_id) >= 0 && is_array ($mgmt_config))
   {
@@ -521,19 +525,15 @@ function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
     }
 
     // return key = taxonomy ID and value = keyword
-    if (!empty ($taxonomy[$lang]))
-    {
-      // get childs
-      $result = gettaxonomy_childs ($site, $lang, $tax_id, 1, true);
+    // get childs
+    $result = gettaxonomy_childs ($site, $lang, $tax_id, 1, true);
 
-      // remove root element
-      if (!empty ($result[$tax_id])) unset ($result[$tax_id]);
+    // remove root element
+    if (!empty ($result[$tax_id])) unset ($result[$tax_id]);
 
-      // return sorted array
-      natcasesort ($result);
-      return $result;
-    }
-    else return false;
+    // return sorted array
+    natcasesort ($result);
+    return $result;
   }
   else return false;
 }
@@ -552,7 +552,7 @@ function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
 
 function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $id_only=true)
 {
-  global $mgmt_config, $mgmt_lang_shortcut_default, $taxonomy;
+  global $mgmt_config, $taxonomy;
 
   if ($childlevels >= 0 && is_array ($mgmt_config))
   {
@@ -609,9 +609,13 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
     // search for taxonomy keyword and its childs
     if (!empty ($taxonomy) && is_array ($taxonomy) && sizeof ($taxonomy) > 0)
     {
-      // verify language in taxonomy and set en as default
-      if (!empty ($lang) && empty ($taxonomy[$lang])) $lang = $mgmt_lang_shortcut_default;
-
+      // verify language in taxonomy and set language is requested language is not available
+      if (!empty ($lang) && empty ($taxonomy[$lang]))
+      {
+        reset ($taxonomy);
+        $lang = key ($taxonomy);
+      }
+      
       // return key = taxonomy ID and value = keyword
       foreach ($taxonomy as $tax_lang=>$tax_array)
       {
@@ -1275,13 +1279,17 @@ function getlistelements ($list_sourcefile)
 function getmetadata ($location, $object, $container="", $seperator="\n", $template="")
 {
 	global $mgmt_config;
-  
+
   // deconvert location
   if (@substr_count ($location, "%page%") > 0 || @substr_count ($location, "%comp%") > 0)
   {
     $site = getpublication ($location);
     $cat = getcategory ($site, $location);
     $location = deconvertpath ($location, "file");
+  }
+  elseif (strpos ($template, "/") > 0)
+  {
+    list ($site, $template) = explode ("/", $template);
   }
       
   // if object includes special characters
@@ -1337,21 +1345,22 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
       $labels = Null;
 
       // load template and define labels
-      if ($template != "" && strpos ($template, "/") > 0)
+      if ($template != "")
       {
-        list ($site, $template) = explode ("/", $template);
-        
         if ($site != "" && $template != "")
         {
           $result = loadtemplate ($site, $template);
           
           if ($result['content'] != "")
           {
+            $position = array();
+            
             $hypertag_array = gethypertag ($result['content'], "text", 0);
             
             if (is_array ($hypertag_array))
             {
               $labels = array();
+              $i = 1;
               
               foreach ($hypertag_array as $tag)
               {
@@ -1375,8 +1384,14 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
                 $id = getattribute ($tag, "id");
                 $label = getattribute ($tag, "label");
                 
-                if ($id != "" && $label != "") $labels[$id] = $label;
-                elseif ($id != "") $labels[$id] = str_replace ("_", " ", $id);
+                if ($id != "")
+                {
+                  if ($label != "") $labels[$id] = $label;
+                  else $labels[$id] = str_replace ("_", " ", $id);
+                
+                  $position[$id] = $i;
+                  $i++;
+                }
               }
             }
           }
@@ -1416,7 +1431,7 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
                   $text_content[0] = str_replace (",", ", ", $text_content[0]);
                 }
                 
-    						if (strtolower ($seperator) != "array") $metadata .= $label.": ".$text_content[0].$seperator;
+    						if (strtolower ($seperator) != "array") $metadata[] = $label.": ".$text_content[0].$seperator;
                 else $metadata[$label] = $text_content[0];
               }
   					}
@@ -1448,9 +1463,17 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
     						$text_str = $text_content[0];
               }
             }
-        
-						if (strtolower ($seperator) != "array") $metadata .= $label.": ".$text_str.$seperator;
+            
+            if (!empty ($position[$id])) $pos = $position[$id];
+            
+						if (strtolower ($seperator) != "array") $metadata[$pos] = $label.": ".$text_str;
             else $metadata[$label] = $text_str;
+          }
+          
+          if (strtolower ($seperator) != "array")
+          {
+            ksort ($metadata);
+            $metadata = implode ($seperator, $metadata);
           }
         }
         
@@ -4088,13 +4111,13 @@ function getlockedfileinfo ($location, $file)
 
 // ---------------------------------------- getlockobjects --------------------------------------------
 // function: getlockobjects()
-// input: user name [string]
+// input: user name [string], text IDs to be returned [array] (optional)
 // output: object info array / false
 
 // description:
-// Returns an object info array with of all locked objects of a specific user.
+// Returns an object info array of all locked objects of a specific user.
 
-function getlockedobjects ($user)
+function getlockedobjects ($user, $return_text_id=array())
 {      
   global $mgmt_config;
   
@@ -4157,7 +4180,7 @@ function getlockedobjects ($user)
                   if ($page !== false)
                   {
                     $object_hash = rdbms_getobject_hash (convertpath ($site, $location.$page, ""));
-                    $object_info = rdbms_getobject_info ($object_hash);
+                    $object_info = rdbms_getobject_info ($object_hash, $return_text_id);
                     
                     if (is_array ($object_info))
                     {
@@ -4195,10 +4218,10 @@ function getlockedobjects ($user)
 
 // --------------------------------------- getfavorites -------------------------------------------
 // function: getfavorites ()
-// input: user name [string], output [path,id] (optional)
+// input: user name [string], output [path,id] (optional), text IDs to be returned if output=path [array] (optional)
 // output: object info or object id array of users favorites / false
 
-function getfavorites ($user, $output="path")
+function getfavorites ($user, $output="path", $return_text_id=array())
 {
   global $mgmt_config;
   
@@ -4233,7 +4256,7 @@ function getfavorites ($user, $output="path")
             {
               if ($object_id != "")
               {
-                $object_info = rdbms_getobject_info ($object_id);
+                $object_info = rdbms_getobject_info ($object_id, $return_text_id);
                
                 if (!empty ($object_info['objectpath'])) 
                 {
@@ -5312,12 +5335,21 @@ function getuserinformation ()
         $realname = getcontent ($temp, "<realname>");
         $signature = getcontent ($temp, "<signature>");
         $language = getcontent ($temp, "<language>");
-        $publication = getcontent ($temp, "<publication>");
+        $publication_array = getcontent ($temp, "<publication>");
+        $usergroup_array = getcontent ($temp, "<usergroup>");
+        
+        if (is_array ($publication_array))
+        {
+          foreach ($publication_array as $key=>$pub_temp)
+          {
+            if (!empty ($pub_temp) && !empty ($usergroup_array[$key])) $usergroup[$pub_temp] = $usergroup_array[$key];
+          }
+        }
         
         // standard user
-        if (!empty ($login[0]) && (empty ($admin[0]) || $admin[0] == 0) && is_array ($publication))
+        if (!empty ($login[0]) && (empty ($admin[0]) || $admin[0] == 0) && is_array ($publication_array))
         {
-          foreach ($publication as $pub_temp)
+          foreach ($publication_array as $pub_temp)
           {
             if ($pub_temp != "")
             {
@@ -5327,6 +5359,8 @@ function getuserinformation ()
               $user_array[$pub_temp][$username]['realname'] = $realname[0];
               $user_array[$pub_temp][$username]['signature'] = $signature[0];
               $user_array[$pub_temp][$username]['language'] = $language[0];
+              if (!empty ($usergroup[$pub_temp])) $user_array[$pub_temp][$username]['usergroup'] = $usergroup[$pub_temp];
+              else $user_array[$pub_temp][$username]['usergroup'] = "";
             }
           }
         }
@@ -5342,7 +5376,9 @@ function getuserinformation ()
               $user_array[$pub_temp][$username]['email'] = $email[0];
               $user_array[$pub_temp][$username]['realname'] = $realname[0];
               $user_array[$pub_temp][$username]['signature'] = $signature[0];
-              $user_array[$pub_temp][$username]['language'] = $language[0]; 
+              $user_array[$pub_temp][$username]['language'] = $language[0];
+              if (!empty ($usergroup[$pub_temp])) $user_array[$pub_temp][$username]['usergroup'] = $usergroup[$pub_temp];
+              else $user_array[$pub_temp][$username]['usergroup'] = "";
             }
           }
         }

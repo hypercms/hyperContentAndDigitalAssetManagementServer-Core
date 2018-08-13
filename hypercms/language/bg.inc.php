@@ -3,7 +3,7 @@
 $hcms_lang_name['bg'] = "Bulgarian";
 $hcms_lang_shortcut['bg'] = "bg";
 $hcms_lang_codepage['bg'] = "utf-8";
-$hcms_lang_date['bg'] = 'y-m-d H:i:s';
+$hcms_lang_date['bg'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['bg'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['bg'] = "Настр�
 $hcms_lang['monthly']['bg'] = "Месечни";
 $hcms_lang['weekly']['bg'] = "Ежеседмично";
 $hcms_lang['daily']['bg'] = "Ежедневно";
-$hcms_lang['user-comma-seperated']['bg'] = "Потребителски (comma помощта)";
+$hcms_lang['comma-seperated']['bg'] = "(comma помощта)";
 $hcms_lang['text-id-expiration-date-to-monitor']['bg'] = "Текст за идентификация (дата на изтичане) на монитора";
 $hcms_lang['date-format-eg']['bg'] = "Формат за датата (напр.  %Y- %м- %d или %d. %м. %Y)";
 $hcms_lang['a-user-name-is-required']['bg'] = "Име на потребител се изисква";
@@ -1221,7 +1221,7 @@ $hcms_lang['display-name-optional']['bg'] = "Име за показване (о�
 $hcms_lang['language-session-setting']['bg'] = "Език сесия настройка";
 $hcms_lang['session-name-and-values']['bg'] = "Сесия име и стойности";
 $hcms_lang['valid-language-value-optional']['bg'] = "Валидни език стойност (опция)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['bg'] = "Редактиране/ запис разрешение за определени групи потребители (опция)";
+$hcms_lang['permission-for-certain-user-groups-optional']['bg'] = "Редактиране/ запис разрешение за определени групи потребители (опция)";
 $hcms_lang['date-format-optional']['bg'] = "Формат за датата (опция)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['bg'] = "DPI стойност за autoscale изображения (опция)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['bg'] = "Autoconvert изображения на даден colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (опция)";
@@ -1405,4 +1405,14 @@ $hcms_lang['phone']['bg'] = "телефон";
 $hcms_lang['optical-character-recognition']['bg'] = "Оптично разпознаване на символи";
 $hcms_lang['delete-imported-files']['bg'] = "Изтриване на импортираните файлове";
 $hcms_lang['leave-files-in-import-directory']['bg'] = "Оставете файловете в директорията за импортиране (не ги преименувайте или ги преместете след импортиране)";
+$hcms_lang['timezone']['bg'] = "Часова зона";
+$hcms_lang['регистрация']['bg'] = "Регистрация на нови потребители";
+$hcms_lang['assign-registered-users-to-group']['bg'] = "Присвояване на регистрирани потребители в група";
+$hcms_lang['notify-users']['bg'] = "Уведомяване на потребителите";
+$hcms_lang['sign-in']['bg'] = "Sign in";
+$hcms_lang['sign-up']['bg'] = "Sign up";
+$hcms_lang['please-sign-in']['bg'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['bg'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['bg'] = "Popups must be allowed";
+$hcms_lang['reset-password']['bg'] = "Reset password";
 ?>

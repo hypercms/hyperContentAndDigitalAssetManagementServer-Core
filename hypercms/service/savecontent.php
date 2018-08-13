@@ -234,6 +234,22 @@ if ($usedby == "" || $usedby == $user)
           }
         }
         
+        // correct dates based on users time zone
+        if (!empty ($_SESSION['hcms_timezone']) && ini_get ('date.timezone'))
+        {
+          if ($artdatefrom[$artid] != "")
+          {
+            $datenew = convertdate ($artdatefrom[$artid], $_SESSION['hcms_timezone'], "Y-m-d H:i", ini_get ('date.timezone'), "Y-m-d H:i");
+            if (!empty ($datenew)) $artdatefrom[$artid] = $datenew;
+          }
+          
+          if ($artdateto[$artid] != "")
+          {
+            $datenew = convertdate ($artdateto[$artid], $_SESSION['hcms_timezone'], "Y-m-d H:i", ini_get ('date.timezone'), "Y-m-d H:i");
+            if (!empty ($datenew)) $artdateto[$artid] = $datenew;
+          }
+        }
+        
         next ($artstatus);
       }
     }
@@ -406,7 +422,7 @@ if ($usedby == "" || $usedby == $user)
           rdbms_setcontent ($site, $container_id);
         }
       }
-      
+
       // media content
       if ($contentdatanew != false && isset ($mediafile) && is_array ($mediafile)) $contentdatanew = setmedia ($site, $contentdatanew, $contentfile, $mediafile, $mediaobject_curr, $mediaobject, $mediaalttext, $mediaalign, $mediawidth, $mediaheight, "no", $user, $user, $charset);
       if ($contentdatanew != false && isset ($artmediafile) && is_array ($artmediafile)) $contentdatanew = setmedia ($site, $contentdatanew, $contentfile, $artmediafile, $artmediaobject_curr, $artmediaobject, $artmediaalttext, $artmediaalign, $artmediawidth, $artmediaheight, "yes", $user, $user, $charset);

@@ -3,7 +3,7 @@
 $hcms_lang_name['ru'] = "Russian";
 $hcms_lang_shortcut['ru'] = "ru";
 $hcms_lang_codepage['ru'] = "utf-8";
-$hcms_lang_date['ru'] = 'y-m-d H:i:s';
+$hcms_lang_date['ru'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ru'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['ru'] = "Парам�
 $hcms_lang['monthly']['ru'] = "За месяц";
 $hcms_lang['weekly']['ru'] = "За неделю";
 $hcms_lang['daily']['ru'] = "Ежедневно";
-$hcms_lang['user-comma-seperated']['ru'] = "Пользователь (разделенных запятыми)";
+$hcms_lang['comma-seperated']['ru'] = "(разделенных запятыми)";
 $hcms_lang['text-id-expiration-date-to-monitor']['ru'] = "Текст-ID (дата окончания срока действия) для контроля за";
 $hcms_lang['date-format-eg']['ru'] = "Формат даты (например, %Y-%m-%d и %d.%m.%Y)";
 $hcms_lang['a-user-name-is-required']['ru'] = "Имя пользователя не требуется";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['ru'] = "Отображаемое имя (п
 $hcms_lang['language-session-setting']['ru'] = "Язык сеанса";
 $hcms_lang['session-name-and-values']['ru'] = "Сессии имя и значения";
 $hcms_lang['valid-language-value-optional']['ru'] = "Действительное значение (по спецзаказу)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['ru'] = "Редактирование и запись для определенных групп пользователей (по спецзаказу)";
+$hcms_lang['permission-for-certain-user-groups-optional']['ru'] = "Редактирование и запись для определенных групп пользователей (по спецзаказу)";
 $hcms_lang['date-format-optional']['ru'] = "Формат даты (по спецзаказу)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['ru'] = "DPI значение автоматическое масштабирование по изображения (по спецзаказу)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['ru'] = "Autoconvert изображения с учетом цветовое пространство [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (по спецзаказу)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['ru'] = "Телефон";
 $hcms_lang['optical-character-recognition']['ru'] = "Оптическое распознавание символов";
 $hcms_lang['delete-imported-files']['ru'] = "Удаление импортированных файлов";
 $hcms_lang['leave-files-in-import-directory']['ru'] = "Оставляйте файлы в каталоге импорта (не переименовывайте и не перемещайте их после импорта)";
+$hcms_lang['timezone']['ru'] = "Часовой пояс";
+$hcms_lang['registration-of-new-users']['ru'] = "Регистрация новых пользователей";
+$hcms_lang['assign-registered-users-to-group']['ru'] = "Назначить зарегистрированных пользователей в группу";
+$hcms_lang['notify-users']['ru'] = "Уведомить пользователей";
+$hcms_lang['sign-in']['ru'] = "Войти в систему";
+$hcms_lang['sign-up']['ru'] = "Зарегистрироваться";
+$hcms_lang['please-sign-in']['ru'] = "Пожалуйста войдите.";
+$hcms_lang['please-wait-for-the-approval']['ru'] = "Пожалуйста, дождитесь одобрения";
+$hcms_lang['popups-must-be-allowed']['ru'] = "Всплывающие окна должны быть разрешены";
+$hcms_lang['reset-password']['ru'] = "Сброс пароля";
 ?>

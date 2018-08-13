@@ -3,7 +3,7 @@
 $hcms_lang_name['th'] = "Thai";
 $hcms_lang_shortcut['th'] = "th";
 $hcms_lang_codepage['th'] = "utf-8";
-$hcms_lang_date['th'] = 'y-m-d H:i:s';
+$hcms_lang_date['th'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['th'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['th'] = "การ�
 $hcms_lang['monthly']['th'] = "รายเดือน";
 $hcms_lang['weekly']['th'] = "ทุกสัปดาห์";
 $hcms_lang['daily']['th'] = "ทุกวัน";
-$hcms_lang['user-comma-seperated']['th'] = "ผู้ใช้(เครื่องหมายจุล ภาค แยกระหว่าง)";
+$hcms_lang['comma-seperated']['th'] = "(เครื่องหมายจุล ภาค แยกระหว่าง)";
 $hcms_lang['text-id-expiration-date-to-monitor']['th'] = "ข้อความ - ID (วันที่หมดอายุ)ให้กับจอมอนิเตอร์";
 $hcms_lang['date-format-eg']['th'] = "รูปแบบวันที่(เช่น % - %ม. - % d หรือ% d .% M .% Y )";
 $hcms_lang['a-user-name-is-required']['th'] = "ชื่อผู้ใช้มีความจำเป็น";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['th'] = "ชื่อจอแสดงผ�
 $hcms_lang['language-session-setting']['th'] = "การตั้งค่า ภาษา ของเซสชัน";
 $hcms_lang['session-name-and-values']['th'] = "ค่าและชื่อเซสชัน";
 $hcms_lang['valid-language-value-optional']['th'] = "ค่า ภาษา ที่ถูกต้อง(อุปกรณ์เสริม)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['th'] = "แก้ไข/เขียนไม่ได้รับอนุญาตสำหรับกลุ่มผู้ใช้บางอย่าง(อุปกรณ์เสริม)";
+$hcms_lang['permission-for-certain-user-groups-optional']['th'] = "แก้ไข/เขียนไม่ได้รับอนุญาตสำหรับกลุ่มผู้ใช้บางอย่าง(อุปกรณ์เสริม)";
 $hcms_lang['date-format-optional']['th'] = "รูปแบบวันที่(อุปกรณ์เสริม)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['th'] = "จุดต่อตารางนิ้วมูลค่าในการ autoscale ภาพ (อุปกรณ์เสริม)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['th'] = "autoconvert กับ ภาพ ที่ได้รับ colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV][CMY, CMYK, siva, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS pogone LAHKO PRENESETE OD, Log, ob desetih, TAKASHIJA OHTO, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, pregleden, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (dodatna možnost)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['th'] = "โทรศัพท์";
 $hcms_lang['optical-character-recognition']['th'] = "การรู้จำตัวอักษรแสง";
 $hcms_lang['delete-imported-files']['th'] = "ลบไฟล์ที่นำเข้า";
 $hcms_lang['leave-files-in-import-directory']['th'] = "ปล่อยให้ไฟล์ในไดเร็กทอรีการนำเข้า (อย่าเปลี่ยนชื่อหรือย้ายไฟล์เหล่านี้หลังจากนำเข้า)";
+$hcms_lang['timezone']['th'] = "เขตเวลา";
+$hcms_lang['registration-of-new-users']['th'] = "การลงทะเบียนผู้ใช้ใหม่";
+$hcms_lang['assign-registered-users-to-group']['th'] = "กำหนดผู้ใช้ที่ลงทะเบียนเข้ากลุ่ม";
+$hcms_lang['notify-users']['th'] = "แจ้งผู้ใช้";
+$hcms_lang['sign-in']['th'] = "Sign in";
+$hcms_lang['sign-up']['th'] = "Sign up";
+$hcms_lang['please-sign-in']['th'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['th'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['th'] = "Popups must be allowed";
+$hcms_lang['reset-password']['th'] = "Reset password";
 ?>

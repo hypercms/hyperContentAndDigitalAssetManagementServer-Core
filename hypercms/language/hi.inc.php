@@ -3,7 +3,7 @@
 $hcms_lang_name['hi'] = "Hindi";
 $hcms_lang_shortcut['hi'] = "hi";
 $hcms_lang_codepage['hi'] = "utf-8";
-$hcms_lang_date['hi'] = 'y-m-d H:i:s';
+$hcms_lang_date['hi'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['hi'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['hi'] = "सफल�
 $hcms_lang['monthly']['hi'] = "मासिक";
 $hcms_lang['weekly']['hi'] = "साप् ताहिक";
 $hcms_lang['daily']['hi'] = "दैनिक";
-$hcms_lang['user-comma-seperated']['hi'] = "उपयोगकर्ता (अल्पविराम नाटक)";
+$hcms_lang['comma-seperated']['hi'] = "(अल्पविराम नाटक)";
 $hcms_lang['text-id-expiration-date-to-monitor']['hi'] = "समाप्ति दिनांक) की निगरानी के लिए पाठ्य-id (";
 $hcms_lang['date-format-eg']['hi'] = "दिनांक स्वरूप (उदाहरण  %वाई-या %d %d %मैसर्स-प्रतिशत एम.वाई.प्रतिशत)";
 $hcms_lang['a-user-name-is-required']['hi'] = "उपयोगकर्ता नाम की आवश्यकता है";
@@ -1221,7 +1221,7 @@ $hcms_lang['display-name-optional']['hi'] = "डिसप् ले नाम (�
 $hcms_lang['language-session-setting']['hi'] = "भाषा की स्थापना सत्र";
 $hcms_lang['session-name-and-values']['hi'] = "सत्र नाम और मूल्यों";
 $hcms_lang['valid-language-value-optional']['hi'] = "मान्य भाषा मूल्य (वैकल्पिक)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['hi'] = "संपादित करने के लिए अनुमति/लिख वैकल् पिक उपयोगकर्ता समूह ()";
+$hcms_lang['permission-for-certain-user-groups-optional']['hi'] = "संपादित करने के लिए अनुमति/लिख वैकल् पिक उपयोगकर्ता समूह ()";
 $hcms_lang['date-format-optional']['hi'] = "दिनांक स्वरूप (वैकल्पिक)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['hi'] = "dpi autoscale छवियों को मूल्य (वैकल्पिक)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['hi'] = "[चित्र autoconvert colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (वैकल्पिक)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['hi'] = "फ़ोन";
 $hcms_lang['optical-character-recognition']['hi'] = "ऑप्टिकल कैरेक्टर पहचान";
 $hcms_lang['delete-imported-files']['hi'] = "आयातित फ़ाइलों को हटाएं";
 $hcms_lang['leave-files-in-import-directory']['hi'] = "आयात निर्देशिका में फ़ाइलें छोड़ें (आयात करने के बाद उनका नाम बदलें या उन्हें स्थानांतरित न करें)";
+$hcms_lang['timezone']['hi'] = "समय क्षेत्र";
+$hcms_lang['registration-of-new-users']['hi'] = "नए उपयोगकर्ताओं का पंजीकरण";
+$hcms_lang['assign-registered-users-to-group']['hi'] = "पंजीकृत उपयोगकर्ताओं को समूह में असाइन करें";
+$hcms_lang['notify-users']['hi'] = "उपयोगकर्ताओं को सूचित करें";
+$hcms_lang['sign-in']['hi'] = "Sign in";
+$hcms_lang['sign-up']['hi'] = "Sign up";
+$hcms_lang['please-sign-in']['hi'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['hi'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['hi'] = "Popups must be allowed";
+$hcms_lang['reset-password']['hi'] = "Reset password";
 ?>

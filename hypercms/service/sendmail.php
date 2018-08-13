@@ -9,12 +9,25 @@
 
 // session
 define ("SESSION", "create");
-// management configuration
-require ("config.inc.php");
-// hyperCMS API
-require ("function/hypercms_api.inc.php");
-// mailer class
-require ("function/hypermailer.class.php");
+
+if (is_file ("config.inc.php"))
+{
+  // management configuration
+  require_once ("config.inc.php");
+  // hyperCMS API
+  require_once ("function/hypercms_api.inc.php");
+  // mailer class
+  require_once ("function/hypermailer.class.php");
+}
+elseif (is_file ("../config.inc.php"))
+{
+  // management configuration
+  require_once ("../config.inc.php");
+  // hyperCMS API
+  require_once ("../function/hypercms_api.inc.php");
+  // mailer class
+  require_once ("../function/hypermailer.class.php");
+}
 
 
 // input parameters
@@ -116,7 +129,7 @@ function getallusers ()
   // load usergroup data
   if (empty ($groupdata) && valid_publicationname ($site)) $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");  
   
-  if ($groupdata != false) $allgroup_array = getcontent ($groupdata, "<groupname>");  
+  if ($groupdata != false) $allgroup_array = getcontent ($groupdata, "<groupname>");
   
   // load user data
   if (empty ($userdata)) $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");  

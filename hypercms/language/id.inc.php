@@ -3,7 +3,7 @@
 $hcms_lang_name['id'] = "Indonesian";
 $hcms_lang_shortcut['id'] = "id";
 $hcms_lang_codepage['id'] = "utf-8";
-$hcms_lang_date['id'] = 'y-m-d H:i:s';
+$hcms_lang_date['id'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['id'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['id'] = "Pengaturan 
 $hcms_lang['monthly']['id'] = "Bulanan";
 $hcms_lang['weekly']['id'] = "Mingguan";
 $hcms_lang['daily']['id'] = "Setiap Hari";
-$hcms_lang['user-comma-seperated']['id'] = "Pengguna (dipisahkan koma)";
+$hcms_lang['comma-seperated']['id'] = "(dipisahkan koma)";
 $hcms_lang['text-id-expiration-date-to-monitor']['id'] = "Teks-ID (tanggal kadaluwarsa) untuk memantau";
 $hcms_lang['date-format-eg']['id'] = "Format Tanggal (mis. %Y- %m %d atau %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['id'] = "Nama pengguna diperlukan";
@@ -1222,7 +1222,7 @@ $hcms_lang['display-name-optional']['id'] = "Nama Tampilan (opsional)";
 $hcms_lang['language-session-setting']['id'] = "Bahasa pengaturan sesi";
 $hcms_lang['session-name-and-values']['id'] = "Nama dan nilai Sesi";
 $hcms_lang['valid-language-value-optional']['id'] = "Bahasa sah nilai (opsional)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['id'] = "Edit/menulis izin untuk pengguna tertentu kelompok (opsional)";
+$hcms_lang['permission-for-certain-user-groups-optional']['id'] = "Edit/menulis izin untuk pengguna tertentu kelompok (opsional)";
 $hcms_lang['date-format-optional']['id'] = "Format Tanggal (opsional)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['id'] = "DPI nilai autoscale gambar (opsional)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['id'] = "Autoconvert gambar ke diberikan colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (opsional)";
@@ -1405,4 +1405,14 @@ $hcms_lang['phone']['id'] = "Telepon";
 $hcms_lang['optical-character-recognition']['id'] = "Pengenalan Karakter Optik";
 $hcms_lang['delete-imported-files']['id'] = "Hapus file yang diimpor";
 $hcms_lang['leave-files-in-import-directory']['id'] = "Tinggalkan file di direktori impor (jangan ganti nama atau pindahkan setelah mengimpor)";
+$hcms_lang['timezone']['id'] = "Zona waktu";
+$hcms_lang['registration-of-new-users']['id'] = "Pendaftaran pengguna baru";
+$hcms_lang['assign-registered-users-to-group']['id'] = "Tetapkan pengguna terdaftar ke grup";
+$hcms_lang['notify-users']['id'] = "Beri tahu pengguna";
+$hcms_lang['sign-in']['id'] = "Sign in";
+$hcms_lang['sign-up']['id'] = "Sign up";
+$hcms_lang['please-sign-in']['id'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['id'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['id'] = "Popups must be allowed";
+$hcms_lang['reset-password']['id'] = "Reset password";
 ?>

@@ -3,7 +3,7 @@
 $hcms_lang_name['da'] = "Danish";
 $hcms_lang_shortcut['da'] = "da";
 $hcms_lang_codepage['da'] = "utf-8";
-$hcms_lang_date['da'] = 'y-m-d H:i:s';
+$hcms_lang_date['da'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['da'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['da'] = "Anmeldelsen
 $hcms_lang['monthly']['da'] = "Månedlige";
 $hcms_lang['weekly']['da'] = "Ugentlig";
 $hcms_lang['daily']['da'] = "Dagligt";
-$hcms_lang['user-comma-seperated']['da'] = "Bruger (tal adskilte af komma)";
+$hcms_lang['comma-seperated']['da'] = "(tal adskilte af komma)";
 $hcms_lang['text-id-expiration-date-to-monitor']['da'] = "Tekst-ID (udløbsdato) til monitor";
 $hcms_lang['date-format-eg']['da'] = "Date format (f. eks. %Y- %m- %d eller %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['da'] = "Brugernavn er påkrævet";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['da'] = "Display name (ekstraudstyr)";
 $hcms_lang['language-session-setting']['da'] = "Sprog session indstilling";
 $hcms_lang['session-name-and-values']['da'] = "Session navn og værdier";
 $hcms_lang['valid-language-value-optional']['da'] = "Gyldige sprog (ekstraudstyr)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['da'] = "Rediger/skriverettigheder for visse brugergrupper (ekstraudstyr)";
+$hcms_lang['permission-for-certain-user-groups-optional']['da'] = "Rediger/skriverettigheder for visse brugergrupper (ekstraudstyr)";
 $hcms_lang['date-format-optional']['da'] = "Datoformat (ekstraudstyr)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['da'] = "Dpi værdi til autoskala billeder (ekstraudstyr)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['da'] = "Autoconvert billeder til en given farverum [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (ekstraudstyr)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['da'] = "Telefon";
 $hcms_lang['optical-character-recognition']['da'] = "Optisk karaktergenkendelse";
 $hcms_lang['delete-imported-files']['da'] = "Slet importerede filer";
 $hcms_lang['leave-files-in-import-directory']['da'] = "Forlad filer i importmappen (ikke omdøb eller flyt dem efter import)";
+$hcms_lang['timezone']['da'] = "Tidszone";
+$hcms_lang['registration-of-new-users']['da'] = "Registrering af nye brugere";
+$hcms_lang['assign-registered-users-to-group']['da'] = "Tildel registrerede brugere til gruppe";
+$hcms_lang['notify-users']['da'] = "Advisér brugere";
+$hcms_lang['sign-in']['da'] = "Sign in";
+$hcms_lang['sign-up']['da'] = "Sign up";
+$hcms_lang['please-sign-in']['da'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['da'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['da'] = "Popups must be allowed";
+$hcms_lang['reset-password']['da'] = "Reset password";
 ?>

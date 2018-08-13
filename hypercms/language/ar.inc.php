@@ -3,7 +3,7 @@
 $hcms_lang_name['ar'] = "Arabic";
 $hcms_lang_shortcut['ar'] = "ar";
 $hcms_lang_codepage['ar'] = "utf-8";
-$hcms_lang_date['ar'] = 'y-m-d H:i:s';
+$hcms_lang_date['ar'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ar'] = "rtl";
 
 // Text for hyperCMS
@@ -530,7 +530,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['ar'] = "تم حفظ
 $hcms_lang['monthly']['ar'] = "شهريا";
 $hcms_lang['weekly']['ar'] = "الاسبوعية";
 $hcms_lang['daily']['ar'] = "يوميا";
-$hcms_lang['user-comma-seperated']['ar'] = "المستخدم (فاصلة منفصل)";
+$hcms_lang['comma-seperated']['ar'] = "(فاصلة منفصل)";
 $hcms_lang['text-id-expiration-date-to-monitor']['ar'] = "النص-ID (تاريخ انتهاء الصلاحية) لرصد";
 $hcms_lang['date-format-eg']['ar'] = "تنسيق التاريخ (مثل  % % y M- %d %d.إم. %% y)";
 $hcms_lang['a-user-name-is-required']['ar'] = "اسم المستخدم مطلوب";
@@ -1219,7 +1219,7 @@ $hcms_lang['display-name-optional']['ar'] = "اسم العرض (اختياري)"
 $hcms_lang['language-session-setting']['ar'] = "دورة إعداد اللغة";
 $hcms_lang['session-name-and-values']['ar'] = "اسم الدورة القيم";
 $hcms_lang['valid-language-value-optional']['ar'] = "قيمة اللغة صالحة (اختياري)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['ar'] = "تحرير/إذن بعض مجموعات المستخدمين (اختياري)";
+$hcms_lang['permission-for-certain-user-groups-optional']['ar'] = "تحرير/إذن بعض مجموعات المستخدمين (اختياري)";
 $hcms_lang['date-format-optional']['ar'] = "تنسيق التاريخ (اختياري)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['ar'] = "إدارة شؤون الإعلام قيمة autoscale الصور (اختياري)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['ar'] = "صور autoconvert على colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (اختياري)";
@@ -1403,4 +1403,14 @@ $hcms_lang['phone']['ar'] = "هاتف";
 $hcms_lang['optical-character-recognition']['ar'] = "التعرف الضوئي على الحروف";
 $hcms_lang['delete-imported-files']['ar'] = "حذف الملفات المستوردة";
 $hcms_lang['leave-files-in-import-directory']['ar'] = "اترك الملفات في دليل الاستيراد (لا تقم بإعادة تسميتها أو نقلها بعد الاستيراد)";
+$hcms_lang['timezone']['ar'] = "وحدة زمنية";
+$hcms_lang['registration-of-new-users']['ar'] = "تسجيل المستخدمين الجدد";
+$hcms_lang['assign-registered-users-to-group']['ar'] = "تعيين المستخدمين المسجلين للمجموعة";
+$hcms_lang['notify-users']['ar'] = "إعلام المستخدمين";
+$hcms_lang['sign-in']['ar'] = "تسجيل الدخول";
+$hcms_lang['sign-up']['ar'] = "سجل";
+$hcms_lang['please-sign-in']['ar'] = "الرجاء تسجيل الدخول.";
+$hcms_lang['please-wait-for-the-approval']['ar'] = "الرجاء الانتظار للحصول على الموافقة.";
+$hcms_lang['popups-must-be-allowed']['ar'] = "يجب السماح بالنوافذ المنبثقة";
+$hcms_lang['reset-password']['ar'] = "إعادة تعيين كلمة المرور";
 ?>

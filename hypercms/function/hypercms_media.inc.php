@@ -1240,7 +1240,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
     // get container ID
     $container_id = getmediacontainerid ($file);
-    
+
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
 
@@ -1320,6 +1320,51 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     // get file size of media file in kB
     $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
     if ($filesize_orig < 1) $filesize_orig = 1;
+    
+    // get individual watermark
+    if ($mgmt_config['publicdownload'] == true) $containerdata = loadcontainer ($container_id, "work", "sys");
+    else $containerdata = loadcontainer ($container_id, "published", "sys");
+    
+    if ($containerdata != "")
+    {
+      $wmlocation = getmedialocation ($site, $file, "abs_path_media");
+      $wmnode = selectcontent ($containerdata, "<media>", "<media_id>", "Watermark");
+      
+      if (!empty ($wmnode[0]))
+      {
+        $temp = getcontent ($wmnode[0], "<mediafile>");
+        if (!empty ($temp[0])) $wmfile = $temp[0];
+        
+        $temp = getcontent ($wmnode[0], "<mediaalign>");
+        if (!empty ($temp[0])) $wmalign = $temp[0];
+        else $wmalign = "center";
+
+        if (!empty ($wmfile))
+        {
+          // prepare media file
+          $temp = preparemediafile ($site, $wmlocation, $wmfile, $user);
+  
+          // if encrypted
+          if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
+          {
+            $wmlocation = $temp['templocation'];
+            $wmfile = $temp['tempfile'];
+          }
+          // if restored
+          elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
+          {
+            $wmlocation = $temp['location'];
+            $wmfile = $temp['file'];
+          }
+        
+          if (is_file ($wmlocation.$wmfile))
+          {
+            $mgmt_config[$site]['watermark_image'] = "-wm ".$wmlocation.$wmfile."->".$wmalign."->10";
+            $mgmt_config[$site]['watermark_video'] = "-wm ".$wmlocation.$wmfile."->".$wmalign."->10";
+          }
+        }
+      }
+    }
 
     // convert RAW image to equivalent JPEG image if not already converted
     if (is_rawimage ($file_ext))
@@ -1824,11 +1869,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   $mgmt_imageoptions[$imageoptions_ext][$type] .= " ".$mgmt_config[$site]['watermark_image'];
                 }
-                 
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-wm ") > 0) 
                 {
                   $watermarking = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-wm");
-                  
+  
                   if ($watermarking == "" || $watermarking == "0"  || $watermarking == "false" || $watermarking == false)
                   {
                     $watermark = "";
@@ -1842,7 +1887,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     //               It is specified in the form width x height +/- horizontal offset +/- vertical offset (<width>x<height>{+-}<xoffset>{+-}<yoffset>).
                     // -composite ... parameter, which tells ImageMagick to add the watermark image we’ve just specified to the image. 
                     list ($watermark, $gravity, $geometry) = explode ("->", $watermarking);
-                    
+
                     if (!empty ($geometry)) $geometry = intval ($geometry);
                     else $geometry = 0;
                     
@@ -1861,15 +1906,26 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       $gravity = "southwest";
                       $geometry = "+".$geometry."-".$geometry;
                     }
-                    elseif (strtolower(trim($gravity)) == "bottomleft")
+                    elseif (strtolower(trim($gravity)) == "bottomright")
                     {
                       $gravity = "southeast";
                       $geometry = "-".$geometry."-".$geometry;
                     }
-                    
-                    if ($watermark != "" && $gravity != "" && $geometry != "")
+                    elseif (strtolower(trim($gravity)) == "center")
                     {
-                      $watermark = "-compose multiply -gravity ".$gravity." -geometry ".shellcmd_encode(trim($geometry))." -background none \"".shellcmd_encode(trim($watermark))."\"";
+                      $gravity = "center";
+                      $geometry = "";
+                    }
+                    // not valid
+                    else
+                    {
+                      $gravity = "";
+                      $geometry = "";
+                    }
+                    
+                    if ($watermark != "" && $gravity != "")
+                    {
+                      $watermark = "-compose multiply -gravity ".$gravity.($geometry != "" ? " -geometry ".shellcmd_encode(trim($geometry)) : "")." -background none \"".shellcmd_encode(trim($watermark))."\"";
                     }
                     else $watermark = "";
                   }                  
@@ -2324,7 +2380,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         // -s:v ... frame size in pixel (WxH)
         // -sh ... sharpness (blur -1 up to 1 sharpen)
         // -gbcs ... gamma, brightness, contrast, saturation (neutral values are 0.0:1:0:0.0:1.0)
-        // -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright] e.g. image.png->topleft)
+        // -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright, center] e.g. image.png->topleft)
         // -rotate ... rotate video
         // -fv ... flip video in vertical direction
         // -fh ... flop video in horizontal direction
@@ -2847,7 +2903,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   elseif (strtolower(trim($positioning)) == "bottomleft") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=".shellcmd_encode (trim($geometry_x)).":main_h-overlay_h-".shellcmd_encode (trim($geometry_y))." [out]";
                   // bottom right corner
                   elseif (strtolower(trim($positioning)) == "bottomright") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=main_w-overlay_w:main_h-overlay_h-".shellcmd_encode (trim($geometry_y))." [out]";
-  
+                  // bottom right corner
+                  elseif (strtolower(trim($positioning)) == "center") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2 [out]";
+                  
                   $tmpfile2 = $file_name.".tmp2.".$format_set;
                   
                   // apply watermark as video filter
@@ -3270,6 +3328,35 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
     
     // format
     $format = strtolower (trim ($format));
+    
+    // if watermark is used, force recreation
+    if (!is_document ($format))
+    {
+      // get container ID
+      $container_id = getmediacontainerid ($mediafile);
+      
+      // get individual watermark
+      if ($mgmt_config['publicdownload'] == true) $containerdata = loadcontainer ($container_id, "work", "sys");
+      else $containerdata = loadcontainer ($container_id, "published", "sys");
+      
+      if ($containerdata != "")
+      {
+        $wmlocation = getmedialocation ($site, $mediafile, "abs_path_media");
+        $wmnode = selectcontent ($containerdata, "<media>", "<media_id>", "Watermark");
+        
+        if (!empty ($wmnode[0]))
+        {
+          $temp = getcontent ($wmnode[0], "<mediafile>");
+          if (!empty ($temp[0])) $wmfile = $temp[0];
+          
+          $temp = getcontent ($wmnode[0], "<mediaalign>");
+          if (!empty ($temp[0])) $wmalign = $temp[0];
+          else $wmalign = "center";
+  
+          if (!empty ($wmfile)) $force_recreate = true;
+        }
+      }
+    }
 
     // convert-config is not supported when we are using createdocument
     if (is_document ($format))
@@ -3289,7 +3376,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
       $newname = $media_info['filename'].".".$format.".zip";
       
       // generate new file only if necessary
-      if (!is_file ($location_dest.$newname) || @filemtime ($location_source.$mediafile) > @filemtime ($location_dest.$newname)) 
+      if (!is_file ($location_dest.$newname) || @filemtime ($location_source.$mediafile) > @filemtime ($location_dest.$newname) || !empty ($force_recreate)) 
       {
         // temporary directory for collecting image files
         $temp_dir = $mgmt_config['abs_path_temp']."vid2jpg_".createuniquetoken()."/";
@@ -3352,7 +3439,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
       $newname = $media_info['filename'].".".$media_config.".".$format;
 
       // generate new file only if necessary
-      if (!is_file ($location_dest.$newname) || @filemtime ($location_source.$mediafile) > @filemtime ($location_dest.$newname)) 
+      if (!is_file ($location_dest.$newname) || @filemtime ($location_source.$mediafile) > @filemtime ($location_dest.$newname) || !empty ($force_recreate)) 
       {
         $result_conv = createmedia ($site, $location_source, $location_dest, $mediafile, $format, $media_config, $force_no_encrypt);
       }
@@ -3760,7 +3847,7 @@ function getimagecolors ($site, $file)
       
       // verify local media file
       if (!is_file ($media_root.$file)) return false;
-    
+
       if ($file_info['ext'] == ".jpg") $image = imagecreatefromjpeg ($media_root.$file);
       elseif ($file_info['ext'] == ".png") $image = imagecreatefrompng ($media_root.$file);
       elseif ($file_info['ext'] == ".gif") $image = imagecreatefromgif ($media_root.$file);

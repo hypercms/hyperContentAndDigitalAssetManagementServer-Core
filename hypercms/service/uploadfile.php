@@ -109,7 +109,7 @@ if ($token != "" && checktoken ($token, $user))
   // make new entry in queue to delete object
   if (is_date ($deletedate, "Y-m-d H:i") && !empty ($result['object']))
   {
-    rdbms_createqueueentry ("delete", $location_esc.$result['object'], $deletedate, 0, $user);
+    createqueueentry ("delete", $location_esc.$result['object'], $deletedate, 0, "", $user);
   }
 }
 // invalid token

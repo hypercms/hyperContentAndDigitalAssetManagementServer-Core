@@ -305,7 +305,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         } 
         
         // metadata
-        $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".$file_modified." \r\n".$metadata;             
+        $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
 
         $listview .= "
                       <tr id=g".$items_row." align=\"left\" style=\"cursor:pointer\" ".$selectclick.">
@@ -333,11 +333,11 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
               {
                 if ($key == 'createdate')
                 {
-                  $title = $file_created;
+                  $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
                 }
                 elseif ($key == 'modifieddate')
                 {
-                  $title = $file_modified;
+                  $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_modified))."</span>".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang]);
                 }
                 elseif ($key == 'filesize')
                 {
@@ -553,7 +553,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$site."', '".$cat."', '".$location_esc."', '".$object."', '".$file_info['name']."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
    
         // metadata
-        $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".$file_modified." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;             
+        $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;             
         
         // listview - view option for un/published objects
         if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
@@ -591,11 +591,11 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
                 
                 if ($key == 'createdate')
                 {
-                  $title = $file_created;
+                  $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
                 }
                 elseif ($key == 'modifieddate')
                 {
-                  $title = $file_modified;
+                  $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_modified))."</span>".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang]);
                 }
                 elseif ($key == 'filesize')
                 {

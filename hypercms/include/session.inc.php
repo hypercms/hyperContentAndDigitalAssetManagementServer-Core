@@ -20,6 +20,7 @@ $instance =  getsession ("hcms_instance");
 $user = getsession ("hcms_user");
 $passwd = getsession ("hcms_passwd");
 $lang = getsession ("hcms_lang", "en");
+$timezone = getsession ("hcms_timezone");
 // access parameter (array)
 $siteaccess = getsession ("hcms_siteaccess");
 $pageaccess = getsession ("hcms_pageaccess");

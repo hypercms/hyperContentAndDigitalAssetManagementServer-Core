@@ -3,7 +3,7 @@
 $hcms_lang_name['tr'] = "Turkish";
 $hcms_lang_shortcut['tr'] = "tr";
 $hcms_lang_codepage['tr'] = "utf-8";
-$hcms_lang_date['tr'] = 'y-m-d H:i:s';
+$hcms_lang_date['tr'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['tr'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['tr'] = "Bildirim ay
 $hcms_lang['monthly']['tr'] = "Aylık";
 $hcms_lang['weekly']['tr'] = "Haftalık";
 $hcms_lang['daily']['tr'] = "Günlük";
-$hcms_lang['user-comma-seperated']['tr'] = "Kullanıcı (virgülle ayrılmış)";
+$hcms_lang['comma-seperated']['tr'] = "(virgülle ayrılmış)";
 $hcms_lang['text-id-expiration-date-to-monitor']['tr'] = "Metin-ID (bitiş tarihi) monitör";
 $hcms_lang['date-format-eg']['tr'] = "Tarih formatı (örn. %Y- %m- %d ve %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['tr'] = "A kullanıcı adı gerekiyor";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['tr'] = "Display name (isteğe bağlı)";
 $hcms_lang['language-session-setting']['tr'] = "Dil oturum ayarı";
 $hcms_lang['session-name-and-values']['tr'] = "Oturum adı ve değerler";
 $hcms_lang['valid-language-value-optional']['tr'] = "Geçerli dil değerini (isteğe bağlı)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['tr'] = "Edit/yazma izni belirli kullanıcı grupları (isteğe bağlı)";
+$hcms_lang['permission-for-certain-user-groups-optional']['tr'] = "Edit/yazma izni belirli kullanıcı grupları (isteğe bağlı)";
 $hcms_lang['date-format-optional']['tr'] = "Tarih formatı (isteğe bağlı)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['tr'] = "DPI değeri autoscale görüntüleri (isteğe bağlı)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['tr'] = "Autoconvert images verilen colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (isteğe bağlı)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['tr'] = "Telefon";
 $hcms_lang['optical-character-recognition']['tr'] = "Optik karakter tanıma";
 $hcms_lang['delete-imported-files']['tr'] = "İçe aktarılmış dosyaları sil";
 $hcms_lang['leave-files-in-import-directory']['tr'] = "Dosyaları içe aktarım dizininde bırakın (yeniden adlandırma veya içe aktarma işleminden sonra bunları taşıma)";
+$hcms_lang['timezone']['tr'] = "Saat dilimi";
+$hcms_lang['registration-of-new-users']['tr'] = "Yeni kullanıcı kaydı";
+$hcms_lang['assign-registered-users-to-group']['tr'] = "Kayıtlı kullanıcıları gruplara atama";
+$hcms_lang['notify-users']['tr'] = "Kullanıcıları bilgilendir";
+$hcms_lang['sign-in']['tr'] = "Oturum aç";
+$hcms_lang['sign-up']['tr'] = "Kaydol";
+$hcms_lang['please-sign-in']['tr'] = "Lütfen giriş yapın.";
+$hcms_lang['please-wait-for-the-approval']['tr'] = "Lütfen onay için bekleyin.";
+$hcms_lang['popups-must-be-allowed']['tr'] = "Popup'lara izin verilmelidir";
+$hcms_lang['reset-password']['tr'] = "Şifreyi yenile";
 ?>

@@ -156,8 +156,8 @@ if ($pagestore != false)
     if (!empty ($contentfile))
     {                
       echo "<tr><td valign=top>".getescapedtext ($hcms_lang['owner'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=top>".$owner[0]."</td></tr>\n";
-      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['modified'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_updated[0]."</td></tr>\n";
-      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['published'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_published[0]."</td></tr>\n"; 
+      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['modified'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=top>".showdate ($last_updated[0], "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>\n";
+      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['published'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=top>".showdate ($last_published[0], "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>\n"; 
     }
  
     // if object will be deleted automatically

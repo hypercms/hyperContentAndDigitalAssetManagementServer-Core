@@ -3,7 +3,7 @@
 $hcms_lang_name['zh-s'] = "Chinese (simplified)";
 $hcms_lang_shortcut['zh-s'] = "zh-s";
 $hcms_lang_codepage['zh-s'] = "utf-8";
-$hcms_lang_date['zh-s'] = 'y-m-d H:i:s';
+$hcms_lang_date['zh-s'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['zh-s'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['zh-s'] = "通知设
 $hcms_lang['monthly']['zh-s'] = "每月";
 $hcms_lang['weekly']['zh-s'] = "每周";
 $hcms_lang['daily']['zh-s'] = "每日";
-$hcms_lang['user-comma-seperated']['zh-s'] = "用户(以逗号分隔)";
+$hcms_lang['comma-seperated']['zh-s'] = "(以逗号分隔)";
 $hcms_lang['text-id-expiration-date-to-monitor']['zh-s'] = "文本-id(失效日期),监视器";
 $hcms_lang['date-format-eg']['zh-s'] = "日期格式(例如: %Y%m%d或%d.%M.%Y)";
 $hcms_lang['a-user-name-is-required']['zh-s'] = "需要提供用户名";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['zh-s'] = "显示名称(可选)";
 $hcms_lang['language-session-setting']['zh-s'] = "语言会话设置";
 $hcms_lang['session-name-and-values']['zh-s'] = "会话名称和值";
 $hcms_lang['valid-language-value-optional']['zh-s'] = "有效的语言值(可选)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['zh-s'] = "编辑/写入许可的特定用户组(可选)";
+$hcms_lang['permission-for-certain-user-groups-optional']['zh-s'] = "编辑/写入许可的特定用户组(可选)";
 $hcms_lang['date-format-optional']['zh-s'] = "日期格式(可选)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['zh-s'] = "DPI值,自动调节图像(可选)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['zh-s'] = "autoconvert图像,以给定色彩空间[CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV](可选)";
@@ -1405,4 +1405,14 @@ $hcms_lang['phone']['zh-s'] = "电话";
 $hcms_lang['optical-character-recognition']['zh-s'] = "光学字符识别";
 $hcms_lang['delete-imported-files']['zh-s'] = "删除导入的文件";
 $hcms_lang['leave-files-in-import-directory']['zh-s'] = "将文件保留在导入目录中（导入后不要重命名或移动它们）";
+$hcms_lang['timezone']['zh-s'] = "时区";
+$hcms_lang['registration-of-new-users']['zh-s'] = "注册新用户";
+$hcms_lang['assign-registered-users-to-group']['zh-s'] = "将注册用户分配到组";
+$hcms_lang['notify-users']['zh-s'] = "知用户";
+$hcms_lang['sign-in']['zh-s'] = "签到";
+$hcms_lang['sign-up']['zh-s'] = "注册";
+$hcms_lang['please-sign-in']['zh-s'] = "请登录。";
+$hcms_lang['please-wait-for-the-approval']['zh-s'] = "请等待批准。";
+$hcms_lang['popups-must-be-allowed']['zh-s'] = "必须允许弹出窗口";
+$hcms_lang['reset-password']['zh-s'] = "重设密码";
 ?>

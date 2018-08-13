@@ -238,6 +238,8 @@ else
           echo "<tr height=\"16\" class=\"hcmsWorkplaceObjectlist\"><td nowrap=\"nowrap\">&nbsp;</td><td nowrap=\"nowrap\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$link."</td><td nowrap=\"nowrap\">&nbsp;</td><td align=\"right\" nowrap=\"nowrap\">&nbsp;</td></tr>\n";
         }
         
+        $i = 0;
+        
         foreach ($file_array as $name => $file)
         {
           if ($name != "." && substr ($name, 0, 1) != ".")
@@ -272,13 +274,18 @@ else
               if ($multi == "true") $input_type = "checkbox";
               else $input_type = "radio";
               
-              $checkbox = "&nbsp;<input name=\"select\" type=\"".$input_type."\" value=\"".$name."|".$file['size']."|ftp://".$sentserver.$path.$name."\" />";
+              $checkbox = "&nbsp;<input id=\"".$i."\" name=\"select\" type=\"".$input_type."\" value=\"".$name."|".$file['size']."|ftp://".$sentserver.$path.$name."\" />";
               
               $link = showshorttext ($name, 40);
             }
             
+            $date = date ("Y-m-d", strtotime ($file['month']." ".$file['day']." ".$file['time']));
+            $date = showdate ($date, "Y-m-d", $hcms_lang_date[$lang]);
+            
             // output
-            echo "<tr height=\"16\" class=\"hcmsWorkplaceObjectlist\"><td nowrap=\"nowrap\">".$checkbox."</td><td nowrap=\"nowrap\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$link."</td><td nowrap=\"nowrap\">&nbsp;".$file['month']."".$file['day']." ".$file['time']."</td><td align=\"right\" nowrap=\"nowrap\">&nbsp;".$file_size."&nbsp;</td></tr>\n";
+            echo "<tr height=\"16\" class=\"hcmsWorkplaceObjectlist\"><td nowrap=\"nowrap\">".$checkbox."</td><td nowrap=\"nowrap\"><label for=\"".$i."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$link."</td><td nowrap=\"nowrap\">&nbsp;".$date."</td><td align=\"right\" nowrap=\"nowrap\">&nbsp;".$file_size."</label>&nbsp;</td></tr>\n";
+          
+            $i++;
           }
         }
       }

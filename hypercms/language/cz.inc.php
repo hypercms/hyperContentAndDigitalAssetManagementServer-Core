@@ -3,7 +3,7 @@
 $hcms_lang_name['cz'] = "Czech";
 $hcms_lang_shortcut['cz'] = "cz";
 $hcms_lang_codepage['cz'] = "utf-8";
-$hcms_lang_date['cz'] = 'y-m-d H:i:s';
+$hcms_lang_date['cz'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['cz'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['cz'] = "Nastavení 
 $hcms_lang['monthly']['cz'] = "Měsíční";
 $hcms_lang['weekly']['cz'] = "Týdenní";
 $hcms_lang['daily']['cz'] = "Denní";
-$hcms_lang['user-comma-seperated']['cz'] = "Uživatel (čárka odděleni)";
+$hcms_lang['comma-seperated']['cz'] = "(čárka odděleni)";
 $hcms_lang['text-id-expiration-date-to-monitor']['cz'] = "Textové ID (datum vypršení platnosti) sledovat";
 $hcms_lang['date-format-eg']['cz'] = "Formát data (např. %Y-% m-%d a %d.%m.%Y)";
 $hcms_lang['a-user-name-is-required']['cz'] = "Uživatelské jméno je vyžadováno";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['cz'] = "Zobrazované jméno (nepovinné)";
 $hcms_lang['language-session-setting']['cz'] = "Jazykové nastavení relace";
 $hcms_lang['session-name-and-values']['cz'] = "Název relace a hodnoty";
 $hcms_lang['valid-language-value-optional']['cz'] = "Platné jazykové hodnota (volitelná)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['cz'] = "Upravit/oprávnění zapisovat určitým skupinám uživatelů (nepovinné)";
+$hcms_lang['permission-for-certain-user-groups-optional']['cz'] = "Upravit/oprávnění zapisovat určitým skupinám uživatelů (nepovinné)";
 $hcms_lang['date-format-optional']['cz'] = "Formát data (nepovinné)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['cz'] = "DPI hodnotu měřítko obrázky (nepovinné)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['cz'] = "autoconvert obrázky na daný colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (nepovinné)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['cz'] = "Telefon";
 $hcms_lang['optical-character-recognition']['cz'] = "Optické rozpoznávání znaků";
 $hcms_lang['delete-imported-files']['cz'] = "Smazat importované soubory";
 $hcms_lang['leave-files-in-import-directory']['cz'] = "Ponechat soubory v importním adresáři (po importu je nepřemenujte ani je přesuňte)";
+$hcms_lang['timezone']['cz'] = "Časové pásmo";
+$hcms_lang['registration-of-new-users']['cz'] = "Registrace nových uživatelů";
+$hcms_lang['assign-registered-users-to-group']['cz'] = "Přiřadit registrované uživatele ke skupině";
+$hcms_lang['notify-users']['cz'] = "Upozornit uživatele";
+$hcms_lang['sign-in']['cz'] = "Přihlásit se";
+$hcms_lang['sign-up']['cz'] = "Registrovat";
+$hcms_lang['please-sign-in']['cz'] = "Prosím přihlašte se.";
+$hcms_lang['please-wait-for-the-approval']['cz'] = "Počkejte prosím na schválení.";
+$hcms_lang['popups-must-be-allowed']['cz'] = "Popup musí být povoleny";
+$hcms_lang['reset-password']['cz'] = "Obnovit heslo";
 ?>

@@ -276,22 +276,30 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
               if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ($user);
       
               if ($inherit_db != false)
-              {    
-                sort ($inherit_db);
-                reset ($inherit_db);
-                
+              {
+                $list1_array = array();
                 $list2_array = array();
                           
                 foreach ($inherit_db as $inherit_db_record)
                 {      
                   if (substr_count ("|".$inherit_db_record['child'], "|".$site_name."|") == 0 && $inherit_db_record['parent'] != $site_name && in_array ($inherit_db_record['parent'], $siteaccess))
                   {
-                    echo "<option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>\n";
+                    $list1_array[] = "<option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>\n";
                   }
                   elseif (substr_count ("|".$inherit_db_record['child'], "|".$site_name."|") == 1 && $inherit_db_record['parent'] != $site_name)
                   {
                     $list2_array[] = "<option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>\n";
                   }
+                }
+              }
+              
+              if (sizeof ($list1_array) >= 1)
+              {
+                natcasesort ($list1_array);
+                
+                foreach ($list1_array as $list1)
+                {
+                  echo $list1;
                 }
               }
 
@@ -308,6 +316,8 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 
               if (sizeof ($list2_array) >= 1)
               {
+                natcasesort ($list2_array);
+                
                 foreach ($list2_array as $list2)
                 {
                   echo $list2;

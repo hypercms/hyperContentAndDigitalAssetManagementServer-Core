@@ -180,6 +180,7 @@ $(function() {
 </head>
 
 <body class="hcmsWorkplaceGeneric">
+
   <!-- top bar -->
   <?php
   echo showtopbar ($title.": ".$object_name, $lang);

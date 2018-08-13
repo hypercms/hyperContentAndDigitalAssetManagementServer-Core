@@ -3,7 +3,7 @@
 $hcms_lang_name['sk'] = "Slovak";
 $hcms_lang_shortcut['sk'] = "sk";
 $hcms_lang_codepage['sk'] = "utf-8";
-$hcms_lang_date['sk'] = 'y-m-d H:i:s';
+$hcms_lang_date['sk'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['sk'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['sk'] = "Oznámenie 
 $hcms_lang['monthly']['sk'] = "Mesačná";
 $hcms_lang['weekly']['sk'] = "Týždenne";
 $hcms_lang['daily']['sk'] = "Denne";
-$hcms_lang['user-comma-seperated']['sk'] = "Užívateľ (čiarka jeden folikul)";
+$hcms_lang['comma-seperated']['sk'] = "(čiarka jeden folikul)";
 $hcms_lang['text-id-expiration-date-to-monitor']['sk'] = "Text-ID (dátum expirácie), aby monitor";
 $hcms_lang['date-format-eg']['sk'] = "Formát dátumu (napr. %Y- %m-%d alebo %d.%m.%Y)";
 $hcms_lang['a-user-name-is-required']['sk'] = "Meno používateľa je potrebné";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['sk'] = "Názov zobrazenia (voliteľné)";
 $hcms_lang['language-session-setting']['sk'] = "Jazyk zasadnutí nastavenie";
 $hcms_lang['session-name-and-values']['sk'] = "Zasadnutie meno a hodnoty";
 $hcms_lang['valid-language-value-optional']['sk'] = "Platné jazykové hodnoty (voliteľné)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['sk'] = "Upraviť/napíšte povolenie pre určité skupiny používateľov (voliteľné)";
+$hcms_lang['permission-for-certain-user-groups-optional']['sk'] = "Upraviť/napíšte povolenie pre určité skupiny používateľov (voliteľné)";
 $hcms_lang['date-format-optional']['sk'] = "Formát dátumu (voliteľné)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['sk'] = "DPI hodnoty na automatické nastavenie rozsahu obrazov (voliteľné)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['sk'] = "Autoconvert obrázkov pre danú colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (voliteľné)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['sk'] = "Telefón";
 $hcms_lang['optical-character-recognition']['sk'] = "Optické rozpoznávanie znakov";
 $hcms_lang['delete-imported-files']['sk'] = "Odstrániť importované súbory";
 $hcms_lang['leave-files-in-import-directory']['sk'] = "Ponechať súbory v adresári importu (po importe ich nepremenujte ani ich nehýbte)";
+$hcms_lang['timezone']['sk'] = "Časové pásmo";
+$hcms_lang['registration-of-new-users']['sk'] = "Registrácia nových používateľov";
+$hcms_lang['assign-registered-users-to-group']['sk'] = "Priradiť registrovaných používateľov k skupine";
+$hcms_lang['notify-users']['sk'] = "Upozorniť používateľov";
+$hcms_lang['sign-in']['sk'] = "Prihlásiť sa";
+$hcms_lang['sign-up']['sk'] = "Registrovať";
+$hcms_lang['please-sign-in']['sk'] = "Prosím prihlás sa.";
+$hcms_lang['please-wait-for-the-approval']['sk'] = "Prosím počkajte na schválenie.";
+$hcms_lang['popups-must-be-allowed']['sk'] = "Popupy musia byť povolené";
+$hcms_lang['reset-password']['sk'] = "Obnoviť heslo";
 ?>

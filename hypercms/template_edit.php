@@ -88,6 +88,10 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
     {
       $add_onload = " hcms_openWindow('".$mgmt_config['url_path_cms']."template_view.php?site=".url_encode($site)."&cat=".$cat."&template=".url_encode($template)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
     }
+    elseif ($result_save['result'] == false)
+    {
+      $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['template-could-not-be-saved'][$lang], $charset, $lang)."</span>";
+    }
     else $add_onload = "";
   }
   else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['template-could-not-be-saved'][$lang], $charset, $lang)."</span><br />\n".getescapedtext ($hcms_lang['there-are-forbidden-functions-in-the-code'][$lang], $charset, $lang).": <span style=\"color:red;\">".$contentfield_check['found']."</span>";
@@ -159,10 +163,9 @@ function openmediaType()
   hcms_openWindow('template_edit_mediatype.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', 350, 150);
 }
 
-function checkForm_chars(text, exclude_chars)
+function checkForm_chars (text, exclude_chars)
 {
-  exclude_chars = exclude_chars.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-  
+  exclude_chars = exclude_chars.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");  
 	var expr = new RegExp ("[^a-zA-Z0-9" + exclude_chars + "]", "g");
 	var separator = ', ';
 	var found = text.match(expr); 
@@ -188,7 +191,7 @@ function checkForm_chars(text, exclude_chars)
 
 function checkForm (expression)
 {  
-  if (!checkForm_chars(expression, " _-"))
+  if (!checkForm_chars(expression, "_-"))
   {
     return false;
   }   
@@ -303,6 +306,13 @@ function format_tag (format)
   if (format == "mediafile" && document.forms['template_edit'].elements['constraints'].value != "") 
   {
     constraint = " mediatype='" + document.forms['template_edit'].elements['constraints'].value + "'";
+  }
+  
+  if (format == "watermark")
+  {
+    format = "mediafile";
+    constraint = " mediatype='watermark'";
+    tagid = "Watermark";
   }
 
   if (artid == "")
@@ -501,9 +511,15 @@ function tplmedia()
   insertAtCaret (code, '');
 }
 
-function script()
+function phpscript()
 {
   code = "[hyperCMS:scriptbegin\r// insert your script here\rscriptend]";
+  insertAtCaret (code, '');
+}
+
+function javascript()
+{
+  code = "[JavaScript:scriptbegin\r// insert your script here\rscriptend]";
   insertAtCaret (code, '');
 }
 
@@ -528,7 +544,8 @@ function savetemplate(mode)
       {
         document.forms['template_edit'].elements['preview'].value = "yes";
       }
-        
+       
+      hcms_showInfo ('savelayer', 0); 
       document.forms['template_edit'].submit();
       return true;
     }
@@ -544,7 +561,8 @@ function savetemplate(mode)
     {
       document.forms['template_edit'].elements['preview'].value = "yes";
     }
-      
+    
+    hcms_showInfo ('savelayer', 0);
     document.forms['template_edit'].submit();
     return true;
   }
@@ -553,6 +571,9 @@ function savetemplate(mode)
 </head>
 
 <body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>">
+
+<!-- saving --> 
+<div id="savelayer" class="hcmsLoadScreen"></div>
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
@@ -689,7 +710,11 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
              echo "
            </div>";
            
-              if ($cat != "meta") echo "
+              if ($cat == "meta") echo "
+              <div class=\"hcmsToolbarBlock\">
+                <img onClick=\"format_tag('watermark');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.png\" alt=\"".getescapedtext ($hcms_lang['watermark-options-for-images'][$lang].", ".$hcms_lang['watermark-options-for-vidoes'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['watermark-options-for-images'][$lang].", ".$hcms_lang['watermark-options-for-vidoes'][$lang], $charset, $lang)."\" />
+              </div>";
+              else echo "
             <div class=\"hcmsToolbarBlock\">
               <img onClick=\"openmediaType();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.png\" alt=\"".getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang)."\" />
               <img onClick=\"format_tag('mediaalign');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediaalign.png\" alt=\"".getescapedtext ($hcms_lang['media-alignment'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-alignment'][$lang], $charset, $lang)."\" />
@@ -731,7 +756,8 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
              <img onClick=\"workflow();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_workflowinsert.png\" alt=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\">                           
             </div>
             <div class=\"hcmsToolbarBlock\">    
-              <img onClick=\"script();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_script.png\" alt=\"".getescapedtext ($hcms_lang['script'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['script'][$lang], $charset, $lang)."\" />                            
+              <img onClick=\"phpscript();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_script.png\" alt=\"".getescapedtext ("hyperCMS-Script", $charset, $lang)."\" title=\"".getescapedtext ("hyperCMS-Script", $charset, $lang)."\" />
+              <img onClick=\"javascript();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/admin.png\" alt=\"".getescapedtext ("JavaScript (form-views)", $charset, $lang)."\" title=\"".getescapedtext ("JavaScript (form-views)", $charset, $lang)."\" />                          
             </div>
             <div class=\"hcmsToolbarBlock\">                     
               <img onClick=\"date();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_tpldate.png\" alt=\"".getescapedtext ($hcms_lang['insert-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-date'][$lang], $charset, $lang)."\" />

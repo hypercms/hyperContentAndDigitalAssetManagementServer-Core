@@ -1072,9 +1072,8 @@ else
   
   <div class="hcmsToolbarBlock">
     <?php
-    // Upload Button
-    if ($html5file) $popup_upload = "popup_upload_html.php";
-    else $popup_upload = "popup_upload_swf.php";
+    // Upload Button (HTML5 file upload)
+    $popup_upload = "popup_upload_html.php";
     
     if (@$hcms_linking['type'] != "Object" && $from_page == "" && ($cat != "page" || !empty($mgmt_config[$site]['upload_pages'])) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)
     {

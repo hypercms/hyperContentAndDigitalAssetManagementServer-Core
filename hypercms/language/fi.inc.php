@@ -3,7 +3,7 @@
 $hcms_lang_name['fi'] = "Finnish";
 $hcms_lang_shortcut['fi'] = "fi";
 $hcms_lang_codepage['fi'] = "utf-8";
-$hcms_lang_date['fi'] = 'y-m-d H:i:s';
+$hcms_lang_date['fi'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['fi'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['fi'] = "Ilmoitusten
 $hcms_lang['monthly']['fi'] = "Kuukausittain";
 $hcms_lang['weekly']['fi'] = "Viikoittain";
 $hcms_lang['daily']['fi'] = "Päivittäin";
-$hcms_lang['user-comma-seperated']['fi'] = "Käyttäjä (pilkulla erotettuja)";
+$hcms_lang['comma-seperated']['fi'] = "(pilkulla erotettuja)";
 $hcms_lang['text-id-expiration-date-to-monitor']['fi'] = "Teksti-ID (viimeinen käyttöpäivä)";
 $hcms_lang['date-format-eg']['fi'] = "Päivämäärän muotoa (esim. %Y- %m- %d ja %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['fi'] = "Käyttäjätunnus on pakollinen";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['fi'] = "Näyttönimi (lisävaruste)";
 $hcms_lang['language-session-setting']['fi'] = "Kieli istunnon asetukset";
 $hcms_lang['session-name-and-values']['fi'] = "Istunnon nimi ja arvot";
 $hcms_lang['valid-language-value-optional']['fi'] = "Voimassa kielen (lisävaruste)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['fi'] = "Muokkaa/kirjoitusoikeudet, tietyt käyttäjäryhmät (lisävaruste)";
+$hcms_lang['permission-for-certain-user-groups-optional']['fi'] = "Muokkaa/kirjoitusoikeudet, tietyt käyttäjäryhmät (lisävaruste)";
 $hcms_lang['date-format-optional']['fi'] = "Päivämäärän muotoa (lisävaruste)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['fi'] = "DPI arvo Autoscale kuvia (lisävaruste)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['fi'] = "Autoconvert kuvat on colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (lisävaruste)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['fi'] = "Puhelin";
 $hcms_lang['optical-character-recognition']['fi'] = "Optinen hahmon tunnistus";
 $hcms_lang['delete-imported-files']['fi'] = "Poista tuodut tiedostot";
 $hcms_lang['leave-files-in-import-directory']['fi'] = "Jätä tiedostoja tuontihakemistoon (älä nimeä tai siirrä niitä tuonnin jälkeen)";
+$hcms_lang['timezone']['fi'] = "Aikavyöhyke";
+$hcms_lang['registration-of-new-users']['fi'] = "Uusien käyttäjien rekisteröinti";
+$hcms_lang['assign-registered-users-to-group']['fi'] = "Liitä rekisteröityneet käyttäjät ryhmään";
+$hcms_lang['notify-users']['fi'] = "Ilmoita käyttäjille";
+$hcms_lang['sign-in']['fi'] = "Sign in";
+$hcms_lang['sign-up']['fi'] = "Sign up";
+$hcms_lang['please-sign-in']['fi'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['fi'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['fi'] = "Popups must be allowed";
+$hcms_lang['reset-password']['fi'] = "Reset password";
 ?>

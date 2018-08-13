@@ -97,7 +97,7 @@ if ($action != "" && valid_publicationname ($site) && $cat != "" && valid_locati
       {
         if ($multiobject != "")
         {
-          $result = rdbms_createqueueentry ($action, $multiobject, $publishdate, $published_only, $user);
+          $result = createqueueentry ($action, $multiobject, $publishdate, $published_only, "", $user);
         }
       }
       
@@ -195,7 +195,7 @@ function submitform ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric">
 
 <!-- top bar -->
 <?php

@@ -483,9 +483,8 @@ else
     
   <div class="hcmsToolbarBlock">
     <?php
-    // Upload Button
-    if ($html5file) $popup_upload = "popup_upload_html.php";
-    else $popup_upload = "popup_upload_swf.php";
+    // Upload Button (HTML5 file upload)
+    $popup_upload = "popup_upload_html.php";
     
     if (($usedby == "" || $usedby == $user) && $cat != "page" && !empty ($media) && $application != "generator" && $page != ".folder" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)
     {

@@ -26,6 +26,7 @@ $confirm_password = getrequest ("confirm_password");
 $superadmin = getrequest_esc ("superadmin");
 $realname = getrequest_esc ("realname");
 $language = getrequest_esc ("language");
+$timezone = getrequest ("timezone");
 $theme = getrequest_esc ("theme", "objectname");
 $email = getrequest_esc ("email");
 $phone = getrequest_esc ("phone");
@@ -93,9 +94,16 @@ if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission (
         $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
       }
     }
+    
+    // set time zone
+    if (!empty ($timezone) && $timezone != getsession ("hcms_timezone"))
+    {
+      setsession ('hcms_timezone', $timezone);
+      $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+    }
 
     // edit user settings
-    $result = edituser ($site, $login, $old_password, $password, $confirm_password, $superadmin, $realname, $language, $theme, $email, $phone, $signature, $usergroup, $usersite, $user);
+    $result = edituser ($site, $login, $old_password, $password, $confirm_password, $superadmin, $realname, $language, $timezone, $theme, $email, $phone, $signature, $usergroup, $usersite, $user);
 
     $show = $result['message'];
   }
@@ -204,7 +212,7 @@ function checkForm ()
     
     if (userform.elements['confirm_password'].value == "")
     {
-      alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['assigned-to-publication'][$lang]); ?>"));
+      alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-confirm-the-password'][$lang]); ?>"));
       userform.elements['confirm_password'].focus();
       return false;
     } 
@@ -225,8 +233,11 @@ function checkForm ()
   
   if (eval (userform.elements['list2'])) selectall = selectAll (userform.elements['list2']);
   
-  if (selectall == true) userform.submit();
-  return true;
+  if (selectall == true)
+  {
+    hcms_showInfo ('savelayer', 0);
+    userform.submit();
+  }
 }
 
 function move(fbox, tbox)
@@ -287,6 +298,9 @@ function move(fbox, tbox)
 
 <body class="hcmsWorkplaceGeneric" onload="<?php echo $add_onload; ?>">
 
+<!-- saving --> 
+<div id="savelayer" class="hcmsLoadScreen"></div>
+
 <?php
 echo showmessage ($show, 460, 70, $lang, "position:fixed; left:15px; top:15px;");
 ?>  
@@ -322,6 +336,9 @@ if ($login != "" && $login != false)
   
   $languagearray = getcontent ($userrecord[0], "<language>");
   $userlanguage = $languagearray[0];
+  
+  $timezonearray = getcontent ($userrecord[0], "<timezone>");
+  $usertimezone = $timezonearray[0];
   
   $themearray = getcontent ($userrecord[0], "<theme>");
   $usertheme = $themearray[0];
@@ -445,6 +462,32 @@ if ($login != "" && $login != false)
         </select>
       </td>
     </tr>
+    <tr>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['timezone'][$lang]); ?> </td>
+      <td align="right">
+        <select name="timezone" style="width:210px;">
+          <option value=""><?php echo getescapedtext ($hcms_lang['standard'][$lang]); ?></option>
+        <?php
+        $timezone_array = timezone_identifiers_list();
+
+        if (is_array ($timezone_array) && sizeof ($timezone_array) > 0)
+        {
+          $timezone_array = array_unique ($timezone_array);
+          natcasesort ($timezone_array);
+          
+          foreach ($timezone_array as $tz)
+          {
+            if ($usertimezone == $tz) $selected = "selected=\"selected\"";
+            else $selected = "";
+            
+            echo "
+            <option value=\"".$tz."\" ".$selected.">".$tz."</option>";
+          }
+        }
+        ?>
+        </select>
+      </td>
+    </tr> 
     <?php
     // check if publication defines a theme
     foreach ($siteaccess as $entry) if (!empty ($mgmt_config[$entry]['theme'])) { $config_theme = $mgmt_config[$entry]['theme']; break; }

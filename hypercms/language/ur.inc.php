@@ -3,7 +3,7 @@
 $hcms_lang_name['ur'] = "Urdu";
 $hcms_lang_shortcut['ur'] = "ur";
 $hcms_lang_codepage['ur'] = "utf-8";
-$hcms_lang_date['ur'] = 'y-m-d H:i:s';
+$hcms_lang_date['ur'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ur'] = "rtl";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['ur'] = "جتاوا 
 $hcms_lang['monthly']['ur'] = "ماہانہ";
 $hcms_lang['weekly']['ur'] = "ہفتہ وار";
 $hcms_lang['daily']['ur'] = "روزانہ";
-$hcms_lang['user-comma-seperated']['ur'] = "یوتھ ایکسیس ٹیلیفون: (comma seperated)";
+$hcms_lang['comma-seperated']['ur'] = "(comma seperated)";
 $hcms_lang['text-id-expiration-date-to-monitor']['ur'] = "عید کے الفہظ (انقضا تاریخ کو مانیٹر)";
 $hcms_lang['date-format-eg']['ur'] = "تاریخ ترتیب (مثلا  IBD‬ﮐﯽ % % کے ایم ڈی یا % % % ہے ایم ڈی % IBD‬ﮐﯽ ہے)";
 $hcms_lang['a-user-name-is-required']['ur'] = "یوتھ ایکسیس ٹیلیفون: ایک کا نام کی ضرورت ہے";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['ur'] = "نمائش کا نام (طبعی)";
 $hcms_lang['language-session-setting']['ur'] = "اجلاس کی زبان کا قیام";
 $hcms_lang['session-name-and-values']['ur'] = "سیشن کا نام اور اقدار";
 $hcms_lang['valid-language-value-optional']['ur'] = "صحیح زبان کی قیمت (طبعی)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['ur'] = "اپ کو اڈٹ کی اجازت کے لئے مخصوص یوتھ ایکسیس ٹیلیفون: (اختیاری گروپ)";
+$hcms_lang['permission-for-certain-user-groups-optional']['ur'] = "اپ کو اڈٹ کی اجازت کے لئے مخصوص یوتھ ایکسیس ٹیلیفون: (اختیاری گروپ)";
 $hcms_lang['date-format-optional']['ur'] = "تاریخ ترتیب (طبعی)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['ur'] = "dpi قیمت autoscale کو مورتیں (طبعی)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['ur'] = "autoconvert مورتیں کو colorspace کو بھی [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV]یوں, (طبعی)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['ur'] = "فون";
 $hcms_lang['optical-character-recognition']['ur'] = "آپٹیکل کریکٹر ریکگنیشن";
 $hcms_lang['delete-imported-files']['ur'] = "درآمد کردہ فائلوں کو حذف کریں";
 $hcms_lang['leave-files-in-import-directory']['ur'] = "درآمد ڈائرکٹری میں فائلوں کو چھوڑ دو (ان کا نام تبدیل نہ کریں یا درآمد کے بعد ان کو منتقل کریں)";
+$hcms_lang['timezone']['ur'] = "ٹائم زون";
+$hcms_lang['registration-of-new-users']['ur'] = "نئے صارفین کے رجسٹریشن"؛
+$hcms_lang['assign-registered-users-to-group']['ur'] =  "رجسٹرڈ صارفین کو گروہ کو";
+$hcms_lang['notify-users']['ur'] = "صارفین کو مطلع کریں"؛
+$hcms_lang['sign-in']['ur'] = "Sign in";
+$hcms_lang['sign-up']['ur'] = "Sign up";
+$hcms_lang['please-sign-in']['ur'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['ur'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['ur'] = "Popups must be allowed";
+$hcms_lang['reset-password']['ur'] = "Reset password";
 ?>

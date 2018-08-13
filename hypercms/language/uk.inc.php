@@ -3,7 +3,7 @@
 $hcms_lang_name['uk'] = "Ukrainian";
 $hcms_lang_shortcut['uk'] = "uk";
 $hcms_lang_codepage['uk'] = "utf-8";
-$hcms_lang_date['uk'] = 'y-m-d H:i:s';
+$hcms_lang_date['uk'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['uk'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['uk'] = "Були у
 $hcms_lang['monthly']['uk'] = "Щомісячно";
 $hcms_lang['weekly']['uk'] = "Щотижня";
 $hcms_lang['daily']['uk'] = "Щодня";
-$hcms_lang['user-comma-seperated']['uk'] = "Користувач (комами протистояннях)";
+$hcms_lang['comma-seperated']['uk'] = "(комами протистояннях)";
 $hcms_lang['text-id-expiration-date-to-monitor']['uk'] = "Текст-ID (дату закінчення терміну дії) на монітор";
 $hcms_lang['date-format-eg']['uk'] = "Формат дати (напр.  %Y- %m %d або %d. %m %Y)";
 $hcms_lang['a-user-name-is-required']['uk'] = "Ім'я користувача обов'язкове для заповнення";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['uk'] = "Назва дисплея (дода
 $hcms_lang['language-session-setting']['uk'] = "Засідання налаштування мови";
 $hcms_lang['session-name-and-values']['uk'] = "Назва сеансу та цінності";
 $hcms_lang['valid-language-value-optional']['uk'] = "Дійсний мови значення (додатково)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['uk'] = "Редагування/запису дозвіл для окремих груп користувачів (додатково)";
+$hcms_lang['permission-for-certain-user-groups-optional']['uk'] = "Редагування/запису дозвіл для окремих груп користувачів (додатково)";
 $hcms_lang['date-format-optional']['uk'] = "Формат дати (додатково)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['uk'] = "Значення dpi для autoscale зображення (додатково)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['uk'] = "Autoconvert зображення за вказаним colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (додатково)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['uk'] = "Телефон";
 $hcms_lang['optical-character-recognition']['uk'] = "Оптичний розпізнавання символів";
 $hcms_lang['delete-imported-files']['uk'] = "Видалити імпортовані файли";
 $hcms_lang['leave-files-in-import-directory']['uk'] = "Залиште файли у каталозі імпорту (не перейменуйте їх та не переміщуйте їх після імпорту)";
+$hcms_lang['timezone']['uk'] = "Часовий пояс";
+$hcms_lang['registration-of-new-users']['uk'] = "Реєстрація нових користувачів";
+$hcms_lang['assign-registered-users-to-group']['uk'] = "Призначити зареєстрованих користувачів групі";
+$hcms_lang['notify-users']['uk'] = "Повідомити користувачів";
+$hcms_lang['sign-in']['uk'] = "Увійти";
+$hcms_lang['sign-up']['uk'] = "Зареєструватися";
+$hcms_lang['please-sign-in']['uk'] = "Будь ласка, увійдіть".;
+$hcms_lang['please-wait-for-the-approval']['uk'] = "Будь ласка, зачекайте на схвалення";
+$hcms_lang['popups-must-be-allowed']['uk'] = "спливаючі вікна повинні бути дозволені";
+$hcms_lang['reset-password']['uk'] = "Скинути пароль";
 ?>

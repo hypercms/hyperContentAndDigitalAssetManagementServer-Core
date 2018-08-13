@@ -3,7 +3,7 @@
 $hcms_lang_name['ja'] = "Japanese";
 $hcms_lang_shortcut['ja'] = "ja";
 $hcms_lang_codepage['ja'] = "utf-8";
-$hcms_lang_date['ja'] = 'y-m-d H:i:s';
+$hcms_lang_date['ja'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ja'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['ja'] = "通知設�
 $hcms_lang['monthly']['ja'] = "毎月";
 $hcms_lang['weekly']['ja'] = "週単位";
 $hcms_lang['daily']['ja'] = "毎日";
-$hcms_lang['user-comma-seperated']['ja'] = "ユーザー(カンマ区切り)";
+$hcms_lang['comma-seperated']['ja'] = "(カンマ区切り)";
 $hcms_lang['text-id-expiration-date-to-monitor']['ja'] = "モニタ(有効期限)テキストID";
 $hcms_lang['date-format-eg']['ja'] = "(例:日付形式 %Y-%m-%dまたは%d.%M.%y)";
 $hcms_lang['a-user-name-is-required']['ja'] = "ユーザー名が必要です";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['ja'] = "表示名(オプション)";
 $hcms_lang['language-session-setting']['ja'] = "言語はセッション設定";
 $hcms_lang['session-name-and-values']['ja'] = "セッションの名前と値";
 $hcms_lang['valid-language-value-optional']['ja'] = "(任意)有効な言語の値";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['ja'] = "編集/アクセス権(オプション)、特定のユーザーグループの書き込み";
+$hcms_lang['permission-for-certain-user-groups-optional']['ja'] = "編集/アクセス権(オプション)、特定のユーザーグループの書き込み";
 $hcms_lang['date-format-optional']['ja'] = "(オプション)日付の形式";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['ja'] = "値(オプション)画像AutoScale dpi";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['ja'] = "autoConvertイメージには、指定されたカラースペース[CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV](オプション)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['ja'] = "電話";
 $hcms_lang['optical-character-recognition']['ja'] = "光学式文字認識";
 $hcms_lang['delete-imported-files']['ja'] = "インポートされたファイルを削除する";
 $hcms_lang['leave-files-in-import-directory']['ja'] = "インポートディレクトリにファイルを残します（インポート後に名前を変更したり移動しないでください）";
+$hcms_lang['timezone']['ja'] = "タイムゾーン";
+$hcms_lang['registration-of-new-users']['ja'] = "新規ユーザーの登録";
+$hcms_lang['assign-registered-users-to-group']['ja'] = "登録されたユーザをグループに割り当てる";
+$hcms_lang['notify-users']['ja'] = "ユーザーに通知する";
+$hcms_lang['sign-in']['ja'] = "サインイン";
+$hcms_lang['sign-up']['ja'] = "サインアップ";
+$hcms_lang['please-sign-in']['ja'] = "サインインしてください。";
+$hcms_lang['please-wait-for-the-approval']['ja'] = "承認待ちです。";
+$hcms_lang['popups-must-be-allowed']['ja'] = "ポップアップを許可する必要があります";
+$hcms_lang['reset-password']['ja'] = "パスワードを再設定する";
 ?>

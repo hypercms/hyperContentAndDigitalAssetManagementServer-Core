@@ -3,7 +3,7 @@
 $hcms_lang_name['bn'] = "Bengali";
 $hcms_lang_shortcut['bn'] = "bn";
 $hcms_lang_codepage['bn'] = "utf-8";
-$hcms_lang_date['bn'] = 'y-m-d H:i:s';
+$hcms_lang_date['bn'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['bn'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['bn'] = "বিজ�
 $hcms_lang['monthly']['bn'] = "মাসিক";
 $hcms_lang['weekly']['bn'] = "সাপ্তাহিক";
 $hcms_lang['daily']['bn'] = "দৈনিক";
-$hcms_lang['user-comma-seperated']['bn'] = "ইউজার (যেমন সেপারেটেড ভ্যালু ভূখণ্ড)";
+$hcms_lang['comma-seperated']['bn'] = "(যেমন সেপারেটেড ভ্যালু ভূখণ্ড)";
 $hcms_lang['text-id-expiration-date-to-monitor']['bn'] = "মনিটর করতে টেক্সট- ID (মেয়াদ শেষের তারিখ)";
 $hcms_lang['date-format-eg']['bn'] = "Format তারিখ (যেমন.এম-y-.ডি.বা.ডি.এম।.।y)";
 $hcms_lang['a-user-name-is-required']['bn'] = "একটা নাম প্রয়োজন";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['bn'] = "ডিসপ্লে নাম (�
 $hcms_lang['language-session-setting']['bn'] = "ভাষা সংক্রান্ত অধিবেশন";
 $hcms_lang['session-name-and-values']['bn'] = "অধিবেশনে নাম ও মূল্যবোধের";
 $hcms_lang['valid-language-value-optional']['bn'] = "বৈধ ভাষা মূল্য (ঐচ্ছিক)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['bn'] = "পরিমার্জন/লিখে কিছু ইউজার গ্রুপের জন্য অনুমতি (ঐচ্ছিক)";
+$hcms_lang['permission-for-certain-user-groups-optional']['bn'] = "পরিমার্জন/লিখে কিছু ইউজার গ্রুপের জন্য অনুমতি (ঐচ্ছিক)";
 $hcms_lang['date-format-optional']['bn'] = "তারিখ Format (ঐচ্ছিক)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['bn'] = "ডিপিআই মূল্য autoscale ছবি (ঐচ্ছিক)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['bn'] = "autoconvert ছবি দেয়া করতে colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (ঐচ্ছিক)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['bn'] = "ফোন";
 $hcms_lang['optical-character-recognition']['bn'] = "অপটিক্যাল ক্যারেক্টার রেকগনিশন";
 $hcms_lang['delete-imported-files']['bn'] = "আমদানি করা ফাইলগুলি মুছুন";
 $hcms_lang['leave-files-in-import-directory']['bn'] = "আমদানি ডিরেক্টরিতে ফাইলগুলি ত্যাগ করুন (আমদানির পরে নাম পরিবর্তন করবেন না বা তাদের স্থানান্তর করবেন না)";
+$hcms_lang['timezone']['bn'] = "সময় অঞ্চল";
+$hcms_lang['registration-of-new-users']['bn'] = "নতুন ব্যবহারকারীর নিবন্ধন";
+$hcms_lang['assign-registered-users-to-group']['bn'] = "নিবন্ধিত ব্যবহারকারীদের গ্রুপে সাইন করুন";
+$hcms_lang['notify-users']['bn'] = "ব্যবহারকারীকে বিজ্ঞপ্তি দিন";
+$hcms_lang['sign-in']['bn'] = "প্রবেশ কর";
+$hcms_lang['sign-up']['bn'] = "নিবন্ধন";
+$hcms_lang['please-sign-in']['bn'] = "সাইন ইন করুন.";
+$hcms_lang['please-wait-for-the-approval']['bn'] = "অনুমোদনের জন্য অপেক্ষা করুন।";
+$hcms_lang['popups-must-be-allowed']['bn'] = "পপআপগুলি অনুমোদিত হতে হবে";
+$hcms_lang['reset-password']['bn'] = "পাসওয়ার্ড রিসেট করুন";
 ?>

@@ -183,6 +183,54 @@ function objectfilter ($file)
   else return false;
 }
 
+// --------------------------------------- showdate -------------------------------------------
+// function: showdate ()
+// input: date and time [string, date input format [string], date output format [string], correct time zone [true,false] (optional)
+// output: date and time
+
+// description:
+// Prepares the date and time for the display in the users time zone and format.
+
+function showdate ($date, $sourceformat="Y-m-d H:i", $targetformat="Y-m-d H:i", $timezone=true)
+{
+  global $mgmt_config;
+
+  if ($date != "" && is_date ($date, $sourceformat))
+  {
+    // remove time from target if not present in source format
+    if (stripos ("_".$sourceformat, "H:i") < 1 && stripos ("_".$sourceformat, "G:i") < 1)
+    {
+      $targetformat = trim (str_replace ("H:i:s", "", $targetformat));
+      $targetformat = trim (str_replace ("G:i:s", "", $targetformat));
+      $targetformat = trim (str_replace ("h:i:s", "", $targetformat));
+      $targetformat = trim (str_replace ("g:i:s", "", $targetformat));
+    }
+    // remove seconds from target if not present in source format
+    elseif (stripos ("_".$sourceformat, ":s") < 1)
+    {
+      $targetformat = trim (str_replace ("H:i:s", "H:i", $targetformat));
+      $targetformat = trim (str_replace ("G:i:s", "G:i", $targetformat));
+      $targetformat = trim (str_replace ("h:i:s", "h:i", $targetformat));
+      $targetformat = trim (str_replace ("g:i:s", "g:i", $targetformat));
+    }
+
+    // convert date and time based on users time zone
+    if ($timezone == true && !empty ($_SESSION['hcms_timezone']) && ini_get ('date.timezone') && $_SESSION['hcms_timezone'] != ini_get ('date.timezone'))
+    {
+      $datenew = convertdate ($date, ini_get ('date.timezone'), $sourceformat, $_SESSION['hcms_timezone'], $targetformat);
+    }
+    // convert date format
+    elseif ($sourceformat != $targetformat)
+    {
+      $datenew = date ($targetformat, strtotime ($date));
+    }
+
+    if (!empty ($datenew)) return $datenew;
+    else return $date;
+  }
+  else return $date;
+}
+
 // --------------------------------------- showshorttext -------------------------------------------
 // function: showshorttext ()
 // input: text [string], max. length of text (minus length starting from the end) [integer] (optional),
@@ -530,7 +578,7 @@ function showmetadata ($data, $lang="en", $class_headline="hcmsRowData2")
 
 function showobject ($site, $location, $page, $cat="", $name="")
 {
-  global $mgmt_config, $hcms_charset, $hcms_lang, $lang;
+  global $mgmt_config, $hcms_charset, $hcms_lang, $hcms_lang_date, $lang;
 
   $location = deconvertpath ($location, "file");
 
@@ -592,7 +640,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
     <table>
       <tr><td align=\"left\" colspan=\"2\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" alt=\"".$file_info['name']."\" title=\"".$file_info['name']."\" /></td></tr>
       <tr><td align=\"middle\" colspan=\"2\" class=\"hcmsHeadlineTiny\">".$name."<br /><hr /></td></tr>
-      <tr><td>".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang)." </td><td class=\"hcmsHeadlineTiny\">".$filetime."</td></tr>";
+      <tr><td>".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang)." </td><td class=\"hcmsHeadlineTiny\">".showdate ($filetime, "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>";
     
     if (!empty ($filesize) && $filesize > 0) $mediaview .= "
       <tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang)." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filesize."</td></tr>";
@@ -619,7 +667,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
 function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $height="", $class="hcmsImageItem")
 {
   // $mgmt_imageoptions is used for image rendering (in case the format requires the rename of the object file extension)	 
-  global $site, $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docpreview, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
+  global $site, $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docpreview, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_charset, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang,
          $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $downloadformats, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions, $is_mobile, $is_iphone;
 
   // Path to PDF.JS
@@ -792,6 +840,35 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     
     $mediaview = "";
     $style = "";
+    
+    // if watermark is used, force recreation
+    if (is_image ($mediafile))
+    {
+      // get container ID
+      $container_id = getmediacontainerid ($mediafile);
+      
+      // get individual watermark
+      if ($mgmt_config['publicdownload'] == true) $containerdata = loadcontainer ($container_id, "work", "sys");
+      else $containerdata = loadcontainer ($container_id, "published", "sys");
+      
+      if ($containerdata != "")
+      {
+        $wmlocation = getmedialocation ($site, $mediafile, "abs_path_media");
+        $wmnode = selectcontent ($containerdata, "<media>", "<media_id>", "Watermark");
+        
+        if (!empty ($wmnode[0]))
+        {
+          $temp = getcontent ($wmnode[0], "<mediafile>");
+          if (!empty ($temp[0])) $wmfile = $temp[0];
+          
+          $temp = getcontent ($wmnode[0], "<mediaalign>");
+          if (!empty ($temp[0])) $wmalign = $temp[0];
+          else $wmalign = "center";
+  
+          if (!empty ($wmfile)) $force_recreate = true;
+        }
+      }
+    }
 
     // only show details if user has permissions to edit the file or for template media files
     if ($viewtype == "template" || ($setlocalpermission['root'] == 1 && ($setlocalpermission['create'] == 1 || $setlocalpermission['download'] == 1)))
@@ -1399,7 +1476,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $newname = $file_info['filename'].".".$typename.'.'.$newext;
 
               // generate new file only when another one wasn't already created or is outdated (use thumbnail since the date of the decrypted temporary file is not representative)
-              if (!is_file ($viewfolder.$newname) || @filemtime ($thumb_root.$thumbfile) > @filemtime ($viewfolder.$newname)) 
+              if (!is_file ($viewfolder.$newname) || @filemtime ($thumb_root.$thumbfile) > @filemtime ($viewfolder.$newname) || !empty ($force_recreate)) 
               {
                 if (!empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
                 {
@@ -2486,17 +2563,17 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "
         <tr>
           <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang)." </td>
-          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$mediafiletime."</td>
+          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($mediafiletime, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
         </tr>";
         if (!empty ($date_published[0])) $mediaview .= "
         <tr>
           <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['published'][$lang], $hcms_charset, $lang)." </td>
-          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$date_published[0]."</td>
+          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($date_published[0], "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
         </tr>";
         if (!empty ($date_delete)) $mediaview .= "
         <tr>
           <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['will-be-removed'][$lang], $hcms_charset, $lang)." </td>
-          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$date_delete."</td>
+          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($date_delete, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
         </tr>";
         $mediaview .= "
         <tr>
@@ -2540,7 +2617,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 // --------------------------------------- showcompexplorer -------------------------------------------
 // function: showcompexplorer ()
 // input: publication name [string], current explorer location [string], object location [string] (optional), object name [string] (optional), 
-//        component category [single,multi,media] (optional), search expression [string] (optional), search format [object,document,image,video,audio] (optional), 
+//        component category [single,multi,media] (optional), search expression [string] (optional), search format [object,document,image,video,audio,watermark] (optional), 
 //        media-type [audio,video,text,flash,image,compressed,binary] (optional), 
 //        callback of CKEditor [string] (optional), saclingfactor for images [integer] (optional)
 // output: explorer with search / false on error
@@ -2649,7 +2726,9 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     }
     
     // media format
-    if ($mediatype == "audio") $format_ext = strtolower ($hcms_ext['audio']);
+    // only for watermark images
+    if ($mediatype == "watermark") $format_ext = ".jpg.jpeg.png.gif";
+    elseif ($mediatype == "audio") $format_ext = strtolower ($hcms_ext['audio']);
     elseif ($mediatype == "video") $format_ext = strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']);
     elseif ($mediatype == "text") $format_ext = strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']);
     elseif ($mediatype == "flash") $format_ext = strtolower ($hcms_ext['flash']);
@@ -3018,7 +3097,7 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
     if (strpos ("_".$hypertagname, "comment") == 1) $classname = "class=\"is_comment\"";
     else $classname = "";
     
-    return "<textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" ".$classname.">".$contentbot."</textarea>
+    return "<textarea id=\"".$hypertagname."_".str_replace (":", "_", $id)."\" name=\"".$hypertagname."[".$id."]\" ".$classname.">".$contentbot."</textarea>
       <script type=\"text/javascript\">
       <!--
         CKEDITOR.replace( '".$hypertagname."_".$id."',
@@ -3245,7 +3324,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
   $constraint = getattribute ($hypertag, "constraint");
   
   // get tag id
-  $id = getattribute ($hypertag, "id");
+  $id = $id_orig = getattribute ($hypertag, "id");
   
   // get label text
   $label = getattribute ($hypertag, "label");  
@@ -3390,7 +3469,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           });
         </script>
         ";
-        $element = "<input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"\"/><input title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-checkbox'][$lang], $hcms_charset, $lang)."\" type=\"checkbox\" id=\"hcms_checkbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".($value == $contentbot ? ' checked ' : '').">".$labelname;
+        $element = "<input type=\"hidden\" name=\"".$hypertagname."[".$id_orig."]\" value=\"\"/><input title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-checkbox'][$lang], $hcms_charset, $lang)."\" type=\"checkbox\" id=\"hcms_checkbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" value=\"".$value."\"".($value == $contentbot ? ' checked ' : '').">".$labelname;
         break;
         
       // date picker
@@ -3529,7 +3608,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           });
           </script>
         ";
-        $element = "<input title=\"".$labelname.": ".getescapedtext ($hcms_lang['pick-a-date'][$lang], $hcms_charset, $lang)."\" type=\"text\" id=\"hcms_datefield_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\" /><br>";
+        $element = "<input title=\"".$labelname.": ".getescapedtext ($hcms_lang['pick-a-date'][$lang], $hcms_charset, $lang)."\" type=\"text\" id=\"hcms_datefield_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" value=\"".$contentbot."\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\" /><br>";
         break;
         
       // unformatted text
@@ -3606,7 +3685,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           </script>
         ";
         // textarea
-        $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" onkeyup=\"hcms_adjustTextarea(this);\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
+        $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" onkeyup=\"hcms_adjustTextarea(this);\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
         break;
         
       // text options/list
@@ -3672,7 +3751,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         ";
         // Building the select box
         $list = explode ("|", getattribute ($hypertag, "list"));
-        $element = "<select title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-text-options'][$lang], $hcms_charset, $lang)."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\">\n";
+        $element = "<select title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-text-options'][$lang], $hcms_charset, $lang)."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\">\n";
         
         foreach ($list as $elem)
         {
@@ -3773,7 +3852,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           </script>
         ";
         
-        $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\">".$contentbot."</textarea>";
+        $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\">".$contentbot."</textarea>";
         break;
       default:
         break;

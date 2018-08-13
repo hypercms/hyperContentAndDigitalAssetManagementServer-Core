@@ -3,7 +3,7 @@
 $hcms_lang_name['no'] = "Norwegian";
 $hcms_lang_shortcut['no'] = "no";
 $hcms_lang_codepage['no'] = "utf-8";
-$hcms_lang_date['no'] = 'y-m-d H:i:s';
+$hcms_lang_date['no'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['no'] = "ltr";
 
 // Text for hyperCMS
@@ -531,7 +531,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['no'] = "Varsel ble 
 $hcms_lang['monthly']['no'] = "Månedlig";
 $hcms_lang['weekly']['no'] = "Ukentlig";
 $hcms_lang['daily']['no'] = "Daglig";
-$hcms_lang['user-comma-seperated']['no'] = "Bruker (komma)";
+$hcms_lang['comma-seperated']['no'] = "(komma)";
 $hcms_lang['text-id-expiration-date-to-monitor']['no'] = "Tekst-ID (utløpsdato) for å overvåke";
 $hcms_lang['date-format-eg']['no'] = "Dato format (f.eks.  %Y- %m- %d eller %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['no'] = "En bruker navn er nødvendig";
@@ -1220,7 +1220,7 @@ $hcms_lang['display-name-optional']['no'] = "Vise navn (valgfritt)";
 $hcms_lang['language-session-setting']['no'] = "Språk økt innstilling";
 $hcms_lang['session-name-and-values']['no'] = "Økt navn og verdier";
 $hcms_lang['valid-language-value-optional']['no'] = "Gyldig språk verdi (tilleggsutstyr)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['no'] = "Redigere/skrive tillatelse for visse brukergrupper (tilleggsutstyr)";
+$hcms_lang['permission-for-certain-user-groups-optional']['no'] = "Redigere/skrive tillatelse for visse brukergrupper (tilleggsutstyr)";
 $hcms_lang['date-format-optional']['no'] = "Dato format (tilleggsutstyr)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['no'] = "Dpi verdien til Autoskaler bilder (tilleggsutstyr)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['no'] = "Autoconvert bilder til gitt colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (tilleggsutstyr)";
@@ -1404,4 +1404,14 @@ $hcms_lang['phone']['no'] = "Telefon";
 $hcms_lang['optical-character-recognition']['no'] = "Optisk karaktergjenkjennelse";
 $hcms_lang['delete-imported-files']['no'] = "Slett importerte filer";
 $hcms_lang['leave-files-in-import-directory']['no'] = "Legg igjen filer i importkatalogen (ikke endre navn på eller flytte dem etter import)";
+$hcms_lang['timezone']['no'] = "Tidssone";
+$hcms_lang['registration-of-new-users']['no'] = "Registrering av nye brukere";
+$hcms_lang['assign-registered-users-to-group']['no'] = "Tilordne registrerte brukere til gruppe";
+$hcms_lang['notify-users']['no'] = "Gi beskjed om brukere";
+$hcms_lang['sign-in']['no'] = "Sign in";
+$hcms_lang['sign-up']['no'] = "Sign up";
+$hcms_lang['please-sign-in']['no'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['no'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['no'] = "Popups must be allowed";
+$hcms_lang['reset-password']['no'] = "Reset password";
 ?>

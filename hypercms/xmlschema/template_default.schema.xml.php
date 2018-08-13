@@ -14,6 +14,7 @@
 [hyperCMS:textl id='Quality' label='Quality' infotype='meta' height='20' mediatype='image' list='|Print|Web']
 [hyperCMS:textl id='YoutubeCategories' label='YouTube categories' infotype='meta' height='25' mediatype='video' list='Autos & Vehicles{2}|Comedy{23}|Education{27}|Entertainment{24}|Film & Animation{1}|Gaming{20}|Howto & Style{26}|Music{10}|News & Politics{25}|Nonprofits & Activism{29}|People & Blogs{22}|Pets & Animals{15}|Science & Technology{28}|Sport{17}|Travel & Events{19}'
 [hyperCMS:commentf id='Comment' infotype='meta' height='100']
+[hyperCMS:componentm id='Related' label='Related assets']
 [hyperCMS:geolocation infotype='meta']
 ]]></content>
 </template>

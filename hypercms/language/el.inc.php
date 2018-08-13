@@ -3,7 +3,7 @@
 $hcms_lang_name['el'] = "Greek";
 $hcms_lang_shortcut['el'] = "el";
 $hcms_lang_codepage['el'] = "utf-8";
-$hcms_lang_date['el'] = 'y-m-d H:i:s';
+$hcms_lang_date['el'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['el'] = "ltr";
 
 // Text for hyperCMS
@@ -532,7 +532,7 @@ $hcms_lang['notification-settings-were-saved-successfully']['el'] = "Ρυθμί�
 $hcms_lang['monthly']['el'] = "Μηνιαία";
 $hcms_lang['weekly']['el'] = "Εβδομαδιαία";
 $hcms_lang['daily']['el'] = "Καθημερινά";
-$hcms_lang['user-comma-seperated']['el'] = "Χρήστης (κόμμα χωρίζονται)";
+$hcms_lang['comma-seperated']['el'] = "(κόμμα χωρίζονται)";
 $hcms_lang['text-id-expiration-date-to-monitor']['el'] = "Κείμενο-ID (ημερομηνία λήξης) για την παρακολούθηση";
 $hcms_lang['date-format-eg']['el'] = "Μορφή ημερομηνίας (π. χ. %Y- %m %d και %d. %m. %Y)";
 $hcms_lang['a-user-name-is-required']['el'] = "ΤΟ όνομα χρήστη είναι απαραίτητη";
@@ -1222,7 +1222,7 @@ $hcms_lang['display-name-optional']['el'] = "Όνομα εμφάνισης (πρ
 $hcms_lang['language-session-setting']['el'] = "Γλώσσα συνόδου ρύθμιση";
 $hcms_lang['session-name-and-values']['el'] = "Συνόδου όνομα και τιμές";
 $hcms_lang['valid-language-value-optional']['el'] = "Έγκυρη γλώσσα τιμή (προαιρετικό)";
-$hcms_lang['editwrite-permission-for-certain-user-groups-optional']['el'] = "Επεξεργασία/εγγραφη άδεια για ορισμένες ομάδες χρηστών (προαιρετικό)";
+$hcms_lang['permission-for-certain-user-groups-optional']['el'] = "Επεξεργασία/εγγραφη άδεια για ορισμένες ομάδες χρηστών (προαιρετικό)";
 $hcms_lang['date-format-optional']['el'] = "Μορφή ημερομηνίας (προαιρετικό)";
 $hcms_lang['dpi-value-to-autoscale-images-optional']['el'] = "Dpi αξία στο σύστημα autoscale εικόνες (προαιρετικά)";
 $hcms_lang['autoconvert-images-to-the-given-colorspace-']['el'] = "Autoconvert εικόνες για να της δοθεί colorspace [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (προαιρετικό)";
@@ -1406,4 +1406,14 @@ $hcms_lang['phone']['el'] = "Τηλέφωνο";
 $hcms_lang['optical-character-recognition']['el'] = "Οπτική αναγνώριση χαρακτήρων";
 $hcms_lang['delete-imported-files']['el'] = "Διαγράψτε τα εισαγόμενα αρχεία";
 $hcms_lang['leave-files-in-import-directory']['el'] = "Αφήστε τα αρχεία στον κατάλογο εισαγωγής (μην τα μετονομάσετε ή μετακινήσετε μετά την εισαγωγή)";
+$hcms_lang['timezone']['el'] = "Ζώνη ώρας";
+$hcms_lang['registration-of-new-users']['el'] = "Εγγραφή νέων χρηστών";
+$hcms_lang['assign-registered-users-to-group']['el'] = "Εκχώρηση εγγεγραμμένων χρηστών σε ομάδα";
+$hcms_lang['notify-users']['el'] = "Ειδοποιήστε τους χρήστες";
+$hcms_lang['sign-in']['el'] = "Sign in";
+$hcms_lang['sign-up']['el'] = "Sign up";
+$hcms_lang['please-sign-in']['el'] = "Please sign in.";
+$hcms_lang['please-wait-for-the-approval']['el'] = "Please wait for the approval.";
+$hcms_lang['popups-must-be-allowed']['el'] = "Popups must be allowed";
+$hcms_lang['reset-password']['el'] = "Reset password";
 ?>

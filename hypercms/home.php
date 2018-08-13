@@ -208,22 +208,13 @@ function submitHomeBoxes ()
   form.submit();
 }
 
-function html5support()
-{
-  if (eval (document.forms['login']) && hcms_html5file())
-  {
-    return true;
-  }
-  else return false;
-}
-
 function setwallpaper ()
 {
   <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
   document.body.style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
   return true;
   <?php } elseif (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-  if (html5support())
+  if (hcms_html5file())
   {
     document.getElementById('videoScreen').src = "<?php echo $wallpaper; ?>";
   }
