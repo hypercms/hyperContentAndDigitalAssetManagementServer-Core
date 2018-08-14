@@ -29,8 +29,8 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // file name of event log
-if (valid_publicationname ($site)) $logfile = $site.".custom.log";
-else $logfile = "event.log";
+if (valid_publicationname ($site)) $logfile = $site.".custom";
+else $logfile = "event";
 ?>
 <!DOCTYPE html>
 <html>
@@ -106,12 +106,12 @@ function resizecols()
   <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" style="border:0; width:100%; table-layout:fixed;">
 <?php
-if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
+if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".log"))
 {
   $items_row = 0;
   
   // load log file
-  $event_array = loadlog ();
+  $event_array = loadlog ($logfile);
 
   if ($event_array != false && sizeof ($event_array) > 0)
   {

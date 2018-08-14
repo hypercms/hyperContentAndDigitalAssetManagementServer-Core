@@ -2829,7 +2829,7 @@ Release 06/2017
 - Bug fix: function rdbms_setpublicationtaxonomy in DB connect did use the wrong variable name for container ID in settaxnomy function call
 
 Version 7.0.9
-Release 07/2017
+Release 08/2017
 - Modifications and improvements in Workflow Management
 - Modifications in function getserverload in Get API in order to verify results on MS Windows OS and set default values
 - Modifications in event system in order to verify variables
@@ -2913,6 +2913,7 @@ Release 07/2017
 - Bug fix: Logon using access links did not provide information from browser regarding is_mobile, is_iphone, and html5support
 - Bug fix: The home screen did use a wrapper function instead of JS function hcms_html5file in order to verify HTML5 support
 - Bug fix: Function userlogin in Security API did not set the user name for log entries in case the users hash has been used for logon
+- Bug fix: log_list did not load custom log file due to missing input for function loadlog
 */
 
 // current version
