@@ -202,7 +202,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['customer-profile'][$lang]); ?> </td>
       <td nowrap="nowrap">
         <select name="condition" style="width:220px;">
-          <option value="">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+          <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           $dir_item = @dir ($mgmt_config['abs_path_data']."customer/".$site."/");
 

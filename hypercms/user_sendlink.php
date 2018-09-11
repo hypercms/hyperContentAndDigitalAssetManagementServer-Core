@@ -20,17 +20,19 @@ $token_new = createtoken ($user);
     <meta charset="<?php echo getcodepage ($lang); ?>" />
     <meta name="viewport" content="width=device-width, initial-scale=0.62, maximum-scale=1.0, user-scalable=1" />
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
     <script src="javascript/main.js" type="text/javascript"></script>
+    
     <!-- Jquery and Jquery UI Autocomplete -->
-    <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
     <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
         
     <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
     <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
     <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
     <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
     <script src="javascript/rich_calendar/domready.js"></script>
+    
     <script type="text/javascript">
     
     var cal_obj = null; 
@@ -605,7 +607,7 @@ $token_new = createtoken ($user);
               </td>
               <td align="left" valign="top">
                 <select name="group_login" id="group_login" style="width:350px;">
-                  <option value="">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+                  <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
                   <?php 
                   if (!empty ($allgroup_array) && sizeof ($allgroup_array) > 0)
                   {
@@ -700,7 +702,7 @@ $token_new = createtoken ($user);
         </div>
 
         <!-- Download formats -->      
-        <div id="LayerFormats" class="hcmsWorkplaceGeneric" style="padding-left:4px;">
+        <div id="LayerFormats" class="hcmsWorkplaceGeneric" style="height:210px; scrolling:auto; padding-left:4px;">
           <table border="0" cellspacing="0" cellpadding="2">
             <tr>
               <td colspan="2" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?></td>
@@ -762,7 +764,7 @@ $token_new = createtoken ($user);
                   
                   foreach ($mgmt_docoptions as $ext => $value)
                   {
-                    if ($ext != "")
+                    if ($ext != "" && !is_image ("_".$ext))
                     {
                       $ext_array = explode (".", trim ($ext, "."));
                       $doc_type = $ext_array[0];

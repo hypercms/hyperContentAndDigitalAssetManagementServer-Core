@@ -470,7 +470,7 @@ $mgmt_config['maxfilesize'] = 0;
 $mgmt_config['maxzipsize'] = 2000;
 
 // Maximum digits for file names (applies for createobject and uploadfile).
-$mgmt_config['max_digits_filename'] = 200;
+$mgmt_config['max_digits_filename'] = 400;
 
 // Which types of files (file extensions) are not allowed for upload, example ".asp.jsp.php.pl.sql"
 $mgmt_config['exclude_files'] = ".php.pl.jsp.asp.aspx.exe.sql.sh.bash";
@@ -515,7 +515,7 @@ $mgmt_config['search_synonym'] = true;
 $mgmt_config['search_operator'] = "";
 
 // Use "like" or "match" syntax for full-text search queries
-// "match" has performance advantages if not wildcard-character is used
+// "match" has performance advantages if no wildcard-character is used
 $mgmt_config['search_query_match'] = "match";
 
 // Maximum number of search results
@@ -535,6 +535,18 @@ $mgmt_config['multifactorauth'] = false;
 // Registration of new users
 // Enable (true) or disable (false) the registration link for new users in the sign-in mask
 $mgmt_config['userregistration'] = false;
+
+// Log level for system events
+// Define the log level (all, warning, error, none) for the logging of system events
+$mgmt_config['loglevel'] = "all";
+
+// Publication specific log files
+// Enable (true) or disable (false) publication specific log files besides the standard event log
+$mgmt_config['publication_log'] = false;
+
+// User e-mail notification on system errors or warnings
+// Provide a list of comma separated user names for automated notification, or leave empty
+$mgmt_config['eventlog_notify'] = "";
 
 // Encryption
 // Encryption strength (weak, standard, strong)
@@ -647,17 +659,20 @@ $mgmt_docoptions['.ppt'] = "-f ppt";
 $mgmt_docoptions['.odt'] = "-f odt";
 $mgmt_docoptions['.ods'] = "-f ods";
 $mgmt_docoptions['.odp'] = "-f odp";
+$mgmt_docoptions['.png'] = "-f png";
+$mgmt_docoptions['.jpg'] = "-f jpg";
 
 // Define the mapping of the source and target formats for documents:
-$mgmt_docconvert['.doc'] = array('.pdf', '.odt');
-$mgmt_docconvert['.docx'] = array('.pdf', '.odt');
-$mgmt_docconvert['.xls'] = array('.pdf', '.csv', '.ods');
-$mgmt_docconvert['.xlsx'] = array('.pdf', '.csv', '.ods');
-$mgmt_docconvert['.ppt'] = array('.pdf', '.odp');
-$mgmt_docconvert['.pptx'] = array('.pdf', '.odp');
-$mgmt_docconvert['.odt'] = array('.pdf', '.doc');
-$mgmt_docconvert['.ods'] = array('.pdf', '.csv', '.xls');
-$mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
+$mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
+$mgmt_docconvert['.doc'] = array('.png', '.pdf', '.odt');
+$mgmt_docconvert['.docx'] = array('.png', '.pdf', '.odt');
+$mgmt_docconvert['.xls'] = array('.png', '.pdf', '.csv', '.ods');
+$mgmt_docconvert['.xlsx'] = array('.png', '.pdf', '.csv', '.ods');
+$mgmt_docconvert['.ppt'] = array('.png', '.pdf', '.odp');
+$mgmt_docconvert['.pptx'] = array('.png', '.pdf', '.odp');
+$mgmt_docconvert['.odt'] = array('.png', '.pdf', '.doc');
+$mgmt_docconvert['.ods'] = array('.png', '.pdf', '.csv', '.xls');
+$mgmt_docconvert['.odp'] = array('.png', '.pdf', '.ppt');
 
 // Define Image Preview using the GD Library or ImageMagick
 
@@ -685,7 +700,7 @@ $mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
 
 // Define image preview using ImageMagick and GhostScript (thumbnail generation)
 // The path to the executable is usually /usr/bin/convert
-$mgmt_imagepreview['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
+$mgmt_imagepreview['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
 
 // If an image file is uploaded hyperCMS will try to generate a thumbnail file for preview:
 $mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 220x220 -q 95 -f jpg";
@@ -731,7 +746,7 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -q 95 -f jpg';
 $mgmt_mediapreview['.3g2.3gp.4xm.a64.aac.ac3.act.adf.adts.adx.aea.aiff.alaw.alsa.amr.anm.apc.ape.apr.asf.asf_stream.ass.au.audio.avi.avm2.avs.bethsoftvid.bfi.bin.bink.bit.bmv.c93.caf.cavsvideo.cdg.cdxl.crc.daud.dfa.dirac.dnxhd.dsicin.dts.dv.dv1394.dvd.dxa.dwd.ea.ea_cdata.eac3.f32be.f32le.f4v.f64be.f64le.fbdev.ffm.ffmetadata.film_cpk.filmstrip.flac.flic.flv.framecrc.framemd5.g722.g723_1.g729.gsm.gxf.h261.h263.h264.hls.ico.idcin.idf.iff.ilbc.image2.image2pipe.ingenient.ipmovie.ipod.ismv.iss.iv8.ivf.jack.jacosub.jv.la.latm.lavfi.libcdio.libdc1394.lmlm4.loas.lxf.m4a.m4b.m4p.m4r.m4v.matroska.md5.mgsts.microdvd.mid.mj2.mjpeg.mkv.mlp.mm.mmf.mov.mp2.mp3.mp4.mp4v.mpc.mpc8.mpeg.mpg.mpeg1video.mpeg2video.mpegts.mpegtsraw.mpegvideo.mpjpeg.msnwctcp.mts.mtv.mulaw.mvi.mxf.mxf_d10.mxg.nc.nsv.null.nut.nuv.oga.ogg.ogm.ogv.oma.oss.ots.pac.paf.pmp.psp.psxstr.pva.qcp.r3d.ra.rawvideo.rcv.realtext.rka.rl2.rm.roq.rpl.rso.rtp.rtsp.s16be.s16le.s24be.s24le.s32be.s32le.s8.sami.sap.sbg.sdl.sdp.segment.shn.siff.smjpeg.smk.smush.sol.sox.spdif.srt.subviewer.svcd.swa.swf.thp.tiertexseq.tmv.truehd.tta.tty.txd.u16be.u16le.u24be.u24le.u32be.u32le.u8.vc1.vc1test.vcd.vmd.vob.voc.vox.vqf.w64.wav.wc3movie.webm.webvtt.wma.wmv.wsaud.wsvqa.wtv.wv.x11grab.xa.xbin.xmv.xwma.yop.yuv4mpegpipe'] = "%ffmpeg%";
 
 // If a video or audio file is uploaded hyperCMS will try to generate a thumbnail video/audio file for preview
-$mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 576x432 -f mp4 -c:a libfdk_aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
+$mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 640x480 -f mp4 -c:a libfdk_aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
 $mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k";
 
 // Auto rotate video if a rotation has been detected (true) or leave video in it's original state (false)

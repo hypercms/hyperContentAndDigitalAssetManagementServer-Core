@@ -2121,7 +2121,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             <script type=\"text/javascript\">
             // define delete button for VTT record
             var vtt_buttons = '<img src=\"".getthemelocation()."img/button_delete.png\" onclick=\"hcms_removeVTTrecord(this)\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"float:left;\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $hcms_charset, $lang)."\" />';
-            var vtt_confirm = '".getescapedtext ($hcms_lang['copy-tracks-from-previously-selected-language'][$lang], $hcms_charset, $lang)."';
+            var vtt_confirm = hcms_entity_decode ('".getescapedtext ($hcms_lang['copy-tracks-from-previously-selected-language'][$lang], $hcms_charset, $lang)."');
 
             function createVTTrecord ()
             {
@@ -2396,7 +2396,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {		
               $youtube_uploads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'><img src="'.getthemelocation().'img/button_file_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
+                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openpopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
               </td>';
             }
           }
@@ -2497,7 +2497,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                     {	
                       $youtube_uploads[$media_extension] = '
                       <td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                        <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'><img src="'.getthemelocation().'img/button_file_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
+                        <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openpopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
                       </td>';
                     }
                   }
@@ -2739,8 +2739,8 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     
     // javascript code
     $result = "<!-- Jquery and Jquery UI Autocomplete -->
-<script src=\"javascript/jquery/jquery-1.10.2.min.js\" type=\"text/javascript\"></script>
-<script src=\"javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
+<script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.3.1.min.js\" type=\"text/javascript\"></script>
+<script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
 <script type=\"text/javascript\">
 function sendCompOption(newtext, newvalue)
 {
@@ -3137,7 +3137,7 @@ function showinlineeditor_head ($lang)
   if (is_array ($mgmt_config) && $lang != "")
   {
     return "
-    <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-1.10.2.min.js\" type=\"text/javascript\"></script>
+    <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-1.12.4.min.js\" type=\"text/javascript\"></script>
     <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."/editor/ckeditor/ckeditor.js\"></script>
     <script type=\"text/javascript\">
       CKEDITOR.disableAutoInline = true;
@@ -4031,7 +4031,6 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
     
       $return .= '  </video>
   <script type="text/javascript">
-  <!--
   jQuery(document).ready(function() 
   {
     projekktor("#hcms_projekktor_'.$id.'", 
@@ -4057,7 +4056,6 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       $return .= '
     });
   });
-  //-->
   </script>'."\n";
     }
     // VIDEO.JS Player (Standard)
@@ -4111,7 +4109,7 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
   // PROJEKKTOR Player
   if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")
   {
-    $jquerylib = $mgmt_config['url_path_cms']."javascript/jquery/jquery-1.10.2.min.js";
+    $jquerylib = $mgmt_config['url_path_cms']."javascript/jquery/jquery-3.3.1.min.js";
     $css = $mgmt_config['url_path_cms']."javascript/video/theme/style.css";
     $projekktor = $mgmt_config['url_path_cms']."javascript/video/projekktor.min.js";
 

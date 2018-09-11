@@ -42,9 +42,9 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 
 // check permissions
 if (
-     ($site == "*Null*" && $login_cat == "home" && $login == $user && !checkrootpermission ('desktopsetting')) || 
-     ($site == "*Null*" && $login_cat != "home" && (!checkrootpermission ('user') || !checkrootpermission ('useredit'))) || 
-     ($site != "*Null*" && $login_cat != "home" && (!checkglobalpermission ($site, 'user') || !checkglobalpermission ($site, 'useredit')))
+     (!valid_publicationname ($site) && $login_cat == "home" && $login == $user && !checkrootpermission ('desktopsetting')) || 
+     (!valid_publicationname ($site) && $login_cat != "home" && (!checkrootpermission ('user') || !checkrootpermission ('useredit'))) || 
+     (valid_publicationname ($site) && $login_cat != "home" && (!checkglobalpermission ($site, 'user') || !checkglobalpermission ($site, 'useredit')))
    ) killsession ($user);
 
 // check session of user
@@ -56,17 +56,17 @@ $show = "";
 $add_onload = "";
 
 // save user
-if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission ($site)) && checktoken ($token, $user))
+if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicationpermission ($site)) && checktoken ($token, $user))
 {
   // check permissions
   if (
        ($login_cat == "home" && $login == $user && checkrootpermission ('desktopsetting')) || 
-       ($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('useredit')) || 
-       ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))
+       (!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || 
+       (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))
      )
   {
     // set super admin (only in main user administration)
-    if ($site == "*Null*" && (checkadminpermission () || $user == "admin"))
+    if (!valid_publicationname ($site) && (checkadminpermission () || $user == "admin"))
     {
       if ($superadmin != "1") $superadmin = "0";
     }
@@ -151,11 +151,11 @@ function selectAll ()
     assigned = "*Null*";
   }
 
-  if (form.elements['site'].value != "*Null*")
+  if (form.elements['site'].value != "*Null*" && form.elements['site'].value != "*no_memberof*")
   {
     form.elements['usergroup'].value = assigned;
   }
-  else if (form.elements['site'].value == "*Null*")  
+  else if (form.elements['site'].value == "*Null*" || form.elements['site'].value == "*no_memberof*")  
   {
     form.elements['usersite'].value = assigned;  
   }
@@ -346,7 +346,7 @@ if ($login != "" && $login != false)
   $signaturearray = getcontent ($userrecord[0], "<signature>");
   $signature = $signaturearray[0];
   
-  if ($site != "*Null*") 
+  if (valid_publicationname ($site)) 
   {
     $memberofarray = selectcontent ($userrecord[0], "<memberof>", "<publication>", "$site");
     
@@ -355,7 +355,7 @@ if ($login != "" && $login != false)
     if ($usergrouparray != false) $usergroup = $usergrouparray[0]; 
     else $usergroup = "";
   }
-  elseif ($site == "*Null*")
+  elseif (!valid_publicationname ($site))
   {
     $usersitearray = getcontent ($userrecord[0], "<publication>");
     
@@ -376,7 +376,7 @@ if ($login != "" && $login != false)
   <input type="hidden" name="group" value="<?php echo $usergroup; ?>">
   <input type="hidden" name="login" value="<?php echo $login; ?>">
   <?php 
-  if ($site != "*Null*" && $login_cat == "") echo "<input type=\"hidden\" name=\"usergroup\" value=\"".$usergroup."\">\n";
+  if (valid_publicationname ($site) && $login_cat == "") echo "<input type=\"hidden\" name=\"usergroup\" value=\"".$usergroup."\">\n";
   elseif ($login_cat == "") echo "<input type=\"hidden\" name=\"usersite\" value=\"".$usersite."\">\n";
   ?>
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
@@ -492,7 +492,7 @@ if ($login != "" && $login != false)
     // check if publication defines a theme
     foreach ($siteaccess as $entry) if (!empty ($mgmt_config[$entry]['theme'])) { $config_theme = $mgmt_config[$entry]['theme']; break; }
     
-    if (($site == "*Null*" && empty ($mgmt_config['theme']) && empty ($config_theme)) || ($site != "*Null*" && empty ($mgmt_config['theme']) && empty ($mgmt_config[$site]['theme']))) {
+    if ((!valid_publicationname ($site) && empty ($mgmt_config['theme']) && empty ($config_theme)) || (valid_publicationname ($site) && empty ($mgmt_config['theme']) && empty ($mgmt_config[$site]['theme']))) {
     ?>
     <tr>
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?> </td>
@@ -537,7 +537,7 @@ if ($login != "" && $login != false)
     </tr>
     <?php } ?>  
     <?php
-    if ($site != "*Null*" && $login_cat != "home")
+    if (valid_publicationname ($site) && $login_cat != "home")
     {    
       echo "<tr>
       <td colspan=2>
@@ -602,7 +602,7 @@ if ($login != "" && $login != false)
       </td>
     </tr>\n";
     }
-    elseif ($site == "*Null*" && $login_cat != "home")
+    elseif (!valid_publicationname ($site) && $login_cat != "home")
     {    
       echo "<tr>
       <td colspan=2>
@@ -673,7 +673,7 @@ if ($login != "" && $login != false)
     </tr>\n";
     }    
     ?>
-    <?php if ($site == "*Null*" && checkadminpermission ()) { ?>
+    <?php if (!valid_publicationname ($site) && checkadminpermission ()) { ?>
     <tr>
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['administration'][$lang]); ?> </td>
       <td align="left">

@@ -546,7 +546,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
   <meta charset="<?php echo $charset; ?>" />
   <meta name="viewport" content="width=580, initial-scale=0.9, maximum-scale=1.0, user-scalable=1" />
   
-  <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-1.10.2.min.js"></script>
+  <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-1.12.4.min.js"></script>
   <script src="javascript/jquery/plugins/jquery.color.js"></script>
   <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
   <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />

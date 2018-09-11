@@ -30,6 +30,8 @@ $checkduplicates = getrequest ("checkduplicates");
 $versioning = getrequest ("versioning");
 $deletedate = getrequest ("deletedate");
 $token = getrequest ("token");
+// additional text content
+$text_array = getrequest ("text", "array");
 // Dropbox respond array
 $dropbox_file = getrequest ("dropbox_file");
 // FTP respond array
@@ -106,6 +108,31 @@ if ($token != "" && checktoken ($token, $user))
     $result = uploadfile ($site, $location, $cat, $_FILES, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning, $zipname, $zipcount);
   }
 
+  // additional text content
+  if (!empty ($result['object']) && is_array ($text_array) && sizeof ($text_array) > 0)
+  {
+    $objects = link_db_getobject ($result['object']);
+    
+    if (is_array ($objects) && sizeof ($objects) > 0)
+    {
+      foreach ($objects as $temp_path)
+      {
+        if ($temp_path != "")
+        {
+          $temp_info = getobjectinfo ($site, getlocation ($temp_path), getobject ($temp_path), $user);
+          $temp_contentdata = getobjectcontainer ($site, getlocation ($temp_path), getobject ($temp_path), $user, "work");
+          $temp_container_id = $temp_info['container_id'];
+          
+          // set text in container
+          $temp_contentdata = settext ($site, $temp_contentdata, $temp_container_id.".xml", $text_array, "u", "no", $user, $user);
+          
+          // save working xml content container file
+          if (!empty ($temp_contentdata)) $savefile = savecontainer ($temp_container_id, "work", $temp_contentdata, $user);
+        }
+      }
+    }
+  }
+  
   // make new entry in queue to delete object
   if (is_date ($deletedate, "Y-m-d H:i") && !empty ($result['object']))
   {

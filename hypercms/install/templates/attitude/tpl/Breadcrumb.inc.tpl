@@ -48,28 +48,40 @@ if(sizeof($dir_array) > 6) {
       $files = array_values ($files);
     }
     
-    for ($i = 0; $i < sizeof($files); $i++)
+    if (is_array ($files))
     {
-      $e = readnavigation ("%publication%", $path, $files[$i], "sys");
-
-      if (!$e['hide'])
+      for ($i = 0; $i < sizeof($files); $i++)
       {
-        if (!empty($e['order']))
+        $e = readnavigation ("%publication%", $path, $files[$i], "sys");
+  
+        if (!$e['hide'])
         {
-          if ($e['order'] == "X") $key = "X-".$i;  
-          else $key = $e['order']."-".$i;;
+          if (!empty($e['order']))
+          {
+            if ($e['order'] == "X") $key = "X-".$i;  
+            else $key = $e['order']."-".$i;;
+          }
+          else $key = "X-".$i;
+  
+          $elements[$key]['title'] = $e['title'] ;
+          $elements[$key]['href'] = str_replace ("%abs_page%", "%url_page%", $path.$files[$i]);
         }
-        else $key = "X-".$i;
-
-        $elements[$key]['title'] = $e['title'] ;
-        $elements[$key]['href'] = str_replace ("%abs_page%", "%url_page%", $path.$files[$i]);
       }
+  
+      if (is_array ($elements))
+      {
+        ksort ($elements, SORT_STRING);
+        reset ($elements);
+    
+        if (!empty ($elements))
+        {
+          $result = array_slice ($elements, 0, 1);
+          return array_shift ($result);
+        }
+        else return false;
+      }
+      else return false;
     }
-
-    ksort ($elements, SORT_STRING);
-    reset ($elements);
-
-    if (!empty($elements)) return array_shift (array_slice ($elements, 0, 1));
     else return false;
   }
 

@@ -185,6 +185,10 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
     exit;
   }
 }
+
+// create new unique folder for each upload session
+$newFolder = uniqid();
+if (!empty ($site) && !empty ($location)) createfolder ($site, $location_esc, $newFolder, $user);
 ?>
 <!DOCTYPE html>
 <html>
@@ -199,7 +203,7 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 <script src="%url_hypercms%/javascript/main.js" type="text/javascript"></script>
 
 <!-- JQuery -->
-<script src="%url_hypercms%/javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="%url_hypercms%/javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 
 <!-- JQuery UI -->
 <script src="%url_hypercms%/javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
@@ -614,145 +618,75 @@ $(document).ready(function ()
     $('#deletedate').prop('disabled', !($(this).prop('checked')));
   });
   
-  //-------------------------- GENERAL --------------------------
-  
-  // Reloads all needed frames
-  function frameReload (objectpath, timeout)
-  {
-    // reload main frame (upload by control objectlist)
-    if (opener && opener.parent.frames['mainFrame'])
-    {
-      opener.parent.frames['mainFrame'].location.reload();
-    }
-    
-    // reload explorer frame (upload by component explorer)
-    if (opener && opener.parent.frames['navFrame2'])
-    {
-      opener.parent.frames['navFrame2'].location.reload();
-    }
-    // reload object frame (upload by control content)
-    else if (parent.document.getElementById('objFrame'))
-    {
-      if (objectpath == "")
-      {
-        var iframe = parent.document.getElementById('objFrame');
-        iframe.src = iframe.src;
-      }
-      else
-      {
-        // get location and object
-        var index = objectpath.lastIndexOf("/") + 1;
-        var location = objectpath.substring(0, index);
-        var newpage = objectpath.substr(index);
-
-        parent.document.getElementById('objFrame').src='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
-      }
-
-      setTimeout('parent.closeobjectview()', timeout);
-    }
-  }
-  
-  function openEditWindow (objectpath)
-  {
-    // add objectpath to array
-    editobjects.push(objectpath);
-    
-    var window = document.getElementById('editwindow');
-    var iframe = document.getElementById('editiframe');
-  
-    // open edit window for first object
-    if (window.style.display == 'none')
-    {
-      // get location and object
-      var index = objectpath.lastIndexOf("/") + 1;
-      var location = objectpath.substring(0, index);
-      var newpage = objectpath.substr(index);
-      
-      iframe.src='page_view.php?rlreload=yes&location=' + location + '&page=' + newpage;
-      window.style.display='inline';
-      
-      // remove first array element
-      editobjects.shift();
-    }
-  }
-  
-  function nextEditWindow ()
-  {
-    var window = document.getElementById('editwindow');
-    var iframe = document.getElementById('editiframe');
-      
-    if (editobjects.length > 0)
-    {
-      // get and remove first array element
-      var objectpath = editobjects.shift();
-  
-      // get location and object
-      var index = objectpath.lastIndexOf("/") + 1;
-      var location = objectpath.substring(0, index);
-      var newpage = objectpath.substr(index);
-  
-      // load next object
-      iframe.src='page_view.php?ctrlreload=yes&location=' + location + '&page=' + newpage;
-      
-      if (window.style.display == 'none')
-      {
-        window.style.display='inline';
-      }
-    }
-    else
-    {
-      window.style.display='none';
-      iframe.src='';
-    }
-  }
-  
-  // if user closes window while still in edit mode
-  window.onbeforeunload = function() {
-    if (document.getElementById('editwindow') && document.getElementById('editwindow').style.display != "none")
-    {
-      return "<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>";
-    }
-  }
 });
 
-// enable/disable checkboxes and buttons
-function switchzip ()
+//-------------------------- GENERAL --------------------------
+
+// Reloads all needed frames
+function frameReload (objectpath, timeout)
 {
-  if (document.getElementById("zip").checked)
+  // add your own code here, executed after a successful file upload
+}
+
+function openEditWindow (objectpath)
+{
+  // add objectpath to array
+  editobjects.push(objectpath);
+  
+  var window = document.getElementById('editwindow');
+  var iframe = document.getElementById('editiframe');
+
+  // open edit window for first object
+  if (window.style.display == 'none')
   {
-    document.getElementById("unzip").checked = false;
-    document.getElementById("unzip").disabled = true;
-    document.getElementById("zipname").disabled = false;
-    document.getElementById("imageresize").checked = false;
-    document.getElementById("imageresize").disabled = true;
-    document.getElementById("checkduplicates").checked = false;
-    document.getElementById("checkduplicates").disabled = true;
-  }
-  else
-  {
-    document.getElementById("unzip").checked = false;
-    document.getElementById("unzip").disabled = false;
-    document.getElementById("zipname").disabled = true;
-    document.getElementById("imageresize").checked = false;
-    document.getElementById("imageresize").disabled = false;
-    document.getElementById("checkduplicates").checked = false;
-    document.getElementById("checkduplicates").disabled = false;
+    // get location and object
+    var index = objectpath.lastIndexOf("/") + 1;
+    var location = objectpath.substring(0, index);
+    var newpage = objectpath.substr(index);
+    
+    iframe.src='page_view.php?rlreload=yes&location=' + location + '&page=' + newpage;
+    window.style.display='inline';
+    
+    // remove first array element
+    editobjects.shift();
   }
 }
 
-function switchthumbnail ()
+function nextEditWindow ()
 {
-  if (document.getElementById("createthumbnail").checked)
+  var window = document.getElementById('editwindow');
+  var iframe = document.getElementById('editiframe');
+    
+  if (editobjects.length > 0)
   {
-    document.getElementById("versioning").checked = false;
-    document.getElementById("versioning").disabled = true;
-    document.getElementById("checkduplicates").checked = false;
-    document.getElementById("checkduplicates").disabled = true;
+    // get and remove first array element
+    var objectpath = editobjects.shift();
+
+    // get location and object
+    var index = objectpath.lastIndexOf("/") + 1;
+    var location = objectpath.substring(0, index);
+    var newpage = objectpath.substr(index);
+
+    // load next object
+    iframe.src='page_view.php?ctrlreload=yes&location=' + location + '&page=' + newpage;
+    
+    if (window.style.display == 'none')
+    {
+      window.style.display='inline';
+    }
   }
   else
   {
-    document.getElementById("versioning").disabled = false;
-    document.getElementById("checkduplicates").disabled = false;
+    window.style.display='none';
+    iframe.src='';
+  }
+}
+
+// if user closes window while still in edit mode
+window.onbeforeunload = function() {
+  if (document.getElementById('editwindow') && document.getElementById('editwindow').style.display != "none")
+  {
+    return "<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>";
   }
 }
 </script>
@@ -764,7 +698,7 @@ function switchthumbnail ()
   <form name="upload" id="upload" enctype="multipart/form-data">
     <input type="hidden" name="PHPSESSID" value="<?php echo session_id(); ?>" />
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
-    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="location" value="<?php echo $location_esc.$newFolder."/"; ?>" />
     <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
     <input type="hidden" name="user" value="<?php echo $user; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
@@ -774,6 +708,12 @@ function switchthumbnail ()
     <div style="padding:5px;"><span id="status">0</span>&nbsp;<?php echo getescapedtext ($hcms_lang['files-uploaded'][$lang]); ?></div>
     
     <div>
+      <div class="row">
+        <input type="text" name="text[name]" value="" placeholder="<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>" style="width:400px; margin:1px 0px;" />
+      </div>
+      <div class="row">
+        <input type="text" name="text[email]" value="" placeholder="<?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>" style="width:400px; margin:1px 0px;" />
+      </div>
       <?php if (!empty ($enableUnzip) && $uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
       <div class="row">
         <label><input type="checkbox" name="unzip" id="unzip" value="unzip" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?> (<?php echo getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang]); ?>)</label>

@@ -968,7 +968,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 {
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $user;
   
-  if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && $frame != "")
+  if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && is_video ($file) && $frame != "")
   {
     // add slash if not present at the end of the location string
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
@@ -1100,7 +1100,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
 {
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $user;
   
-  if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && $fs > 0)
+  if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && is_video ($file) && $fs > 0)
   {
     // default format
     $format = strtolower (trim ($format));
@@ -1226,7 +1226,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
 // output: new file name / false on error
 
 // description:
-// Creates an new image from original or creates a thumbnail and transferes the generated image via remoteclient.
+// Creates an new image or video from the original file or creates a thumbnail and transferes the generated image via remoteclient.
 // Saves original or thumbnail media file in destination location, for thumbnail only jpeg format is supported as output.
 
 function createmedia ($site, $location_source, $location_dest, $file, $format="", $type="thumbnail", $force_no_encrypt=false)
@@ -1508,9 +1508,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
     if ($skip == false)
     {
+      // ---------------------- if Document file ------------------------
+      if (is_document ($file_ext) && ($type == "thumbnail" || $type == "origthumb"))
+      {  
+        $newfile = createdocument ($site, $location_source, $location_dest, $file, "jpg");
+      }
       // ---------------------- if Audio file ------------------------
       // the extracted thumbnail will be used as it is and don't use the image data for table media
-      if (is_audio ($file_ext) && ($type == "thumbnail" || $type == "origthumb"))
+      elseif (is_audio ($file_ext) && ($type == "thumbnail" || $type == "origthumb"))
       {        
         // new file name
         $newfile = $file_name.".thumb.jpg";
@@ -1583,10 +1588,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           }
         }
       }
-      
       // ---------------------- if Adobe InDesign file ------------------------
       // the extracted thumbnail will be used as it is
-      if ($file_ext == ".indd" && ($type == "thumbnail" || $type == "origthumb"))
+      elseif ($file_ext == ".indd" && ($type == "thumbnail" || $type == "origthumb"))
       {
         $newfile = createthumbnail_indesign ($site, $location_source, $location_dest, $file);
         
@@ -1604,8 +1608,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           }
         }
       }
-  
-      // -------------- if image conversion software is given -----------------
+      
+      // -------------- if Image conversion software is provided -----------------
       if (is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0)
       {
         // redefine type (for images thumbnail and origthumb are the same)
@@ -1945,7 +1949,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // copy original image before conversion to restore it if an error occured
                   elseif ($type != "thumbnail" && is_file ($path_source))
                   {
-                    // create buffer file
+                    // create temp file
                     $buffer_file = $location_temp.$file_name.".temp".strrchr ($file, ".");;
                     copy ($path_source, $buffer_file);
 
@@ -2105,7 +2109,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode)
                     {            
                       $errcode = "20234";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file."<br />".implode ("<br />", $error_array);   
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file." (".implode (", ", $error_array).")";   
                     }
                     // on success
                     else $converted = true;
@@ -2128,7 +2132,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         if (is_file ($location_temp."watermark.".$newfile)) unlink ($location_temp."watermark.".$newfile);
   
                         $errcode = "20262";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile."<br />".implode ("<br />", $error_array);
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile." (".implode (", ", $error_array).")";
                       }
                       // on success
                       else
@@ -3328,7 +3332,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
     
     // format
     $format = strtolower (trim ($format));
-    
+
     // if watermark is used, force recreation
     if (!is_document ($format))
     {
@@ -3359,7 +3363,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
     }
 
     // convert-config is not supported when we are using createdocument
-    if (is_document ($format))
+    if (is_document ($mediafile))
     {
       $result_conv = createdocument ($site, $location_source, $location_dest, $mediafile, $format, $force_no_encrypt);
     }
@@ -3393,7 +3397,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
           // zip images
           if ($result)
           {
-            // delete olf zip file
+            // delete old zip file
             deletefile ($location_dest, $newname, 0);
             
             // Windows
@@ -3414,11 +3418,11 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
             // errors during compressions of files
             if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
             {
-              $error_message = implode ("<br />", $error_array);
+              $error_message = implode (", ", $error_array);
               $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
           
               $errcode = "10445";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|zipfiles failed for ".$newname.": $error_message";          
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|zipfiles failed for ".$newname.": ".$error_message;          
             }
             
             // on success
@@ -4426,7 +4430,7 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
 function createdocument ($site, $location_source, $location_dest, $file, $format="", $force_no_encrypt=false)
 {
   global $mgmt_config, $mgmt_docpreview, $mgmt_docoptions, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_ext, $hcms_lang, $lang, $user;
-  
+ 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
     $converted = false;
@@ -4455,7 +4459,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
     else $format = strtolower ($format);
 
     // if media conversion software is given, conversion supported and destination format is not the source format
-    if (is_array ($mgmt_docpreview) && sizeof ($mgmt_docpreview) > 0 && !empty ($mgmt_docconvert[$file_ext]) && is_array ($mgmt_docconvert[$file_ext]) && $format != trim ($file_ext, ".") && in_array (".".$format, $mgmt_docconvert[$file_ext]))
+    if (is_array ($mgmt_docpreview) && sizeof ($mgmt_docpreview) > 0 && !empty ($mgmt_docconvert[$file_ext]) && is_array ($mgmt_docconvert[$file_ext]) && $format != trim ($file_ext, "."))
     {
       // prepare source media file
       $temp_source = preparemediafile ($site, $location_source, $file, $user);
@@ -4556,69 +4560,88 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
               
               if (empty ($converted) && !empty ($mgmt_docpreview[$docpreview_ext]))
               {
-                // default UNOCONV character set is UTF-8
-                $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
-                           
-                @exec ($cmd." 2>&1", $error_array, $errorCode);
-  
-                // error if conversion failed
-                if ($errorCode || !is_file ($location_source.$file_name.".".$docformat))
+                // if image file is the target format UNOCONV fails and therefore libreoffice will be used
+                // exlude spreadsheets due to issues with libreoffice (will be generated when opened using converion to PDF and PDF to image
+                if (is_image (".".$format) && strpos ("_.ods.xls.xlsx", $file_ext) < 1)
                 {
-                  $errcode = "20276";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of unoconv (code:$errorCode) to '$format' failed in createdocument for file: ".$location_source.$file." with message: ".implode("<br />", $error_array);
+                  // export filters for libreoffice
+                  if ($file_ext == ".xlsx") $export_filter = ":\"MS Excel 2007 XML\"";
+                  elseif ($file_ext == ".xls") $export_filter = ":\"MS Excel 95\"";
+                  elseif ($file_ext == ".ods") $export_filter = ":\"OpenDocument Spreadsheet Flat XML\"";
+                  else $export_filter = "";
                   
-                  // save log
-                  savelog (@$error);          
-                } 
-                else
-                {  
-                  // rename/move converted file to destination
-                  $result_rename = @rename ($location_source.$file_name.".".$docformat, $location_dest.$newfile);
+                  $cmd = "libreoffice --headless --convert-to ".shellcmd_encode ($docformat).$export_filter." \"".shellcmd_encode ($location_source.$file)."\" --outdir \"".shellcmd_encode ($location_source)."\"";
+                }
+                // default UNOCONV character set is UTF-8
+                elseif (!is_image (".".$format))
+                {
+                  $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
+                }
+
+                // execute code
+                if (!empty ($cmd))
+                {
+                  @exec ($cmd." 2>&1", $error_array, $errorCode);
   
-                  if ($result_rename == false)
+                  // error if conversion failed
+                  if ($errorCode || !is_file ($location_source.$file_name.".".$docformat))
                   {
-                    $errcode = "20377";
-                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
+                    $errcode = "20276";
+                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of libreoffice/unoconv (".$cmd.") to '".$format."' failed in createdocument for file '".$location_source.$file."' with message: ".implode(", ", $error_array);
                     
                     // save log
-                    savelog (@$error);            
-                  }
-                  else 
-                  {
-                    $converted = true;
-                    
-                    // copy metadata from original file using EXIFTOOL
-                    $result_copy = copymetadata ($location_source.$file, $location_dest.$newfile);
-  
-                    // remote client
-                    remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-  
-                    // encrypt and save data
-                    if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+                    savelog (@$error);          
+                  } 
+                  else
+                  {  
+                    // rename/move converted file to destination
+                    $result_rename = @rename ($location_source.$file_name.".".$docformat, $location_dest.$newfile);
+    
+                    if ($result_rename == false)
                     {
-                      $data = encryptfile ($location_dest, $newfile);
-                      if (!empty ($data)) savefile ($location_dest, $newfile, $data);
+                      $errcode = "20377";
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
+                      
+                      // save log
+                      savelog (@$error);
+                    }
+                    else 
+                    {
+                      $converted = true;
+                      
+                      // copy metadata from original file using EXIFTOOL
+                      $result_copy = copymetadata ($location_source.$file, $location_dest.$newfile);
+    
+                      // remote client
+                      remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+    
+                      // encrypt and save data
+                      if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+                      {
+                        $data = encryptfile ($location_dest, $newfile);
+                        if (!empty ($data)) savefile ($location_dest, $newfile, $data);
+                      }
+    
+                      // save in cloud storage
+                      if (is_file ($location_dest.$newfile) && function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
                     }
   
-                    // save in cloud storage
-                    if (is_file ($location_dest.$newfile) && function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
-                  }
-                  
-                  // create thumbnail image for document form converted PDF file
-                  if (strpos ($file, "_hcm") > 0 && $docformat = "pdf")
-                  {
-                    $location_media = getmedialocation ($site, $file, "abs_path_media").$site."/";
-                    $thumbnail = $file_name_orig.".thumb.jpg";
-                    
-                    if (!is_file ($thumbnail) || filemtime ($location_source.$file) > filemtime ($location_media.$thumbnail))
+                    // create thumbnail image for document from converted PDF or image file
+                    if (strpos ($file, "_hcm") > 0 && ($docformat == "pdf" || is_image ($newfile)))
                     {
-                      $thumbnail_new = createmedia ($site, $location_dest, $location_media, $newfile, "jpg", "thumbnail", true);
+                      $location_media = getmedialocation ($site, $file, "abs_path_media").$site."/";
+                      $thumbnail = $file_name_orig.".thumb.jpg";
                       
-                      // correct file name by removing double .thumb
-                      if (!empty ($thumbnail_new) && is_file ($location_media.$thumbnail_new))
+                      if (!is_file ($thumbnail) || filemtime ($location_source.$file) > filemtime ($location_media.$thumbnail))
                       {
-                        if (is_file ($location_media.$thumbnail)) deletefile ($location_media, $thumbnail, 0);
-                        rename ($location_media.$thumbnail_new, $location_media.$thumbnail);
+                        $thumbnail_new = createmedia ($site, $location_dest, $location_media, $newfile, "jpg", "thumbnail", true);
+                        
+                        // correct file name by removing double .thumb
+                        if (!empty ($thumbnail_new) && is_file ($location_media.$thumbnail_new))
+                        {
+                          if (is_file ($location_media.$thumbnail)) deletefile ($location_media, $thumbnail, 0);
+                          rename ($location_media.$thumbnail_new, $location_media.$thumbnail);
+                        }
                       }
                     }
                   }
@@ -4711,7 +4734,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
             $error_message = implode ("<br />", $error_array);
 
             $errcode = "10639";
-            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzipfile failed for $filename: $error_message";
+            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzipfile failed for '".$filename."' with error: ".$error_message;
             
             // save log
             savelog (@$error);                       
@@ -4752,7 +4775,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
               $error_message = str_replace ($unzippath_temp, "/".$site."/", $error_message);
 
               $errcode = "10640";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzipfile failed for $filename: $error_message";
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzipfile failed for '".$filename."' with error:". $error_message;
               
               // save log
               savelog (@$error);                       
@@ -4864,6 +4887,55 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
   else return false;
 }
 
+// ---------------------- zipfiles_helper -----------------------------
+// function: zipfiles_helper()
+// input: source directory [string], destination directory [string], name of ZIP-file [string], remouse all files from source [true,false] (optional)
+// output: true/false
+
+// description:
+// Compresses all files and includes their folder structure in a ZIP file. This function does not support multimedia objects and is only a helper function for native file system operations.
+
+function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
+{
+ global $mgmt_config, $mgmt_compress;
+ 
+ if (!empty ($mgmt_compress['.zip']) && is_dir ($source) && is_dir ($destination) && valid_objectname ($zipfilename))
+ {
+    // ZIP files
+    // Windows
+    if ($mgmt_config['os_cms'] == "WIN")
+    { 
+      $cmd = "cd \"".shellcmd_encode ($source)."\" & ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";  
+      $cmd = str_replace ("/", "\\", $cmd);
+    }
+    // UNIX
+    else $cmd = "cd \"".shellcmd_encode ($source)."\" ; ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
+    
+    // compress files to ZIP format
+    @exec ($cmd, $error_array);
+  
+    // remove temp files
+    if ($remove == true) deletefile (getlocation ($source), getobject ($source), 1);
+    
+    // errors during compressions of files
+    if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
+    {
+      $error_message = implode (", ", $error_array);
+      $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
+  
+      $errcode = "10545";
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|zipfiles_helper failed for '".$filename."' with error: ".$error_message;
+      
+      // save log
+      savelog (@$error);
+      
+      return false;                     
+    }
+    else return true;
+  }
+  return false;
+}
+
 // ---------------------- zipfiles -----------------------------
 // function: zipfiles()
 // input: publication name [string], array with path to source files [array], destination location (if this is null then the $location where the zip-file resists will be used) [string], 
@@ -4878,7 +4950,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
   global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission;
 
   // valid_locationname ($destination) && valid_objectname ($zipfilename) && valid_objectname ($user)
-  if (is_array ($mgmt_config) && $mgmt_compress['.zip'] != "" && valid_publicationname ($site) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 0 && is_dir ($destination) && valid_locationname ($destination) && valid_objectname ($zipfilename) && valid_objectname ($user))
+  if (!empty ($mgmt_compress['.zip']) && valid_publicationname ($site) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 0 && is_dir ($destination) && valid_locationname ($destination) && valid_objectname ($zipfilename) && valid_objectname ($user))
   {  
     // check max file size (set default value to 2000 MB)
     if (!isset ($mgmt_config['maxzipsize'])) $mgmt_config['maxzipsize'] = 2000;
@@ -5059,11 +5131,11 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
     // errors during compressions of files
     if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
     {
-      $error_message = implode ("<br />", $error_array);
+      $error_message = implode (", ", $error_array);
       $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
   
       $errcode = "10645";
-      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|zipfiles failed for $filename: $error_message";
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|zipfiles failed for '".$filename."' with error: ".$error_message;
       
       // save log
       savelog (@$error);

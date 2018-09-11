@@ -6,6 +6,13 @@ img
   image-rendering: -o-crisp-edges; // Opera 12
 }
 
+.hcmsHomeSpacer
+{
+  width: 94%;
+  height: 32px;
+  display: block;
+}
+
 .hcmsStartBar
 {
   width: 100%;

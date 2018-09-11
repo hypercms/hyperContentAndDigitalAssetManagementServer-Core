@@ -1,3 +1,10 @@
+.hcmsHomeSpacer
+{
+  width: 94%;
+  height: 12px;
+  display: block;
+}
+
 .hcmsStartBar
 {
   width: 100%;

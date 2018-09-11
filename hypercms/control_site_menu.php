@@ -220,7 +220,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
       <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
         <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?> 
         <select name="site_name" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
-          <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+          <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
         <?php
           if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ();
           
@@ -272,7 +272,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
         <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?> 
         <select name="site_name" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
-          <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+          <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           if (is_array ($item_option_edit) && sizeof ($item_option_edit) > 0)
           {

@@ -57,9 +57,9 @@ else $template = "";
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
 
 <script src="javascript/main.js" type="text/javascript"></script>
+
 <!-- Rich calendar -->
 <link  rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
 <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
@@ -69,9 +69,12 @@ else $template = "";
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_pt.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_ru.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
+
 <!-- Jquery and Jquery UI Autocomplete -->
-<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
+
 <!-- Google Maps -->
 <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php echo $mgmt_config['googlemaps_appkey']; ?>"></script>
 <script>

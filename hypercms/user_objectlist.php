@@ -17,7 +17,7 @@ require ("function/hypercms_api.inc.php");
 
 // input parameters
 $site = getrequest_esc ("site"); // site can be *Null* which is not a valid name!
-$group = getrequest_esc ("group", "objectname");
+$group = getrequest_esc ("group");
 $next = getrequest ("next");
 
 // publication management config
@@ -26,7 +26,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($site == "*Null*" && (!checkrootpermission ('user')) || ($site != "*Null*" && !checkglobalpermission ($site, 'user'))) killsession ($user);
+if ((!valid_publicationname ($site) && !checkrootpermission ('user')) || (valid_publicationname ($site) && !checkglobalpermission ($site, 'user'))) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -48,10 +48,10 @@ $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
 
 $i = 1;
 
-if ($userdata != false && isset ($site))
+if ($userdata != false)
 {
   // get users of certain group
-  if ($site != "*Null*" && $group != "")
+  if (valid_publicationname ($site) && $group != "")
   {     
     $usernode_array = selectxmlcontent ($userdata, "<user>", "<publication>", $site);
     
@@ -59,7 +59,7 @@ if ($userdata != false && isset ($site))
     {
       foreach ($usernode_array as $usernode)
       {
-        if ($group == "_all")
+        if ($group == "*all*")
         {
           $buffer_array = getcontent ($usernode, "<login>");
           $object_array['login'][$i] = $buffer_array[0];
@@ -74,7 +74,7 @@ if ($userdata != false && isset ($site))
         elseif ($group != "")
         {
           // check publication and group membership
-          if ($group != "_none") $memberof_array = selectcontent ($usernode, "<memberof>", "<usergroup>", "*|".$group."|*");
+          if ($group != "*none*") $memberof_array = selectcontent ($usernode, "<memberof>", "<usergroup>", "*|".$group."|*");
           else $memberof_array = selectcontent ($usernode, "<memberof>", "<usergroup>", "");
           
           if (is_array ($memberof_array))
@@ -101,7 +101,7 @@ if ($userdata != false && isset ($site))
       } 
     }    
   }
-  // get users of certain publication
+  // get users of a publication
   elseif (isset ($site) && $group == "")
   {
     if ($site == "*Null*")
@@ -115,7 +115,7 @@ if ($userdata != false && isset ($site))
       }
       else
       {
-        $userrecord_big_array = Array();
+        $userrecord_big_array = array();
         
         foreach ($siteaccess as $site_entry)
         {
@@ -135,14 +135,38 @@ if ($userdata != false && isset ($site))
             $object_array['name'][$i] = $buffer_array[0];
             $buffer_array = getcontent ($userrecord_big, "<email>");
             $object_array['email'][$i] = $buffer_array[0];                
-            $i++;          
+            $i++;
           }
           
           $object_array['login'] = array_unique ($object_array['login']);
         }        
       }
-    }    
-    elseif ($site != "*Null*")
+    }
+    elseif ($site == "*no_memberof*")
+    {
+      $userrecord_big_array = getcontent ($userdata, "<user>");
+      
+      if ($userrecord_big_array != false)
+      {
+        foreach ($userrecord_big_array as $userrecord_big)
+        {
+          // no memberof node present
+          if (strpos ($userrecord_big, "<memberof>") < 1)
+          {
+            $buffer_array = getcontent ($userrecord_big, "<login>");
+            $object_array['login'][$i] = $buffer_array[0];
+            $buffer_array = getcontent ($userrecord_big, "<userdate>");
+            $object_array['date'][$i] = $buffer_array[0];
+            $buffer_array = getcontent ($userrecord_big, "<realname>");
+            $object_array['name'][$i] = $buffer_array[0];
+            $buffer_array = getcontent ($userrecord_big, "<email>");
+            $object_array['email'][$i] = $buffer_array[0];                
+            $i++;
+          }
+        }
+      }
+    }
+    elseif (valid_publicationname ($site))
     {        
       $userrecord_big_array = selectcontent ($userdata, "<user>", "<publication>", $site);
       
@@ -158,7 +182,7 @@ if ($userdata != false && isset ($site))
           $object_array['name'][$i] = $buffer_array[0];
           $buffer_array = getcontent ($userrecord_big, "<email>");
           $object_array['email'][$i] = $buffer_array[0];              
-          $i++;          
+          $i++;
         }
       }
     }    
@@ -184,14 +208,14 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
     $key = key ($object_array['login']);
     
     // subtract admin user
-    if ($object_array['login'][$key] == "admin" || $object_array['login'][$key] == "hcms_download") $objects_total--;
+    if ($object_array['login'][$key] == "admin" || $object_array['login'][$key] == "hcms_download" || empty ($object_array['login'][$key])) $objects_total--;
     
-    if ($object_array['login'][$key] != "admin" && $object_array['login'][$key] != "sys" && $object_array['login'][$key] != "hcms_download" && $items_row < $next_max)
+    if ($object_array['login'][$key] != "admin" && $object_array['login'][$key] != "sys" && !empty ($object_array['login'][$key]) && $object_array['login'][$key] != "hcms_download" && $items_row < $next_max)
     {
       // open on double click
-      if (checkrootpermission ('user') && checkrootpermission ('useredit') || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
+      if (checkrootpermission ('user') && checkrootpermission ('useredit') || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
       {
-        $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=no,resizable=yes', 520, 660);\"";
+        $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=no,resizable=yes', 520, 680);\"";
       }
       else $openUser = "";
       
@@ -233,9 +257,9 @@ else $objects_counted = 0;
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/contextmenu.js"></script>
-<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
-<script>
+<script type="text/javascript">
 function confirm_delete ()
 {
   return confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-user'][$lang]); ?>"));
@@ -297,12 +321,12 @@ var session_id = '<?php session_id(); ?>';
       <tr>
         <td>
           <?php $tblrow = 1;  
-          if (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('useredit')) || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) { 
+          if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) { 
           ?>
           <a href=# id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.png" id="img_edit" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
           <hr />
           <?php }
-          if (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('userdelete')) || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))) {
+          if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))) {
           ?>
           <a href=# id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" id="img_delete" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
           <hr />        

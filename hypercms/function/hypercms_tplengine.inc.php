@@ -678,7 +678,8 @@ if (!empty (\$_GET['hcms_session']) && is_array (\$_GET['hcms_session']))
 \$site = '".$site."';
 include ('".$abs_path_cms."config.inc.php'); 
 \$publ_config = parse_ini_file ('".$abs_path_rep."config/".$site.".ini'); 
-include ('".$abs_path_cms."function/hypercms_api.inc.php');
+include_once ('".$abs_path_cms."function/hypercms_api.inc.php');
+include_once ('".$abs_path_cms."function/hypercms_tplengine.inc.php');
 \$url_publ_page = \$publ_config['url_publ_page'];
 \$abs_publ_page = \$publ_config['abs_publ_page'];
 \$url_publ_rep = \$publ_config['url_publ_rep'];
@@ -2756,7 +2757,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $id = getattribute ($hypertag, "id"); 
             
             // if id uses special characters
-            if (trim ($id) != "" && specialchr ($id, "-_") == true)
+            if (trim ($id) != "" && specialchr ($id, "-_ ") == true)
             {
               $result['view'] = "<!DOCTYPE html>
   <html>
@@ -4030,7 +4031,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $id = getattribute ($hypertag, "id");
             
             // get watermark image if id=Watermark
-            if ($id == "Watermark" && (is_image ($mediafile) || is_video ($mediafile))) $is_watermark = true;
+            if ($id == "Watermark" && !empty ($mediafile) && (is_image ($mediafile) || is_video ($mediafile))) $is_watermark = true;
             else $is_watermark = false;
             
             // if id uses special characters
@@ -5772,10 +5773,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             }
             else
             {
+              $contentbot = "";
+              
               if ($buildview != "template")
               {
-                $contentbot = "";
-                
                 // read content using db_connect
                 if (isset ($db_connect) && $db_connect != "") 
                 {
@@ -5872,10 +5873,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $viewstore_offset = $viewstore;
                   
                   // get the first objectpath from the single component string
-                  $temp = link_db_getobject ($contentbot);
-                  $contentbot = $temp[0];
+                  if (!empty ($contentbot))
+                  {
+                    $temp = link_db_getobject ($contentbot);
+                    $contentbot = $temp[0];
+                  }
 
-                  while (@substr_count ($viewstore_offset, $hypertag) >= 1)  // necessary loop for unique media names for rollover effect
+                  while (@substr_count ($viewstore_offset, $hypertag) > 0)  // necessary loop for unique media names for rollover effect
                   {
                     if ($searchtag == "component")
                     {                   
@@ -6789,13 +6793,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         if ($execute_code == true)
         {
           // escape xml-declaration in templates using XML-code
-          $xmldeclaration = gethtmltag ($viewstore, "?xml");
+          // only if part of the source code and not included as a string in a script
+          // $regex = "/\"\\s".preg_quote ("<?xml")."\\s/";
+          // if (!preg_match ($regex, $viewstore))
           
-          if ($xmldeclaration != false) 
+          if (!stripos ($viewstore, "\"<?xml ") && !stripos ($viewstore, "'<?xml "))
           {
-            $xmldeclaration_esc = str_replace ("<?", "[hypercms:xmlbegin", $xmldeclaration);
-            $xmldeclaration_esc = str_replace ("?>", "xmlend]", $xmldeclaration_esc);
-            $viewstore = str_replace ($xmldeclaration, $xmldeclaration_esc, $viewstore);
+            $xmldeclaration = gethtmltag ($viewstore, "?xml");
+            
+            if (!empty ($xmldeclaration)) 
+            {
+              $xmldeclaration_esc = str_replace ("<?", "[hypercms:xmlbegin", $xmldeclaration);
+              $xmldeclaration_esc = str_replace ("?>", "xmlend]", $xmldeclaration_esc);
+              $viewstore = str_replace ($xmldeclaration, $xmldeclaration_esc, $viewstore);
+            }
           }
 
           if ($application != "htm" && $application != "xml")
@@ -6878,9 +6889,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           elseif (!empty ($mgmt_config['application']['php']) && ($buildview == "publish" || $buildview == "unpublish") && (preg_match ("/\[hypercms:scriptbegin/i", $viewstore) || strtoupper ($mgmt_config['os_cms']) == "WIN"))
           {
             // execute hyperCMS scripts for preprocessing
-            // transform 
+            // transform
             $viewstore = str_ireplace (tpl_tagbegin ($application), "[hyperCMS:skip", $viewstore);
             $viewstore = str_ireplace (tpl_tagend ($application), "skip]", $viewstore);
+            
             $viewstore = str_ireplace ("[hyperCMS:scriptbegin", "<?php", $viewstore);
             $viewstore = str_ireplace ("scriptend]", "?>", $viewstore);
             
@@ -6979,7 +6991,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           }  
           
           // unescape xml-declaration
-          if ($xmldeclaration != false) 
+          if (!empty ($xmldeclaration)) 
           {
             $viewstore = str_replace ("[hypercms:xmlbegin", "<?", $viewstore);
             $viewstore = str_replace ("xmlend]", "?>", $viewstore);
@@ -7436,7 +7448,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   <script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
   <!-- JQuery -->
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.1.1.min.js\" type=\"text/javascript\"></script>
+  <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.3.1.min.js\" type=\"text/javascript\"></script>
   <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
   <link  rel=\"stylesheet\" href=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.css\" type=\"text/css\" />
   <!-- Editor -->
@@ -8157,7 +8169,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (methode == 'post' || isNewComment()) saveContent();
       // save content using AJAX in all other cases
       else save = autoSave(true);
-      
+
       // for file upload and meta data editing
       if (save == true && typeof parent.nextEditWindow == 'function')
       {
@@ -9246,6 +9258,27 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   $result['objecttype'] = $filetype;    
 
   return $result;
+}
+
+// --------------------------------- unescapeview -------------------------------------------
+// function: unescapeview()
+// input: code [string], application name [string] (optional)
+// output: unescaped code / false on error
+
+function unescapeview ($viewstore, $application="php")
+{ 
+  if ($viewstore != "")
+  {
+    $viewstore = str_replace ("[hypercms:xmlbegin", "<?", $viewstore);
+    $viewstore = str_replace ("xmlend]", "?>", $viewstore);
+    $viewstore = str_replace ("[hyperCMS:skip", tpl_tagbegin ($application), $viewstore);
+    $viewstore = str_replace ("skip]", tpl_tagend ($application), $viewstore);            
+    $viewstore = str_replace ("[hyperCMS:scriptbegin", "<?php", $viewstore);
+    $viewstore = str_replace ("scriptend]", "?>", $viewstore);
+    
+    return $viewstore;
+  }
+  else return false;
 }
 
 // --------------------------------- buildsearchform -------------------------------------------

@@ -18,7 +18,7 @@ require ("function/hypercms_api.inc.php");
 // input parameters
 $action = getrequest_esc ("action");
 $multiobject = getrequest ("multiobject");
-$site = getrequest_esc ("site"); // site can be *Null* which is not a valid name!
+$site = getrequest_esc ("site"); // site can be *Null* or "no_memberof* which is not a valid name!
 $group = getrequest_esc ("group", "objectname", "", true);
 $login = getrequest_esc ("login", "objectname", "", true);
 $password = getrequest ("password");
@@ -34,7 +34,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if (($site == "*Null*" && !checkrootpermission ('user')) || ($site != "*Null*" && !checkglobalpermission ($site, 'user'))) killsession ($user);
+if ((!valid_publicationname ($site) && !checkrootpermission ('user')) || (valid_publicationname ($site) && !checkglobalpermission ($site, 'user'))) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -49,8 +49,8 @@ if ($action != "" && checktoken ($token, $user))
   // create new user
   if ($action == "create" &&
        (
-         ($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('usercreate')) || 
-         ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'usercreate'))
+         (!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('usercreate')) || 
+         (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'usercreate'))
         )
       )
   {
@@ -62,8 +62,8 @@ if ($action != "" && checktoken ($token, $user))
   // delete user
   elseif ($action == "delete" && $login != "admin" && $login != "sys" && $login != "hcms_download" && 
            (
-             ($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('userdelete')) || 
-             ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))
+             (!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('userdelete')) || 
+             (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))
            )
          )
   {
@@ -97,7 +97,7 @@ if ($action != "" && checktoken ($token, $user))
     }
   }
   // registration settings
-  elseif ($action == "registration" && $site != "*Null*" && checkglobalpermission ($site, 'user'))
+  elseif ($action == "registration" && valid_publicationname ($site) && checkglobalpermission ($site, 'user'))
   {
     $settings = array('registration'=>$registration, 'registration_notify'=>$registration_notify, 'registration_group'=>$registration_group);
     
@@ -112,7 +112,7 @@ if ($action != "" && checktoken ($token, $user))
 }
 
 // define name: publication or usergroup
-if ($temp_site != "*Null*") $item_name = getescapedtext ($hcms_lang['group'][$lang]);
+if (valid_publicationname ($site)) $item_name = getescapedtext ($hcms_lang['group'][$lang]);
 else $item_name = getescapedtext ($hcms_lang['publication'][$lang]);
 
 // create secure token
@@ -295,7 +295,7 @@ function goToURL()
 <div class="hcmsToolbar">
   <div class="hcmsToolbarBlock">
     <?php
-    if (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('usercreate')) || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'usercreate')))
+    if ((!valid_publicationname ($site)  && checkrootpermission ('user') && checkrootpermission ('usercreate')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'usercreate')))
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
@@ -309,7 +309,7 @@ function goToURL()
     ?>
     <?php
     // DELETE BUTTON
-    if ($login != "" && (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('userdelete')) || ($site != "*Null*" && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'userdelete'))))
+    if ($login != "" && ((!valid_publicationname ($site)  && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'userdelete'))))
     {
       echo 
       "<img ".
@@ -325,11 +325,11 @@ function goToURL()
     ?>
     <?php
     // USER EDIT
-    if ($login != "" && (!$multiobject || $multiobject_count <= 1) && (($site == "*Null*" && checkrootpermission ('user')  && checkrootpermission ('useredit')) || ($site != "*Null*" && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'useredit'))))
+    if ($login != "" && (!$multiobject || $multiobject_count <= 1) && ((!valid_publicationname ($site)  && checkrootpermission ('user')  && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'useredit'))))
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-             "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'status=yes,scrollbars=no,resizable=yes', 520, 660);\" ".
+             "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'status=yes,scrollbars=no,resizable=yes', 520, 680);\" ".
              "name=\"media_edit\" src=\"".getthemelocation()."img/button_user_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
     }    
     else
@@ -341,7 +341,7 @@ function goToURL()
   <div class="hcmsToolbarBlock">
     <?php
     // USER FILES
-    if ((!$multiobject || $multiobject_count <= 1) && $mgmt_config['db_connect_rdbms'] != "" && $login != "" && (($site == "*Null*" && checkrootpermission ('user')) || ($site != "*Null*" && checkglobalpermission ($site, 'user'))))
+    if ((!$multiobject || $multiobject_count <= 1) && $mgmt_config['db_connect_rdbms'] != "" && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
@@ -357,7 +357,7 @@ function goToURL()
   <div class="hcmsToolbarBlock">
     <?php
     // REGISTRATION (only per publication)
-    if ($site != "*Null*" && checkglobalpermission ($site, 'user'))
+    if (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
@@ -366,7 +366,7 @@ function goToURL()
     }    
     else
     {
-      echo "<img src=\"".getthemelocation()."img/button_user_files.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "<img src=\"".getthemelocation()."img/button_sessionreg.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
   </div>
@@ -377,22 +377,15 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">  
-      <select name="group" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" title="<?php echo $item_name; ?>">
+      <select name="group" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" title="<?php echo $item_name; ?>" style="width:180px;">
         <?php
         // select users by group membership
-        if ($temp_site != "*Null*")
+        if (valid_publicationname ($site))
         {
-          if ($group == "_all") $selected = "selected=\"selected\"";
-          else $selected = "";        
-        
           echo "
-        <option value=\"user_objectlist.php?site=".url_encode($site)."&group=_all\" ".$selected.">".getescapedtext ($hcms_lang['all-users'][$lang])."</option>";
-        
-          if ($group == "_none") $selected = "selected=\"selected\"";
-          else $selected = "";
-          
+        <option value=\"user_objectlist.php?site=".url_encode($site)."&group=*all*\" ".($group == "*all*" ? "selected" : "").">".getescapedtext ($hcms_lang['all-users'][$lang])."</option>";
           echo "
-        <option value=\"user_objectlist.php?site=".url_encode($site)."&group=_none\" ".$selected.">".getescapedtext ($hcms_lang['group'][$lang].": ".$hcms_lang['none'][$lang])."</option>";
+        <option value=\"user_objectlist.php?site=".url_encode($site)."&group=*none*\" ".($group == "*none*" ? "selected" : "").">".getescapedtext ($hcms_lang['group'][$lang])." &gt; ".getescapedtext ($hcms_lang['none'][$lang])."</option>";
                   
           $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
 
@@ -412,19 +405,20 @@ function goToURL()
                   if ($group == $group_item) $selected = "selected=\"selected\"";
                   else $selected = "";
                   
-                  echo "<option value=\"user_objectlist.php?site=".url_encode($site)."&group=".url_encode($group_item)."\" ".$selected.">".$group_item."</option>\n";
+                  echo "
+          <option value=\"user_objectlist.php?site=".url_encode($site)."&group=".url_encode($group_item)."\" ".$selected.">".$group_item."</option>\n";
                 }
               }
             }
           }
         }
         // select users by publication
-        elseif ($temp_site == "*Null*")
-        {    
-          if ($site == "*Null*") $selected = "selected=\"selected\"";
-          else $selected = "";    
-             
-          echo "<option value=\"user_objectlist.php?site=*Null*\" ".$selected.">".getescapedtext ($hcms_lang['all-users'][$lang])."</option>\n";
+        elseif (!valid_publicationname ($site))
+        {
+          echo "
+          <option value=\"user_objectlist.php?site=*Null*\" ".($site == "*Null*" ? "selected" : "").">".getescapedtext ($hcms_lang['all-users'][$lang])."</option>";
+          echo "
+          <option value=\"user_objectlist.php?site=*no_memberof*\" ".($site == "*no_memberof*" ? "selected" : "").">".getescapedtext ($hcms_lang['publication'][$lang])." &gt; ".getescapedtext ($hcms_lang['none'][$lang])."</option>";
         
           $inherit_db = inherit_db_read ();
           
@@ -450,7 +444,8 @@ function goToURL()
                 if ($site == $site_item) $selected = "selected=\"selected\"";
                 else $selected = "";
                               
-                echo "<option value=\"user_objectlist.php?site=".url_encode($site_item)."\" ".$selected.">".$site_item."</option>\n";
+                echo "
+            <option value=\"user_objectlist.php?site=".url_encode($site_item)."\" ".$selected.">".$site_item."</option>";
               }
             }            
           }           
@@ -482,7 +477,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="group" value="<?php echo $group; ?>" />
   <input type="hidden" name="action" value="create" />
-  <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
+  <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
@@ -513,7 +508,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 <form name="registrationform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="registration" />
-  <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
+  <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
   <table width="100%" border="0" cellspacing="0" cellpadding="1">
     <tr>
@@ -535,8 +530,11 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
       <td>&nbsp;<?php if (!$is_mobile) echo getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang]); ?>&nbsp;</td>
       <td nowrap="nowrap">
         <select name="registration_group" style="width:242px;" tabindex="3">
-          <option value="" disabled <?php if (empty ($mgmt_config[$site]['registration_group'])) echo "selected"; ?>><?php echo getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang]); ?></option>
-          <option value=""><?php echo getescapedtext ($hcms_lang['none'][$lang]); ?></option>
+          <?php
+          if ($is_mobile) echo "
+          <option value=\"\" disabled>".getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang])."</option>";
+          ?>
+          <option value="" <?php if (empty ($mgmt_config[$site]['registration_group'])) echo "selected"; ?>><?php echo getescapedtext ($hcms_lang['none'][$lang]); ?></option>
           <?php 
           if (!empty ($group_array) && sizeof ($group_array) > 0)
           {

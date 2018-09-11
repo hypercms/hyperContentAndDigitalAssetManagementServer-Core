@@ -1,18 +1,18 @@
 <?php
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 //                                                             //
 // /demo/demo.simple.write.php - part of getID3()              //
 // Sample script showing basic syntax for writing tags         //
-// See readme.txt for more details                             //
+//  see readme.txt for more details                            //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-//die('Due to a security issue, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in '.$_SERVER['PHP_SELF']);
+die('For security reasons, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
+
 
 $TextEncoding = 'UTF-8';
 
@@ -38,14 +38,15 @@ $tagwriter->remove_other_tags = true;
 
 // populate data array
 $TagData = array(
-	'title'         => array('My Song'),
-	'artist'        => array('The Artist'),
-	'album'         => array('Greatest Hits'),
-	'year'          => array('2004'),
-	'genre'         => array('Rock'),
-	'comment'       => array('excellent!'),
-	'track'         => array('04/16'),
-	'popularimeter' => array('email'=>'user@example.net', 'rating'=>128, 'data'=>0),
+	'title'                  => array('My Song'),
+	'artist'                 => array('The Artist'),
+	'album'                  => array('Greatest Hits'),
+	'year'                   => array('2004'),
+	'genre'                  => array('Rock'),
+	'comment'                => array('excellent!'),
+	'track'                  => array('04/16'),
+	'popularimeter'          => array('email'=>'user@example.net', 'rating'=>128, 'data'=>0),
+	'unique_file_identifier' => array('ownerid'=>'user@example.net', 'data'=>md5(time())),
 );
 $tagwriter->tag_data = $TagData;
 

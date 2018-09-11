@@ -47,6 +47,105 @@ function setsession ($variable, $content="", $write=false)
   else return false;
 }
 
+// =========================================== TEMPLATE ==============================================
+
+// -------------------------------- settemplate --------------------------------
+// function: settemplate()
+// input: publication name [string], location [string], object [string], template name [string], recursive [true,false] (optional)
+// output: true/false
+
+// description:
+// This function sets the template for a single folder/object or all objects in a folder.
+
+function settemplate ($site, $location, $object, $template, $recursive=false)
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($template))
+  {
+    // DB connectivity
+    if ($mgmt_config['db_connect_rdbms'] != "") include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
+      
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // convert location
+    $location = deconvertpath ($location, "file");
+    
+    // auto correct
+    if (is_dir ($location.$object))
+    {
+      $location = $location.$object."/";
+      $object = ".folder";
+    }
+        
+    // check access permissions
+    $cat = getcategory ($site, $location);
+    $ownergroup = accesspermission ($site, $location, $cat);
+    $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
+    if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1) return false;
+
+    // set template recursive (only for folder)
+    if ($recursive == true && $object == ".folder")
+    {
+      $scandir = scandir ($location);
+      
+      if ($scandir)
+      {
+        foreach ($scandir as $file)
+        {
+          if ($file != '.' && $file != '..')
+          {
+            if (is_dir ($location.$file)) $result = settemplate ($site, $location.$file."/", ".folder", $template, $recursive);
+            else $result = settemplate ($site, $location, $file, $template, false);
+          }
+        }
+      }
+      
+      return $result;
+    }
+    // set template for a single object
+    else
+    {
+      // load object file and get media file
+      $objectdata = loadfile ($location, $object);
+      $container = getfilename ($objectdata, "content");
+      $media = getfilename ($objectdata, "media");
+    
+      // container must be present
+      if (!empty ($container))
+      {
+        // correct template category
+        if ($media != "" || $object == ".folder") $cat = "meta";
+    
+        // define template file name
+        if (strpos ($template, ".page.tpl") == false && $cat == "page") $template = $template.".page.tpl";
+        elseif (strpos ($template, ".comp.tpl") == false && $cat == "comp") $template = $template.".comp.tpl";
+        elseif (strpos ($template, ".meta.tpl") == false && $cat == "meta") $template = $template.".meta.tpl";
+        
+        // check if template exists
+        $template_array = gettemplates ($site, $cat);    
+        if (!in_array ($template, $template_array)) return false;
+  
+        // set new template
+        $objectdata = setfilename ($objectdata, "template", $template);
+        
+        if ($objectdata != false)
+        {
+          // DB connectivity
+          if ($mgmt_config['db_connect_rdbms'] != "") rdbms_settemplate (convertpath ($site, $location.$object, $cat), $template);     
+    
+          // save file
+          return savefile ($location, $object, $objectdata);
+        }
+        else return false;
+      }
+      else return false;
+    }
+  }
+  else return false;
+}
+
 // ========================================== CONTENT ===========================================
 
 // ----------------------------------------- settaxonomy ------------------------------------------

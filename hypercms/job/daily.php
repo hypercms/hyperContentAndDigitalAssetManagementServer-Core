@@ -86,10 +86,13 @@ if (sizeof ($config_files) > 0)
         {
           foreach ($objectpath_array as $objectpath)
           {
-            // if folder object remove .folder
-            if (getobject ($objectpath) == ".folder") $objectpath = getlocation ($objectpath);
-
-            if ($objectpath != "") processobjects ("delete", getpublication($objectpath), getlocation($objectpath), getobject($objectpath), 0, "sys");
+            if (!empty ($objectpath['objectpath']))
+            {
+              // if folder object remove .folder
+              if (getobject ($objectpath['objectpath']) == ".folder") $objectpath = getlocation ($objectpath['objectpath']);
+  
+              if ($objectpath['objectpath'] != "") processobjects ("delete", getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), 0, "sys");
+            }
           }
         }
       }

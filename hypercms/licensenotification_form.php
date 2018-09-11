@@ -60,9 +60,8 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
-<script>
-<!--
+<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script type="text/javascript">
 function replace (string, text, by) 
 {
   // Replaces text with by in string
@@ -164,7 +163,6 @@ function selectAll (form_name, select_name, input_name)
   form.submit();
   return true;
 }
-//-->
 </script>
 </head>
 

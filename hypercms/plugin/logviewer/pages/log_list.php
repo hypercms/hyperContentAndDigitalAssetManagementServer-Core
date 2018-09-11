@@ -38,7 +38,7 @@ else $logfile = "";
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script type="text/javascript" src="../../../javascript/click.js"></script>
 <script type="text/javascript" src="../../../javascript/main.js"></script>
-<script type="text/javascript" src="../../../javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="../../../javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="../../../javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript">
 function submitToWindow (url, description, windowname, features, width, height)

@@ -54,7 +54,7 @@ scriptend]
       <br />
       <table>
         <tr>
-          <td>Select Picture / Folder <!-- [hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' onPublish='hidden'] --></td><td><img src="[hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' thumbnail='yes' onEdit='hidden']" /></td>
+          <td>Select Picture / Folder <!-- [hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' onPublish='hidden'] --></td><td>[hyperCMS:scriptbegin if (strpos ("[hyperCMS:mediafile id='picture' onEdit='hidden']", "Null_media") == false) echo "Done"; scriptend]</td>
         </tr>
         <tr>
           <td>Width of stage</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='galleriaWidth' label='Width of stage' constraint='isNum' default='800' height='15' width='100']</div> px</td>
@@ -90,6 +90,11 @@ scriptend]
       <br />
       <br />
       <textarea id="codesegment" wrap="VIRTUAL" style="height:80px; width:98%">[hyperCMS:scriptbegin echo html_encode($embed_code); scriptend]</textarea>
+      <br />
+      <hr/>
+      <strong>Online view</strong>
+      <br />
+      [hyperCMS:scriptbegin if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_cms']."?wl=$hash' scrolling='no' frameborder=0 border=0 width='".$galleriaWidth."' height='".$galleriaHeight."' style='border:1px solid grey; background-color:#000000;'></iframe>"; scriptend]
     </div>
   </body>
 </html>
@@ -106,9 +111,6 @@ scriptend]
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
-[hyperCMS:scriptbegin
-  }
-scriptend]
 
   <style>
     body {
@@ -127,13 +129,13 @@ scriptend]
   </style>
 
   <!-- Core CSS file -->
-  <link rel="stylesheet" href="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_photoswipe/dist/photoswipe.css?v=4.1.1-1.0.4"> 
+  <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_photoswipe/dist/photoswipe.css?v=4.1.1-1.0.4"> 
   
   <!-- Skin CSS file (styling of UI - buttons, caption, etc.)
        In the folder of skin CSS file there are also:
        - .png and .svg icons sprite, 
        - preloader.gif (for browsers that do not support CSS animations) -->
-  <link rel="stylesheet" href="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_photoswipe/dist/default-skin/default-skin.css?v=4.1.1-1.0.4"> 
+  <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_photoswipe/dist/default-skin/default-skin.css?v=4.1.1-1.0.4"> 
   
   <!-- Core JS file -->
   <script src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_photoswipe/dist/photoswipe.min.js?v=4.1.1-1.0.4"></script> 
@@ -141,14 +143,9 @@ scriptend]
   <!-- UI JS file -->
   <script src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_photoswipe/dist/photoswipe-ui-default.min.js?v=4.1.1-1.0.4"></script> 
 
-[hyperCMS:scriptbegin
-  if ($view == "publish" || $view == "preview")
-  {
-scriptend]
   </head>
   <body class="photoswipe-gallery">
 [hyperCMS:scriptbegin
-  } 
   // check if picture (folder) is choosen or if it exsists
   if (substr_count ($picture, "Null_media.gif") == 1)
   {
@@ -166,8 +163,7 @@ scriptend]
  <p>Folder could not be read!</p>
 [hyperCMS:scriptbegin		
     }
-  }		
-  if($view == "publish" || $view == "preview") {
+  }
 scriptend]
 
   <div id="hypercms-gallery" class="hypercms-gallery">
@@ -214,7 +210,7 @@ scriptend]
                     <button class="pswp__button pswp__button--share" title="Share"></button>
                     <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
                     <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>    
-                    <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+
                     <!-- element will get class pswp__preloader--active when preloader is running -->
                     <div class="pswp__preloader">
                         <div class="pswp__preloader__icn">

@@ -332,7 +332,7 @@ function convert_dbcharset ($charset)
 // output: true / false
 
 // description:
-// Creates new object in database.
+// Creates a new container in the database.
 
 function rdbms_createobject ($container_id, $object, $template, $media="", $container, $user="")
 {
@@ -340,9 +340,10 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
 
   if (intval ($container_id) > 0 && $object != "" && $template != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0))
   {
-    // correct object name 
-    if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
-      
+    // remove tailing slash
+    $object = trim ($object);
+    $object = trim ($object, "/");
+
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
         
     $container_id = intval($container_id);
@@ -354,6 +355,8 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
         
     $date = date ("Y-m-d H:i:s", time());
     $hash = createuniquetoken ();
+    
+    // correct object name
     $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
     if (strtolower (strrchr ($object, ".")) == ".off") $object = substr ($object, 0, -4);
     
@@ -2547,7 +2550,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     if (!empty ($count))
     {
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj';
-      if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
+      if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= " ".implode (' ', $sql_table).' ';
       $sql .= ' WHERE obj.deleteuser="" ';
       if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' AND '.implode (' AND ', $sql_where);
       
@@ -4154,7 +4157,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
           // remove .folder file
           if (getobject ($object) == ".folder") $object = getlocation ($object);
           
-          // remove slash
+          // remove tailing slash
           if (substr ($object, -1) == "/") $object = substr ($object, 0, -1);
 
           // get absolute path in file system without the .folder file

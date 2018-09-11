@@ -996,10 +996,10 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" type="text/javascript"></script>
-<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
-<script>
+<script type="text/javascript">
 
 // context menu
 var contextenable = 1;

@@ -77,6 +77,8 @@ switch ($function)
           if ($line_num >= $state)
           {
             $line = str_replace ("\n", "", $line);
+            
+            // get chat message log entries
             list ($chat_date, $chat_sites, $chat_text) = explode ("|", $line);
             
             foreach ($siteaccess as $site)

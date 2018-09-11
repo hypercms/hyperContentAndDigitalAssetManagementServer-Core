@@ -62,7 +62,7 @@ $height = $screenheight - 80;
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/click.js"></script>
-<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-1.12.4.min.js"></script>
 <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
 <script type="text/javascript" src="javascript/zoomcrop/jquery.zoomcrop.js"></script>
 

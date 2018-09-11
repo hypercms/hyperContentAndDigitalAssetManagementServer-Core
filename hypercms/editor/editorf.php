@@ -147,7 +147,7 @@ $token = createtoken ($user);
     <meta charset="<?php echo $charset; ?>" />
     <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-    <script src="../javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="../javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
     <script type="text/javascript" src="../javascript/main.js" ></script>
     <script type="text/javascript">

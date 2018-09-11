@@ -72,7 +72,7 @@ elseif (strpos ($template, ".meta.tpl") > 0)
 // save template file if save button was pressed
 if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, 'tpledit') && $save == "yes" && checktoken ($token, $user))
 {
-  // set highest cleaning level is not provided or meta data template
+  // set highest cleaning level if not provided or meta data template
   if (!isset ($mgmt_config['template_clean_level']) || $cat == "meta") $mgmt_config['template_clean_level'] = 3;
   
   // check code

@@ -246,7 +246,7 @@ if (substr_count ($media, "/") == 1) $site = substr ($media, 0, strpos ($media, 
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
 // read multimedia file (publication/file)
-if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || !$mgmt_config[$site]['dam'])) || $media_approved == true))
+if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || empty ($mgmt_config[$site]['dam']))) || $media_approved == true))
 {
   // check ip access if public access
   if ($user == "" && (!allowuserip ($site) || !mediapublicaccess ($media)))

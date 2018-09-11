@@ -72,7 +72,7 @@ $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 // check localpermissions for DAM usage only
-if (!checkpublicationpermission ($site) || ($mgmt_config[$site]['dam'] == true && $setlocalpermission['root'] != 1)) killsession ($user);
+if (!checkpublicationpermission ($site) || (!empty ($mgmt_config[$site]['dam']) && empty ($setlocalpermission['root']))) killsession ($user);
 // check for general root element access since localpermissions are checked later
 // Attention! variable page can be empty when a new object will be created
 elseif (
@@ -126,14 +126,12 @@ if (@substr_count ($follow, "://") > 0 || @substr_count (strtolower ($follow), "
   if (@substr_count ($follow, "://") > 0)
   {
     $add_code = "<script type=\"text/javascript\">
-    <!--
     function urlforward()
     {
       document.location='".$follow."';
     }
 
     setTimeout('urlforward()', 2000);
-    -->
     </script>";
   }
   else $add_code = "<a href=\"".$follow."\" target=\"_blank\">".$follow."</a>";

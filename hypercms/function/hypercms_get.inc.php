@@ -1845,7 +1845,7 @@ function getwallpaper ($version="")
   global $mgmt_config;
   
   // get wallpaper name
-  $wallpaper_name = @file_get_contents ("http://cms.hypercms.com/wallpaper/?action=name&version=".urlencode($version));
+  $wallpaper_name = @file_get_contents ("http://cloud.hypercms.net/wallpaper/?action=name&version=".urlencode($version));
 
   if (!empty ($wallpaper_name))
   {
@@ -1853,7 +1853,7 @@ function getwallpaper ($version="")
     if (!is_file ($mgmt_config['abs_path_temp']."view/".$wallpaper_name))
     {
       // get wallpaper file
-      $wallpaper_file = @file_get_contents ("http://cms.hypercms.com/wallpaper/?action=get&name=".urlencode($wallpaper_name));
+      $wallpaper_file = @file_get_contents ("http://cloud.hypercms.net/wallpaper/?action=get&name=".urlencode($wallpaper_name));
       
       if (!empty ($wallpaper_file))
       {
@@ -4324,10 +4324,10 @@ function getboxes ($user)
 
 // ---------------------- getusersonline -----------------------------
 // function: getusersonline()
-// input: %
+// input: publication names [array] (optional)
 // output: Array of online user names / false
 
-function getusersonline ()
+function getusersonline ($sites=array())
 {
   global $mgmt_config, $siteaccess;
   
@@ -4340,9 +4340,10 @@ function getusersonline ()
 
     $result = array();
     
+    // collect online users
     foreach ($scandir as $user)
     {
-      if (is_file ($session_dir.$user) && $user != "." && $user != ".." && strpos ($user, ".dat") > 0 && strpos ($user, "hyperdav_") === false)
+      if (is_file ($session_dir.$user) && $user != "." && $user != ".." && strpos ($user, ".dat") > 0 && strpos ($user, "hyperdav_") === false && $user != "sys.dat")
       {
         // only users that have been logged in the past 8 hours are online users
         $now = time();
@@ -4351,9 +4352,48 @@ function getusersonline ()
         
         if ($now - $last_logon_time < $max)
         {
-          $result[] = substr ($user, 0, -4);
+          // check publication access
+          if (sizeof ($sites) > 0)
+          {
+            $approved = false;
+            $temp_data = loadfile_fast ($session_dir, $user);
+            
+            if ($temp_data)
+            {
+              $temp_data = trim ($temp_data);
+              $temp_array = explode ("\n", $temp_data);
+                
+              if ($temp_array)
+              {
+                $temp = end  ($temp_array);
+              
+                if ($temp != "")
+                {
+                  list ($regsessionid, $regsessiontime, $regpasswd, $regchecksum, $site_access) = explode ("|", $temp);
+                  
+                  if ($site_access)
+                  {
+                    foreach ($sites as $temp_site)
+                    {
+                      if (strpos ("_:".$site_access.":", ":".$temp_site.":") > 0) $approved = true;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          // no publication access filters
+          else $approved = true;
+          
+          if ($approved == true) $result[] = substr ($user, 0, -4);
         }
       }
+    }
+    
+    // chat support user
+    if (!empty ($mgmt_config['chat-support']))
+    {
+      if (!in_array ($mgmt_config['chat-support'], $result)) $result[] = $mgmt_config['chat-support'];
     }
     
     if (sizeof ($result) > 0)

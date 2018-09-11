@@ -54,9 +54,9 @@ checkusersession ($user);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
 </head>
 
 <body class="hcmsWorkplaceObjectlist">

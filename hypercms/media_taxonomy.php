@@ -130,7 +130,7 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && c
 <meta charset="<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
 var changed = false;
 var text = "";

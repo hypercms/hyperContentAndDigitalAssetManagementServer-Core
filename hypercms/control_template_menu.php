@@ -358,7 +358,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
           <?php echo $pagecomp; ?> 
           <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
-            <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+            <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
             <?php
             $template_option_edit = array();
   
@@ -400,7 +400,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
         <?php echo $pagecomp; ?> 
         <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
-          <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+          <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           if (sizeof ($template_option_edit) > 0)
           {

@@ -18,8 +18,9 @@ require ("function/hypercms_api.inc.php");
 // input parameters
 $location = getrequest_esc ("location", "locationname");
 $object = getrequest_esc ("page", "objectname");
-$intention = getrequest ("intention");
 $template = getrequest ("template", "objectname");
+$action = getrequest ("action");
+$type = getrequest ("type");
 $token = getrequest ("token");
 
 // get publication and category
@@ -78,20 +79,20 @@ else
 }
 
 // change template
-if ($intention == "change" && $objectdata != "" && valid_objectname ($template) && ($media == "" || ($media != "" && (strpos ($template, ".meta.tpl") > 0 || strpos ($template, ".comp.tpl") > 0))) && checktoken ($token, $user))
+if ($action == "change" && $objectdata != "" && valid_objectname ($template) && ($media == "" || ($media != "" && (strpos ($template, ".meta.tpl") > 0 || strpos ($template, ".comp.tpl") > 0))) && checktoken ($token, $user))
 {
-  // set new template
-  $objectdata = setfilename ($objectdata, "template", $template);
-  
-  // relational DB connectivity
-  if ($mgmt_config['db_connect_rdbms'] != "")
-  {   
-    include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
-    rdbms_settemplate (convertpath ($site, $location.$object, $cat), $template);                    
+  // change all objects
+  if ($object == ".folder" && $type == "all")
+  {
+    // set new template
+     settemplate ($site, $location, $object, $template, true);
   }
-  
-  // save file
-  if ($objectdata != false) $savefile = savefile ($location, $object, $objectdata);
+  // change single object
+  else
+  {
+    // set new template
+     settemplate ($site, $location, $object, $template, false);
+  }
 }
 
 // get template name
@@ -131,13 +132,13 @@ $token_new = createtoken ($user);
     <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
     <input type="hidden" name="page" value="<?php echo $object; ?>" />
-    <input type="hidden" name="intention" value="change" />
+    <input type="hidden" name="action" value="change" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>">
     
     <table border="0" cellspacing="2" cellpadding="0">
       <tr>
         <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['template-in-use'][$lang]); ?> </td>
-        <td nowrap="nowrap" class="hcmsHeadlineTiny"><?php echo $tpl_name; ?></td>
+        <td nowrap="nowrap" class="hcmsHeadlineTiny">&nbsp; <?php echo $tpl_name; ?></td>
       </tr>
       <tr>
         <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['change-template'][$lang]); ?> </td>
@@ -162,10 +163,11 @@ $token_new = createtoken ($user);
             }
             else 
             {
-              echo "<option value=\"\"> ----------------- </option>\n";
+              echo "<option value=\"\">".getescapedtext ($hcms_lang['none'][$lang])."</option>\n";
             }
             ?>
           </select>
+          <?php if ($object == ".folder") echo "&nbsp;&nbsp;<label><input type=\"checkbox\" name=\"type\" value=\"all\" /> ".getescapedtext ($hcms_lang['all'][$lang]." ".$hcms_lang['objects'][$lang])."</label>&nbsp;&nbsp;"; ?>
           <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['template_change'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
           </td>
       </tr>

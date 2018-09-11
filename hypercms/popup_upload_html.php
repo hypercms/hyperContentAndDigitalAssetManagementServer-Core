@@ -97,12 +97,11 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=0.6, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/jquery-fileupload.css" type="text/css">
 
 <script src="javascript/main.js" type="text/javascript"></script>
 
 <!-- JQuery -->
-<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 
 <!-- JQuery UI -->
 <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
@@ -111,6 +110,7 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 <!-- JQuery File Upload -->
 <script src="javascript/jquery/plugins/jquery.fileupload.js" type="text/javascript"></script>
 <script src="javascript/jquery/plugins/jquery.iframe-transport.js" type="text/javascript"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/jquery-fileupload.css" type="text/css">
 
 <!-- Dropbox dropin.js -->
 <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropins.js" id="dropboxjs" data-app-key="<?php if (!empty ($mgmt_config['dropbox_appkey'])) echo $mgmt_config['dropbox_appkey']; ?>"></script>
@@ -401,7 +401,7 @@ $(document).ready(function ()
 
     if (queuecount <= 0) frameReload(file, hcms_waitTillClose);
     
-    // Remove the div after 10 seconds
+    // Remove the div
     setTimeout( function() {
       data.context.remove();
       selectcount--;
@@ -497,7 +497,7 @@ $(document).ready(function ()
             
             if (queuecount <= 0) frameReload(file, hcms_waitTillClose);
             
-            // Remove the div after 10 seconds
+            // Remove the div
             setTimeout( function()
             {
               data.context.remove();
@@ -788,7 +788,7 @@ $(document).ready(function ()
 
             if (queuecount <= 0) frameReload(file, hcms_waitTillClose);
             
-            // Remove the div after 10 seconds
+            // Remove the div
             setTimeout( function()
             {
               data.context.remove();
@@ -1056,106 +1056,108 @@ $(document).ready(function ()
     $('#deletedate').prop('disabled', !($(this).prop('checked')));
   });
   
-  //-------------------------- GENERAL --------------------------
-  
-  // Reloads all needed frames
-  function frameReload (objectpath, timeout)
+});
+
+//-------------------------- GENERAL --------------------------
+
+// Reloads all needed frames
+function frameReload (objectpath, timeout)
+{
+  // reload main frame (upload by control objectlist)
+  if (opener && opener.parent.frames['mainFrame'])
   {
-    // reload main frame (upload by control objectlist)
-    if (opener && opener.parent.frames['mainFrame'])
-    {
-      opener.parent.frames['mainFrame'].location.reload();
-    }
-    
-    // reload explorer frame (upload by component explorer)
-    if (opener && opener.parent.frames['navFrame2'])
-    {
-      opener.parent.frames['navFrame2'].location.reload();
-    }
-    // reload object frame (upload by control content)
-    else if (parent.document.getElementById('objFrame'))
-    {
-      if (objectpath == "")
-      {
-        var iframe = parent.document.getElementById('objFrame');
-        iframe.src = iframe.src;
-      }
-      else
-      {
-        // get location and object
-        var index = objectpath.lastIndexOf("/") + 1;
-        var location = objectpath.substring(0, index);
-        var newpage = objectpath.substr(index);
-
-        parent.document.getElementById('objFrame').src='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
-      }
-
-      setTimeout('parent.closeobjectview()', timeout);
-    }
+    opener.parent.frames['mainFrame'].location.reload();
   }
   
-  function openEditWindow (objectpath)
+  // reload explorer frame (upload by component explorer)
+  if (opener && opener.parent.frames['navFrame2'])
   {
-    // add objectpath to array
-    editobjects.push(objectpath);
-    
-    var window = document.getElementById('editwindow');
-    var iframe = document.getElementById('editiframe');
-  
-    // open edit window for first object
-    if (window.style.display == 'none')
-    {
-      // get location and object
-      var index = objectpath.lastIndexOf("/") + 1;
-      var location = objectpath.substring(0, index);
-      var newpage = objectpath.substr(index);
-      
-      iframe.src='page_view.php?rlreload=yes&location=' + location + '&page=' + newpage;
-      window.style.display='inline';
-      
-      // remove first array element
-      editobjects.shift();
-    }
+    opener.parent.frames['navFrame2'].location.reload();
   }
-  
-  function nextEditWindow ()
+  // reload object frame (upload by control content)
+  else if (parent.document.getElementById('objFrame'))
   {
-    var window = document.getElementById('editwindow');
-    var iframe = document.getElementById('editiframe');
-      
-    if (editobjects.length > 0)
+    if (objectpath == "")
     {
-      // get and remove first array element
-      var objectpath = editobjects.shift();
-  
-      // get location and object
-      var index = objectpath.lastIndexOf("/") + 1;
-      var location = objectpath.substring(0, index);
-      var newpage = objectpath.substr(index);
-  
-      // load next object
-      iframe.src='page_view.php?ctrlreload=yes&location=' + location + '&page=' + newpage;
-      
-      if (window.style.display == 'none')
-      {
-        window.style.display='inline';
-      }
+      var iframe = parent.document.getElementById('objFrame');
+      iframe.src = iframe.src;
     }
     else
     {
-      window.style.display='none';
-      iframe.src='';
+      // get location and object
+      var index = objectpath.lastIndexOf("/") + 1;
+      var location = objectpath.substring(0, index);
+      var newpage = objectpath.substr(index);
+
+      parent.document.getElementById('objFrame').src='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
     }
+
+    setTimeout('parent.closeobjectview()', timeout);
   }
+}
+
+function openEditWindow (objectpath)
+{
+  // add objectpath to array
+  editobjects.push(objectpath);
   
-  // if user closes window while still in edit mode
-  window.onbeforeunload = function() {
-    if (document.getElementById('editwindow') && document.getElementById('editwindow').style.display != "none")
+  var window = document.getElementById('editwindow');
+  var iframe = document.getElementById('editiframe');
+
+  // open edit window for first object
+  if (window.style.display == 'none')
+  {
+    // get location and object
+    var index = objectpath.lastIndexOf("/") + 1;
+    var location = objectpath.substring(0, index);
+    var newpage = objectpath.substr(index);
+    
+    iframe.src='page_view.php?rlreload=yes&location=' + location + '&page=' + newpage;
+    window.style.display='inline';
+    
+    // remove first array element
+    editobjects.shift();
+  }
+}
+  
+// function will be called from iframe and must be outside of document onload/ready function
+function nextEditWindow ()
+{
+  var window = document.getElementById('editwindow');
+  var iframe = document.getElementById('editiframe');
+
+  if (editobjects.length > 0)
+  {
+    // get and remove first array element
+    var objectpath = editobjects.shift();
+
+    // get location and object
+    var index = objectpath.lastIndexOf("/") + 1;
+    var location = objectpath.substring(0, index);
+    var newpage = objectpath.substr(index);
+
+    // load next object
+    iframe.src='page_view.php?ctrlreload=yes&location=' + location + '&page=' + newpage;
+    
+    if (window.style.display == 'none')
     {
-      return "<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>";
+      window.style.display='inline';
     }
   }
-});
+  else
+  {
+    window.style.display='none';
+    iframe.src='';
+  }
+}
+
+// if user closes window while still in edit mode
+window.onbeforeunload = function() {
+  if (document.getElementById('editwindow') && document.getElementById('editwindow').style.display != "none")
+  {
+    return "<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>";
+  }
+}
 
 </script>
 
@@ -1345,7 +1347,7 @@ echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name
 <?php
 // iPad and iPhone requires special CSS settings
 if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scrolling:touch !important;";
-else $css_iphone = "";
+else $css_iphone = " overflow-x:hidden; overflow-y:hidden;";
 ?>
 <!-- Edit Window -->
 <div id="editwindow" style="display:none; position:fixed; top:0px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1000;">
@@ -1353,7 +1355,7 @@ else $css_iphone = "";
     <div style="padding:4px;"><b><?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?></b></div>
   </div>
   <div class="hcmsWorkplaceGeneric" style="position:fixed; top:28px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1001; <?php echo $css_iphone; ?>">
-    <iframe id="editiframe" scrolling="auto" src="" style="width:100%; height:95%; border-bottom:1px solid #000000; margin:0; padding:0;" frameborder="0"></iframe>
+    <iframe id="editiframe" scrolling="auto" src="" style="width:100%; height:100%; border-bottom:1px solid #000000; margin:0; padding:0;" frameborder="0"></iframe>
   </div>
 </div>
 

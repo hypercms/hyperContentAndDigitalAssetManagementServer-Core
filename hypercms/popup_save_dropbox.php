@@ -113,7 +113,7 @@ $object_name = getlocationname ($site, $location, $cat, "path");
 <script src="javascript/main.js" type="text/javascript"></script>
 <!-- <script src="javascript/click.js" type="text/javascript"></script> -->
 <!-- JQuery -->
-<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 <!-- JQuery UI -->
 <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css">

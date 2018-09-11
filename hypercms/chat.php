@@ -50,7 +50,7 @@ checkusersession ($user, false);
 }
 </style>
 <script type="text/javascript" src="javascript/main.js" ></script>
-<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
 <script type="text/javascript">
 // user name    
@@ -69,9 +69,10 @@ var chat =  new Chat();
 $(function()
 {
   //chat.getState();
+  getusersonline();
 
   // watch textarea for key pressed
-  $("#send-message-input").keydown(function(event)
+  $('#send-message-input').keydown(function(event)
   {
     var key = event.which;  
  
@@ -124,39 +125,47 @@ function adjust_height ()
   setheight = height - 160;
   document.getElementById('chat-area').style.height = setheight + "px";
 }
+
+function getusersonline ()
+{
+  var usersonline;
+  var result = '';
+
+	$.ajax({
+		async: false,
+		type: 'POST',
+		url: '<?php echo $mgmt_config['url_path_cms']; ?>service/getusersonline.php',
+		data: {},
+		dataType: 'json',
+		success: function(data){ if(data.success) {usersonline = data.usersonline;}}
+	});
+  
+  if (usersonline)
+  {
+    for (var i in usersonline)
+    {
+      if (usersonline.hasOwnProperty(i) && usersonline[i] != "<?php echo $user; ?>")
+      {
+        result = result + "    <div class=\"hcmsSelectorItem\" style=\"text-align:left;\" onclick=\"invite('" + usersonline[i] + "');\"><img src=\"<?php echo getthemelocation()."img/user.png"; ?>\" class=\"hcmsIconList\" align=\"absmiddle\" />" + usersonline[i] + "&nbsp;</div>\n";
+      }
+    }
+  }
+  
+  if (result != "") document.getElementById('select_user').innerHTML = result;
+  else document.getElementById('select_user').innerHTML = "   <div style=\"text-align:left;\">&nbsp; . . . . . . &nbsp;</div>\n";
+}
 </script>
 </head>
 
-<body class="hcmsWorkplaceExplorer" onload="setInterval('chat.update()', 1000); adjust_height();" onresize="adjust_height();">
-
-<?php
-$users_online = getusersonline ();
-
-// chat support user
-if (!empty ($mgmt_config['chat-support']))
-{
-  if (!is_array ($users_online)) $users_online = array();
-  if (!in_array ($mgmt_config['chat-support'], $users_online)) $users_online[] = $mgmt_config['chat-support'];
-}
-
-if (is_array ($users_online) && sizeof ($users_online) > 1)
-{
-  $users_online_button = "<button class=\"hcmsButtonOrange hcmsButtonSizeHeight\" style=\"white-space:nowrap;\" onClick=\"hcms_switchSelector('select_user');\">".getescapedtext ($hcms_lang['invite-online-user'][$lang])."</button>
-  <div id=\"select_user\" class=\"hcmsSelector\" style=\"position:fixed; top:32px; right:8px; visibility:hidden; z-index:999; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">\n";
-
-  foreach ($users_online as $user_online)
-  {
-    if ($user_online != $user) $users_online_button .= "    <div class=\"hcmsSelectorItem\" style=\"text-align:left;\" onclick=\"invite('".$user_online."');\"><img src=\"".getthemelocation()."img/user.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".$user_online."&nbsp;</div>\n";
-  }
-  
-  $users_online_button .= "  </div>\n";
-}
-else $users_online_button = "<button class=\"hcmsButtonOrange hcmsButtonSizeHeight\" style=\"white-space:nowrap;\" onClick=\"location.reload();\">".getescapedtext ($hcms_lang['invite-online-user'][$lang])."</button>";
-?>
+<body class="hcmsWorkplaceExplorer" onload="setInterval('chat.update()', 1000); setInterval('getusersonline()', 10000); adjust_height();" onresize="adjust_height();">
 
 <?php echo showtopbar ($hcms_lang['chat'][$lang], $lang); ?>
 
-<div style="position:fixed; top:2px; right:8px; z-index:1000;"><?php echo $users_online_button; ?></div>
+<div style="position:fixed; top:2px; right:8px; z-index:1000;">
+  <button class="hcmsButtonOrange hcmsButtonSizeHeight" style="white-space:nowrap;" onClick="hcms_switchSelector('select_user');"><?php echo getescapedtext ($hcms_lang['invite-online-user'][$lang]); ?></button>
+  <div id="select_user" class="hcmsSelector" style="position:absolute; top:32px; right:0px; visibility:hidden; z-index:999; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
+  </div>
+</div>
 
 <div id="page-wrap" style="margin:0; padding:0;">
    

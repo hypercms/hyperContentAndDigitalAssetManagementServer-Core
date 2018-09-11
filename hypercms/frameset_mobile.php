@@ -34,7 +34,6 @@ toggleview ($view);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0"></meta>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery.mobile-1.3.1.min.css" />
 <!-- 57 x 57 Android and iPhone 3 icon -->
 <link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
 <!-- 114 x 114 iPhone 4 icon -->
@@ -42,8 +41,9 @@ toggleview ($view);
 <!-- 57 x 57 Nokia icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-1.12.4.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery.mobile-1.3.1.min.js"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery.mobile-1.3.1.min.css" />
 </head> 
 
 <script type="text/javascript">

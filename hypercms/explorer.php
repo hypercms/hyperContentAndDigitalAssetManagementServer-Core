@@ -966,11 +966,10 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
             // display custom system log if a custom log file exists
-            if (checkglobalpermission ($site, 'user') && is_file ($mgmt_config['abs_path_data']."log/".$site.".custom.log"))
+            elseif (checkglobalpermission ($site, 'user') && is_file ($mgmt_config['abs_path_data']."log/".$site.".custom.log"))
             {
-              $subpoint = new hcms_menupoint($hcms_lang['custom-system-events'][$lang], "frameset_log.php?site=".url_encode($site), 'event.png');
+              $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php?site=".url_encode($site), 'event.png');
               $subpoint->setOnClick('changeSelection(this)');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -1077,7 +1076,7 @@ else
               $point->addSubPoint($subpoint);
             }
             
-            if (checkglobalpermission ($site, 'tplmedia') && empty ($mgmt_config[$site]['dam']))
+            if (checkglobalpermission ($site, 'tplmedia'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['template-media'][$lang], "frameset_media.php?site=".url_encode($site)."&mediacat=tpl", 'media.png');
               $subpoint->setOnClick('changeSelection(this)');
@@ -1226,16 +1225,19 @@ else
     <meta charset="<?php echo getcodepage ($lang); ?>" />
     <meta name="viewport" content="width=260, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     
-    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
     
-    <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+    <!-- JQuery -->
+    <script type="text/javascript" src="javascript/jquery/jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>  
+    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.cookie.js"></script>
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.hotkeys.js"></script>
     <script type="text/javascript" src="javascript/jstree/jquery.jstree.js"></script>
+    
     <script type="text/javascript" src="javascript/main.js"></script>
     <script type="text/javascript" src="javascript/contextmenu.js"></script>
+    
     <!-- Rich calendar -->
     <link  rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
     <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>

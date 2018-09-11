@@ -13,7 +13,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
     <div style=\"display:block; padding-bottom:5px;\">
       <span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['report'][$lang])." </span>
       <select name=\"reportfile\" onChange=\"document.getElementById('report').src=this.value\">
-        <option value=\"".$mgmt_config['url_path_cms']."empty.php\">--- ".getescapedtext ($hcms_lang['select'][$lang])." ---</option>
+        <option value=\"".$mgmt_config['url_path_cms']."empty.php\">".getescapedtext ($hcms_lang['select'][$lang])."</option>
   ";
   
   $report_files = getdirectoryfiles ($mgmt_config['abs_path_data']."report/", ".report.dat");

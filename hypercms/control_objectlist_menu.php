@@ -333,7 +333,7 @@ $token_new = createtoken ($user);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/click.js"></script>
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>

@@ -79,7 +79,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
             }
             
             // bar text
-            $download_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$download_axis[$i]['value']." ".$hcms_lang['downloads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$download_axis[$i]['text'];
+            $download_axis[$i]['text'] = showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang])."   \n".$download_axis[$i]['value']." ".$hcms_lang['downloads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$download_axis[$i]['text'];
           }
           
           // uploads
@@ -105,7 +105,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
             }
             
             // bar text
-            $upload_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$upload_axis[$i]['value']." ".$hcms_lang['uploads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$upload_axis[$i]['text'];   
+            $upload_axis[$i]['text'] = showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang])."   \n".$upload_axis[$i]['value']." ".$hcms_lang['uploads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$upload_axis[$i]['text'];   
           }
         }
           

@@ -299,10 +299,10 @@ function accessgeneral ($site, $location, $cat)
     if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-    } 
+    }
    
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);     
+    if ($cat == "") $cat = getcategory ($site, $location);
     
     if (substr_count ($location, "://") > 0)
     {
@@ -313,6 +313,11 @@ function accessgeneral ($site, $location, $cat)
     {
       $location = deconvertpath ($location, "file");
     }
+    
+    // resolve symbolic links
+    if (!empty ($mgmt_config[$site]['abs_path_page'])) $mgmt_config[$site]['abs_path_page'] = realpath ($mgmt_config[$site]['abs_path_page'])."/";
+    if (!empty ($mgmt_config['abs_path_comp'])) $mgmt_config['abs_path_comp'] = realpath ($mgmt_config['abs_path_comp'])."/";
+    if (!empty ($mgmt_config['abs_path_rep'])) $mgmt_config['abs_path_rep'] = realpath ($mgmt_config['abs_path_rep'])."/";
     
     // cut off file name 
     if (is_file ($location) && $location[strlen ($location)-1] != "/")
@@ -336,14 +341,14 @@ function accessgeneral ($site, $location, $cat)
     else return false;    
     
     // check publication access
-    if (is_array ($siteaccess))
+    if (!empty ($siteaccess) && is_array ($siteaccess))
     {
       if (!checkpublicationpermission ($site)) return false;
     }
 
     // check excluded folders
     if (isset ($hiddenfolder[$site]) && is_array ($hiddenfolder[$site]))  
-    {   
+    {
       foreach ($hiddenfolder[$site] as $exclude_folder)
       {
         if (substr_count ($location_esc, $exclude_folder) > 0) return false;
@@ -354,15 +359,15 @@ function accessgeneral ($site, $location, $cat)
     if (@substr_count ($location, $mgmt_config['abs_path_cms']) == 0 && @substr_count ($location, $mgmt_config['abs_path_data']) == 0)
     {
       // check page access
-      if ($cat == "page" && @substr_count ($location, $mgmt_config[$site]['abs_path_page']) > 0 && @substr_count ($location, $mgmt_config['abs_path_rep']) == 0) 
-      {   
+      if ($cat == "page" && @substr_count ($location, $mgmt_config[$site]['abs_path_page']) > 0 && @substr_count ($location, $mgmt_config['abs_path_rep']) == 0 && @substr_count ($mgmt_config['abs_path_rep'], $location) == 0) 
+      {
         return true;
       }
       // check component access
       elseif ($cat == "comp" && @substr_count ($location, $mgmt_config['abs_path_comp']) > 0)
-      { 
-        return true;     
-      }  
+      {
+        return true;
+      }
       else return false;
     }
     else return false;
@@ -381,7 +386,7 @@ function accessgeneral ($site, $location, $cat)
 
 function accesspermission ($site, $location, $cat)
 {
-  global $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $mgmt_config;   
+  global $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $mgmt_config;   
 
   if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
   {
@@ -453,7 +458,7 @@ function accesspermission ($site, $location, $cat)
               $points[$i] = strlen ($value);
               $groups[$i] = $group;
               $i++;
-            }              
+            }
           }
         }
       }
@@ -484,7 +489,7 @@ function accesspermission ($site, $location, $cat)
         }
       }  
       else return false;
-
+      
       // return result if group was located
       if (isset ($groups) && is_array ($groups) && sizeof ($groups) > 0 && isset ($points) && is_array ($points) && sizeof ($points) > 0)
       {
@@ -1659,7 +1664,7 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
     }
   
     // write hypercms session file
-    $login_result['writesession'] = writesession ($login_result['user'], $login_result['passwd'], $login_result['checksum']);
+    $login_result['writesession'] = writesession ($login_result['user'], $login_result['passwd'], $login_result['checksum'], $login_result['siteaccess']);
 
     // session info could not be saved
     if ($login_result['writesession'] == false)
@@ -1746,14 +1751,14 @@ function createchecksum ($permissions="")
 
 // ---------------------- writesession -----------------------------
 // function: writesession()
-// input: user name [string], password [string], checksum [string]
+// input: user name [string], password [string], checksum [string], publicaion access [array]
 // output: true / false on error
 // requires: hypercms_api.inc.php
 
 // description:
 // Writes hyperCMS specific session data of a user
 
-function writesession ($user, $passwd, $checksum)
+function writesession ($user, $passwd, $checksum, $siteaccess=array())
 {
   global $mgmt_config;
 
@@ -1766,7 +1771,7 @@ function writesession ($user, $passwd, $checksum)
     $sessiontime = time();
     
     // session string
-    $sessiondata = session_id()."|".$sessiontime."|".md5 ($passwd)."|".$checksum."\n";
+    $sessiondata = session_id()."|".$sessiontime."|".md5 ($passwd)."|".$checksum."|".implode(":", $siteaccess)."\n";
   
     // if user session file exists (user didn't log out or same user logged in a second time)
     if (is_file ($mgmt_config['abs_path_data']."session/".$user.".dat"))
@@ -2056,7 +2061,7 @@ function checkdiskkey ($users="", $site="")
     
     if ($mgmt_config['url_protocol'] != "https://" || $mgmt_config['url_protocol'] != "http://") $mgmt_config['url_protocol'] = "https://";
     
-    $result_post = HTTP_Post ($mgmt_config['url_protocol']."cms.hypercms.net/keyserver/", $data);
+    $result_post = HTTP_Post ($mgmt_config['url_protocol']."cloud.hypercms.net/keyserver/", $data);
     
     if ($result_post != "")
     {
@@ -2441,7 +2446,7 @@ function valid_publicationname ($variable)
   {
     if (!is_array ($variable) && is_string ($variable))
     {
-      if ($variable == "*Null*") return false;
+      if ($variable == "*Null*" || $variable == "*no_memberof*") return false;
       if (substr_count ($variable, "<") > 0) return false;
       if (substr_count ($variable, ">") > 0) return false;
       if (substr_count ($variable, "/") > 0) return false;

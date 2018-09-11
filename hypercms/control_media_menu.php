@@ -351,7 +351,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete-media-category'][$lang]); ?></span><br />
         <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?> 
         <select name="mediacat_name" style="width:150px;">
-          <option value="">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+          <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           $mediacat_data = loadfile ($mgmt_config['abs_path_data']."media/", $datafile);
           
@@ -400,7 +400,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
       </td>
       <td>
         <select name="mediacat_name_curr" style="width:150px;" onChange="insertCat()">
-          <option value="">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+          <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           if (is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
           {
@@ -412,14 +412,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
           }
           ?>
         </select>
-      </td>
-    </tr>
-    <tr>
-      <td nowrap="nowrap">
-        <?php echo getescapedtext ($hcms_lang['rename-selected-category'][$lang]); ?> 
-      </td>
-      <td>
-        <input type="text" name="mediacat_name" maxlength="100" style="width:150px;" />
+        <input type="text" name="mediacat_name" maxlength="100" style="width:220px;" placeholder="<?php echo getescapedtext ($hcms_lang['rename-selected-category'][$lang]); ?> " />
         <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_mediacat_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
       </td>       
     </tr>
@@ -446,7 +439,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
       </td>
       <td>
         <select name="mediacat_name" style="width:150px;">
-          <option value="">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+          <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           if (is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
           {
@@ -458,14 +451,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
           }
           ?>
         </select>
-      </td>
-    </tr>
-    <tr>
-      <td nowrap="nowrap">
-        <?php echo getescapedtext ($hcms_lang['upload-media-file'][$lang]); ?> 
-      </td>
-      <td>
-        <input type="file" name="file" size="25" />
+        <input type="file" name="file" style="width:150px;" />
         <img name="Button4" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_mediafile_upload();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button4','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
       </td>       
     </tr>

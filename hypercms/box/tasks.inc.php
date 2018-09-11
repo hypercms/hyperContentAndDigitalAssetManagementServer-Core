@@ -33,7 +33,7 @@ if (checkrootpermission ('desktoptaskmgmt'))
 
         echo "
       <tr class=\"".$rowcolor."\">
-        <td valign=\"top\">".$task_record['startdate']." &#x0203A; ".$task_record['finishdate']."</td>
+        <td valign=\"top\">".showdate ($task_record['startdate'], "Y-m-d", $hcms_lang_date[$lang])." &#x0203A; ".showdate ($task_record['finishdate'], "Y-m-d", $hcms_lang_date[$lang])."</td>
         <td valign=\"top\">".str_replace ("\n", "<br />", $task_record['description'])."</td>
       </tr>";
       }

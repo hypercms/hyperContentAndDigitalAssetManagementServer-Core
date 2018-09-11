@@ -656,7 +656,7 @@ $token_new = createtoken ($user);
 
 <body class="hcmsStartScreen" style="font-size:12px;">
 
-<script type="text/javascript" src="http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="../javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	// place ID's of all required fields here.
@@ -725,8 +725,9 @@ Otherwise just provide the information below and install the most powerful Conte
 <?php echo showmessage ($show, 480, 300, "en", "position:fixed; top:40px; margin-left:auto; margin-right:auto;"); ?>  
 
 <form id="installform" name="installform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-  <input type="hidden" name="action" value="install">
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+  <input type="hidden" name="action" value="install" />
+  <input type="hidden" name="language" value="en" />
+  <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
   <table border="0" cellspacing="0" cellpadding="3"> 
   
@@ -782,31 +783,6 @@ Otherwise just provide the information below and install the most powerful Conte
       <td nowrap="nowrap">E-mail: </td>
       <td align="left">
         <input type="text" id="email" name="email" style="width:200px;" value="<?php echo $email; ?>" />
-      </td>
-    </tr>
-    <tr>
-      <td nowrap="nowrap">Language: </td>
-      <td align="left">
-        <select id="language" name="language" style="width:200px;">
-        <?php
-        $lang_name['en'] = "English";
-        $lang_shortcut['en'] = "en";
-        $lang_name['de'] = "German";
-        $lang_shortcut['de'] = "de";
-        
-        if (is_array ($lang_shortcut))
-        {
-          foreach ($lang_shortcut as $lang_opt)
-          {
-            if ($language == $lang_opt)
-            {
-              echo "<option value=\"".$lang_opt."\" selected=\"selected\">".$lang_name[$lang_opt]."</option>\n";
-            }
-            else echo "<option value=\"".$lang_opt."\">".$lang_name[$lang_opt]."</option>\n";
-          }
-        }
-        ?>
-        </select>
       </td>
     </tr>
     <tr>

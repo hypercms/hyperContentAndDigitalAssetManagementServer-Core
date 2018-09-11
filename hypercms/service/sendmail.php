@@ -74,10 +74,11 @@ $ondate = getrequest_esc ("ondate");
 $maildate = getrequest_esc ("maildate");
 
 // include values from mail file
-if (valid_objectname ($mailfile))
+if ($mailfile != "" && valid_objectname ($mailfile))
 {
   if (is_file ($mgmt_config['abs_path_data']."queue/".$mailfile.".php")) include ($mgmt_config['abs_path_data']."queue/".$mailfile.".php");
   elseif (is_file ($mgmt_config['abs_path_data']."message/".$mailfile.".php")) include ($mgmt_config['abs_path_data']."message/".$mailfile.".php");
+  else $mailfile = "";
   
   if (!empty ($multiobject_id))
   {
@@ -95,7 +96,7 @@ $location_esc = convertpath ($site, $location, $cat);
 // ------------------------------ permission section --------------------------------
 
 // do not verify permissions if used as service call of minutely job
-if (empty ($mailfile) && $intention != "sendmail")
+if (empty ($mailfile) || $intention != "sendmail")
 { 
   // check access permissions
   $ownergroup = accesspermission ($site, $location, $cat);

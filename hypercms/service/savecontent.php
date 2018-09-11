@@ -520,6 +520,10 @@ if ($usedby == "" || $usedby == $user)
         // check if event returns a string, if so, the event returns the container and not true or false 
         if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdatanew = $contentdataevent;
         
+        // information log
+        $errcode = "00101";
+        $error[] = date('Y-m-d H:i')."|savecontent|information|".$errcode."|object '".$location_esc.$page."' has been edited and saved by user '".$user."'";
+        
         // notification
         notifyusers ($site, $location, $page, "onedit", $user);
               

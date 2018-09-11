@@ -94,7 +94,7 @@ scriptend]
 [hyperCMS:scriptbegin
 	}
 scriptend]
-			<script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-1.10.2.min.js"></script>
+			<script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-1.12.4.min.js"></script>
 			<script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_360view/jquery.reel-min.js"></script>
 			<style>
 				body {

@@ -232,7 +232,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
         <?php echo $item_type; ?> 
         <select name="persfile" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
-          <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+          <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           $temp_dir = $mgmt_config['abs_path_data']."customer/".$site."/";
           $dir_item = @dir ($temp_dir);
@@ -300,7 +300,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
         <?php echo $item_type; ?> 
         <select name="persfile" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
-          <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
+          <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           if (sizeof ($item_option_edit) > 0)
           {

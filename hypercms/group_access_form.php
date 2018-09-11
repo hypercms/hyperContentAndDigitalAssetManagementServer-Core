@@ -87,9 +87,8 @@ if ($group_name != false && $group_name != "")
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
-<script>
-<!--
+<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script type="text/javascript">
 function getobject_id (location)
 {
   if (location != "")
@@ -99,7 +98,7 @@ function getobject_id (location)
   	$.ajax({
   		async: false,
   		type: 'POST',
-  		url: '<?php echo $mgmt_config['url_path_cms']; ?>/service/getobject_id.php',
+  		url: '<?php echo $mgmt_config['url_path_cms']; ?>service/getobject_id.php',
   		data: {'location': location},
   		dataType: 'json',
   		success: function(data){ if(data.success) {object_id = data.object_id;} }
@@ -198,7 +197,6 @@ function selectAll ()
   form.submit();
   return true;
 }
-//-->
 </script>
 </head>
 

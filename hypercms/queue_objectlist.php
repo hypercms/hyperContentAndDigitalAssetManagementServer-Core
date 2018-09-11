@@ -182,7 +182,7 @@ else $objects_counted = 0;
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" type="text/javascript"></script>
-<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script>
 // context menu

@@ -54,7 +54,7 @@ if ($hcms_themename != "mobile")
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 
@@ -327,7 +327,7 @@ function setwallpaper ()
     </form>
   </div>
   
-  <div id="spacer" style="width:94%; height:32px; display:block;"></div>
+  <div class="hcmsHomeSpacer"></div>
 
   <!-- show boxes -->
   <?php 

@@ -231,7 +231,7 @@ $token_new = createtoken ($user);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css">
 <script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script src="javascript/jquery/jquery-1.12.4.min.js"></script>
 <script src="javascript/jquery/plugins/jquery.color.js"></script>
 <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
 <script src="javascript/jcrop/jquery.Jcrop.min.js"></script>

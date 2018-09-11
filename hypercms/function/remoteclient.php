@@ -188,7 +188,7 @@ function valid_publicationname ($expression)
 {
   if ($expression != "")
   {
-    if ($expression == "*Null*") return false;
+    if ($expression == "*Null*" || $variable == "*no_memberof*") return false;
     if (substr_count ($expression, "/") >  0) return false;
     if (substr_count ($expression, "\\") >  0) return false;
     return $expression;

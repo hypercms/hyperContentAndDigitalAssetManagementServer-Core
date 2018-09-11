@@ -314,7 +314,7 @@ if (checkuserip (getuserip ()) == true)
   // login form
   if (!isset ($login_result) || empty ($login_result['auth']))
   {
-    if ($show != "") $show .= "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".$show."</div>\n";
+    if ($show != "") $show = "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".$show."</div>\n";
           
     if (!empty ($mgmt_config['instances']) && is_dir ($mgmt_config['instances'])) $show .= "
         <div id=\"sentinstance_container\" ".($require == "password" ? "style=\"position:absolute; visibility:hidden;\"" :  "").">

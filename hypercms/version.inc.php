@@ -1621,7 +1621,7 @@ Release 07/2016
 - Updates in all languages files
 - Bug fix: JS function isNewComment in template engine did not verify if rich text editor instance exists before writing the content into the textarea
 - Implementation of new template variable %object_id% in template engine
-- Implementation of date and time and publication access of user to each chat entry
+- Implementation of date, time, and publication access of user to each chat entry
 - Implementation of new presentation logic of chat in order to show only messages based on the users publication access
 - Bug fix: Function link_db_restore of link API did not have access to user
 - Bug fix: Function link_db_restore was not able to access working content container due to wrong verification
@@ -2896,7 +2896,7 @@ Release 08/2017
 - Removed support of deprecated SWF file upload that required the Adobe Falsh browser plugin (popup_upload_swf)
 - Modifications in userlogin in order to include browser information in the forward link after the successful logon
 - Added TIFF and BMP image target format definitions to default main configuration file in install directory
-- Update of manuals
+- Update of the manuals
 - Update of all language files
 - Implementation of new showcase component template "Upload" in the install directory for public file uploads
 - Improvement in the showcase component templates Galleria and PhotoSwipe in the install directory
@@ -2914,8 +2914,99 @@ Release 08/2017
 - Bug fix: The home screen did use a wrapper function instead of JS function hcms_html5file in order to verify HTML5 support
 - Bug fix: Function userlogin in Security API did not set the user name for log entries in case the users hash has been used for logon
 - Bug fix: log_list did not load custom log file due to missing input for function loadlog
+
+Version 7.0.10
+Release 09/2017
+- Modifications in function uploadfile in Main API in order to support new result array parameters
+- Modifications in service uploadfile in order to support the upload of additional text content (HTTP Post array variable must be named "text" and use the text-ID as key and the text content as value)
+- Modifications in the showcase component template "Upload" in the install directory in order to support additional text content
+- Modifications in function deletefolder, editmediaobject, and unpublishobject in Main API in order to correct location input parameters (tailing slash)
+- Implementation of new main configuration setting $mgmt_config['publication_log'] for publication logs
+- Implementation of new main configuration setting $mgmt_config['eventlog_notify'] for automated notification of users on global errors or warnings
+- Modifications in function savelog in Main API in order to support publication logs and user notifications
+- Modifications in function editpublication in Main API in order to support user notifications for system error or warning events
+- Implementation of user notification settings in control_log_menu
+- Modifications in service sendmail in order to stop execution of service if the mail file is not present
+- Implementation of new function update_config_7010 in Update API in order to add new setting to all publication configurations
+- Modifications in user_objectlist for an increased height of the user_edit window
+- Modifications in function deletelog in Main API in order to support publication logs
+- Changed $mgmt_config['max_digits_filename'] to 400 in main configuration
+- Design modifications in popup_notify in order to include labels for all checkboxes
+- Change of navigation tree node name for publication logs
+- Modifications in various functions in Main API in order to create event log entries on success
+- Modifications in function getwallpaper in Get API and function checkdiskkey in Security API due to new domain for key and wallpaper service
+- Modifications in function createthumbnail_video and createimages_video in Media API in order to verify video file input
+- Removed mp2 file extension from video files in /include/format.ext.inc.php
+- Changed default video thumbnail size to 640x480 px in main configuration
+- Removed txt file extension from $mgmt_imagepreview in default main configuration
+- Modifications in function createdocument in order to support the conversion of plain text files and documents to images using libreoffice instead of UNOCONV
+- Removed format conversion verification based on $mgmt_docconvert in the main configuration in function createdocument in Media API
+- Update of the administrator manuals
+- Minor modifications in function GCspeech2text in the Cloud API of the Connector module
+- Modifications in function importmetadata in Meta API in order to transform special characters in content IDs provided in CSV-files
+- Modifications in function sendresetpassword in order to verify if the user exists
+- Modifications in service savecontent in order to log new information event
+- Implementation of new main configuration setting $mgmt_config['loglevel'] for the definition of the log level (all, warning, error)
+- Modifications in function accessgeneral in Security API in order to resolve symbolic links
+- Modifications in function savelog in order to support reporting based on log levels
+- Modifications in control_user_menu and user_objectlist in order to support the search of users without a publication membership
+- Modifications in function valid_publicationname in Security API and remote client in order to verify *no_memberof* as publication name
+- Modifications in function createuser and deleteuser in Main API in order to support the publication name *no_memberof*
+- Modifications in user_edit and frameset_user in order to support the publication name *no_memberof*
+- Update of GetID3 library to version 1.9.15
+- Update of TCPDF library to version 6.2.13
+- Removed speech2text library due to support by Connector Module of Enterprise Edition
+- Update of JQuery to version 3.3.1 includig all modifications in the system and the plugins
+- Update to JQuery 1.12.4 of explorer, explorer_imageview, frameset_mobile, image_rendering, media_rendering, workflow_folder_form
+- Update to JQuery 1.12.4 and 3.3.1 of templates in install directory
+- Modifications in user_sendlink in order to exclude image formats for documents and to support longer list of formats
+- Modifications in template Breadcrump in install directory
+- Modifications in install script in order to use local jquery file
+- Implementation of new Google libraries in Connector for Youtube support
+- Implementation of overlay instead of popup in frameset_content for Youtube upload
+- Modifications in function showmedia in order to support Youtube upload in overlay
+- Modifications in Youtube Connector in  order to support overlay and new Google OAuth API and new token file name for each publication
+- Bug fix: control_user_menu used wrong image for disabled registration icon
+- Implementation of new service getusersonline in order to provide a list of all active users
+- Modifications in chat in order to reload chat users every 10 seconds
+- Modifications in function getusersonline in Get API in order to include support user and support publication filtering based on new input parameter
+- Modifications in function writesession in Security API in order to save publication access
+- Modifications in createpublication and deletepublication in Main API in order to provide publication access to function writesession
+- Removed language selector from installation routine (default language is English)
+- Minor changes in chat service
+- Modifications in function savelog in Main API in order to rest/delete log file if it exceeds 12 GB of file size
+- Modifications in explorer in order to activate template media node for DAM publications
+- Implementation of new function unescapeview in template engine in order to unescape all system specific code segements from a string
+- Modifications in template engine in order to include template engine for usage in scripts
+- Modifications in function uploadtomediacat in Main API in order to verify and exclude server side scripts for upload
+- Design modifications in control_medi_menu
+- Implementation of new function zipfiles_helper in Media API for basic zip file system support
+- Design modifications in most control menus
+- Modifications in function accesspermission in Security API in order to support the logging of warnings
+- Modifications in page_view regarding the verification of the DAM and rootpermission
+- Implementation of new function settemplate in Set API in order to set the tempate for single and multiple objects
+- Modifications in template_change in order to change templates recursively for all objects in a folder
+- Modifications in function createaccesslink, createobjectaccesslink, createwrapperlink, and createdownloadlink in Main API in order to correct object names
+- Modifications in Home screen and all design themes in order to add the new CSS class hcmsHomeSpacer
+- Bug fix: JS function nextEditWindow in popup_upload_html was outside of scope for iframe function call
+- Bug fix: Function rdbms_searchcontent in DB Connect had an error in the SQL statement for counting the result rows due to a missing space
+- Bug fix: userlogin dislpayed error messages twice
+- Bug fix: function createdocument did not verify the target format before calling createmedia for thumbnail creation
+- Bug fix: function manipulateobject did not verify container ID and media file name before writing it to the object file
+- Bug fix: Variable mediafile and contentfile have not been verified in template engine
+- Bug fix: Function accessgeneral in Security API did not verify the repository path in a page root
+- Bug fix: Function selectcontent and selectxmlcontent in XML API did perform a case insensitve search for the condition
+- Bug fix: editor/media_frameset used wrong reference for main.js
+- Bug fix: Function showcompexplorer in UI API did not use full path as reference to JS sources
+- Bug fix: Function shomedia did not HTML decode the JS variable vtt_confirm
+- Bug fix: Changed position:fixed to absolute due to issues with MS Edge positioning of chat users selector
+- Bug fix: Youtube connector did not split tag string into array for Google API method setTags
+- Bug fix: Installation routine did not verify SMTP definitions
+- Bug fix: Template engine did not verify the usage of the XML declaration inside a template script
+- Bug fix: Daily job did not access the results of function rdbms_getdeletedobjects roperly in order to empty recycle bin
+- Bug fix: Function rdbms_createobject in DB Connect accepted an object path with a tailing slash
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.9";
+$mgmt_config['version'] = "Version 7.0.10";
 ?>

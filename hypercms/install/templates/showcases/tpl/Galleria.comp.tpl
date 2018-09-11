@@ -55,7 +55,7 @@ scriptend]
       <br />
       <table>
         <tr>
-          <td>Select Picture / Folder <!-- [hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' onPublish='hidden'] --></td><td><img src="[hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' thumbnail='yes' onEdit='hidden']" /></td>
+          <td>Select Picture / Folder <!-- [hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' onPublish='hidden'] --></td><td>[hyperCMS:scriptbegin if (strpos ("[hyperCMS:mediafile id='picture' onEdit='hidden']", "Null_media") == false) echo "Done"; scriptend]</td>
         </tr>
         <tr>
           <td>Width of stage</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='galleriaWidth' label='Width of stage' constraint='isNum' default='800' height='15' width='100']</div> px</td>
@@ -94,6 +94,11 @@ scriptend]
       <br />
       <br />
       <textarea id="codesegment" wrap="VIRTUAL" style="height:80px; width:98%">[hyperCMS:scriptbegin echo html_encode($embed_code); scriptend]</textarea>
+      <br />
+      <hr/>
+      <strong>Online view</strong>
+      <br />
+      [hyperCMS:scriptbegin if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_cms']."?wl=$hash' scrolling='no' frameborder=0 border=0 width='".$galleriaWidth."' height='".$galleriaHeight."' style='border:1px solid grey; background-color:#000000;'></iframe>"; scriptend]
     </div>
   </body>
 </html>
@@ -107,10 +112,7 @@ scriptend]
 <html>
   <head>
     <meta charset='utf-8'/>	
-[hyperCMS:scriptbegin
-  }
-scriptend]
-      <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-1.10.2.min.js"></script>
+      <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-1.12.4.min.js"></script>
       <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_galleria/galleria-1.2.9.min.js"></script>
       <style>
         body {
@@ -123,14 +125,10 @@ scriptend]
           height: [hyperCMS:scriptbegin echo $galleriaHeight; scriptend]px;
         }
       </style>
-[hyperCMS:scriptbegin
-  if ($view == "publish" || $view == "preview")
-  {
-scriptend]
   </head>
   <body>
+
 [hyperCMS:scriptbegin
-  } 
   // check if picture (folder) is choosen or if it exsists
   if (substr_count ($picture, "Null_media.gif") == 1)
   {
@@ -152,6 +150,7 @@ scriptend]
     {
 scriptend]
 <div id="galleria" ></div>
+
 <script>
 var data = [
 [hyperCMS:scriptbegin
@@ -171,6 +170,8 @@ scriptend]
 
         $i++;
       }
+    }
+  }
 scriptend]
 ];
 
@@ -191,11 +192,7 @@ scriptend]
     }
   });
 </script>
-[hyperCMS:scriptbegin
-    }
-  }		
-  if($view == "publish" || $view == "preview") {
-scriptend]
+
   </body>
 </html>
 [hyperCMS:scriptbegin 

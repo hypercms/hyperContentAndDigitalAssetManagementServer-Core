@@ -833,7 +833,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
       </td>
       <td style="white-space:nowrap">
         <select name="template" onChange="hcms_jumpMenu('parent.frames[\'objFrame\']',this,0)" style="width:220px;">
-          <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select-template'][$lang]); ?> ---</option>
+          <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select-template'][$lang]); ?></option>
           <?php
           $template_array = gettemplates ($site, $cat);
           

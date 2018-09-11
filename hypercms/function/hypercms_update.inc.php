@@ -1047,6 +1047,69 @@ function update_users_709 ()
   else return false;
 }
 
+// ------------------------------------------ update_config_7010 ----------------------------------------------
+// function: update_config_7010()
+// input: %
+// output: true / false
+
+// description:
+// Update to version 7.0.10 (add new notification settings)
+
+function update_config_7010 ()
+{
+  global $mgmt_config;
+
+  $logdata = loadlog ("update", "string");
+  
+  if (empty ($logdata) || strpos ($logdata, "|7.0.10|") < 1)
+  {
+    // update management config
+    $dir = $mgmt_config['abs_path_data']."config/";
+    $files = scandir ($dir);
+  
+    if (is_array ($files))
+    {
+      foreach ($files as $file)
+      {
+        // only publication config files and not the plugin config file
+        if (strpos ($file, ".conf.php") > 0 && $file != "plugin.conf.php")
+        {
+          $site_name = substr ($file, 0, strpos ($file, ".conf.php"));
+          
+          // load management config
+          $site_mgmt_config = loadfile ($dir, $file);
+          
+          // update/add settings for version 9.0.7
+          if ($site_mgmt_config != "" && strpos ($site_mgmt_config, "['eventlog_notify']") < 1)
+          {
+            // new settings
+            $code_add = "
+// Set user notification if an error or warning has been logged
+\$mgmt_config['".$site_name."']['eventlog_notify'] = \"\";
+";
+      
+            list ($code, $rest) = explode ("?>", $site_mgmt_config);
+            
+            // add new settings
+            if ($code != "") $site_mgmt_config = $code.$code_add."?>";
+            
+            // save management config
+            if ($site_mgmt_config != "") $savefile = savefile ($dir, $site_name.".conf.php", trim ($site_mgmt_config));
+            else $savefile = false;
+
+            // sys log
+            if ($savefile != true) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10106|update to version 7.0.10 failed for management configuration '".$file."'"));
+          }
+        }
+      }
+    }
+    
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.10|updated to version 7.0.10"), "update");
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -1072,5 +1135,6 @@ function updates_all ()
   update_users_706 ();
   update_database_v708();
   update_users_709();
+  update_config_7010();
 }
 ?>

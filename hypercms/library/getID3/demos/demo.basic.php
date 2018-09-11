@@ -1,18 +1,17 @@
 <?php
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 //                                                             //
 // /demo/demo.basic.php - part of getID3()                     //
 // Sample script showing most basic use of getID3()            //
-// See readme.txt for more details                             //
+//  see readme.txt for more details                            //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-die('Due to a security issue, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in '.$_SERVER['PHP_SELF']);
+die('For security reasons, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
 
 
 // include getID3() library (can be in a different directory if full path is specified)
@@ -46,7 +45,10 @@ getid3_lib::CopyTagsToComments($ThisFileInfo);
 //echo $ThisFileInfo['audio']['bitrate'];           // audio bitrate
 //echo $ThisFileInfo['playtime_string'];            // playtime in minutes:seconds, formatted string
 
-/*
- if you want to see ALL the output, uncomment this line:
-*/
-//echo '<pre>'.htmlentities(print_r($ThisFileInfo, true)).'</pre>';
+/* if you want to see all the tag data (from all tag formats), uncomment this line: */
+//echo '<pre>'.htmlentities(print_r($ThisFileInfo['comments'], true), ENT_SUBSTITUTE).'</pre>';
+
+/* if you want to see ALL the output, uncomment this line: */
+//echo '<pre>'.htmlentities(print_r($ThisFileInfo, true), ENT_SUBSTITUTE).'</pre>';
+
+

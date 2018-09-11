@@ -326,7 +326,7 @@ function openBrWindowComp (winName, features, type)
       <td colspan="2" nowrap="nowrap">
         <?php echo getescapedtext ($hcms_lang['customer-profile'][$lang]); ?> 
         <select name="condition" style="width:220px;">
-          <option value="">--------- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---------</option>
+          <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           $dir_item = @dir ($mgmt_config['abs_path_data']."customer/".$site."/");
 

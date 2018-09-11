@@ -33,12 +33,12 @@ checkusersession ($user, false);
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=1024, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <!-- Jquery and Jquery UI Autocomplete -->
-<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
 <?php
 // set time zone for user
 if (!empty ($_SESSION['hcms_timezone']) && $_SESSION['hcms_timezone'] != "standard")

@@ -141,8 +141,20 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                 // must be content ID
                 else
                 {
+                  // replace special characters and spaces in IDs
+                  if (function_exists ("iconv")) $temp = iconv ('UTF-8', 'ISO-8859-1//TRANSLIT//IGNORE', $data[$c]);
+                  
+                  // reset on conversion error
+                  if (empty ($temp)) $temp = $data[$c];
+                  
+                  // replace spaces in IDs
+                  $temp = str_replace (array(" - ", " "), array("-", "_"), $temp);
+                  
+                  // remove special characters in IDs
+                  $temp = preg_replace ("/[^a-zA-Z0-9_\\-]/", "", $temp);
+                
                   // assign content ID
-                  $id_content[$c] = $data[$c];
+                  $id_content[$c] = $temp;
                   
                   // assign article
                   if (strpos ($data[$c], ":") > 0) $art[$id_content[$c]] = "yes";

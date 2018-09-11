@@ -31,13 +31,13 @@ checkusersession ($user, false);
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=0.57, maximum-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script>
 function setviewport ()
 {
   var width = hcms_getViewportWidth();
-  alert (width);
+
   if (width > 0)
   {
     // AJAX request to set viewport width
@@ -116,6 +116,8 @@ function closeobjectview ()
   document.getElementById('objectview').src = '';
   hcms_hideInfo('objectviewLayer');
 }
+
+var popupwindow;
 
 function openBrWindowLink (url, winName, features)
 {
