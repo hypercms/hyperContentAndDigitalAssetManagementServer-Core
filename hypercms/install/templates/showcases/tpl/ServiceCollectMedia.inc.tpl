@@ -1,40 +1,34 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template>
 <name>ServiceCollectMedia</name>
-<user>hypercms</user>
+<user>admin</user>
 <category>inc</category>
 <extension></extension>
 <application></application>
-<content><![CDATA[
-[hyperCMS:scriptbegin
+<content><![CDATA[[hyperCMS:scriptbegin
+// function: sortByName()
+// description:
+// helper function for sorting outcome
 
-/*
-helper function for sorting outcome
-*/
 function sortByName ($a, $b)
 {
   return strnatcmp ($a['name'], $b['name']);
 }
 
-/*
-Retrieves the location of the given mediaTag container_id tuple and collects
-than all mediafiles of this location.
-@param string site/publication 
-@param string containerid 
-@param string mediaTagId
-@param string allowedFileExtensions e.g. ".jpg.jpeg.gif.png"
-@param string abs_comp
-@return array array of array where each array contains name / link / thumb_link of a mediafile
-*/	
-function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFileExtensions="", $metaTitleId="", $metaDescriptionId="", $filter="")
+// function: collectMedia()
+// input: publication name [string], containerid [string], mediaTagId [string], absolute component root path [string], allowedFileExtensions [.jpg.jpeg.gif.png] (optional), text ID of the image title [string] (optional), 
+//          text Id of the image description [string] (optional), filter text-ID and filter value pairs [array] (optional), search expressions [array]
+// output: result array, each array contains name / link / thumb_link of a mediafile / false on error
+
+// description:
+// Performs a media search or retrieves the location of the given mediaTag container_id tuple and collects all mediafiles of this location.
+
+function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFileExtensions=".jpg.jpeg.gif.png", $metaTitleId="", $metaDescriptionId="", $filter=array())
 {
   global $mgmt_config;
   
   // check if paramters are empty
-  if (empty ($site) || empty ($container_id) || empty ($mediaTagId) || empty ($abs_comp))
-  {
-    return false;
-  }
+  if (empty ($site) || empty ($container_id) || empty ($mediaTagId) || empty ($abs_comp)) return false;
   
   // retrieve folder of mediafile via container/mediaTagId
   $data = loadcontainer ($container_id, "work", "sys");
@@ -44,21 +38,12 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
   {
     $media = selectcontent ($data, "<media>", "<media_id>", $mediaTagId);
     
-    if($media)
-    {
-      // Fully determine Folder
-      $folder = str_replace ("%comp%", $abs_comp, dirname (current (getcontent ($media[0], "<mediaobject>"))))."/";
-    }
-    else
-    {
-      return false;
-    }
+    // Fully determine Folder
+    if ($media) $folder = str_replace ("%comp%", $abs_comp, dirname (current (getcontent ($media[0], "<mediaobject>"))))."/";
+    else return false;
   }
-  else
-  {
-    return false;
-  }
-  
+  else return false;
+
   // check if folder is empty
   if (empty ($folder) && !is_dir ($folder))
   {
@@ -91,13 +76,13 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
         $abspath = $medialocation.$item_site."/";
         
         // create thumbnail link
-        if (is_file ($thumbnail_path=$medialocation.$item_site."/".$mediafileinfo['filename'].".thumb.jpg") && filesize ($medialocation.$item_site."/".$mediafileinfo['filename'].".thumb.jpg") > 400)
+        if (is_file ($thumbnail_path=$medialocation.$item_site."/".$mediafileinfo['filename'].".thumb.jpg"))
         {	
           $thumb_link = createviewlink ($item_site, $mediafileinfo['filename'].".thumb.jpg");
         }
         else
         {
-          $thumb_link = $picture_link;
+          $thumb_link = createviewlink ($item_site, $objectinfo['media']);
         }
         
         // retrieve image size
@@ -144,6 +129,5 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
 
   return $files;
 }
-scriptend]
-]]></content>
+scriptend]]]></content>
 </template>

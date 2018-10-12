@@ -3155,10 +3155,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   }
                 }
                 
-                // add slashes if onedit=hidden
+                // escape variable and add slashes if onedit=hidden
                 if ($onedit == "hidden")
                 {
                   $contentbot = addslashes ($contentbot);
+                  $contentbot = str_replace ("\$", "\\\$", $contentbot);
                 }
               }
         
@@ -4853,7 +4854,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 }                 
               
                 if ($buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
-                {                 
+                {
+                  // escape variable and add slashes if onedit=hidden
+                  if ($onedit_file[$id][$tagid] == "hidden")
+                  {
+                    $mediaalttextbot[$id] = addslashes ($mediaalttextbot[$id]);
+                    $mediaalttextbot[$id] = str_replace ("\$", "\\\$", $mediaalttextbot[$id]);
+                  }
+                               
                   // replace hyperCMS media-tag with contentbot
                   if (!empty ($hypertag_file[$id][$tagid]))
                   {
@@ -5533,6 +5541,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                 if ($buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
                 {
+                  // escape variable and add slashes if onedit=hidden
+                  if ($onedit_href[$id][$tagid] == "hidden")
+                  {
+                    $linktextbot[$id] = addslashes ($linktextbot[$id]);
+                    $linktextbot[$id] = str_replace ("\$", "\\\$", $linktextbot[$id]);
+                  }
+                  
                   // ----------------------------- insert hyperreferenes ------------------------------
                   // replace hyperCMS link-tag with contentbot for the page view -> <a href="$linkhref" target="...">
                   if (isset ($hypertag_href[$id][$tagid]) && $hypertag_href[$id][$tagid] != "")

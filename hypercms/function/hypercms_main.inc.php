@@ -6907,8 +6907,7 @@ function deletepublication ($site_name, $user="sys")
       // content media
       deletefile ($mgmt_config['abs_path_rep']."media_cnt/", $site_name, 1);
       
-      // user
-      $errcode = "10101";
+      // load user file
       $userdata = loadlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", 5);
       
       if ($userdata != false)
@@ -7756,7 +7755,11 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
           {
             // eventsystem
             if ($eventsystem['oncreateuser_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-              oncreateuser_post ($login, $user);              
+              oncreateuser_post ($login, $user);
+              
+            // log
+            $errcode = "00010";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|new user '".$login."' has been created by user '".$user."' (".getuserip().")";  
           
             $add_onload = "window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes,width=520,height=680'); parent.frames['mainFrame'].location.reload(); ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-user-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-user'][$lang]."<br />\n";              
@@ -7772,6 +7775,11 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
         {
           // unlock file
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
+          
+              
+          // log
+          $errcode = "20010";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new user '".$login."' could not be inserted in user directory by '".$user."' (".getuserip().")";  
              
           $add_onload = "";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['user-information-cannot-be-inserted'][$lang]."</span><br />\n";
@@ -7787,6 +7795,9 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-user-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
+  
+  // save log
+  savelog (@$error);
   
   // return results
   $result = array();
@@ -8078,7 +8089,11 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         {
           // eventsystem
           if ($eventsystem['onsaveuser_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-            onsaveuser_post ($login, $user_node, $user);        
+            onsaveuser_post ($login, $user_node, $user);
+            
+          // log
+          $errcode = "00020";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|user '".$login."' has been edited by user '".$user."' (".getuserip().")";  
         
           $add_onload = "";
           $show = "<span class=hcmsHeadline>".$hcms_lang['the-user-information-was-saved-successfully'][$lang]."</span>";
@@ -8099,6 +8114,10 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       {
         //unlock file
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
+        
+        // log
+        $errcode = "20020";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|user '".$login."' could not be edited by user '".$user."' (".getuserip().")";  
         
         $add_onload = "";
         $show = "<span class=hcmsHeadline>".$hcms_lang['an-error-occurred-in-xml-manipulation'][$lang]."</span><br />\n";
@@ -8127,6 +8146,9 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
     $add_onload = "";
     $show = "<span class=hcmsHeadline>".$hcms_lang['the-user-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-user-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
   }
+  
+  // save log
+  savelog (@$error);
   
   // return results
   $result = array();
@@ -8215,7 +8237,11 @@ function deleteuser ($site, $login, $user="sys")
           
           // eventsystem
           if ($eventsystem['ondeleteuser_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-            ondeleteuser_post ($login, $user);      
+            ondeleteuser_post ($login, $user);
+            
+          // log
+          $errcode = "00030";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|user '".$login."' has been deleted by user '".$user."' (".getuserip().")";  
     
           $add_onload = "parent.frames['mainFrame'].location.reload();";
           $show = "<span class=hcmsHeadline>".$hcms_lang['all-user-information-was-removed-successfully'][$lang]."</span>\n";          
@@ -8231,6 +8257,10 @@ function deleteuser ($site, $login, $user="sys")
       {
         // unlock file
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
+        
+        // log
+        $errcode = "20030";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|user '".$login."' could not be deleted by user '".$user."' (".getuserip().")";  
         
         $add_onload = "";
         $show = "<span class=hcmsHeadline>".$hcms_lang['an-error-occurred-in-function-deletecontent'][$lang]."</span><br />\n";    
@@ -8250,7 +8280,10 @@ function deleteuser ($site, $login, $user="sys")
   {
     $add_onload = "";
     $show = "<span class=hcmsHeadline>".$hcms_lang['necessary-user-information-is-missing'][$lang]."</span><br />".$hcms_lang['please-go-back-and-select-a-user'][$lang]."\n";
-  }  
+  }
+  
+  // save log
+  savelog (@$error);
   
   // return results
   $result = array();
@@ -8343,6 +8376,10 @@ function creategroup ($site, $group_name, $user="sys")
               
             $usergroupdata = $usergroupdatanew;
             
+            // log
+            $errcode = "00040";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|new group '".$group_name."' has been created by user '".$user."' (".getuserip().")";  
+            
             $add_onload = "parent.frames['mainFrame'].location='group_edit_form.php?site=".url_encode($site)."&preview=no&group_name=".url_encode($group_name)."'; ";
             $show = "<span class=hcmsHeadline>".$hcms_lang['group'][$lang]." '".$group_name."' ".$hcms_lang['was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-group'][$lang]."<br />\n";            
             $error_switch = "no";
@@ -8361,6 +8398,10 @@ function creategroup ($site, $group_name, $user="sys")
           //unlock file
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
           
+          // log
+          $errcode = "20040";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new group '".$group_name."' could not be created by user '".$user."' (".getuserip().")";  
+          
           $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
           $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-could-not-be-inserted'][$lang]."</span>\n";         
         }
@@ -8375,6 +8416,9 @@ function creategroup ($site, $group_name, $user="sys")
       $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['group-information-is-missing-or-you-do-not-have-read-permission'][$lang]."\n";
     }
   }
+  
+  // save log
+  savelog (@$error);
   
   // return results
   $result = array();
@@ -8605,7 +8649,11 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
       {
         // eventsystem
         if ($eventsystem['onsavegroup_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-          onsavegroup_post ($group_name, $groupdata, $user);  
+          onsavegroup_post ($group_name, $groupdata, $user);
+          
+        // log
+        $errcode = "00050";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|group '".$group_name."' has been edited by user '".$user."' (".getuserip().")";  
                 
         $add_onload = "parent.location.href='group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($group_name)."&preview=no'; ";
         $show = "<span class=hcmsHeadline>".$hcms_lang['group-settings-were-updated'][$lang]."</span>\n";
@@ -8626,10 +8674,17 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
       //unlock file
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
       
+      // log
+      $errcode = "20050";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|group '".$group_name."' could not be edited by user '".$user."' (".getuserip().")";  
+      
       $add_onload = "";
       $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-information-cant-be-accessed'][$lang]."</span><br />\n".$hcms_lang['an-error-occurred-in-function-setcontent'][$lang]."\n";
     }
   }
+  
+  // save log
+  savelog (@$error);
   
   // return results
   $result = array();
@@ -8720,6 +8775,10 @@ function deletegroup ($site, $group_name, $user)
                 ondeletegroup_post ($group_name, $user);           
             
               $usergroupdata = $usergroupdatanew;
+              
+              // log
+              $errcode = "00060";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|group '".$group_name."' has been deleted by user '".$user."' (".getuserip().")";  
             
               $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
               $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-was-removed'][$lang]."</span><br />\n".$hcms_lang['all-group-information-was-successfully-removed'][$lang]."\n";
@@ -8738,6 +8797,10 @@ function deletegroup ($site, $group_name, $user)
           {
             //unlock file
             unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
+            
+            // log
+            $errcode = "20060";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|group '".$group_name."' could not be deleted by user '".$user."' (".getuserip().")";  
         
             $add_onload = "";
             $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-could-not-be-removed'][$lang]."</span><br />\n";
@@ -8767,6 +8830,9 @@ function deletegroup ($site, $group_name, $user)
       $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['users-are-still-members-of-this-group'][$lang]."\n";
     }  
   }
+  
+  // save log
+  savelog (@$error);
 
   // return results
   $result = array();
@@ -10448,6 +10514,9 @@ function createobject ($site, $location, $page, $template, $user)
               
               $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
+              
+              $errcode = "20885";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) due to a contentcount failure (contentcount.dat could not be saved)";
             }  
           }
           else
@@ -10457,12 +10526,15 @@ function createobject ($site, $location, $page, $template, $user)
        
             $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
+            
+            $errcode = "20885";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) due to a contentcount failure (contentcount.dat could not be loaded)";
           }
         }
         else
         {
-            $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-name'][$lang]."\n";
+          $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-name'][$lang]."\n";
         }
         
         if ($show == "")
@@ -10550,6 +10622,9 @@ function createobject ($site, $location, $page, $template, $user)
           {
             $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['could-not-create-new-content-container'][$lang]."\n";
+            
+            $errcode = "20885";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) because the content container could not be created";     
           }            
     
           // ------------------------ add record in link management file --------------------------------
@@ -10577,19 +10652,12 @@ function createobject ($site, $location, $page, $template, $user)
               }
               else
               {
-                // send mail
-                $mailer = new HyperMailer();
-                $mailer->AddAddress("support@hypercms.net");
-                $mailer->FromName = "hyperCMS link index failed on server: ".$_SERVER['SERVER_NAME'];
-                $mailer->Body = "Link index ".$site.".link.dat is locked!\nhyperCMS Host: ".$_SERVER['SERVER_NAME']."\n";
-                $mailer->Send();
-                
                 $result_unlock = false;
                 $result['message'] = $hcms_lang['could-not-insert-into-link-management'][$lang];
                 $auth = false;
                 
                 $errcode = "10885";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|link index file ".$site.".link.dat could not be unlocked";     
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|link index file ".$site.".link.dat could not be unlocked";     
               }
         
               if ($result_unlock == true)
@@ -10625,7 +10693,7 @@ function createobject ($site, $location, $page, $template, $user)
             if ($test == false)
             {
               $errcode = "10882";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|working container $contentfile.wrk could not be saved";                
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|working container ".$contentfile.".wrk could not be saved";                
             }
                     
             // save container initally since savecontainer only saves data to existing containers
@@ -10637,7 +10705,7 @@ function createobject ($site, $location, $page, $template, $user)
             if ($test == false)
             {
               $errcode = "10883";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|container $contentfile could not be saved";                
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|container ".$contentfile." could not be saved";                
             } 
 
             if ($test != false)
@@ -10675,6 +10743,10 @@ function createobject ($site, $location, $page, $template, $user)
               {
                 $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
                 $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
+                
+                // log entry
+                $errcode = "10101";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object '".$pagefile."'could not be created by user '$user' ($site, $location_esc, $page) due to missing write permissions for the object file";    
               }
               // on success
               else
@@ -10692,7 +10764,7 @@ function createobject ($site, $location, $page, $template, $user)
                 
                 // information log entry
                 $errcode = "00102";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|new object created by user '$user' ($site, $location_esc, $page)";     
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|new object created by user '$user' ($site, $location_esc, $page)";     
                             
                 // remote client
                 remoteclient ("save", "abs_path_".$cat, $site, $location, "", $pagefile, "");                 
@@ -10710,14 +10782,22 @@ function createobject ($site, $location, $page, $template, $user)
             else
             {
               $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-content-container'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";            
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-content-container'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";          
+              
+              // log entry
+              $errcode = "10102";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) due to missing write permissions for the container";     
             }
           }
           // if user has no access to the workflow or link management failed
           else
           {
             $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-workflow-access-permissions'][$lang]."\n";        
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-workflow-access-permissions'][$lang]."\n";
+            
+            // log entry
+            $errcode = "30102";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) due to missing workflow access permissions";     
           } 
         }     
       }
@@ -10725,6 +10805,10 @@ function createobject ($site, $location, $page, $template, $user)
       {
         $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-selected-no-template'][$lang]."</span><br />\n".$hcms_lang['please-select-a-template'][$lang]."\n";
+        
+        // log entry
+        $errcode = "20211";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) due to a missing template";
       }      
     }
   }
@@ -10732,6 +10816,10 @@ function createobject ($site, $location, $page, $template, $user)
   {
     $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-fill-in-a-name'][$lang]."\n";
+    
+    // log entry
+    $errcode = "20212";
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) due to wrong or missing input";
   }   
   
   // save log

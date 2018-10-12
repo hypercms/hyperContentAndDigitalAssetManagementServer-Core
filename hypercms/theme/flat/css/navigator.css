@@ -122,6 +122,13 @@ img
   filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='180',strength='4');
 }
 
+.hcmsObjectGalleryMarker
+{
+  cursor: pointer;
+  display: block;
+  text-align: center;
+}
+
 .hcmsButton
 {
   cursor: pointer;

@@ -1412,17 +1412,8 @@ else
     var pos1, pos2;
     var latlng1, latlng2;
     
-    var mapOptions = {
-        zoom: 1,
-        center: new google.maps.LatLng(0, 0),
-        disableDefaultUI: true,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    
-    function initMap ()
+    function initRectangle ()
     {
-      map = new google.maps.Map(document.getElementById('map'), mapOptions);
-      
       rect = new google.maps.Rectangle({
         map: map,
         strokeColor: '#359FFC', 
@@ -1431,35 +1422,84 @@ else
         strokeWeight: 0.9,
         clickable: false
       });
+    }
+    
+    function initMap ()
+    {
+      var mapOptions = {
+          zoom: 1,
+          center: new google.maps.LatLng(0, 0),
+          disableDefaultUI: true,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+    
+      map = new google.maps.Map(document.getElementById('map'), mapOptions);
       
-      document.getElementById('map').onmousedown = function(e)
-      {
+      <?php if (!$is_mobile) { ?>  
+      initRectangle();
+      
+      document.getElementById('map').onmousedown = function(e) {
+        e = e || window.event;
+        
         // right mouse click
         if ((e.which && e.which == 3) || (e.button && e.button == 2))
         {
           rightclick = true;
-          setTimeout (hcms_hideContextmenu, 50);
+          
+          // hide context menu
+          setTimeout (hcms_hideContextmenu, 10);
+        }
+        // left mouse click
+        else if ((e.which && (e.which == 0 || e.which == 1)) || (e.button && (e.button == 0 || e.button == 1)))
+        {
+          map.setOptions({draggable: true});
+
+          if (rect)
+          {
+            // reset rectangle
+            rect.setMap(null);
+            initRectangle();
+            
+            document.forms['searchform_advanced'].elements['geo_border_sw'].value = '';
+            document.forms['searchform_advanced'].elements['geo_border_ne'].value = '';
+          }
         }
       }
     
       google.maps.event.addListener(map, 'mousedown', function(e) {
-        map.draggable = false;
+        map.setOptions({draggable: false});
+        
+        // current position on the map
         latlng1 = e.latLng;
         dragging = true;
         pos1 = e.pixel;
       });
     
       google.maps.event.addListener(map, 'mousemove', function(e) {
+        // current position on the map
         latlng2 = e.latLng;
-        showRect();
+    
+        // display rectangle
+        if (dragging && rightclick)
+        {
+          if (rect === undefined)
+          {
+            rect = new google.maps.Rectangle({
+                map: map
+            });
+          }
+          
+          var latLngBounds = new google.maps.LatLngBounds(latlng1, latlng2);
+          rect.setBounds(latLngBounds);
+        }
       });
      
       google.maps.event.addListener(map, 'mouseup', function(e) {
-        map.draggable = true;
+        map.setOptions({draggable: true});
         dragging = false;
         rightclick = false;
     
-        if (rect)
+        if (rect && rect.getBounds() !== undefined)
         {
           var borderSW = rect.getBounds().getSouthWest();
           var borderNE = rect.getBounds().getNorthEast();
@@ -1468,22 +1508,19 @@ else
           document.forms['searchform_advanced'].elements['geo_border_ne'].value = borderNE;
         }
       });
-    }
-    
-    function showRect ()
-    {
-      if (dragging && rightclick)
-      {
-        if (rect === undefined)
+      
+      <?php } else { ?>
+      google.maps.event.addListener(map, 'bounds_changed', function() {
+        if (map.getBounds() !== undefined)
         {
-          rect = new google.maps.Rectangle({
-              map: map
-          });
-        }
+          var borderSW = map.getBounds().getSouthWest();
+          var borderNE = map.getBounds().getNorthEast();
         
-        var latLngBounds = new google.maps.LatLngBounds(latlng1, latlng2);
-        rect.setBounds(latLngBounds);
-      }
+          document.forms['searchform_advanced'].elements['geo_border_sw'].value = borderSW;
+          document.forms['searchform_advanced'].elements['geo_border_ne'].value = borderNE;
+        }
+      });
+      <?php } ?>
     }
     
     function activateFulltextSearch ()

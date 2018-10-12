@@ -109,7 +109,7 @@ $action = getrequest ("action");
 $password = getrequest ("password");
 $confirm_password = getrequest ("confirm_password");
 $realname = getrequest_esc ("realname");
-$language = getrequest_esc ("language");
+$language = getrequest_esc ("language", "objectname", "en");
 $email = getrequest_esc ("email");
 
 $db_host = getrequest_esc ("db_host");
@@ -245,7 +245,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
   {
     if (trim ($password) != "" && trim ($confirm_password) != "" && trim ($language) != "" && trim ($email) != "")
     {
-      $result = edituser ("*Null*", "admin", "", trim ($password), trim ($confirm_password), "1", $realname, $language, "standard", trim ($email), "", "", "", $user);
+      $result = edituser ("*Null*", "admin", "", trim ($password), trim ($confirm_password), "1", $realname, $language, "", "standard", trim ($email), "", "", "", $user);
       if ($result['result'] == false) $show .= "<li>".strip_tags ($result['message'])."</li>\n";
     }
     else $show .= "<li>Please provide all information for the Administrator Account</li>\n";

@@ -1,5 +1,6 @@
 <?php
 $tempfile_patterns = array (
+  '/^.*\.recycle$/',    // object in recycle bin
   '/^__MACOSX$/',    // OS/X folder
   '/^\._(.*)$/',     // OS/X resource forks
   '/^.DS_Store$/',   // OS/X custom folder settings

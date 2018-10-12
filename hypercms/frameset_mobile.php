@@ -106,11 +106,12 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
   <!-- header -->
   <div id="topbar" class="ui-header ui-bar-b" data-role="header">
-    <a href="#navigator">Navigator</a>
+    <?php if (!is_array ($hcms_linking)) { ?><a href="#navigator">Navigator</a><?php } ?>
     <h1>hyperCMS <?php echo ucfirst ($hcms_themename); ?></h1>
     <?php if (empty ($hcms_assetbrowser) && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true && !$is_iphone) { ?><a href="#chat"><?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?></a><?php } ?>
   </div> 
 
+  <?php if (!is_array ($hcms_linking)) { ?>
   <!-- navigator panel -->
   <div id="navigator" data-role="panel" data-position="left" data-display="overlay" style="padding:0; margin:0; width:260px;">
     <div class="ui-bar-b" style="position:absolute; top:0; left:0; width:258px;">
@@ -134,6 +135,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
       <iframe id="navFrame" src="explorer.php" frameBorder="0" style="border:0; width:260px;"></iframe>
     </div>
   </div>
+  <?php } ?>
   
   <!-- content -->
   <div id="content" data-role="content" style="padding:0; margin:0;">

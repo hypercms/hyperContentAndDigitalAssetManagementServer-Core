@@ -796,7 +796,6 @@ else
 
 <!-- toolbar -->
 <div class="hcmsToolbar" <?php if (!$is_mobile) echo "style=\"white-space:nowrap; min-width:820px;\""; ?>>
-  <?php if (!$is_mobile) { ?>
   <div class="hcmsToolbarBlock">
     <?php
     if (
@@ -825,7 +824,6 @@ else
     }
     ?> 
   </div>
-  <?php } ?>
   
   <div class="hcmsToolbarBlock">
     <?php
@@ -1275,7 +1273,7 @@ else
     if (@$hcms_linking['type'] != "Object" && $from_page == "" && $mgmt_compress['.zip'] != "" && 
         ($usedby == "" || $usedby == $user) && 
          $page != "" &&  
-         $setlocalpermission['root'] == 1 && $cat != "page"
+         $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1 && $cat != "page"
        )
     {
       echo "

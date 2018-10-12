@@ -324,7 +324,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
         {
           foreach ($user_array[$site_name] as $login => $value)
           {
-            if ($login != "admin")
+            if ($login != "admin" && $login != "sys")
             {
               if (@$mgmt_config[$site_name]['accesslinkuser'] == $login) $selected = "selected=\"selected\"";
               else $selected = "";

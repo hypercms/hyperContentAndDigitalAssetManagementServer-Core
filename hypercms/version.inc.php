@@ -149,7 +149,7 @@ Release 09/2010 - 06/2012
 - New crop images feature 
 - Minor bug fixes
 - Improved send link form (including user search and tabs)
-- New CKeditor as rich text editor integrated to suppoprt Google Chrone and Safari
+- New CKeditor as rich text editor integrated to suppoprt Google Chrome and Safari
 - Redesign of GUI incl. shadow effects
 - hashcode for users for webdav support
 - Access to (nested) folders can be excluded via folder access defined in groups
@@ -2652,7 +2652,7 @@ Release 05/2017
 - Updates in all functions of the Google Cloud Connector
 - Implementation of Google Video Intelligence service in Connector and in function setmetadata in Meta API
 - Added support for Google JSON key file to main configuration
-- Removed Google Translater API in Connector
+- Removed Google Translator API in Connector
 - Implementation of auto class loader for Google Vision and Google Translate API in Connector libraries
 - Implementation of Google Vision service in Connector and in function setmetadata in Meta API
 - Implementation of new main configuration settings for the Google Cloud Services
@@ -2956,7 +2956,7 @@ Release 09/2017
 - Update of GetID3 library to version 1.9.15
 - Update of TCPDF library to version 6.2.13
 - Removed speech2text library due to support by Connector Module of Enterprise Edition
-- Update of JQuery to version 3.3.1 includig all modifications in the system and the plugins
+- Update of JQuery to version 3.3.1 including all modifications in the system and the plugins
 - Update to JQuery 1.12.4 of explorer, explorer_imageview, frameset_mobile, image_rendering, media_rendering, workflow_folder_form
 - Update to JQuery 1.12.4 and 3.3.1 of templates in install directory
 - Modifications in user_sendlink in order to exclude image formats for documents and to support longer list of formats
@@ -2976,15 +2976,15 @@ Release 09/2017
 - Minor changes in chat service
 - Modifications in function savelog in Main API in order to rest/delete log file if it exceeds 12 GB of file size
 - Modifications in explorer in order to activate template media node for DAM publications
-- Implementation of new function unescapeview in template engine in order to unescape all system specific code segements from a string
+- Implementation of new function unescapeview in template engine in order to unescape all system specific code segments from a string
 - Modifications in template engine in order to include template engine for usage in scripts
 - Modifications in function uploadtomediacat in Main API in order to verify and exclude server side scripts for upload
-- Design modifications in control_medi_menu
+- Design modifications in control_media_menu
 - Implementation of new function zipfiles_helper in Media API for basic zip file system support
 - Design modifications in most control menus
 - Modifications in function accesspermission in Security API in order to support the logging of warnings
 - Modifications in page_view regarding the verification of the DAM and rootpermission
-- Implementation of new function settemplate in Set API in order to set the tempate for single and multiple objects
+- Implementation of new function settemplate in Set API in order to set the template for single and multiple objects
 - Modifications in template_change in order to change templates recursively for all objects in a folder
 - Modifications in function createaccesslink, createobjectaccesslink, createwrapperlink, and createdownloadlink in Main API in order to correct object names
 - Modifications in Home screen and all design themes in order to add the new CSS class hcmsHomeSpacer
@@ -2995,7 +2995,7 @@ Release 09/2017
 - Bug fix: function manipulateobject did not verify container ID and media file name before writing it to the object file
 - Bug fix: Variable mediafile and contentfile have not been verified in template engine
 - Bug fix: Function accessgeneral in Security API did not verify the repository path in a page root
-- Bug fix: Function selectcontent and selectxmlcontent in XML API did perform a case insensitve search for the condition
+- Bug fix: Function selectcontent and selectxmlcontent in XML API did perform a case insensitive search for the condition
 - Bug fix: editor/media_frameset used wrong reference for main.js
 - Bug fix: Function showcompexplorer in UI API did not use full path as reference to JS sources
 - Bug fix: Function shomedia did not HTML decode the JS variable vtt_confirm
@@ -3003,10 +3003,47 @@ Release 09/2017
 - Bug fix: Youtube connector did not split tag string into array for Google API method setTags
 - Bug fix: Installation routine did not verify SMTP definitions
 - Bug fix: Template engine did not verify the usage of the XML declaration inside a template script
-- Bug fix: Daily job did not access the results of function rdbms_getdeletedobjects roperly in order to empty recycle bin
+- Bug fix: Daily job did not treat the results of function rdbms_getdeletedobjects as an array in order to empty the recycle bin
 - Bug fix: Function rdbms_createobject in DB Connect accepted an object path with a tailing slash
+
+Version 7.0.11
+Release 10/2017
+- Modifications in Security API
+- Modifications in userlogin in order to seperate messages from JavaScript code
+- Update of PHPWord library
+- Replacement of PHPExcel by PHPSpreadsheet library
+- Modifications in OpenSearch in order to include the support of RSS 2.0 enclosure tag
+- Modifications in OpenSearch in order to support RSS 2.0 feed and JSON as format of the search result
+- Implementation of new example template ServiceSearchMedia and GalleriaSearch in install directory
+- Modifications in template Galleria in install directory in order to suppress error messages if no image folder has been selected
+- Update of Connector Guide (manual)
+- Minor modifications in function getmetadata in Get API
+- Implementation of information and error event logging in function creatuser, deleteuser, edituser, creategroup, deletegroup, and editgroup in Main API
+- Modifications in the geolocation search in order to support the reset of the search area by left mouse click
+- Modifications in the installation routine
+- Modification of max file length setting $mgmt_config['max_digits_filename'] in main configuration file to 236 digits (due to limit of 255 bytes on most standard linux file systems)
+- Modifications in function creatobject in Main API in order to add error log entries
+- Modifications in control_objectlist_menu in order to enable file compression only if the local permission "create" has been assigned
+- Removed sys user from user list in publication management
+- Design changes in top bar
+- Design changes in Mobile Edition
+- Modifications in the temp file search patterns in order to include objects stored in the recycle bin
+- Modifications in function clonefolder and zipfiles in Media API in order to apply function is_tempfile on selected objects and alsoverify if a folder included in the location is in the recycle bin
+- Modifications in template engine in order to escape quotes and $ for onedit=hiffen textcontent, linktext, and mediaalttext
+- Modifications in control_objectlist_menu in order to enable back button for Mobile Edition
+- Implementation of new CSS class hcmsObjectGalleryMarker for all design themes
+- Modifications in function createdocument in Media API in order to provide convert error code in log entry and to set environment variables before executing the command
+- Implementation of views bar in the monthly statistics of page_info_stats
+- Modifications in function exportxmlfiles in Import/Export API of Connector
+- Bug fix: Function userlogin in Security API did not verify the users hash, so an empty hash as input was compared to an empty hash if the users XML node can not be loaded (user does not exist)
+- Bug fix: OpenSearch API referred to an outdated language file explorer_objectlist.inc.php and used deprecated language variables
+- Bug fix: Google Maps API does not support map.draggable property anymore and has been replaced by map.setOptions({draggable: true/false});
+- Bug fix: Installation routine used old input paramaters for function edituser
+- Bug fix: Objects in the recycle bin still occur in download links
+- Bug fix: Disable Navigator button and in Mobile Edition if access links are used
+- Bug fix: libreoffice did not execute successfully due to missing home path variable
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.10";
+$mgmt_config['version'] = "Version 7.0.11";
 ?>

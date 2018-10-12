@@ -239,6 +239,7 @@ $superadmin = null;
 $hiddenfolder = null;
 $result_frameset = "";
 $show = "";
+$onload = "";
 
 // check IP and user logon name of client
 if (checkuserip (getuserip ()) == true)
@@ -297,21 +298,18 @@ if (checkuserip (getuserip ()) == true)
     // user is logged in (forward)
     if (!empty ($login_result['writesession']))
     {
-      $show = "
-      <script type=\"text/javascript\">
-      location.href='".$mgmt_config['url_path_cms'].$result_frameset."';
-      </script>
-    
-      ".$login_result['message']."\n";
+      $onload = "location.href='".$mgmt_config['url_path_cms'].$result_frameset."';";
+      
+      $show = $login_result['message'];
     }
     // login name or password are false
-    elseif (empty ($login_result['auth']) || empty ($login_result['writesession']))
+    elseif (isset ($login_result['auth']) && (empty ($login_result['auth']) || empty ($login_result['writesession'])))
     {
-      $show = str_replace ("%timeout%", $mgmt_config['logon_timeout'], $login_result['message']);
+      $show = $login_result['message'];
     }
   }
 
-  // login form
+  // login form (if login is missi8ng or failed)
   if (!isset ($login_result) || empty ($login_result['auth']))
   {
     if ($show != "") $show = "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".$show."</div>\n";
@@ -348,26 +346,31 @@ if (checkuserip (getuserip ()) == true)
       if (!empty ($mgmt_config['userregistration'])) $show .= "
         <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"location.href='userregister.php';\">".getescapedtext ($hcms_lang['sign-up'][$lang])."</div>";
   }
-  
-  // wallpaper
-  $wallpaper = "";
-
-  if ($themename != "mobile")
+  // login successful
+  else
   {
-    if (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg");
-    elseif (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.png")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.png");
-    elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
-    else $wallpaper = getwallpaper ($mgmt_config['version']);
+    $show = "<div class=\"hcmsTextWhite\" style=\"padding:5px;\">".$show."</div>\n";
   }
-
-  // save log
-  savelog (@$error);
 }
 // client ip is banned
 else
 {
-  $show = "<p class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".str_replace ("%timeout%", $mgmt_config['logon_timeout'], $hcms_lang['you-have-been-banned'][$lang])."</p>\n";
+  $show = "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".str_replace ("%timeout%", $mgmt_config['logon_timeout'], $hcms_lang['you-have-been-banned'][$lang])."</div>\n";
 }
+
+// wallpaper
+$wallpaper = "";
+
+if ($themename != "mobile")
+{
+  if (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg");
+  elseif (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.png")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.png");
+  elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
+  else $wallpaper = getwallpaper ($mgmt_config['version']);
+}
+
+// save log
+savelog (@$error);
 ?>
 <!DOCTYPE html>
 <html>
@@ -574,6 +577,8 @@ function setwallpaper ()
   return false;
   <?php } ?>
 }
+
+<?php if (!empty ($onload)) echo $onload; ?>
 </script>
 </head>
 

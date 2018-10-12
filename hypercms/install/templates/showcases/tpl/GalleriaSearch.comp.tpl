@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template>
-<name>Galleria</name>
+<name>GalleriaSearch</name>
 <user>admin</user>
 <category>comp</category>
 <extension>php</extension>
 <application>php</application>
 <content><![CDATA[[hyperCMS:objectview name='inlineview']
-[hyperCMS:tplinclude file='ServiceCollectMedia.inc.tpl']
-[hyperCMS:scriptbegin
-global $mgmt_config;	
+[hyperCMS:fileinclude file='%abs_hypercms%/config.inc.php']
+[hyperCMS:fileinclude file='%abs_hypercms%/function/hypercms_api.inc.php']
+[hyperCMS:tplinclude file='ServiceSearchMedia.inc.tpl']
+<?php
+global $mgmt_config;
 
-// INIT
+// Input
+$search = getrequest_esc ("search");
+
+// Init
 $uniqid = uniqid();
 $site = "%publication%";
-$abs_comp = "%abs_comp%";
+$abs_comp = "%abs_comp%/";
 $container_id = "%container_id%";
 $view = "%view%";
 $hash = "%objecthash%";
@@ -29,6 +34,9 @@ $pictureTagId = "picture";
 $metaTitleId = "Title";
 $metaDescriptionId = "Description";
 
+// Use search instead of all images in directory
+$mgmt_config['publicsearch'] = true;
+
 // USER ENTRIES
 $galleriaWidth = "[hyperCMS:textu id='galleriaWidth' onEdit='hidden']";
 $galleriaHeight = "[hyperCMS:textu id='galleriaHeight' onEdit='hidden']";
@@ -39,14 +47,18 @@ $filtervalue = "[hyperCMS:textu id='filterValue' onEdit='hidden']";
 // SET FILTER
 if ("[hyperCMS:textl id='filterName' onEdit='hidden']" != "")
 {
-  $filter = array ("name" => $filtername, "value" => $filtervalue);
+  $filter = array ($filtername => $filtervalue);
+}
+elseif ($search != "")
+{
+  $filter = array ($search);
 }
 else $filter = "";
 
 // CMS VIEW => get user entry and create iframe code
 if ($view == "cmsview")
 {
-scriptend]
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -77,40 +89,41 @@ scriptend]
       </table>
       <p>Please do not forget to publish this page after changing the parameters!</p>
       <hr/>
-[hyperCMS:scriptbegin
+<?php
   //check if component is published
   $objectpath = correctfile ("%abs_location%", "%object%");
   $compinfo = getfileinfo ($site, $objectpath, "comp");
 
   if ($compinfo['published'])
   {
-    $embed_code = "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_cms']."?wl=".$hash."' scrolling='no' frameborder=0 border=0 width='".$galleriaWidth."' height='".$galleriaHeight."'></iframe>";
+    $embed_code = "<iframe id='frame_$uniqid' src='%url_location%/%object%' scrolling='no' frameborder=0 border=0 width='".$galleriaWidth."' height='".$galleriaHeight."'></iframe>";
   }
   else
   {
     $embed_code = "Component is not published yet!";
   }
-scriptend]
+?>
       <strong>HTML body segment</strong>
       <br />
       Mark and copy the code from the text area box (keys ctrl + A and Ctrl + C for copy or right mouse button -> copy).  Insert this code into your HTML Body of the page, where the snippet will be integrated (keys Crtl + V or right mouse button -> insert).
       <br />
       <br />
-      <textarea id="codesegment" wrap="VIRTUAL" style="height:80px; width:98%">[hyperCMS:scriptbegin echo html_encode($embed_code); scriptend]</textarea>
+      <textarea id="codesegment" wrap="VIRTUAL" style="height:80px; width:98%"><?php echo html_encode($embed_code); ?></textarea>
       <br />
       <hr/>
       <strong>Online view</strong>
       <br />
-      [hyperCMS:scriptbegin if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_cms']."?wl=$hash' scrolling='no' frameborder=0 border=0 width='".$galleriaWidth."' height='".$galleriaHeight."' style='border:1px solid grey; background-color:#000000;'></iframe>"; scriptend]
+      <?php if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='%url_location%/%object%' scrolling='no' frameborder=0 border=0 width='".$galleriaWidth."' height='".$galleriaHeight."' style='border:1px solid grey; background-color:#000000;'></iframe>"; ?>
     </div>
   </body>
 </html>
-[hyperCMS:scriptbegin
+
+<?php
 }
 elseif ($view == "publish" || $view == "preview")
 {
   //published file should be a valid html
-scriptend]
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -121,23 +134,48 @@ scriptend]
         body {
           margin: 0px;
           padding: 0px;
+          background-color: #000000;
+        }
+
+        #search {
+          padding: 10px;
+        }
+
+        #search input {
+          padding: 5px;
+        }
+
+        #search button {
+          padding: 5px;
+          border: 0;
+          background-color: #666666;
+          color: #FFFFFF;
         }
         
         #galleria {
-          width: [hyperCMS:scriptbegin echo $galleriaWidth; scriptend]px;
-          height: [hyperCMS:scriptbegin echo $galleriaHeight; scriptend]px;
+          width: <?php if ($galleriaWidth > 0) echo $galleriaWidth; else echo "800"; ?>px;
+          height: <?php if ($galleriaHeight > 0) echo $galleriaHeight; else echo "600"; ?>px;
         }
       </style>
   </head>
   <body>
 
+
+<?php if (!empty ($mgmt_config['publicsearch']) && "[hyperCMS:textl id='filterName' onEdit='hidden']" == "") { ?>
+  <div id="search">
+    <form action="">
+      <input type="text" name="search" value="<?php echo $search; ?>" placeholder="Expression" />
+      <button>Search</button>
+    </form>
+  </div>
+<?php } ?>
+
   <div id="galleria"></div>
 
 <script>
 var data = [
-[hyperCMS:scriptbegin
-  // check if picture (folder) is choosen or if it exsists
-  if (!empty ($picture) && substr_count ($picture, "Null_media.gif") != 1)
+<?php
+  if (!empty ($filter) && sizeof ($filter) > 0)
   {
     $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions, $metaTitleId, $metaDescriptionId, $filter);
 
@@ -148,20 +186,20 @@ var data = [
       foreach ($mediaFiles as $media)
       {
         if ($i > 0) echo "    ,\r\n";
-scriptend]
+?>
     {
-        image: '[hyperCMS:scriptbegin echo $media['link']; scriptend]',
-        thumb: '[hyperCMS:scriptbegin echo $media['thumb_link']; scriptend]',
-        title: '[hyperCMS:scriptbegin echo (empty($media['title']) ? $media['name'] : $media['title']); scriptend]',
-        description: '[hyperCMS:scriptbegin  echo (empty($media['description']) ? $media['name'] : $media['description']); scriptend]'
+        image: '<?php echo $media['link']; ?>',
+        thumb: '<?php echo $media['thumb_link']; ?>',
+        title: '<?php echo (empty($media['title']) ? $media['name'] : $media['title']); ?>',
+        description: '<?php  echo (empty($media['description']) ? $media['name'] : $media['description']); ?>'
     }
-[hyperCMS:scriptbegin
+<?php
 
         $i++;
       }
     }
   }
-scriptend]
+?>
 ];
 
   // Load the classic theme
@@ -171,7 +209,7 @@ scriptend]
   $('#galleria').galleria({
      lightbox: false,
      thumbnails: 'lazy',
-     showInfo: [hyperCMS:scriptbegin if (!empty ($showInfo)) echo "true"; else echo "false";  scriptend],
+     showInfo: <?php if (!empty ($showInfo)) echo "true"; else echo "false";  ?>,
      dataSource: data,
 
      // extend options              
@@ -184,8 +222,7 @@ scriptend]
 
   </body>
 </html>
-[hyperCMS:scriptbegin 
+<?php
 }
-scriptend]
-]]></content>
+?>]]></content>
 </template>

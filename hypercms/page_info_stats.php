@@ -138,22 +138,28 @@ if (!empty ($container_id))
 {  
   if ($page == ".folder")
   {
+    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc.$page, "");
     $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc.$page, "");
     $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc.$page, "");
   }
   elseif ($media != "")
   {
+    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", intval ($container_id), "", "");
     $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "");
     $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", intval ($container_id), "", "");
   }
   else
   {
+    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", intval ($container_id), "", "", "object");
     $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "", "object");
   }
 
   $date_axis = array();
+  $view_axis = array();
   $download_axis = array();
   $upload_axis = array();
+  $view_total_filesize = 0;
+  $view_total_count = 0;
   $download_total_filesize = 0;
   $download_total_count = 0;
   $upload_total_filesize = 0;
@@ -166,6 +172,32 @@ if (!empty ($container_id))
     
     if (strlen ($i) == 1) $day = "0".$i;
     else $day = $i;
+    
+    // views
+    $view_axis[$i]['value'] = 0;
+    $view_axis[$i]['text'] = "";
+    
+    if (isset ($result_view) && is_array ($result_view)) 
+    { 
+      foreach ($result_view as $row)
+      {
+        if ($row['date'] == $date_year."-".$date_month."-".$day)
+        {
+          if ($view_axis[$i]['text'] != "") $seperator = ", ";
+          else $seperator = "";
+   
+          $view_axis[$i]['value'] = $view_axis[$i]['value'] + $row['count'];
+          $view_axis[$i]['text'] = $view_axis[$i]['text'].$seperator.$row['user'];
+          
+          // total
+          $view_total_count = $view_total_count + $row['count'];
+          $view_total_filesize = $view_total_filesize + ($row['count'] * $row['filesize']);
+        }
+      }
+      
+      // bar text
+      $view_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$view_axis[$i]['value']." ".getescapedtext ($hcms_lang['views'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$view_axis[$i]['text'];
+    }
 
     // downloads
     $download_axis[$i]['value'] = 0;
@@ -222,13 +254,14 @@ if (!empty ($container_id))
     
   if (is_array ($download_axis) || is_array ($upload_axis))
   {
-    $chart = buildbarchart ("chart", 700, 400, 10, 40, $date_axis, $download_axis, $upload_axis, "", "border:1px solid #666666; background:white;", "background:#3577ce; font-size:10px; cursor:pointer;", "background:#ff8219; font-size:10px; cursor:pointer;", "background:#73bd73; font-size:10px; cursor:pointer;");
+    $chart = buildbarchart ("chart", 700, 400, 10, 40, $date_axis, $view_axis, $download_axis, $upload_axis, "border:1px solid #666666; background:white;", "background:#6fae30; font-size:10px; cursor:pointer;", "background:#108ae7; font-size:10px; cursor:pointer;", "background:#ff8219; font-size:10px; cursor:pointer;");
     echo $chart;
   }
 }
 ?>
   <div style="margin:30px 0px 0px 40px;">
-    <div style="height:16px;"><div style="width:16px; height:16px; background:#3577ce; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['downloads'][$lang])." (".number_format ($download_total_count, 0, "", ".")." Hits / ".number_format (($download_total_filesize / 1024), 0, "", ".")." MB)"; ?></div>
+    <div style="height:16px;"><div style="width:16px; height:16px; background:#6fae30; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['views'][$lang])." (".number_format ($view_total_count, 0, "", ".")." Hits / ".number_format (($view_total_filesize / 1024), 0, "", ".")." MB)"; ?></div>
+    <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#108ae7; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['downloads'][$lang])." (".number_format ($download_total_count, 0, "", ".")." Hits / ".number_format (($download_total_filesize / 1024), 0, "", ".")." MB)"; ?></div>
     <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['uploads'][$lang])." (".number_format ($upload_total_count, 0, "", ".")." Hits / ".number_format (($upload_total_filesize / 1024), 0, "", ".")." MB)"; ?></div>
   </div>
   
@@ -239,9 +272,9 @@ if (!empty ($container_id))
     echo "
     <table border=\"0\" celspacing=\"2\" cellpadding=\"1\">
       <tr>
-        <td class=\"hcmsHeadline\" width=\"150\" nowrap=\"nowrap\">Download </td>
-        <td class=\"hcmsHeadline\" width=\"250\" nowrap=\"nowrap\">Users/IP </td>
-        <td class=\"hcmsHeadline\" width=\"150\" nowrap=\"nowrap\">Hits </td>
+        <td class=\"hcmsHeadline\" width=\"150\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['download'][$lang])."</td>
+        <td class=\"hcmsHeadline\" width=\"250\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['users'][$lang])."/IP </td>
+        <td class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">Hits</td>
       </tr>";
   
     $color = false;

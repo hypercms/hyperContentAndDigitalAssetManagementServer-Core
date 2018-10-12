@@ -758,7 +758,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
 
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
-  
+
   if ($mgmt_config['db_connect_rdbms'] != "")
   {
     include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
@@ -766,7 +766,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
 
   // set default language
   if (empty ($lang)) $lang = "en";
-  
+
   // result array containing the following fields:
   $result = array(
       'hcms_linking' => array(),
@@ -793,7 +793,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       'objectlistcols' => array(),
       'labels' => array()
       );
-  
+
   $linking_auth = true;
   $ldap_auth = true;
   $auth = false;
@@ -802,7 +802,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   $filepasswd = Null;
   $superadmin = Null;
   $memberofnode = Null;
-  
+
   // eventsystem
   if ($eventsystem['onlogon_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
   {
@@ -856,13 +856,13 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
      
     $ldap_auth = authconnect ($sentuser, $sentpasswd);
   }
-  
+
   if ($ldap_auth && $linking_auth)
   {
     // please note: each user login name and user group name is unique!
     // load user file
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-    
+
     // user file could not be loaded (might be locked by a user)
     if ($userdata == false)
     {
@@ -894,15 +894,15 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       }
       else $userdata = false;
     }    
-     
+
     if ($userdata != false)
     {
       // updates
       updates_all ();
-    
+
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 
-      
+
       if ($charset == false || $charset == "")
       {
         // set encoding
@@ -923,61 +923,61 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
           savelog (@$error);
         } 
       }
-      
+
       // count users
       $users = substr_count ($userdata, "</user>");
-    
+
       // get user information
       if ($user != "") $usernode = selectcontent ($userdata, "<user>", "<login>", $user);
       elseif ($hash != "") $usernode = selectcontent ($userdata, "<user>", "<hashcode>", $hash);
       else $usernode = false;
-      
-      if (is_array ($usernode))
+
+      if (is_array ($usernode) && !empty ($usernode[0]))
       {
         // user name
         $userlogin = getcontent ($usernode[0], "<login>");
         if (!empty ($userlogin[0])) $fileuser = $userlogin[0];
         else $fileuser = "";
-        
+
         // password hash
         $userpasswd = getcontent ($usernode[0], "<password>");
         if (!empty ($userpasswd[0])) $filepasswd = $userpasswd[0];
         else $filepasswd = "";
-        
+
         // user hash for WebDAV
         $userhash = getcontent ($usernode[0], "<hashcode>");
         if (!empty ($userhash[0])) $result['userhash'] = $userhash[0];
         else $result['userhash'] = "";
-        
+
         // user real name
         $userrealname = getcontent ($usernode[0], "<realname>");
         if (!empty ($userrealname[0])) $result['realname'] = $userrealname[0];
         else $result['realname'] = "";
-        
+
         // user e-mail
         $useremail = getcontent ($usernode[0], "<email>");
         if (!empty ($useremail[0])) $result['email'] = $useremail[0];
         else $result['email'] = "";
-        
+
         // super admin
         $useradmin = getcontent ($usernode[0], "<admin>");
         if (!empty ($useradmin[0])) $result['superadmin'] = $superadmin = $useradmin[0];
         else $result['superadmin'] = "";
-           
+
         // language
         $userlanguage = getcontent ($usernode[0], "<language>");
         if (!empty ($userlanguage[0])) $result['lang'] = $userlanguage[0];
         else $result['lang'] = "en";
-        
+
         // language
         $usertimezone = getcontent ($usernode[0], "<timezone>");
         if (!empty ($usertimezone[0])) $result['timezone'] = $usertimezone[0];
         else $result['timezone'] = "";
-        
+
         // set language of user and load language file
         $lang = $result['lang'];        
         require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
-        
+
         // hyperCMS theme
         if (is_mobilebrowser ())
         {
@@ -986,7 +986,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         else
         {
           $usertheme = getcontent ($usernode[0], "<theme>");
-          
+
           if (!empty ($usertheme[0])) $result['themename'] = $usertheme[0];
           else $result['themename'] = "standard";
         }
@@ -995,11 +995,11 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       }
 
       // check logon
-      if ($hash == $result['userhash'] || ($user == $fileuser && (password_verify ($passwd, $filepasswd) || $filepasswd == $passwd_crypted ||$ignore_password)))
+      if ((!empty ($hash) && $hash == $result['userhash']) || ($user == $fileuser && (password_verify ($passwd, $filepasswd) || $filepasswd == $passwd_crypted || $ignore_password)))
       {
         $result['user'] = $fileuser;
         $result['passwd'] = $filepasswd;
-                
+
         // super, download or system user
         if ($user == "admin" || $user == "sys" || $user == "hcms_download" || $superadmin == "1")
         {
@@ -1008,7 +1008,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
           // set permissions and group name
           if ($user != "hcms_download") $permission_str_admin = "desktop=1111111&site=1111&user=1111&group=1111&pers=111111111&workflow=1111111111&template=11111&media=111111&component=11111111111&page=111111111";
           else $permission_str_admin = "desktop=0000000&site=0000&user=0000&group=0000&pers=000000000&workflow=0000000000&template=00000&media=000000&component=10100000000&page=000000000";
-          
+
           if ($user != "hcms_download")
           {
             $site_admin = true;  
@@ -1025,28 +1025,28 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
             foreach ($inherit_db as $key => $inherit_db_record)
             {
               $site_name = $inherit_db_record['parent'];
-              
+
               // if no publication has been created so far
               if ($key == "hcms_empty" && !valid_publicationname ($site_name))
               {
                 $site_name = "hcms_empty";
                 $site_admin = true;
-                
+
                 // deseralize the permission string and define root, global and local permissions
                 $permission_str[$site_name][$group_name_admin] = $permission_str_admin;
-                
+
                 $result['siteaccess'][] = $site_name;
                 $result['rootpermission'] = rootpermission ($site_name, $site_admin, $permission_str);
-   
+ 
                 break;
               }
               // include configuration of site
               elseif (valid_publicationname ($site_name) && is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
               {
                 @require_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
-                
+
                 $site_collection .= "|".$site_name; 
-                
+
                 // define array of excluded/hidden folders
                 if (!empty ($mgmt_config[$site_name]['exclude_folders']))
                 {
@@ -1067,14 +1067,13 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                   {
                     $result['hiddenfolder'][$site_name][0] = $excludefolders;
                   }
-                  
                 }
                 else
                 {
                   $result['hiddenfolder'][$site_name] = false;
                 }
               }
-               
+
               // access permissions to publications and folders
               $result['siteaccess'][] = $site_name;              
               $result['compaccess'][$site_name][$group_name_admin] = deconvertpath ("%comp%/".$site_name."/|", "file");              
@@ -1093,7 +1092,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                 {
                   $result['globalpermission'] = array_replace_recursive ($result['globalpermission'], $globalpermission_new);
                 }
-                
+
                 if ($localpermission_new != false)
                 {
                   $result['localpermission'] = array_replace_recursive ($result['localpermission'], $localpermission_new);
@@ -1101,7 +1100,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
               }           
             }
           }
-   
+
           $auth = true;
         }
         // other users
@@ -1110,18 +1109,18 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
           if (isset ($memberofnode) && is_array ($memberofnode))
           {
             $site_collection = "";
-            
+
             foreach ($memberofnode as $memberof)
             {
               $site_node = getcontent ($memberof, "<publication>");
               $site_name = $site_node[0];
               $result['siteaccess'][] = $site_name;
-               
+
               $usergroup = getcontent ($memberof, "<usergroup>");
               $group_string = $usergroup[0];
-              
+
               $site_collection .= "|".$site_name; 
-              
+
               // load usergroup information
               $usergroupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site_name.".usergroup.xml.php");
 
@@ -1155,13 +1154,13 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                 {
                   $result['hiddenfolder'][$site_name] = false;
                 }
-                
+
                 if ($usergroupdata != false && strlen ($group_string) > 0)
                 {
                   // user group names as array
                   if (strpos ("_".$group_string, "|") > 0) $group_array = explode ("|", trim ($group_string, "|"));
                   else $group_array = array($group_string);
-             
+
                   // if object linking is used assign group "default" if existing.
                   // user must have at least one group assigned to have access to the system!
                   if (isset ($result['hcms_linking']) && is_array ($result['hcms_linking']) && !empty ($result['hcms_linking']['location']))
@@ -1173,7 +1172,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                       $group_array[] = "default";
                     }
                   }
-                  
+
                   if (is_array ($group_array) && sizeof ($group_array) > 0)
                   {
                     // get the permissions of the group
@@ -1181,7 +1180,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                     {
                       // get usergroup information
                       $usergroupnode = selectcontent ($usergroupdata, "<usergroup>", "<groupname>", $group_name);
-                      
+
                       if ($usergroupnode != false)
                       {
                         $userpermission = getcontent ($usergroupnode[0], "<permission>");
@@ -1227,7 +1226,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                         {
                           $result['pageaccess'][$site_name][$group_name] = null;
                         }
-                        
+
                         // component access
                         if ($usercompaccess != false && strlen ($usercompaccess[0]) > 0)
                         {
@@ -1239,7 +1238,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                             if (is_array ($temp_array))
                             {
                               $folder_path = "";
-                              
+
                               foreach ($temp_array as $temp)
                               {
                                 if ($temp != "")
@@ -1258,7 +1257,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                         {
                           $result['compaccess'][$site_name][$group_name] = null;
                         }
-                        
+
                         // deseralize the permission string and define root, global and local permissions
                         if (isset ($permission_str[$site_name][$group_name]))
                         {
@@ -1279,7 +1278,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                       }
                     }
                   }
-  
+
                   $auth = true;
                 }
               }
@@ -1523,7 +1522,10 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   }
   
   // save log
-  savelog (@$error);    
+  savelog (@$error);
+  
+  // replace placeholder with value
+  if (!empty ($result['message'])) $result['message'] = str_replace ("%timeout%", $mgmt_config['logon_timeout'], $result['message']);
   
   return $result;
 }

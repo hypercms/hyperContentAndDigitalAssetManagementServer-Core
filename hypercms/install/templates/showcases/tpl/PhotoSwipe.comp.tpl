@@ -18,11 +18,14 @@ $container_id = "%container_id%";
 $view = "%view%";
 $hash = "%objecthash%";
 $correctFile = correctfile("%abs_location%", "%object%");
+
 // picture - file extensions
 $picture_extensions = ".jpg.jpeg.png.gif.bmp";
+
 // User entry - picture / folder
 $picture = "[hyperCMS:mediafile id='picture' onEdit='hidden']";
 $pictureTagId = "picture";
+
 // Metadata IDs to display
 $metaTitleId = "Title";
 $metaDescriptionId = "Description";
@@ -36,7 +39,7 @@ $filtervalue = "[hyperCMS:textu id='filterValue' onEdit='hidden']";
 // SET FILTER
 if ("[hyperCMS:textl id='filterName' onEdit='hidden']" != "")
 {
-  $filter = array ("name" => $filtername, "value" => $filtervalue);
+  $filter = array ($filtername => $filtervalue);
 }
 else $filter = "";
 

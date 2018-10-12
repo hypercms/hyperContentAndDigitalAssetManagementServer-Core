@@ -1276,7 +1276,7 @@ function getlistelements ($list_sourcefile)
 //         seperator of meta data fields [any string,array] (optional), publication name/template name to extract label names [string] (optional)
 // output: string with all metadata from given object based on container / false
 
-function getmetadata ($location, $object, $container="", $seperator="\n", $template="")
+function getmetadata ($location, $object, $container="", $seperator="\r\n", $template="")
 {
 	global $mgmt_config;
 

@@ -1651,10 +1651,10 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // ----------------------------------------------- search content ------------------------------------------------- 
 
 // function: rdbms_searchcontent()
-// input: location (optional), exlude locations/folders (optional), object-type (optional), filter for start modified date (optional), filter for end modified date (optional), 
-//        filter for template name (optional), search expression as array (optional), search expression for object/file name (optional), 
-//        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel (optional), image height in pixel (optional), primary image color as array (optional), image-type (optional), 
-//        SW geo-border as float value (optional), NE geo-border as float value (optional), maximum search results/hits to return (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional), log search expression [true/false] (optional), taxonomy level to include  as integer (optional)
+// input: location [string]] (optional), exlude locations/folders (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
+//        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), 
+//        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image color [array] (optional), image-type [portrait,landscape,square] (optional), 
+//        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned, eg. text:Title [array] (optional), count search result entries [true,false] (optional), log search expression [true/false] (optional), taxonomy level to include [integer] (optional)
 // output: result array with object paths of all found objects / false
 
 // description:

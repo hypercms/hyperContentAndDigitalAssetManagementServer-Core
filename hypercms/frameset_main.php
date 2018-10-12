@@ -189,13 +189,15 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
         <img src="<?php echo getthemelocation(); ?>img/button_logout.png" class="hcmsButtonTiny hcmsButtonSizeSquare" onclick="top.location='userlogout.php';" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
       </td>
       <td align="right" valign="middle" nowrap="nowrap">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?> </span>
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></span>&nbsp;
         <span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span>
       </td>
       <td width="20" nowrap="nowrap">&nbsp;&nbsp;</td>
-      <td width="260" align="left" valign="middle" nowrap="nowrap">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['server-time'][$lang]); ?> </span>&nbsp;<?php $servertime->InstallClock(); ?>
+      <td width="180" align="left" valign="middle" nowrap="nowrap">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?></span>&nbsp;&nbsp;
+        <?php $servertime->InstallClock(); ?>
       </td>
+      <td width="20" nowrap="nowrap">&nbsp;&nbsp;</td>
       <td width="260" nowrap="nowrap">
       <?php if (!empty ($mgmt_config['db_connect_rdbms']) && empty ($hcms_linking['object'])) { ?>
         <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">

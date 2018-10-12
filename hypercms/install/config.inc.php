@@ -469,8 +469,9 @@ $mgmt_config['maxfilesize'] = 0;
 // Maximum file size to be compressed in ZIP file in MB. set value to 0 to disable limit
 $mgmt_config['maxzipsize'] = 2000;
 
-// Maximum digits for file names (applies for createobject and uploadfile).
-$mgmt_config['max_digits_filename'] = 400;
+// Maximum digits for file names (applies for createobject and uploadfile)
+// Most linux file systems does not support more than 255 bytes
+$mgmt_config['max_digits_filename'] = 236;
 
 // Which types of files (file extensions) are not allowed for upload, example ".asp.jsp.php.pl.sql"
 $mgmt_config['exclude_files'] = ".php.pl.jsp.asp.aspx.exe.sql.sh.bash";

@@ -4570,7 +4570,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                   elseif ($file_ext == ".ods") $export_filter = ":\"OpenDocument Spreadsheet Flat XML\"";
                   else $export_filter = "";
                   
-                  $cmd = "libreoffice --headless --convert-to ".shellcmd_encode ($docformat).$export_filter." \"".shellcmd_encode ($location_source.$file)."\" --outdir \"".shellcmd_encode ($location_source)."\"";
+                  $cmd = getlocation ($mgmt_docpreview[$docpreview_ext])."libreoffice --headless --convert-to ".shellcmd_encode ($docformat).$export_filter." \"".shellcmd_encode ($location_source.$file)."\" --outdir \"".shellcmd_encode ($location_source)."\"";
                 }
                 // default UNOCONV character set is UTF-8
                 elseif (!is_image (".".$format))
@@ -4581,13 +4581,24 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                 // execute code
                 if (!empty ($cmd))
                 {
+                  // set environment variables
+                  if (!empty ($mgmt_config['os_cms']) && $mgmt_config['os_cms'] == "WIN")
+                  {
+                    putenv ("HOME=C:\\WINDOWS\\TEMP");
+                  }
+                  else
+                  {
+                    putenv ("PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin");
+                    putenv ("HOME=/tmp");
+                  }
+                  
                   @exec ($cmd." 2>&1", $error_array, $errorCode);
-  
+
                   // error if conversion failed
-                  if ($errorCode || !is_file ($location_source.$file_name.".".$docformat))
+                  if (!empty ($errorCode) || !is_file ($location_source.$file_name.".".$docformat))
                   {
                     $errcode = "20276";
-                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of libreoffice/unoconv (".$cmd.") to '".$format."' failed in createdocument for file '".$location_source.$file."' with message: ".implode(", ", $error_array);
+                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of libreoffice/unoconv (".$cmd.") to '".$format."' failed in createdocument for file '".$location_source.$file."' with message (Error code:".$errorCode."): ".implode(", ", $error_array);
                     
                     // save log
                     savelog (@$error);          
@@ -4842,11 +4853,13 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
 
         if (substr_compare ($file, ".", 0, 1) != 0 && ($user == "sys" || ($setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)))
         {
+          // recursive for folders
           if (is_dir ($source."/".$file))
           {
             clonefolder ($site, $source."/".$file, $destDir, $user, $activity);
           }
-          else
+          // exclude files matching the temp file pattern and in recycle bin  (double check of recycle bin object and location, since a folder is maybe in the recycle bin)
+          elseif (!is_tempfile ($file) && strpos ($source.$file, ".recycle") === false)
           {  
             $objectdata = loadfile ($source."/", $file);
             
@@ -5058,7 +5071,8 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
           $destinationFolder = str_replace ($commonRoot, "", $location);
           @mkdir ($tempFolder."/".$destinationFolder, $mgmt_config['fspermission'], true);
           
-          if (strpos ($location.$filename, ".recycle") === false)
+          // exclude files matching the temp file pattern and in recycle bin (double check of recycle bin object and location, since a folder is maybe in the recycle bin)
+          if (!is_tempfile ($filename) && strpos ($location.$filename, ".recycle") === false)
           {
             if ($filename != ".folder" && is_file ($location.$filename))
             {
