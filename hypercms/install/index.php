@@ -33,7 +33,7 @@ $hypercms_dir = basename (dirname (getcwd()));
 $base_path = str_replace ("\\", "/", $base_path);
 
 // url and asolute path to hyperCMS on your webserver (e.g. /home/domain/hyperCMS/)
-echo "<br><br><br>".$mgmt_config['url_path_cms'] = $mgmt_config['url_protocol'].$base_url."/".$hypercms_dir."/";
+$mgmt_config['url_path_cms'] = $mgmt_config['url_protocol'].$base_url."/".$hypercms_dir."/";
 $mgmt_config['url_path_cms_sub'] = $base_url."/".$hypercms_dir."/";
 $mgmt_config['abs_path_cms'] = $base_path."/".$hypercms_dir."/";
 
