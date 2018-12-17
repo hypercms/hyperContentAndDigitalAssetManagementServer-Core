@@ -1,6 +1,12 @@
 <?php
 /*
-Version history of the hyper Content & Digital Asset Management Server
+Version History of the hyper Content & Digital Asset Management Server
+
+General Notes:
+The final release is based on the Enterprise Edition.
+The Free Edition is a reduced Version of the Standard and Enterprise Edition.
+The release date of the Free Edition can be earlier than the listed month and year.
+
 
 Version 1.0.x
 Release 11/2001 - 05/2002
@@ -1019,10 +1025,10 @@ Release 11/2015
 - Implementation of function avoidfilecollision due to issues when manipulating encrypted files with e.g. function createmedia and the shell execute file process has not been finished
 - Removed file encryption feature from free to standard and enterprise edition
 - Improvements in hyperCMS UI
-- Bug fix: Function creatmedia did not render edited videos properly if the file has been encrypted
-- Bug fix: Function creatmedia passed wrong file name to createversion if the file has been encrypted
+- Bug fix: Function createmedia did not render edited videos properly if the file has been encrypted
+- Bug fix: Function createmedia passed wrong file name to createversion if the file has been encrypted
 - Change of watermarking in function createmedia to keep original media file without watermark
-- Bug fix: Function creatmedia did not use comma as separator when using multiple FFMPEG video filters at once
+- Bug fix: Function createmedia did not use comma as separator when using multiple FFMPEG video filters at once
 - Bug fix: The install script did not empty the %instances% place holder
 - Implementation of instances path verification in userlogin
 
@@ -2235,7 +2241,7 @@ Release 08/2017
 - Implementation of new JS function hcms_hideSelector
 - Implementation of click events in order to hide opened selector in control_objectlist_menu
 - Modifications in function showmedia in UI API with new design layout
-- Modifications in function creatmedia to support different empty values (0 and false) for the watermark parameter (wm)
+- Modifications in function createmedia to support different empty values (0 and false) for the watermark parameter (wm)
 - Removed JS function hcms_resizeFrameWidth due to changes in function switchsidebar in control_objectlist_menu
 - Implementation of columns for sorting for gallery views
 - Enabled annotations for iOS devices (iPad and iPhone)
@@ -2434,7 +2440,7 @@ Release 11/2017
 - Bug fix: Function createmedia in Media API did not set the correct size of the original video and used the size of the rendered preview video
 - Bug fix: control_objectlist_menu did not display the number of selected objects if a folder has been selected as last object
 - Bug fix: Function createmedia in Media API did not set proper width and height of cropped images if GD library has been used
-- Bug fix: component_edit_page_single did not remove seperators from single component string
+- Bug fix: component_edit_page_single did not remove separators from single component string
 - Bug fix: Template engine did not remove separators from single component string
 - Bug fix: Mail links opened in Mobile Edition did not disable the search functionality
 
@@ -2990,7 +2996,7 @@ Release 09/2017
 - Modifications in Home screen and all design themes in order to add the new CSS class hcmsHomeSpacer
 - Bug fix: JS function nextEditWindow in popup_upload_html was outside of scope for iframe function call
 - Bug fix: Function rdbms_searchcontent in DB Connect had an error in the SQL statement for counting the result rows due to a missing space
-- Bug fix: userlogin dislpayed error messages twice
+- Bug fix: userlogin displayed error messages twice
 - Bug fix: function createdocument did not verify the target format before calling createmedia for thumbnail creation
 - Bug fix: function manipulateobject did not verify container ID and media file name before writing it to the object file
 - Bug fix: Variable mediafile and contentfile have not been verified in template engine
@@ -3007,9 +3013,9 @@ Release 09/2017
 - Bug fix: Function rdbms_createobject in DB Connect accepted an object path with a tailing slash
 
 Version 7.0.11
-Release 10/2017
-- Modifications in Security API
-- Modifications in userlogin in order to seperate messages from JavaScript code
+Release 12/2017
+- Modifications and improvements in Security API
+- Modifications in userlogin in order to separate messages from JavaScript code
 - Update of PHPWord library
 - Replacement of PHPExcel by PHPSpreadsheet library
 - Modifications in OpenSearch in order to include the support of RSS 2.0 enclosure tag
@@ -3022,26 +3028,56 @@ Release 10/2017
 - Modifications in the geolocation search in order to support the reset of the search area by left mouse click
 - Modifications in the installation routine
 - Modification of max file length setting $mgmt_config['max_digits_filename'] in main configuration file to 236 digits (due to limit of 255 bytes on most standard linux file systems)
-- Modifications in function creatobject in Main API in order to add error log entries
+- Modifications in function createobject in Main API in order to add error log entries
 - Modifications in control_objectlist_menu in order to enable file compression only if the local permission "create" has been assigned
 - Removed sys user from user list in publication management
 - Design changes in top bar
 - Design changes in Mobile Edition
 - Modifications in the temp file search patterns in order to include objects stored in the recycle bin
-- Modifications in function clonefolder and zipfiles in Media API in order to apply function is_tempfile on selected objects and alsoverify if a folder included in the location is in the recycle bin
-- Modifications in template engine in order to escape quotes and $ for onedit=hiffen textcontent, linktext, and mediaalttext
+- Modifications in function clonefolder and zipfiles in Media API in order to apply function is_tempfile on selected objects and also verify if a folder included in the location is in the recycle bin
+- Modifications in template engine in order to escape quotes and $ for onedit=hidden textcontent, linktext, and mediaalttext
 - Modifications in control_objectlist_menu in order to enable back button for Mobile Edition
 - Implementation of new CSS class hcmsObjectGalleryMarker for all design themes
 - Modifications in function createdocument in Media API in order to provide convert error code in log entry and to set environment variables before executing the command
 - Implementation of views bar in the monthly statistics of page_info_stats
 - Modifications in function exportxmlfiles in Import/Export API of Connector
+- Implementation of create export directory if it does not exist in Export API of Connector
+- Modifications of density (set 288 instead of 1800) for converting SVG graphics in function createmedia in Media API
+- Implementation of new function getmediasize in Get API in order to extract width and height from differnt media files
+- Modifications in function createmedia in Media API in order to render SVG graphics in their original size for the thumbnail presentation
+- Added file extension .phtml to main config setting 'exclude_files'
+- new htaccess and web.config files for media_tpl and media_cnt in repository to disable execution of PHP code in the content and template media repository
+- Update of user manuals in all languages
+- Modifications in function createdocument in Media API in order to support thumbnails for all document formats besides the one defined in main config setting $mgmt_docoptions
+- Changed number format in the system to space for the thousands separator and dot as the decimal point
+- Modifications in function createmedia in Media API in ordr to verify the video dimensions are divisble by 2 and change the dimensions accordingly
+- Modifications in function getcharset in Get API in order to set contenttype for HTML5 files and verify results
+- Modifications in various example templates in the install directory for 360-view, Zoom-view, and PDF-Generators
+- Modifications in function collectMedia of the example templates in the install directory
+- Implementation of publication specific template clean levels in the main configuration
+- Implementation of the support for publication specific template clean levels in pers_form, template_edit, and workflow_script_form
+- Modifications in function scriptcode_clean_functions in Security API in order to include hyperCMS Scripts independently from the application code for improved security
+- Modifications in function scriptcode_clean_functions in Security API in order to provide 2 additional cleaning levels for hyperCMS API file functions and no-script
+- Modifications in function scriptcode_extract in Security API in order to include code that has no end tag defined for improved security
+- Modifications in function valid_publicationname in Security API in order to optionally verify if the publication name is included in the siteaccess
+- Modifications in function tpl_globals_extended in template engine in order to include siteaccess
+- Modifications in function showmedia in UI API in order to fix issues in MS IE/Edge with aligment of page selector box
 - Bug fix: Function userlogin in Security API did not verify the users hash, so an empty hash as input was compared to an empty hash if the users XML node can not be loaded (user does not exist)
 - Bug fix: OpenSearch API referred to an outdated language file explorer_objectlist.inc.php and used deprecated language variables
 - Bug fix: Google Maps API does not support map.draggable property anymore and has been replaced by map.setOptions({draggable: true/false});
-- Bug fix: Installation routine used old input paramaters for function edituser
+- Bug fix: Installation routine used old input parameters for function edituser
 - Bug fix: Objects in the recycle bin still occur in download links
 - Bug fix: Disable Navigator button and in Mobile Edition if access links are used
 - Bug fix: libreoffice did not execute successfully due to missing home path variable
+- Bug fix: Function exportxmlfiles in Import/Export API was not able to move files to mounted drives (rename is replaced by copy and delete)
+- Bug fix: The determined URL of the installation script were not correct if the installation package has not been unpacked in the root of the web host
+- Bug fix: The number format for the file size in search_objectlist was not set
+- Bug fix: Function createmedia was not able to render preview videos if the video dimension was not divisble by 2 (FFMPEG)
+- Bug fix: control_objectlist_menu did not extract proper folder name for recycled folders
+- Bug fix: Function getcharset used data string instead of charset HTML meta tag to extract the character set
+- Bug fix: Function processobjects in Main API did not verify the location and file variable before processing them
+- Bug fix: Undefined variable media in control_content_menu in case of a new object
+- Bug fix: Function scriptcode_extract ion Security API used a newline at the beginning of the string that could lead to an infinite loop when analyzing the code
 */
 
 // current version

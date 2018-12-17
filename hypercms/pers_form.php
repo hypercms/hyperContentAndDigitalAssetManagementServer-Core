@@ -103,11 +103,13 @@ if ($save == "yes" && $persfile != "" && checktoken ($token, $user))
   // replace the publication varibales in the template with the used publication
   $persdata_save = str_replace ("%publication%", $site, $persdata_save);
 
-  // set highest cleaning level is not provided
-  if (!isset ($mgmt_config['template_clean_level'])) $mgmt_config['template_clean_level'] = 3;
+  // set highest cleaning level if not provided
+  if ($site != "" && isset ($mgmt_config[$site]['template_clean_level'])) $cleanlevel = $mgmt_config[$site]['template_clean_level'];
+  elseif (isset ($mgmt_config['template_clean_level'])) $cleanlevel = $mgmt_config['template_clean_level'];
+  else $cleanlevel = 4;
   
   // check code (php tags need to be added!)
-  $persdata_check = scriptcode_clean_functions ("<?".$persdata_save."?>", $mgmt_config['template_clean_level']);
+  $persdata_check = scriptcode_clean_functions ("<?".$persdata_save."?>", $cleanlevel);
         
    // save pers file
   if ($persdata_check['result'] == true)

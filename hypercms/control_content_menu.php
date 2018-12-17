@@ -81,16 +81,22 @@ if ($action != "page_create")
   $contentfile = getfilename ($objectdata, "content");
   $media = getfilename ($objectdata, "media");
   $template = getfilename ($objectdata, "template");
+}
+else 
+{
+  $contentfile = "";
+  $media = "";
+}
 
-  if ($template != "")
+// load template
+if (!empty ($template))
+{
+  $result = loadtemplate ($site, $template);
+  
+  if (is_array ($result))
   {
-    $result = loadtemplate ($site, $template);
-    
-    if (is_array ($result))
-    {
-      $bufferdata = getcontent ($result['content'], "<application>");
-      $application = $bufferdata[0];
-    }
+    $bufferdata = getcontent ($result['content'], "<application>");
+    $application = $bufferdata[0];
   }
 }
 

@@ -634,7 +634,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
     }
     else $unit = "KB";
     
-    $filesize = number_format ($filesize, 0, "", ".")." ".$unit;
+    $filesize = number_format ($filesize, 0, ".", " ")." ".$unit;
 
     $mediaview = "
     <table>
@@ -1195,8 +1195,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {
               $mediaview_doc .= "
   <div style=\"position:absolute; width:".($width+15)."px; height:28px; text-align:right;".($width < 420 ? "margin-top:-38px;" : "margin-top:-8px;")."\">
-    <img src=\"".getthemelocation()."img/button_arrow_left.png\" onclick=\"gotoPage('previous');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" />
-    <select id=\"pagenumber\" onchange=\"gotoPage('none');\" title=\"".getescapedtext ($hcms_lang['page'][$lang], $hcms_charset, $lang)."\" style=\"width:70px;\">";
+    <img src=\"".getthemelocation()."img/button_arrow_left.png\" onclick=\"gotoPage('previous');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"display:inline-block; vertical-align:middle;\" alt=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" />
+    <select id=\"pagenumber\" onchange=\"gotoPage('none');\" title=\"".getescapedtext ($hcms_lang['page'][$lang], $hcms_charset, $lang)."\" style=\"display:inline-block; width:70px;\">";
     
               for ($i = 0; $i < $page_count; $i++)
               {
@@ -1206,7 +1206,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       
               $mediaview_doc .= "
     </select> / ".$page_count."
-    <img src=\"".getthemelocation()."img/button_arrow_right.png\" onclick=\"gotoPage('next');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" />
+    <img src=\"".getthemelocation()."img/button_arrow_right.png\" onclick=\"gotoPage('next');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"display:inline-block; vertical-align:middle;\" alt=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" />
   </div>";
             }
   
@@ -1615,9 +1615,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if ($page_count > 1)
           {
             $mediaview = "
-  <div style=\"position:absolute; width:".($width+15)."px; height:28px; text-align:right;".($width < 420 ? "margin-top:-38px;" : "margin-top:-8px;")."\">
-    <img src=\"".getthemelocation()."img/button_arrow_left.png\" onclick=\"gotoPage('previous');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" />
-    <select id=\"pagenumber\" onchange=\"gotoPage('none');\" title=\"".getescapedtext ($hcms_lang['page'][$lang], $hcms_charset, $lang)."\" style=\"width:70px;\">";
+  <div style=\"position:absolute; width:".($width+15)."px; height:28px; text-align:right; ".($width < 420 ? "margin-top:-38px;" : "margin-top:-8px;")."\">
+    <img src=\"".getthemelocation()."img/button_arrow_left.png\" onclick=\"gotoPage('previous');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"display:inline-block; vertical-align:middle;\" alt=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" />
+    <select id=\"pagenumber\" onchange=\"gotoPage('none');\" title=\"".getescapedtext ($hcms_lang['page'][$lang], $hcms_charset, $lang)."\" style=\"display:inline-block; width:70px;\">";
     
             for ($i = 0; $i < $page_count; $i++)
             {
@@ -1627,7 +1627,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       
             $mediaview .= "
     </select> / ".$page_count."
-    <img src=\"".getthemelocation()."img/button_arrow_right.png\" onclick=\"gotoPage('next');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" />
+    <img src=\"".getthemelocation()."img/button_arrow_right.png\" onclick=\"gotoPage('next');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\"  style=\"display:inline-block; vertical-align:middle;\" alt=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" />
   </div>";
           }
         
@@ -2549,7 +2549,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
         else $unit = "KB";
         
-        $mediafilesize = number_format ($mediafilesize, 0, "", ".")." ".$unit;
+        $mediafilesize = number_format ($mediafilesize, 0, ".", " ")." ".$unit;
         
         // output information
         $col_width = "width:120px; ";

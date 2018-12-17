@@ -1434,30 +1434,19 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $path_source = $location_source.$file;
     }
 
-    // get file width and heigth in pixels
-    $imagesize_orig = @getimagesize ($location_source.$file);
-    
     // get file-type
     $filetype_orig = getfiletype ($file_ext);
     
     // MD5 hash of the original file
     $md5_hash = md5_file ($location_source.$file);
+    
+    // get original image width and heigth in pixels
+    $temp = getmediasize ($location_source.$file);
 
-    if ($imagesize_orig != false)
+    if ($temp != false)
     {
-      $imagewidth_orig = $imagesize_orig[0];
-      $imageheight_orig = $imagesize_orig[1];
-    }
-    // try to read from file source
-    elseif (is_file ($location_source.$file))
-    {
-      $temp = loadfile_header ($location_source, $file);
-      
-      if ($temp != "")
-      {
-        $imagewidth_orig = getattribute ($temp, "width", true);
-        $imageheight_orig = getattribute ($temp, "height", true);
-      }
+      $imagewidth_orig = $temp['width'];
+      $imageheight_orig = $temp['height'];
     }
     
     // reset values if not available
@@ -1959,6 +1948,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       unlink ($path_source);
                     }
                   }
+                  
+                  // set size for thumbnails
+                  if ($type == "thumbnail" && !empty ($imagewidth_orig) && !empty ($imageheight_orig))
+                  {
+                    // set size for for vector graphics like SVG in order to be rendered correctly (no density required in this case)
+                    $imagedensity = "-size ".$imagewidth_orig."x".$imageheight_orig;
+                    $imageresize = "-resize ".$imagewidth_orig."x".$imageheight_orig;
+                  }
 
                   // set background properties for JPEG (thumbnail images, annotation images, preview images) 
                   if ($imageformat == "jpg") $background = "-background white -alpha remove";
@@ -1967,8 +1964,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // CASE: document-based formats (if converted to PDF), encapsulated post script (EPS) and vector graphics
                   if (strpos ("_.pdf".$hcms_ext['vectorimage'], $file_ext) > 0)
                   {
-                    if ($file_ext == ".svg" && empty ($imagedensity)) $imagedensity = "-density 1800 ";
-                    elseif ($file_ext != ".pdf")  $imagedensity = "-density 144 ";
+                    // density for SVG graphics
+                    if ($file_ext == ".svg" && empty ($imagedensity)) $imagedensity = "-density 288";
+                    elseif ($file_ext != ".pdf")  $imagedensity = "-density 144";
                     
                     if ($type == "thumbnail")
                     {
@@ -2009,7 +2007,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       
                       // use geometry instead of resize for EPS files
                       if ($file_ext == ".eps") $imageresize = $imagegeometry;
-  
+
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$background." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     
@@ -2527,11 +2525,23 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         if ($videoinfo['ratio'] > 1)
                         {
                           $mediaheight = round((intval($mediawidth)/$videoinfo['ratio']), 0);
+                          
+                          // must be divisible by 2
+                          if ($mediaheight % 2 != 0)
+                          {
+                            $mediaheight = $mediaheight - 1;
+                          }
                         }
                         // use mediaheight and calculate width
                         else
                         {
                           $mediawidth = round((intval($mediaheight) * $videoinfo['ratio']), 0);
+                          
+                          // must be divisible by 2
+                          if ($mediawidth % 2 != 0)
+                          {
+                            $mediawidth = $mediawidth - 1;
+                          }
                         }
                       }
                     }                  
@@ -4459,7 +4469,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
     else $format = strtolower ($format);
 
     // if media conversion software is given, conversion supported and destination format is not the source format
-    if (is_array ($mgmt_docpreview) && sizeof ($mgmt_docpreview) > 0 && !empty ($mgmt_docconvert[$file_ext]) && is_array ($mgmt_docconvert[$file_ext]) && $format != trim ($file_ext, "."))
+    if (is_array ($mgmt_docpreview) && sizeof ($mgmt_docpreview) > 0 && $format != trim ($file_ext, "."))
     {
       // prepare source media file
       $temp_source = preparemediafile ($site, $location_source, $file, $user);
@@ -4513,7 +4523,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
 
       // supported extensions for document rendering
       foreach ($mgmt_docpreview as $docpreview_ext => $docpreview)
-      { 
+      {
         // check file extension
         if ($file_ext != "" && substr_count (strtolower ($docpreview_ext).".", $file_ext.".") > 0)
         {
@@ -4527,132 +4537,135 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
             {
               // document format (document file extension) definition
               $docformat = strtolower (getoption ($mgmt_docoptions[$docoptions_ext], "-f"));
+            }
               
-              if ($docformat == "" || $docformat == false) $docformat = "pdf";   
+            if (empty ($docformat)) $docformat = "pdf";   
               
-              // create new file
-              $newfile = $file_name_orig.".thumb.".$docformat;  
+             
+            // create new file
+            $newfile = $file_name_orig.".thumb.".$docformat;  
               
-              // if thumbnail file exists in destination (temp) folder
-              if (is_file ($location_dest.$newfile))
+            // if thumbnail file exists in destination (temp) folder
+            if (is_file ($location_dest.$newfile))
+            {
+              // delete existing destination file if it is older than the source file
+              if (filemtime ($location_dest.$newfile) < filemtime ($location_source.$file)) 
               {
-                // delete existing destination file if it is older than the source file
-                if (filemtime ($location_dest.$newfile) < filemtime ($location_source.$file)) 
-                {
-                  unlink ($location_dest.$newfile);
-                }
-                // or we return the filename
-                else $converted = true;
+                unlink ($location_dest.$newfile);
+              }
+              // or we return the filename
+              else $converted = true;
+            }
+
+            // if thumbnail file exits in source folder 
+            if (is_file ($location_source.$newfile))
+            {
+              // if existing thumbnail file is newer than the source file
+              if (filemtime ($location_source.$newfile) >= filemtime ($location_source.$file) && $location_source != $location_dest) 
+              {
+                // copy to destination directory
+                $converted = copy ($location_source.$newfile, $location_dest.$newfile);
+              }
+              // or we return the filename
+              else $converted = true;
+            }
+              
+            // if not already converted
+            if (empty ($converted))
+            {
+              // if image file is the target format UNOCONV fails and therefore libreoffice will be used
+              // exlude spreadsheets due to issues with libreoffice (will be generated when opened using converion to PDF and PDF to image
+              if (is_image (".".$format) && strpos ("_.ods.xls.xlsx", $file_ext) < 1)
+              {
+                // export filters for libreoffice
+                if ($file_ext == ".xlsx") $export_filter = ":\"MS Excel 2007 XML\"";
+                elseif ($file_ext == ".xls") $export_filter = ":\"MS Excel 95\"";
+                elseif ($file_ext == ".ods") $export_filter = ":\"OpenDocument Spreadsheet Flat XML\"";
+                else $export_filter = "";
+                
+                $cmd = getlocation ($mgmt_docpreview[$docpreview_ext])."libreoffice --headless --convert-to ".shellcmd_encode ($docformat).$export_filter." \"".shellcmd_encode ($location_source.$file)."\" --outdir \"".shellcmd_encode ($location_source)."\"";
+              }
+              // default UNOCONV character set is UTF-8
+              // convert only if $mgmt_docpreview mapping exists in $mgmt_docconvert 
+              elseif (!is_image (".".$format) && !empty ($mgmt_docpreview[$docpreview_ext]) && !empty ($mgmt_docconvert[$file_ext]) && is_array ($mgmt_docconvert[$file_ext]))
+              {
+                $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
               }
 
-              // if thumbnail file exits in source folder 
-              if (is_file ($location_source.$newfile))
+              // execute code
+              if (!empty ($cmd))
               {
-                // if existing thumbnail file is newer than the source file
-                if (filemtime ($location_source.$newfile) >= filemtime ($location_source.$file) && $location_source != $location_dest) 
+                // set environment variables
+                if (!empty ($mgmt_config['os_cms']) && $mgmt_config['os_cms'] == "WIN")
                 {
-                  // copy to destination directory
-                  $converted = copy ($location_source.$newfile, $location_dest.$newfile);
+                  putenv ("HOME=C:\\WINDOWS\\TEMP");
                 }
-                // or we return the filename
-                else $converted = true;
-              }
-              
-              if (empty ($converted) && !empty ($mgmt_docpreview[$docpreview_ext]))
-              {
-                // if image file is the target format UNOCONV fails and therefore libreoffice will be used
-                // exlude spreadsheets due to issues with libreoffice (will be generated when opened using converion to PDF and PDF to image
-                if (is_image (".".$format) && strpos ("_.ods.xls.xlsx", $file_ext) < 1)
+                else
                 {
-                  // export filters for libreoffice
-                  if ($file_ext == ".xlsx") $export_filter = ":\"MS Excel 2007 XML\"";
-                  elseif ($file_ext == ".xls") $export_filter = ":\"MS Excel 95\"";
-                  elseif ($file_ext == ".ods") $export_filter = ":\"OpenDocument Spreadsheet Flat XML\"";
-                  else $export_filter = "";
-                  
-                  $cmd = getlocation ($mgmt_docpreview[$docpreview_ext])."libreoffice --headless --convert-to ".shellcmd_encode ($docformat).$export_filter." \"".shellcmd_encode ($location_source.$file)."\" --outdir \"".shellcmd_encode ($location_source)."\"";
+                  putenv ("PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin");
+                  putenv ("HOME=/tmp");
                 }
-                // default UNOCONV character set is UTF-8
-                elseif (!is_image (".".$format))
-                {
-                  $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
-                }
+                
+                @exec ($cmd." 2>&1", $error_array, $errorCode);
 
-                // execute code
-                if (!empty ($cmd))
+                // error if conversion failed
+                if (!empty ($errorCode) || !is_file ($location_source.$file_name.".".$docformat))
                 {
-                  // set environment variables
-                  if (!empty ($mgmt_config['os_cms']) && $mgmt_config['os_cms'] == "WIN")
-                  {
-                    putenv ("HOME=C:\\WINDOWS\\TEMP");
-                  }
-                  else
-                  {
-                    putenv ("PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin");
-                    putenv ("HOME=/tmp");
-                  }
+                  $errcode = "20276";
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of libreoffice/unoconv (".$cmd.") to '".$format."' failed in createdocument for file '".$location_source.$file."' with message (Error code:".$errorCode."): ".implode(", ", $error_array);
                   
-                  @exec ($cmd." 2>&1", $error_array, $errorCode);
-
-                  // error if conversion failed
-                  if (!empty ($errorCode) || !is_file ($location_source.$file_name.".".$docformat))
+                  // save log
+                  savelog (@$error);          
+                } 
+                else
+                {  
+                  // rename/move converted file to destination
+                  $result_rename = @rename ($location_source.$file_name.".".$docformat, $location_dest.$newfile);
+  
+                  if ($result_rename == false)
                   {
-                    $errcode = "20276";
-                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of libreoffice/unoconv (".$cmd.") to '".$format."' failed in createdocument for file '".$location_source.$file."' with message (Error code:".$errorCode."): ".implode(", ", $error_array);
+                    $errcode = "20377";
+                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
                     
                     // save log
-                    savelog (@$error);          
-                  } 
-                  else
-                  {  
-                    // rename/move converted file to destination
-                    $result_rename = @rename ($location_source.$file_name.".".$docformat, $location_dest.$newfile);
-    
-                    if ($result_rename == false)
+                    savelog (@$error);
+                  }
+                  else 
+                  {
+                    $converted = true;
+                    
+                    // copy metadata from original file using EXIFTOOL
+                    $result_copy = copymetadata ($location_source.$file, $location_dest.$newfile);
+  
+                    // remote client
+                    remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+  
+                    // encrypt and save data
+                    if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
                     {
-                      $errcode = "20377";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
-                      
-                      // save log
-                      savelog (@$error);
-                    }
-                    else 
-                    {
-                      $converted = true;
-                      
-                      // copy metadata from original file using EXIFTOOL
-                      $result_copy = copymetadata ($location_source.$file, $location_dest.$newfile);
-    
-                      // remote client
-                      remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-    
-                      // encrypt and save data
-                      if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
-                      {
-                        $data = encryptfile ($location_dest, $newfile);
-                        if (!empty ($data)) savefile ($location_dest, $newfile, $data);
-                      }
-    
-                      // save in cloud storage
-                      if (is_file ($location_dest.$newfile) && function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
+                      $data = encryptfile ($location_dest, $newfile);
+                      if (!empty ($data)) savefile ($location_dest, $newfile, $data);
                     }
   
-                    // create thumbnail image for document from converted PDF or image file
-                    if (strpos ($file, "_hcm") > 0 && ($docformat == "pdf" || is_image ($newfile)))
+                    // save in cloud storage
+                    if (is_file ($location_dest.$newfile) && function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
+                  }
+
+                  // create thumbnail image for document from converted PDF or image file
+                  if (strpos ($file, "_hcm") > 0 && ($docformat == "pdf" || is_image ($newfile)))
+                  {
+                    $location_media = getmedialocation ($site, $file, "abs_path_media").$site."/";
+                    $thumbnail = $file_name_orig.".thumb.jpg";
+                    
+                    if (!is_file ($thumbnail) || filemtime ($location_source.$file) > filemtime ($location_media.$thumbnail))
                     {
-                      $location_media = getmedialocation ($site, $file, "abs_path_media").$site."/";
-                      $thumbnail = $file_name_orig.".thumb.jpg";
+                      $thumbnail_new = createmedia ($site, $location_dest, $location_media, $newfile, "jpg", "thumbnail", true);
                       
-                      if (!is_file ($thumbnail) || filemtime ($location_source.$file) > filemtime ($location_media.$thumbnail))
+                      // correct file name by removing double .thumb
+                      if (!empty ($thumbnail_new) && is_file ($location_media.$thumbnail_new))
                       {
-                        $thumbnail_new = createmedia ($site, $location_dest, $location_media, $newfile, "jpg", "thumbnail", true);
-                        
-                        // correct file name by removing double .thumb
-                        if (!empty ($thumbnail_new) && is_file ($location_media.$thumbnail_new))
-                        {
-                          if (is_file ($location_media.$thumbnail)) deletefile ($location_media, $thumbnail, 0);
-                          rename ($location_media.$thumbnail_new, $location_media.$thumbnail);
-                        }
+                        if (is_file ($location_media.$thumbnail)) deletefile ($location_media, $thumbnail, 0);
+                        rename ($location_media.$thumbnail_new, $location_media.$thumbnail);
                       }
                     }
                   }

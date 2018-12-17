@@ -15587,77 +15587,92 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
     $location_esc = convertpath ($site, $location, "");
 
     // define object file name
+    $file_orig = $file;
     $file = correctfile ($location, $file, $user);
 
     // -------------------------- process objects -------------------------------
-    // if folder
-    if (is_dir ($location.$file))
-    {  
-      // process all objects in folder
-      $scandir = scandir ($location.$file);
-      
-      if ($scandir)
-      {
-        foreach ($scandir as $dirfile)
-        {
-          if ($dirfile != "." && $dirfile != ".." && $dirfile != ".folder")
-          {
-            processobjects ($action, $site, $location.$file."/", $dirfile, $published_only, $user);
-          }
-        }
-        
-        // process .folder file always at last since action "delete" will trigger deletefolder that can only delete empty folders
-        if (is_file ($location.$file."/.folder"))
-        {
-          processobjects ($action, $site, $location.$file."/", ".folder", $published_only, $user);
-        }
-    
-        return true;
-      }
-      else return false;
-    }
-    // if object
-    elseif (is_file ($location.$file))
+    if (!empty ($location) && !empty ($file))
     {
-      $result = getfileinfo ($site, $file, "");
-
-      // process object
-      if ($result['published'] == true || $published_only == "0")
+      // if folder
+      if (is_dir ($location.$file))
+      {  
+        // process all objects in folder
+        $scandir = scandir ($location.$file);
+        
+        if ($scandir)
+        {
+          foreach ($scandir as $dirfile)
+          {
+            if ($dirfile != "." && $dirfile != ".." && $dirfile != ".folder")
+            {
+              processobjects ($action, $site, $location.$file."/", $dirfile, $published_only, $user);
+            }
+          }
+          
+          // process .folder file always at last since action "delete" will trigger deletefolder that can only delete empty folders
+          if (is_file ($location.$file."/.folder"))
+          {
+            processobjects ($action, $site, $location.$file."/", ".folder", $published_only, $user);
+          }
+      
+          return true;
+        }
+        else return false;
+      }
+      // if object
+      elseif (is_file ($location.$file))
       {
-        if ($action == "publish")
+        $result = getfileinfo ($site, $file, "");
+  
+        // process object
+        if ($result['published'] == true || $published_only == "0")
         {
-          $result = publishobject ($site, $location, $file, $user);
+          if ($action == "publish")
+          {
+            $result = publishobject ($site, $location, $file, $user);
+          }
+          elseif ($action == "unpublish")
+          {
+            $result = unpublishobject ($site, $location, $file, $user);
+          }
+          elseif ($action == "delete")
+          {
+            // delete object
+            if ($file != ".folder") $result = deleteobject ($site, $location, $file, $user);
+            // delete folder
+            else $result = deletefolder ($site, getlocation ($location), getobject ($location), $user);
+          }
+  
+          // error
+          if ($result['result'] == false)
+          {
+            $errcode = "20421";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|processing ($action) failed for ".$location_esc.$file;
+            
+            // save log
+            savelog (@$error); 
+            
+            return false;
+          }
+          else return true;
         }
-        elseif ($action == "unpublish")
-        {
-          $result = unpublishobject ($site, $location, $file, $user);
-        }
-        elseif ($action == "delete")
-        {
-          // delete object
-          if ($file != ".folder") $result = deleteobject ($site, $location, $file, $user);
-          // delete folder
-          else $result = deletefolder ($site, getlocation ($location), getobject ($location), $user);
-        }
-
-        // error
-        if ($result['result'] == false)
-        {
-          $errcode = "20421";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|processing ($action) failed for ".$location_esc.$file;
-          
-          // save log
-          savelog (@$error); 
-          
-          return false;
-        }
+        // nothing to process
         else return true;
       }
       // nothing to process
       else return true;
     }
-    // if location does not exist
-    else return false;
+    // if location or object does not exist
+    else
+    {
+      $errcode = "20422";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|processing ($action) failed since location '".$location_esc."' or object '".$file_orig."' does not exist";
+      
+      // save log
+      savelog (@$error); 
+            
+      return false;
+    }
   }  
   else return false; 
 }

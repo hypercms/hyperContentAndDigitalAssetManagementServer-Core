@@ -467,7 +467,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
   
             if (!empty ($container_info) && is_array ($container_info))
             { 
-              if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, "", ".");
+              if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, ".", " ");
               if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
               if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
               if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
@@ -486,7 +486,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             if (empty ($file_size) && is_file ($mediadir.$site."/".$mediafile))
             {
               $file_size = round (@filesize ($mediadir.$site."/".$mediafile) / 1024);
-              $file_size = number_format ($file_size, 0, "", ".");
+              $file_size = number_format ($file_size, 0, ".", " ");
               
               $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$site."/".$mediafile));               
             }
@@ -519,7 +519,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             // get file size
             $file_size = round (@filesize ($location.$object) / 1024);
             if ($file_size == 0) $file_size = 1;
-            $file_size = number_format ($file_size, 0, "", ".");
+            $file_size = number_format ($file_size, 0, ".", " ");
 
             // link for copy & paste of download links (not if an access link is used)
             if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))

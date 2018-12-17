@@ -96,9 +96,9 @@ if ($multiobject != "")
     {
       $page = ".folder";
       $folder = $object;
-      $pagename = specialchr_decode ($folder);
+      $file_info = getfileinfo ($site, $location.$folder, $cat);
+      $pagename = $file_info['name'];
       $media = "";
-      $file_info = getfileinfo ($site, $location.$page, $cat);  
     }
     else
     {
@@ -117,8 +117,8 @@ elseif ($location != "" && $page != "")
   if ($folder != "")
   {
     $page = ".folder";
-    $pagename = specialchr_decode ($folder);
-    $file_info = getfileinfo ($site, $page, $cat);
+    $file_info = getfileinfo ($site, $location.$folder, $cat);
+    $pagename = $file_info['name'];
   }
   // object
   else
@@ -749,7 +749,7 @@ if (($page != "" && $page != ".folder") || $multiobject_count > 1)
 elseif ($folder != "")
 {
   $item = getescapedtext ($hcms_lang['folder'][$lang]);
-  $object_name = specialchr_decode ($folder);
+  $object_name = $pagename;
 }
 else
 {

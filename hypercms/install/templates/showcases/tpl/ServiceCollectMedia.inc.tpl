@@ -91,7 +91,7 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
         // retrieve additional
         $contentdata = loadcontainer ($objectinfo['container_id'], "work", "sys");
 
-        if (!empty($contentdata))
+        if (!empty ($contentdata))
         {
           if (!empty ($metaTitleId))
           {
@@ -116,7 +116,7 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
         }
 
         // return array
-        if (!is_array ($filter) || (!empty ($filter['name']) && strpos ("_".$filtervalue, $filter['value']) > 0))
+        if (!is_array ($filter) || sizeof ($filter) < 1 || (!empty ($filter['name']) && strpos ("_".$filtervalue, $filter['value']) > 0))
         {
           $files[] = array("name" => $fileinfo['name'], "title"=>$title, "description"=>$desc, "link" => $link, "thumb_link" => $thumb_link, "abspath"  => $abspath, "filename" => $objectinfo['media'], "width" => $width, "height" => $height);
         }

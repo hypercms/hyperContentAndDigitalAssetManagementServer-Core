@@ -62,6 +62,8 @@ if ($view == "cmsview")
 <!DOCTYPE html>
 <html>
   <head>
+    <title>hyperCMS.com</title>
+    <meta charset='utf-8'/>
     <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation(); scriptend]css/main.css" />
   </head>
   <body class="hcmsWorkplaceGeneric">
@@ -127,10 +129,11 @@ elseif ($view == "publish" || $view == "preview")
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset='utf-8'/>	
-      <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-1.12.4.min.js"></script>
-      <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_galleria/galleria-1.2.9.min.js"></script>
-      <style>
+    <title>hyperCMS.com</title>
+    <meta charset='utf-8'/>
+    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_galleria/galleria-1.2.9.min.js"></script>
+    <style>
         body {
           margin: 0px;
           padding: 0px;
@@ -156,10 +159,9 @@ elseif ($view == "publish" || $view == "preview")
           width: <?php if ($galleriaWidth > 0) echo $galleriaWidth; else echo "800"; ?>px;
           height: <?php if ($galleriaHeight > 0) echo $galleriaHeight; else echo "600"; ?>px;
         }
-      </style>
+    </style>
   </head>
   <body>
-
 
 <?php if (!empty ($mgmt_config['publicsearch']) && "[hyperCMS:textl id='filterName' onEdit='hidden']" == "") { ?>
   <div id="search">

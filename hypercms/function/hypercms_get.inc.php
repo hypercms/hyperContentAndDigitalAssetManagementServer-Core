@@ -1869,6 +1869,49 @@ function getwallpaper ($version="")
  
 // ======================================== GET INFORMATION ===========================================
 
+// --------------------------------------- getmediasize -------------------------------------------
+// function: getmediasize()
+// input: path to media file [string]
+// output: Array with media width and height / false on error
+
+function getmediasize ($file)
+{
+  if (is_file ($file))
+  {
+    $result = array();
+    
+    // get file width and heigth in pixels
+    $imagesize = @getimagesize ($file);
+
+    if (!empty ($imagesize))
+    {
+      $result['width'] = $imagesize[0];
+      $result['height'] = $imagesize[1];
+    }
+    // try to read values from file source (e.g. SVG files)
+    else
+    {
+      $header = loadfile_header (getlocation ($file), getobject ($file));
+      
+      if (!empty ($header))
+      {
+        // get SVG tag
+        $svg_tag = gethtmltag ($header, "svg");
+        
+        if (!empty ($svg_tag)) $header = $svg_tag;
+        
+        $result['width'] = getattribute ($header, "width", true);
+        $result['height'] = getattribute ($header, "height", true);
+      }
+    }
+    
+    // return result
+    if (!empty ($result['width']) && !empty ($result['height'])) return $result;
+    else return false;
+  }
+  else return false;
+}
+
 // --------------------------------------- getcontainername -------------------------------------------
 // function: getcontainername()
 // input: container name (e.g. 0000112.xml.wrk) or container ID [string]
@@ -2833,7 +2876,7 @@ function getfileinfo ($site, $file, $cat="comp")
         else $folder_name = $file;
         
         if ($cat == "") $cat = getcategory ($site, $file);  
-      
+
         // if deleted folder
         if (substr ($folder_name, -8) == ".recycle")
         {
@@ -4948,19 +4991,19 @@ function getattribute ($string, $attribute, $secure=true)
         {
           // cut off first part of the string till attribute value begins
           $checkedstring = substr (strstr ($checkedstring, $attribute."="), $attrlen);
-    
-          // " indicates end of attribute value
-          if ($checkedstring[0] == "\"" && strpos (substr ($checkedstring, 1), "\"") >= 0)
+
+          // " indicates start and end of attribute value
+          if ($checkedstring[0] == "\"" && strpos ("_".substr ($checkedstring, 1), "\"") > 0)
           {
             // get the length of the value
             $vallen = strpos (substr ($checkedstring, 1), "\"") + 2;
-          }  
-          // ' indicates end of attribute value
-          elseif ($checkedstring[0] == "'" && strpos (substr ($checkedstring, 1), "'") >= 0)
+          }
+          // ' indicates start and end of attribute value
+          elseif ($checkedstring[0] == "'" && strpos ("_".substr ($checkedstring, 1), "'") > 0)
           {
             // get the length of the value
             $vallen = strpos (substr ($checkedstring, 1), "'") + 2;
-          }  
+          }
           //  '&' indicates end of attribute value
           elseif (strpos ($checkedstring, "&") > 0)
           {
@@ -4972,13 +5015,25 @@ function getattribute ($string, $attribute, $secure=true)
           {
             // get the length of the value
             $vallen = strpos ($checkedstring, "]");
-          }    
+          }
           // freespace indicates also end of attribute value
           elseif (strpos ($checkedstring, " ") > 0)
           {
             // get the length of the value
             $vallen = strpos ($checkedstring, " ");
-          }    
+          }
+          // " indicates end of attribute value
+          elseif (strpos ($checkedstring, "\"") > 0)
+          {
+            // get the length of the value
+            $vallen = strpos ($checkedstring, "\"");
+          }
+          // ' indicates end of attribute value
+          elseif (strpos ($checkedstring, "'") > 0)
+          {
+            // get the length of the value
+            $vallen = strpos ($checkedstring, "'");
+          }
           // or the value itself is the end of the string    
           else
           {
@@ -4993,7 +5048,7 @@ function getattribute ($string, $attribute, $secure=true)
           {
             $value = substr ($value, 1, strlen ($value)-2);
           }
-          
+
           // secure value
           if ($secure)
           {
@@ -5090,16 +5145,17 @@ function getcharset ($site, $data)
       {
         // get tag defined by the value of attribute charset=""
         $contenttypetag = gethtmltag (strtolower ($data), "charset");
-    
+
         if ($contenttypetag != false)
         {
-          $charset = getattribute ($data, "charset");
+          $charset = getattribute ($contenttypetag, "charset");
+          if (!empty ($charset)) $contenttype = "text/html; charset=".$charset;
         }
       }
     } 
  
     // if hypertag is used to set the character set (e.g. components)
-    if ($contenttype == false && strpos (strtolower ($data), "compcontenttype") > 0)
+    if (empty ($contenttype) && strpos (strtolower ($data), "compcontenttype") > 0)
     {
       // get content-type from component template, if set
       $hypertag_array = gethypertag ($data, "compcontenttype", 0);
@@ -5129,7 +5185,7 @@ function getcharset ($site, $data)
     }    
     
     // if XML page of from content container encoding
-    if ($contenttype == false && @substr_count (strtolower ($data), " encoding=") > 0)
+    if (empty ($contenttype) && @substr_count (strtolower ($data), " encoding=") > 0)
     {
       $xml_encoding = gethtmltag ($data, "?xml");
       
@@ -5155,7 +5211,7 @@ function getcharset ($site, $data)
     }
     
     // if head information in container is set
-    if ($contenttype == false && @substr_count (strtolower ($data), "<pagecontenttype>") > 0)
+    if (empty ($contenttype) && @substr_count (strtolower ($data), "<pagecontenttype>") > 0)
     {
       $contenttype_array = getcontent ($data, "<pagecontenttype>");
       
@@ -5178,7 +5234,7 @@ function getcharset ($site, $data)
     }  
     
     // if content-type is given
-    if ($contenttype == false && @substr_count (strtolower ($data), "charset") > 0)
+    if (empty ($contenttype) && @substr_count (strtolower ($data), "charset") > 0)
     {
       $charset = getattribute ($data, "charset");
 
@@ -5194,20 +5250,21 @@ function getcharset ($site, $data)
       }
     }
     
-    // no character set could be found in $data
-    if (($contenttype == "" || $contenttype == false) && valid_publicationname ($site))
+    // use publication settings if no character set could be found in $data
+    if ((empty ($contenttype) || empty ($charset) || strlen ($charset) > 20) && valid_publicationname ($site))
     {
       $contenttype = "text/html; charset=".$mgmt_config[$site]['default_codepage'];
       $charset = $mgmt_config[$site]['default_codepage'];
     }  
 
     // return result
-    if ($contenttype != "") $result['contenttype'] = $contenttype;
-    if ($charset != "") $result['charset'] = $charset;
+    if (!empty ($contenttype)) $result['contenttype'] = $contenttype;
+    if (!empty ($charset)) $result['charset'] = $charset;
 
     if (is_array ($result)) return $result;
     else return false;
   }
+  // use publication settings
   elseif (valid_publicationname ($site))
   {
     $result['contenttype'] = "text/html; charset=".$mgmt_config[$site]['default_codepage'];

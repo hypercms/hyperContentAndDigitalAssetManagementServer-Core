@@ -2440,21 +2440,25 @@ function valid_locationname ($variable)
 // output: true / false
 
 // description:
-// Checks if a publication name includes forbidden characters in order to prevent directory browsing
+// Checks if a publication name includes forbidden characters in order to prevent directory browsing.
+// Optionally verifies if the publication name is included in the siteaccess variable.
 
 function valid_publicationname ($variable)
 {
+  global $siteaccess;
+  
   if ($variable != "")
   {
     if (!is_array ($variable) && is_string ($variable))
     {
+      if (is_array ($siteaccess) && !in_array ($variable, $siteaccess)) return false;
       if ($variable == "*Null*" || $variable == "*no_memberof*") return false;
       if (substr_count ($variable, "<") > 0) return false;
       if (substr_count ($variable, ">") > 0) return false;
       if (substr_count ($variable, "/") > 0) return false;
       if (substr_count ($variable, "\\") > 0) return false;
       if (substr_count ($variable, ":") > 0) return false;
-      if (substr_count ($variable, "\"") > 0) return false;    
+      if (substr_count ($variable, "\"") > 0) return false;
       return true;
     }
     elseif (is_array ($variable))
@@ -2655,42 +2659,54 @@ function scriptcode_encode ($content)
 
 function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="?>")
 {
-  if ($content != "" && $identifier_start != "" && $identifier_end != "")
+  if ($content != "" && $identifier_start != "" && $identifier_end != "" && strpos ("_".$content, $identifier_start) > 0)
   {
     $content_array = explode ($identifier_start, $content);
     
     if (is_array ($content_array))
     {
       $result = array();
+      $i = 0;
       
       foreach ($content_array as $buffer)
       {
-        if (strpos ($buffer, $identifier_end) > 0)
+        if ($i > 0)
         {
-          list ($content_script, $rest) = explode ($identifier_end, $buffer);
-          
+          // search for end tag
+          if (strpos ($buffer, $identifier_end) > 0)
+          {
+            list ($content_script, $rest) = explode ($identifier_end, $buffer);
+          }
+          // no end tag defined
+          else
+          {
+            $content_script = $buffer;
+          }
+           
           if ($content_script != "")
           {
             // remove comments
             if (substr_count ($content_script, "//") > 0)
             {
-              $comment_array = scriptcode_extract ("\n".$content_script, "// ", "\n");
-              
+              $comment_array = scriptcode_extract ($content_script."\n", "// ", "\n");
+
               if (is_array ($comment_array))
               {
                 foreach ($comment_array as $comment) $content_script = str_replace ($comment, "", $content_script);
               }
             }
-
+  
             if (substr_count ($content_script, "/*") > 0)
             {
               $content_temp = scriptcode_extract ($content_script, "*/", "/*");
               if (is_array ($content_temp)) $content_script = implode ("", $content_temp);
             }
-
+  
             $result[] = $identifier_start.$content_script.$identifier_end;
           }
         }
+        
+        $i++;
       }
       
       if (sizeof ($result) > 0) return $result;
@@ -2698,45 +2714,56 @@ function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="
     }
     else return false;
   }
-  else return false;
+  else return $content;
 }
 
 // ------------------------- scriptcode_clean_functions -----------------------------
 // function: scriptcode_clean_functions()
-// input: content [string], cleaning level type: no cleaning = 0; basic set of disabled functions = 1; 1 + file access functions = 2; 2 + include functions = 3 [0,1,2,3] (optional), application [PHP,ASP,JSP] (optional)
+// input: content [string], cleaning level type: no cleaning = 0; basic set of disabled functions = 1; 1 + file access functions = 2; 2 + include functions = 3; 3 + hyperCMS API file functions = 4; No server side script allowed = 5 [0,1,2,3,4,5] (optional), application [PHP,ASP,JSP] (optional)
 // output: result array / false on error
 
 // description:
 // This function removes all dangerous PHP functions
 
-function scriptcode_clean_functions ($content, $type=3, $application="PHP")
+function scriptcode_clean_functions ($content, $type=4, $application="PHP")
 {
   global $mgmt_config;
   
-  if ($content != "" && $type > 0 && ($application == "ASP" || $application == "JSP" || $application == "PHP"))
+  // PHP defintions
+  if ($application == "PHP")
   {
-    if ($application == "PHP")
-    {
-      if ($type > 0) $disabled_functions = array("apache_child_terminate", "apache_setenv", "define_syslog_variables", "eval", "exec", "fp", "fput", "ftp_connect", "ftp_exec", "ftp_get", "ftp_login", "ftp_nb_fput", "ftp_put", "ftp_raw", "ftp_rawlist", "highlight_file", "ini_alter", "ini_get_all", "ini_restore", "inject_code", "mysql_pconnect", "openlog", "passthru", "php_uname", "phpinfo", "phpAds_remoteInfo", "phpAds_XmlRpc", "phpAds_xmlrpcDecode", "phpAds_xmlrpcEncode", "popen", "posix_getpwuid", "posix_kill", "posix_mkfifo", "posix_setpgid", "posix_setsid", "posix_setuid", "posix_setuid", "posix_uname", "proc_close", "proc_get_status", "proc_nice", "proc_open", "proc_terminate", "shell_exec", "syslog", "system", "xmlrpc_entity_decode");
-      else $disabled_functions = array();
-      
-      if ($type > 1) $file_functions = array("basename", "chgrp", "chmod", "chown ", "clearstatcache", "copy", "delete", "dir", "dirname", "disk_free_space", "disk_total_space", "diskfreespace", "fclose", "feof", "fflush", "fgetc", "fgetcsv", "fgets", "fgetss", "file_exists", "file_get_contents", "file_put_contents ", "file", "fileatime", "filectime", "filegroup", "fileinode", "filemtime", "fileowner", "fileperms", "filesize", "filetype", "flock", "fnmatch", "fopen", "fpassthru", "fputcsv", "fputs", "fread", "fscanf", "fseek", "fstat", "ftell", "ftruncate", "fwrite", "glob", "is_dir", "is_executable ", "is_file", "is_link", "is_readable", "is_uploaded_file ", "is_writable", "is_writeable ", "lchgrp", "lchown", "link", "linkinfo", "lstat", "mkdir", "move_uploaded_file", "opendir", "parse_ini_file", "parse_ini_string", "pathinfo ", "pclose", "popen", "readfile", "readlink", "realpath_cache_get", "realpath_cache_size", "realpath", "rename", "rewind", "rmdir", "set_file_buffer", "stat", "symlink ", "tempnam", "tmpfile ", "touch ", "umask", "unlink");
-      else $file_functions = array();
-      
-      if ($type > 2) $include_functions = array("include", "include_once", "require", "require_once");
-      else  $include_functions = array();
-      
-      $identifier_start = "<?";
-      $identifier_end = "?>";      
-    }
+    if ($type > 0) $disabled_functions = array("apache_child_terminate", "apache_setenv", "define_syslog_variables", "eval", "exec", "fp", "fput", "ftp_connect", "ftp_exec", "ftp_get", "ftp_login", "ftp_nb_fput", "ftp_put", "ftp_raw", "ftp_rawlist", "highlight_file", "ini_alter", "ini_get_all", "ini_restore", "inject_code", "mysql_pconnect", "openlog", "passthru", "php_uname", "phpinfo", "phpAds_remoteInfo", "phpAds_XmlRpc", "phpAds_xmlrpcDecode", "phpAds_xmlrpcEncode", "popen", "posix_getpwuid", "posix_kill", "posix_mkfifo", "posix_setpgid", "posix_setsid", "posix_setuid", "posix_setuid", "posix_uname", "proc_close", "proc_get_status", "proc_nice", "proc_open", "proc_terminate", "shell_exec", "syslog", "system", "xmlrpc_entity_decode");
+    else $disabled_functions = array();
     
-    $all_functions = array_merge ($disabled_functions, $file_functions, $include_functions);
+    if ($type > 1) $file_functions = array("basename", "chgrp", "chmod", "chown ", "clearstatcache", "copy", "delete", "dir", "dirname", "disk_free_space", "disk_total_space", "diskfreespace", "fclose", "feof", "fflush", "fgetc", "fgetcsv", "fgets", "fgetss", "file_exists", "file_get_contents", "file_put_contents ", "file", "fileatime", "filectime", "filegroup", "fileinode", "filemtime", "fileowner", "fileperms", "filesize", "filetype", "flock", "fnmatch", "fopen", "fpassthru", "fputcsv", "fputs", "fread", "fscanf", "fseek", "fstat", "ftell", "ftruncate", "fwrite", "glob", "is_dir", "is_executable ", "is_file", "is_link", "is_readable", "is_uploaded_file ", "is_writable", "is_writeable ", "lchgrp", "lchown", "link", "linkinfo", "lstat", "mkdir", "move_uploaded_file", "opendir", "parse_ini_file", "parse_ini_string", "pathinfo ", "pclose", "popen", "readfile", "readlink", "realpath_cache_get", "realpath_cache_size", "realpath", "rename", "rewind", "rmdir", "set_file_buffer", "stat", "symlink ", "tempnam", "tmpfile ", "touch ", "umask", "unlink");
+    else $file_functions = array();
+    
+    if ($type > 2) $include_functions = array("include", "include_once", "require", "require_once");
+    else $include_functions = array();
+    
+    $identifier_start = "<?";
+    $identifier_end = "?>";      
+  }
+  
+  // scan code for server side functions
+  if ($content != "" && $type > 0 && $type < 5 && ($application == "ASP" || $application == "JSP" || $application == "PHP"))
+  {    
+    // hyperCMS API functions    
+    if ($type > 3) $api_file_functions = array("loadfile_header", "loadfile_fast", "loadfile", "loadlockfile", "savefile", "savelockfile", "appendfile", "lockfile", "unlockfile", "deletefile", "deletemediafiles", "copyrecursive", "deleteversion", "deleteversions", "loadcontainer", "savecontainer", "loadtemplate", "savetemplate", "loadlog", "savelog", "indexcontent", "unindexcontent", "reindexcontent", "convertimage", "convertmedia", "rotateimage", "readmediaplayer_config", "savemediaplyer_config", "unzipfile", "clonefolder", "zipfiles_helper", "createthumbnail_indesign", "createthumbnail_video", "createimages_video", "splitmedia", "createmedia", "createdocument"); 
+    else $api_file_functions = array();
+    
+    $all_functions = array_merge ($disabled_functions, $file_functions, $include_functions, $api_file_functions);
     
     $found = array();
+    $scriptcode = "";
     
-    $scriptcode_array = scriptcode_extract ($content, $identifier_start, $identifier_end);
-    
+    // hyperCMS Script
+    $scriptcode_array = scriptcode_extract (strtolower ($content), "[hypercms:scriptbegin", "scriptend]");
     if (is_array ($scriptcode_array)) $scriptcode = implode ("", $scriptcode_array);
+    
+    // Application Code
+    $scriptcode_array = scriptcode_extract ($content, $identifier_start, $identifier_end);
+    if (is_array ($scriptcode_array)) $scriptcode = $scriptcode.implode ("", $scriptcode_array);
 
     // remove functions from content
     if (!empty ($scriptcode))
@@ -2770,6 +2797,48 @@ function scriptcode_clean_functions ($content, $type=3, $application="PHP")
     $result['result'] = $passed;
     $result['content'] = $content;
     $result['found'] = $found_list;
+    
+    return $result;
+  }
+  // no server side script code allowed
+  elseif ($type == 5)
+  {
+    $scriptcode = "";
+    
+    // hyperCMS Script
+    $scriptcode_array = scriptcode_extract (strtolower ($content), "[hypercms:scriptbegin", "scriptend]");
+    
+    if (is_array ($scriptcode_array))
+    {
+      $scriptcode = implode ("", $scriptcode_array);
+      $content = str_ireplace ($scriptcode_array, "", $content);
+    }
+    
+    // Application Code
+    $scriptcode_array = scriptcode_extract ($content, $identifier_start, $identifier_end);
+    
+    if (is_array ($scriptcode_array))
+    {
+      $scriptcode = $scriptcode.implode ("", $scriptcode_array);
+      $content = str_ireplace ($scriptcode_array, "", $content);
+    }
+    
+    if ($scriptcode != "")
+    {
+      $passed = false;
+      $content = "";
+      $found_list = "Server side code included";
+    }
+    else
+    {
+      $passed = true;
+      $found_list = "";
+    }
+    
+    $result = array();
+    $result['result'] = $passed;
+    $result['content'] = $content;
+    $result['found'] =  $found_list;
     
     return $result;
   }

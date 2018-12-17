@@ -17,22 +17,23 @@ $mgmt_config['url_protocol'] = (!empty($_SERVER['HTTPS'])) ? 'https://' : 'http:
 // get current working directory
 $base_url = $_SERVER['SERVER_NAME'];
 
-if (dirname($_SERVER['REQUEST_URI']) != "")
+if (dirname ($_SERVER['REQUEST_URI']) != "")
 {
-  $dirname = dirname(dirname(dirname($_SERVER['REQUEST_URI'])));
+  // get root URI (index.php must be removed!)
+  $dirname = dirname (dirname (str_replace ("index.php", "", $_SERVER['REQUEST_URI'])));
   if ($dirname != "/" && $dirname != "") $base_url .= $dirname;
 }
 
-$base_path = dirname(dirname(getcwd()));
+$base_path = dirname (dirname (getcwd()));
 
 // Directory name of hyperCMS application
-$hypercms_dir = basename(dirname(getcwd()));
+$hypercms_dir = basename (dirname (getcwd()));
 
 // correct for Windows
 $base_path = str_replace ("\\", "/", $base_path);
 
 // url and asolute path to hyperCMS on your webserver (e.g. /home/domain/hyperCMS/)
-$mgmt_config['url_path_cms'] = $mgmt_config['url_protocol'].$base_url."/".$hypercms_dir."/";
+echo "<br><br><br>".$mgmt_config['url_path_cms'] = $mgmt_config['url_protocol'].$base_url."/".$hypercms_dir."/";
 $mgmt_config['url_path_cms_sub'] = $base_url."/".$hypercms_dir."/";
 $mgmt_config['abs_path_cms'] = $base_path."/".$hypercms_dir."/";
 

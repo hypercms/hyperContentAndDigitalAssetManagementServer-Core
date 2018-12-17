@@ -72,11 +72,19 @@ elseif (strpos ($template, ".meta.tpl") > 0)
 // save template file if save button was pressed
 if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, 'tpledit') && $save == "yes" && checktoken ($token, $user))
 {
-  // set highest cleaning level if not provided or meta data template
-  if (!isset ($mgmt_config['template_clean_level']) || $cat == "meta") $mgmt_config['template_clean_level'] = 3;
+  // get charset before transformation of < and >
+  $result_charset = getcharset ($site, $contentfield);  
   
+  if (isset ($result_charset['charset']) && $result_charset['charset'] != "") $charset = $result_charset['charset'];
+  else $charset = $mgmt_config[$site]['default_codepage'];
+  
+  // set highest cleaning level if not provided and not a metadata template
+  if ($site != "" && isset ($mgmt_config[$site]['template_clean_level']) && $cat != "meta") $cleanlevel = $mgmt_config[$site]['template_clean_level'];
+  elseif (isset ($mgmt_config['template_clean_level']) && $cat != "meta") $cleanlevel = $mgmt_config['template_clean_level'];
+  else $cleanlevel = 4;
+
   // check code
-  $contentfield_check = scriptcode_clean_functions ($contentfield, $mgmt_config['template_clean_level']);
+  $contentfield_check = scriptcode_clean_functions ($contentfield, $cleanlevel);
 
    // save pers file
   if ($contentfield_check['result'] == true)
@@ -108,13 +116,14 @@ else
   $application = $bufferarray[0];  
   $bufferarray = getcontent ($templatedata, "<content>"); 
   $contentfield = $bufferarray[0];
+  
+  
+  // get charset before transformation of < and >
+  $result_charset = getcharset ($site, $contentfield);  
+  
+  if (isset ($result_charset['charset']) && $result_charset['charset'] != "") $charset = $result_charset['charset'];
+  else $charset = $mgmt_config[$site]['default_codepage'];
 }
-
-// get charset before transformation of < and >
-$result_charset = getcharset ($site, $contentfield);  
-
-if (isset ($result_charset['charset']) && $result_charset['charset'] != "") $charset = $result_charset['charset'];
-else $charset = $mgmt_config[$site]['default_codepage'];
 
 // escape special characters (transform all special chararcters into their html/xml equivalents)
 if ($contentfield != "")

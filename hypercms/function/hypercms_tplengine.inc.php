@@ -659,10 +659,18 @@ end if
 
 function tpl_globals_extended ($application, $abs_path_cms, $abs_path_rep, $site, $location)
 {
+  global $siteaccess;
+  
   $application = strtolower ($application);
   
   if ($application == "php")
   {
+    if (!empty ($siteaccess) && is_array ($siteaccess) && sizeof ($siteaccess) > 0)
+    {
+      $siteaccessvar = "\$siteaccess = array('".implode ("','", $siteaccess)."');";
+    }
+    else $siteaccessvar = "\$siteaccess = array('".$site."');";
+    
     return "<?php
 if (!empty (\$_GET['hcms_session']) && is_array (\$_GET['hcms_session']))
 {
@@ -676,6 +684,7 @@ if (!empty (\$_GET['hcms_session']) && is_array (\$_GET['hcms_session']))
   }
 }
 \$site = '".$site."';
+".$siteaccessvar."
 include ('".$abs_path_cms."config.inc.php'); 
 \$publ_config = parse_ini_file ('".$abs_path_rep."config/".$site.".ini'); 
 include_once ('".$abs_path_cms."function/hypercms_api.inc.php');
@@ -695,8 +704,9 @@ include_once ('".$abs_path_cms."function/hypercms_tplengine.inc.php');
 \$abs_publ_media = \$publ_config['abs_publ_media'];
 \$url_publ_tplmedia = \$publ_config['url_publ_tplmedia'];
 \$abs_publ_tplmedia = \$publ_config['abs_publ_tplmedia'];        
-@chdir ('$location');
-?>\n";
+@chdir ('".$location."');
+?>
+";
   }
   else return "";
 }

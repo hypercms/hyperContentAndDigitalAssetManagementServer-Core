@@ -268,7 +268,7 @@ else
               if ($file['type'] == "file") $file_info = getfileinfo ($site, $name, "comp");
               
               // file size
-              if ($file['size'] > 0) $file_size = number_format (ceil ($file['size'] / 1024), 0, "", ".");
+              if ($file['size'] > 0) $file_size = number_format (ceil ($file['size'] / 1024), 0, ".", " ");
             
               // single or multi select
               if ($multi == "true") $input_type = "checkbox";

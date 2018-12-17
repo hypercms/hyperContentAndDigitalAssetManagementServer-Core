@@ -426,7 +426,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
       if (!empty ($object_item['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($object_item['createdate']));
       if (!empty ($object_item['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($object_item['date']));
       if (!empty ($object_item['user'])) $file_owner = $object_item['user'];
-      if (!empty ($object_item['filesize'])) $file_size = $object_item['filesize'];
+      if (!empty ($object_item['filesize'])) $file_size = number_format ($object_item['filesize'], 0, ".", " ");
       
       foreach ($object_item as $text_id=>$content)
       {
@@ -694,7 +694,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
       
                 if (!empty ($container_info) && is_array ($container_info))
                 { 
-                  if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, "", ".");
+                  if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, ".", " ");
                   if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
                   if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
                   if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
@@ -710,7 +710,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 if (empty ($file_size) && is_file ($mediadir.$item_site."/".$mediafile))
                 {
                   $file_size = round (@filesize ($mediadir.$item_site."/".$mediafile) / 1024);
-                  $file_size = number_format ($file_size, 0, "", ".");
+                  $file_size = number_format ($file_size, 0, ".", " ");
                   
                   $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));
                 }
@@ -739,7 +739,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 // get file size
                 $file_size = round (@filesize ($location.$object) / 1024);
                 if ($file_size == 0) $file_size = 1;
-                $file_size = number_format ($file_size, 0, "", ".");
+                $file_size = number_format ($file_size, 0, ".", " ");
                 
                 // get file time
                 $file_modified = date ("Y-m-d H:i", @filemtime ($location.$object));

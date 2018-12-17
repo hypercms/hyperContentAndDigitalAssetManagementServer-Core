@@ -50,6 +50,8 @@ scriptend]
 <!DOCTYPE html>
 <html>
   <head>
+    <title>hyperCMS.com</title>
+    <meta charset='utf-8'/>
     <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation(); scriptend]css/main.css" />
   </head>
   <body class="hcmsWorkplaceGeneric">
@@ -78,7 +80,7 @@ scriptend]
       <p>Please do not forget to publish this page after changing the parameters!</p>
       <hr/>
 [hyperCMS:scriptbegin
-  //check if component is published
+  // check if component is published
   $objectpath = correctfile ("%abs_location%", "%object%");
   $compinfo = getfileinfo ($site, $objectpath, "comp");
 
@@ -114,10 +116,11 @@ scriptend]
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset='utf-8'/>	
-      <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-1.12.4.min.js"></script>
-      <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_galleria/galleria-1.2.9.min.js"></script>
-      <style>
+    <title>hyperCMS.com</title>
+    <meta charset='utf-8'/>
+    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_galleria/galleria-1.2.9.min.js"></script>
+    <style>
         body {
           margin: 0px;
           padding: 0px;
@@ -127,7 +130,7 @@ scriptend]
           width: [hyperCMS:scriptbegin echo $galleriaWidth; scriptend]px;
           height: [hyperCMS:scriptbegin echo $galleriaHeight; scriptend]px;
         }
-      </style>
+    </style>
   </head>
   <body>
 

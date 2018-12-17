@@ -474,7 +474,7 @@ $mgmt_config['maxzipsize'] = 2000;
 $mgmt_config['max_digits_filename'] = 236;
 
 // Which types of files (file extensions) are not allowed for upload, example ".asp.jsp.php.pl.sql"
-$mgmt_config['exclude_files'] = ".php.pl.jsp.asp.aspx.exe.sql.sh.bash";
+$mgmt_config['exclude_files'] = ".php.phtml.pl.jsp.asp.aspx.exe.sql.sh.bash";
 
 // Save Metadata to Files
 // Save IPTC tags to image files (true) or not (false)
@@ -563,6 +563,7 @@ $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
 $mgmt_config['aes256_key'] = "h1y2p3e4r5c6m7s8s9m0c1r2e3p4y5h6";
 
 // Template code
+// Use $mgmt_config['publication-name']['template_clean_level'] for publication specific settings
 // Cleaning level of template code from none = 0 to strong = 3 (no cleaning = 0, basic set of disabled functions = 1, 1 + file access functions = 2, 2 + include functions = 3)
 $mgmt_config['template_clean_level'] = 1;
 
