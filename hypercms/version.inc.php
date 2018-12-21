@@ -2511,7 +2511,7 @@ Release 02/2018
 - Bug fix: Function showmedia in UI API did not set the correct width of the annotation toolbar
 
 Version 7.0.6
-Release 03/2017
+Release 03/2018
 - Implementation of video background wallpapers for the logon and home screen
 - Modifications in function getwallpaper in Get API in order to support video wallpapers based on the version number
 - Design modifications in popup_upload_html and popup_upload_swf
@@ -2620,7 +2620,7 @@ Release 03/2017
 - Bug fix: Function createmedia in Media API set a high image density for all vector based images, this has now been limited to SVG graphics due to issues with ImageMagick
 
 Version 7.0.7
-Release 05/2017
+Release 05/2018
 - Implementation of a new Home screen box for the latest uploads including the download/access links for the objects
 - Implementation of compress feature for the HTML5 file upload (only HTML5 file upload, Flash-Plugin based file upload will not receive the new feature)
 - Modifications in CSS of the file upload for all design themes
@@ -2730,7 +2730,7 @@ Release 05/2017
 - Bug fix: Function createfavorite in Main API did verify unasissgned variable $cat
 
 Version 7.0.8
-Release 06/2017
+Release 06/2018
 - Implementation of PhotoSwipe JS library into the system
 - Implementation of PhotoSwipe template for the automatic creation of responsive image galleries (code snippet)
 - Modification of field types in user_sendlink
@@ -2835,7 +2835,7 @@ Release 06/2017
 - Bug fix: function rdbms_setpublicationtaxonomy in DB connect did use the wrong variable name for container ID in settaxnomy function call
 
 Version 7.0.9
-Release 08/2017
+Release 08/2018
 - Modifications and improvements in Workflow Management
 - Modifications in function getserverload in Get API in order to verify results on MS Windows OS and set default values
 - Modifications in event system in order to verify variables
@@ -2922,7 +2922,7 @@ Release 08/2017
 - Bug fix: log_list did not load custom log file due to missing input for function loadlog
 
 Version 7.0.10
-Release 09/2017
+Release 09/2018
 - Modifications in function uploadfile in Main API in order to support new result array parameters
 - Modifications in service uploadfile in order to support the upload of additional text content (HTTP Post array variable must be named "text" and use the text-ID as key and the text content as value)
 - Modifications in the showcase component template "Upload" in the install directory in order to support additional text content
@@ -3013,7 +3013,7 @@ Release 09/2017
 - Bug fix: Function rdbms_createobject in DB Connect accepted an object path with a tailing slash
 
 Version 7.0.11
-Release 12/2017
+Release 12/2018
 - Modifications and improvements in Security API
 - Modifications in userlogin in order to separate messages from JavaScript code
 - Update of PHPWord library
