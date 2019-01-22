@@ -65,8 +65,8 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
   
   <div style="margin:10px;">
   <?php
-    echo "<table border=\"0\" celspacing=\"2\" cellpadding=\"1\" width=\"620\">\n";
-    echo "  <tr class=\"hcmsRowData1\"><td width=\"180\">Country </td><td>".@$data['country']." </td></tr>\n";
+    echo "<table class=\"hcmsTableStandard\" style=\"width:620px;\">\n";
+    echo "  <tr class=\"hcmsRowData1\"><td style=\"width:180px;\">Country </td><td>".@$data['country']." </td></tr>\n";
     echo "  <tr class=\"hcmsRowData2\"><td>Region </td><td>".@$data['regionName']." </td></tr>\n";
     echo "  <tr class=\"hcmsRowData1\"><td>City </td><td>".@$data['city']." </td></tr>\n";
     echo "  <tr class=\"hcmsRowData2\"><td>ZIP code </td><td>".@$data['zip']." </td></tr>\n";

@@ -97,30 +97,39 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
 </head>
 
 <body class="hcmsWorkplaceGeneric">
-<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-  <table width="100%">
-    <tr><td class="hcmsHeadline" width="220" nowrap><?php echo $pagecomp; ?> </td><td><input name="extension" type="text" value="<?php echo $templatename; ?>" style="width:220px;" disabled="disabled" /></td></tr>
+<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
+  <table class="hcmsTableStandard" style="width:100%;">
+    <tr>
+      <td class="hcmsHeadline" style="white-space:nowrap; width:220px;"><?php echo $pagecomp; ?> </td>
+      <td><input name="extension" type="text" value="<?php echo $templatename; ?>" style="width:220px;" disabled="disabled" /></td>
+    </tr>
     <?php if ($cat == "page" || $cat == "comp") { ?>
-    <tr><td class="hcmsHeadline" nowrap><?php echo getescapedtext ($hcms_lang['file-extension-without-dot'][$lang]); ?> </td><td><input name="extension" type="text" value="<?php echo $extension; ?>" style="width:50" disabled="disabled" /></td></tr>
-    <tr><td class="hcmsHeadline" nowrap><?php echo getescapedtext ($hcms_lang['application'][$lang]); ?> </td><td>
-    <select name="application" disabled>
-      <option value="asp"<?php if ($application == "asp") echo "selected=\"selected\""; ?>>Active Server Pages (ASP)</option>
-      <option value="xml"<?php if ($application == "xml") echo "selected=\"selected\""; ?>>Extensible Markup Language (XML) or Text</option>
-      <option value="htm"<?php if ($application == "htm") echo "selected=\"selected\""; ?>>Hypertext Markup Language (HTML)</option>
-      <option value="jsp"<?php if ($application == "jsp") echo "selected=\"selected\""; ?>>Java Server Pages (JSP)</option>
-      <option value="php"<?php if ($application == "php") echo "selected=\"selected\""; ?>>PHP Hypertext Preprocessor (PHP)</option>
-    </select>
-    <br />
-    </td></tr>
+    <tr>
+      <td class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['file-extension-without-dot'][$lang]); ?> </td>
+      <td><input name="extension" type="text" value="<?php echo $extension; ?>" style="width:50" disabled="disabled" /></td>
+    </tr>
+    <tr>
+      <td class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['application'][$lang]); ?> </td>
+      <td>
+        <select name="application" disabled="disabled">
+          <option value="asp"<?php if ($application == "asp") echo "selected=\"selected\""; ?>>Active Server Pages (ASP)</option>
+          <option value="xml"<?php if ($application == "xml") echo "selected=\"selected\""; ?>>Extensible Markup Language (XML) or Text</option>
+          <option value="htm"<?php if ($application == "htm") echo "selected=\"selected\""; ?>>Hypertext Markup Language (HTML)</option>
+          <option value="jsp"<?php if ($application == "jsp") echo "selected=\"selected\""; ?>>Java Server Pages (JSP)</option>
+          <option value="php"<?php if ($application == "php") echo "selected=\"selected\""; ?>>PHP Hypertext Preprocessor (PHP)</option>
+        </select>
+        <br />
+      </td>
+    </tr>
     <?php } ?>
     <tr>
-      <td colspan=2>
-        <textarea name="contentfield" style="width:98%; height:700px; margin-bottom:10px;" wrap="VIRTUAL"><?php echo $contentfield; ?></textarea>
+      <td colspan="2">
+        <textarea name="contentfield" style="width:100%; height:700px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;" wrap="VIRTUAL"><?php echo $contentfield; ?></textarea>
       </td>
     </tr>
   </table>
+</div>
 
-</div> 
 </body>
 </html>

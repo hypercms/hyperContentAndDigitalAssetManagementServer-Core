@@ -601,9 +601,9 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
   <input type="hidden" name="preview" value="no" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
-  <table border=0 cellpadding=0 cellspacing=2>
+  <table class="hcmsTableStandard">
     <tr>
-      <td width="250" class="hcmsHeadline"><?php echo getescapedtext ($pagecomp, $charset, $lang); ?> </td>
+      <td class="hcmsHeadline" style="width:250px;"><?php echo getescapedtext ($pagecomp, $charset, $lang); ?> </td>
       <td><input name="template" type="text" value="<?php echo getescapedtext ($templatename, $charset, $lang); ?>" style="width:220px;" disabled="disabled" /></td>
     </tr>
     <?php if ($cat == "page" || $cat == "comp") { ?>
@@ -632,46 +632,51 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
   </table>
   <br />
   
-  <table border="0" cellspacing="0" cellpadding="0" style="border: 1px solid #000000; width:100%; height:100%;">
+  <table class="hcmsTableNarrow" style="border:1px solid #000000; width:100%; height:100%;">
   <?php
   if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
   {
     // meta-information checkbox
-    if ($cat != "meta") $checkbox_metainfo = "<font color=\"#000000\">&nbsp;&nbsp;&nbsp;</font><input type=\"checkbox\" name=\"infotype\" value=\"meta\" /> ".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang);
+    if ($cat != "meta") $checkbox_metainfo = "&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"infotype\" value=\"meta\" /> ".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang);
     else $checkbox_metainfo = "";
     
-    echo "<tr>
+    echo "
+    <tr>
       <td>
-        <table border=\"0\" cellspacing=\"2\" cellpadding=\"0\" width=\"100%\">\n";
-    if ($cat != "meta") echo "<tr>
-              <td width=\"248\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['article-identification-name'][$lang], $charset, $lang)." </td>
-              <td nowrap=\"nowrap\">
+        <table class=\"hcmsTableStandard\" style=\"width:100%;\">";
+    if ($cat != "meta") echo "
+            <tr>
+              <td style=\"white-space:nowrap; width:248px; padding:2px;\">".getescapedtext ($hcms_lang['article-identification-name'][$lang], $charset, $lang)." </td>
+              <td style=\"white-space:nowrap; padding:2px;\">
                 <input type=\"text\" name=\"artid\" style=\"width:200px;\" />
                 <input type=\"button\" class=\"hcmsButtonBlue\" name=\"art_clean\" value=\"".getescapedtext ($hcms_lang['no-article'][$lang], $charset, $lang)."\" onClick=\"document.forms['template_edit'].elements['artid'].value = '';\" />
               </td>
-            </tr>\n";            
-    echo "<tr>
-              <td width=\"248\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['content-identification-name'][$lang], $charset, $lang)." </td>
-              <td nowrap=\"nowrap\">
+            </tr>";            
+    echo "
+            <tr>
+              <td style=\"white-space:nowrap; width:248px; padding:2px;\">".getescapedtext ($hcms_lang['content-identification-name'][$lang], $charset, $lang)." </td>
+              <td style=\"white-space:nowrap; padding:2px;\">
                 <input type=\"text\" name=\"tagid\" style=\"width:200px;\" />
                 <input type=\"button\" class=\"hcmsButtonBlue\" name=\"tag_clean\" value=\"".getescapedtext ($hcms_lang['reset'][$lang], $charset, $lang)."\" onClick=\"document.forms['template_edit'].elements['tagid'].value = '';\" />".$checkbox_metainfo."
               </td>
-            </tr>\n";
-    echo "<tr>
-              <td width=\"248\" wnowrap=\"nowrap\">".getescapedtext ($hcms_lang['hide-content'][$lang], $charset, $lang)." </td>
-              <td nowrap=\"nowrap\">
+            </tr>";
+    echo "
+            <tr>
+              <td style=\"white-space:nowrap; width:248px; padding:2px;\">".getescapedtext ($hcms_lang['hide-content'][$lang], $charset, $lang)." </td>
+              <td style=\"white-space:nowrap; padding:2px;\">
                 <input type=\"checkbox\" name=\"onpublish\" value=\"hidden\" />&nbsp;".getescapedtext ($hcms_lang['on-publish'][$lang], $charset, $lang)."&nbsp;
                 <input type=\"checkbox\" name=\"onedit\" value=\"hidden\" />&nbsp;".getescapedtext ($hcms_lang['on-edit'][$lang], $charset, $lang)."
               </td>
-            </tr>\n";
-    echo "</table>
+            </tr>";
+    echo "
+        </table>
       </td>
     </tr>\n";
   }
   ?>
     <tr>
       <td>
-        <div class="hcmsToolbar" style="width:100%">
+        <div class="hcmsToolbar" style="width:100%;">
         
           <div class="hcmsToolbarBlock">
             <img onClick="savetemplate('');" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" name="save" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
@@ -784,8 +789,8 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
       </td>
     </tr>
     <tr>
-      <td align="center">
-        <textarea name="contentfield" style="width:98%; height:700px; margin-bottom:10px;"><?php echo $contentfield; ?></textarea>
+      <td style="text-align:center;">
+        <textarea name="contentfield" style="width:100%; height:700px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;"><?php echo $contentfield; ?></textarea>
       </td>
     </tr>
   </table>

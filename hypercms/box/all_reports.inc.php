@@ -35,7 +35,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
   echo"
       </select>
     </div>
-    <iframe id=\"report\" src=\"".$mgmt_config['url_path_cms']."empty.php\" style=\"width:100%; height:365px; border:1px solid #000000;\"></iframe>
+    <iframe id=\"report\" src=\"".$mgmt_config['url_path_cms']."empty.php\" style=\"width:100%; height:360px; border:1px solid #000000;\"></iframe>
   </div>\n";
 }
 ?>

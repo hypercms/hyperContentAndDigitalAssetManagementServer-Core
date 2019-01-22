@@ -127,7 +127,7 @@ function submitTo(url, action, target, features, width, height)
 <?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
 
 <div class="hcmsLocationBar">
-  <table border=0 cellspacing=0 cellpadding=1>
+  <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo getescapedtext ($hcms_lang['messages'][$lang]); ?></b></td>
     </tr>

@@ -257,7 +257,7 @@ function goToURL()
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <div class="hcmsLocationBar">
-  <table border=0 cellspacing=0 cellpadding=0>
+  <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo getescapedtext ($hcms_lang['user-management'][$lang]); ?></b></td>
     </tr>
@@ -479,26 +479,24 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="action" value="create" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr>
-      <td colspan="2" class="hcmsHeadline">&nbsp;<?php echo getescapedtext ($hcms_lang['create-new-user'][$lang]); ?>&nbsp;</td>
-      <td rowspan="3" width="22" align="right" valign="top">
+      <td>
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-new-user'][$lang]); ?></span><br/>
+        <table class="hcmsTableNarrow">
+          <tr>
+            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['user-name'][$lang])."&nbsp;</td>"; ?><td><input type="text" name="login" style="width:240px;" maxlength="60" value="<?php if ($action == "create") echo $login; ?>" tabindex="1" placeholder="<?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?>" /></td>
+          </tr>
+          <tr>
+            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['password'][$lang])."&nbsp;</td>"; ?><td style="white-space:nowrap;"><input type="password" name="password" maxlength="20" style="width:113px;" placeholder="<?php echo getescapedtext ($hcms_lang['password'][$lang]); ?>" tabindex="2" />
+            <input type="password" name="confirm_password" maxlength="20" style="width:113px;" placeholder="<?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?>" tabindex="3" />
+            <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" tabindex="4" /></td>
+          </tr>
+        </table>
+      </td>
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('createuserLayer','','hide');" />
       </td>        
-    </tr>    
-    <tr>
-      <td nowrap="nowrap">&nbsp;<?php if (!$is_mobile) echo getescapedtext ($hcms_lang['user-name'][$lang]); ?>&nbsp;</td>
-      <td>
-        <input type="text" name="login" style="width:240px;" maxlength="60" value="<?php if ($action == "create") echo $login; ?>" tabindex="1" placeholder="<?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?>" />
-      </td>
-    </tr>
-    <tr>
-      <td nowrap="nowrap">&nbsp;<?php if (!$is_mobile) echo getescapedtext ($hcms_lang['password'][$lang]); ?>&nbsp;</td>
-      <td nowrap="nowrap">
-        <input type="password" name="password" maxlength="20" style="width:113px;" placeholder="<?php echo getescapedtext ($hcms_lang['password'][$lang]); ?>" tabindex="2" />
-        <input type="password" name="confirm_password" maxlength="20" style="width:113px;" placeholder="<?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?>" tabindex="3" />
-        <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" tabindex="4" />
-      </td>
     </tr>
   </table>
 </form>
@@ -510,46 +508,42 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="action" value="registration" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table width="100%" border="0" cellspacing="0" cellpadding="1">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr>
-      <td colspan="2">
-        &nbsp;<label><input type="checkbox" name="registration" value="true" tabindex="1" <?php if (!empty ($mgmt_config[$site]['registration'])) echo "checked"; ?> /> <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['registration-of-new-users'][$lang]); ?></span></label> 
-        <span class="hcmsTextSmall">&nbsp;<?php if (!$is_mobile) echo $mgmt_config['url_path_cms']."userregister.php?site=".url_encode($site); ?></span>
+      <td>
+        <label><input type="checkbox" name="registration" value="true" tabindex="1" <?php if (!empty ($mgmt_config[$site]['registration'])) echo "checked"; ?> /> <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['registration-of-new-users'][$lang]); ?></span></label>
+        <span class="hcmsTextSmall"><?php if (!$is_mobile) echo $mgmt_config['url_path_cms']."userregister.php?site=".url_encode($site); ?></span><br/>
+        <table class="hcmsTableNarrow">
+          <tr>
+            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang])."&nbsp;</td>"; ?><td style="white-space:nowrap;"><input name="registration_notify" value="<?php if (!empty ($mgmt_config[$site]['registration_notify'])) echo $mgmt_config[$site]['registration_notify']; ?>" style="width:230px;" tabindex="2" placeholder="<?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?>" /></td>
+          </tr>
+          <tr>
+            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang])."&nbsp;</td>"; ?><td style="white-space:nowrap;"><select name="registration_group" style="width:242px;" tabindex="3">
+            <?php
+            if ($is_mobile) echo "
+            <option value=\"\" disabled>".getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang])."</option>";
+            ?>
+            <option value="" <?php if (empty ($mgmt_config[$site]['registration_group'])) echo "selected"; ?>><?php echo getescapedtext ($hcms_lang['none'][$lang]); ?></option>
+            <?php 
+            if (!empty ($group_array) && sizeof ($group_array) > 0)
+            {
+              reset ($group_array);
+              
+              foreach ($group_array as $group)
+              {
+                echo "
+                <option value=\"".$group."\" ".((!empty ($mgmt_config[$site]['registration_group']) && $mgmt_config[$site]['registration_group'] == $group) ? "selected=\"selected\"" : "").">".$group."</option>";
+              }
+            }
+            ?>
+          </select>
+          <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['registrationform'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" tabindex="4" /></td>
+          </tr>
+        </table>
       </td>
-      <td rowspan="3" width="22" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('registrationLayer','','hide');" />
       </td>        
-    </tr>
-    <tr>
-      <td>&nbsp;<?php if (!$is_mobile) echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?>&nbsp;</td>
-      <td>
-        <input name="registration_notify" value="<?php if (!empty ($mgmt_config[$site]['registration_notify'])) echo $mgmt_config[$site]['registration_notify']; ?>" style="width:230px;" tabindex="2" placeholder="<?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?>" />
-      </td>
-    </tr>
-    <tr>
-      <td>&nbsp;<?php if (!$is_mobile) echo getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang]); ?>&nbsp;</td>
-      <td nowrap="nowrap">
-        <select name="registration_group" style="width:242px;" tabindex="3">
-          <?php
-          if ($is_mobile) echo "
-          <option value=\"\" disabled>".getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang])."</option>";
-          ?>
-          <option value="" <?php if (empty ($mgmt_config[$site]['registration_group'])) echo "selected"; ?>><?php echo getescapedtext ($hcms_lang['none'][$lang]); ?></option>
-          <?php 
-          if (!empty ($group_array) && sizeof ($group_array) > 0)
-          {
-            reset ($group_array);
-            
-            foreach ($group_array as $group)
-            {
-              echo "
-              <option value=\"".$group."\" ".((!empty ($mgmt_config[$site]['registration_group']) && $mgmt_config[$site]['registration_group'] == $group) ? "selected=\"selected\"" : "").">".$group."</option>";
-            }
-          }
-          ?>
-        </select>
-        <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['registrationform'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" tabindex="4" />
-      </td>
     </tr>
   </table>
 </form>

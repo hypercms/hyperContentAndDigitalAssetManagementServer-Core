@@ -97,7 +97,7 @@ function warning_delete()
 <?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
 
 <div class="hcmsLocationBar">
-  <table border=0 cellspacing=0 cellpadding=1>
+  <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php if ($site != "") echo getescapedtext ($hcms_lang['custom-system-events'][$lang]); else echo getescapedtext ($hcms_lang['system-events'][$lang]); ?></b></td>
     </tr>
@@ -146,21 +146,19 @@ function warning_delete()
   <input type="hidden" name="action" value="notification" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table width="100%" border="0" cellspacing="0" cellpadding="1">
+  <table class="hcmsTableStandard" style="width:100%; height:80px;">
     <tr>
-      <td colspan="2">
-        &nbsp;<span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." (".$hcms_lang['error'][$lang].", ".$hcms_lang['warning'][$lang].")"); ?></span>
+      <td style="overflow:auto;">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." (".$hcms_lang['error'][$lang].", ".$hcms_lang['warning'][$lang].")"); ?></span><br />
+        <?php if (!$is_mobile) echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?>&nbsp;
+        <span style="white-space:nowrap;">
+          <input name="eventlog_notify" value="<?php if (!empty ($mgmt_config[$site]['eventlog_notify'])) echo $mgmt_config[$site]['eventlog_notify']; ?>" style="width:230px;" tabindex="1" placeholder="<?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?>" />
+          <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['registrationform'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" tabindex="2" />
+        </span>
       </td>
-      <td rowspan="2" width="22" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('notificationLayer','','hide');" />
       </td>        
-    </tr>
-    <tr>
-      <td>&nbsp;<?php if (!$is_mobile) echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?>&nbsp;</td>
-      <td>
-        <input name="eventlog_notify" value="<?php if (!empty ($mgmt_config[$site]['eventlog_notify'])) echo $mgmt_config[$site]['eventlog_notify']; ?>" style="width:230px;" tabindex="1" placeholder="<?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?>" />
-        <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['registrationform'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" tabindex="2" />
-      </td>
     </tr>
   </table>
 </form>

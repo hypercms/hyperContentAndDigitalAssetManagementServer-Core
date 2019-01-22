@@ -1259,12 +1259,12 @@ else $title = getescapedtext ($hcms_lang['upload-new-file-in'][$lang]);
 if ($uploadmode == "multi")
 {
   $object_name = getlocationname ($site, $location_esc, $cat, "path");
-  $object_name = "&nbsp;<img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".str_replace ("/", " &gt; ", trim ($object_name, "/"));
+  $object_name = "&nbsp;<img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" />&nbsp;".str_replace ("/", " &gt; ", trim ($object_name, "/"));
 }
 else
 {
   $fileinfo = getfileinfo ($site, $object, $cat);
-  $object_name = "&nbsp;<img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" title=\"".getescapedtext ($hcms_lang['object'][$lang])."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".$fileinfo['name'];
+  $object_name = "&nbsp;<img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" title=\"".getescapedtext ($hcms_lang['object'][$lang])."\" class=\"hcmsIconList\" />&nbsp;".$fileinfo['name'];
 }
 
 echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name."</style>", $lang);
@@ -1321,11 +1321,11 @@ echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name
       <div class="row">
         <label><input type="checkbox" name="deleteobject" id="deleteobject" value="1" /> <?php echo getescapedtext ($hcms_lang['remove-uploaded-files-on'][$lang]); ?></label>
         <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
-        <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" /><img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+        <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" /><img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
       </div>
       <?php } ?>
       <div style="margin:10px 0px 10px 0px;">
-        <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsButtonSizeSquare" align="absmiddle" />
+        <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsButtonSizeSquare" />
         <?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?>
       </div>
       <div style="margin:0px 0px 10px 0px;">

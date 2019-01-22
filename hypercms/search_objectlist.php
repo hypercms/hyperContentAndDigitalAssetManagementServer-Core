@@ -409,6 +409,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
     $container_id = "";
     $mediafile = "";
     $file_size = "";
+    $file_width = "";
+    $file_height = "";
     $file_created = "";
     $file_modified = "";
     $file_owner = "";
@@ -427,6 +429,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
       if (!empty ($object_item['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($object_item['date']));
       if (!empty ($object_item['user'])) $file_owner = $object_item['user'];
       if (!empty ($object_item['filesize'])) $file_size = number_format ($object_item['filesize'], 0, ".", " ");
+      if (!empty ($object_item['width'])) $file_width = $object_item['width'];
+      if (!empty ($object_item['height'])) $file_height = $object_item['height'];
       
       foreach ($object_item as $text_id=>$content)
       {
@@ -550,15 +554,15 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                          <tr id=g".$items_row." style=\"cursor:pointer\" align=\"left\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                              <input type=\"hidden\" value=\"".$location_esc.$folder."\">
-                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" style=\"display:block; padding-left:5px; padding-right:5px;\">
-                               <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".$dlink_start.$folder_name.$dlink_end."
+                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" style=\"display:block; padding:0px 5px;\">
+                               <img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$dlink_start.$folder_name.$dlink_end."
                              </div>
                             </td>";
 
             if (!$is_mobile)
             {
               $listview .= "
-                            <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; padding-left:5px; padding-right:5px;\">".$item_location."</div></td>";
+                            <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; \">".$item_location."</div></td>";
                    
               if (is_array ($objectlistcols_reduced))
               {
@@ -584,7 +588,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     elseif ($key == 'filesize')
                     {
                       $title = "";
-                      $style_div = "text-align:right;";
+                      $style_div = "text-align:right; padding-right:5px;";
                     }
                     elseif ($key == 'type')
                     {
@@ -601,7 +605,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     }
                     
                     $listview .= "
-                            <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; padding-left:5px; padding-right:5px; ".$style_div."\">".$title."</div></td>";
+                            <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"padding-left:3px; ".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
                     
                     $i++;
                   }
@@ -789,15 +793,15 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                          <tr id=\"g".$items_row."\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                              <input type=\"hidden\" value=\"".$location_esc.$object."\" />
-                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"display:block; padding-left:5px; padding-right:5px;\">
-                               <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" ".$class_image." /> ".$dlink_start.$object_name.$dlink_end."
+                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"display:block; padding:0px 5px;\">
+                               <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$dlink_start.$object_name.$dlink_end."
                              </div>
                            </td>";
             
             if (!$is_mobile)
             {
               $listview .= "
-                           <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; padding-left:5px; padding-right:5px;\">".$item_location."</div></td>";
+                           <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block;\">".$item_location."</div></td>";
 
               if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
               {
@@ -823,7 +827,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     elseif ($key == 'filesize')
                     {
                       $title = $file_size;
-                      $style_div = "text-align:right;";
+                      $style_div = "text-align:right; padding-right:5px;";
                     }
                     elseif ($key == 'type')
                     {
@@ -840,7 +844,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     }
                     
                     $listview .= "
-                            <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; padding-left:5px; padding-right:5px; ".$style_div."\">".$title."</div></td>";
+                            <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"padding-left:3px; ".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
                   
                     $i++;
                   }
@@ -864,14 +868,31 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               preparemediafile ($item_site, $thumbdir.$item_site."/", $media_info['filename'].".thumb.jpg", $user);
 
               // try to create thumbnail if not available
-              if ($mgmt_config['recreate_preview'] == true && (!is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg")))
+              if (!empty ($mgmt_config['recreate_preview']) && (!is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg")))
               {
                 createmedia ($item_site, $thumbdir.$item_site."/", $thumbdir.$item_site."/", $media_info['file'], "", "thumbnail");
               }          
               
               if (is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg"))
               {
-                $imgsize = getimagesize ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg");
+                // use original image size from RDBMS
+                if (!empty ($file_width) && !empty ($file_height))
+                {
+                  $imgsize = array();
+                  $imgsize[0] = $file_width;
+                  $imgsize[1] = $file_height;
+                }
+                elseif (!empty ($container_info['width']) && !empty ($container_info['height']))
+                {
+                  $imgsize = array();
+                  $imgsize[0] = $container_info['width'];
+                  $imgsize[1] = $container_info['height'];
+                }
+                // use size of thumbnail file
+                else
+                {
+                  $imgsize = getimagesize ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg");
+                }
                 
                 // calculate image ratio to define CSS for image container div-tag
                 if (is_array ($imgsize))
@@ -887,8 +908,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 }
                           
                 // galleryview - view option for locked multimedia objects
-                if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
-                else $class_image = "class=\"hcmsImageItem\"";               
+                if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsIconOff\"";
+                else $class_image = "class=\"lazyload hcmsImageItem\"";               
                 
                 // if thumbnail is smaller than defined thumbnail size
                 if ($imgwidth < 180 && $imgheight < 180)
@@ -902,7 +923,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   $class_size = "class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"";
                 }
                 
-                $thumbnail = "<div ".$div_id." ".$class_size."><img src=\"".createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name)."\" ".$class_image." /></div>";
+                $thumbnail = "<div ".$div_id." ".$class_size."><img data-src=\"".createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name)."\" ".$class_image." /></div>";
               }
               // display file icon if thumbnail fails 
               else
@@ -911,7 +932,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
                 else $class_image = "";
                         
-                $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"border:0;\" ".$class_image." /></div>";
+                $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /></div>";
               }           
             }
             // display file icon for non multimedia objects 
@@ -921,7 +942,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
               else $class_image = "";
                       
-              $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"border:0;\" ".$class_image." /></div>";
+              $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /></div>";
             }
             
             // if linking is used display download buttons, display edit button for mobile edition
@@ -957,7 +978,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if (!$is_mobile) $width = "160px";
               else $width = "180px";
                 
-              $linking_buttons = "<div style=\"width:".$width."; margin-left:auto; margin-right:auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
+              $linking_buttons = "<div style=\"width:".$width."; margin:0px auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
             }
 
             $galleryview .= "
@@ -999,6 +1020,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
+<script type="text/javascript" src="javascript/lazysizes/lazysizes.min.js" async=""></script>
 <script type="text/javascript">
 
 // context menu
@@ -1083,7 +1105,7 @@ function resizecols ()
   for (i = 0; i < <?php if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced)) echo sizeof ($objectlistcols_reduced) + 1; else echo 1;  ?>; i++)
   {
     // get width of table header columns
-    if ($('#c'+i)) colwidth = $('#c'+i).width() + 3;
+    if ($('#c'+i)) colwidth = $('#c'+i).width();
 
     // set width for table columns
     $('.hcmsCol'+i).width(colwidth);
@@ -1146,43 +1168,43 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
     
-    <table width="150px" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
+    <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
       <tr>
         <td>
           <?php if ($action == "favorites") { ?>
-          <a href=# id="href_fav_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_delete');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_new.png" id="img_fav_delete" align="absmiddle" class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete-favorite'][$lang]); ?></a><br />        
+          <a href="javascript:void(0);" id="href_fav_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_delete');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_new.png" id="img_fav_delete" class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete-favorite'][$lang]); ?></a><br />        
           <hr />
           <?php } elseif (checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1) { ?>
-          <a href=# id="href_fav_create" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_create');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_delete.png" id="img_fav_create" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['add-to-favorites'][$lang]); ?></a><br />
+          <a href="javascript:void(0);" id="href_fav_create" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_create');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_delete.png" id="img_fav_create" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['add-to-favorites'][$lang]); ?></a><br />
           <hr />        
           <?php } ?>
           <?php if ($action == "checkedout") { ?>
-          <a href=# id="href_unlock" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('checkin');"><img src="<?php echo getthemelocation(); ?>img/button_file_unlock.png" id="img_unlock" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['check-in'][$lang]); ?></a><br />        
+          <a href="javascript:void(0);" id="href_unlock" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('checkin');"><img src="<?php echo getthemelocation(); ?>img/button_file_unlock.png" id="img_unlock" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['check-in'][$lang]); ?></a><br />        
           <hr />
           <?php } ?>  
-          <a href=# id="href_preview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('preview');"><img src="<?php echo getthemelocation(); ?>img/button_file_preview.png" id="img_preview" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></a><br />  
+          <a href="javascript:void(0);" id="href_preview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('preview');"><img src="<?php echo getthemelocation(); ?>img/button_file_preview.png" id="img_preview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></a><br />  
           <?php if ($action != "recyclebin") { ?>
-          <a href=# id="href_cmsview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
-          <a href=# id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" align="absmiddle" class="hcmsIconOn hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />
+          <a href="javascript:void(0);" id="href_cmsview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
+          <a href="javascript:void(0);" id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" class="hcmsIconOn hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />
           <?php } ?>
           <?php if ($action != "recyclebin" && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
-          <a href=# id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.png" id="img_chat" align="absmiddle" class="hcmsIconOn hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
+          <a href="javascript:void(0);" id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.png" id="img_chat" class="hcmsIconOn hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
           <?php } ?>   
           <hr />
           <?php if ($action == "recyclebin") { ?>
-          <a href=# id="href_emptybin" onClick="hcms_emptyRecycleBin ('<?php echo $token; ?>');"><img src="<?php echo getthemelocation(); ?>img/button_recycle_bin.png" id="img_emptybin" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['empty-recycle-bin'][$lang]); ?></a><br />
+          <a href="javascript:void(0);" id="href_emptybin" onClick="hcms_emptyRecycleBin ('<?php echo $token; ?>');"><img src="<?php echo getthemelocation(); ?>img/button_recycle_bin.png" id="img_emptybin" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['empty-recycle-bin'][$lang]); ?></a><br />
           <hr />
-          <a href=# id="href_restore" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('restore');"><img src="<?php echo getthemelocation(); ?>img/button_import.png" id="img_restore" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['restore'][$lang]); ?></a><br />        
+          <a href="javascript:void(0);" id="href_restore" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('restore');"><img src="<?php echo getthemelocation(); ?>img/button_import.png" id="img_restore" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['restore'][$lang]); ?></a><br />        
           <?php } ?>  
-          <a href=# id="href_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />     
+          <a href="javascript:void(0);" id="href_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />     
           <hr />
           <?php if ($action != "recyclebin") { ?>
-          <a href=# id="href_cut" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="img_cut" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
-          <a href=# id="href_copy" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="img_copy" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
-          <a href=# id="href_copylinked" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="img_copylinked" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />   
+          <a href="javascript:void(0);" id="href_cut" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="img_cut" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
+          <a href="javascript:void(0);" id="href_copy" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="img_copy" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
+          <a href="javascript:void(0);" id="href_copylinked" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="img_copylinked" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />   
           <hr />
-          <a href=# id="href_publish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('publish');"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.png" id="img_publish" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
-          <a href=# id="href_unpublish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('unpublish');"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png" id="img_unpublish" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />
+          <a href="javascript:void(0);" id="href_publish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('publish');"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.png" id="img_publish" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
+          <a href="javascript:void(0);" id="href_unpublish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('unpublish');"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png" id="img_unpublish" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />
           <hr />
           <?php } ?> 
           <?php
@@ -1199,7 +1221,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
                 foreach ($data['menu']['context'] as $key => $point)
                 {
                   if (!empty ($point['page']) && !empty ($point['name'])) $plugin_items .= "
-            <a href=# id=\"href_plugin_".$key."\" onClick=\"if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('".$mgmt_config['url_path_plugin'].$plugin_name."/".$point['page']."');\"><img src=\"".$point['icon']."\" name=\"img_plugin\" align=\"absmiddle\" class=\"hcmsIconOn hcmsIconList\" />&nbsp;".getescapedtext ($point['name'])."</a><br />";
+            <a href=\"javascript:void(0);\" id=\"href_plugin_".$key."\" onClick=\"if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('".$mgmt_config['url_path_plugin'].$plugin_name."/".$point['page']."');\"><img src=\"".$point['icon']."\" name=\"img_plugin\" class=\"hcmsIconOn hcmsIconList\" />&nbsp;".getescapedtext ($point['name'])."</a><br />";
                 }
               }
             }
@@ -1208,8 +1230,8 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
           <hr />";
           }
           ?>
-          <a href=# id="href_print" onClick="hcms_hideContextmenu(); window.print();"><img src="<?php echo getthemelocation(); ?>img/button_print.png" id="img_print" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['print'][$lang]); ?></a><br />     
-          <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+          <a href="javascript:void(0);" id="href_print" onClick="hcms_hideContextmenu(); window.print();"><img src="<?php echo getthemelocation(); ?>img/button_print.png" id="img_print" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['print'][$lang]); ?></a><br />     
+          <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
         </td>
       </tr>    
     </table>
@@ -1218,14 +1240,14 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 
 <!-- Table Header -->
 <div id="tableHeadLayer" style="position:fixed; top:0; left:0; margin:0; padding:0; width:100%; z-index:2; visibility:visible;">
-  <table id="objectlist_head" cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;">
+  <table id="objectlist_head" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;">
     <tr>
-      <td id="c0" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:277px; white-space:nowrap;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
+      <td id="c0" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:280px; white-space:nowrap;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
     <?php
     if (!$is_mobile)
     {
     ?>
-      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:247px; white-space:nowrap;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
+      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:250px; white-space:nowrap;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
     <?php
       if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
       {
@@ -1233,7 +1255,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
         
         foreach ($objectlistcols_reduced as $key => $active)
         {
-          if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:112px; white-space:nowrap;";
+          if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:115px; white-space:nowrap;";
           else $style_td = "white-space:nowrap;";
           
           $sortnumeric = "";
@@ -1267,6 +1289,8 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
               if (!empty ($labels_reduced[$key])) $title = $labels_reduced[$key];
               // use text ID
               else $title = ucfirst (str_replace ("_", " ", substr ($key, 5)));
+              
+              if (!is_utf8 ($title)) $title = utf8_encode ($title);
             }
             
             echo "
@@ -1284,7 +1308,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 
 <!-- Detail View -->
 <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:0; margin:0; padding:0; width:100%; z-index:1; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
-  <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" style="border:0; width:100%; table-layout:fixed;">
+  <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
   <?php 
   echo $listview;
   ?>
@@ -1298,7 +1322,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 if ($galleryview != "")
 {
   echo "
-  <table id=\"objectgallery\" name=\"objectgallery\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\" width=\"98%\" align=\"center\">
+  <table id=\"objectgallery\" name=\"objectgallery\" style=\"table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;\">
     <tr>";
   
   // add table cells till table row adds up to the defined table cells in a row

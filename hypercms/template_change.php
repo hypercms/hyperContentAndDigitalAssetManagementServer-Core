@@ -135,13 +135,13 @@ $token_new = createtoken ($user);
     <input type="hidden" name="action" value="change" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>">
     
-    <table border="0" cellspacing="2" cellpadding="0">
+    <table class="hcmsTableStandard">
       <tr>
-        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['template-in-use'][$lang]); ?> </td>
-        <td nowrap="nowrap" class="hcmsHeadlineTiny">&nbsp; <?php echo $tpl_name; ?></td>
+        <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['template-in-use'][$lang]); ?> </td>
+        <td style="white-space:nowrap;" class="hcmsHeadlineTiny">&nbsp; <?php echo $tpl_name; ?></td>
       </tr>
       <tr>
-        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['change-template'][$lang]); ?> </td>
+        <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['change-template'][$lang]); ?> </td>
         <td>
           <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame2\']',this,0)">
             <?php
@@ -158,7 +158,7 @@ $token_new = createtoken ($user);
                 elseif (strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"));
                 elseif (strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"));
                 
-                echo "<option value=\"template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($value)."\""; if ($value == $template) echo "selected=\"selected\""; echo ">".$tpl_name."</option>\n";
+                echo "<option value=\"template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($value)."\"".($value == $template ? "selected=\"selected\"" : "").">".$tpl_name."</option>\n";
               }
             }
             else 
@@ -168,7 +168,7 @@ $token_new = createtoken ($user);
             ?>
           </select>
           <?php if ($object == ".folder") echo "&nbsp;&nbsp;<label><input type=\"checkbox\" name=\"type\" value=\"all\" /> ".getescapedtext ($hcms_lang['all'][$lang]." ".$hcms_lang['objects'][$lang])."</label>&nbsp;&nbsp;"; ?>
-          <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['template_change'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
+          <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['template_change'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
           </td>
       </tr>
     </table>

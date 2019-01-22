@@ -113,7 +113,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
       $rows .= "<tr><td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".$value."</td></tr>\n";
     }
     
-    if ($rows != "") $metadata = "<hr /><table>\n".$rows."</table>\n";
+    if ($rows != "") $metadata = "<hr /><table class=\"hcmsTableStandard\">\n".$rows."</table>\n";
   }
 }
 ?>

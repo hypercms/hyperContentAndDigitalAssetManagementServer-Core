@@ -2454,7 +2454,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
       if ($mediafile != "")
       {
         $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
-        $thumbdir = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
+        $thumbdir = getmedialocation ($site, ".hcms.".$mediafile, "abs_path_media").$site."/";
         
         // if current version is a symbolic link to an external media file without an ID
         if (is_link ($thumbdir.$mediafile)  && strpos (readlink ($thumbdir.$mediafile), "_hcm".$container_id) < 1)
@@ -2474,7 +2474,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
           $createversion = createversion ($site, $mediafile, $user);
 
           // remove original files (that will be kept by function createversion for image editing)
-          if (!empty ($createversion)) deletefile ($thumbdir, $mediafile, 0);
+          if (!empty ($createversion)) deletefile ($thumbdir, $mediafile, false);
         }
         else
         {
@@ -2698,14 +2698,14 @@ function deleteversion ($site, $container_version, $user="sys")
     {
       // get locations
       $versiondir = getcontentlocation ($container_id, 'abs_path_content');
-      $thumbdir = getmedialocation ($site, "dummy.".$container_version, "abs_path_media").$site."/";
+      $thumbdir = getmedialocation ($site, ".hcms.".$container_version, "abs_path_media").$site."/";
       $mediadir = getmedialocation ($site, $container_version, "abs_path_media").$site."/";
       
       // delete media file version
       if (is_file ($mediadir.$container_version) || is_cloudobject ($container_version))
       {
         // delete media file and symbolic link to media file (if exported file)
-        if (is_file ($mediadir.$container_version)) $media_result = deletefile ($mediadir, $container_version, 0);
+        if (is_file ($mediadir.$container_version)) $media_result = deletefile ($mediadir, $container_version, false);
 
         // fallback delete of symbolic link to media file (if exported file)
         if (is_link ($thumbdir.$container_version)) deletefile ($thumbdir, $container_version, 0);
@@ -2721,7 +2721,7 @@ function deleteversion ($site, $container_version, $user="sys")
         
       if (is_file ($thumbdir.$thumbnail))
       {
-        $thumbnail_result = deletefile ($thumbdir, $thumbnail, 0);
+        $thumbnail_result = deletefile ($thumbdir, $thumbnail, false);
         
         // cloud storage
         if (function_exists ("deletecloudobject")) deletecloudobject ($site, $thumbdir, $thumbnail, $user);
@@ -2795,7 +2795,7 @@ function deleteversions ($type, $report, $user="sys")
         // remove template or other version
         else
         {
-          $test = deletefile ($versiondir, $entry, 0);
+          $test = deletefile ($versiondir, $entry, false);
         }
         
         // report  
@@ -3664,14 +3664,14 @@ function restoremediafile ($site, $mediafile)
   $success = true;
   $restored = false;
   $medialocation = "";
-  
+
   // restore files to the media repository if requested
   if (!isset ($mgmt_config['restore_exported_media'])) $mgmt_config['restore_exported_media'] = true;
 
   if (valid_publicationname ($site) && valid_objectname ($mediafile) && !empty ($mgmt_config['abs_path_media']))
   {  
     // get media repository directory by using a dummy media file name with same ID
-    $mediaroot = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
+    $mediaroot = getmedialocation ($site, ".hcms.".$mediafile, "abs_path_media").$site."/";
     
     // get media file location (can be outside of repository if a symbolic link is used)
     $medialocation = getmedialocation ($site, $mediafile, "abs_path_media", true);
@@ -3771,7 +3771,7 @@ function preparemediafile ($site, $medialocation, $mediafile, $user="")
 
     // create temp file if file is encrypted
     $createtempfile = createtempfile ($medialocation, $mediafile);
-    
+
     // set restore array element
     if (!empty ($restoremediafile['result']) && !empty ($restoremediafile['restored'])) $createtempfile['restored'] = true;
     else $createtempfile['restored'] = false;
@@ -3805,7 +3805,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
       $medialocation_orig = getmedialocation ($site, $mediafile, "abs_path_media");
 
       // local media file
-      $deletefile = deletefile ($medialocation_orig.$site."/", $mediafile, 0);
+      $deletefile = deletefile ($medialocation_orig.$site."/", $mediafile, false);
       // remove symbolic link of exported media file (deprecated since version 7.0.7)
       // if ($deletefile && is_link ($medialocation.$site."/".$mediafile)) unlink ($medialocation.$site."/".$mediafile);
       // cloud storage
@@ -3844,7 +3844,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
       {
         $temp = $docfile_annotation."-".$p.".jpg";
         // local media file
-        $delete_1 = deletefile ($medialocation.$site."/", $temp, 0);
+        $delete_1 = deletefile ($medialocation.$site."/", $temp, false);
         // cloud storage
         if (function_exists ("deletecloudobject")) $delete_2 = deletecloudobject ($site, $medialocation.$site."/", $temp, $user);
         else $delete_2 = false;
@@ -4894,7 +4894,7 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
         else 
         {
           $workflow_name = getattribute ($hypertag, "name"); 
-          $viewstore = str_replace ($hypertag, "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>workflow </b>".$workflow_name."</font>\n    </td>\n  </tr>\n</table>\n", $viewstore);
+          $viewstore = str_replace ($hypertag, "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">\n  <tr>\n    <td>\n      <span style=\"font-family:'Verdana, Arial, Helvetica, sans-serif'; font-size:9px; color:#000000;\"><b>workflow </b>".$workflow_name."</span>\n    </td>\n  </tr>\n</table>\n", $viewstore);
         }      
       }  
     } 
@@ -5646,7 +5646,7 @@ function deleteinstance ($instance_name, $user="sys")
     // delete internal repository
     if (is_dir ($mgmt_config['abs_path_data']))
     {
-      $result = deletefile (getlocation ($mgmt_config['abs_path_data']), getobject ($mgmt_config['abs_path_data']), 1);
+      $result = deletefile (getlocation ($mgmt_config['abs_path_data']), getobject ($mgmt_config['abs_path_data']), true);
       
       if ($result == false)
       {
@@ -5663,7 +5663,7 @@ function deleteinstance ($instance_name, $user="sys")
     // delete external repository
     if (is_dir ($mgmt_config['abs_path_rep']))
     {
-      $result = deletefile (getlocation ($mgmt_config['abs_path_rep']), getobject ($mgmt_config['abs_path_rep']), 1);
+      $result = deletefile (getlocation ($mgmt_config['abs_path_rep']), getobject ($mgmt_config['abs_path_rep']), true);
       
       if ($result == false)
       {
@@ -5705,7 +5705,7 @@ function deleteinstance ($instance_name, $user="sys")
     // delete main config of instance
     if ($show == "")
     {
-      $result = deletefile ($mgmt_config['instances'], $instance_name.".inc.php", 0);
+      $result = deletefile ($mgmt_config['instances'], $instance_name.".inc.php", false);
       
       if ($result == false)
       {
@@ -7230,7 +7230,7 @@ function deletepersonalization ($site, $pers_name, $cat)
     
     if (is_file ($mgmt_config['abs_path_data']."customer/".$site."/".$persfile))
     {
-      $test = deletefile ($mgmt_config['abs_path_data']."customer/".$site."/", $persfile, 0);
+      $test = deletefile ($mgmt_config['abs_path_data']."customer/".$site."/", $persfile, false);
     
       if ($test == true)
       {
@@ -7560,7 +7560,7 @@ function deletetemplate ($site, $template, $cat)
         {
           if ($entry == $template || substr_count ($entry, $template.".v_") == 1)
           {
-            $test = deletefile ($mgmt_config['abs_path_template'].$site."/", $entry, 0);
+            $test = deletefile ($mgmt_config['abs_path_template'].$site."/", $entry, false);
           }
         }
       }
@@ -9493,18 +9493,19 @@ function deletefrommediacat ($site, $mediafile)
       // remove media file
       if ($test != false) 
       {
-        $test = deletefile ($mediadir, $mediafile, 0);
+        $test = deletefile ($mediadir, $mediafile, false);
       
         // remote client
         remoteclient ("delete", "abs_path_media", $site, $mediadir, "", $mediafile, "");
                             
         $add_onload = "goToURL('parent.frames[\'mainFrame2\']','".$mgmt_config['url_path_cms']."empty.php'); return document.returnValue; ";
   
-        $show = "<table width=\"400\" border=0 cellspacing=1 cellpadding=3 class=\"hcmsMessage\">
+        $show = "
+      <table style=\"width:400px;\" class=\"hcmsMessage hcmsTableStandard\">
         <tr>
-         <td><span class=hcmsHeadline>".$hcms_lang['the-selected-media-file-was-removed'][$lang]."</span></td>
+         <td><span class=\"hcmsHeadline\">".$hcms_lang['the-selected-media-file-was-removed'][$lang]."</span></td>
         </tr>
-      </table>\n";      
+      </table>";      
       }  
       else
       {
@@ -9512,39 +9513,36 @@ function deletefrommediacat ($site, $mediafile)
           
         $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php?site=".url_encode($site)."'; ";
     
-        $show = "<table width=\"400\" border=0 cellspacing=1 cellpadding=3 class=\"hcmsMessage\">
+        $show = "
+      <table style=\"width:400px;\" class=\"hcmsMessage hcmsTableStandard\">
         <tr>
-         <td><span class=hcmsHeadline>".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
+         <td><span class=\"hcmsHeadline\">".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
         </tr>
-      </table>\n";    
+      </table>";    
       }
     }
     else
     {
       $add_onload = "";
   
-      $show = "<table width=\"400\" border=0 cellspacing=1 cellpadding=3 class=\"hcmsMessage\">
-      <tr>
-       <td><span class=hcmsHeadline>".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
-      </tr>
-      </table>
-      </td>
-    </tr>
-  </table>\n";
+      $show = "
+      <table style=\"width:400px;\" class=\"hcmsMessage hcmsTableStandard\">
+        <tr>
+         <td><span class=\"hcmsHeadline\">".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
+        </tr>
+      </table>";
     }    
   }
   else
   {
     $add_onload = "";
 
-    $show = "<table width=\"400\" border=0 cellspacing=1 cellpadding=3 class=\"hcmsMessage\">
-    <tr>
-     <td><span class=hcmsHeadline>".$hcms_lang['the-selected-media-file-was-removed'][$lang]." '".$mediafile."' ".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
-    </tr>
-    </table>
-    </td>
-  </tr>
-</table>\n";
+    $show = "
+    <table style=\"width:400px;\" class=\"hcmsMessage hcmsTableStandard\">
+      <tr>
+       <td><span class=\"hcmsHeadline\">".$hcms_lang['the-selected-media-file-was-removed'][$lang]." '".$mediafile."' ".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
+      </tr>
+    </table>";
   }
   
   $result['add_onload'] = $add_onload;
@@ -9974,7 +9972,7 @@ function deletefolder ($site, $location, $folder, $user)
       $result_delete = deleteobject ($site, $location.$folder, ".folder", $user);
     
       // delete directory
-      if ($result_delete['result']) $result_delete['result'] = deletefile ($location, $folder, 0);     
+      if ($result_delete['result']) $result_delete['result'] = deletefile ($location, $folder, false);     
    
       if ($result_delete['result'] == true)
       {
@@ -10819,7 +10817,7 @@ function createobject ($site, $location, $page, $template, $user)
     
     // log entry
     $errcode = "20212";
-    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) due to wrong or missing input";
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location, $page) due to wrong or missing input";
   }   
   
   // save log
@@ -11147,7 +11145,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             $dup_location = getlocation ($duplicate['objectpath']);
             $dup_object = getobject ($duplicate['objectpath']);
             $dup_name = specialchr_decode ($dup_object);
-            $links[] = '<a href="#" onclick="hcms_openWindow(\''.$mgmt_config['url_path_cms'].'frameset_content.php?site='.$site.'&ctrlreload=yes&cat=comp&location='.urlencode($dup_location).'&page='.urlencode($dup_object).'\', \''.uniqid().'\', \'status=yes,scrollbars=no,resizable=yes\', '.windowwidth ("object").', '.windowheight ("object").');">'.$dup_name.'</a>';
+            $links[] = '<a href="javascript:void(0);" onclick="hcms_openWindow(\''.$mgmt_config['url_path_cms'].'frameset_content.php?site='.$site.'&ctrlreload=yes&cat=comp&location='.urlencode($dup_location).'&page='.urlencode($dup_object).'\', \''.uniqid().'\', \'status=yes,scrollbars=no,resizable=yes\', '.windowwidth ("object").', '.windowheight ("object").');">'.$dup_name.'</a>';
           }
         }
         
@@ -11420,7 +11418,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         {
           // get media root directory
           $media_root = getmedialocation ($site, $media_update, "abs_path_media").$site."/";
-          $thumb_root = getmedialocation ($site, "dummy.".$media_update, "abs_path_media").$site."/";
+          $thumb_root = getmedialocation ($site, ".hcms.".$media_update, "abs_path_media").$site."/";
           
           // force a restore if media file has been exported (on any chnage of the media file it should be restored)
           $mgmt_config['restore_exported_media'] = true;
@@ -12164,6 +12162,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
   $site_source = "";
   $cat_source = "";
   $location_source_esc = "";
+  $mediafile_new = "";
   $add_onload = "";
   $show = "";
   $allow_delete = true;
@@ -12881,7 +12880,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         if ($allow_delete == true && ($cat == "page" || $cat == "comp"))
         {       
           // delete page file
-          $test = deletefile ($location, $page, 0); 
+          $test = deletefile ($location, $page, false); 
 
           if ($test != false)
           {
@@ -12918,7 +12917,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             {
               $contentlocation = getcontentlocation ($contentfile_id, 'abs_path_content');
               
-              $test_temp = deletefile ($contentlocation, $contentfile_self, 0);    
+              $test_temp = deletefile ($contentlocation, $contentfile_self, false);    
               
               // rename working container
               if ($test_temp != false) @rename ($contentlocation.$contentfile_self_wrk, $contentlocation.$contentfile_self);
@@ -12926,7 +12925,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               // delete link file
               if (is_file ($mgmt_config['abs_path_link'].$contentfile_id))
               {
-                $test_temp = deletefile ($mgmt_config['abs_path_link'], $contentfile_id, 0);    
+                $test_temp = deletefile ($mgmt_config['abs_path_link'], $contentfile_id, false);    
                 
                 if ($test_temp != false)
                 {
@@ -13215,7 +13214,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         if ($test == true)
         {
           // remove source object file
-          $test = deletefile ($location_source, $page, 0);
+          $test = deletefile ($location_source, $page, false);
           
           // notification
           notifyusers ($site, $location, $page, "onmove", $user); 
@@ -13491,7 +13490,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             if (!empty ($mediafile_self) && !empty ($mediafile_new)) $pagedata = setfilename ($pagedata, "media", $mediafile_new);  
 
             // relational DB connectivity
-            if ($mgmt_config['db_connect_rdbms'] != "")
+            if (!empty ($mgmt_config['db_connect_rdbms']))
             {
               // create new object in DB
               rdbms_createobject ($contentfile_new_id, convertpath ($site, $location.$page_sec, $cat), $templatefile_self, $mediafile_new, $contentfile_new, $user);
@@ -16198,7 +16197,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               if (isset ($eventsystem['ondeletefolder_pre']) && $eventsystem['ondeletefolder_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
                 ondeletefolder_pre ($site, $cat, $location, $folder, $user);
                           
-              $test['result'] = deletefile ($location, $folder, 1);
+              $test['result'] = deletefile ($location, $folder, true);
 
               // remote client
               remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $folder, "");              
@@ -16226,7 +16225,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
              
             if (valid_locationname ($location) && $folder != "" && is_dir ($location.$folder))
             {
-              $test['result'] = deletefile ($location, $folder, 1);
+              $test['result'] = deletefile ($location, $folder, true);
               
               if ($test['result'] == true)
               {
@@ -17490,6 +17489,7 @@ function sendresetpassword ($login, $link=false, $instance="")
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
   
   if (empty ($lang)) $lang = "en";
+  if (empty ($mgmt_config['resetpassword']) && empty ($mgmt_config['multifactorauth'])) return $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
   if ($login == "") return $hcms_lang['a-user-name-is-required'][$lang];
   
   // create new password

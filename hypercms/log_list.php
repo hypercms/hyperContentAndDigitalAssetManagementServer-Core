@@ -64,11 +64,11 @@ function submitToWindow (url, description, windowname, features, width, height)
 function resizecols()
 {
   // get width of table header columns
-  var c1 = $('#c1').width() + 3;
-  var c2 = $('#c2').width() + 3;
-  var c3 = $('#c3').width() + 3;
-  var c4 = $('#c4').width() + 3;
-  var c5 = $('#c5').width() + 3;
+  var c1 = $('#c1').width();
+  var c2 = $('#c2').width();
+  var c3 = $('#c3').width();
+  var c4 = $('#c4').width();
+  var c5 = $('#c5').width();
 
   // set width for table columns
   $('.hcmsCol1').width(c1);
@@ -78,23 +78,32 @@ function resizecols()
   $('.hcmsCol5').width(c5);
 }
 </script>
+<style>
+.hcmsCell
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
 </head>
 
 <body class="hcmsWorkplaceObjectlist" style="overflow:hidden;" onresize="resizecols();">
 
+<!-- Table Header -->
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:0; width:100%; z-index:1; visibility:visible;">
-  <table id="objectlist_head" cellspacing="0" style="border:0; padding:0; width:100%; height:20px; table-layout:fixed;"> 
+  <table id="objectlist_head" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:102px; white-space:nowrap;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:105px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>
       </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:117px; white-space:nowrap;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:177px; white-space:nowrap;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['source'][$lang]); ?>
       </td>
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:52px; white-space:nowrap;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:55px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['code'][$lang]); ?>
       </td>    
       <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="white-space:nowrap;">
@@ -104,7 +113,7 @@ function resizecols()
   </table>
 
   <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
-    <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" style="border:0; width:100%; table-layout:fixed;">
+    <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
 <?php
 if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".log"))
 {
@@ -156,14 +165,13 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
       }
 
       echo "
-<tr id=\"g".$items_row."\" align=\"left\" valign=\"top\">
-  <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:105px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <a href=# onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', '600', '200');\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\" align=\"absmiddle\">&nbsp; ".$type_name."</a></td>
-  <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
-  <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$source."</td>
-  <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$errorcode."</td>
-  <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <a href=# onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', 600, 200);\">".$description_short."</a></td>
-  ";
-  echo "</tr>";
+<tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top;\">
+  <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">&nbsp;<a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', '600', '200');\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</a></td>
+  <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+  <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$source."</td>
+  <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$errorcode."</td>
+  <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', 600, 400);\">".$description_short."</a></td>
+ </tr>";
 
       $items_row++;
       

@@ -215,7 +215,7 @@ if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt
 }
 ?>
 <?php if ($cat == "page") { ?>
-  <div onClick="if (document.getElementById('objectiframe')) var url = document.getElementById('objectiframe').src; else url=''; parent.openBrWindowLink(url, 'preview', 'scrollbars=yes,resizable=yes')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
+  <div onClick="if (document.getElementById('objectiframe')) var url = document.getElementById('objectiframe').src; else url=''; parent.openBrWindowLink(url, 'preview', 'scrollbars=yes,resizable=yes')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
 <?php } ?>
 </div>
 

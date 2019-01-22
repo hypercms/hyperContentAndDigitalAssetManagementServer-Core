@@ -104,7 +104,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           }
         
           echo "
-          <div ".$openObject." style=\"display:block; cursor:pointer;\" title=\"".$item_locationname.$item_fileinfo['name']."\"><img src=\"".getthemelocation()."img/".$item_fileinfo['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($item_fileinfo['name'], 60)."&nbsp;</div>";
+          <div ".$openObject." style=\"display:block; cursor:pointer;\" title=\"".$item_locationname.$item_fileinfo['name']."\"><img src=\"".getthemelocation()."img/".$item_fileinfo['icon']."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($item_fileinfo['name'], 60)."&nbsp;</div>";
           
           if (!empty ($filewrapperdownload)) echo "
           <div style=\"padding-left:22px;\"><b>".getescapedtext ($hcms_lang['download-link'][$lang]).":</b> ".$filewrapperdownload."</div>";

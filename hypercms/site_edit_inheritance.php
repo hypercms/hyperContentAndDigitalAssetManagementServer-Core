@@ -261,17 +261,18 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   <input type="hidden" name="site_parents" value="" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
-  <table border="0" cellspacing="0" cellpadding="3">
+  <table class="hcmsTableStandard">
     <?php
     if ($site == "*Null*" && checkrootpermission ('site') && checkrootpermission ('siteedit'))
     {    
-      echo "<tr>
-      <td colspan=2>
-        <table border=0 cellspacing=0 cellpadding=0>
+      echo "
+    <tr>
+      <td>
+        <table class=\"hcmsTableNarrow\">
           <tr>
             <td>
-              ".getescapedtext ($hcms_lang['publications'][$lang]).":<br /><br />
-              <select multiple name=\"list1\" style=\"width:220px; height:180px;\" "; if ($preview == "yes") echo "disabled=\"disabled\""; echo ">\n";
+              ".getescapedtext ($hcms_lang['publications'][$lang])."<br />
+              <select multiple name=\"list1\" style=\"width:220px; height:180px;\" ".($preview == "yes" ? "disabled=\"disabled\"" : "").">";
 
               if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ($user);
       
@@ -284,11 +285,13 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
                 {      
                   if (substr_count ("|".$inherit_db_record['child'], "|".$site_name."|") == 0 && $inherit_db_record['parent'] != $site_name && in_array ($inherit_db_record['parent'], $siteaccess))
                   {
-                    $list1_array[] = "<option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>\n";
+                    $list1_array[] = "
+                    <option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>";
                   }
                   elseif (substr_count ("|".$inherit_db_record['child'], "|".$site_name."|") == 1 && $inherit_db_record['parent'] != $site_name)
                   {
-                    $list2_array[] = "<option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>\n";
+                    $list2_array[] = "
+                    <option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>";
                   }
                 }
               }
@@ -303,15 +306,16 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
                 }
               }
 
-              echo "</select>
+              echo "
+              </select>
             </td>
-            <td align=\"center\" valign=\"middle\">
+            <td style=\"text-align:center; vertical-align:middle;\">
               <br />
               <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list2'], this.form.elements['list1'])\" value=\"&lt;&lt;\" />
               <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list1'], this.form.elements['list2'])\" value=\"&gt;&gt;\" />
             </td>
             <td>
-              ".getescapedtext ($hcms_lang['assigned-publications'][$lang]).":<br /><br />
+              ".getescapedtext ($hcms_lang['assigned-publications'][$lang])."<br />
               <select multiple name=\"list2\" style=\"width:220px; height:180px;\" "; if ($preview == "yes") echo "disabled=\"disabled\""; echo ">\n";
 
               if (sizeof ($list2_array) >= 1)
@@ -333,25 +337,31 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     }    
     ?>
     <tr>
-      <td colspan="2">&nbsp;</td>
+      <td>&nbsp;</td>
     </tr>
     <?php if (isset ($mgmt_config['not-supported'])) { ?>
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['cut-copy-and-paste-objects'][$lang]); ?> </td>
-      <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_obj_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_obj'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap;">
+        <label><input type="checkbox" name="inherit_obj_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_obj'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['cut-copy-and-paste-objects'][$lang]); ?></label>
+      </td>
     </tr>
     <?php } ?>       
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['inherit-assets-content-not-editable'][$lang]); ?> </td>
-      <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_comp_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_comp'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap;">
+        <label><input type="checkbox" name="inherit_comp_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_comp'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['inherit-assets-content-not-editable'][$lang]); ?></label>
+      </td>
+      <td></td>
     </tr>   
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['inherit-templates-design-not-editable'][$lang]); ?> </td> 
-      <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_tpl_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_tpl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap;">
+        <label><input type="checkbox" name="inherit_tpl_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_tpl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['inherit-templates-design-not-editable'][$lang]); ?></label>
+      </td>
     </tr>       
     <tr>
-      <td align="left" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?> </td>
-      <td width="80%" align="left" valign="top"><img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" <?php if ($preview == "yes") echo " disabled"; ?> /></td>
+      <td style="padding-top:10px; white-space:nowrap;">
+        <?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?>
+        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" <?php if ($preview == "yes") echo " disabled"; ?> />
+      </td>
     </tr>
   </table>
 </form>

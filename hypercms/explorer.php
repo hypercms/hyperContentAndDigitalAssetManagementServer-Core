@@ -1961,18 +1961,18 @@ else
       <input type="hidden" name="multiobject" value="" />
       <input type="hidden" name="token" value="" />
       
-      <table width="150px" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
+      <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
         <tr>
           <td>
-            <a href=# onClick="parent.location='userlogout.php';"><img src="<?php echo getthemelocation(); ?>img/button_logout.png" align="absmiddle"  class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></a>
+            <a href="javascript:void(0);" onClick="parent.location='userlogout.php';"><img src="<?php echo getthemelocation(); ?>img/button_logout.png"  class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></a>
             <hr/>
-            <a href=# id="href_cmsview" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" align="absmiddle" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
-            <a href=# id="href_notify" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" align="absmiddle" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />   
+            <a href="javascript:void(0);" id="href_cmsview" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
+            <a href="javascript:void(0);" id="href_notify" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />   
             <hr/>
-            <a href=# onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('publish');"><img id="img_publish" src="<?php echo getthemelocation(); ?>img/button_file_publish.png" align="absmiddle" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
-            <a href=# onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('unpublish');"><img id="img_unpublish" src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png" align="absmiddle"  class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />        
+            <a href="javascript:void(0);" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('publish');"><img id="img_publish" src="<?php echo getthemelocation(); ?>img/button_file_publish.png" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('unpublish');"><img id="img_unpublish" src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png"  class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />        
             <hr/>
-            <a href=# onClick="document.location='explorer.php?refresh=1';"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" align="absmiddle"  class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+            <a href="javascript:void(0);" onClick="document.location='explorer.php?refresh=1';"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png"  class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
           </td>
         </tr>    
       </table>
@@ -1994,7 +1994,7 @@ else
 
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></span>
-          <img onClick="activateFulltextSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
+          <img onClick="activateFulltextSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
         <div id="fulltextLayer" style="display:none;"> 
         
@@ -2005,7 +2005,7 @@ else
           
           <div style="padding-bottom:3px;">
             <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
-            <select id="publication" name="site" style="width:220px;">
+            <select id="publication" name="site" style="width:230px;">
               <option value=""><?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></option>
             <?php
             if (!empty ($siteaccess) && is_array ($siteaccess))
@@ -2030,13 +2030,13 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></span>
-          <img onClick="activateAdvancedSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
+          <img onClick="activateAdvancedSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
         <div id="advancedLayer" style="display:none;">
         
           <label for="template"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?></label><br />
           
-          <select id="template" name="template" style="width:220px;" onChange="loadForm();">
+          <select id="template" name="template" style="width:230px;" onChange="loadForm();">
             <option value="">&nbsp;</option>
           <?php
           if (!empty ($siteaccess) && is_array ($siteaccess))
@@ -2108,13 +2108,13 @@ else
           </select><br />
 
           <iframe id="contentFRM" name="contentFRM" width="0" height="0" frameborder="0"></iframe> 
-          <div class="hcmsObjectSelected" style="border:1px solid #000000; width:245px; height:200px; padding:2px; overflow:auto;">
+          <div class="hcmsObjectSelected" style="border:1px solid #000000; width:226px; height:200px; padding:2px; overflow:auto;">
             <div id="contentLayer"></div>
           </div>
 
           <div style="margin-top:5px;">
             <label for="search_operator"><?php echo getescapedtext ($hcms_lang['link-fields-with'][$lang]); ?></label><br />
-            <select id="search_operator" name="search_operator" style="width:220px;">
+            <select id="search_operator" name="search_operator" style="width:230px;">
               <option value="AND" <?php if (empty ($mgmt_config['search_operator']) || (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "AND")) echo "selected"; ?>>AND</option>
               <option value="OR" <?php if (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "OR") echo "selected"; ?>>OR</option>
             </select>
@@ -2125,12 +2125,12 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['keywords'][$lang]); ?></span>
-          <img onClick="activateKeywordSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
+          <img onClick="activateKeywordSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
         <div id="keywordsLayer" style="display:none;">
           <!--
           <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
-          <select id="publication" name="site" style="width:220px;">
+          <select id="publication" name="site" style="width:230px;">
             <option value=""><?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></option>
           <?php
           $keywords = array();
@@ -2148,11 +2148,11 @@ else
           ?>
           </select><br /> 
           -->
-          <table style="width:100%; margin-top:4px; padding:0; border-spacing:0; border-collapse:collapse;">
+          <table class="hcmsTableNarrow" style="width:100%; margin-top:4px;">
           <?php
           $count = rdbms_getemptykeywords ($siteaccess);
           ?>
-            <tr class="hcmsRowData1"><td align="left" title="<?php echo getescapedtext ($hcms_lang['none'][$lang]); ?>"><label><input type="checkbox" onclick="startSearch('auto')" name="search_textnode[]" value="%keyword%/" />&nbsp;<?php echo getescapedtext ($hcms_lang['none'][$lang]); ?></label></td><td align="right"><?php echo $count; ?>&nbsp;&nbsp;</td></tr>
+            <tr class="hcmsRowData1"><td style="text-align:left;" title="<?php echo getescapedtext ($hcms_lang['none'][$lang]); ?>"><label><input type="checkbox" onclick="startSearch('auto')" name="search_textnode[]" value="%keyword%/" />&nbsp;<?php echo getescapedtext ($hcms_lang['none'][$lang]); ?></label></td><td style="text-align:right;"><?php echo $count; ?>&nbsp;</td></tr>
           <?php
           $keywords = getkeywords ($siteaccess);
           
@@ -2177,7 +2177,7 @@ else
                 }
                 
                 echo "
-            <tr class=\"".$rowcolor."\"><td align=\"left\" title=\"".$keyword."\"><label><input type=\"checkbox\" onclick=\"startSearch('auto')\" name=\"search_textnode[]\" value=\"%keyword%/".$keyword_id."\" />&nbsp;".getescapedtext (showshorttext ($keyword, 22))."</label></td><td align=\"right\">".$count."&nbsp;&nbsp;</td></tr>\n";
+            <tr class=\"".$rowcolor."\"><td style=\"text-align:left;\" title=\"".$keyword."\"><label><input type=\"checkbox\" onclick=\"startSearch('auto')\" name=\"search_textnode[]\" value=\"%keyword%/".$keyword_id."\" />&nbsp;".getescapedtext (showshorttext ($keyword, 22))."</label></td><td style=\"text-align:right;\">".$count."&nbsp;</td></tr>";
               }
             }
           }
@@ -2192,7 +2192,7 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media'][$lang]); ?></span>
-          <img onClick="activateImageSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
+          <img onClick="activateImageSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
         <div id="imageLayer" style="display:none;">
 
@@ -2219,7 +2219,7 @@ else
           
           <div style="padding-bottom:3px;">
             <label for="search_imagesize"><?php echo getescapedtext ($hcms_lang['media-size'][$lang]); ?></label><br />
-            <select id="search_imagesize" name="search_imagesize" style="width:220px;" onchange="if (this.options[this.selectedIndex].value=='exact') document.getElementById('searchfield_imagesize').style.display='block'; else document.getElementById('searchfield_imagesize').style.display='none';">
+            <select id="search_imagesize" name="search_imagesize" style="width:230px;" onchange="if (this.options[this.selectedIndex].value=='exact') document.getElementById('searchfield_imagesize').style.display='block'; else document.getElementById('searchfield_imagesize').style.display='none';">
               <option value="" selected="selected"><?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></option>
               <option value="1024-9000000"><?php echo getescapedtext ($hcms_lang['big-1024px'][$lang]); ?></option>
               <option value="640-1024"><?php echo getescapedtext ($hcms_lang['medium-640-1024px'][$lang]); ?></option>
@@ -2234,7 +2234,7 @@ else
           
           <div style="padding-bottom:3px;">
             <label for="search_imagetype"><?php echo getescapedtext ($hcms_lang['image-type'][$lang]); ?></label><br />
-            <select id="search_imagetype" name="search_imagetype" style="width:220px;">
+            <select id="search_imagetype" name="search_imagetype" style="width:230px;">
               <option value="" selected="selected"><?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></option>
               <option value="landscape"><?php echo getescapedtext ($hcms_lang['landscape'][$lang]); ?></option>
               <option value="portrait"><?php echo getescapedtext ($hcms_lang['portrait'][$lang]); ?></option>
@@ -2268,7 +2268,7 @@ else
         <?php if (!$is_mobile) { ?>
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></span>
-          <img onClick="activateGeolocationSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
+          <img onClick="activateGeolocationSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
         <div id="mapLayer" style="display:none;">
           <div style="position:relative; left:185px; top:15px; width:22px; height:22px; z-index:1000;">
@@ -2286,17 +2286,17 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?></span>
-          <img onClick="activateLastmodifiedSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
+          <img onClick="activateLastmodifiedSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        <div id="dateLayer" style="display:none;">
         
-          <table border="0" cellspacing="0" cellpadding="2">     
+        <div id="dateLayer" style="display:none;">        
+          <table class="hcmsTableStandard">     
             <tr>
               <td> 
                 <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;&nbsp;
               </td>
               <td>
-                <input type="text" name="date_from" id="date_from" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+                <input type="text" name="date_from" id="date_from" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
               </td>
             </tr>
             <tr>
@@ -2304,56 +2304,51 @@ else
               <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp;&nbsp; 
               </td>
               <td>
-                <input type="text" name="date_to" id="date_to" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
+                <input type="text" name="date_to" id="date_to" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
               </td>
             </tr>
-          </table>
-          
+          </table>          
         </div>
         <hr />
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></span>
-          <img onClick="activateIdSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
+          <img onClick="activateIdSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        <div id="idLayer" style="display:none;">
         
+        <div id="idLayer" style="display:none;">        
           <div style="padding-bottom:3px;">
             <label nowrap="object_id"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></label><br />
             <input type="text" id="object_id" name="object_id" value="" style="width:220px;" />
-          </div>
-          
+          </div>          
           <div style="padding-bottom:3px;">    
             <label nowrap="container_id"><?php echo getescapedtext ($hcms_lang['container-id'][$lang]); ?></label><br />
             <input type="text" id="container_id" name="container_id" value="" style="width:220px;" />
-          </div>
-          
+          </div>          
         </div>
         <hr />
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></span>
-          <img onClick="activateRecipientSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
+          <img onClick="activateRecipientSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        <div id="recipientLayer" style="display:none;">
         
+        <div id="recipientLayer" style="display:none;">        
           <div style="padding-bottom:3px;">
             <label for="from_user"><?php echo getescapedtext ($hcms_lang['sender'][$lang]); ?></label><br />
             <input type="text" id="from_user" name="from_user" style="width:220px;" maxlength="200" />
-          </div>
-          
+          </div>          
           <div style="padding-bottom:3px;">
             <label for="to_user"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></label><br />
             <input type="text" id="to_user" name="to_user" style="width:220px;" maxlength="200" />
-          </div>
-          
-          <table border="0" cellspacing="0" cellpadding="2" style="margin-top:4px;">     
+          </div>          
+          <table class="hcmsTableStandard" style="margin-top:4px;">     
             <tr>
               <td> 
                 <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;&nbsp;
               </td>
               <td>
-                <input type="text" name="date_from" id="date_sent_from" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_sent_from', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+                <input type="text" name="date_from" id="date_sent_from" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_sent_from', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
               </td>
             </tr>
             <tr>
@@ -2361,17 +2356,16 @@ else
               <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp;&nbsp; 
               </td>
               <td>
-                <input type="text" name="date_to" id="date_sent_to" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_sent_to', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
+                <input type="text" name="date_to" id="date_sent_to" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_sent_to', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
               </td>
             </tr>
-          </table>
-          
+          </table>          
         </div>
         <hr />
 
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['save-search'][$lang]); ?></span>
-          <img onClick="activateSaveSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
+          <img onClick="activateSaveSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
         <div id="saveLayer" style="display:none;">
         
@@ -2385,7 +2379,7 @@ else
               echo "
           <div style=\"padding-bottom:3px;\">
             <label>".getescapedtext ($hcms_lang['saved-searches'][$lang])."</label><br/>
-            <select name=\"search_execute\" style=\"width:220px;\">
+            <select name=\"search_execute\" style=\"width:230px;\">
               <option value=\"\"></option>";
               
               foreach ($searchlog_array as $searchlog)
@@ -2441,7 +2435,7 @@ else
               
               echo "
               </select>
-              <img onClick=\"deletesearch()\" align=\"absmiddle\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.png\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
+              <img onClick=\"deletesearch()\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.png\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
             </div>";
             }
           }
@@ -2452,7 +2446,7 @@ else
         <hr />
         
         <label><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?></label>
-    	  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('post');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
+    	  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('post');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
       </form>
     </div>
     

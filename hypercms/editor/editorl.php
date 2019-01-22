@@ -150,37 +150,37 @@ if (!empty ($list))
     <input type="hidden" name="savetype" value="">
     <input type="hidden" name="token" value="<?php echo $token; ?>">
     
-    <table border="0" cellspacing="2">
+    <table class="hcmsTableStandard">
       <tr>
         <td>
-        <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />    
-        <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" />
-        <br />
-        <select name="<?php echo $tagname."[".$id."]"; ?>">
-        <?php
-        if (!empty ($list_array) && is_array ($list_array))
-        {
-          foreach ($list_array as $list_entry)
+          <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />    
+          <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" />
+          <br />
+          <select name="<?php echo $tagname."[".$id."]"; ?>">
+          <?php
+          if (!empty ($list_array) && is_array ($list_array))
           {
-            $list_entry = trim ($list_entry);
-            $end_val = strlen ($list_entry)-1;
-            
-            if (($start_val = strpos($list_entry, "{")) > 0 && strpos($list_entry, "}") == $end_val)
+            foreach ($list_array as $list_entry)
             {
-              $diff_val = $end_val-$start_val-1;
-              $list_value = substr ($list_entry, $start_val+1, $diff_val);
-              $list_text = substr ($list_entry, 0, $start_val);
-            } 
-            else $list_value = $list_text = $list_entry;
+              $list_entry = trim ($list_entry);
+              $end_val = strlen ($list_entry)-1;
               
-            echo "
-                <option value=\"".$list_value."\""; 
-            if ($list_value == $contentbot) echo " selected"; 
-            echo  ">".$list_text."</option>";
+              if (($start_val = strpos($list_entry, "{")) > 0 && strpos($list_entry, "}") == $end_val)
+              {
+                $diff_val = $end_val-$start_val-1;
+                $list_value = substr ($list_entry, $start_val+1, $diff_val);
+                $list_text = substr ($list_entry, 0, $start_val);
+              } 
+              else $list_value = $list_text = $list_entry;
+                
+              echo "
+                  <option value=\"".$list_value."\""; 
+              if ($list_value == $contentbot) echo " selected"; 
+              echo  ">".$list_text."</option>";
+            }
           }
-        }
-        ?>
-        </select>
+          ?>
+          </select>
         </td>
       </tr>
     </table>

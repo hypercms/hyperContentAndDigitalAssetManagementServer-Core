@@ -207,7 +207,7 @@ function checkForm_import()
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <div class="hcmsLocationBar">
-  <table border=0 cellspacing=0 cellpadding=1>
+  <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo $pagecomp; ?></b></td>
     </tr>
@@ -293,51 +293,54 @@ function checkForm_import()
 echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
 ?>
 
-<div id="createtplLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:4; left:15px; top:5px; visibility:hidden;">
+<div id="createtplLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden;">
   <form name="tpl_create" action="" method="post">
     <input type="hidden" name="action" value="tpl_create" />
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
-    <table width="100%" border="0" cellspacing="2" cellpadding="0">
+    <table class="hcmsTableStandard" style="width:100%; height:60px;">
       <tr>
-        <td colspan="2"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span></td>
-        <td rowspan="2" width="16" align="right" valign="top">
+        <td>
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span>
+          <br/>
+          <?php echo $pagecomp; ?> <span class="hcmsTextSmall">(<?php echo getescapedtext ($hcms_lang['name-without-ext'][$lang]); ?>)</span>
+          <span style="white-space:nowrap;">
+            <input type="text" name="template" maxlength="60" style="width:220px;" />
+            <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_tpl_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+          </span>
+        </td>
+        <td style="width:38px; text-align:right; vertical-align:top;">
           <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('createtplLayer','','hide');" />
         </td>        
       </tr>  
-      <tr>
-        <td nowrap="nowrap"><?php echo $pagecomp; ?><font size="1">(<?php echo getescapedtext ($hcms_lang['name-without-ext'][$lang]); ?>)</font> </td>
-        <td>
-          <input type="text" name="template" maxlength="60" style="width:220px;" />
-          <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_tpl_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
-        </td>
-      </tr>
     </table>
   </form>
 </div>
 
-<div id="importLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "850px"; ?>; height:75px; z-index:1; left:15px; top:10px; visibility:hidden">
+<div id="importLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:1; left:15px; top:15px; visibility:hidden">
   <form name="import" action="" method="post" enctype="multipart/form-data" onsubmit="return checkForm_import();">
     <input type="hidden" name="action" value="import" />
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>">
     
-    <table width="100%" height="75" border="0" cellspacing="4" cellpadding="0">
+    <table class="hcmsTableStandard" style="width:100%; height:60px;">
       <tr>
-        <td valign="middle">
+        <td>
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['import-list-comma-delimited'][$lang]); ?></span>
           <br />
-          <input name="importfile" type="file" size="60" accept="text/*" />
-          <img src="<?php echo getthemelocation(); ?>img/button_info.png" align="absmiddle" class="hcmsButtonSizeSquare" style="cursor:pointer;" title="Example:
-  level;de;en;it
-  1;Typ;Type;Tipo
-  2;Abenteuer;Adventure;Avventura" />
-          <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_import();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+          <span style="white-space:nowrap;">
+            <input name="importfile" type="file" size="60" accept="text/*" />
+            <img src="<?php echo getthemelocation(); ?>img/button_info.png" class="hcmsButtonSizeSquare" style="cursor:pointer;" title="Example:
+    level;de;en;it
+    1;Typ;Type;Tipo
+    2;Abenteuer;Adventure;Avventura" />
+            <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_import();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+          </span>
         </td>
-        <td width="16" align="right" valign="top">
+        <td style="width:38px; text-align:right; vertical-align:top;">
           <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('importLayer','','hide');" />
         </td>      
       </tr>
@@ -352,13 +355,14 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
-    <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
+    <table class="hcmsTableStandard" style="width:100%; height:60px;">
       <tr>
-        <td valign="middle" nowrap="nowrap">
+        <td style="white-space:nowrap;">
           <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
-          <?php echo $pagecomp; ?> 
-          <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
-            <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
+          <?php echo $pagecomp; ?>
+          <span style="white-space:nowrap;">
+            <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+              <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
             <?php
             $template_option_edit = array();
   
@@ -379,10 +383,11 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
               }
             }
             ?>
-          </select>
-          <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+            </select>
+            <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+          </span>
         </td>
-        <td width="16" align="right" valign="top">
+        <td style="width:38px; text-align:right; vertical-align:top;">
           <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('deletetplLayer','','hide');" />
         </td>        
       </tr>
@@ -394,9 +399,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 <form name="tpl_edit" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   
-  <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle" nowrap="nowrap">
+      <td style="white-space:nowrap;">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
         <?php echo $pagecomp; ?> 
         <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
@@ -412,7 +417,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           ?>
         </select>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose4" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose4','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('edittplLayer','','hide');" />
       </td>       
     </tr>

@@ -31,7 +31,7 @@ checkusersession ($user, false);
 </head>
 
 <body class="hcmsWorkplaceControlWallpaper">
-<div style="width:128px; margin-left:auto; margin-right:auto; margin-top:40px;">
+<div style="width:128px; margin:40px auto;">
   <img src="<?php echo getthemelocation(); ?>img/loading.gif" />
 </div>
 </body>

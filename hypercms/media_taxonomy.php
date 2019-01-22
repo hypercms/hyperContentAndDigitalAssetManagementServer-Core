@@ -85,7 +85,7 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && c
     
     if ($savefile == false)   
     {  
-      $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
     }
   }
   // delete row and save as CSV
@@ -97,7 +97,7 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && c
     
     if ($savefile == false)   
     {  
-      $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
     }
   }
   // save as CSV
@@ -107,7 +107,7 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && c
     
     if ($savefile == false)   
     {  
-      $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
     }
   }
   // reindex content based on taxonomy
@@ -117,7 +117,7 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && c
    
     if ($create == false)   
     {  
-      $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>";
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>";
     }
     else $show = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang]);
   }
@@ -476,14 +476,14 @@ if (!empty ($languages) && is_array ($languages))
   <hr />
 
   <div style="width:94%; overflow:auto; padding-bottom:6px;">
-    <table id="taxonomy" border="0" cellspacing="0" cellpadding="1">
+    <table id="taxonomy" class="hcmsTableStandard">
       <thead>
         <tr>
         <?php
         echo "
-          <th class=\"hcmsHeadline hcmsRowHead1\" nowrap=\"nowrap\" style=\"text-align:left; width:160px; height:20px; position:absolute; z-index:2;\">&nbsp;".getescapedtext ($hcms_lang['level'][$lang])."</th>
-          <th class=\"hcmsHeadline hcmsRowHead1\" nowrap=\"nowrap\" style=\"text-align:right; width:38px; height:20px; position:absolute; left:160px; z-index:2;\">&nbsp;ID&nbsp;</th>
-          <th class=\"hcmsHeadline hcmsRowHead1\" nowrap=\"nowrap\" style=\"text-align:right; width:82px; height:20px; position:absolute; left:198px; z-index:2;\">&nbsp;&nbsp;</th>";
+          <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:left; width:160px; height:20px; position:absolute; z-index:2; white-space:nowrap;\">&nbsp;".getescapedtext ($hcms_lang['level'][$lang])."</th>
+          <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:right; width:38px; height:20px; position:absolute; left:160px; z-index:2; white-space:nowrap;\">&nbsp;ID&nbsp;</th>
+          <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:right; width:82px; height:20px; position:absolute; left:198px; z-index:2; white-space:nowrap;\">&nbsp;&nbsp;</th>";
 
         if (!empty ($languages) && is_array ($languages))
         {
@@ -493,7 +493,7 @@ if (!empty ($languages) && is_array ($languages))
             else $style = "";
             
             echo "
-            <th class=\"hcmsHeadline ".$langcode."\" nowrap=\"nowrap\"  style=\"position:relative; left:274px; width:140px; height:20px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;".$style."\">
+            <th class=\"hcmsHeadline ".$langcode."\" style=\"position:relative; left:274px; width:140px; height:20px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; ".$style."\">
               <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButton hcmsIconList\" onclick=\"deletelanguage('".$langcode."');\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
               <div style=\"float:left;\" title=\"".getescapedtext ($langname)."\">".showshorttext (getescapedtext ($langname), 16)."</div>
             </th>";

@@ -31,10 +31,11 @@ checkusersession ($user);
 <script src="javascript/click.js" type="text/javascript"></script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin="3" topmargin="3" marginwidth="0" marginheight="0">
+<body class="hcmsWorkplaceGeneric">
 
-<span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['content-type'][$lang]); ?></span><br /><br />
-<table width="100%" border="0" cellspacing="2" cellpadding="3">
+<span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['content-type'][$lang]); ?></span>
+<br /><br />
+<table class="hcmsTableStandard" style="width:100%;">
   <tr>
     <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['character-set'][$lang]); ?></td>
     <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['description'][$lang]); ?></td>
@@ -62,14 +63,15 @@ checkusersession ($user);
         $color = true;
       }
   
-      echo "<tr class=\"".$rowcolor."\">
-        <td nowrap=\"nowrap\">".$code."</td>
+      echo "
+      <tr class=\"".$rowcolor."\">
+        <td style=\"white-space:nowrap;\">".$code."</td>
         <td>".$description."</td>
         <td>".$language."</td>
-      </tr>\n";
+      </tr>";
     }
   }
-  else echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-find-code-page-index'][$lang])."</p>";
+  else echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-find-code-page-index'][$lang])."</p>";
   ?>
 </table>
 

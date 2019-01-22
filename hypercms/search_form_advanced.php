@@ -56,7 +56,7 @@ $viewstore = false;
 if (valid_publicationname ($site) && valid_objectname ($template))
 {
   // call template engine
-  $viewstore = buildsearchform ($site, $template, "", $ownergroup, $css_display);
+  $viewstore = buildsearchform ($site, $template, "", $ownergroup, $css_display, "196px");
 }
 
 // show form

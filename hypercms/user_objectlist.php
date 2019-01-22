@@ -227,9 +227,9 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
             <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
               <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                 <input id=\"login\" type=\"hidden\" value=\"".$object_array['login'][$key]."\">
-                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">
-                    <img src=\"".getthemelocation()."img/user.png\" width=16 height=16 border=0 align=\"absmiddle\" />&nbsp; ".
-                    $object_array['login'][$key]."&nbsp;
+                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">&nbsp; 
+                  <img src=\"".getthemelocation()."img/user.png\" class=\"hcmsIconList\" /> ".
+                  $object_array['login'][$key]."&nbsp;
                 </div>
               </td>
               <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['name'][$key]."</span></td>
@@ -278,10 +278,10 @@ function buttonaction (action)
 function resizecols()
 {
   // get width of table header columns
-  var c1 = $('#c1').width() + 3;
-  var c2 = $('#c2').width() + 3;
-  var c3 = $('#c3').width() + 3;
-  var c4 = $('#c4').width() + 3;
+  var c1 = $('#c1').width() ;
+  var c2 = $('#c2').width();
+  var c3 = $('#c3').width();
+  var c4 = $('#c4').width();
 
   // set width for table columns
   $('.hcmsCol1').width(c1);
@@ -317,37 +317,38 @@ var session_id = '<?php session_id(); ?>';
     <input type="hidden" name="multiobject" value="" />
     <input type="hidden" name="token" value="" />
     
-    <table width="150" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
+    <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
       <tr>
         <td>
           <?php $tblrow = 1;  
           if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) { 
           ?>
-          <a href=# id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.png" id="img_edit" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
+          <a href="javascript:void(0);" id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.png" id="img_edit" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
           <hr />
           <?php }
           if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))) {
           ?>
-          <a href=# id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" id="img_delete" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+          <a href="javascript:void(0);" id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
           <hr />        
           <?php } ?>   
-          <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+          <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
         </td>
       </tr>    
     </table>
   </form>
 </div>
 
+<!-- Table Header -->
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; width:100%; z-index:1; visibility:visible;">
-  <table id="objectlist_head" cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
+  <table id="objectlist_head" cols="4" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:177px; white-space:nowrap;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
       </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:177px; white-space:nowrap;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:297px; white-space:nowrap;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:300px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>
       </td> 
       <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="white-space:nowrap;">
@@ -357,7 +358,7 @@ var session_id = '<?php session_id(); ?>';
   </table>
   
   <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:30px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
-    <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; table-layout:fixed;">
+    <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
   <?php
   echo $listview;
   ?>

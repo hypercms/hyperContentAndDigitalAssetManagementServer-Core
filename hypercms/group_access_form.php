@@ -214,15 +214,15 @@ function selectAll ()
     <input type="hidden" name="access_new" value="" />
     <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
       
-    <table border="0" cellspacing="2" cellpadding="0">
+    <table class="hcmsTableStandard" style="table-layout:auto;">
       <tr>
-        <td colspan="2" nowrap="nowrap">
+        <td style="white-space:nowrap;">
           <?php echo getescapedtext ($hcms_lang['grant-access-to-selected-folders'][$lang]); ?> 
         </td>
       </tr>
       <tr>
         <td>
-          <table border="0" cellpadding="0" cellspacing="0">
+          <table class="hcmsTableNarrow">
             <tr>
               <td>
                 <select name="folder" style="width:250px;" size="10">
@@ -248,9 +248,9 @@ function selectAll ()
                   ?>
                 </select>
               </td>
-              <td align="center" valign="middle">
+              <td style="text-align:center; vertical-align:middle; padding:2px;">
                 <img onClick="deleteSelected();" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
-            </td>
+              </td>
             </tr>
           </table>
         </td>
@@ -259,9 +259,9 @@ function selectAll ()
         <td>&nbsp;</td>
       </tr>
       <tr>
-        <td colspan="2" nowrap="nowrap">
+        <td style="white-space:nowrap;">
           <?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?>&nbsp;
-          <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
+          <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
         </td>
       </tr>
     </table>

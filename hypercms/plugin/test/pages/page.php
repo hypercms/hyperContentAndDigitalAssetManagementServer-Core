@@ -41,9 +41,10 @@ checkusersession ($user, false);
 </head>
 
 <body class="hcmsWorkplaceGeneric" background="<?php echo getthemelocation(); ?>img/backgrd_empty.png">
-<table width="100%" height="100%">
+
+<table class="hcmsTableStandard" style="width:100%; height:100%;">
   <tr>
-    <td align="middle" valign="middle">
+    <td style="text-align:center; vertical-align:middle;">
       <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>; margin:40px;" />
       <div>
         <?php
@@ -55,5 +56,6 @@ checkusersession ($user, false);
     </td>
   </tr>
 </table>
+
 </body>
 </html>

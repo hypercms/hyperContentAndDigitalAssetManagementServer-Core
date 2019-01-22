@@ -190,7 +190,8 @@ if (!empty ($file_info['ext']))
 </head>
 
 <body class="hcmsWorkplaceGeneric">
-  <div class="hcmsWorkplaceFrame">
+
+<div class="hcmsWorkplaceFrame">
   <?php echo showtopbar ($hcms_lang['selected-file'][$lang], $lang); ?>
   
   <?php
@@ -198,7 +199,7 @@ if (!empty ($file_info['ext']))
   {
     // output information
     echo "
-    <form name=\"media\" target=\"_parent\" method=\"post\">\n";
+  <form name=\"media\" target=\"_parent\" method=\"post\">\n";
     if ($mediatype == "video") echo "
     <input type=\"hidden\" name=\"mediafile\" value=\"".$mediafile."\" />\n";
     else echo "
@@ -208,14 +209,14 @@ if (!empty ($file_info['ext']))
     <input type=\"hidden\" name=\"mediaheight\" value=\"".$mediaheight."\" />
     <input type=\"hidden\" name=\"mediatype\" value=\"".$mediatype."\" />
   
-    <table border=0 cellpadding=0 cellspacing=2>
+    <table class=\"hcmsTableStandard\">
       <tr>
-        <td align=left valign=top>";
+        <td style=\"vertical-align:top;\">";
           
     if ($show == "" || substr_count ($mediafile, "Null_media.png") == 1)
     {
       echo "
-        <p class=hcmsHeadline>".$hcms_lang['no-file-selected'][$lang]."</p>";
+        <p class=\"hcmsHeadline\">".$hcms_lang['no-file-selected'][$lang]."</p>";
     }
     else
     {
@@ -223,19 +224,20 @@ if (!empty ($file_info['ext']))
     }
     
     echo "
-    </td>
+          </td>
         </tr>
       <tr>
       <tr>
-        <td align=left valign=center>
+        <td style=\"vertical-align:middle;\">
           ".$hcms_lang['confirm-selection'][$lang].":&nbsp;
-          <img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"submitMedia();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonOK','','".getthemelocation()."img/button_ok_over.png',1)\" name=\"ButtonOK\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" />
+          <img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"submitMedia();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonOK','','".getthemelocation()."img/button_ok_over.png',1)\" name=\"ButtonOK\" alt=\"OK\" title=\"OK\" />
         </td>
       </tr>
     </table>
   </form>";
   }
   ?>
-  </div>
+</div>
+  
 </body>
 </html>

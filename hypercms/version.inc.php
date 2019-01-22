@@ -3078,8 +3078,60 @@ Release 12/2018
 - Bug fix: Function processobjects in Main API did not verify the location and file variable before processing them
 - Bug fix: Undefined variable media in control_content_menu in case of a new object
 - Bug fix: Function scriptcode_extract ion Security API used a newline at the beginning of the string that could lead to an infinite loop when analyzing the code
+
+Version 7.0.12
+Release 01/2019
+- Modifications in main.css and navigator.css for all design themes in order to fix alignment issues with MS Edge
+- Implementation of new CSS class hcmsCenter in main.css and navigator.css of all design themes
+- Design modifications in article_edit
+- Design modifications in Workflow Management
+- Design modifications in Personalization
+- Design modifications in Project Management
+- Design modifications in Task Management
+- Design modifications in Import/Export Module
+- Design modifications in Colorful design theme
+- Design modifications in popup_ftp
+- Design modifications in page_multiedit according to design of the template engine
+- New implementation of datepicker JS functions in page_multiedit
+- Removed all align="absmiddle" from system code
+- Migration of all deprecated table, tr, and td attributes to new CSS classes hcmsTableStandard and hcmsTableNarrow defined in main.css and navigator.css
+- Migration of all deprecated font tags to span tags
+- Modifications in function getattribute in Get API in order to verify attribute values
+- Modifications in function createobject in Main API in order to use input location in error message
+- Modifications in group_edit_explorer in order to verify subdirectories
+- Implementation of UTF-8 conversion of column titles explorer_objectlist and in search_objectlist
+- Changed text to number type attribute for media width and height in template engine and media_edit_page
+- Implementation of scrolling to top in template_help if a tab has been selected
+- Change of frame height in frameset_edit_media from 200px to 220px
+- Modifications in function rdbms_searchcontent in DB Connect in order to inlcude media width and height in search result
+- Modifications in search_objectlist in order to support the media width and height from the search result for performance improvement
+- Modifications in function getmedialocation in Get API in order to improve performance when using dummy media files with prefix ".hcms." (skip is_link on non-existing files greatly improves speed of more than 1/100 of the time)
+- Modifications of all API functions that uses the old "dummy." media file prefix
+- Modifications of all service savecontent that uses the old "dummy." file prefix
+- Modifications in function createtempfile in Encryption API order to skip thumbnail files since they are not encrypted (performance improvement by avoiding reading the file header)
+- Removed unused upload button for deprected flash uploader from img source of all design themes
+- Update of Import/Export Guide
+- Implementation of lazysizes javascript library
+- Implementation of lazy image loader in explorer_objectlist and search_objectlist for the gallery view (based on lazysizes)
+- Implementation of views in statistics of favorites home box and up- and download home box
+- Modification of the Navigator select box sizes and advanced search box frame in order to align with the input boxes
+- Implementation of new function ftp_deletefile in Connect API
+- Implementation of FTP/FTPS support in function importmediafiles, importxmlfiles, and exportxmlfiles of the Import/Export API
+- Implementation of FTP/FTPS support in the Import/Export Connector modules
+- Modifications in function buildsearchform i
+- Design modifications in function buildsearchform
+- Modifications in function sendresetpassword in Main API in order to verify the main config setting $mgmt_config['resetpassword'] and $mgmt_config['multifactorauth'] before executing the function
+- Modifications in userlogin in order to verify the main config setting $mgmt_config['resetpassword'] and $mgmt_config['multifactorauth']
+- Bug fix: Template engine did not exlude double quote as forbidden special character of a tag ID
+- Bug fix: Template engine did not create a functional  link for opening the article settings
+- Bug fix: Missing type attributes found in some input elements of the template engine
+- Bug fix: Variables $dir and $entry_dir have not been verified in folder_explorer
+- Bug fix: Variables $dir and $site have not been verified in link_edit_explorer and link_explorer
+- Bug fix: Function createmedia in Media API did apply wrong resize parameter width and height for the image thumbnails resolution (used size of the original image)
+- Bug fix: .htacess files in install directory used wrong IP for localhost
+- Bug fix: Function manipulateobject in Main API did not initalize the variable $mediafile_new
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.11";
+$mgmt_config['version'] = "Version 7.0.12";
 ?>

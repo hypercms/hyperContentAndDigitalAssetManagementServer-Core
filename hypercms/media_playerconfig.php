@@ -284,7 +284,7 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
     <div>
       <label for="logo"><?php echo getescapedtext ($hcms_lang['start-image'][$lang]);?> </label><br />
       <input style="vertical-align: top;" type="text" onchange="updateCodeSegment();" id="logo" />
-      <img class="hcmsButtonTiny hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_media.png" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
+      <img class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_media.png" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
     </div>
     <?php } ?>
     <hr />

@@ -202,18 +202,18 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"
   <input type="hidden" name="preview" value="no" />
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
   
-  <table cellspacing="0" cellpadding="0" style="border:1px solid #000000; margin:2px;">
+  <table class="hcmsTableNarrow" style="width:100%; border:1px solid #000000; margin:2px;">
     <tr>
-      <td align="left">
+      <td style="text-align:left;">
         <?php if ($preview == "no") echo "<img onclick=\"hcms_showInfo ('savelayer', 0); document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>
       </td>
-      <td align="right" width="36">
+      <td style="text-align:right; width:36px;">
         <img onClick="openHelp();" name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.png" class="hcmsButton hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" />
       </td>
     </tr>
     <tr>
       <td colspan="2">
-        <textarea name="persdata" wrap="VIRTUAL" style="width:750px;" rows=20<?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>><?php echo $persdata; ?></textarea>
+        <textarea name="persdata" wrap="VIRTUAL" style="width:100%; height:600px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>><?php echo $persdata; ?></textarea>
       </td>
     </tr>
   </table>  

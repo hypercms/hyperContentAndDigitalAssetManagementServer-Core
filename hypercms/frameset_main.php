@@ -179,7 +179,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 <div class="hcmsWorkplaceTop" style="position:fixed; left:0px; top:0px; width:100%; height:32px;">
   <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
     <tr> 
-      <td align="left" valign="middle" nowrap="nowrap">
+      <td align="left" valign="middle" style="white-space:nowrap;">
         <img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsButtonTiny hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
         <?php if (empty ($hcms_linking)) { ?>
         <img src="<?php echo getthemelocation(); ?>img/button_explorer.png" class="hcmsButtonTiny hcmsButtonSizeSquare" onclick="switchNav();" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
@@ -188,17 +188,17 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
         <?php } ?>
         <img src="<?php echo getthemelocation(); ?>img/button_logout.png" class="hcmsButtonTiny hcmsButtonSizeSquare" onclick="top.location='userlogout.php';" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
       </td>
-      <td align="right" valign="middle" nowrap="nowrap">
+      <td align="right" valign="middle" style="white-space:nowrap;">
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></span>&nbsp;
         <span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span>
       </td>
-      <td width="20" nowrap="nowrap">&nbsp;&nbsp;</td>
-      <td width="180" align="left" valign="middle" nowrap="nowrap">
+      <td width="20" style="white-space:nowrap;">&nbsp;&nbsp;</td>
+      <td width="180" align="left" valign="middle" style="white-space:nowrap;">
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?></span>&nbsp;&nbsp;
         <?php $servertime->InstallClock(); ?>
       </td>
-      <td width="20" nowrap="nowrap">&nbsp;&nbsp;</td>
-      <td width="260" nowrap="nowrap">
+      <td width="20" style="white-space:nowrap;">&nbsp;&nbsp;</td>
+      <td width="260" style="white-space:nowrap;">
       <?php if (!empty ($mgmt_config['db_connect_rdbms']) && empty ($hcms_linking['object'])) { ?>
         <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
           <input type="hidden" name="action" value="base_search" />

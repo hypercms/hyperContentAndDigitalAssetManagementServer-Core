@@ -119,139 +119,152 @@ $(document).ready(function()
 </div>
 
 <div id="Navigator" class="hcmsWorkplaceFrame">
-<table width="98%" border="0" cellspacing="2" cellpadding="0">
+<table class="hcmsTabelStandard" style="table-layout:auto; width:90%;">
   <tr>
-    <td class="hcmsHeadline" style="padding:3px 0px 3px 0px;" align="left" colspan="2"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?><td>
+    <td class="hcmsHeadline" style="text-align:left; padding:3px 0px 3px 0px;" colspan="2"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?><td>
   </tr>
   <tr>
-    <td class="hcmsHeadlineTiny" align="left" colspan="2" nowrap="nowrap"><?php echo $location_name; ?></td>
+    <td class="hcmsHeadlineTiny" align="left" colspan="2" style="white-space:nowrap;"><?php echo $location_name; ?></td>
   </tr>
   <?php if ($mgmt_config['db_connect_rdbms'] != "") { ?>
   <tr>
-    <td align="left" colspan="2">
-    <form name="searchform_general" action="" method="post">
-      <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
-      <input type="hidden" name="site" value="<?php echo $site; ?>" />
-      <input type="text" name="search_expression" id="search_expression" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="<?php if ($search_expression != "") echo html_encode ($search_expression); ?>" style="width:190px;" maxlength="200" />
-      <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="top" alt="OK" title="OK" />
-    </form>
-  </td>
- </tr>
- <?php } ?>
+    <td colspan="2" style="text-align:left;">
+      <form name="searchform_general" action="" method="post">
+        <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
+        <input type="hidden" name="site" value="<?php echo $site; ?>" />
+        <input type="text" name="search_expression" id="search_expression" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="<?php if ($search_expression != "") echo html_encode ($search_expression); ?>" 
+        style="width:184px;" maxlength="200" /><img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+      </form>
+    </td>
+  </tr>
+  <?php } ?>
 
 <?php
-// parent directory
-if (substr_count ($dir, $mgmt_config[$site]['abs_path_page']) > 0 && $dir != $mgmt_config[$site]['abs_path_page'])
-{
-  //get parent directory
-  $updir_esc = getlocation ($dir_esc);
-
-  echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp; ".getescapedtext ($hcms_lang['back'][$lang])."</a></td></tr>\n";
-}
-
-// search results
-if ($search_expression != "")
-{
-  $object_array = rdbms_searchcontent ($dir_esc, "", array("page"), "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", 100);
-  
-  if (is_array ($object_array))
+if (!empty ($dir) && !empty ($site))
+{  
+  // parent directory
+  if (substr_count ($dir, $mgmt_config[$site]['abs_path_page']) > 0 && $dir != $mgmt_config[$site]['abs_path_page'])
   {
-    foreach ($object_array as $hash=>$object_item)
+    //get parent directory
+    $updir_esc = getlocation ($dir_esc);
+  
+    echo "
+    <tr>
+      <td colspan=\"2\" style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang])."</a></td>
+    </tr>";
+  }
+  
+  // search results
+  if ($search_expression != "")
+  {
+    $object_array = rdbms_searchcontent ($dir_esc, "", array("page"), "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", 100);
+    
+    if (is_array ($object_array))
     {
-      $entry = $object_item['objectpath'];
-      
-      if ($hash != "count" && $entry != "" && accessgeneral ($site, $entry, "page"))
+      foreach ($object_array as $hash=>$object_item)
       {
-        $entry_location = getlocation ($entry);
-        $entry_object = getobject ($entry);
-        $entry_object = correctfile ($entry_location, $entry_object, $user);
+        $entry = $object_item['objectpath'];
         
-        if ($entry_object !== false)
+        if ($hash != "count" && $entry != "" && accessgeneral ($site, $entry, "page"))
         {
-          if ($entry_object == ".folder")
+          $entry_location = getlocation ($entry);
+          $entry_object = getobject ($entry);
+          $entry_object = correctfile ($entry_location, $entry_object, $user);
+          
+          if ($entry_object !== false)
           {
-            $entry_dir[] = $entry_location.$entry_object;
+            if ($entry_object == ".folder")
+            {
+              $entry_dir[] = $entry_location.$entry_object;
+            }
+            else
+            {
+              $entry_file[] = $entry_location.$entry_object;
+            }
           }
-          else
+        }
+      }
+    }
+  }
+  // file explorer
+  else
+  {
+    // get all files in dir
+    $outdir = @dir ($dir);
+  
+    // get all outdir entries in folder and file array
+    if ($outdir != false)
+    {
+      while ($entry = $outdir->read())
+      {
+        if ($entry != "" && $entry != "." && $entry != ".." && $entry != ".folder" && accessgeneral ($site, $dir.$entry, "page"))
+        {        
+          if (is_dir ($dir.$entry))
           {
-            $entry_file[] = $entry_location.$entry_object;
+            $entry_dir[] = $dir_esc.$entry."/.folder";
+          }
+          elseif (is_file ($dir.$entry))
+          {
+            $entry_file[] = $dir_esc.$entry;
           }
         }
       }
+      
+      $outdir->close();
     }
   }
-}
-// file explorer
-else
-{
-  // get all files in dir
-  $outdir = @dir ($dir);
-
-  // get all outdir entries in folder and file array
-  if ($outdir != false)
+  
+  // directory
+  if (!empty ($entry_dir) && sizeof ($entry_dir) > 0)
   {
-    while ($entry = $outdir->read())
+    natcasesort ($entry_dir);
+    reset ($entry_dir);
+  
+    foreach ($entry_dir as $dirname)
     {
-      if ($entry != "" && $entry != "." && $entry != ".." && $entry != ".folder" && accessgeneral ($site, $dir.$entry, "page"))
-      {        
-        if (is_dir ($dir.$entry))
+      // folder info
+      $folder_info = getfileinfo ($site, $dirname, "page");
+      
+      if ($dirname != "" && $folder_info['deleted'] == false)
+      {
+        $folder_path = getlocation ($dirname);
+        $location_name = getlocationname ($site, $folder_path, "page", "path"); 
+    
+        if ($folder_info != false && $folder_info['deleted'] == false)
         {
-          $entry_dir[] = $dir_esc.$entry."/.folder";
-        }
-        elseif (is_file ($dir.$entry))
-        {
-          $entry_file[] = $dir_esc.$entry;
+          echo "
+      <tr>
+        <td colspan=\"2\" style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".$folder_path."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".showshorttext($folder_info['name'], 24)."</a></td>
+      </tr>";
         }
       }
     }
-    
-    $outdir->close();
   }
-}
-
-// directory
-if (isset ($entry_dir) && sizeof ($entry_dir) > 0)
-{
-  natcasesort ($entry_dir);
-  reset ($entry_dir);
-
-  foreach ($entry_dir as $dirname)
-  {
-    // folder info
-    $folder_info = getfileinfo ($site, $dirname, "page");
-    
-    if ($dirname != "" && $folder_info['deleted'] == false)
-    {
-      $folder_path = getlocation ($dirname);
-      $location_name = getlocationname ($site, $folder_path, "page", "path"); 
   
-      if ($folder_info != false && $folder_info['deleted'] == false)
-      {
-        echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".$folder_path."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
-      }
-    }
-  }
-}
-
-// file
-if (isset ($entry_file) && sizeof ($entry_file) > 0)
-{
-  natcasesort ($entry_file);
-  reset ($entry_file);
-
-  foreach ($entry_file as $file)
+  // file
+  if (!empty ($entry_file) && sizeof ($entry_file) > 0)
   {
-    // object info
-    $file_info = getfileinfo ($site, $file, "page");
-    
-    if ($file != "" && $file_info['deleted'] == false)
-    {
-      $file_name = getlocationname ($site, $file, "page", "path");
-      $file_path = $file;
+    natcasesort ($entry_file);
+    reset ($entry_file);
   
-      if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
+    foreach ($entry_file as $file)
+    {
+      // object info
+      $file_info = getfileinfo ($site, $file, "page");
+      
+      if ($file != "" && $file_info['deleted'] == false)
       {
-        echo "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp; ".showshorttext($file_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+        $file_name = getlocationname ($site, $file, "page", "path");
+        $file_path = $file;
+    
+        if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
+        {
+          echo "
+      <tr>
+        <td style=\"width:90%; text-align:left; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 24)."</a></td>
+        <td style=\"text-align:right;\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+      </tr>";
+        }
       }
     }
   }

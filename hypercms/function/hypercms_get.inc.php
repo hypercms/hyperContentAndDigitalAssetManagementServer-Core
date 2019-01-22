@@ -930,7 +930,7 @@ function getmetakeywords ($text, $language="en", $charset="UTF-8")
     $text = cleancontent ($text, $charset);
     
     // remove stopwords
-    if (is_array ($stopwords[$language])) $text = str_ireplace ($stopwords[$language]." ", "", $text);
+    if (!empty ($stopwords[$language]) && is_array ($stopwords[$language])) $text = str_ireplace ($stopwords[$language]." ", "", $text);
     
     // extract the keywords
     $pattern1 = '/\b[A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+ [A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+ [A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+|[A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+ [A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+|[A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+\b/';
@@ -1610,7 +1610,7 @@ function getmetadata_container ($container_id, $text_id_array)
     $result = array();
 
     // use database
-    if ($mgmt_config['db_connect_rdbms'] != "")
+    if (!empty ($mgmt_config['db_connect_rdbms']))
     {
       // collect container and media info
       $select = "";
@@ -1645,7 +1645,7 @@ function getmetadata_container ($container_id, $text_id_array)
     
       if ($select != "")
       {
-        $objectdata = rdbms_externalquery ('SELECT '.$select.' FROM container LEFT JOIN media ON media.id=container.id WHERE container.id='.intval($container_id));
+        $objectdata = rdbms_externalquery ('SELECT media.width, media.height, '.$select.' FROM container LEFT JOIN media ON media.id=container.id WHERE container.id='.intval($container_id));
  
         // reduce array
         if (is_array ($objectdata) && sizeof ($objectdata) > 0) $result = $objectdata[0];
@@ -4041,8 +4041,8 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
               {
                 if ($mgmt_config[$type][$j] != "")
                 {
-                  // symbolic link
-                  if (is_link ($mgmt_config[$type][$j].$site."/".$file) && !empty ($resolve_symlink))
+                  // symbolic link and NOT a dummy media file
+                  if (substr ($file, 0, 6) != ".hcms." && is_link ($mgmt_config[$type][$j].$site."/".$file) && !empty ($resolve_symlink))
                   {
                     // get link target
                     $targetpath = readlink ($mgmt_config[$type][$j].$site."/".$file);
@@ -4065,8 +4065,8 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
         // single media harddisk/mountpoint
         else
         {
-          // symbolic link
-          if (is_link ($mgmt_config[$type].$site."/".$file) && !empty ($resolve_symlink))
+          // symbolic link and NOT a dummy media file
+          if (substr ($file, 0, 6) != ".hcms." && is_link ($mgmt_config[$type].$site."/".$file) && !empty ($resolve_symlink))
           {
             // get link target
             $targetpath = readlink ($mgmt_config[$type].$site."/".$file);
@@ -4992,62 +4992,66 @@ function getattribute ($string, $attribute, $secure=true)
           // cut off first part of the string till attribute value begins
           $checkedstring = substr (strstr ($checkedstring, $attribute."="), $attrlen);
 
-          // " indicates start and end of attribute value
-          if ($checkedstring[0] == "\"" && strpos ("_".substr ($checkedstring, 1), "\"") > 0)
+          if (!empty ($checkedstring))
           {
-            // get the length of the value
-            $vallen = strpos (substr ($checkedstring, 1), "\"") + 2;
+            // " indicates start and end of attribute value
+            if (substr ($checkedstring, 0, 1) == "\"" && strpos ("_".substr ($checkedstring, 1), "\"") > 0)
+            {
+              // get the length of the value
+              $vallen = strpos (substr ($checkedstring, 1), "\"") + 2;
+            }
+            // ' indicates start and end of attribute value
+            elseif ($checkedstring[0] == "'" && strpos ("_".substr ($checkedstring, 1), "'") > 0)
+            {
+              // get the length of the value
+              $vallen = strpos (substr ($checkedstring, 1), "'") + 2;
+            }
+            //  '&' indicates end of attribute value
+            elseif (strpos ($checkedstring, "&") > 0)
+            {
+              // get the length of the value
+              $vallen = strpos ($checkedstring, "&");
+            }
+            // in case ot hyperCMS tags an end parenthesis indicates also end of attribute value
+            elseif (strpos ($checkedstring, "]") > 0)
+            {
+              // get the length of the value
+              $vallen = strpos ($checkedstring, "]");
+            }
+            // freespace indicates also end of attribute value
+            elseif (strpos ($checkedstring, " ") > 0)
+            {
+              // get the length of the value
+              $vallen = strpos ($checkedstring, " ");
+            }
+            // " indicates end of attribute value
+            elseif (strpos ($checkedstring, "\"") > 0)
+            {
+              // get the length of the value
+              $vallen = strpos ($checkedstring, "\"");
+            }
+            // ' indicates end of attribute value
+            elseif (strpos ($checkedstring, "'") > 0)
+            {
+              // get the length of the value
+              $vallen = strpos ($checkedstring, "'");
+            }
+            // or the value itself is the end of the string    
+            else
+            {
+              $vallen = strlen ($checkedstring);
+            }
+        
+            // get the value of attribute
+            $value = trim (substr ($checkedstring, 0, $vallen));
+            
+            // cut off double quotes from value
+            if ((substr ($value, 0, 1) == "'" && substr ($value, strlen ($value)-1, 1) == "'") || (substr ($value, 0, 1) == "\"" && substr ($value, strlen ($value)-1, 1) == "\""))
+            {
+              $value = substr ($value, 1, strlen ($value)-2);
+            }
           }
-          // ' indicates start and end of attribute value
-          elseif ($checkedstring[0] == "'" && strpos ("_".substr ($checkedstring, 1), "'") > 0)
-          {
-            // get the length of the value
-            $vallen = strpos (substr ($checkedstring, 1), "'") + 2;
-          }
-          //  '&' indicates end of attribute value
-          elseif (strpos ($checkedstring, "&") > 0)
-          {
-            // get the length of the value
-            $vallen = strpos ($checkedstring, "&");
-          }
-          // in case ot hyperCMS tags an end parenthesis indicates also end of attribute value
-          elseif (strpos ($checkedstring, "]") > 0)
-          {
-            // get the length of the value
-            $vallen = strpos ($checkedstring, "]");
-          }
-          // freespace indicates also end of attribute value
-          elseif (strpos ($checkedstring, " ") > 0)
-          {
-            // get the length of the value
-            $vallen = strpos ($checkedstring, " ");
-          }
-          // " indicates end of attribute value
-          elseif (strpos ($checkedstring, "\"") > 0)
-          {
-            // get the length of the value
-            $vallen = strpos ($checkedstring, "\"");
-          }
-          // ' indicates end of attribute value
-          elseif (strpos ($checkedstring, "'") > 0)
-          {
-            // get the length of the value
-            $vallen = strpos ($checkedstring, "'");
-          }
-          // or the value itself is the end of the string    
-          else
-          {
-            $vallen = strlen ($checkedstring);
-          }
-      
-          // get the value of attribute
-          $value = trim (substr ($checkedstring, 0, $vallen));
-
-          // cut off double quotes from value
-          if ((substr ($value, 0, 1) == "'" && substr ($value, strlen ($value)-1, 1) == "'") || (substr ($value, 0, 1) == "\"" && substr ($value, strlen ($value)-1, 1) == "\""))
-          {
-            $value = substr ($value, 1, strlen ($value)-2);
-          }
+          else $value = "";
 
           // secure value
           if ($secure)

@@ -15,7 +15,7 @@
 // output: true / false on error
 
 // description:
-// This function connects and performs logon to an FTP server
+// This function connects and performs logon to an FTP server.
 
 function ftp_userlogon ($server, $user, $passwd, $ssl=false)
 {
@@ -64,7 +64,7 @@ function ftp_userlogon ($server, $user, $passwd, $ssl=false)
 // output: true / false on error
 
 // description:
-// This function disconnects from an FTP server
+// This function disconnects from an FTP server.
 
 function ftp_userlogout ($conn_id)
 {
@@ -84,7 +84,7 @@ function ftp_userlogout ($conn_id)
 // output: true / false on error
 
 // description:
-// This function gets a file from the FTP server
+// This function gets a file from the FTP server.
 
 function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 {
@@ -117,7 +117,7 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 // output: true / false on error
 
 // description:
-// This function puts a file to the FTP server
+// This function puts a file to the FTP server.
 
 function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 {
@@ -148,13 +148,46 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
   else return false;
 }
 
+// ----------------------------------------- ftp_deletefile ---------------------------------------------
+// function: ftp_deletefile()
+// input: FTP connection [resource], path to file on FTP server [string], passive mode [true,false] (optional)
+// output: true / false on error
+
+// description:
+// This function deletes a file from the FTP server.
+
+function ftp_deletefile ($conn_id, $remote_file, $passive=true)
+{
+  global $mgmt_config;
+  
+  if ($conn_id != "" && $remote_file != "" && ($passive == true || $passive == false))
+  {
+    $delete = false;
+    
+    // set mode
+    ftp_pasv ($conn_id, $passive);
+
+    // delete file
+    $delete = ftp_delete ($conn_id, $remote_file);
+
+    // verify upload
+    if (!$delete) $error[] = date('Y-m-d H:i')."|hypercms_connect.inc.php|error|20103|FTP: delete of ".$remote_file." has failed";
+  
+    // save log
+    savelog (@$error);
+    
+    return $delete;
+  }
+  else return false;
+}
+
 // ----------------------------------------- ftp_filelist ---------------------------------------------
 // function: ftp_filelist()
 // input: FTP connection [resource], path to remote directory [string] (optional), passive mode [true,false] (optional)
 // output: result array / false on error
 
 // description:
-// This function gets a file/directory listing of the FTP server
+// This function gets a file/directory listing of the FTP server.
 
 function ftp_filelist ($conn_id, $path=".", $passive=true)
 {

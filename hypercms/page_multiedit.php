@@ -164,6 +164,7 @@ function gettagdata ($tag_array)
 $multiobject_array = explode ("|", $multiobject);
 
 $add_onload = "";
+$js_tpl_code = "";
 $mediafile = "";
 $is_image = true;
 $is_video = true;
@@ -329,6 +330,33 @@ foreach ($multiobject_array as $object)
           // include db_connect function
           @include_once ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
           break;
+        }
+      }
+    }
+    
+    // =========================================== JavaScript code ============================================
+
+    // only for form views
+    if (preg_match ("/\[JavaScript:scriptbegin/i", $templatedata))
+    {
+      // replace hyperCMS script code                  
+      while (@substr_count (strtolower($templatedata), "[javascript:scriptbegin") > 0)
+      {
+        $jstagstart = strpos (strtolower($templatedata), "[javascript:scriptbegin");
+        $jstagend = strpos (strtolower($templatedata), "scriptend]", $jstagstart + strlen ("[javascript:scriptbegin")) + strlen ("scriptend]");
+        $jstag = substr ($templatedata, $jstagstart, $jstagend - $jstagstart);
+
+                  
+        // remove JS code
+        $templatedata = str_replace ($jstag, "", $templatedata);
+          
+        // assign code
+        if (trim ($jstag))
+        {
+          // remove tags
+          $jstag = str_ireplace ("[javascript:scriptbegin", "", $jstag);
+          $jstag = str_ireplace ("scriptend]", "", $jstag);
+          $js_tpl_code .= "\n".$jstag;
         }
       }
     }
@@ -541,7 +569,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
 ?>
 <!DOCTYPE html>
 <html>
-	<head>
+<head>
   <title>hyperCMS</title>
   <meta charset="<?php echo $charset; ?>" />
   <meta name="viewport" content="width=580, initial-scale=0.9, maximum-scale=1.0, user-scalable=1" />
@@ -553,8 +581,8 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
   
   <!-- Tag it script -->
   <script src="javascript/tag-it/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
-  <link href="javascript/tag-it/jquery.tagit.css" rel="stylesheet" type="text/css">
-  <link href="javascript/tag-it/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
+  <link href="javascript/tag-it/jquery.tagit.css" rel="stylesheet" type="text/css" />
+  <link href="javascript/tag-it/tagit.ui-zendesk.css" rel="stylesheet" type="text/css" />
 
   <script src="<?php echo $mgmt_config['url_path_cms']; ?>editor/ckeditor/ckeditor.js"></script>
   <script> CKEDITOR.disableAutoInline = true;</script>
@@ -566,208 +594,444 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
   <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_de.js"></script>
   <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/domready.js"></script>
   
-  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css"/>
+  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
   
   <style>
-    .fieldrow > div.cke
-    {
-      display: inline-block !important;
-    }
-    
-    .row
-    {
-      margin-top: 1px;
-    }
-    
-    .row *
-    {
-      vertical-align: middle;
-    }
-    
-    .row input[type="radio"]
-    {
-      margin: 0px;
-      padding: 0px;
-    }
-    
-    .cell
-    {
-      vertical-align: top;
-      display: inline-block;
-      margin-left: 3px;
-      margin-top: 3px;
-      <?php if ($is_image) { ?>width: 230px;<?php } else { ?>width: 210px;<?php } ?>
-    }
-    
-    .cellButton
-    {
-      vertical-align: middle;
-      padding: 0px 2px;
-    }
-    
-    .cell *
-    {
-      font-size: 11px;
-    }
+  .row
+  {
+    margin-top: 1px;
+  }
+  
+  .row *
+  {
+    vertical-align: middle;
+  }
+  
+  .row input[type="radio"]
+  {
+    margin: 0px;
+    padding: 0px;
+  }
+  
+  .cell
+  {
+    vertical-align: top;
+    display: inline-block;
+    margin-left: 3px;
+    margin-top: 3px;
+    <?php if ($is_image) { ?>width: 230px;<?php } else { ?>width: 210px;<?php } ?>
+  }
+  
+  .cellButton
+  {
+    vertical-align: middle;
+    padding: 0px 2px;
+  }
+  
+  .cell *
+  {
+    font-size: 11px;
+  }
   </style>
  
   <script src="javascript/main.js"></script>
 
   <script type="text/javascript">
+  
+  var image_checked = false;
+  var video_checked = false;
     
-    var image_checked = false;
-    var video_checked = false;
-    
-    function save (reload)
+  
+  // ----- Field controls for form views -----
+  
+  // Alisa for checkFieldValue
+  function checkValue (id, value)
+  {
+    return checkFieldValue (id, value);
+  }
+  
+  function checkFieldValue (id, value)
+  {
+    if (document.getElementById(id).type === 'checkbox')
     {
-      var checkcontent = true;
-      var checkimage = false;
-      var checkvideo = false;
-      
-      <?php echo $add_constraint; ?>
-      
-      <?php if ($is_image) { ?>
-      if (checkcontent == true) checkcontent = checkimage = checkImageForm();
-      <?php } elseif ($is_video) { ?>     
-      if (checkcontent == true) checkcontent = checkvideo = checkVideoForm();
-      <?php } ?>
+      if (document.getElementById(id).checked == true && document.getElementById(id).value == value) return true;
+    }
+    else if (document.getElementById(id).value)
+    {
+      if (document.getElementById(id).value == value || document.getElementById(id).value.indexOf(value) > -1) return true;
+    }
     
-      if (checkcontent == true)
+    return false;
+  }
+
+  // Alias for lockField
+  function lockEdit (id)
+  {
+    lockField (id);
+  }
+  
+  function lockField (id)
+  {
+    if (document.getElementById(id))
+    {
+      document.getElementById(id).disabled = true;
+    }
+    
+    if (document.getElementById(id+'_controls'))
+    {
+      document.getElementById(id+'_controls').style.display = 'none';
+    }
+    
+    var elements = document.getElementsByClassName(id);
+    
+    if (elements.length > 0)
+    {
+      for (var i = 0; i < elements.length; i++)
       {
-        // update all CKEDitor instances
-        for (var instanceName in CKEDITOR.instances)
-          CKEDITOR.instances[instanceName].updateElement();
+        elements[i].disabled = true;
+      }
+    }
+    
+    if (document.getElementById(id+'_protect'))
+    {
+      document.getElementById(id+'_protect').style.display = 'inline';
+    }
+  }
+  
+  // Alias for unlockField
+  function unlockEdit (id)
+  {
+    unlockField (id);
+  }
+  
+  function unlockField (id)
+  {
+    if (document.getElementById(id))
+    {
+      document.getElementById(id).disabled = false;
+    }
+    
+    if (document.getElementById(id+'_controls'))
+    {
+      document.getElementById(id+'_controls').style.display = 'inline-block';
+    }
+
+    var elements = document.getElementsByClassName(id);
+    
+    if (elements.length > 0)
+    {
+      for (var i = 0; i < elements.length; i++)
+      {
+        elements[i].disabled = false;
+      }
+    }
+
+    if (document.getElementById(id+'_protect'))
+    {
+      document.getElementById(id+'_protect').style.display = 'none';
+    }
+  }
+  
+  function hideField (id)
+  {   
+    var elements = document.getElementsByClassName(id);
+    
+    if (elements.length > 0)
+    {
+      for (var i = 0; i < elements.length; i++)
+      {
+        elements[i].style.display = 'none';
+      }
+    }
+    
+    lockEdit (id);
+  }
+  
+  function showField (id)
+  {   
+    var elements = document.getElementsByClassName(id);
+    
+    if (elements.length > 0)
+    {
+      for (var i = 0; i < elements.length; i++)
+      {
+        elements[i].style.display = '';
+      }
+    }
+    
+    unlockEdit (id);
+  } 
+
+  // ----- Rich Calendar -----
+  
+  var cal_obj = null;
+  var cal_format = null;
+  var cal_field = null;
+  
+  function show_cal (el, field_id, format)
+  {
+    if (cal_obj) return;
+    
+    cal_field = field_id;
+    cal_format = format;
+    var datefield = document.getElementById(field_id);
+    
+    cal_obj = new RichCalendar();
+    cal_obj.start_week_day = 1;
+    cal_obj.show_time = false;
+    cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
+    cal_obj.user_onchange_handler = cal_on_change;
+    cal_obj.user_onclose_handler = cal_on_close;
+    cal_obj.user_onautoclose_handler = cal_on_autoclose;
+    cal_obj.parse_date(datefield.value, cal_format);
+    cal_obj.show_at_element(datefield, 'adj_left-bottom');
+  }
+  
+  // onchange handler
+  function cal_on_change (cal, object_code)
+  {
+    if (object_code == 'day')
+    {
+      document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
+      cal.hide();
+      cal_obj = null;
+    }
+  }
+  
+  // user defined onclose handler (used in pop-up mode - when auto_close is true)
+  function cal_on_close (cal)
+  {
+  	cal.hide();
+  	cal_obj = null;
+  }
+  
+  // user defined onautoclose handler
+  function cal_on_autoclose (cal)
+  {
+  	cal_obj = null;
+  }
+  
+  function save (reload)
+  {
+    var checkcontent = true;
+    var checkimage = false;
+    var checkvideo = false;
+    
+    <?php echo $add_constraint; ?>
+    
+    <?php if ($is_image) { ?>
+    if (checkcontent == true) checkcontent = checkimage = checkImageForm();
+    <?php } elseif ($is_video) { ?>     
+    if (checkcontent == true) checkcontent = checkvideo = checkVideoForm();
+    <?php } ?>
+  
+    if (checkcontent == true)
+    {
+      // update all CKEDitor instances
+      for (var instanceName in CKEDITOR.instances)
+        CKEDITOR.instances[instanceName].updateElement();
+      
+      // get objects from multiobject and content fields
+      var obj = $('#objs').val().split("|");
+      var fields = $('#fields').val().split("|");
+      
+      
+      // init content post data
+      var postdata_content = {
+        'savetype' : 'auto',
+        'db_connect': '<?php echo $db_connect; ?>',
+        'contenttype': '<?php echo $contenttype; ?>',
+        'token': '<?php echo $token; ?>'
+      };
+      
+      for (var nr in fields)
+      {
+        var field = $('[id="'+fields[nr]+'"]');
         
-        // get objects from multiobject and content fields
-        var obj = $('#objs').val().split("|");
-        var fields = $('#fields').val().split("|");
+        if (!field.prop) 
+        {
+          alert ('<?php echo getescapedtext ($hcms_lang['could-not-find-the-value-for-one-of-the-fields'][$lang], $charset, $lang); ?>');
+        }
         
+        var name = field.prop('name');
+        var value = '';
         
-        // init content post data
-        var postdata_content = {
+        // for input we get the type
+        if (field.prop('tagName').toUpperCase() == 'INPUT' && field.prop('type').toUpperCase() == 'CHECKBOX') 
+          value = (field.prop('checked') ? field.prop('value') : '');
+        // formatted fields doesn't need to be encoded as this is already done by CKEDitor
+        // use direct value for selectboxes
+        else if ( field.attr('id').slice(0, 'textf_'.length) == 'textf_' || field.prop('tagName').toUpperCase() == 'SELECT')
+          value = field.prop('value');
+        else if (field.prop('value') == "")
+          value = "";
+        else
+          value = field.prop('value');
+        
+        postdata_content[name] = value;
+      }
+      
+      // collect image form data
+      if (checkimage == true)
+      {
+        // init image post data
+        var postdata_image = {
           'savetype' : 'auto',
-          'db_connect': '<?php echo $db_connect; ?>',
-          'contenttype': '<?php echo $contenttype; ?>',
           'token': '<?php echo $token; ?>'
         };
         
-        for (var nr in fields)
-        {
-          var field = $('[id="'+fields[nr]+'"]');
-          
-          if (!field.prop) 
-          {
-            alert ('<?php echo getescapedtext ($hcms_lang['could-not-find-the-value-for-one-of-the-fields'][$lang], $charset, $lang); ?>');
-          }
-          
-          var name = field.prop('name');
-          var value = '';
-          
-          // for input we get the type
-          if (field.prop('tagName').toUpperCase() == 'INPUT' && field.prop('type').toUpperCase() == 'CHECKBOX') 
-            value = (field.prop('checked') ? field.prop('value') : '');
-          // formatted fields doesn't need to be encoded as this is already done by CKEDitor
-          // use direct value for selectboxes
-          else if ( field.attr('id').slice(0, 'textf_'.length) == 'textf_' || field.prop('tagName').toUpperCase() == 'SELECT')
-            value = field.prop('value');
-          else if (field.prop('value') == "")
-            value = "";
-          else
-            value = field.prop('value');
-          
-          postdata_content[name] = value;
-        }
+        // get all image form elements
+        var imageoptions = document.forms['imageoptions'].elements;
         
-        // collect image form data
-        if (checkimage == true)
+        if (imageoptions)
         {
-          // init image post data
-          var postdata_image = {
-            'savetype' : 'auto',
-            'token': '<?php echo $token; ?>'
-          };
+          var name;
           
-          // get all image form elements
-          var imageoptions = document.forms['imageoptions'].elements;
-          
-          if (imageoptions)
+          for (var i=0; i < imageoptions.length; i+=1) 
           {
-            var name;
-            
-            for (var i=0; i < imageoptions.length; i+=1) 
+            if (imageoptions[i].disabled == false)
             {
-              if (imageoptions[i].disabled == false)
-              {
-                name = imageoptions[i].name;
-                
-                // checkbox
-                if (imageoptions[i].type == "checkbox" && imageoptions[i].checked == true) postdata_image[name] = imageoptions[i].value;
-                // select box
-                else if (imageoptions[i].type == "select-one") postdata_image[name] = imageoptions[i].options[imageoptions[i].selectedIndex].value;
-                // text or hidden input
-                else if (imageoptions[i].type == "text" || imageoptions[i].type == "hidden") postdata_image[name] = imageoptions[i].value;
-              }
+              name = imageoptions[i].name;
+              
+              // checkbox
+              if (imageoptions[i].type == "checkbox" && imageoptions[i].checked == true) postdata_image[name] = imageoptions[i].value;
+              // select box
+              else if (imageoptions[i].type == "select-one") postdata_image[name] = imageoptions[i].options[imageoptions[i].selectedIndex].value;
+              // text or hidden input
+              else if (imageoptions[i].type == "text" || imageoptions[i].type == "hidden") postdata_image[name] = imageoptions[i].value;
             }
           }
         }
+      }
+      
+      // collect video/audio form data
+      if (checkvideo == true)
+      {
+        // init video post data
+        var postdata_video = {
+          'savetype' : 'auto',
+          'token': '<?php echo $token; ?>'
+        };
         
-        // collect video/audio form data
-        if (checkvideo == true)
+        // get all video form elements
+        var videooptions = document.forms['videooptions'].elements;
+        
+        if (videooptions)
         {
-          // init video post data
-          var postdata_video = {
-            'savetype' : 'auto',
-            'token': '<?php echo $token; ?>'
-          };
+          var name;
           
-          // get all video form elements
-          var videooptions = document.forms['videooptions'].elements;
-          
-          if (videooptions)
+          for (var i=0; i < videooptions.length; i+=1) 
           {
-            var name;
-            
-            for (var i=0; i < videooptions.length; i+=1) 
+            if (videooptions[i].disabled == false)
             {
-              if (videooptions[i].disabled == false)
-              {
-                name = videooptions[i].name;
-                
-                // checkbox
-                if (videooptions[i].type == "checkbox" && videooptions[i].checked == true) postdata_video[name] = videooptions[i].value;
-                // radio
-                else if (videooptions[i].type == "radio" && videooptions[i].checked == true) postdata_video[name] = videooptions[i].value;
-                // select box
-                else if (videooptions[i].type == "select-one") postdata_video[name] = videooptions[i].options[videooptions[i].selectedIndex].value;
-                // text or hidden input
-                else if (videooptions[i].type == "text" || videooptions[i].type == "hidden") postdata_video[name] = videooptions[i].value;
-              }
+              name = videooptions[i].name;
+              
+              // checkbox
+              if (videooptions[i].type == "checkbox" && videooptions[i].checked == true) postdata_video[name] = videooptions[i].value;
+              // radio
+              else if (videooptions[i].type == "radio" && videooptions[i].checked == true) postdata_video[name] = videooptions[i].value;
+              // select box
+              else if (videooptions[i].type == "select-one") postdata_video[name] = videooptions[i].options[videooptions[i].selectedIndex].value;
+              // text or hidden input
+              else if (videooptions[i].type == "text" || videooptions[i].type == "hidden") postdata_video[name] = videooptions[i].value;
             }
           }
         }
+      }
+      
+      // show savelayer across the whole page
+      $('#savelayer').show();
+      
+      // save each object
+      for (nr in obj) 
+      {
+        file = obj[nr];
         
-        // show savelayer across the whole page
-        $('#savelayer').show();
+        // ignore empty values
+        if($.trim(file) == "") continue;
         
-        // save each object
-        for (nr in obj) 
-        {
-          file = obj[nr];
-          
-          // ignore empty values
-          if($.trim(file) == "") continue;
-          
-          // for each selected object the location and object name must be provided
-          var len = file.lastIndexOf('/')+1;
-          
-          postdata_content['page'] = file.slice(len);
-          postdata_content['location'] = file.slice(0, len);
+        // for each selected object the location and object name must be provided
+        var len = file.lastIndexOf('/')+1;
+        
+        postdata_content['page'] = file.slice(len);
+        postdata_content['location'] = file.slice(0, len);
 
-          // save content
+        // save content
+        $.ajax({
+            'type': "POST",
+            'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php",
+            'data': postdata_content,
+            'async': false,
+            'dataType': 'json'
+          }).error(function(data) {
+            // server message
+            if (data.message && data.message.length !== 0)
+            {
+              alert(hcms_entity_decode(data.message));
+            }
+            else
+            {
+              alert('Internal Error');
+            }
+          }).success(function(data) {
+            // server message
+            if (data.message && data.message.length !== 0)
+            {
+              alert(hcms_entity_decode(data.message));
+            }
+        });
+        
+        // render and save image
+        if (image_checked == true)
+        {
+          var multiobject = document.forms['reloadform'].elements['multiobject'];
+          postdata_image['page'] = postdata_content['page'];
+          postdata_image['location'] = postdata_content['location'];
+          
           $.ajax({
               'type': "POST",
-              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php",
-              'data': postdata_content,
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/renderimage.php",
+              'data': postdata_image,
+              'async': false,
+              'dataType': 'json'
+            }).error(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert(hcms_entity_decode(data.message));
+              }
+              else
+              {
+                alert('Internal Error');
+              }
+            }).success(function(data) {
+              // object name after rendering
+              if (data.object && data.object.length !== 0)
+              {
+                var multiobject_new = multiobject.value.replace(file, data.object);
+
+                // update multiobjects
+                if (multiobject_new != multiobject.value) multiobject.value = multiobject_new;
+              }
+            
+              // server message
+              if (data.success == false && data.message && data.message.length !== 0)
+              {
+                alert(hcms_entity_decode(data.message));
+              }
+          });
+        }
+        
+        // render and save video/audio
+        if (video_checked == true)
+        {
+          postdata_video['page'] = postdata_content['page'];
+          postdata_video['location'] = postdata_content['location'];
+
+          $.ajax({
+              'type': "POST",
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/rendervideo.php",
+              'data': postdata_video,
               'async': false,
               'dataType': 'json'
             }).error(function(data) {
@@ -782,926 +1046,857 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
               }
             }).success(function(data) {
               // server message
-              if (data.message && data.message.length !== 0)
+              if (data.success == false && data.message && data.message.length !== 0)
               {
                 alert(hcms_entity_decode(data.message));
               }
           });
-          
-          // render and save image
-          if (image_checked == true)
-          {
-            var multiobject = document.forms['reloadform'].elements['multiobject'];
-            postdata_image['page'] = postdata_content['page'];
-            postdata_image['location'] = postdata_content['location'];
-            
-            $.ajax({
-                'type': "POST",
-                'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/renderimage.php",
-                'data': postdata_image,
-                'async': false,
-                'dataType': 'json'
-              }).error(function(data) {
-                // server message
-                if (data.message && data.message.length !== 0)
-                {
-                  alert(hcms_entity_decode(data.message));
-                }
-                else
-                {
-                  alert('Internal Error');
-                }
-              }).success(function(data) {
-                // object name after rendering
-                if (data.object && data.object.length !== 0)
-                {
-                  var multiobject_new = multiobject.value.replace(file, data.object);
-
-                  // update multiobjects
-                  if (multiobject_new != multiobject.value) multiobject.value = multiobject_new;
-                }
-              
-                // server message
-                if (data.success == false && data.message && data.message.length !== 0)
-                {
-                  alert(hcms_entity_decode(data.message));
-                }
-            });
-          }
-          
-          // render and save video/audio
-          if (video_checked == true)
-          {
-            postdata_video['page'] = postdata_content['page'];
-            postdata_video['location'] = postdata_content['location'];
-
-            $.ajax({
-                'type': "POST",
-                'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/rendervideo.php",
-                'data': postdata_video,
-                'async': false,
-                'dataType': 'json'
-              }).error(function(data) {
-                // server message
-                if (data.message && data.message.length !== 0)
-                {
-                  alert(hcms_entity_decode(data.message));
-                }
-                else
-                {
-                  alert('Internal Error');
-                }
-              }).success(function(data) {
-                // server message
-                if (data.success == false && data.message && data.message.length !== 0)
-                {
-                  alert(hcms_entity_decode(data.message));
-                }
-            });
-          }
         }
-        
-        if (reload == true) $('#reloadform').submit();
-        return true;
-      }
-      else return false;
-    }
-      
-    function saveClose()
-    {
-      var result = save(false);
-      if (result == true) window.close();
-    }
-      
-    function validateForm() 
-    {
-      var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
-      
-      for (i=0; i<(args.length-2); i+=3) 
-      { 
-        test = args[i+2];
-        contentname = args[i+1];
-        val = hcms_findObj(args[i]);
-        
-        if (val) 
-        { 
-          if (contentname != '')
-          {
-            nm = contentname;
-          }
-          else
-          {
-            nm = val.name;
-            nm = nm.substring(nm.indexOf('_')+1, nm.length);
-          }
-          
-          if ((val=val.value) != '' && test != '') 
-          {
-            if (test == 'audio' || test == 'compressed' || test == 'flash' || test == 'image' || test == 'text' || test == 'video') 
-            { 
-              errors += checkMediaType(val, contentname, test);
-            } 
-            else if (test.indexOf('isEmail')!=-1) 
-            { 
-              p=val.indexOf('@');
-              if (p<1 || p==(val.length-1)) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>\n';
-            } 
-            else if (test!='R') 
-            { 
-              num = parseFloat(val);
-              if (isNaN(val)) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>\n';
-              if (test.indexOf('inRange') != -1) 
-              { 
-                p=test.indexOf(':');
-                if(test.substring(0,1) == 'R')
-                {
-                  min=test.substring(8,p); 
-                } else {
-                  min=test.substring(7,p); 
-                }
-                max=test.substring(p+1);
-                if (num<min || max<num) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
-              } 
-            } 
-          } 
-          else if (test.charAt(0) == 'R') errors += nm+' - <?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n'; 
-        }
-      } 
-      
-      if (errors) 
-      {
-        alert (hcms_entity_decode ('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
-        return false;
-      }  
-      else return true;
-    }
-    
-    function toggleDivAndButton (caller, element)
-    {
-      var options = $(element);
-      caller = $(caller);  
-      var time = 500;
-        
-      if (options.css('display') == 'none')
-      {
-        caller.addClass('hcmsButtonActive');
-        activate();
-        options.fadeIn(time);
-      }
-      else
-      {
-        caller.removeClass('hcmsButtonActive');
-        options.fadeOut(time);
-      }
-    }
-    
-    function openerReload ()
-    {
-      // reload main frame
-      if (opener != null && eval (opener.parent.frames['mainFrame']))
-      {
-        opener.parent.frames['mainFrame'].location.reload();
       }
       
+      if (reload == true) $('#reloadform').submit();
       return true;
-    } 
-
-  <?php if ($is_image) { ?>
-    <!-- image -->
+    }
+    else return false;
+  }
     
-    function validateImageForm() 
-    {
-      var i,p,q,nm,test,num,min,max,errors='',args=validateImageForm.arguments;
+  function saveClose()
+  {
+    var result = save(false);
+    if (result == true) window.close();
+  }
+    
+  function validateForm() 
+  {
+    var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
+    
+    for (i=0; i<(args.length-2); i+=3) 
+    { 
+      test = args[i+2];
+      contentname = args[i+1];
+      val = hcms_findObj(args[i]);
       
-      for (i=0; i<(args.length-2); i+=3) 
+      if (val) 
       { 
-        test=args[i+2]; val=hcms_findObj(args[i]);
+        if (contentname != '')
+        {
+          nm = contentname;
+        }
+        else
+        {
+          nm = val.name;
+          nm = nm.substring(nm.indexOf('_')+1, nm.length);
+        }
         
-        if (val) 
-        { 
-          nm=val.name;
-          nm=nm.substring(nm.indexOf('_')+1, nm.length);
-          
-          if ((val=val.value)!='') 
-          {
-            if (test.indexOf('isEmail')!=-1) 
+        if ((val=val.value) != '' && test != '') 
+        {
+          if (test == 'audio' || test == 'compressed' || test == 'flash' || test == 'image' || test == 'text' || test == 'video') 
+          { 
+            errors += checkMediaType(val, contentname, test);
+          } 
+          else if (test.indexOf('isEmail')!=-1) 
+          { 
+            p=val.indexOf('@');
+            if (p<1 || p==(val.length-1)) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>\n';
+          } 
+          else if (test!='R') 
+          { 
+            num = parseFloat(val);
+            if (isNaN(val)) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>\n';
+            if (test.indexOf('inRange') != -1) 
             { 
-              p=val.indexOf('@');
-              if (p<1 || p==(val.length-1)) errors += nm+'-<?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>.\n';
-            } 
-            else if (test!='R') 
-            { 
-              num = parseFloat(val);
-              if (isNaN(val)) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>.\n';
-              if (test.indexOf('inRange') != -1) 
-              { 
-                p=test.indexOf(':');
+              p=test.indexOf(':');
+              if(test.substring(0,1) == 'R')
+              {
                 min=test.substring(8,p); 
-                max=test.substring(p+1);
-                if (num<min || max<num) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
-              } 
+              } else {
+                min=test.substring(7,p); 
+              }
+              max=test.substring(p+1);
+              if (num<min || max<num) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
             } 
           } 
-          else if (test.charAt(0) == 'R') errors += '-<?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>.\n'; 
-        }
-      } 
+        } 
+        else if (test.charAt(0) == 'R') errors += nm+' - <?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n'; 
+      }
+    } 
+    
+    if (errors) 
+    {
+      alert (hcms_entity_decode ('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
+      return false;
+    }  
+    else return true;
+  }
+  
+  function toggleDivAndButton (caller, element)
+  {
+    var options = $(element);
+    caller = $(caller);  
+    var time = 500;
       
-      if (errors) 
-      {
-        alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
-        return false;
-      }  
-      else return true;
+    if (options.css('display') == 'none')
+    {
+      caller.addClass('hcmsButtonActive');
+      activate();
+      options.fadeIn(time);
+    }
+    else
+    {
+      caller.removeClass('hcmsButtonActive');
+      options.fadeOut(time);
+    }
+  }
+  
+  function openerReload ()
+  {
+    // reload main frame
+    if (opener != null && eval (opener.parent.frames['mainFrame']))
+    {
+      opener.parent.frames['mainFrame'].location.reload();
     }
     
-    function checkImageForm()
-    {
-      var result = true;
- 
-      if ($('#percentage').prop('checked'))
-      {
-        image_checked = true;
-        result = validateImageForm ('imagepercentage','','RinRange1:200');
-      }
-      
-      if (result && $('#width').prop('checked'))
-      {
-        image_checked = true;
-        result = validateImageForm ('imagewidth','','RisNum');
-      }
-      
-      if (result && $('#height').prop('checked'))
-      {
-        image_checked = true;
-        result = validateImageForm ('imageheight','','RisNum');
-      }
-      
-      if (result && $('#rotate').prop('checked'))
-      {
-        image_checked = true;
-        result = true;
-      }
-      
-      if (result && $('#chbx_brightness').prop('checked'))
-      {
-        image_checked = true;
-        result = validateImageForm('brightness', '', 'RinRange-100:100');
-      } 
-      
-      if (result && $('#chbx_contrast').prop('checked'))
-      {
-        image_checked = true;
-        result = validateImageForm('contrast', '', 'RinRange-100:100');
-      } 
-      
-      if (result && $('#chbx_colorspace').prop('checked'))
-      {
-        image_checked = true;
-        result = true;
-      }
-      
-      if (result && $('#chbx_flip').prop('checked'))
-      {
-        image_checked = true;
-        result = true;
-      }
-      
-      if (result && $('#sepia').prop('checked'))
-      {
-        image_checked = true;
-        result = validateImageForm('sepia_treshold', '', 'RinRange0:99.9');
-      }
-      
-      if (result && $('#blur').prop('checked')) 
-      {
-        image_checked = true;
-        result = validateImageForm('blur_radius', '', 'RisNum', 'blur_sigma', '', 'RinRange0.1:3');
-      }
-      
-      if (result && $('#sharpen').prop('checked')) 
-      {
-        image_checked = true;
-        result = validateImageForm('sharpen_radius', '', 'RisNum', 'sharpen_sigma', '', 'RinRange0.1:3');
-      }
-      
-      if (result && $('#sketch').prop('checked')) 
-      {
-        image_checked = true;
-        result = validateImageForm('sketch_radius', '', 'RisNum', 'sketch_sigma', '', 'RisNum', 'sketch_angle', '', 'RisNum');
-      }
-      
-      if (result && $('#paint').prop('checked')) 
-      {
-        image_checked = true;
-        result = validateImageForm('paint_value', '', 'RisNum');
-      }
-      
-      if (result && image_checked && $('#renderimage').prop('checked'))
-      {
-        image_checked = true;
-      }
-      else image_checked = false;
-      
-      // display warning if any image option is checked
-      if (image_checked)
-      {
-        if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang], $charset, $lang); ?>"))) return false;
-      }
-      // set image checked to enable rendering
-      else image_checked = true;
-      
-      return result;
-    }
+    return true;
+  } 
+
+<?php if ($is_image) { ?>
+  <!-- image -->
+  
+  function validateImageForm() 
+  {
+    var i,p,q,nm,test,num,min,max,errors='',args=validateImageForm.arguments;
     
-    function toggle_percentage () 
-    {
-      var percentage = $('#percentage');
-      var width = $('#width');
-      var height = $('#height');
-      var percent = $('#imagepercentage');
+    for (i=0; i<(args.length-2); i+=3) 
+    { 
+      test=args[i+2]; val=hcms_findObj(args[i]);
       
-      if (percentage.prop('checked')) 
-      {
-        percent.prop('disabled', false);
-        width.prop('checked', false);
-        height.prop('checked', false);
+      if (val) 
+      { 
+        nm=val.name;
+        nm=nm.substring(nm.indexOf('_')+1, nm.length);
         
-        toggle_size_height();
-        toggle_size_width();
+        if ((val=val.value)!='') 
+        {
+          if (test.indexOf('isEmail')!=-1) 
+          { 
+            p=val.indexOf('@');
+            if (p<1 || p==(val.length-1)) errors += nm+'-<?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>.\n';
+          } 
+          else if (test!='R') 
+          { 
+            num = parseFloat(val);
+            if (isNaN(val)) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>.\n';
+            if (test.indexOf('inRange') != -1) 
+            { 
+              p=test.indexOf(':');
+              min=test.substring(8,p); 
+              max=test.substring(p+1);
+              if (num<min || max<num) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
+            } 
+          } 
+        } 
+        else if (test.charAt(0) == 'R') errors += '-<?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>.\n'; 
       }
-      else 
-      {
-        percent.prop('disabled', true);
-      }
+    } 
+    
+    if (errors) 
+    {
+      alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
+      return false;
+    }  
+    else return true;
+  }
+  
+  function checkImageForm()
+  {
+    var result = true;
+
+    if ($('#percentage').prop('checked'))
+    {
+      image_checked = true;
+      result = validateImageForm ('imagepercentage','','RinRange1:200');
     }
     
-    function toggle_size_width () 
+    if (result && $('#width').prop('checked'))
     {
-      var percentage = $('#percentage');
-      var width = $('#width');
-      var height = $('#height');
-      var imagewidth = $('#imagewidth');
+      image_checked = true;
+      result = validateImageForm ('imagewidth','','RisNum');
+    }
+    
+    if (result && $('#height').prop('checked'))
+    {
+      image_checked = true;
+      result = validateImageForm ('imageheight','','RisNum');
+    }
+    
+    if (result && $('#rotate').prop('checked'))
+    {
+      image_checked = true;
+      result = true;
+    }
+    
+    if (result && $('#chbx_brightness').prop('checked'))
+    {
+      image_checked = true;
+      result = validateImageForm('brightness', '', 'RinRange-100:100');
+    } 
+    
+    if (result && $('#chbx_contrast').prop('checked'))
+    {
+      image_checked = true;
+      result = validateImageForm('contrast', '', 'RinRange-100:100');
+    } 
+    
+    if (result && $('#chbx_colorspace').prop('checked'))
+    {
+      image_checked = true;
+      result = true;
+    }
+    
+    if (result && $('#chbx_flip').prop('checked'))
+    {
+      image_checked = true;
+      result = true;
+    }
+    
+    if (result && $('#sepia').prop('checked'))
+    {
+      image_checked = true;
+      result = validateImageForm('sepia_treshold', '', 'RinRange0:99.9');
+    }
+    
+    if (result && $('#blur').prop('checked')) 
+    {
+      image_checked = true;
+      result = validateImageForm('blur_radius', '', 'RisNum', 'blur_sigma', '', 'RinRange0.1:3');
+    }
+    
+    if (result && $('#sharpen').prop('checked')) 
+    {
+      image_checked = true;
+      result = validateImageForm('sharpen_radius', '', 'RisNum', 'sharpen_sigma', '', 'RinRange0.1:3');
+    }
+    
+    if (result && $('#sketch').prop('checked')) 
+    {
+      image_checked = true;
+      result = validateImageForm('sketch_radius', '', 'RisNum', 'sketch_sigma', '', 'RisNum', 'sketch_angle', '', 'RisNum');
+    }
+    
+    if (result && $('#paint').prop('checked')) 
+    {
+      image_checked = true;
+      result = validateImageForm('paint_value', '', 'RisNum');
+    }
+    
+    if (result && image_checked && $('#renderimage').prop('checked'))
+    {
+      image_checked = true;
+    }
+    else image_checked = false;
+    
+    // display warning if any image option is checked
+    if (image_checked)
+    {
+      if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang], $charset, $lang); ?>"))) return false;
+    }
+    // set image checked to enable rendering
+    else image_checked = true;
+    
+    return result;
+  }
+  
+  function toggle_percentage () 
+  {
+    var percentage = $('#percentage');
+    var width = $('#width');
+    var height = $('#height');
+    var percent = $('#imagepercentage');
+    
+    if (percentage.prop('checked')) 
+    {
+      percent.prop('disabled', false);
+      width.prop('checked', false);
+      height.prop('checked', false);
       
-      if (width.prop('checked')) 
-      {
-        imagewidth.prop('disabled', false);
-        percentage.prop('checked', false);
-        height.prop('checked', false);
-        
-        toggle_size_height();
-        toggle_percentage();
-      }
-      else
-      {
-        imagewidth.prop('disabled', true);
-      }
-    }
-    
-    function toggle_size_height () 
-    {
-      var percentage = $('#percentage');
-      var width = $('#width');
-      var height = $('#height');
-      var imageheight = $('#imageheight');
-      
-      if (height.prop('checked')) 
-      {
-        imageheight.prop('disabled', false);
-        width.prop('checked', false);
-        percentage.prop('checked', false);
-        
-        toggle_size_width();
-        toggle_percentage();
-      }
-      else
-      {
-        imageheight.prop('disabled', true);
-      }
-    }
-    
-    function toggle_rotate () 
-    {
-      var rotate = $('#rotate');
-      var chbxflip = $('#chbx_flip');
-      var degree = $('#degree');
-      
-      if(rotate.prop('checked')) 
-      {
-        chbxflip.prop('checked', false);
-        degree.prop('disabled', false);
-        
-        toggle_flip();   
-      }
-      else
-      {
-        degree.prop('disabled', true);
-      }
-    }
-    
-    function toggle_brightness () 
-    {
-      var chbx = $('#chbx_brightness');
-      var brightness = $('#brightness');
-      
-      if (chbx.prop('checked')) 
-      {
-        brightness.prop('disabled', false);
-        brightness.spinner("option", "disabled", false);
-      }
-      else 
-      {
-        brightness.prop('disabled', true);
-        brightness.spinner("option", "disabled", true);
-      }
-    }
-    
-    function toggle_contrast () 
-    {
-      var chbx = $('#chbx_contrast');
-      var contrast = $('#contrast');
-      
-      if (chbx.prop('checked')) 
-      {
-        contrast.prop('disabled', false);
-        contrast.spinner("option", "disabled", false);
-      }
-      else 
-      {
-        contrast.prop('disabled', true);
-        contrast.spinner("option", "disabled", true);
-      }
-    }
-    
-    function toggle_colorspace () 
-    {
-      var chbx = $('#chbx_colorspace');
-      var space = $('#colorspace');
-      
-      if (chbx.prop('checked'))
-      {
-        space.prop('disabled', false);
-      }
-      else
-      {
-        space.prop('disabled', true);
-      }
-    }
-    
-    function toggle_flip () 
-    {
-      var rotate = $('#rotate');
-      var chbxflip = $('#chbx_flip');
-      var flip = $('#flip');
-      
-      if (chbxflip.prop('checked')) 
-      {
-        rotate.prop('checked', false);
-        flip.prop('disabled', false);
-        
-        toggle_rotate();
-      }
-      else
-      {
-        flip.prop('disabled', true);
-      }
-    }
-    
-    function toggle_sepia () 
-    {
-      var sepia = $('#sepia');
-      var treshold = $('#sepia_treshold');
-      var blur = $('#blur');
-      var sharpen = $('#sharpen');
-      var sketch = $('#sketch');
-      var paint = $('#paint');
-      
-      if (sepia.prop('checked')) 
-      {
-        treshold.prop('disabled', false);
-        blur.prop('checked', false);
-        sharpen.prop('checked', false);
-        sketch.prop('checked', false);
-        paint.prop('checked', false);
-        
-        treshold.spinner("option", "disabled", false);
-        
-        toggle_blur();
-        toggle_sharpen();
-        toggle_sketch();
-        toggle_paint();
-      }
-      else
-      {
-        treshold.prop('disabled', true);
-        
-        treshold.spinner("option", "disabled", true);
-      }
-    }
-    
-    function toggle_blur () 
-    {
-      var sepia = $('#sepia');
-      var radius = $('#blur_radius');
-      var sigma = $('#blur_sigma');
-      var blur = $('#blur');
-      var sharpen = $('#sharpen');
-      var sketch = $('#sketch');
-      var paint = $('#paint');
-      
-      if (blur.prop('checked'))
-      {
-        radius.prop('disabled', false);
-        sigma.prop('disabled', false);
-        sepia.prop('checked', false);
-        sharpen.prop('checked', false);
-        sketch.prop('checked', false);
-        paint.prop('checked', false);
-        
-        sigma.spinner("option", "disabled", false);
-        
-        toggle_sepia();
-        toggle_sharpen();
-        toggle_sketch();
-        toggle_paint();
-      }
-      else
-      {
-        sigma.prop('disabled', true);
-        radius.prop('disabled', true);
-        
-       sigma.spinner("option", "disabled", true);
-      }
-    }
-    
-    function toggle_sharpen ()
-    {
-      var sepia = $('#sepia');
-      var radius = $('#sharpen_radius');
-      var sigma = $('#sharpen_sigma');
-      var blur = $('#blur');
-      var sharpen = $('#sharpen');
-      var sketch = $('#sketch');
-      var paint = $('#paint');
-      
-      if (sharpen.prop('checked'))
-      {
-        radius.prop('disabled', false);
-        sigma.prop('disabled', false);
-        sepia.prop('checked', false);
-        blur.prop('checked', false);
-        sketch.prop('checked', false);
-        paint.prop('checked', false);
-        
-        sigma.spinner("option", "disabled", false);
-        
-        toggle_sepia();
-        toggle_blur();
-        toggle_sketch();
-        toggle_paint();
-      }
-      else
-      {
-        sigma.prop('disabled', true);
-        radius.prop('disabled', true);
-        
-       sigma.spinner("option", "disabled", true);
-      }
-    }
-    
-    function toggle_sketch ()
-    {
-      var sepia = $('#sepia');
-      var radius = $('#sketch_radius');
-      var sigma = $('#sketch_sigma');
-      var angle = $('#sketch_angle');
-      var blur = $('#blur');
-      var sharpen = $('#sharpen');
-      var sketch = $('#sketch');
-      var paint = $('#paint');
-      
-      if (sketch.prop('checked'))
-      {
-        radius.prop('disabled', false);
-        sigma.prop('disabled', false);
-        angle.prop('disabled', false);
-        sepia.prop('checked', false);
-        blur.prop('checked', false);
-        sharpen.prop('checked', false);
-        paint.prop('checked', false);
-            
-        toggle_sepia();
-        toggle_blur();
-        toggle_sharpen();
-        toggle_paint();
-      }
-      else
-      {
-        sigma.prop('disabled', true);
-        radius.prop('disabled', true);
-        angle.prop('disabled', true);
-      }
-    }
-    
-    function toggle_paint () 
-    {
-      var sepia = $('#sepia');
-      var value = $('#paint_value');
-      var blur = $('#blur');
-      var sharpen = $('#sharpen');
-      var sketch = $('#sketch');
-      var paint = $('#paint');
-      
-      if (paint.prop('checked'))
-      {
-        value.prop('disabled', false);
-        sepia.prop('checked', false);
-        blur.prop('checked', false);
-        sketch.prop('checked', false);
-        sharpen.prop('checked', false);
-            
-        toggle_sepia();
-        toggle_blur();
-        toggle_sharpen();
-        toggle_sketch();
-      }
-      else
-      {
-        value.prop('disabled', true);
-      }
-    }
-    
-    function activate ()
-    {
-      toggle_percentage();
-      toggle_size_width();
       toggle_size_height();
-      toggle_sepia();
+      toggle_size_width();
+    }
+    else 
+    {
+      percent.prop('disabled', true);
+    }
+  }
+  
+  function toggle_size_width () 
+  {
+    var percentage = $('#percentage');
+    var width = $('#width');
+    var height = $('#height');
+    var imagewidth = $('#imagewidth');
+    
+    if (width.prop('checked')) 
+    {
+      imagewidth.prop('disabled', false);
+      percentage.prop('checked', false);
+      height.prop('checked', false);
+      
+      toggle_size_height();
+      toggle_percentage();
+    }
+    else
+    {
+      imagewidth.prop('disabled', true);
+    }
+  }
+  
+  function toggle_size_height () 
+  {
+    var percentage = $('#percentage');
+    var width = $('#width');
+    var height = $('#height');
+    var imageheight = $('#imageheight');
+    
+    if (height.prop('checked')) 
+    {
+      imageheight.prop('disabled', false);
+      width.prop('checked', false);
+      percentage.prop('checked', false);
+      
+      toggle_size_width();
+      toggle_percentage();
+    }
+    else
+    {
+      imageheight.prop('disabled', true);
+    }
+  }
+  
+  function toggle_rotate () 
+  {
+    var rotate = $('#rotate');
+    var chbxflip = $('#chbx_flip');
+    var degree = $('#degree');
+    
+    if(rotate.prop('checked')) 
+    {
+      chbxflip.prop('checked', false);
+      degree.prop('disabled', false);
+      
+      toggle_flip();   
+    }
+    else
+    {
+      degree.prop('disabled', true);
+    }
+  }
+  
+  function toggle_brightness () 
+  {
+    var chbx = $('#chbx_brightness');
+    var brightness = $('#brightness');
+    
+    if (chbx.prop('checked')) 
+    {
+      brightness.prop('disabled', false);
+      brightness.spinner("option", "disabled", false);
+    }
+    else 
+    {
+      brightness.prop('disabled', true);
+      brightness.spinner("option", "disabled", true);
+    }
+  }
+  
+  function toggle_contrast () 
+  {
+    var chbx = $('#chbx_contrast');
+    var contrast = $('#contrast');
+    
+    if (chbx.prop('checked')) 
+    {
+      contrast.prop('disabled', false);
+      contrast.spinner("option", "disabled", false);
+    }
+    else 
+    {
+      contrast.prop('disabled', true);
+      contrast.spinner("option", "disabled", true);
+    }
+  }
+  
+  function toggle_colorspace () 
+  {
+    var chbx = $('#chbx_colorspace');
+    var space = $('#colorspace');
+    
+    if (chbx.prop('checked'))
+    {
+      space.prop('disabled', false);
+    }
+    else
+    {
+      space.prop('disabled', true);
+    }
+  }
+  
+  function toggle_flip () 
+  {
+    var rotate = $('#rotate');
+    var chbxflip = $('#chbx_flip');
+    var flip = $('#flip');
+    
+    if (chbxflip.prop('checked')) 
+    {
+      rotate.prop('checked', false);
+      flip.prop('disabled', false);
+      
+      toggle_rotate();
+    }
+    else
+    {
+      flip.prop('disabled', true);
+    }
+  }
+  
+  function toggle_sepia () 
+  {
+    var sepia = $('#sepia');
+    var treshold = $('#sepia_treshold');
+    var blur = $('#blur');
+    var sharpen = $('#sharpen');
+    var sketch = $('#sketch');
+    var paint = $('#paint');
+    
+    if (sepia.prop('checked')) 
+    {
+      treshold.prop('disabled', false);
+      blur.prop('checked', false);
+      sharpen.prop('checked', false);
+      sketch.prop('checked', false);
+      paint.prop('checked', false);
+      
+      treshold.spinner("option", "disabled", false);
+      
       toggle_blur();
       toggle_sharpen();
       toggle_sketch();
       toggle_paint();
-      toggle_flip();
-      toggle_rotate();
-      toggle_brightness();
-      toggle_contrast();
-      toggle_colorspace();
     }
-    
-    $(window).load( function()
+    else
     {
-      var spinner_config_bc = { step: 1, min: -100, max: 100}
-      var spinner_config_sep = { step: 0.1, min: 0, max: 99.9}
-      var spinner_config_sigma = { step: 0.1, min: 0.1, max: 3}
-      $('#brightness').spinner(spinner_config_bc);
-      $('#contrast').spinner(spinner_config_bc);
-      $('#sepia_treshold').spinner(spinner_config_sep);
-      $('#blur_sigma').spinner(spinner_config_sigma);
-      $('#sharpen_sigma').spinner(spinner_config_sigma);
+      treshold.prop('disabled', true);
       
-      // Add our special function
-      $.fn.getGeneratorParameter = function() {
-        return this.prop('name')+'='+this.val();
-      } 
-    });
+      treshold.spinner("option", "disabled", true);
+    }
+  }
+  
+  function toggle_blur () 
+  {
+    var sepia = $('#sepia');
+    var radius = $('#blur_radius');
+    var sigma = $('#blur_sigma');
+    var blur = $('#blur');
+    var sharpen = $('#sharpen');
+    var sketch = $('#sketch');
+    var paint = $('#paint');
     
-    <?php } elseif ($is_video || $is_audio) { ?>
-    <!-- video/audio -->
-    
-    function checkVideoForm()
+    if (blur.prop('checked'))
     {
-      var result = true;
+      radius.prop('disabled', false);
+      sigma.prop('disabled', false);
+      sepia.prop('checked', false);
+      sharpen.prop('checked', false);
+      sketch.prop('checked', false);
+      paint.prop('checked', false);
       
-      if ($('#rendervideo').prop('checked'))
-      {
-        var errors = '';
-              
-        if (document.getElementById('cut_yes').checked == true)
-        {
-          if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-          if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-        }
-        
-        if (document.getElementById('thumb_yes').checked == true)
-        {
-          if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-        }
-        
-        if (document.getElementById('videosize_i').checked == true)
-        {
-          if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-          if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-        }
-        
-        if (errors) 
-        { 
-          alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>\n ' + errors));
+      sigma.spinner("option", "disabled", false);
+      
+      toggle_sepia();
+      toggle_sharpen();
+      toggle_sketch();
+      toggle_paint();
+    }
+    else
+    {
+      sigma.prop('disabled', true);
+      radius.prop('disabled', true);
+      
+     sigma.spinner("option", "disabled", true);
+    }
+  }
+  
+  function toggle_sharpen ()
+  {
+    var sepia = $('#sepia');
+    var radius = $('#sharpen_radius');
+    var sigma = $('#sharpen_sigma');
+    var blur = $('#blur');
+    var sharpen = $('#sharpen');
+    var sketch = $('#sketch');
+    var paint = $('#paint');
+    
+    if (sharpen.prop('checked'))
+    {
+      radius.prop('disabled', false);
+      sigma.prop('disabled', false);
+      sepia.prop('checked', false);
+      blur.prop('checked', false);
+      sketch.prop('checked', false);
+      paint.prop('checked', false);
+      
+      sigma.spinner("option", "disabled", false);
+      
+      toggle_sepia();
+      toggle_blur();
+      toggle_sketch();
+      toggle_paint();
+    }
+    else
+    {
+      sigma.prop('disabled', true);
+      radius.prop('disabled', true);
+      
+     sigma.spinner("option", "disabled", true);
+    }
+  }
+  
+  function toggle_sketch ()
+  {
+    var sepia = $('#sepia');
+    var radius = $('#sketch_radius');
+    var sigma = $('#sketch_sigma');
+    var angle = $('#sketch_angle');
+    var blur = $('#blur');
+    var sharpen = $('#sharpen');
+    var sketch = $('#sketch');
+    var paint = $('#paint');
+    
+    if (sketch.prop('checked'))
+    {
+      radius.prop('disabled', false);
+      sigma.prop('disabled', false);
+      angle.prop('disabled', false);
+      sepia.prop('checked', false);
+      blur.prop('checked', false);
+      sharpen.prop('checked', false);
+      paint.prop('checked', false);
           
-          result = false;
-        }
-        
-        video_checked = true;
-      }
-      
-      return result;
+      toggle_sepia();
+      toggle_blur();
+      toggle_sharpen();
+      toggle_paint();
     }
-    
-    function checkCut()
+    else
     {
-      var area1 = $('#cut_area');
-      
+      sigma.prop('disabled', true);
+      radius.prop('disabled', true);
+      angle.prop('disabled', true);
+    }
+  }
+  
+  function toggle_paint () 
+  {
+    var sepia = $('#sepia');
+    var value = $('#paint_value');
+    var blur = $('#blur');
+    var sharpen = $('#sharpen');
+    var sketch = $('#sketch');
+    var paint = $('#paint');
+    
+    if (paint.prop('checked'))
+    {
+      value.prop('disabled', false);
+      sepia.prop('checked', false);
+      blur.prop('checked', false);
+      sketch.prop('checked', false);
+      sharpen.prop('checked', false);
+          
+      toggle_sepia();
+      toggle_blur();
+      toggle_sharpen();
+      toggle_sketch();
+    }
+    else
+    {
+      value.prop('disabled', true);
+    }
+  }
+  
+  function activate ()
+  {
+    toggle_percentage();
+    toggle_size_width();
+    toggle_size_height();
+    toggle_sepia();
+    toggle_blur();
+    toggle_sharpen();
+    toggle_sketch();
+    toggle_paint();
+    toggle_flip();
+    toggle_rotate();
+    toggle_brightness();
+    toggle_contrast();
+    toggle_colorspace();
+  }
+  
+  $(window).load( function()
+  {
+    var spinner_config_bc = { step: 1, min: -100, max: 100}
+    var spinner_config_sep = { step: 0.1, min: 0, max: 99.9}
+    var spinner_config_sigma = { step: 0.1, min: 0.1, max: 3}
+    $('#brightness').spinner(spinner_config_bc);
+    $('#contrast').spinner(spinner_config_bc);
+    $('#sepia_treshold').spinner(spinner_config_sep);
+    $('#blur_sigma').spinner(spinner_config_sigma);
+    $('#sharpen_sigma').spinner(spinner_config_sigma);
+    
+    // Add our special function
+    $.fn.getGeneratorParameter = function() {
+      return this.prop('name')+'='+this.val();
+    } 
+  });
+  
+  <?php } elseif ($is_video || $is_audio) { ?>
+  <!-- video/audio -->
+  
+  function checkVideoForm()
+  {
+    var result = true;
+    
+    if ($('#rendervideo').prop('checked'))
+    {
+      var errors = '';
+            
       if (document.getElementById('cut_yes').checked == true)
       {
-        area1.show();
+        if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+        if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
       }
-      else
-      {
-        area1.hide();
-      }
-    }
-    
-    <?php if (!$is_audio) { ?>
-    function checkThumb()
-    {
-      var area1 = $('#thumb_area');
       
       if (document.getElementById('thumb_yes').checked == true)
       {
-        area1.show();
+        if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
       }
-      else
+      
+      if (document.getElementById('videosize_i').checked == true)
       {
-        area1.hide();
+        if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+        if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
       }
+      
+      if (errors) 
+      { 
+        alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>\n ' + errors));
+        
+        result = false;
+      }
+      
+      video_checked = true;
     }
-    <?php } ?>
+    
+    return result;
+  }
+  
+  function checkCut()
+  {
+    var area1 = $('#cut_area');
+    
+    if (document.getElementById('cut_yes').checked == true)
+    {
+      area1.show();
+    }
+    else
+    {
+      area1.hide();
+    }
+  }
+  
+  <?php if (!$is_audio) { ?>
+  function checkThumb()
+  {
+    var area1 = $('#thumb_area');
+    
+    if (document.getElementById('thumb_yes').checked == true)
+    {
+      area1.show();
+    }
+    else
+    {
+      area1.hide();
+    }
+  }
+  <?php } ?>
 
-    function toggle_sharpen () 
-    {
-      var chbx = $('#chbx_sharpen');
-      var sharpen = $('#sharpen');
-      
-      if (chbx.prop('checked')) 
-      {
-        sharpen.prop('disabled', false);
-        sharpen.spinner("option", "disabled", false);
-      }
-      else 
-      {
-        sharpen.prop('disabled', true);
-        sharpen.spinner("option", "disabled", true);
-      }
-    }
+  function toggle_sharpen () 
+  {
+    var chbx = $('#chbx_sharpen');
+    var sharpen = $('#sharpen');
     
-    function toggle_gamma () 
+    if (chbx.prop('checked')) 
     {
-      var chbx = $('#chbx_gamma');
-      var gamma = $('#gamma');
-      
-      if (chbx.prop('checked')) 
-      {
-        gamma.prop('disabled', false);
-        gamma.spinner("option", "disabled", false);
-      }
-      else 
-      {
-        gamma.prop('disabled', true);
-        gamma.spinner("option", "disabled", true);
-      }
+      sharpen.prop('disabled', false);
+      sharpen.spinner("option", "disabled", false);
     }
-    
-    function toggle_brightness () 
+    else 
     {
-      var chbx = $('#chbx_brightness');
-      var brightness = $('#brightness');
-      
-      if (chbx.prop('checked')) 
-      {
-        brightness.prop('disabled', false);
-        brightness.spinner("option", "disabled", false);
-      }
-      else 
-      {
-        brightness.prop('disabled', true);
-        brightness.spinner("option", "disabled", true);
-      }
+      sharpen.prop('disabled', true);
+      sharpen.spinner("option", "disabled", true);
     }
+  }
+  
+  function toggle_gamma () 
+  {
+    var chbx = $('#chbx_gamma');
+    var gamma = $('#gamma');
     
-    function toggle_contrast () 
+    if (chbx.prop('checked')) 
     {
-      var chbx = $('#chbx_contrast');
-      var contrast = $('#contrast');
-      
-      if (chbx.prop('checked')) 
-      {
-        contrast.prop('disabled', false);
-        contrast.spinner("option", "disabled", false);
-      }
-      else 
-      {
-        contrast.prop('disabled', true);
-        contrast.spinner("option", "disabled", true);
-      }
+      gamma.prop('disabled', false);
+      gamma.spinner("option", "disabled", false);
     }
-    
-    function toggle_saturation () 
+    else 
     {
-      var chbx = $('#chbx_saturation');
-      var saturation = $('#saturation');
-      
-      if (chbx.prop('checked')) 
-      {
-        saturation.prop('disabled', false);
-        saturation.spinner("option", "disabled", false);
-      }
-      else 
-      {
-        saturation.prop('disabled', true);
-        saturation.spinner("option", "disabled", true);
-      }
+      gamma.prop('disabled', true);
+      gamma.spinner("option", "disabled", true);
     }
+  }
+  
+  function toggle_brightness () 
+  {
+    var chbx = $('#chbx_brightness');
+    var brightness = $('#brightness');
     
-    function toggle_rotate () 
+    if (chbx.prop('checked')) 
     {
-      var rotate = $('#rotate');
-      var chbxflip = $('#chbx_flip');
-      var degree = $('#degree');
-      
-      if(rotate.prop('checked')) 
-      {
-        chbxflip.prop('checked', false);
-        degree.prop('disabled', false);
-        
-        toggle_flip();   
-      }
-      else
-      {
-        degree.prop('disabled', true);
-      }
+      brightness.prop('disabled', false);
+      brightness.spinner("option", "disabled", false);
     }
-    
-    function toggle_flip () 
+    else 
     {
-      var rotate = $('#rotate');
-      var chbxflip = $('#chbx_flip');
-      var flip = $('#flip');
-      var crop = $('#crop');
-      
-      if (chbxflip.prop('checked')) 
-      {
-        rotate.prop('checked', false);
-        flip.prop('disabled', false);
-        crop.prop('checked', false);
-        
-        toggle_rotate();
-        toggle_crop();
-      }
-      else
-      {
-        flip.prop('disabled', true);
-      }
+      brightness.prop('disabled', true);
+      brightness.spinner("option", "disabled", true);
     }
+  }
+  
+  function toggle_contrast () 
+  {
+    var chbx = $('#chbx_contrast');
+    var contrast = $('#contrast');
     
-    function activate ()
+    if (chbx.prop('checked')) 
     {
-      toggle_sharpen();
-      toggle_gamma();
-      toggle_brightness();
-      toggle_contrast();
-      toggle_saturation();
-      toggle_flip();
+      contrast.prop('disabled', false);
+      contrast.spinner("option", "disabled", false);
+    }
+    else 
+    {
+      contrast.prop('disabled', true);
+      contrast.spinner("option", "disabled", true);
+    }
+  }
+  
+  function toggle_saturation () 
+  {
+    var chbx = $('#chbx_saturation');
+    var saturation = $('#saturation');
+    
+    if (chbx.prop('checked')) 
+    {
+      saturation.prop('disabled', false);
+      saturation.spinner("option", "disabled", false);
+    }
+    else 
+    {
+      saturation.prop('disabled', true);
+      saturation.spinner("option", "disabled", true);
+    }
+  }
+  
+  function toggle_rotate () 
+  {
+    var rotate = $('#rotate');
+    var chbxflip = $('#chbx_flip');
+    var degree = $('#degree');
+    
+    if(rotate.prop('checked')) 
+    {
+      chbxflip.prop('checked', false);
+      degree.prop('disabled', false);
+      
+      toggle_flip();   
+    }
+    else
+    {
+      degree.prop('disabled', true);
+    }
+  }
+  
+  function toggle_flip () 
+  {
+    var rotate = $('#rotate');
+    var chbxflip = $('#chbx_flip');
+    var flip = $('#flip');
+    var crop = $('#crop');
+    
+    if (chbxflip.prop('checked')) 
+    {
+      rotate.prop('checked', false);
+      flip.prop('disabled', false);
+      crop.prop('checked', false);
+      
       toggle_rotate();
+      toggle_crop();
     }
-    
-    $(window).load( function()
+    else
     {
-      var spinner_config = { step: 1, min: -100, max: 100}
+      flip.prop('disabled', true);
+    }
+  }
+  
+  function activate ()
+  {
+    toggle_sharpen();
+    toggle_gamma();
+    toggle_brightness();
+    toggle_contrast();
+    toggle_saturation();
+    toggle_flip();
+    toggle_rotate();
+  }
+
+  // ----- onload -----
+  
+  $(window).load( function()
+  {
+    var spinner_config = { step: 1, min: -100, max: 100}
+    
+    $('#sharpen').spinner(spinner_config);
+    $('#gamma').spinner(spinner_config);
+    $('#brightness').spinner(spinner_config);
+    $('#contrast').spinner(spinner_config);
+    $('#saturation').spinner(spinner_config);
+    
+    // add special function
+    $.fn.getGeneratorParameter = function() {
+      return this.prop('name')+'='+this.val();
+    } 
+  });
       
-      $('#sharpen').spinner(spinner_config);
-      $('#gamma').spinner(spinner_config);
-      $('#brightness').spinner(spinner_config);
-      $('#contrast').spinner(spinner_config);
-      $('#saturation').spinner(spinner_config);
-      
-      // add special function
-      $.fn.getGeneratorParameter = function() {
-        return this.prop('name')+'='+this.val();
-      } 
-    });
-        
-    <?php if (!$is_audio) { ?>
-    $().ready(function() {
-      checkCut();
-      checkThumb();
-    });
-    <?php } ?>
+  <?php if (!$is_audio) { ?>
+  $().ready(function() {
+    checkCut();
+    checkThumb();
+  });
+  <?php } ?>
   <?php } ?>
   </script>
   </head>
   
-  <body class="hcmsWorkplaceGeneric" style="overflow:auto">
+  <body class="hcmsWorkplaceGeneric">
   
     <!-- save layer --> 
-    <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height:100%; margin:0; padding:0; left:0px; top:0px; display:none; z-index:100;">
+    <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; display:none; z-index:100;">
       <span style="position:absolute; top:50%; height:150px; margin-top:-75px; width:200px; left:50%; margin-left:-100px;">
         <b><?php echo getescapedtext ($hcms_lang['saving-in-progress'][$lang], $charset, $lang); ?></b>
         <br />
@@ -1715,8 +1910,8 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
       <table style="width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;">
         <tr>
           <td class="hcmsHeadline" style="text-align:left; vertical-align:middle; padding:0px 1px 0px 2px">
-            <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="save(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />
-            <img name="Button_sc" src="<?php echo getthemelocation()?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="saveClose()" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
+            <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="save(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
+            <img name="Button_sc" src="<?php echo getthemelocation()?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="saveClose()" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" />
             <?php if ($is_image || $is_video) { ?>
             <div class="hcmsButtonMenu" onclick="toggleDivAndButton(this, '#renderOptions');"><?php echo getescapedtext ($hcms_lang['options'][$lang], $charset, $lang); ?></div>
             <?php } ?>
@@ -2083,7 +2278,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
     
     
     <!-- message or gallery -->
-    <div style="width:100%; margin:42px 4px 4px 4px;">
+    <div style="margin:42px 4px 4px 4px;">
     <?php
     if ($error != "")
     {
@@ -2124,13 +2319,15 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
           
           if ($tagdata->ignore == false) $ids[] = $id;
           ?>
-          <div style="margin-top: 10px;" class="fieldrow">
-            <label for="<?php echo $id; ?>" style="display:inline-block; width:130px; vertical-align:top;"><b><?php if (trim ($label) != "") { echo $label; if ($tagdata->ignore == false) echo " *"; } ?></b></label>
+          <div class="hcmsFormRowLabel <?php echo $id; ?>">
+            <label for="<?php echo $id; ?>"><b><?php if (trim ($label) != "") { echo $label; if ($tagdata->ignore == false) echo " *"; } ?></b></label>
+          </div>
+          <div class="hcmsFormRowContent <?php echo $id; ?>">
           <?php
           if ($tagdata->type == "u") 
           {
           ?>
-            <textarea id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width:<?php echo $tagdata->width; ?>px; height:<?php echo $tagdata->height; ?>px;" <?php echo $disabled; ?>><?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?></textarea>
+            <textarea id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> style="width:<?php echo $tagdata->width; ?>px; height:<?php echo $tagdata->height; ?>px;" <?php echo $disabled; ?>><?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?></textarea>
           <?php 
           } 
           elseif ($tagdata->type == "k") 
@@ -2180,60 +2377,37 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
               $('#".$id."').tagit({".$keywords_tagit."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$id."')});";
             }
           ?>
-            <div style="display:inline-block; width:<?php echo $tagdata->width; ?>px;"><input id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php echo $disabled; ?> value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>" /></div>
+            <div style="display:inline-block; width:<?php echo $tagdata->width; ?>px;">
+              <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> <?php echo $disabled; ?> value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>" />
+            </div>
           <?php 
           } 
           elseif ($tagdata->type == "f")
           {
             if ($tagdata->ignore == false)
+            {
               echo showeditor ($site, $tagdata->hypertagname, $key, $tagdata->fieldvalue, $tagdata->width, $tagdata->height, $tagdata->toolbar, $lang, $tagdata->dpi);
+            }
+            else
+            {
+              echo "<textarea id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" class=\"hcmsPriorityMedium\" style=\"width:".$tagdata->width."px; height:".$tagdata->height."px;\" ".$disabled."></textarea>";
+            }
           }
           elseif ($tagdata->type == "d")
           {
-            $onclick = "show_cal_{$id}(this);";
+            // get date format
+            $format = $tagdata->format;
+            if ($format == "") $format = "%Y-%m-%d";
+          
+            if (empty ($disabled)) $showcalendar = "onclick=\"show_cal(this, '".$id."', '".$format."');\"";
+            else $showcalendar = "";
             ?>
-            <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>" <?php echo $disabled; ?> />
+            <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>" readonly="readonly" <?php echo $disabled; ?> />
             <?php
             if ($tagdata->ignore == false) 
             {
             ?>
-            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="<?php echo $onclick; ?>" align="absmiddle" style="width:22px; height:22px; border:0; cursor:pointer;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" />
-            <script type="text/javascript">
-            var cal_obj_<?php echo $id; ?> = null;
-            var format_<?php echo $id; ?> = '<?php echo $tagdata->format; ?>';
-
-            function show_cal_<?php echo $id; ?> (el)
-            {
-              if (cal_obj_<?php echo $id; ?>) return;
-              var datefield_<?php echo $id; ?> = document.getElementById('<?php echo $id; ?>');  
-
-              cal_obj_<?php echo $id; ?> = new RichCalendar();
-              cal_obj_<?php echo $id; ?>.start_week_day = 1;
-              cal_obj_<?php echo $id; ?>.show_time = false;
-              cal_obj_<?php echo $id; ?>.language = '<?php echo getcalendarlang ($lang); ?>';
-              cal_obj_<?php echo $id; ?>.user_onchange_handler = cal_on_change_<?php echo $id; ?>;
-              cal_obj_<?php echo $id; ?>.user_onautoclose_handler = cal_on_autoclose_<?php echo $id; ?>;
-              cal_obj_<?php echo $id; ?>.parse_date(datefield_<?php echo $id; ?>.value, format_<?php echo $id; ?>);
-              cal_obj_<?php echo $id; ?>.show_at_element(datefield_<?php echo $id; ?>, 'adj_left-bottom');
-            }
-
-            // onchange handler
-            function cal_on_change_<?php echo $id; ?> (cal, object_code)
-            {
-              if (object_code == 'day')
-              {
-                document.getElementById('<?php echo $id; ?>').value = cal.get_formatted_date(format_<?php echo $id; ?>);
-                cal.hide();
-                cal_obj_<?php echo $id; ?> = null;
-              }
-            }
-
-            // onautoclose handler
-            function cal_on_autoclose_<?php echo $id; ?> (cal)
-            {
-              cal_obj_<?php echo $id; ?> = null;
-            }
-            </script>
+            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" <?php echo $showcalendar; ?> class="hcmsButtonTiny hcmsButtonSizeSquare" style="z-index:9999999;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" <?php echo $disabled; ?> />
           <?php
             }
           } 
@@ -2287,7 +2461,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
           elseif ($tagdata->type == "c")
           {
             ?>
-            <input type="checkbox" name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" value="<?php echo $tagdata->value; ?>" <?php if ($tagdata->ignore == false && $tagdata->value == $tagdata->fieldvalue) echo "checked"; echo $disabled; ?>><?php echo $tagdata->value; ?>
+            <input type="checkbox" name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" value="<?php echo $tagdata->value; ?>" <?php if ($tagdata->ignore == false && $tagdata->value == $tagdata->fieldvalue) echo "checked"; echo $disabled; ?> /> <?php echo $tagdata->value; ?>
             <?php
           }
           else
@@ -2310,8 +2484,20 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
   // onload event / document ready
   if ($add_onload != "") echo "
   <script language=\"JavaScript\" type=\"text/javascript\">
-  $(document).ready(function() {".
-    $add_onload."
+  $(document).ready(function() {
+    // Protect images
+    $('#annotation').bind('contextmenu', function(e){
+        return false;
+    });
+    $('img').bind('contextmenu', function(e){
+        return false;
+    });
+    
+    // Execute onload events
+    ".$add_onload."
+    
+    // Execute code from template
+    ".$js_tpl_code."
   });
   </script>
   ";

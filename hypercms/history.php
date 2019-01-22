@@ -116,12 +116,12 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
   <input type="hidden" name="contentdate" value="">
   <input type="hidden" name="templatedate" value="">
   
-  <table border="0" cellspacing="0" cellpadding="5">
+  <table class="hcmsTableStandard">
     <tr> 
       <td>&nbsp;</td>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['year'][$lang]); ?> </td>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['month'][$lang]); ?> </td>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['day'][$lang]); ?> </td>
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['year'][$lang]); ?> </td>
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['month'][$lang]); ?> </td>
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['day'][$lang]); ?> </td>
     </tr>
     <tr> 
       <td><?php echo getescapedtext ($hcms_lang['show-the-content-online-on'][$lang]); ?> </td>
@@ -150,7 +150,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
           ?>
         </select>
       </td>
-      <td width="60">
+      <td style="width:60px;">
         <select name="content_day">
           <?php 
           for ($d=1; $d<=31; $d++)
@@ -190,7 +190,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
           ?>
         </select>
       </td>
-      <td width="60">
+      <td style="width:60px;">
         <select name="template_day">
           <?php 
           for ($d=1; $d<=31; $d++)
@@ -204,11 +204,11 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
       </td>
     </tr>
     <tr> 
-      <td nowrap="nowrap">&nbsp;</td>
+      <td style="white-space:nowrap;">&nbsp;</td>
       <td colspan="3"><button name="ButtonSet" class="hcmsButtonGreen" onClick="submitform();"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?></button></td>
     </tr>
     <tr>
-      <td nowrap="nowrap">&nbsp;</td>
+      <td style="white-space:nowrap;">&nbsp;</td>
       <td colspan="3"><button name="ButtonClean" class="hcmsButtonOrange" onClick="cleandate();"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?></button></td>
     </tr>
   </table>

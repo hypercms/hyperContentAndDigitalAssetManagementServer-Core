@@ -1,9 +1,101 @@
+html, body
+{
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 12px; 
+  font-weight: normal; 
+  color: #000000; 
+  text-decoration: none;
+}
+
 img
 {
+  display: inline-block;
+  vertical-align: middle;
   image-rendering: -webkit-optimize-contrast; // Safari 6, UC Browser 9.9
   image-rendering: -webkit-crisp-edges; // Safari 7+
   image-rendering: -moz-crisp-edges; // Firefox 3.6+
   image-rendering: -o-crisp-edges; // Opera 12
+}
+
+input, select, textarea, button
+{
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: normal;
+  color: #000000;
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+  border: 1px solid #808080;
+  background-color: #FFFFFF;
+  margin: 0;
+  padding: 7px 4px;
+}
+
+a 
+{
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: bold;
+  text-decoration: none;
+  color: #000000;
+  outline: none;
+}
+
+a:link 
+{
+  color: #000000;
+}
+
+a:hover 
+{
+  color: #004ACE;
+}
+
+a:visited 
+{
+  color: #000000;
+}
+
+a:active 
+{
+  color: #000000;
+}
+
+ins
+{
+  color: green;
+}
+
+del
+{
+  color: red;
+}
+
+hr
+{
+  height: 1px;
+  border-width :0;
+  color: #0ACA03;
+  background-color: #8EA9EC;
+}
+
+.hcmsCenter
+{
+  max-height: 100%;  
+  max-width: 100%; 
+  width: auto;
+  height: auto;
+  position: absolute;  
+  top: 0;  
+  bottom: 0;  
+  left: 0;  
+  right: 0;  
+  margin: auto;
 }
 
 .hcmsHomeSpacer
@@ -46,7 +138,7 @@ img
 
 .hcmsWorkplaceTop
 {
-  background-color: #1E2738;
+  background-color: #429925;
   background-image: url('../img/backgrd_top.png');
   background-repeat: repeat;
 }
@@ -156,12 +248,7 @@ img
 
 .hcmsWorkplaceObjectlist
 {
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #B8D2FC), color-stop(1, #EFF6FF) );
-	background: -moz-linear-gradient( center top, #B8D2FC 5%, #EFF6FF 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#B8D2FC', endColorstr='#EFF6FF');
-  background-color: #B8D2FC;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-color: #E7F1FF;
 }
 
 .hcmsWorkplaceWorkflow
@@ -688,67 +775,6 @@ img
   -moz-box-shadow: 2px 2px 10px #000000;
 }
 
-input, select, textarea, button
-{
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: normal;
-  color: #000000;
-  text-decoration: none;
-  vertical-align: middle;
-  border: 1px solid #808080;
-  background-color: #FFFFFF;
-  margin: 0;
-  padding: 5px;
-}
-
-a 
-{
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: bold;
-  text-decoration: none;
-  color: #000000;
-  outline: none;
-}
-
-a:link 
-{
-  color: #000000;
-}
-
-a:hover 
-{
-  color: #004ACE;
-}
-
-a:visited 
-{
-  color: #000000;
-}
-
-a:active 
-{
-  color: #000000;
-}
-
-html, body
-{
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  margin: 0;
-}
-
-html, body
-{  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 12px; 
-  font-weight: normal; 
-  color: #000000; 
-  text-decoration: none;
-}
-
 ul.hcmsStructuredList
 {
   list-style-type: none;
@@ -761,20 +787,39 @@ ul.hcmsStructuredList li
   padding-left: 14px;
 }
 
-ins
+table.hcmsTableStandard
 {
-  color: green;
+  display: table;
+  table-layout: auto;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-del
+table.hcmsTableStandard th, table.hcmsTableStandard td
 {
-  color: red;
+  padding: 2px 2px 2px 4px;
+  text-align: left;
+  vertical-align: middle;
 }
 
-hr
+table.hcmsTableNarrow
 {
-  height: 1px;
-  border-width :0;
-  color: #0ACA03;
-  background-color: #8EA9EC;
+  display: table;
+  table-layout: auto;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.hcmsTableNarrow th, table.hcmsTableNarrow td
+{
+  height: 18px;
+  padding: 0;
+  text-align: left;
+  vertical-align: middle;
 }

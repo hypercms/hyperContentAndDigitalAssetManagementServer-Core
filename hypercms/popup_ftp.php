@@ -71,7 +71,7 @@ if (!empty ($ftp_connection))
 }
 
 // logon to FTP server
-if ((($action == "logon" && checktoken ($token, $user)) || !empty ($ftp_connection)) && !empty ($sentserver) && !empty ($sentuser) && !empty ($sentpasswd))
+if ((($action == "logon" && checktoken ($token, $user)) || !empty ($ftp_connection)) && !empty ($sentserver) && !empty ($sentuser))
 {
   if (!empty ($ssl)) $ssl = true;
   else $ssl = false;
@@ -152,7 +152,7 @@ if (empty ($conn_id))
     <input type="hidden" name="action" value="logon" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
 
-    <table style="border:0; padding:0; border-spacing:2; border-collapse:collapse;">
+    <table class="hcmsTableStandard">
       <tr>
         <td>&nbsp;</td>
         <td class="hcmsTextOrange"><strong><?php echo $show; ?></strong></td>
@@ -184,7 +184,7 @@ if (empty ($conn_id))
       <tr>
         <td>&nbsp;</td>   
         <td>
-          <button class="hcmsButtonGreen" style="width:155px; heigth:20px;" onClick="document.forms['login'].submit();">Log in</button>
+          <button class="hcmsButtonGreen" style="width:160px;" onClick="document.forms['login'].submit();">Log in</button>
         </td>
       </tr>
       <tr>
@@ -208,24 +208,24 @@ else
   // show messages
   echo showmessage ($show, 360, 70, $lang, "position:fixed; left:15px; top:15px;");
 ?>
-<div>
+<div class="hcmsWorkplaceObjectlist" style="width:100%; height:100%;">
   <form name="publish" method="post" action="">
     <input type="hidden" name="action" value="<?php echo $action; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" /> 
-    
-    <table cellpadding="0" cellspacing="0" style="border:0; width:100%; height:340px; table-layout:fixed;">
-      <tr height="16">
-        <td width="20" nowrap="nowrap">
+
+    <table class="hcmsTableNarrow" style="width:100%;">
+      <tr>
+        <td style="white-space:nowrap; width:20px;">
           &nbsp;
         </td>
-        <td nowrap="nowrap" class="hcmsHeadline">
-          &nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
+        <td style="white-space:nowrap;" class="hcmsHeadline">
+          <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
         </td>
-        <td width="120" nowrap="nowrap" class="hcmsHeadline">
-          &nbsp;<?php echo getescapedtext ($hcms_lang['date-modified'][$lang]); ?>
+        <td style="white-space:nowrap; width:120px;" class="hcmsHeadline">
+          <?php echo getescapedtext ($hcms_lang['date-modified'][$lang]); ?>
         </td>
-        <td width="100" align="right" nowrap="nowrap" class="hcmsHeadline">
-          &nbsp;<?php echo getescapedtext ($hcms_lang['size-in-kb'][$lang]); ?>&nbsp;
+        <td style="white-space:nowrap; width:100px; text-align:right;" class="hcmsHeadline">
+          <?php echo getescapedtext ($hcms_lang['size-in-kb'][$lang]); ?>&nbsp;
         </td>
       </tr>
       <?php
@@ -233,9 +233,15 @@ else
       {
         if ($path != ".")
         {
-          $link = "<a href=\"?path=".url_encode(getlocation($path))."&multi=".$multi."\"><span class=\"hcmsStandardText\">".getescapedtext ($hcms_lang['go-to-parent-folder'][$lang])."</span></a>";
+          $link = "<a href=\"?path=".url_encode(getlocation($path))."&multi=".$multi."\" style=\"font-weight:normal;\">".getescapedtext ($hcms_lang['back'][$lang])."</a>";
           
-          echo "<tr height=\"16\" class=\"hcmsWorkplaceObjectlist\"><td nowrap=\"nowrap\">&nbsp;</td><td nowrap=\"nowrap\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$link."</td><td nowrap=\"nowrap\">&nbsp;</td><td align=\"right\" nowrap=\"nowrap\">&nbsp;</td></tr>\n";
+          echo "
+          <tr>
+            <td style=\"white-space:nowrap;\">&nbsp;</td>
+            <td style=\"white-space:nowrap;\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".$link."</td>
+            <td style=\"white-space:nowrap;\">&nbsp;</td>
+            <td style=\"white-space:nowrap; text-align:right;\">&nbsp;</td>
+          </tr>";
         }
         
         $i = 0;
@@ -259,7 +265,7 @@ else
               // no select
               $checkbox = "";
               
-              $link = "<a href=\"?path=".url_encode($path.$name."/")."&multi=".$multi."\"><span class=\"hcmsStandardText\">".showshorttext($name, 40)."</span></a>";
+              $link = "<a href=\"?path=".url_encode($path.$name."/")."&multi=".$multi."\" style=\"font-weight:normal;\">".showshorttext($name, 40)."</a>";
             }
             // if file
             else
@@ -283,21 +289,27 @@ else
             $date = showdate ($date, "Y-m-d", $hcms_lang_date[$lang]);
             
             // output
-            echo "<tr height=\"16\" class=\"hcmsWorkplaceObjectlist\"><td nowrap=\"nowrap\">".$checkbox."</td><td nowrap=\"nowrap\"><label for=\"".$i."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$link."</td><td nowrap=\"nowrap\">&nbsp;".$date."</td><td align=\"right\" nowrap=\"nowrap\">&nbsp;".$file_size."</label>&nbsp;</td></tr>\n";
+            echo "
+            <tr>
+              <td style=\"white-space:nowrap;\">".$checkbox."</td>
+              <td style=\"white-space:nowrap;\"><label for=\"".$i."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$link."</label></td>
+              <td style=\"white-space:nowrap;\"><label for=\"".$i."\"> ".$date."</label></td>
+              <td style=\"white-space:nowrap; text-align:right;\"><label for=\"".$i."\"> ".$file_size."</label>&nbsp;</td>
+            </tr>";
           
             $i++;
           }
         }
       }
       ?>
-      <tr class="hcmsWorkplaceObjectlist">
+      <tr>
         <td colspan="4">
           &nbsp;
         </td>
       </tr>
     </table>
 
-    <div class="hcmsWorkplaceControl" style="position:fixed; left:0; bottom:0; width:100%; padding:10px;"> 
+    <div class="hcmsWorkplaceObjectlist" style="position:fixed; left:0; bottom:0; width:100%; padding:10px;"> 
       <button type="button" class="hcmsButtonGreen" onClick="submitfiles();"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></button>
       <button type="button" class="hcmsButtonOrange" onClick="ftp_logout();"><?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></button>
     </div>

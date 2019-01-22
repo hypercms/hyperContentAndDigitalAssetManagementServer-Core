@@ -48,41 +48,40 @@ function applyconstraints ()
 </head>
 
 <body class="hcmsWorkplaceGeneric">
+
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
-
-<form name="valid" onsubmit="return applyconstraints();">
-  <input type="hidden" name="site" value="<?php echo $site; ?>" />
-  
-  <table border="0" cellspacing="2">
-    <tr align="left" valign="top"> 
-      <td colspan="3" nowrap="nowrap" class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['assigned-media-types'][$lang]); ?></td>
-    </tr>
-    <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-media-type'][$lang]); ?> </td>
-      <td nowrap="nowrap">
-      <select name="mediatype">
-        <option value=""><?php echo getescapedtext ($hcms_lang['all-types'][$lang]); ?></option>
-        <option value="audio">audio</option>
-        <option value="compressed">compressed</option>
-        <option value="flash">flash</option>
-        <option value="image">image</option>
-        <option value="text">text</option>
-        <option value="video">video</option>
-      </select>
-      </td>
-    </tr>
-    <tr align="left" valign="top"> 
-      <td colspan="2" nowrap="nowrap">&nbsp;</td>
-    </tr>    
-    <tr align="left" valign="top">
-      <td nowrap="nowrap">&nbsp;</td>
-      <td nowrap="nowrap"><input name="apply" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['assign'][$lang]); ?>" onClick="applyconstraints();" />
-      <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onClick="self.close();" /></td>
-    </tr>  
-  </table>
-  
-</form>
-
+  <form name="valid" onsubmit="return applyconstraints();">
+    <input type="hidden" name="site" value="<?php echo $site; ?>" />
+    
+    <table border="0" cellspacing="2">
+      <tr> 
+        <td colspan="3" style="white-space:nowrap; vertical-align:top;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['assigned-media-types'][$lang]); ?></td>
+      </tr>
+      <tr> 
+        <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['select-media-type'][$lang]); ?> </td>
+        <td style="white-space:nowrap; vertical-align:top;">
+          <select name="mediatype">
+            <option value=""><?php echo getescapedtext ($hcms_lang['all-types'][$lang]); ?></option>
+            <option value="audio">audio</option>
+            <option value="compressed">compressed</option>
+            <option value="flash">flash</option>
+            <option value="image">image</option>
+            <option value="text">text</option>
+            <option value="video">video</option>
+          </select>
+        </td>
+      </tr>
+      <tr> 
+        <td colspan="2" style="white-space:nowrap; vertical-align:top;">&nbsp;</td>
+      </tr>    
+      <tr>
+        <td style="white-space:nowrap; vertical-align:top;">&nbsp;</td>
+        <td style="white-space:nowrap; vertical-align:top;"><input name="apply" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['assign'][$lang]); ?>" onClick="applyconstraints();" />
+        <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onClick="self.close();" /></td>
+      </tr>  
+    </table>
+  </form>
 </div>
+
 </body>
 </html>

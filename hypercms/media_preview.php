@@ -46,9 +46,9 @@ checkusersession ($user, false);
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="media_name" />
     
-    <table border="0">
+    <table class="hcmsTableStandard">
       <tr>
-        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
+        <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
         <td>
           <input type="text" style="width:300px" name="mediafile" />
         </td>

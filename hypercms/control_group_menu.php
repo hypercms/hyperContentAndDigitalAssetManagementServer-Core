@@ -148,7 +148,7 @@ function goToURL()
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <div class="hcmsLocationBar">
-  <table border=0 cellspacing=0 cellpadding=1>
+  <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo getescapedtext ($hcms_lang['group-management'][$lang]); ?></b></td>
     </tr>
@@ -199,15 +199,15 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="group_create" />
   
-  <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle" nowrap="nowrap">
-        <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
+      <td style="white-space:nowrap;">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
         <?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?> 
         <input type="text" name="group_name" maxlength="100" style="width:150px;" />
-        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('creategroupLayer','','hide');" />
       </td>         
     </tr>
@@ -220,10 +220,10 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="group_delete" />
   
-  <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle" nowrap="nowrap">
-        <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
+      <td style="white-space:nowrap;">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
         <?php echo getescapedtext ($hcms_lang['group'][$lang]); ?> 
         <select name="group_name" style="width:150px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
@@ -251,9 +251,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           }
         ?>
         </select>
-        <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+        <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('deletegroupLayer','','hide');" />
       </td>           
     </tr>
@@ -265,10 +265,10 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 <form name="group_edit" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   
-  <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle" nowrap="nowrap">
-        <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
+      <td style="white-space:nowrap;">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
         <?php echo getescapedtext ($hcms_lang['group'][$lang]); ?> 
         <select name="group_name" style="width:150" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
@@ -283,7 +283,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           ?>
         </select>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('editgroupLayer','','hide');" />
       </td>          
     </tr>

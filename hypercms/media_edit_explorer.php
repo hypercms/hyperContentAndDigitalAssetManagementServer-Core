@@ -94,9 +94,9 @@ function goToURL()
 </div>
 
 <div id="Navigator" class="hcmsWorkplaceFrame">
-<table border="0" cellspacing="0" cellpadding="2" width="100%">
+<table class="hcmsTableStandard" style="width:100%;">
   <tr align="left">
-    <td class=hcmsHeadline>
+    <td class="hcmsHeadline">
       <?php echo getescapedtext ($hcms_lang['select-media-files'][$lang]); ?>
       <form name="imagesearch" method="post" action="">
         <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -104,7 +104,7 @@ function goToURL()
         <input type="hidden" name="mediatype" value="<?php echo $mediatype; ?>" />
         <input type="hidden" name="sender" value="search" />
       
-        <table border="0" cellspacing="2" cellpadding="0">
+        <table class="hcmsTableStandard">
           <tr>
             <td class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['select-media-category'][$lang]); ?> </td>
           </tr>
@@ -147,7 +147,7 @@ function goToURL()
           <tr>
             <td>
             <input type="text" name="imagesearch" size="18" style="width:170px;" />
-            <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['imagesearch'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" />
+            <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['imagesearch'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" />
             </td>
           </tr>
         </table>
@@ -156,7 +156,7 @@ function goToURL()
   </tr>
   <tr>
     <td>
-    <div id="searchLayer" style="position:relative; width:220px; height:94%; z-index:2; left:2px; top:2px; overflow:auto; visibility:visible;"> 
+      <div id="searchLayer" style="position:relative; width:220px; height:94%; z-index:2; left:2px; top:2px; overflow:auto; visibility:visible;"> 
 <?php
 if ($sender == "search")
 {   
@@ -239,7 +239,7 @@ if ($sender == "search")
 
           if ($file_info != false && $file != "Null_media.png")
           {
-            echo "<img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" width=\"16\" heigth=\"16\" /><a href=# onClick=\"sendInput('".$site."/".$file."'); goToURL('parent.frames[\'mainFrame2\']','media_view.php?site=".url_encode($site)."&mediacat=tpl&mediafile=".url_encode($site."/".$file)."'); return document.returnValue;\"> ".$file_info['name']."</a><br />\n";
+            echo "<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /><a href=\"javascript:void(0);\" onClick=\"sendInput('".$site."/".$file."'); goToURL('parent.frames[\'mainFrame2\']','media_view.php?site=".url_encode($site)."&mediacat=tpl&mediafile=".url_encode($site."/".$file)."'); return document.returnValue;\"> ".$file_info['name']."</a><br />\n";
           }
 
           $c++;
@@ -254,7 +254,7 @@ if ($sender == "search")
   }
 }
 ?>
-    </div>
+      </div>
     </td>
   </tr>
 </table>

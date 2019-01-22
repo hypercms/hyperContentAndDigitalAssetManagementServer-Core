@@ -380,17 +380,17 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   <input type="hidden" name="mediaobject" value="<?php echo $mediaobject; ?>" />
   <input type="hidden" name="token" value="<?php echo $token; ?>">
 
-  <table border="0" cellspacing="3" cellpadding="0">
+  <table class="hcmsTableStandard">
     <tr>
-      <td colspan="2" class="hcmsHeadlineTiny" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang); ?></td>
+      <td colspan="2" class="hcmsHeadlineTiny" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang); ?></td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang], $charset, $lang); ?> </td>
-      <td  nowrap="nowrap">
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang], $charset, $lang); ?> </td>
+      <td  style="white-space:nowrap;">
         <input type="text" name="mediafile" value="<?php echo convertchars (getlocationname ($site, $mediafile, "comp"), $hcms_lang_codepage[$lang], $charset); ?>" style="width:220px;" />
-        <img onClick="openBrWindowMedia('','scrollbars=yes,resizable=yes,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
-        <img onClick="deleteEntry(document.forms['media'].elements['mediafile']); deleteEntry(document.forms['media'].elements['mediaobject']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
-        <img onClick="<?php echo $onsubmit; ?>" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+        <img onClick="openBrWindowMedia('','scrollbars=yes,resizable=yes,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
+        <img onClick="deleteEntry(document.forms['media'].elements['mediafile']); deleteEntry(document.forms['media'].elements['mediaobject']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
+        <img onClick="<?php echo $onsubmit; ?>" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
       </td>
     </tr>
 
@@ -399,7 +399,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   {
     echo "
     <tr>
-      <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang)." </td>
+      <td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang)." </td>
       <td>
         <input type=\"text\" name=\"mediaalttext\" value=\"".$mediaalttext."\" style=\"width:220px;\" />
       </td>
@@ -410,14 +410,14 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   {
     echo "
     <tr>
-      <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>
+      <td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>
       <td>
-        <select name=\"mediaalign\" style=\"width:220px;\">
-          <option value=\"topleft\"".($mediaalign == "topleft" ? " selected" : "").">".getescapedtext ($hcms_lang['top'][$lang]." ".$hcms_lang['left'][$lang], $charset, $lang)."</option>
-          <option value=\"topright\"".($mediaalign== "topright" ? " selected" : "").">".getescapedtext ($hcms_lang['top'][$lang]." ".$hcms_lang['right'][$lang], $charset, $lang)."</option>
-          <option value=\"bottomleft\"".($mediaalign == "bottomleft" ? " selected" : "").">".getescapedtext ($hcms_lang['bottom'][$lang]." ".$hcms_lang['left'][$lang], $charset, $lang)."</option>
-          <option value=\"bottomright\"".($mediaalign == "bottomright" ? " selected" : "").">".getescapedtext ($hcms_lang['bottom'][$lang]." ".$hcms_lang['right'][$lang], $charset, $lang)."</option>
-          <option value=\"center\"".($mediaalign == "center" ? " selected" : "").">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>
+        <select name=\"mediaalign\" style=\"width:230px;\">
+          <option value=\"topleft\"".($mediaalign == "topleft" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['top'][$lang]." ".$hcms_lang['left'][$lang], $charset, $lang)."</option>
+          <option value=\"topright\"".($mediaalign== "topright" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['top'][$lang]." ".$hcms_lang['right'][$lang], $charset, $lang)."</option>
+          <option value=\"bottomleft\"".($mediaalign == "bottomleft" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['bottom'][$lang]." ".$hcms_lang['left'][$lang], $charset, $lang)."</option>
+          <option value=\"bottomright\"".($mediaalign == "bottomright" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['bottom'][$lang]." ".$hcms_lang['right'][$lang], $charset, $lang)."</option>
+          <option value=\"center\"".($mediaalign == "center" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>
         </select>
       </td>
     </tr>";
@@ -426,16 +426,16 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   {
     echo "
     <tr>
-      <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>
-      <td valign=\"top\">
-        <select name=\"mediaalign\" style=\"width:220px;\">
-          <option value=\"\" ".($mediaalign == "" ? " selected" : "").">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>
-          <option value=\"top\" ".($mediaalign == "top" ? " selected" : "").">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>
-          <option value=\"middle\" ".($mediaalign == "middle" ? " selected" : "").">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>
-          <option value=\"absmiddle\" ".($mediaalign == "absmiddle" ? " selected" : "").">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>
-          <option value=\"bottom\" ".($mediaalign == "bottom" ? " selected" : "").">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>
-          <option value=\"left\" ".($mediaalign == "left" ? " selected" : "").">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>
-          <option value=\"right\" ".($mediaalign == "right" ? " selected" : "").">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>
+      <td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>
+      <td style=\"vertical-align:top;\">
+        <select name=\"mediaalign\" style=\"width:230px;\">
+          <option value=\"\" ".($mediaalign == "" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>
+          <option value=\"top\" ".($mediaalign == "top" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>
+          <option value=\"middle\" ".($mediaalign == "middle" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>
+          <option value=\"absmiddle\" ".($mediaalign == "absmiddle" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>
+          <option value=\"bottom\" ".($mediaalign == "bottom" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>
+          <option value=\"left\" ".($mediaalign == "left" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>
+          <option value=\"right\" ".($mediaalign == "right" ? "selected=\"selected\"" : "").">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>
         </select>
       </td>
     </tr>";
@@ -463,15 +463,15 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   
     echo "
     <tr>
-      <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['media-size'][$lang], $charset, $lang)." </td>
-      <td valign=\"top\" class=\"hcmsHeadlineTiny\">
+      <td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['media-size'][$lang], $charset, $lang)." </td>
+      <td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">
     ";
       
-    if ($mediawidth != "*Null*") echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang)." <input type=\"text\" name=\"mediawidth\" value=\"".$mediawidth."\" size=\"4\" />&nbsp;";
-    else  echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediawidth\" value=\"\" size=\"4\" disabled=\"disabled\" />&nbsp;";
+    if ($mediawidth != "*Null*") echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang)." <input type=\"number\" name=\"mediawidth\" value=\"".$mediawidth."\" style=\"width:60px;\" />&nbsp;";
+    else  echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": <input type=\"number\" name=\"mediawidth\" value=\"\" style=\"width:60px;\" disabled=\"disabled\" />&nbsp;";
     
-    if ($mediaheight != "*Null*") echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang)." <input type=\"text\" name=\"mediaheight\" value=\"".$mediaheight."\" size=\"4\" />";
-    else echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediaheight\" value=\"\" size=\"4\"  disabled=\"disabled\" />";
+    if ($mediaheight != "*Null*") echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang)." <input type=\"number\" name=\"mediaheight\" value=\"".$mediaheight."\" style=\"width:60px;\" />";
+    else echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": <input type=\"number\" name=\"mediaheight\" value=\"\" style=\"width:60px;\"  disabled=\"disabled\" />";
     
     echo "
       </td>

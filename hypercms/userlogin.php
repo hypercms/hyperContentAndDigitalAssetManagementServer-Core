@@ -245,12 +245,12 @@ $onload = "";
 if (checkuserip (getuserip ()) == true)
 {
   // reset password
-  if ($action == "reset")
+  if ($action == "reset" && !empty ($mgmt_config['resetpassword']))
   {
     $show = sendresetpassword ($sentuser, false);
   }
   // reset password and send login link
-  elseif ($action == "request")
+  elseif ($action == "request" && !empty ($mgmt_config['multifactorauth']))
   {
     $show = sendresetpassword ($sentuser, true);
   }

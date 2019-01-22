@@ -90,7 +90,7 @@ if (sizeof ($config_files) > 0)
             {
               // if folder object remove .folder
               if (getobject ($objectpath['objectpath']) == ".folder") $objectpath = getlocation ($objectpath['objectpath']);
-  
+
               if ($objectpath['objectpath'] != "") processobjects ("delete", getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), 0, "sys");
             }
           }

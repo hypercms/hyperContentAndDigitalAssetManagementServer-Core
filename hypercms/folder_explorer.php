@@ -56,9 +56,9 @@ function sendOption(folder_name, folder_location)
 </div>
 
 <div id="Navigator" class="hcmsWorkplaceFrame">
-  <table width="98%" border="0" cellspacing="0" cellpadding="0">
+  <table class="hcmsTableNarrow" style="width:90%;">
     <tr>
-      <td class="hcmsHeadline" align="left" colspan="2" style="padding: 0px 0px 8px 0px;"><?php echo getescapedtext ($hcms_lang['select-folder'][$lang]); ?><td>
+      <td class="hcmsHeadline" colspan="2" style="text-align:left; padding-bottom:8px;"><?php echo getescapedtext ($hcms_lang['select-folder'][$lang]); ?></td>
     </tr>
   <?php
   if ($cat == "page" || $cat == "comp")
@@ -87,7 +87,11 @@ function sendOption(folder_name, folder_location)
     // generate virtual root directories
     if (!empty ($dir) && substr_count ($dir, $initialdir) == 0)
     {
-      echo "<tr><td align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".png\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp; ".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('/".$site."/', '%".$cat."%/".$site."/')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" align=\"absmiddle\" alt=\"OK\" /></a></td></tr>\n";
+      echo "
+      <tr>
+        <td style=\"width:90%; text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".png\" class=\"hcmsIconList\" /> ".$folder_name."</a></td>
+        <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:sendOption('/".$site."/', '%".$cat."%/".$site."/')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" /></a></td>
+      </tr>";
     }
     else
     {
@@ -98,55 +102,69 @@ function sendOption(folder_name, folder_location)
         $dir_esc = $initialdir_esc;
       }
       
-      // location
-      $location_name = getlocationname ($site, $dir, $cat, "path");    
-      echo "<tr><td align=\"left\" colspan=\"2\" class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".$location_name."</td></tr>\n";
-  
-      // get (up) parent directory
-      $updir_esc = getlocation ($dir_esc);
-      
-      // back to parent directory
-      if (substr_count ($dir, $initialdir) > 0)
+      if (!empty ($dir))
       {
-        echo "<tr><td align=\"left\" colspan=\"2\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['back'][$lang])."</a></td></tr>\n";
-      }
-      
-      // get all files in dir
-      $scandir = scandir ($dir);
-      
-      // get all outdir entries in folder and file array
-      if ($scandir)
-      {
-        foreach ($scandir as $entry)
+        // location
+        $location_name = getlocationname ($site, $dir, $cat, "path");   
+         
+        echo "
+        <tr>
+          <td colspan=\"2\" class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$location_name."</td>
+        </tr>";
+    
+        // get (up) parent directory
+        $updir_esc = getlocation ($dir_esc);
+        
+        // back to parent directory
+        if (substr_count ($dir, $initialdir) > 0)
         {
-          if ($entry != "" && $entry != "." && $entry != "..")
-          {
-            if (is_dir ($dir.$entry) && accessgeneral ($site, $dir.$entry, $cat) == true)
-            {
-              $entry_dir[] = $entry;
-            }
-          }
+          echo "
+        <tr>
+          <td colspan=\"2\" style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang])."</a></td>
+        </tr>";
         }
         
-        // directory
-        if (sizeof ($entry_dir) > 0)
-        {
-          sort ($entry_dir);
-          reset ($entry_dir);
+        // get all files in dir
+        $scandir = scandir ($dir);
         
-          foreach ($entry_dir as $folder)
+        // get all outdir entries in folder and file array
+        if (!empty ($scandir))
+        {
+          foreach ($scandir as $entry)
           {
-            // folder info
-          	$folder_info = getfileinfo ($site, $dir.$folder.'/.folder', $cat);
-            
-            if ($folder != "" && $folder_info['deleted'] == false)
+            if ($entry != "" && $entry != "." && $entry != "..")
             {
-            	$folder_name = $folder_info['name'];
-            	$icon = getthemelocation()."img/".$folder_info['icon'];
-          
-              if ($folder_info != false && $folder_info['deleted'] == false)
+              if (is_dir ($dir.$entry) && accessgeneral ($site, $dir.$entry, $cat) == true)
               {
-                echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></a></td></tr>\n";
+                $entry_dir[] = $entry;
+              }
+            }
+          }
+          
+          // directory
+          if (!empty ($entry_dir) && sizeof ($entry_dir) > 0)
+          {
+            sort ($entry_dir);
+            reset ($entry_dir);
+          
+            foreach ($entry_dir as $folder)
+            {
+              // folder info
+            	$folder_info = getfileinfo ($site, $dir.$folder.'/.folder', $cat);
+              
+              if ($folder != "" && $folder_info['deleted'] == false)
+              {
+              	$folder_name = $folder_info['name'];
+              	$icon = getthemelocation()."img/".$folder_info['icon'];
+            
+                if ($folder_info != false && $folder_info['deleted'] == false)
+                {
+                  echo "
+        <tr>
+          <td style=\"width:90%; text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" /> ".$folder_name."</a></td>
+          <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" title=\"OK\" alt=\"OK\" /></a></td>
+        </tr>";
+                }
               }
             }
           }

@@ -45,7 +45,7 @@ checkusersession ($user, false);
 
     <!-- workplace control title -->
     <div class="hcmsLocationBar">
-      <table border=0 cellspacing=0 cellpadding=0>
+      <table class="hcmsTableNarrow">
         <tr>
           <td class="hcmsHeadline">Test Plugin</td>
         </tr>

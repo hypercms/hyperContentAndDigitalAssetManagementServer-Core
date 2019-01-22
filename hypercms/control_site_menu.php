@@ -139,7 +139,7 @@ function checkForm()
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <div class="hcmsLocationBar">
-  <table border=0 cellspacing=0 cellpadding=1>
+  <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo getescapedtext ($hcms_lang['publication-management'][$lang]); ?></b></td>
     </tr>
@@ -192,15 +192,17 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="action" value="site_create" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle">
-        <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?> 
-        <input type="text" name="site_name" maxlength="100" style="width:220px;" />
-        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+      <td>
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
+        <?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>
+        <span style="white-space:nowrap;">
+          <input type="text" name="site_name" maxlength="100" style="width:220px;" />
+          <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+        </span>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('createsiteLayer','','hide');" />
       </td>        
     </tr>
@@ -214,47 +216,49 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="action" value="site_delete" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle" nowrap="nowrap">
-      <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?> 
-        <select name="site_name" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
-          <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
-        <?php
-          if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ();
-          
-          $item_option_delete = array();
-          $item_option_edit = array();
-
-          if ($inherit_db != false && sizeof ($inherit_db) > 0)
-          {
-            foreach ($inherit_db as $inherit_db_record)
-            {
-              if ($inherit_db_record['parent'] != "" && in_array ($inherit_db_record['parent'], $siteaccess))
-              {
-                $inherit_db_record['parent'] = trim ($inherit_db_record['parent']);
-                if ($inherit_db_record['parent'] != $site) $item_option_delete[] = $inherit_db_record['parent'];
-                $item_option_edit[] = $inherit_db_record['parent'];
-              }              
-            }
-          }
-          
-          if (is_array ($item_option_delete) && sizeof ($item_option_delete) > 0)
-          {
-            natcasesort ($item_option_delete);
-            reset ($item_option_delete);
+      <td style="white-space:nowrap;">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
+        <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
+        <span style="white-space:nowrap;">
+          <select name="site_name" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+            <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
+          <?php
+            if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ();
             
-            foreach ($item_option_delete as $delete_option)
+            $item_option_delete = array();
+            $item_option_edit = array();
+  
+            if ($inherit_db != false && sizeof ($inherit_db) > 0)
             {
-              echo "<option value=\"site_edit_form.php?site=".url_encode($site)."&preview=yes&site_name=".url_encode($delete_option)."\">".$delete_option."</option>\n";
+              foreach ($inherit_db as $inherit_db_record)
+              {
+                if ($inherit_db_record['parent'] != "" && in_array ($inherit_db_record['parent'], $siteaccess))
+                {
+                  $inherit_db_record['parent'] = trim ($inherit_db_record['parent']);
+                  if ($inherit_db_record['parent'] != $site) $item_option_delete[] = $inherit_db_record['parent'];
+                  $item_option_edit[] = $inherit_db_record['parent'];
+                }              
+              }
             }
-          }
-        ?>
-        </select>
-        <img border=0 name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+            
+            if (is_array ($item_option_delete) && sizeof ($item_option_delete) > 0)
+            {
+              natcasesort ($item_option_delete);
+              reset ($item_option_delete);
+              
+              foreach ($item_option_delete as $delete_option)
+              {
+                echo "<option value=\"site_edit_form.php?site=".url_encode($site)."&preview=yes&site_name=".url_encode($delete_option)."\">".$delete_option."</option>\n";
+              }
+            }
+          ?>
+          </select>
+          <img border=0 name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+        </span>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('deletesiteLayer','','hide');" />
       </td>        
     </tr>
@@ -266,10 +270,10 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 <form name="site_edit" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   
-  <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle" nowrap="nowrap">
-        <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
+      <td style="white-space:nowrap;">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
         <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?> 
         <select name="site_name" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
@@ -287,7 +291,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           ?>
         </select>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('editsiteLayer','','hide');" />
       </td>        
     </tr>

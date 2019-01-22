@@ -1,9 +1,79 @@
+html, body, span
+{
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0; 
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 11px; 
+  font-weight: normal;
+  color: #000000;
+  white-space: nowrap;
+}
+
 img
 {
+  display: inline-block;
+  vertical-align: middle;
   image-rendering: -webkit-optimize-contrast; // Safari 6, UC Browser 9.9
   image-rendering: -webkit-crisp-edges; // Safari 7+
   image-rendering: -moz-crisp-edges; // Firefox 3.6+
   image-rendering: -o-crisp-edges; // Opera 12
+}
+
+input, select, textarea, button
+{
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 12px; 
+  font-weight: normal;
+  color: #000000;
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+  border: 1px solid #808080;
+  background-color: #FFFFFF;
+  margin: 0;
+  padding: 7px 4px;
+}
+
+a 
+{
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  line-height: 16px !important;
+  font-style: normal;
+  text-decoration: none;
+  color: #000000;
+  outline: none;
+}
+
+a:link 
+{
+  color: #000000;
+}
+
+a:hover 
+{
+  color: #004ACE;
+}
+
+a:visited 
+{
+  color: #000000;
+}
+
+a:active 
+{  
+  background-color: #A3C5F9;
+  color: #000000;
+}
+
+hr
+{
+  height: 1px;
+  border-width :0;
+  color: #0ACA03;
+  background-color: #8EA9EC;
 }
 
 .hcmsWorkplaceExplorer
@@ -379,65 +449,6 @@ img
   opacity: 0.3;
 }
 
-input, select, textarea, button
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 12px; 
-  font-weight: normal;
-  color: #000000;
-  text-decoration: none;
-  vertical-align: middle;
-  border: 1px solid #808080;
-  background-color: #FFFFFF;
-  margin: 0;
-  padding: 5px;
-}
-
-a 
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 11px;
-  line-height: 16px !important;
-  font-style: normal;
-  text-decoration: none;
-  color: #000000;
-  outline: none;
-}
-
-a:link 
-{
-  color: #000000;
-}
-
-a:hover 
-{
-  color: #004ACE;
-}
-
-a:visited 
-{
-  color: #000000;
-}
-
-a:active 
-{  
-  background-color: #A3C5F9;
-  color: #000000;
-}
-
-html, body, span
-{
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  margin: 0; 
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 11px; 
-  font-weight: normal;
-  color: #000000;
-  white-space: nowrap;
-}
-
 .hcmsTableHeader
 {
   text-align: left;
@@ -507,14 +518,6 @@ html, body, span
   border: 0;
 }
 
-hr
-{
-  height: 1px;
-  border-width :0;
-  color: #0ACA03;
-  background-color: #8EA9EC;
-}
-
 .hcmsRowHead1
 {
   background-color: #42B551;
@@ -556,4 +559,41 @@ hr
   filter: gray() alpha(opacity=70);
   -moz-opacity: 0.7;
   opacity: 0.7;
+}
+
+table.hcmsTableStandard
+{
+  display: table;
+  table-layout: auto;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.hcmsTableStandard th, table.hcmsTableStandard td
+{
+  padding: 2px 2px 2px 4px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+table.hcmsTableNarrow
+{
+  display: table;
+  table-layout: auto;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.hcmsTableNarrow th, table.hcmsTableNarrow td
+{
+  height: 18px;
+  padding: 0;
+  text-align: left;
+  vertical-align: middle;
 }

@@ -48,12 +48,12 @@ popupfocus ();
 
 <body class="hcmsWorkplaceGeneric">
 
-<table width="100%" height="100%" border=0 cellpadding="3" cellspacing="0">
-  <tr>
-    <td class="hcmsWorkplaceControl" align="left" valign="top" width="20px"><img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsButtonSizeSquare" align="absmiddle" /></td>
-    <td align="left" valign="top"><?php echo $description; ?></td>
-  </tr>
-</table>
+<?php
+echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" />&nbsp;".getescapedtext ($hcms_lang['system-events'][$lang]), $lang);
+?>
+<div class="hcmsWorkplaceFrame">
+  <?php echo $description; ?>
+</div>
 
 </body>
 </html>

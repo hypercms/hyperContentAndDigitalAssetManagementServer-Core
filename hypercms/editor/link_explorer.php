@@ -118,9 +118,9 @@ function submitLink (url)
     </div>
     <?php } ?>
     <hr />
-    <table width="98%" border="0" cellspacing="0" cellpadding="0">
+    <table class="hcmsTableNarrow" style="width:100%;">
     <?php
-    if ($site != "")
+    if (!empty ($dir) && !empty ($site))
     {  
       // parent directory
       if (substr_count ($dir, $mgmt_config[$site]['abs_path_page']) > 0 && $dir != $mgmt_config[$site]['abs_path_page'])
@@ -128,7 +128,10 @@ function submitLink (url)
         //get parent directory
         $updir_esc = getlocation ($dir_esc);  
         
-        echo "<tr class=\"hcmsWorkplaceGeneric\"><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\"><img src=\"".getthemelocation()."img/back.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".$hcms_lang['back'][$lang]."</a></td></tr>\n";
+        echo "
+      <tr class=\"hcmsWorkplaceGeneric\">
+        <td><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".$hcms_lang['back'][$lang]."</a></td>
+      </tr>";
       }
       
       // search results
@@ -205,7 +208,10 @@ function submitLink (url)
         
             if ($folder_info != false && $folder_info['deleted'] == false)
             {    
-              echo "<tr><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 44)."</a></td></tr>\n";
+              echo "
+          <tr>
+            <td><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".showshorttext($folder_info['name'], 44)."</a></td>
+          </tr>";
             }
           }
         }
@@ -229,7 +235,10 @@ function submitLink (url)
     
             if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
             {
-              echo "<tr><td align=\"left\"><a href=\"javascript:submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($file_info['name'], 44)."</a></td></tr>\n";
+              echo "
+            <tr>
+              <td><a href=\"javascript:void(0);\" onClick=\"submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 44)."</a></td>
+            </tr>";
             }
           }
         }

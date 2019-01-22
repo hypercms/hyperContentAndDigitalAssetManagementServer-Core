@@ -2685,7 +2685,7 @@ function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="
            
           if ($content_script != "")
           {
-            // remove comments
+            // remove // comments
             if (substr_count ($content_script, "//") > 0)
             {
               $comment_array = scriptcode_extract ($content_script."\n", "// ", "\n");
@@ -2696,10 +2696,15 @@ function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="
               }
             }
   
+            // remove /* */ comments
             if (substr_count ($content_script, "/*") > 0)
             {
-              $content_temp = scriptcode_extract ($content_script, "*/", "/*");
-              if (is_array ($content_temp)) $content_script = implode ("", $content_temp);
+              $comment_array = scriptcode_extract ($content_script, "/*", "*/");
+              
+              if (is_array ($comment_array))
+              {
+                foreach ($comment_array as $comment) $content_script = str_replace ($comment, "", $content_script);
+              }
             }
   
             $result[] = $identifier_start.$content_script.$identifier_end;

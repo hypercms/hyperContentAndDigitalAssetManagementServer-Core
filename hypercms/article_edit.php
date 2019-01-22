@@ -173,74 +173,75 @@ function submitform ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric" onload="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png');">
 
 <!-- top bar -->
 <?php 
 echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
 ?>
 
-<form name="article" action="service/savecontent.php" method="post">
-  <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>" />
-  <input type="hidden" name="view" value="<?php echo $view; ?>" />
-  <input type="hidden" name="site" value="<?php echo $site; ?>" />
-  <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
-  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
-  <input type="hidden" name="page" value="<?php echo $page; ?>">
-  <input type="hidden" name="contentfile" value="<?php echo $contentfile; ?>" />
-  <input type="hidden" name="db_connect" value="<?php echo $db_connect; ?>" />
-  <input type="hidden" name="artid" value="<?php echo $artid; ?>" />
-  <input type="hidden" name="tagname" value="<?php echo $tagname; ?>" />
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>">
-  
-  <table border="0" cellspacing="5" cellpadding="0">
-    <tr>
-      <td colspan="2">
-        <p class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['publication-settings-for-article'][$lang], $charset, $lang); ?></p>
-      </td>
-    </tr>        
-    <tr>
-      <td><?php echo getescapedtext ($hcms_lang['title-will-not-be-shown'][$lang], $charset, $lang); ?></td>
-      <td>
-        <input type="text" name="arttitle[<?php echo $artid; ?>]" value="<?php echo $arttitle; ?>" size="40" />
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <label><input type="radio" name="artstatus[<?php echo $artid; ?>]" value="active" <?php if ($artstatus == "active" || $artstatus == "") {echo "checked=\"checked\"";} ?>>
-        <?php echo getescapedtext ($hcms_lang['set-active'][$lang], $charset, $lang); ?></label>
-      </td>
-      <td>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <label><input type="radio" name="artstatus[<?php echo $artid; ?>]" value="inactive" <?php if ($artstatus == "inactive") {echo "checked=\"checked\"";} ?> />
-        <?php echo getescapedtext ($hcms_lang['set-inactive'][$lang], $charset, $lang); ?></label>
-      </td>
-      <td>
-      </td>
-    </tr>
-    <tr>
-      <td valign="top">
-        <label><input type="radio" name="artstatus[<?php echo $artid; ?>]" value="timeswitched" <?php if ($artstatus == "timeswitched") {echo "checked=\"checked\"";} ?> />
-        <?php echo getescapedtext ($hcms_lang['active-from'][$lang], $charset, $lang); ?></label>
-      </td>
-      <td valign="top">
-        <input type="text" name="artdatefrom" id="artdatefrom" readonly="readonly" value="<?php echo $artdatefrom; ?>" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'artdatefrom', '%Y-%m-%d %H:%i');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" />
-        <?php echo getescapedtext ($hcms_lang['to'][$lang], $charset, $lang); ?>
-        <input type="text" name="artdateto" id="artdateto" readonly="readonly" value="<?php echo $artdateto; ?>" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'artdateto', '%Y-%m-%d %H:%i');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" />
-      </td>
-    </tr>
-    <tr>
-      <td><?php echo getescapedtext ($hcms_lang['save-release-settings'][$lang], $charset, $lang); ?>&nbsp;</td>
-      <td>
-        <img name="Button" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" onClick="submitform();" />        
-      </td>
-    </tr>
-  </table>
-  
-</form>
+<div class="hcmsWorkplaceFrame">
+  <form name="article" action="service/savecontent.php" method="post">
+    <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>" />
+    <input type="hidden" name="view" value="<?php echo $view; ?>" />
+    <input type="hidden" name="site" value="<?php echo $site; ?>" />
+    <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="page" value="<?php echo $page; ?>">
+    <input type="hidden" name="contentfile" value="<?php echo $contentfile; ?>" />
+    <input type="hidden" name="db_connect" value="<?php echo $db_connect; ?>" />
+    <input type="hidden" name="artid" value="<?php echo $artid; ?>" />
+    <input type="hidden" name="tagname" value="<?php echo $tagname; ?>" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+    
+    <table class="hcmsTableStandard">
+      <tr>
+        <td colspan="2">
+          <p class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['publication-settings-for-article'][$lang], $charset, $lang); ?></p>
+        </td>
+      </tr>        
+      <tr>
+        <td><?php echo getescapedtext ($hcms_lang['title-will-not-be-shown'][$lang], $charset, $lang); ?></td>
+        <td>
+          <input type="text" name="arttitle[<?php echo $artid; ?>]" value="<?php echo $arttitle; ?>" size="40" />
+        </td>
+      </tr>
+      <tr style="height:24px;">
+        <td>
+          <label><input type="radio" name="artstatus[<?php echo $artid; ?>]" value="active" <?php if ($artstatus == "active" || $artstatus == "") {echo "checked=\"checked\"";} ?> />
+          <?php echo getescapedtext ($hcms_lang['set-active'][$lang], $charset, $lang); ?></label>
+        </td>
+        <td>
+        </td>
+      </tr>
+      <tr style="height:24px;">
+        <td>
+          <label><input type="radio" name="artstatus[<?php echo $artid; ?>]" value="inactive" <?php if ($artstatus == "inactive") {echo "checked=\"checked\"";} ?> />
+          <?php echo getescapedtext ($hcms_lang['set-inactive'][$lang], $charset, $lang); ?></label>
+        </td>
+        <td>
+        </td>
+      </tr>
+      <tr style="height:24px;">
+        <td>
+          <label><input type="radio" name="artstatus[<?php echo $artid; ?>]" value="timeswitched" <?php if ($artstatus == "timeswitched") {echo "checked=\"checked\"";} ?> />
+          <?php echo getescapedtext ($hcms_lang['active-from'][$lang], $charset, $lang); ?></label>
+        </td>
+        <td>
+          <input type="text" name="artdatefrom" id="artdatefrom" readonly="readonly" value="<?php echo $artdatefrom; ?>" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'artdatefrom', '%Y-%m-%d %H:%i');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+          <?php echo getescapedtext ($hcms_lang['to'][$lang], $charset, $lang); ?>
+          <input type="text" name="artdateto" id="artdateto" readonly="readonly" value="<?php echo $artdateto; ?>" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'artdateto', '%Y-%m-%d %H:%i');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+        </td>
+      </tr>
+      <tr>
+        <td><?php echo getescapedtext ($hcms_lang['save-release-settings'][$lang], $charset, $lang); ?>&nbsp;</td>
+        <td>
+          <img name="Button" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" onClick="submitform();" />        
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
 
 </body>
 </html>

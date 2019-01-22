@@ -2890,7 +2890,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             $charset_source = "UTF-8";
             
             // thumbnail file is always in repository
-            $thumb_root = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
+            $thumb_root = getmedialocation ($site, ".hcms.".$mediafile, "abs_path_media").$site."/";
             $file_info = getfileinfo ($site, $mediafile, "comp");
             
             // get video dimensions

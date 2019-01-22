@@ -1607,7 +1607,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         // define format if not set
         if ($format == "") $format_set = "jpg";
         else $format_set = $format;
-            
+
         reset ($mgmt_imagepreview);    
         
         // supported extensions for image rendering
@@ -1948,25 +1948,27 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       unlink ($path_source);
                     }
                   }
-                  
-                  // set size for thumbnails
-                  if ($type == "thumbnail" && !empty ($imagewidth_orig) && !empty ($imageheight_orig))
-                  {
-                    // set size for for vector graphics like SVG in order to be rendered correctly (no density required in this case)
-                    $imagedensity = "-size ".$imagewidth_orig."x".$imageheight_orig;
-                    $imageresize = "-resize ".$imagewidth_orig."x".$imageheight_orig;
-                  }
 
                   // set background properties for JPEG (thumbnail images, annotation images, preview images) 
                   if ($imageformat == "jpg") $background = "-background white -alpha remove";
                   else $background = "";
 
-                  // CASE: document-based formats (if converted to PDF), encapsulated post script (EPS) and vector graphics
+                  // ---------------------- CASE: document-based formats (if converted to PDF), encapsulated post script (EPS) and vector graphics ----------------------
                   if (strpos ("_.pdf".$hcms_ext['vectorimage'], $file_ext) > 0)
                   {
-                    // density for SVG graphics
-                    if ($file_ext == ".svg" && empty ($imagedensity)) $imagedensity = "-density 288";
-                    elseif ($file_ext != ".pdf")  $imagedensity = "-density 144";
+                    // set size for thumbnails
+                    if ($type == "thumbnail" && !empty ($imagewidth_orig) && !empty ($imageheight_orig))
+                    {
+                      // set size for for vector graphics like SVG in order to be rendered correctly (no density required in this case)
+                      $imagedensity = "-size ".$imagewidth_orig."x".$imageheight_orig;
+                      $imageresize = "-resize ".$imagewidth."x".$imageheight;
+                    }
+                    else
+                    {
+                      // density for SVG graphics
+                      if ($file_ext == ".svg" && empty ($imagedensity)) $imagedensity = "-density 288";
+                      elseif ($file_ext != ".pdf")  $imagedensity = "-density 144";
+                    }
                     
                     if ($type == "thumbnail")
                     {
@@ -2010,7 +2012,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$background." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
-                    
+
                     @exec ($cmd, $buffer, $errorCode);
 
                     // on error
@@ -2022,7 +2024,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // on success
                     else $converted = true;
                   }
-                  // CASE: Adobe Photoshop / Adobe Illustrator: layered files
+                  // ---------------------- CASE: Adobe Photoshop / Adobe Illustrator: layered files ----------------------
                   elseif ($file_ext == ".ai" || $file_ext == ".psd")
                   {
                     if ($type == "thumbnail")
@@ -2064,7 +2066,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // on success
                     else $converted = true;
                   }
-                  // CASE: Standard images
+                  // ---------------------- CASE: Standard images ----------------------
                   else
                   {
                     // only for RAW image
@@ -2083,7 +2085,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       {
                         $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
                       }
-                       
+
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($path_source)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     else
@@ -2100,7 +2102,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                     }
-  
+
                     @exec ($cmd, $error_array, $errorCode);
 
                     // on error
@@ -2491,7 +2493,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 $vfilter = array();
 
                 // video size
-                if (is_video ("dummy.".$format_set) && (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0 || (!empty ($videoinfo['width']) && !empty ($videoinfo['height']))))
+                if (is_video (".hcms.".$format_set) && (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0 || (!empty ($videoinfo['width']) && !empty ($videoinfo['height']))))
                 {
                   // get video size defined by media option 
                   $mediasize = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v");
@@ -2581,7 +2583,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
                 
                 // sharpness
-                if (is_video ("dummy.".$format_set) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-sh ") > 0)
+                if (is_video (".hcms.".$format_set) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-sh ") > 0)
                 {
                   // Luminance is the video level of the black and white part of a video signal.
                   // Chroma is just another word for color.
@@ -2615,7 +2617,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
 
                 // rotate (using video filters)
-                if (is_video ("dummy.".$format_set) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-rotate ") > 0)
+                if (is_video (".hcms.".$format_set) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-rotate ") > 0)
                 {
                   // get degrees defined by media option 
                   $rotate = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-rotate");
@@ -2635,7 +2637,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-rotate ".$rotate, "", $mgmt_mediaoptions[$mediaoptions_ext]);
                 }
                 // rotate original video if video has rotate metadata other than zero
-                elseif (is_video ("dummy.".$format_set) && !empty ($mgmt_mediaoptions_autorotate) && !empty ($videoinfo['rotate']) && $videoinfo['rotate'] != "0")
+                elseif (is_video (".hcms.".$format_set) && !empty ($mgmt_mediaoptions_autorotate) && !empty ($videoinfo['rotate']) && $videoinfo['rotate'] != "0")
                 {
                   // usage: transpose=1
                   // for the transpose parameter you can pass:
@@ -2649,7 +2651,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
                 
                 // flip vertically (using video filters)
-                if (is_video ("dummy.".$format_set) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-fv ") > 0)
+                if (is_video (".hcms.".$format_set) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-fv ") > 0)
                 {
                   // usage: hlfip (means horizontal direction = vertical flip)
                   $vfilter[] = "hflip";
@@ -2659,7 +2661,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
                 
                 // flip horizontally (using video filters)
-                if (is_video ("dummy.".$format_set) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-fh ") > 0)
+                if (is_video (".hcms.".$format_set) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-fh ") > 0)
                 {
                   // usage: vlfip (means vertical direction = horizontal flip)
                   $vfilter[] = "vflip";
@@ -2669,7 +2671,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
   
                 // gamma, brigntness, contrast, saturation, red-, green-, blue-gamm (using video filters)
-                if (is_video ("dummy.".$format_set) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-gbcs ") > 0)
+                if (is_video (".hcms.".$format_set) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-gbcs ") > 0)
                 {
                   // get sharpness defined by media option 
                   $gbcs = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-gbcs");
@@ -2703,7 +2705,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
                 
                 // join filter options an add to options string
-                if (is_video ("dummy.".$format_set) && sizeof ($vfilter) > 0)
+                if (is_video (".hcms.".$format_set) && sizeof ($vfilter) > 0)
                 {
                   $mgmt_mediaoptions[$mediaoptions_ext] = " -vf \"".implode (", ", $vfilter)."\" ".$mgmt_mediaoptions[$mediaoptions_ext];
                 }
@@ -2858,7 +2860,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|ffmpeg failed to create original thumbnail file, using orginal file name: ".$file;
                 }
                 // correct rotation metadata if necessary 
-                elseif (is_video ("dummy.".$format_set) && is_file ($location_temp.$tmpfile) && !empty ($videoinfo['rotate']) && $videoinfo['rotate'] != "0")
+                elseif (is_video (".hcms.".$format_set) && is_file ($location_temp.$tmpfile) && !empty ($videoinfo['rotate']) && $videoinfo['rotate'] != "0")
                 {
                   // check video info
                   $videoinfo_after = getvideoinfo ($location_temp.$tmpfile);
@@ -2886,13 +2888,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
   
                 // watermarking (using video filters)
                 // set watermark options if defined in publication settings and not already defined
-                if (is_video ("dummy.".$format_set) && !empty ($mgmt_config[$site]['watermark_video']) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") == 0)
+                if (is_video (".hcms.".$format_set) && !empty ($mgmt_config[$site]['watermark_video']) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") == 0)
                 {
                   $mgmt_mediaoptions[$mediaoptions_ext] .= " ".$mgmt_config[$site]['watermark_video'];
                 }
                 
                 // dont watermark the original file or audio file
-                if (is_video ("dummy.".$format_set) && $type != "original" && is_file ($location_temp.$tmpfile) && filesize ($location_temp.$tmpfile) > 100 && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") > 0)
+                if (is_video (".hcms.".$format_set) && $type != "original" && is_file ($location_temp.$tmpfile) && filesize ($location_temp.$tmpfile) > 100 && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") > 0)
                 {
                   // get watermark defined by media option 
                   $watermarking = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-wm");

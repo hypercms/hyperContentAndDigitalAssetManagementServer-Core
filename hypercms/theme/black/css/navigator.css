@@ -1,9 +1,79 @@
+html, body, span 
+{
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 11px; 
+  font-weight: normal;
+  color: #FFFFFF;
+  white-space: nowrap;
+}
+
 img
 {
+  display: inline-block;
+  vertical-align: middle;
   image-rendering: -webkit-optimize-contrast; // Safari 6, UC Browser 9.9
   image-rendering: -webkit-crisp-edges; // Safari 7+
   image-rendering: -moz-crisp-edges; // Firefox 3.6+
   image-rendering: -o-crisp-edges; // Opera 12
+}
+
+input, select, textarea, button
+{
+  font-family: inherit;
+  font-size: 12px; 
+  font-weight: normal;
+  color: #000000;
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+  border: 1px solid #EB6804;
+  background-color: #FFFFFF;
+  margin: 0;
+  padding: 7px 4px;
+}
+
+a 
+{
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 16px !important;
+  font-style: normal;
+  text-decoration: none;
+  color: #FFFFFF;
+  outline: none;
+}
+
+a:link 
+{
+  color: #FFFFFF;
+}
+
+a:hover 
+{
+  color: #F39F04;
+}
+
+a:visited 
+{
+  color: #FFFFFF;
+}
+
+a:active 
+{  
+  background-color: #7B7B7B;
+  color: #FFFFFF;
+}
+
+hr
+{
+  height: 1px;
+  border-width: 0;
+  color: #0ACA03;
+  background-color: #C0C0C0;
 }
 
 .hcmsWorkplaceExplorer
@@ -378,65 +448,6 @@ img
   opacity: 0.3;
 }
 
-input, select, textarea, button
-{
-  font-family: inherit;
-  font-size: 12px; 
-  font-weight: normal;
-  color: #000000;
-  text-decoration: none;
-  vertical-align: middle;
-  border: 1px solid #EB6804;
-  background-color: #FFFFFF;
-  margin: 0;
-  padding: 5px;
-}
-
-a 
-{
-  font-family: inherit;
-  font-size: 11px;
-  line-height: 16px !important;
-  font-style: normal;
-  text-decoration: none;
-  color: #FFFFFF;
-  outline: none;
-}
-
-a:link 
-{
-  color: #FFFFFF;
-}
-
-a:hover 
-{
-  color: #F39F04;
-}
-
-a:visited 
-{
-  color: #FFFFFF;
-}
-
-a:active 
-{  
-  background-color: #7B7B7B;
-  color: #FFFFFF;
-}
-
-html, body, span 
-{
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  margin: 0;
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 11px; 
-  font-weight: normal;
-  color: #FFFFFF;
-  white-space: nowrap;
-}
-
 .hcmsTableHeader
 {
   border-left: 3px solid #EB7B04;
@@ -503,15 +514,6 @@ html, body, span
   height: 124px;
   border: 0;
 }
-
-hr
-{
-  height: 1px;
-  border-width: 0;
-  color: #0ACA03;
-  background-color: #C0C0C0;
-}
-
 .hcmsRowHead1
 {
   background-color: #909090;
@@ -553,4 +555,41 @@ hr
   filter: gray() alpha(opacity=70);
   -moz-opacity: 0.7;
   opacity: 0.7;
+}
+
+table.hcmsTableStandard
+{
+  display: table;
+  table-layout: auto;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.hcmsTableStandard th, table.hcmsTableStandard td
+{
+  padding: 2px 2px 2px 4px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+table.hcmsTableNarrow
+{
+  display: table;
+  table-layout: auto;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.hcmsTableNarrow th, table.hcmsTableNarrow td
+{
+  height: 18px;
+  padding: 0;
+  text-align: left;
+  vertical-align: middle;
 }

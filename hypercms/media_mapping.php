@@ -125,19 +125,19 @@ if (valid_publicationname ($site) && $save == "reindex" && checktoken ($token, $
   else $show = $hcms_lang['the-data-could-not-be-saved'][$lang];
 }
 ?>
-<p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['meta-data-mapping'][$lang]); ?></p>
+<p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['meta-data-mapping'][$lang]); ?></p>
 
 <?php
 echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
 ?>
 
-<form id="editor" name="editor" action="" method="post">
+<form id="editor" name="editor" action="" method="post" style="margin-top:10px; padding:2px;">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="save" value="yes" />
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
   <?php echo $mapping_data; ?>
   <br />
-  <div style="width:220px; float:left;"><?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?> </div><img name="Button1" onClick="document.forms['editor'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" /> 
+  <div style="width:240px; float:left;"><?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?> </div><img name="Button1" onClick="document.forms['editor'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /> 
 </form>
 
 <div style="margin-top:10px; padding:2px;">
@@ -145,7 +145,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="save" value="reindex" />
     <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
-    <div style="width:220px; float:left;"><?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?> </div><img name="Button2" onClick="checkReindex()" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" /> 
+    <div style="width:240px; float:left;"><?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?> </div><img name="Button2" onClick="checkReindex()" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /> 
   </form>
 </div>
 

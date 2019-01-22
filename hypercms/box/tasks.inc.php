@@ -9,10 +9,12 @@ if (checkrootpermission ('desktoptaskmgmt'))
 
   if (is_array ($task_array) && sizeof ($task_array) > 0)
   {
-    echo "<div id=\"task\" onclick=\"document.location.href='task/task_list.php';\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left; cursor:pointer;\">\n";
+    echo "
+  <div id=\"task\" onclick=\"document.location.href='task/task_list.php';\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left; cursor:pointer;\">";
 
-    echo "<div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['my-recent-tasks'][$lang])."</div>
-    <table width=\"100%\" border=\"0\" cellspacing=\"2\" cellpadding=\"2\">";
+    echo "
+    <div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['my-recent-tasks'][$lang])."</div>
+    <table class=\"hcmsTableStandard\" style=\"table-layout:auto; border-collapse:separate; border-spacing:2px; width:100%;\">";
 
     foreach ($task_array as $task_record)
     {
@@ -33,15 +35,15 @@ if (checkrootpermission ('desktoptaskmgmt'))
 
         echo "
       <tr class=\"".$rowcolor."\">
-        <td valign=\"top\">".showdate ($task_record['startdate'], "Y-m-d", $hcms_lang_date[$lang])." &#x0203A; ".showdate ($task_record['finishdate'], "Y-m-d", $hcms_lang_date[$lang])."</td>
-        <td valign=\"top\">".str_replace ("\n", "<br />", $task_record['description'])."</td>
+        <td style=\"vertical-align:top;\">".showdate ($task_record['startdate'], "Y-m-d", $hcms_lang_date[$lang])." &#x0203A; ".showdate ($task_record['finishdate'], "Y-m-d", $hcms_lang_date[$lang])."</td>
+        <td style=\"vertical-align:top;\">".str_replace ("\n", "<br />", $task_record['description'])."</td>
       </tr>";
       }
     }
     
     echo "
     </table>
-    </div>\n";
+  </div>";
   }
 }
 ?>

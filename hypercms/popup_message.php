@@ -116,7 +116,7 @@ $token_new = createtoken ($user);
   
   <!-- top bar -->
   <?php
-  echo showtopbar ("<img src=\"".$icon."\" class=\"hcmsButtonSizeSquare\" align=\"absmiddle\" /> ".$hcms_lang['message'][$lang], $lang);
+  echo showtopbar ("<img src=\"".$icon."\" class=\"hcmsButtonSizeSquare\" /> ".$hcms_lang['message'][$lang], $lang);
   ?>
 
   <!-- content -->
@@ -128,6 +128,7 @@ $token_new = createtoken ($user);
       <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>">
       <input type="hidden" name="intention" value="send">
       <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+      
       <div class="hcmsFormRowContent">
         <textarea name="message" style="width:380px; height:200px;" placeholder="<?php echo $message_default; ?>"></textarea><br />
       </div>
@@ -139,14 +140,14 @@ $token_new = createtoken ($user);
           <option value="low"><?php echo getescapedtext ($hcms_lang['low'][$lang]); ?></option>
           <option value="medium" selected="selected"><?php echo getescapedtext ($hcms_lang['medium'][$lang]); ?></option>
           <option value="high"><?php echo getescapedtext ($hcms_lang['high'][$lang]); ?></option>
-        </select> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK">
+        </select> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK">
      </div>
     </form>
   </div>
 <?php } else { ?>
   <!-- top bar -->
   <?php
-  echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" align=\"absmiddle\" /> ".$hcms_lang['information'][$lang], $lang);
+  echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" /> ".$hcms_lang['information'][$lang], $lang);
   ?>
   <!-- content -->
   <div class="hcmsWorkplaceFrame">

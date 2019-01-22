@@ -146,7 +146,7 @@ function getusersonline ()
     {
       if (usersonline.hasOwnProperty(i) && usersonline[i] != "<?php echo $user; ?>")
       {
-        result = result + "    <div class=\"hcmsSelectorItem\" style=\"text-align:left;\" onclick=\"invite('" + usersonline[i] + "');\"><img src=\"<?php echo getthemelocation()."img/user.png"; ?>\" class=\"hcmsIconList\" align=\"absmiddle\" />" + usersonline[i] + "&nbsp;</div>\n";
+        result = result + "    <div class=\"hcmsSelectorItem\" style=\"text-align:left;\" onclick=\"invite('" + usersonline[i] + "');\"><img src=\"<?php echo getthemelocation()."img/user.png"; ?>\" class=\"hcmsIconList\" />" + usersonline[i] + "&nbsp;</div>\n";
       }
     }
   }

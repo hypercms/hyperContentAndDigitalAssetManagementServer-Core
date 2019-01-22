@@ -285,16 +285,12 @@ setTimeout('closepopup()', 1000);
 
 <body class="hcmsWorkplaceGeneric">
 
-<div align="center">
-  <p align="center" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?> <?php echo $status; ?></p>
+<div style="display:block; width:100%; text-align:center; vertical-align:middle;">
+  <p class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?> <?php echo $status; ?></p>
   
-  <table style="width:80%; padding:0; border:1px solid #000000; border-collapse:collapse;">
-    <tr> 
-      <td>
-        <div class="hcmsRowHead1" style="width:<?php echo $progress; ?>%; height:16px;"></div>
-      </td>
-    </tr>
-  </table><br />
+  <div style="display:block; width:80%; height:16px; margin:10px auto; border:1px solid #000000;">
+    <div class="hcmsRowHead1" style="width:<?php echo $progress; ?>%; height:100%;"></div>
+  </div>
   
   <form name="stop" action="" method="post">
     <input type="hidden" name="force" value="stop" />

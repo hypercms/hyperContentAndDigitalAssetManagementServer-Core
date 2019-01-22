@@ -219,30 +219,30 @@ echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px
     <input type="hidden" name="multiobject" value="<?php echo $multiobject; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" /> 
     
-    <table width="100%" border=0 cellpadding="3" cellspacing="0">
+    <table class="hcmsTableStandard" style="width:100%;">
       <tr> 
-        <td align="left">
+        <td>
           <label><input name="publish" type="radio" value="now" checked="checked" /> <?php echo getescapedtext ($hcms_lang['now'][$lang]); ?></label>
   	    </td>
       </tr>
       <tr> 
-        <td align="left">		
+        <td>		
           <label>
             <input name="publish" type="radio" value="later" /> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?>
-            <input type="text" name="publishdate" id="publishdate" readonly="readonly" value="<?php echo $publishdate; ?>" /><img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'publishdate', '%Y-%m-%d %H:%i');" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+            <input type="text" name="publishdate" id="publishdate" readonly="readonly" value="<?php echo $publishdate; ?>" /><img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'publishdate', '%Y-%m-%d %H:%i');" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
           </label>
   	    </td>
       </tr>
       <?php if ($action == "publish") { ?>
       <tr> 
-        <td align="left">
+        <td>
           <label><input type="checkbox" name="published_only" value="1" /> <?php echo getescapedtext ($hcms_lang['only-already-published-content'][$lang]); ?></label>
   	    </td>
       </tr>
       <?php } ?>
       <tr>  
-        <td align="left">  
-          <?php echo $headline; ?> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
+        <td>  
+          <?php echo $headline; ?> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
         </td>
       </tr>
     </table>

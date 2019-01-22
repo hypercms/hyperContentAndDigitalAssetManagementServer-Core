@@ -92,14 +92,14 @@ if (is_array ($delete_id) && @sizeof ($delete_id) > 0 && $setlocalpermission['de
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="page" value="<?php echo $page; ?>" />
   
-  <table border="0" celspacing="2" cellpadding="1" width="99%">
+  <table class="hcmsTableStandard" style="width:99%;">
     <tr>
-      <td class="hcmsHeadline" width="150" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['date'][$lang]); ?></td>
-      <td class="hcmsHeadline" width="160" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['sender'][$lang]); ?></td>
-      <td class="hcmsHeadline" width="160" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></td>
-      <td class="hcmsHeadline" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?></td>
-      <td class="hcmsHeadline" width="120" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['picked-up-on'][$lang]); ?></td>
-      <td class="hcmsHeadline" width="100" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></td>
+      <td class="hcmsHeadline" style="width:150px; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['date'][$lang]); ?></td>
+      <td class="hcmsHeadline" style="width:160px; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['sender'][$lang]); ?></td>
+      <td class="hcmsHeadline" style="width:160px;white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></td>
+      <td class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?></td>
+      <td class="hcmsHeadline" style="width:120px; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['picked-up-on'][$lang]); ?></td>
+      <td class="hcmsHeadline" style="width:50px; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></td>
     </tr>
 <?php
 // get recipients
@@ -153,12 +153,12 @@ if ($result_array != false && sizeof ($result_array) > 0)
       else $result['download_date'] = "";
      
       echo "<tr class=\"".$rowcolor."\">
-        <td nowrap=\"nowrap\">".$result['date']."</td>
+        <td style=\"white-space:nowrap;\">".$result['date']."</td>
         <td>".$result['from_user']."</td>
         <td>".$result['to_user']."</td>
         <td>".$result['email']."</td>
         <td>".$result['download_date']."</td>
-        <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"delete_id[]\" value=\"".$result['recipient_id']."\" /></td>
+        <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"delete_id[]\" value=\"".$result['recipient_id']."\" /></td>
       </tr>\n";
     }     
   }
@@ -167,9 +167,9 @@ if ($result_array != false && sizeof ($result_array) > 0)
       <td colspan=\"3\">&nbsp;</td>
     </tr>
     <tr>
-      <td colspan=\"3\" nowrap=\"nowrap\">
+      <td colspan=\"3\" style=\"white-space:nowrap;\">
         ".getescapedtext ($hcms_lang['delete-selected-recipients'][$lang]).":
-        <img name=\"Button\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"warning_recipients_delete();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />
+        <img name=\"Button\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"warning_recipients_delete();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" />
       </td>
     </tr>";  
 }

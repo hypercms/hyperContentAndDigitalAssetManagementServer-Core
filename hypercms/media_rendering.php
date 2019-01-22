@@ -636,7 +636,7 @@ function setsegements ()
         div.style.cssText = segment_color + 'cursor:pointer; display:inline-block; width:' + width + 'px; height:22px;';
         
         // define delete button for split
-        var segment_delete = '<div style="float:right; line-height:22px;"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" onclick="deletebreakpoint(\'' + id + '\')" class="hcmsButtonTiny hcmsIconList" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /></div>';    
+        var segment_delete = '<div style="float:right; line-height:22px;"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" onclick="deletebreakpoint(\'' + id + '\')" class="hcmsButtonTiny hcmsIconList" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /></div>';    
 
         // define split
         if ((parseInt(width_bar) - parseInt(left)) > 0)

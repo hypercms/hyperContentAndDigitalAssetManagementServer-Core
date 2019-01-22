@@ -252,7 +252,7 @@ if (!empty ($container_id))
     }
   }
     
-  if (is_array ($download_axis) || is_array ($upload_axis))
+  if (is_array ($view_axis) || is_array ($download_axis) || is_array ($upload_axis))
   {
     $chart = buildbarchart ("chart", 700, 400, 10, 40, $date_axis, $view_axis, $download_axis, $upload_axis, "border:1px solid #666666; background:white;", "background:#6fae30; font-size:10px; cursor:pointer;", "background:#108ae7; font-size:10px; cursor:pointer;", "background:#ff8219; font-size:10px; cursor:pointer;");
     echo $chart;
@@ -270,11 +270,11 @@ if (!empty ($container_id))
   if (is_array ($result_download)) 
   { 
     echo "
-    <table border=\"0\" celspacing=\"2\" cellpadding=\"1\">
+    <table class=\"hcmsTableStandard\">
       <tr>
-        <td class=\"hcmsHeadline\" width=\"150\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['download'][$lang])."</td>
-        <td class=\"hcmsHeadline\" width=\"250\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['users'][$lang])."/IP </td>
-        <td class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">Hits</td>
+        <td class=\"hcmsHeadline\" style=\"width:150px; white-space:nowrap;\">".getescapedtext ($hcms_lang['download'][$lang])."</td>
+        <td class=\"hcmsHeadline\" style=\"width:250px; white-space:nowrap;\">".getescapedtext ($hcms_lang['users'][$lang])."/IP </td>
+        <td class=\"hcmsHeadline\" style=\"width:50px; white-space:nowrap;\">Hits</td>
       </tr>";
   
     $color = false;
@@ -318,7 +318,7 @@ if (!empty ($container_id))
       else $user = $row['user'];
       
       echo "
-        <tr class=\"".$rowcolor."\"><td>".$row['date']." </td><td>".$user." </td><td>".$row['count']." </td></tr>";
+        <tr class=\"".$rowcolor."\"><td>".$row['date']." </td><td>".$user." </td><td style=\"text-align:right;\">".$row['count']." </td></tr>";
     }
     
     echo "</table>";

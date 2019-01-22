@@ -91,18 +91,18 @@ function maxNavFrame ()
 
   if ($action == "mediafile_delete")
   {
-    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:200px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_delete.php?site=".$site."&mediacat=".$mediacat."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_delete.php?site=".$site."&mediacat=".$mediacat."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
   }
   elseif ($action == "mediafile_preview")
   {
-    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:200px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_preview.php?site=".$site."&cat=".$cat."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_preview.php?site=".$site."&cat=".$cat."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
   }
   else
   {
-    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:200px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&db_connect=".$db_connect."&id=".$id."&label=".$label."&tagname=".$tagname."&mediaalttext=".$mediaalttext."&mediaalign=".$mediaalign."&mediawidth=".$mediawidth."&mediaheight=".$mediaheight."&scaling=".$scaling."&mediatype=".$mediatype."&contenttype=".$contenttype."&mediafile=".$mediafile."&mediaobject_curr=".$mediaobject_curr."&mediaobject=".$mediaobject."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:270px; height:220px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&db_connect=".$db_connect."&id=".$id."&label=".$label."&tagname=".$tagname."&mediaalttext=".$mediaalttext."&mediaalign=".$mediaalign."&mediawidth=".$mediawidth."&mediaheight=".$mediaheight."&scaling=".$scaling."&mediatype=".$mediatype."&contenttype=".$contenttype."&mediafile=".$mediafile."&mediaobject_curr=".$mediaobject_curr."&mediaobject=".$mediaobject."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
   }
   ?>
-  <div id="mainLayer" style="position:fixed; top:200px; right:0; bottom:0; left:260px; margin:0; padding:0;">
+  <div id="mainLayer" style="position:fixed; top:220px; right:0; bottom:0; left:260px; margin:0; padding:0;">
     <iframe id="mainFrame2" name="mainFrame2" scrolling="auto" src="<?php echo "media_view.php?site=".$site."&mediacat=".$mediacat."&mediafile=".$mediafile."&mediaobject=".$mediaobject."&mediatype=".$mediatype."&scaling=".$scaling; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
 </body>

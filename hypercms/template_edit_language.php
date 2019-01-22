@@ -51,37 +51,36 @@ function applylanguage ()
 </head>
 
 <body class="hcmsWorkplaceGeneric">
+
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
-
-<form name="language" onsubmit="return applylanguage();">
-  <input type="hidden" name="site" value="<?php echo $site; ?>" />
-  
-  <table border="0" cellspacing="2">
-    <tr align="left" valign="top"> 
-      <td colspan="2" nowrap="nowrap" class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['assign-language-information'][$lang]); ?></td>
-    </tr>
-    <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['session-variable-name'][$lang]); ?> </td>
-      <td><input name="language_sessionvar" type="text" value="" /></td>
-    </tr>  
-    <tr align="left" valign="top">
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['language-values'][$lang]); ?><br />(<?php echo getescapedtext ($hcms_lang['use-as-delimiter'][$lang]); ?>)</td>
-      <td><input name="language_sessionvalues" type="text" value="" /></td>
-    </tr>
-    <tr align="left" valign="top"> 
-      <td colspan="2">&nbsp;</td>
-    </tr>  
-    <tr align="left" valign="top">
-      <td nowrap="nowrap">&nbsp;</td>
-      <td nowrap="nowrap">
-        <input name="language_values" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['apply'][$lang]); ?>" onClick="applylanguage();" />
-        <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onClick="self.close();" />
-      </td>
-    </tr>      
-  </table>
-  
-</form>
-
+  <form name="language" onsubmit="return applylanguage();">
+    <input type="hidden" name="site" value="<?php echo $site; ?>" />
+    
+    <table class="hcmsTableStandard">
+      <tr> 
+        <td colspan="2" style="white-space:nowrap; vertical-align:top;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['assign-language-information'][$lang]); ?></td>
+      </tr>
+      <tr> 
+        <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['session-variable-name'][$lang]); ?> </td>
+        <td style="white-space:nowrap; vertical-align:top;"><input name="language_sessionvar" type="text" value="" /></td>
+      </tr>  
+      <tr>
+        <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['language-values'][$lang]); ?><br />(<?php echo getescapedtext ($hcms_lang['use-as-delimiter'][$lang]); ?>)</td>
+        <td style="white-space:nowrap; vertical-align:top;"><input name="language_sessionvalues" type="text" value="" /></td>
+      </tr>
+      <tr> 
+        <td colspan="2">&nbsp;</td>
+      </tr>  
+      <tr>
+        <td style="white-space:nowrap; vertical-align:top;">&nbsp;</td>
+        <td style="white-space:nowrap; vertical-align:top;">
+          <input name="language_values" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['apply'][$lang]); ?>" onClick="applylanguage();" />
+          <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onClick="self.close();" />
+        </td>
+      </tr>      
+    </table>
+  </form>
 </div>
+
 </body>
 </html>

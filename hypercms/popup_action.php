@@ -475,12 +475,12 @@ if ($action == "unzip" && $authorized == true)
 ?>
 
 <?php
-echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['information'][$lang]), $lang);
+echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" />&nbsp;".getescapedtext ($hcms_lang['information'][$lang]), $lang);
 ?>
 <div class="hcmsWorkplaceFrame">
-  <table width="100%" height="140" border="0" cellpadding="0" cellspacing="0">
+  <table class="hcmsTableNarrow" style="width:100%; height:140px;">
     <tr>
-      <td align="center" valign="middle"><?php echo $show; ?></td>
+      <td style="text-align:center; vertical-align:middle;"><?php echo $show; ?></td>
     </tr>
   </table>
 </div>

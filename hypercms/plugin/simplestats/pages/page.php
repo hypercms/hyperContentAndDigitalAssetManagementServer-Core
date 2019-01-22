@@ -61,10 +61,10 @@ ob_end_flush();
 
 <div class="hcmsWorkplaceFrame" style="padding:0; width:100%; height:100%; overflow:auto;">
 
-  <table border="0" cellspacing="2" cellpadding="0" style="margin:10px;">
- 	  <tr align="left" valign="top">
+  <table class="hcmsTableStandard" style="margin:10px;">
+ 	  <tr style="text-align:left; vertical-align:top;">
       <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['total-disk-space'][$lang]); ?> &nbsp;&nbsp;</td>
-      <td align="right"><?php
+      <td style="text-align:right;"><?php
       $space_total = disk_total_space ($mgmt_config['abs_path_cms']);
       
       if ($space_total > 0)
@@ -75,10 +75,10 @@ ob_end_flush();
       else echo "not available";
       ?></td>
     </tr>
- 	  <tr align="left" valign="top">
+ 	  <tr style="text-align:left; vertical-align:top;">
       <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['free-disk-space'][$lang]); ?> &nbsp;&nbsp;</td>
-      <td align="right"><?php
-      $space_free = disk_free_space($mgmt_config['abs_path_cms']);
+      <td style="text-align:right;"><?php
+      $space_free = disk_free_space ($mgmt_config['abs_path_cms']);
       
       if ($space_free)
       {
@@ -105,10 +105,10 @@ ob_end_flush();
   <hr />
   
   <div style="float:left; margin:10px;">
-    <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['top-downloaded-files'][$lang]); ?></p>
+    <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['top-downloaded-files'][$lang]); ?></p>
     <table border="0" cellspacing="2" cellpadding="2" style="min-width:400px;">
-   	  <tr align="left" valign="top">
-        <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['hits'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['traffic-in-mb'][$lang]); ?></td>
+   	  <tr>
+        <td class="hcmsHeadline" style="text-align:left; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['hits'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['traffic-in-mb'][$lang]); ?></td>
       </tr>
       <?php
       $show = "";
@@ -117,7 +117,9 @@ ob_end_flush();
       $mysqli = new mysqli ($mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname']);
       
       if ($mysqli->connect_errno) $show .= "
-      <tr class=\"hcmsRowData1\"><td colspan=\"3\" class=\"hcmsHeadline\">DB error (".$mysqli->connect_errno."): ".$mysqli->connect_error."</td></tr>";
+      <tr class=\"hcmsRowData1\">
+        <td colspan=\"3\" class=\"hcmsHeadline\">DB error (".$mysqli->connect_errno."): ".$mysqli->connect_error."</td>
+      </tr>";
       
       if ($show == "")
       {
@@ -142,11 +144,17 @@ ob_end_flush();
             else $link = $info['name'];
                
             $show .= "
-        <tr class=\"hcmsButtonTiny hcmsRowData1\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\"><td><img src=\"".getthemelocation()."img/".$info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" /> ".$info['name']."</td><td align=\"right\">".$row['count']."</td><td align=\"right\">".number_format ($row['filesize'], 0, ",", ".")."</td></tr>";
+        <tr class=\"hcmsButtonTiny hcmsRowData1\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
+          <td><img src=\"".getthemelocation()."img/".$info['icon']."\" class=\"hcmsIconList\" /> ".$info['name']."</td>
+          <td style=\"text-align:right;\">".$row['count']."</td>
+          <td style=\"text-align:right;\">".number_format ($row['filesize'], 0, ",", ".")."</td>
+        </tr>";
           }
         }
         else $show .= "
-        <tr class=\"hcmsRowData1\"><td colspan=\"3\" class=\"hcmsHeadline\">DB error (".$mysqli->errno."): ".$mysqli->error."</td></tr>";
+        <tr class=\"hcmsRowData1\">
+          <td colspan=\"3\" class=\"hcmsHeadline\">DB error (".$mysqli->errno."): ".$mysqli->error."</td>
+        </tr>";
         
         echo $show;
         
@@ -170,7 +178,9 @@ ob_end_flush();
       $mysqli = new mysqli ($mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname']);
       
       if ($mysqli->connect_errno) $show .= "
-      <tr class=\"hcmsRowData1\"><td colspan=\"3\" class=\"hcmsHeadline\">DB error (".$mysqli->connect_errno."): ".$mysqli->connect_error."</td></tr>";
+      <tr class=\"hcmsRowData1\">
+        <td colspan=\"3\" class=\"hcmsHeadline\">DB error (".$mysqli->connect_errno."): ".$mysqli->connect_error."</td>
+      </tr>";
       
       if ($show == "")
       {
@@ -192,11 +202,17 @@ ob_end_flush();
             $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
             
             $show .= "
-        <tr class=\"hcmsButtonTiny hcmsRowData1\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\"><td><img src=\"".getthemelocation()."img/".$info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" /> ".$info['name']."</td><td align=\"right\">".$row['count']."</td><td align=\"right\">".number_format ($row['filesize'], 0, ",", ".")."</td></tr>";
+        <tr class=\"hcmsButtonTiny hcmsRowData1\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
+          <td><img src=\"".getthemelocation()."img/".$info['icon']."\" class=\"hcmsIconList\" /> ".$info['name']."</td>
+          <td style=\"text-align:right;\">".$row['count']."</td>
+          <td style=\"text-align:right;\">".number_format ($row['filesize'], 0, ",", ".")."</td>
+        </tr>";
           }
         }
         else $show .= "
-        <tr class=\"hcmsRowData1\"><td colspan=\"3\" class=\"hcmsHeadline\">DB error (".$mysqli->errno."): ".$mysqli->error."</td></tr>";
+        <tr class=\"hcmsRowData1\">
+          <td colspan=\"3\" class=\"hcmsHeadline\">DB error (".$mysqli->errno."): ".$mysqli->error."</td>
+        </tr>";
         
         echo $show;
         

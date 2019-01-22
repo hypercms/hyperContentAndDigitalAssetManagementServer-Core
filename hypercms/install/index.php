@@ -94,7 +94,7 @@ if (is_file ($mgmt_config['abs_path_data']."check.dat"))
 <link rel="stylesheet" href="../theme/standard/css/main.css" />
 </head>
 <body class="hcmsWorkplaceGeneric">
-<div class="hcmsHeadline" style="width:380px; margin: 20px auto 20px auto;">
+<div class="hcmsHeadline" style="width:380px; margin:20px auto;">
   The hyper Content &amp; Digital Asset Management is already installed!
 </div>
 </body>
@@ -717,7 +717,7 @@ $(document).ready(function(){
 <div id="error" style="padding:4px; border:1px solid red; background:#ffdcd5;">There were errors on the form!</div>
 
 <div style="margin:10px 0px;">
-<img src="<?php echo $mgmt_config['url_path_cms']."theme/standard/img/logo.png"; ?>" style="width:466px; border:0; margin:10px 0px 20px 0px;" align="absmiddle" /><br />
+<img src="<?php echo $mgmt_config['url_path_cms']."theme/standard/img/logo.png"; ?>" style="width:466px; border:0; margin:10px 0px 20px 0px;" /><br />
 Welcome to the one-step hyper Content &amp; Digital Asset Management Server installation. 
 You may want to read the <a href="<?php echo $mgmt_config['url_path_cms']; ?>help/installationguide_en.pdf" target="_blank">installation guide</a> or watch the <a href="https://youtu.be/qR_wZBSw9Ao" target="_blank">installation tutorial</a> at your leisure.<br/>
 Otherwise just provide the information below and install the most powerful Content and Digital Asset Management System.
@@ -730,153 +730,153 @@ Otherwise just provide the information below and install the most powerful Conte
   <input type="hidden" name="language" value="en" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table border="0" cellspacing="0" cellpadding="3"> 
+  <table class="hcmsTableStandard"> 
   
     <!-- Main Purpose of first Publication -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">Set up your first Publication</td>
+      <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextGreen">Set up your first Publication</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap"><label><input name="setup_publication" value="cms" type="radio" <?php if (empty ($setup_publication) || $setup_publication == "cms") echo "checked=\"checked\""; ?> /> as a Content Management Solution (Manage content of a website)</label></td>
+      <td colspan="2" style="white-space:nowrap;"><label><input name="setup_publication" value="cms" type="radio" <?php if (empty ($setup_publication) || $setup_publication == "cms") echo "checked=\"checked\""; ?> /> as a Content Management Solution (Manage content of a website)</label></td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap"><label><input name="setup_publication" value="dam" type="radio" <?php if ($setup_publication == "dam") echo "checked=\"checked\""; ?> /> as a Digital Asset Management Solution (Manage and share multimedia files)</label></td>
+      <td colspan="2" style="white-space:nowrap;"><label><input name="setup_publication" value="dam" type="radio" <?php if ($setup_publication == "dam") echo "checked=\"checked\""; ?> /> as a Digital Asset Management Solution (Manage and share multimedia files)</label></td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">You can create additional Publications any time after the successful installation.</td>
+      <td colspan="2" style="white-space:nowrap;">You can create additional Publications any time after the successful installation.</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap"><hr /></td>
+      <td colspan="2" style="white-space:nowrap;"><hr /></td>
     </tr>
        
     <!-- User -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">hyperCMS Administrator Account</td>
+      <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextGreen">hyperCMS Administrator Account</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">You will need this account to log in to the system after installation.</td>
+      <td colspan="2" style="white-space:nowrap;">You will need this account to log in to the system after installation.</td>
     </tr>
     <tr>
-      <td nowrap="nowrap">User name: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">User name </td>
+      <td>
         <input type="text" id="user" name="user" value="admin" style="width:200px;" readonly="readonly" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Password: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Password </td>
+      <td>
         <input type="password" id="password" name="password" value="<?php echo $password; ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Confirm password: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Confirm password </td>
+      <td>
         <input type="password" id="confirm_password" name="confirm_password" value="<?php echo $confirm_password; ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Name: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Name </td>
+      <td>
         <input type="text" id="realname" name="realname" style="width:200px;" value="<?php echo $realname; ?>" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">E-mail: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">E-mail </td>
+      <td>
         <input type="text" id="email" name="email" style="width:200px;" value="<?php echo $email; ?>" />
       </td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap"><hr /></td>
+      <td colspan="2" style="white-space:nowrap;"><hr /></td>
     </tr>
     
     <!-- Database -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">MySQL Database</td>
+      <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextGreen">MySQL Database</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">Please make sure that a database with the same name does not already exist.</td>
+      <td colspan="2" style="white-space:nowrap;">Please make sure that a database with the same name does not already exist.</td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Database host: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Database host </td>
+      <td>
         <input type="text" id="db_host" name="db_host" value="<?php echo $db_host; ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Database user name: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Database user name </td>
+      <td>
         <input type="text" id="db_username" name="db_username" value="<?php echo $db_username; ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Database password: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Database password </td>
+      <td>
         <input type="password" id="db_password" name="db_password" value="<?php echo $db_password; ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Database name: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Database name </td>
+      <td>
         <input type="text" id="db_name" name="db_name" value="<?php echo $db_name; ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap"><hr /></td>
+      <td colspan="2" style="white-space:nowrap;"><hr /></td>
     </tr>
     
     <!-- SMTP -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">SMTP/Mail Server</td>
+      <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextGreen">SMTP/Mail Server</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">Please provide a valid SMTP host for features like task management, <br/>
+      <td colspan="2" style="white-space:nowrap;">Please provide a valid SMTP host for features like task management, <br/>
       workflow management, send mail-links and others.</td>
     </tr>
     <tr>
-      <td nowrap="nowrap">SMTP host: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">SMTP host </td>
+      <td>
         <input type="text" id="smtp_host" name="smtp_host" value="<?php echo $smtp_host; ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">SMTP user name: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">SMTP user name </td>
+      <td>
         <input type="text" id="smtp_username" name="smtp_username" value="<?php echo $smtp_username; ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">SMTP password: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">SMTP password </td>
+      <td>
         <input type="password" id="smtp_password" name="smtp_password" value="<?php echo $smtp_password; ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">SMTP port: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">SMTP port </td>
+      <td>
         <input type="text" id="smtp_port" name="smtp_port" value="<?php if ($smtp_port != "") echo $smtp_port; else echo "25" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">SMTP sender (e-mail address): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">SMTP sender (e-mail address) </td>
+      <td>
         <input type="text" id="smtp_sender" name="smtp_sender" value="<?php echo $smtp_sender; ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap"><hr /></td>
+      <td colspan="2" style="white-space:nowrap;"><hr /></td>
     </tr>
 
     <!-- OS -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">Operating System</td>
+      <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextGreen">Operating System</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">Please specify the operating system.</td>
+      <td colspan="2" style="white-space:nowrap;">Please specify the operating system.</td>
     </tr>
      <tr>
-      <td nowrap="nowrap">Operating system: </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Operating system </td>
+      <td>
         <select id="os_cms" name="os_cms">
           <option value="UNIX" <?php if ($os_cms == "UNIX") echo "selected=\"selected\""; elseif ($os_cms == "") echo "selected=\"selected\"" ?>>UNIX / Linux</option>
           <option value="WIN" <?php if ($os_cms == "WIN") echo "selected=\"selected\""; ?>>Windows</option>
@@ -884,7 +884,7 @@ Otherwise just provide the information below and install the most powerful Conte
       </td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap"><hr /></td>
+      <td colspan="2" style="white-space:nowrap;"><hr /></td>
     </tr>
     
     <!-- Executables -->
@@ -893,91 +893,91 @@ Otherwise just provide the information below and install the most powerful Conte
     @ini_set ("open_basedir" , NULL);
     ?>
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">Additional Software</td>
+      <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextGreen">Additional Software</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">In order to use the full set of Digital Asset Management features<br/>
+      <td colspan="2" style="white-space:nowrap;">In order to use the full set of Digital Asset Management features<br/>
       of the system, additional software packages are required.<br/>
       The following settings provide typical examples of pathes to the <br/>
       executables on Linux, if available. Please adopt them if not suitable.<br/>
       Attention: The open_basedir restriction might effect the search for executables.</td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to XPDF (pdftotext): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to XPDF (pdftotext) </td>
+      <td>
         <input type="text" id="pdftotext" name="pdftotext" placeholder="/usr/bin/pdftotext" value="<?php if ($pdftotext != "") echo $pdftotext; elseif (@is_executable ("/usr/bin/pdftotext")) echo "/usr/bin/pdftotext" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to AntiWord (antiword): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to AntiWord (antiword) </td>
+      <td>
         <input type="text" id="antiword" name="antiword" placeholder="/usr/bin/antiword" value="<?php if ($antiword != "") echo $antiword; elseif (@is_executable ("/usr/bin/antiword")) echo "/usr/bin/antiword" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to GUNZIP (gunzip): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to GUNZIP (gunzip) </td>
+      <td>
         <input type="text" id="gunzip" name="gunzip" placeholder="/usr/bin/gunzip" value="<?php if ($gunzip != "") echo $gunzip; elseif (@is_executable ("/usr/bin/gunzip")) echo "/usr/bin/gunzip" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to UNZIP (unzip): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to UNZIP (unzip) </td>
+      <td>
         <input type="text" id="unzip" name="unzip" placeholder="/usr/bin/unzip" value="<?php if ($unzip != "") echo $unzip; elseif (@is_executable ("/usr/bin/unzip")) echo "/usr/bin/unzip" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to ZIP (zip): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to ZIP (zip) </td>
+      <td>
         <input type="text" id="zip" name="zip" placeholder="/usr/bin/zip" value="<?php if ($zip != "") echo $zip; elseif (@is_executable ("/usr/bin/zip")) echo "/usr/bin/zip" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to UNOCONV (unoconv): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to UNOCONV (unoconv) </td>
+      <td>
         <input type="text" id="unoconv" name="unoconv" placeholder="/usr/bin/unoconv" value="<?php if ($unoconv != "") echo $unoconv; elseif (@is_executable ("/usr/bin/unoconv")) echo "/usr/bin/unoconv" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to ImageMagick (convert): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to ImageMagick (convert) </td>
+      <td>
         <input type="text" id="convert" name="convert" placeholder="/usr/bin/convert" value="<?php if ($convert != "") echo $convert; elseif (@is_executable ("/usr/bin/convert")) echo "/usr/bin/convert" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to FFMPEG (ffmpeg): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to FFMPEG (ffmpeg) </td>
+      <td>
         <input type="text" id="ffmpeg" name="ffmpeg" placeholder="/usr/bin/ffmpeg" value="<?php if ($ffmpeg != "") echo $ffmpeg; elseif (@is_executable ("/usr/bin/ffmpeg")) echo "/usr/bin/ffmpeg" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to YAMDI (yamdi): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to YAMDI (yamdi) </td>
+      <td>
         <input type="text" id="yamdi" name="yamdi" placeholder="/usr/bin/yamdi" value="<?php if ($yamdi != "") echo $yamdi; elseif (@is_executable ("/usr/bin/yamdi")) echo "/usr/bin/yamdi" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to EXIFTOOL (exiftool): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to EXIFTOOL (exiftool) </td>
+      <td>
         <input type="text" id="exiftool" name="exiftool" placeholder="/usr/bin/exiftool" value="<?php if ($exiftool != "") echo $exiftool; elseif (@is_executable ("/usr/bin/exiftool"))  echo "/usr/bin/exiftool" ?>" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap">Define path to Tesseract OCR (tesseract): </td>
-      <td align="left">
+      <td style="white-space:nowrap;">Define path to Tesseract OCR (tesseract) </td>
+      <td>
         <input type="text" id="tesseract" name="tesseract" placeholder="/usr/bin/tesseract" value="<?php if ($yamdi != "") echo $yamdi; elseif (@is_executable ("/usr/bin/tesseract")) echo "/usr/bin/tesseract" ?>" style="width:200px;" />
       </td>
     </tr> 
     <tr>
-      <td colspan="2" nowrap="nowrap"><hr /></td>
+      <td colspan="2" style="white-space:nowrap;"><hr /></td>
     </tr>
     
     <!-- Scheduled Tasks -->
     <tr>
-      <td colspan="2" nowrap="nowrap" class="hcmsHeadline hcmsTextGreen">Scheduled Tasks</td>
+      <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextGreen">Scheduled Tasks</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">
+      <td colspan="2" style="white-space:nowrap;">
       After installation the following scheduled Cron Jobs (Linux/UNIX) <br/>
       or scheduled Tasks (MS Windows) need to be created manually:<br/>
       <strong>cms/job/daily.php</strong> ... needs to be executed daily (e.g. midnight)<br/>
@@ -994,10 +994,10 @@ Otherwise just provide the information below and install the most powerful Conte
       </td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">&nbsp;</td>
+      <td colspan="2" style="white-space:nowrap;">&nbsp;</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">
+      <td colspan="2" style="white-space:nowrap;">
         <input type="submit" class="button hcmsButtonGreen" style="width:100%; height:40px;" value="Install now" />
       </td>
     </tr>

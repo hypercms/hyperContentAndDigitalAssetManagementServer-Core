@@ -187,9 +187,9 @@ $token = createtoken ($user);
         <input type="hidden" id="savetype" name="savetype" value="">
         <input type="hidden" name="token" value="<?php echo $token; ?>">
         
-        <table border="0" cellspacing="2">
+        <table class="hcmsTableStandard">
           <tr>
-            <td nowrap="nowrap" align="left">
+            <td style="white-space:nowrap; text-align:left;">
               <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />   
               <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
               <?php if (intval ($mgmt_config['autosave']) > 0) { ?>
@@ -198,7 +198,7 @@ $token = createtoken ($user);
               </div>
               <?php } ?>
             </td>
-            <td nowrap="nowrap" align="right">
+            <td style="white-space:nowrap; text-align:right;">
               <?php echo showtranslator ($site, $tagname."_".$id, "f", $charset, $lang); ?>
             </td>
           </tr>
@@ -212,11 +212,11 @@ $token = createtoken ($user);
     </div>
     
     <!-- auto save -->
-    <div id="messageLayer" style="position:absolute; width:300px; height:40px; z-index:999999; left: 150px; top: 120px; visibility: hidden">
-      <table width="300" height="40" border=0 cellspacing=0 cellpadding=3 class="hcmsMessage">
+    <div id="messageLayer" style="position:absolute; width:300px; height:40px; z-index:999999; left:150px; top:120px; visibility:hidden;">
+      <table class="hcmsMessage hcmsTableStandard" style="width:300px; height:40px;">
         <tr>
-          <td align="center" valign="top">
-            <div style="width:100%; height:100%; z-index:10; overflow:auto;">
+          <td style="text-align:center; vertical-align:top;">
+            <div style="width:100%; height:100%; overflow:auto;">
               <?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?>
             </div>
           </td>

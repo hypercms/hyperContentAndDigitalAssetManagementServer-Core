@@ -1151,9 +1151,11 @@ $(window).load( function()
 
 <!-- saving --> 
 <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:absolute; width:100%; height:100%; z-index:999; left:0px; top:0px; visibility:hidden;">
-  <table width="100%" height="100%" border="0" cellpadding="3" cellspacing="1">
+  <table class="hcmsTableStandard" style="width:100%; height:100%;">
     <tr>
-      <td align="center" valign="middle"><b><?php echo getescapedtext ($hcms_lang['the-file-is-being-processed'][$lang]); ?></b><br /><br /><img src="<?php echo getthemelocation(); ?>img/loading.gif"></td>
+      <td style="text-align:center; vertical-align:middle;"><b><?php echo getescapedtext ($hcms_lang['the-file-is-being-processed'][$lang]); ?></b>
+      <br /><br />
+      <img src="<?php echo getthemelocation(); ?>img/loading.gif"></td>
     </tr>
   </table>
 </div>

@@ -112,15 +112,15 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
             <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
               <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                 <input id=\"message_id\" type=\"hidden\" value=\"".$mailfile."\" />
-                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
-                    <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." align=\"absmiddle\" />&nbsp;<span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>&nbsp;
+                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >&nbsp; 
+                    <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>
                 </div>
               </td>
-              <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"\">&nbsp;&nbsp;".$mail_title."</span></td>
-              <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"\">&nbsp;&nbsp;".$recipients."</span></td>
-              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-              <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;sent</span></td>
-              <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$message_user."</span></td>
+              <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$mail_title."</span></td>
+              <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$recipients."</span></td>
+              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+              <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">sent</span></td>
+              <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$message_user."</span></td>
             </tr>";
             
         $items_row++;  
@@ -176,12 +176,12 @@ function buttonaction (action)
 function resizecols()
 {
   // get width of table header columns
-  var c1 = $('#c1').width() + 3;
-  var c2 = $('#c2').width() + 3;
-  var c3 = $('#c3').width() + 3;
-  var c4 = $('#c4').width() + 3;
-  var c5 = $('#c5').width() + 3;
-  var c6 = $('#c6').width() + 3;
+  var c1 = $('#c1').width();
+  var c2 = $('#c2').width();
+  var c3 = $('#c3').width() ;
+  var c4 = $('#c4').width() ;
+  var c5 = $('#c5').width();
+  var c6 = $('#c6').width();
 
   // set width for table columns
   $('.hcmsCol1').width(c1);
@@ -215,14 +215,14 @@ function resizecols()
     <input type="hidden" name="multiobject" value="" />
     <input type="hidden" name="token" value="" />
     
-    <table width="150px" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
+    <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
       <tr>
         <td>
-          <a href=# id="href_edit" onClick="if (buttonaction ('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_edit" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
+          <a href="javascript:void(0);" id="href_edit" onClick="if (buttonaction ('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_edit" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
           <hr />
-          <a href=# id="href_delete" onClick="if (buttonaction ('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+          <a href="javascript:void(0);" id="href_delete" onClick="if (buttonaction ('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
           <hr />
-          <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+          <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
         </td>
       </tr>    
     </table>
@@ -230,21 +230,21 @@ function resizecols()
 </div>
 
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:3; visibility:visible;">
-  <table id="objectlist_head" cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
+  <table id="objectlist_head" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:97px; white-space:nowrap;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:100px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:177px; white-space:nowrap;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['subject'][$lang]); ?>
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:197px; white-space:nowrap;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:200px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?>
       </td> 
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:117px; white-space:nowrap;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>
       </td>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="width:57px; white-space:nowrap;">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="width:60px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>
       </td>
       <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader" style="white-space:nowrap;">
@@ -254,12 +254,13 @@ function resizecols()
   </table>
   
   <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
-    <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="6" style="border:0; width:100%; table-layout:fixed;">
+    <table id="objectlist" name="objectlist" cols="6" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
     <?php 
     echo $listview;
     ?>
     </table>
-    <br /><div id="detailviewReset" style="width:100%; height:20px; z-index:3; visibility:visible;" onMouseOver="hcms_hideContextmenu();"></div>
+    <br />
+    <div id="detailviewReset" style="width:100%; height:20px; z-index:3; visibility:visible;" onMouseOver="hcms_hideContextmenu();"></div>
   </div>
 </div>
 

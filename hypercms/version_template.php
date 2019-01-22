@@ -154,7 +154,7 @@ function toggledelete (source)
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=2 topmargin=2 marginwidth=0 marginheight=0 onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png')">
+<body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png')">
 
 <div class="hcmsWorkplaceFrame">
 <!-- change versions -->
@@ -164,13 +164,13 @@ function toggledelete (source)
   <input type="hidden" name="template_recent" value="<?php echo $template; ?>" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table border="0" cellspacing="2" cellpadding="3">
+  <table class="hcmsTableStandard" style="table-layout:auto; width:100%;">
     <tr>
-     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['version-date'][$lang]); ?></td>
-     <td width="60%" nowrap="nowrap" class="hcmsHeadline"><?php echo $pagecomp; ?></td>
-     <td nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['compare'][$lang]); ?></td>
-     <td nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['current'][$lang]); ?></td>
-     <td nowrap="nowrap" class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggledelete(this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></label></td>
+      <td style="white-space:nowrap; width:160px;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['version-date'][$lang]); ?></td>
+      <td style="white-space:nowrap;" class="hcmsHeadline"><?php echo $pagecomp; ?></td>
+      <td style="white-space:nowrap; width:60px; text-align:center;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['compare'][$lang]); ?></td>
+      <td style="white-space:nowrap; width:60px; text-align:center;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['current'][$lang]); ?></td>
+      <td style="white-space:nowrap; width:60px; text-align:center;" class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggledelete(this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></label></td>
     </tr>
     <?php
     // change to version
@@ -185,9 +185,9 @@ function toggledelete (source)
       {
         $rename_2 = rename ($versiondir.$actual, $versiondir.$template_recent);
 
-        if ($rename_2 == false) echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
+        if ($rename_2 == false) echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
       }
-      else echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
+      else echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
     }
 
     // delete versions
@@ -232,24 +232,26 @@ function toggledelete (source)
           $color = true;
         }
 
-        echo "<tr class=\"".$rowcolor."\">
-          <td nowrap=\"nowrap\">".showdate ($date_v, "Y-m-d H:i:s", $hcms_lang_date[$lang])."</td>
-          <td nowrap=\"nowrap\"><a href=# onClick=\"hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($file_v)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp; ".$tpl_name."</a> <a href=# onClick=\"hcms_openWindow('template_source.php?site=".url_encode($site)."&template=".url_encode($file_v)."', '', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><font size=\"-2\">(Source Code)</font></a></td>
-          <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"dummy\" value=\"".$file_v."\" onclick=\"if (compare_select('".$file_v."')) this.checked=true; else this.checked=false;\" /></td>
-          <td align=\"middle\" valign=\"middle\"><input type=\"radio\" name=\"actual\" value=\"".$file_v."\" /></td>
-          <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" class=\"delete\" /></td>
+        echo "
+        <tr class=\"".$rowcolor."\">
+          <td style=\"white-space:nowrap;\">".showdate ($date_v, "Y-m-d H:i:s", $hcms_lang_date[$lang])."</td>
+          <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($file_v)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$tpl_name."</a> <a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_source.php?site=".url_encode($site)."&template=".url_encode($file_v)."', '', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><span class=\"hcmsTextSmall\">(Source Code)</span</a></td>
+          <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"dummy\" value=\"".$file_v."\" onclick=\"if (compare_select('".$file_v."')) this.checked=true; else this.checked=false;\" /></td>
+          <td style=\"text-align:center; vertical-align:middle;\"><input type=\"radio\" name=\"actual\" value=\"".$file_v."\" /></td>
+          <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" class=\"delete\" /></td>
         </tr>";
 
         $i++;
       }
     }
 
-    echo "<tr class=\"hcmsRowHead2\">
-      <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['current-version'][$lang])."</td>
-      <td nowrap=\"nowrap\"><a href=# onClick=\"hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($template)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp; ".$tpl_name."</a> <a href=# onClick=\"hcms_openWindow('template_source.php?site=".url_encode($site)."&template=".url_encode($template)."', 'sourceview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><font size=\"-2\">(Source Code)</font></a></td>
-      <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"dummy\" value=\"\" onclick=\"if (compare_select('".$template."')) this.checked=true; else this.checked=false;\" /></td>
-      <td align=\"middle\" valign=\"middle\"><input type=\"radio\" name=\"actual\" value=\"\" checked=\"checked\" /></td>
-      <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"dummy\" value=\"\" disabled=\"disabled\" /></td>
+    echo "
+    <tr class=\"hcmsRowHead2\">
+      <td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['current-version'][$lang])."</td>
+      <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($template)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$tpl_name."</a> <a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_source.php?site=".url_encode($site)."&template=".url_encode($template)."', 'sourceview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><span class=\"hcmsTextSmall\">(Source Code)</span></a></td>
+      <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"dummy\" value=\"\" onclick=\"if (compare_select('".$template."')) this.checked=true; else this.checked=false;\" /></td>
+      <td style=\"text-align:center; vertical-align:middle;\"><input type=\"radio\" name=\"actual\" value=\"\" checked=\"checked\" /></td>
+      <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"dummy\" value=\"\" disabled=\"disabled\" /></td>
     </tr>";
     
     // save log
@@ -258,7 +260,7 @@ function toggledelete (source)
   </table>
   <br />
   <div style="width:350px; float:left;"><?php echo getescapedtext ($hcms_lang['submit-changes-to-versions'][$lang]); ?> </div>
-  <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_versions_update();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" /><br />
+  <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_versions_update();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /><br />
 </form>
 
 <!-- compare versions -->
@@ -271,7 +273,7 @@ function toggledelete (source)
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
   <div style="width:350px; float:left;"><?php echo getescapedtext ($hcms_lang['compare-selected-versions'][$lang]); ?> </div>
-  <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="compare_submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
+  <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="compare_submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
 </form>
 </div>
 

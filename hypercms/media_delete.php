@@ -45,7 +45,6 @@ $add_onload = "";
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 function warning_media_delete ()
 {
   var form = document.forms['media'];
@@ -65,7 +64,6 @@ function goToURL ()
   document.returnValue = false;
   for (i=0; i<(args.length-1); i+=2) eval(args[i]+".location='"+args[i+1]+"'");
 }
-//-->
 </script>
 </head>
 <?php
@@ -77,21 +75,22 @@ if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, '
 }
 ?>
 <body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png');">
-<p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete-media-file'][$lang]); ?></p>
-  <table border="0">
+  <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete-media-file'][$lang]); ?></p>
   <form name="media" action="">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="mediafile" value="" />
     <input type="hidden" name="action" value="delete" />
+    
+    <table class="hcmsTableStandard">
       <tr>
-        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
+        <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
         <td>
           <input type="text" style="width:300px;" name="media_name" />
-          <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_media_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
+          <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_media_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
         </td>
       </tr>
-  </form>    
-  </table><br />
+    </table><br />
+  </form>
   <?php echo $show; ?>
 </body>
 </html>

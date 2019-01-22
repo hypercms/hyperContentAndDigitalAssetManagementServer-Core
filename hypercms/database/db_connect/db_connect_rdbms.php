@@ -2482,6 +2482,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       if (in_array ("filesize", $return_text_id))
       {
         $sql_attr[] = "med.filesize";
+        $sql_attr[] = "med.width";
+        $sql_attr[] = "med.height";
         if (empty ($sql_table['media'])) $sql_table['media'] = "";
         if (strpos ($sql_table['media'], " ON obj.id=med.id") < 1) $sql_table['media'] .= ' LEFT JOIN media AS med ON obj.id=med.id';
       }
@@ -2541,6 +2543,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
           if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
+          if (!empty ($row['width'])) $objectpath[$hash]['width'] = $row['width'];
+          if (!empty ($row['height'])) $objectpath[$hash]['height'] = $row['height'];
           if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
         }
       }      

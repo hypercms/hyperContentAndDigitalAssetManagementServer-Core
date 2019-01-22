@@ -489,13 +489,9 @@ elseif ($savetype == "editor_so")
 <script src="../javascript/click.js" type="text/javascript"></script>
 </head>
 <body class="hcmsWorkplaceGeneric">
-<table border="0" cellspacing="4" cellpadding="0">
-  <tr>
-    <td>
-      <?php echo $show; ?>
-   </td>
-  </tr>
-</table>
+<div style="padding:4px;">
+  <?php echo $show; ?>
+</div>
 </body>
 </html>
 <?php 

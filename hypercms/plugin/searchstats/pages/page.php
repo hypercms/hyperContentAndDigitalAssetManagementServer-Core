@@ -60,7 +60,10 @@ function showkeywordlist ($keywords, $sort_type="value", $css="hcmsButtonGreen")
       if ($count > 0) $count = "(".number_format ($count, 0, ",", ".").")";
       else $count = "";
       
-      $show .= "<tr><td><button class=\"".$css."\" style=\"max-width:420px; overflow:hidden; text-overflow:ellipsis;\" onclick=\"location='../../../frameset_objectlist.php?action=base_search&search_expression=".urlencode($value)."';\">".$value." ".$count."</button></td></tr>\n";
+      $show .= "
+      <tr>
+        <td><button class=\"".$css."\" style=\"max-width:420px; overflow:hidden; text-overflow:ellipsis;\" onclick=\"location='../../../frameset_objectlist.php?action=base_search&search_expression=".urlencode($value)."';\">".$value." ".$count."</button></td>
+      </tr>";
     }
       
     return $show;
@@ -182,7 +185,7 @@ if (is_file ($keywordfile))
   <div style="float:left; margin-right:20px;">
   <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['expression-frequency'][$lang]); ?></p>
   <span style="padding-left:4px;"><?php echo getescapedtext ($hcms_lang['please-click-the-links-below-to-access-the-files'][$lang]); ?></span>
-  <table border="0" cellspacing="2" cellpadding="2">
+  <table class="hcmsTableStandard">
     <?php
     echo $show_rank;
     ?>
@@ -194,7 +197,7 @@ if (is_file ($keywordfile))
   <div style="float:left; margin-right:20px;">
   <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['expression-sorted-alphabetically'][$lang]); ?></p>
   <span style="padding-left:4px;"><?php echo getescapedtext ($hcms_lang['please-click-the-links-below-to-access-the-files'][$lang]); ?></span>
-  <table border="0" cellspacing="2" cellpadding="2">
+  <table class="hcmsTableStandard">
     <?php
     echo $show_sort;
     ?>

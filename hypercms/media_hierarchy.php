@@ -249,9 +249,9 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table width="100%" border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-hierarchy'][$lang]); ?> </td>          
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['select-hierarchy'][$lang]); ?> </td>          
     </tr>    
     <tr>
       <td>
@@ -268,12 +268,12 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
           }
           ?>
         </select>
-        <img onClick="deletehierarchy()" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
+        <img onClick="deletehierarchy()" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
         <hr />
       </td>
     </tr>
       <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?> </td>          
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?> </td>          
     </tr>     
     <tr>
       <td>
@@ -285,11 +285,11 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
     </tr>
     <tr>
       <td>
-        <table border="0" cellspacing="2" cellpadding="0">
+        <table class="hcmsTableStandard">
           <tr>
-            <td class="hcmsHeadline" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['level'][$lang]); ?></td>
-            <td class="hcmsHeadline" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['text-id'][$lang]); ?></td>
-            <td class="hcmsHeadline" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['label'][$lang]); ?> (en:Title; de:Titel; fr:Titre)</td>
+            <td class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['level'][$lang]); ?></td>
+            <td class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['text-id'][$lang]); ?></td>
+            <td class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['label'][$lang]); ?> (en:Title; de:Titel; fr:Titre)</td>
           </tr>
           <?php
           if (is_array ($hierarchy) && sizeof ($hierarchy) > 0)
@@ -354,7 +354,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
                   }
                 }
                 ?>
-              </select><img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" align="absmiddle" class="hcmsButtonSizeSquare" />
+              </select><img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButtonSizeSquare" />
             </td>
             <td>
               <select name="hierarchy[<?php echo $i; ?>][text_id]" style="width:160px;" class="<?php echo $rowcolor; ?>">
@@ -390,7 +390,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
     <tr>
       <td>
         <?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> 
-        <img name="Button" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="savehierarchy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
+        <img name="Button" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="savehierarchy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
       </td>
     </tr>
   </table>  

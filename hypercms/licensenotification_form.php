@@ -183,31 +183,31 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
   <input type="hidden" name="result" value="" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
-  <table border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard">
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['text-id-expiration-date-to-monitor'][$lang]); ?> </td>
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['text-id-expiration-date-to-monitor'][$lang]); ?> </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><input type="text" name="text_id" value="" style="width:350px;" /></td>
+      <td style="white-space:nowrap;"><input type="text" name="text_id" value="" style="width:350px;" /></td>
     </tr> 
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['date-format-eg'][$lang]); ?> </td>
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['date-format-eg'][$lang]); ?> </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><input type="text" name="format" value="%Y-%m-%d" style="width:350px;" /></td>
+      <td style="white-space:nowrap;"><input type="text" name="format" value="%Y-%m-%d" style="width:350px;" /></td>
     </tr> 
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?> </td>
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?> </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><input type="text" name="users" value="" style="width:350px;" /></td>
+      <td style="white-space:nowrap;"><input type="text" name="users" value="" style="width:350px;" /></td>
     </tr>    
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-period'][$lang]); ?> </td>
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['select-period'][$lang]); ?> </td>
     </tr>
     <tr> 
       <td>
-        <select name="period" style="width:350px;">
+        <select name="period" style="width:360px;">
           <option value="monthly"><?php echo getescapedtext ($hcms_lang['monthly'][$lang]); ?></option>
           <option value="weekly"><?php echo getescapedtext ($hcms_lang['weekly'][$lang]); ?></option>
           <option value="daily"><?php echo getescapedtext ($hcms_lang['daily'][$lang]); ?></option>
@@ -215,14 +215,14 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
       </td>
     </tr>   
     <tr>
-      <td  colspan="2" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['applied-settings-on-selected-folders'][$lang]); ?> </td>          
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['applied-settings-on-selected-folders'][$lang]); ?> </td>          
     </tr>     
     <tr>
       <td>
-        <table border="0" width="100">
+        <table class="hcmsTableNarrow">
           <tr>
             <td>
-              <select name="folder" style="width:350px;" size="10">
+              <select name="folder" style="width:360px;" size="10">
                 <?php
                 $config_data = loadfile_fast ($mgmt_config['abs_path_data']."config/", $site.".".$cat.".msg.dat");
                 
@@ -268,9 +268,9 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
                 ?>
               </select>
             </td>
-            <td align="center" valign="middle">
+            <td style="text-align:center; vertical-align:middle; padding:2px;">
               <img onClick="deleteSelected(document.forms['notification_area'].elements['folder']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
-          </td>
+            </td>
           </tr>
         </table>
       </td>
@@ -279,8 +279,8 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> 
-        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll('notification_area', 'folder', 'result');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> 
+        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll('notification_area', 'folder', 'result');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
       </td>
     </tr>
   </table>

@@ -101,15 +101,15 @@ if ($action)
     <form action="" method="POST" name="editplugins">
       <input type="hidden" name="action" value="change" />
       
-      <table cellspacing="2" cellpadding="2" border="0" width="95%">
+      <table class="hcmsTableStandard" style="width:95%; table-layout:auto;">
         <tbody>
           <tr>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="50"><?php echo getescapedtext ($hcms_lang['number'][$lang]); ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="30%"><?php echo getescapedtext ($hcms_lang['plugin-name'][$lang]); ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="30%"><?php echo getescapedtext ($hcms_lang['author'][$lang]); ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['version'][$lang]); ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="40%"><?php echo getescapedtext ($hcms_lang['description'][$lang]); ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></th>
+            <th class="hcmsHeadline" style="text-align:center; white-space:nowrap; width:20px;">#</th>
+            <th class="hcmsHeadline" style="text-align:left; white-space:nowrap; width:180px;"><?php echo getescapedtext ($hcms_lang['plugin-name'][$lang]); ?></th>
+            <th class="hcmsHeadline" style="text-align:left; white-space:nowrap; width:180px;"><?php echo getescapedtext ($hcms_lang['author'][$lang]); ?></th>
+            <th class="hcmsHeadline" style="text-align:left; white-space:nowrap; width:100px;"><?php echo getescapedtext ($hcms_lang['version'][$lang]); ?></th>
+            <th class="hcmsHeadline" style="text-align:left; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['description'][$lang]); ?></th>
+            <th class="hcmsHeadline" style="text-align:left; white-space:nowrap; width:50px;"><?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></th>
           </tr>
         <?php
         $cnt = 0;
@@ -121,12 +121,12 @@ if ($action)
             $cnt++;
           ?>
           <tr class="hcmsRowData<?php echo ($cnt%2)+1; ?>">
-            <td nowrap="nowrap"><?php echo $cnt; ?></td>
+            <td style="text-align:center;"><?php echo $cnt; ?></td>
             <td><?php echo $temp_array['name']; ?></td>
             <td><?php echo $temp_array['author']; ?></td>
-            <td nowrap="nowrap"><?php echo $temp_array['version']; ?></td>
+            <td style="white-space:nowrap;"><?php echo $temp_array['version']; ?></td>
             <td><?php echo $temp_array['description']; ?></td>
-            <td align="center" valign="middle">
+            <td style="text-align:center; vertical-align:middle;">
               <input type="checkbox" name="active[<?php echo $temp_name; ?>]" value="1" <?php if (!empty ($temp_array['active'])) echo "checked=\"checked\""; ?>/>
             </td>
           </tr>
@@ -139,10 +139,10 @@ if ($action)
       
       <div style="margin-top:10px;">
         <div style="width:260px; float:left;"><?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?> </div>
-        <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button1','', '<?php echo getthemelocation(); ?>/img/button_ok_over.png',1)" onmouseout="hcms_swapImgRestore()" onclick="document.forms['editplugins'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" name="Button1">
+        <img alt="OK" title="OK" onmouseover="hcms_swapImage('Button1','', '<?php echo getthemelocation(); ?>/img/button_ok_over.png',1)" onmouseout="hcms_swapImgRestore()" onclick="document.forms['editplugins'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" name="Button1">
         <div style="clear:both;"></div>
         <div style="width:260px; float:left;"><?php echo getescapedtext ($hcms_lang['check-for-new-or-changed-plugins'][$lang]); ?> </div>
-        <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button2','', '<?php echo getthemelocation(); ?>/img/button_ok_over.png',1)" onmouseout="hcms_swapImgRestore()" onclick="window.location='?action=reparse'" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" name="Button2">
+        <img alt="OK" title="OK" onmouseover="hcms_swapImage('Button2','', '<?php echo getthemelocation(); ?>/img/button_ok_over.png',1)" onmouseout="hcms_swapImgRestore()" onclick="window.location='?action=reparse'" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" name="Button2">
       </div>
         
     </form>

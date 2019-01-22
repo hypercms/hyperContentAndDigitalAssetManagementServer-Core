@@ -760,14 +760,14 @@ else
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
-  <table cellpadding="0" cellspacing="0" style="border:0; width:100%; table-layout:fixed;">
+  <table class="hcmsTableNarrow">
     <tr>
       <?php
       // location
       if ($cat == "page" || $cat == "comp")
       {
         echo "
-      <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;</td>
+      <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" />&nbsp;</td>
       <td class=\"hcmsHeadlineTiny\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".str_replace ("/", " &gt; ", trim ($location_name, "/"))."</td>";
       }
       else 
@@ -784,7 +784,7 @@ else
       if (empty ($file_info['icon'])) $file_info['icon'] = "Null_media.gif";
 
       echo "
-      <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" title=\"".$item."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;</td>
+      <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" title=\"".$item."\" class=\"hcmsIconList\" />&nbsp;</td>
       <td class=\"hcmsHeadlineTiny\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".$object_name."</td>";
       ?>
     </tr>
@@ -1143,7 +1143,7 @@ else
       {
         // function imgConvert must be used in order to reset the rendering options
         echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"document.getElementById('button_obj_convert').click(); imgConvert ('','');\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['original'][$lang])."&nbsp;</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"document.getElementById('button_obj_convert').click(); imgConvert ('','');\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['original'][$lang])."&nbsp;</div>";
       }
       
       // document download options
@@ -1160,7 +1160,7 @@ else
             if ((empty ($downloadformats) || !empty ($downloadformats['document'][$doc_type])) && in_array ($ext, $mgmt_docconvert[$media_info['ext']]))
             {
               echo "
-            <div class=\"hcmsSelectorItem\" onclick=\"document.getElementById('button_obj_convert').click(); docConvert ('".$doc_type."');\"><img src=\"".getthemelocation()."img/".$doc_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />".$doc_info['type']." (".strtoupper($doc_type).")&nbsp;</div>";
+            <div class=\"hcmsSelectorItem\" onclick=\"document.getElementById('button_obj_convert').click(); docConvert ('".$doc_type."');\"><img src=\"".getthemelocation()."img/".$doc_info['icon']."\" class=\"hcmsIconList\" />".$doc_info['type']." (".strtoupper($doc_type).")&nbsp;</div>";
             }
           }
         }
@@ -1182,7 +1182,7 @@ else
               if ((empty ($downloadformats) || !empty ($downloadformats['image'][$image_type][$config_name])) && $config_name != "thumbnail" && $config_name != "original") 
               {
                 echo "
-            <div class=\"hcmsSelectorItem\" onclick=\"document.getElementById('button_obj_convert').click(); imgConvert ('".$image_type."', '".$config_name."');\"><img src=\"".getthemelocation()."img/".$img_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />".strtoupper($image_type)." ".$config_name."&nbsp;</div>";
+            <div class=\"hcmsSelectorItem\" onclick=\"document.getElementById('button_obj_convert').click(); imgConvert ('".$image_type."', '".$config_name."');\"><img src=\"".getthemelocation()."img/".$img_info['icon']."\" class=\"hcmsIconList\" />".strtoupper($image_type)." ".$config_name."&nbsp;</div>";
               }
             }
           }
@@ -1193,20 +1193,20 @@ else
       if ($vid_rendering && is_video ($media))
       {
         if (empty ($downloadformats) || !empty ($downloadformats['video']['origthumb'])) echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('origthumb'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['preview'][$lang])."&nbsp;</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('origthumb'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['preview'][$lang])."&nbsp;</div>";
           
         if (empty ($downloadformats) || !empty ($downloadformats['video']['jpg'])) echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('jpg'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['images'][$lang])." (JPG)&nbsp;</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('jpg'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['images'][$lang])." (JPG)&nbsp;</div>";
           
         if (empty ($downloadformats) || !empty ($downloadformats['video']['png'])) echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['images'][$lang])." (PNG)&nbsp;</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['images'][$lang])." (PNG)&nbsp;</div>";
       }
 			
 			//save to dropbox
 			if ($dropbox_rendering)
 			{
 				echo "
-            <div class=\"hcmsSelectorItem\" onclick=\"document.getElementById('button_obj_convert').click(); submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'status=yes,scrollbars=yes,resizable=yes,width=600,height=400', 600, 400);\"><img src=\"".getthemelocation()."img/file_dropbox.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['dropbox'][$lang])."&nbsp;</div>";
+            <div class=\"hcmsSelectorItem\" onclick=\"document.getElementById('button_obj_convert').click(); submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'status=yes,scrollbars=yes,resizable=yes,width=600,height=400', 600, 400);\"><img src=\"".getthemelocation()."img/file_dropbox.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['dropbox'][$lang])."&nbsp;</div>";
 			}
       
       echo "
@@ -1517,10 +1517,10 @@ else
         <img src=\"".getthemelocation()."img/button_view_gallery_".$temp_explorerview.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" />
 
         <div id=\"select_obj_view\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:-180px; visibility:hidden; z-index:999; width:180px; max-height:".($is_mobile ? "50px" : "70px")."; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">
-          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('large'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_large.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['large-thumbnails'][$lang])."&nbsp;</div>
-          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('medium'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_medium.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['medium-thumbnails'][$lang])."&nbsp;</div>
-          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('small'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_small.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['small-thumbnails'][$lang])."&nbsp;</div>
-          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('detail'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_detail.png\" class=\"hcmsIconList\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['details'][$lang])."&nbsp;</div>
+          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('large'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_large.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['large-thumbnails'][$lang])."&nbsp;</div>
+          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('medium'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_medium.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['medium-thumbnails'][$lang])."&nbsp;</div>
+          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('small'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_small.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['small-thumbnails'][$lang])."&nbsp;</div>
+          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('detail'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_detail.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['details'][$lang])."&nbsp;</div>
         </div>
       </div>";
     ?>
@@ -1564,14 +1564,16 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="action" value="folder_create" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
-  <table width="100%" height="60" border="0" cellspacing="4" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle">
-        <?php echo getescapedtext ($hcms_lang['create-folder'][$lang]); ?> 
-        <input type="text" name="foldernew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:220px;" />
-        <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+      <td>
+        <?php echo getescapedtext ($hcms_lang['create-folder'][$lang]); ?>
+        <span style="white-space:nowrap;">
+          <input type="text" name="foldernew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:220px;" />
+          <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+        </span>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('foldercreateLayer','','hide');" />
       </td>      
     </tr>
@@ -1586,16 +1588,16 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="action" value="folder_rename" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
-  <table width="100%" height="60" border="0" cellspacing="4" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle">
+      <td>
         <?php echo getescapedtext ($hcms_lang['rename-folder'][$lang]); ?>
         <span style="white-space:nowrap;">
           <input type="text" name="foldernew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:220px;" value="<?php echo $pagename; ?>" />
-          <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+          <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('folderrenameLayer','','hide');" />
       </td>        
     </tr>
@@ -1610,16 +1612,16 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="action" value="page_rename" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
-  <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle">
+      <td>
         <?php echo getescapedtext ($hcms_lang['rename'][$lang]);  if ($filetype == "Page" || $filetype == "Component") echo " (".getescapedtext ($hcms_lang['name-without-ext'][$lang]).")"; ?>
         <span style="white-space:nowrap;">
           <input type="text" name="pagenew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:220px;" value="<?php echo substr ($pagename, 0, strrpos ($pagename, ".")); ?>" />
-          <img name="Button5" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_page_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button5','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+          <img name="Button5" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_page_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button5','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('objrenameLayer','','hide');" />
       </td>      
     </tr>
@@ -1636,16 +1638,16 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="multiobject" value="<?php echo $multiobject ?>" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td valign="middle">
+      <td>
         <?php echo getescapedtext ($hcms_lang['create-zip-file-without-ext'][$lang]); ?>
         <span style="white-space:nowrap;">
           <input type="text" name="pagenew" maxlength="100" style="width:220px;" value="<?php echo substr ($pagename, 0, strrpos ($pagename, ".")); ?>" />
-          <img name="Button6" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="checkForm_zip();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button6','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+          <img name="Button6" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="checkForm_zip();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button6','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose4" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose4','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('zipLayer','','hide');" />
       </td>       
     </tr>
@@ -1659,14 +1661,16 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="action" value="import" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
-  <table width="100%" height="75" border="0" cellspacing="4" cellpadding="0">
+  <table class="hcmsTableStandard" style="width:100%; height:75px;">
     <tr>
-      <td valign="middle">
+      <td>
         <?php echo str_replace ("(", "<br/>(", getescapedtext ($hcms_lang['upload-csv-file'][$lang])); ?><br />
-        <input name="importfile" type="file" size="60" accept="text/*" />
-        <img name="Button7" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_import();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button7','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+        <span style="white-space:nowrap;">
+          <input name="importfile" type="file" size="60" accept="text/*" />
+          <img name="Button7" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_import();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button7','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+        </span>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose7" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose7','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('importLayer','','hide');" />
       </td>      
     </tr>
@@ -1675,10 +1679,10 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </div>
 
 <div id="downloadLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; height:60px; z-index:15; left:15px; top:15px; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
-  <table width="100%" height="60" border=0 cellspacing=0 cellpadding=3 class="hcmsMessage">
+  <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
-      <td align="left" valign="middle">
-        <div style="width:100%; height:100%; z-index:10; overflow:auto;">
+      <td>
+        <div style="width:100%; height:100%; overflow:auto;">
           <?php
           // iPhone download
           if ($action == "download" && $is_iphone)
@@ -1694,7 +1698,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           ?>
         </div>
       </td>
-      <td width="16" align="right" valign="top">
+      <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose6" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose6','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('downloadLayer','','hide');" />
       </td>        
     </tr>

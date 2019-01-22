@@ -333,7 +333,7 @@ if ($usedby == "" || $usedby == $user)
 
           if (!empty ($medianame) && !empty ($mediadata))
           {
-            $thumbfile_location = getmedialocation ($site, "dummy.".$object_info['media'], "abs_path_media").$site."/";
+            $thumbfile_location = getmedialocation ($site, ".hcms.".$object_info['media'], "abs_path_media").$site."/";
             
             // if symbolic link
             if (is_link ($thumbfile_location.$medianame))
@@ -695,13 +695,9 @@ else
 <script src="../javascript/click.js" type="text/javascript"></script>
 </head>
 <body class="hcmsWorkplaceGeneric">
-<table border="0" cellspacing="4" cellpadding="0">
-  <tr>
-    <td>
-      <?php echo $message; ?>
-   </td>
-  </tr>
-</table>
+<div style="padding:4px;">
+  <?php echo $message; ?>
+</div>
 </body>
 </html>
 <?php 

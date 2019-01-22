@@ -31,12 +31,12 @@ checkusersession ($user, false);
 </head>
 
 <body class="hcmsWorkplaceGeneric" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
-<table width="100%" height="100%">
-  <tr>
-    <td align="middle" valign="middle">
-      <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>;" alt="hypercms.com" />
-    </td>
-  </tr>
-</table>
+  <table style="width:100%; height:100%;">
+    <tr>
+      <td style="text-align:center; vertical-align:middle;">
+        <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>;" alt="hypercms.com" />
+      </td>
+    </tr>
+  </table>
 </body>
 </html>

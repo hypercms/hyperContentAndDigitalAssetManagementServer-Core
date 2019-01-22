@@ -351,18 +351,18 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   <input type="hidden" name="linkhref" value="<?php echo $linkhref; ?>">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   
-  <table border="0" cellspacing="3" cellpadding="0">
+  <table class="hcmsTableStandard">
     <tr>
-      <td nowrap colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['link'][$lang], $charset, $lang); ?></td>
+      <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['link'][$lang], $charset, $lang); ?></td>
     </tr>      
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-linkurl'][$lang], $charset, $lang); ?> </td>
-      <td nowrap="nowrap">
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['selected-linkurl'][$lang], $charset, $lang); ?> </td>
+      <td style="white-space:nowrap;">
         <input type="text" name="link_name" value="<?php echo convertchars (getlocationname ($site, $linkhref, "page", "path"), $hcms_lang_codepage[$lang], $charset); ?>" style="width:220px;" />
-        <img onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes', 'preview')" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonView" src="<?php echo getthemelocation(); ?>img/button_file_liveview.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" />
-        <img onClick="openBrWindowLink('','scrollbars=yes,resizable=yes,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
-        <img onClick="deleteEntry(document.link.linkhref); deleteEntry(document.link.link_name);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
-        <img onClick="checkForm();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+        <img onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes', 'preview')" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonView" src="<?php echo getthemelocation(); ?>img/button_file_liveview.png" alt="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" />
+        <img onClick="openBrWindowLink('','scrollbars=yes,resizable=yes,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
+        <img onClick="deleteEntry(document.link.linkhref); deleteEntry(document.link.link_name);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
+        <img onClick="checkForm();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
       </td>
     </tr>
   <?php

@@ -254,9 +254,9 @@ function setwallpaper ()
       <input type="hidden" name="action" value="save" />
       <input type="hidden" name="homeboxes" value="" />
       
-      <table border="0" cellspacing="4" cellpadding="0">
+      <table class="hcmsTableStandard">
         <tr>
-          <td valign="top" align="left">
+          <td style="vertical-align:top; text-align:left;">
             <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?></span>
             <?php
             // display all home boxes for selection          
@@ -274,7 +274,7 @@ function setwallpaper ()
                   $name = ucfirst (str_replace ("_", " ", $box));
                   
                   $select_array[$box] = "
-                <div onclick=\"insertOption('".$name."', '".$box."');\" style=\"display:block; cursor:pointer;\" title=\"".$name."\"><img src=\"".getthemelocation()."img/log_info.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($name, 30)."&nbsp;</div>";
+                <div onclick=\"insertOption('".$name."', '".$box."');\" style=\"display:block; cursor:pointer;\" title=\"".$name."\"><img src=\"".getthemelocation()."img/log_info.png\" class=\"hcmsIconList\" />&nbsp;".showshorttext($name, 30)."&nbsp;</div>";
                 }
               }
 
@@ -289,9 +289,9 @@ function setwallpaper ()
             }
             ?>
           </td>
-          <td valign="top" align="left">
+          <td style="vertical-align:top; text-align:left;">
             <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
-            <select id="box_array" name="box_array" size="8" style="width:250px;">
+            <select id="box_array" name="box_array" size="14" style="width:250px;">
               <?php
               // get boxes of user
               $box_array = getboxes ($user);
@@ -316,11 +316,11 @@ function setwallpaper ()
               ?>
             </select>
           </td>
-          <td align="left" valign="middle">
+          <td style="text-align:left; vertical-align:middle;">
             <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                     
             <img onClick="deleteSelected(document.forms['box_form'].elements['box_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
             <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
-            <img onclick="submitHomeBoxes();" align="absmiddle" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+            <img onclick="submitHomeBoxes();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
            </td>
         </tr>
       </table>

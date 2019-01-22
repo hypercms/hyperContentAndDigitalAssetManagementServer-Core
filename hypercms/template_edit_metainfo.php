@@ -48,39 +48,38 @@ function applyconstraints ()
 </head>
 
 <body class="hcmsWorkplaceGeneric">
+
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
-
-<form name="valid" onsubmit="return applyconstraints();">
-  <input type="hidden" name="site" value="<?php echo $site; ?>" />
-  
-  <table border="0" cellspacing="2">
-    <tr align="left" valign="top"> 
-      <td colspan="3" nowrap="nowrap" class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['assign-meta-information'][$lang]); ?></td>
-    </tr>
-    <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-meta-information'][$lang]); ?> </td>
-      <td>
-        <select name="metainfo">
-          <option value="pageauthor"><?php echo getescapedtext ($hcms_lang['page-author'][$lang]); ?></option>
-          <option value="pagekeywords"><?php echo getescapedtext ($hcms_lang['page-keywords'][$lang]); ?></option>
-          <option value="pagedescription"><?php echo getescapedtext ($hcms_lang['page-description'][$lang]); ?></option>
-          <option value="pagelanguage"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?></option>
-          <option value="pagecontenttype"><?php echo getescapedtext ($hcms_lang['content-type'][$lang]); ?></option>
-        </select>
-      </td>
-    </tr>
-    <tr align="left" valign="top"> 
-      <td colspan="2">&nbsp;</td>
-    </tr>    
-    <tr align="left" valign="top">
-      <td nowrap="nowrap">&nbsp;</td>
-      <td nowrap="nowrap"><input name="apply" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['apply'][$lang]); ?>" onClick="applyconstraints();">
-      <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onClick="self.close();"></td>
-    </tr>  
-  </table>
-  
-</form>
-
+  <form name="valid" onsubmit="return applyconstraints();">
+    <input type="hidden" name="site" value="<?php echo $site; ?>" />
+    
+    <table class="hcmsTableStandard">
+      <tr> 
+        <td colspan="3" style="white-space:nowrap; vertical-align:top;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['assign-meta-information'][$lang]); ?></td>
+      </tr>
+      <tr> 
+        <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['select-meta-information'][$lang]); ?> </td>
+        <td>
+          <select name="metainfo">
+            <option value="pageauthor"><?php echo getescapedtext ($hcms_lang['page-author'][$lang]); ?></option>
+            <option value="pagekeywords"><?php echo getescapedtext ($hcms_lang['page-keywords'][$lang]); ?></option>
+            <option value="pagedescription"><?php echo getescapedtext ($hcms_lang['page-description'][$lang]); ?></option>
+            <option value="pagelanguage"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?></option>
+            <option value="pagecontenttype"><?php echo getescapedtext ($hcms_lang['content-type'][$lang]); ?></option>
+          </select>
+        </td>
+      </tr>
+      <tr> 
+        <td colspan="2">&nbsp;</td>
+      </tr>    
+      <tr>
+        <td style="white-space:nowrap; vertical-align:top;">&nbsp;</td>
+        <td style="white-space:nowrap; vertical-align:top;"><input name="apply" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['apply'][$lang]); ?>" onClick="applyconstraints();">
+        <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onClick="self.close();"></td>
+      </tr>  
+    </table>
+  </form>
 </div>
+
 </body>
 </html>
