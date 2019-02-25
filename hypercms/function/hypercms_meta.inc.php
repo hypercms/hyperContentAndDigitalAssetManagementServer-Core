@@ -2794,7 +2794,11 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               }
 
               if ($containerdata_new != false) $containerdata = $containerdata_new;
-              else return false;
+              else
+              {
+                $errcode = "20600";
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Speech meta data to container with ID: ".$container_id;
+              }
             }
           }
         }
@@ -2871,7 +2875,11 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   }
   
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
-                  else return false;
+                  else
+                  {
+                    $errcode = "20602";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Vision meta data to container with ID: ".$container_id;
+                  }
                 }
               }
             }
@@ -3019,7 +3027,11 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   }
   
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
-                  else return false;
+                  else
+                  {
+                    $errcode = "20603";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Video Intelligence meta data to container with ID: ".$container_id;
+                  }
                 }
               }
             }
@@ -3110,7 +3122,11 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   }
   
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
-                  else return false;
+                  else
+                  {
+                    $errcode = "20604";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write KEYWORDS meta data to container with ID: ".$container_id;
+                  }
                 }
               }
             }
@@ -3188,7 +3204,11 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 }
 
                 if ($containerdata_new != false) $containerdata = $containerdata_new;
-                else return false;
+                else
+                {
+                  $errcode = "20605";
+                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write ID3 meta data to container with ID: ".$container_id;
+                }
               }
             }
           }
@@ -3268,7 +3288,11 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 }
           
                 if ($containerdata_new != false) $containerdata = $containerdata_new;
-                else return false;
+                else
+                {
+                  $errcode = "20606";
+                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write EXIF meta data to container with ID: ".$container_id;
+                }
               }
             }
           }
@@ -3396,7 +3420,11 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               }
         
               if ($containerdata_new != false) $containerdata = $containerdata_new;
-              else return false;
+              else
+              {
+                $errcode = "20607";
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write XMP meta data to container with ID: ".$container_id;
+              }
             }
           }
         }
@@ -3540,7 +3568,11 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   }
             
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
-                  else return false;
+                  else
+                  {
+                    $errcode = "20608";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write IPTC meta data to container with ID: ".$container_id;
+                  }
                 }
               }
             }
@@ -3548,7 +3580,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         }
 
         // ------------------- define and set image quality -------------------
-        if ($mapping['hcms:quality'] != "")
+        if (!empty ($mapping['hcms:quality']))
         {      
           // get dpi from XMP tag
           $xres_array = getcontent ($mediadata, "<tiff:XResolution>");
@@ -3591,7 +3623,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             }
           }
       
-          if ($xres != "")
+          if (!empty ($xres))
           {
             // get type and text ID
             $text_id = $mapping['hcms:quality'];
@@ -3612,17 +3644,21 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             if ($containerdata_new == false)
             {
               $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-              $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $mapping['hcms:quality']);
-              $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $mapping['hcms:quality']);
+              $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $text_id);
+              $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
             }
       
             if ($containerdata_new != false) $containerdata = $containerdata_new;
-            else return false;
+            else
+            {
+              $errcode = "20609";
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write QUALITY meta data to container with ID: ".$container_id;
+            }
           }
         }
 
         // delete temp file
-        if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+        if (!empty ($temp['result']) && !empty ($temp['created'])) deletefile ($temp['templocation'], $temp['tempfile'], 0);
 
         if ($containerdata != false)
         {
@@ -3644,16 +3680,16 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write meta data to container with ID: ".$container_id;
             }
           }
-          
-          // return content container on success
-          return $containerdata;
         }
-        else return false;
       }
-      else return false;
     }
-    else return false;
   }
+
+  // save log
+  savelog (@$error);
+  
+  // return content container on success
+  if (!empty ($containerdata)) return $containerdata;
   else return false;
 }
 ?>

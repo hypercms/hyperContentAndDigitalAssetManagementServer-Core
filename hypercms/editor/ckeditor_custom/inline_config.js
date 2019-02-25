@@ -1,7 +1,7 @@
 CKEDITOR.editorConfig = function( config )
 {
   // Customized for Hypercms
-  config.uiColor = '#C8DCFF';
+  config.uiColor = '#F7F7F7';
  
   // Remove plugin
   config.removePlugins = 'codemirror';

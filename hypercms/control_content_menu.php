@@ -564,7 +564,7 @@ else
       {
         // function imgConvert must be used in order to reset the rendering options
         echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"imgConvert ('',''); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['original'][$lang])."&nbsp;</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"imgConvert ('',''); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</div>";
       }
 
       // document download options
@@ -581,7 +581,7 @@ else
             if ((empty ($downloadformats) || !empty ($downloadformats['document'][$doc_type])) && in_array ($ext, $mgmt_docconvert[$media_info['ext']]))
             {
               echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"docConvert('".$doc_type."'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$doc_info['icon']."\" class=\"hcmsIconList\" />".$doc_info['type']." (".strtoupper($doc_type).")&nbsp;</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"docConvert('".$doc_type."'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$doc_info['icon']."\" class=\"hcmsIconList\" /> ".$doc_info['type']." (".strtoupper($doc_type).")</div>";
             }
           }
         }
@@ -603,7 +603,7 @@ else
               if ((empty ($downloadformats) || !empty ($downloadformats['image'][$image_type][$config_name])) && $config_name != "thumbnail" && $config_name != "original") 
               {
                 echo "
-           <div class=\"hcmsSelectorItem\" onclick=\"imgConvert('".$image_type."', '".$config_name."'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$img_info['icon']."\" class=\"hcmsIconList\" />".strtoupper($image_type)." ".$config_name."&nbsp;</div>";
+           <div class=\"hcmsSelectorItem\" onclick=\"imgConvert('".$image_type."', '".$config_name."'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$img_info['icon']."\" class=\"hcmsIconList\" /> ".strtoupper($image_type)." ".$config_name."</div>";
               }
             }
           }
@@ -614,20 +614,20 @@ else
       if ($vid_rendering && is_video ($media))
       {
         if (empty ($downloadformats) || !empty ($downloadformats['video']['origthumb'])) echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('origthumb'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['preview'][$lang])."&nbsp;</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('origthumb'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['preview'][$lang])."</div>";
           
         if (empty ($downloadformats) || !empty ($downloadformats['video']['jpg'])) echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('jpg'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['images'][$lang])." (JPG)&nbsp;</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('jpg'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (JPG)</div>";
           
         if (empty ($downloadformats) || !empty ($downloadformats['video']['png'])) echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['images'][$lang])." (PNG)&nbsp;</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (PNG)</div>";
       }
       
       //save to dropbox
       if ($dropbox_rendering)
       {
         echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'status=yes,scrollbars=yes,resizable=yes,width=600,height=400', '600', '400'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_dropbox.png\" class=\"hcmsIconList\" />".getescapedtext ($hcms_lang['dropbox'][$lang])."&nbsp;</div>\n";
+          <div class=\"hcmsSelectorItem\" onclick=\"submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'status=yes,scrollbars=yes,resizable=yes,width=600,height=400', '600', '400'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_dropbox.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['dropbox'][$lang])."</div>\n";
       }
       
       echo "
@@ -810,7 +810,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" >
 </form>
 
-<div id="objcreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "95%"; else echo "700px"; ?>; height:70px; z-index:4; left:15px; top:10px; visibility:<?php if ($page != "") echo "hidden"; else echo "visible"; ?>">
+<div id="objcreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "95%"; else echo "700px"; ?>; height:76px; z-index:4; left:15px; top:10px; visibility:<?php if ($page != "") echo "hidden"; else echo "visible"; ?>">
 <form name="page_create" action="" method="post" onsubmit="return checkForm_page_create();">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -821,7 +821,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="action" value="page_create" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
-  <table class="hcmsTableStandard">
+  <table class="hcmsTableStandard" style="width:100%; height:76px;">
     <tr>
       <td>
         <?php
@@ -838,7 +838,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <?php echo getescapedtext ($hcms_lang['template-auto-preview'][$lang]); ?> 
       </td>
       <td style="white-space:nowrap">
-        <select name="template" onChange="hcms_jumpMenu('parent.frames[\'objFrame\']',this,0)" style="width:220px;">
+        <select name="template" onChange="hcms_jumpMenu('parent.frames[\'objFrame\']',this,0)" style="width:230px;">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select-template'][$lang]); ?></option>
           <?php
           $template_array = gettemplates ($site, $cat);

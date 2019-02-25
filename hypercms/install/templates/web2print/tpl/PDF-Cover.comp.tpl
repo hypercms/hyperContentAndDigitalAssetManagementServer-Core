@@ -19,7 +19,7 @@ scriptend]
 	<head>
     <title>Cover Page</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation(); scriptend]css/main.css" />
+		<link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("black"); scriptend]css/main.css" />
 	</head>
 	<body class="hcmsWorkplaceGeneric">
 	<br />

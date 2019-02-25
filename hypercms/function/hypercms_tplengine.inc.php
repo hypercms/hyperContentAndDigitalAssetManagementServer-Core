@@ -1539,17 +1539,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       }
     }
     
-    // if object is media file or folder
-    if ((!empty ($mediafile) && $application != "generator") || $page == ".folder")
-    {
-      if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "formmeta") $buildview = "formedit";
-      elseif ($buildview == "preview" || $buildview == "template") $buildview = "formlock";
-    }
-    
-    // disable form fields
-    if ($buildview == "formlock") $disabled = " disabled=\"disabled\"";
-    else $disabled = "";
-    
     // =============================== get content-type and character set ===============================
     
     $result = getcharset ($site, $viewstore);
@@ -1573,6 +1562,23 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       
       $compcontenttype = true;
     }
+    
+    // =============================== reset view and charset for media assets ===============================
+    
+    // if object is media file or folder
+    if ((!empty ($mediafile) && $application != "generator") || $page == ".folder")
+    {
+      // reset view
+      if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "formmeta") $buildview = "formedit";
+      elseif ($buildview == "preview" || $buildview == "template") $buildview = "formlock";
+      
+      // reset charset
+      $hcms_charset = $charset = "UTF-8";
+    }
+    
+    // disable form fields
+    if ($buildview == "formlock") $disabled = " disabled=\"disabled\"";
+    else $disabled = "";
     
     // ==================================== remove hyperCMS stylesheet tags in template ==================================
     
@@ -2439,8 +2445,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       <td style=\"text-align:center; vertical-align:middle;\">
                         <br />
                         <div id=\"".$hypertagname."_controls\" style=\"display:inline-block;\">
-                          <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"moveBoxEntry(this.form.elements['list2'],this.form.elements['list1'])\" value=\"&lt;&lt;\"".$disabled." />
-                          <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"moveBoxEntry(this.form.elements['list1'],this.form.elements['list2'])\" value=\"&gt;&gt;\"".$disabled." />
+                          <button type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"moveBoxEntry(this.form.elements['list2'],this.form.elements['list1']);\" ".$disabled.">&lt;&lt;</button>
+                          <button type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"moveBoxEntry(this.form.elements['list1'],this.form.elements['list2']);\" ".$disabled.">&gt;&gt;</button>
                         </div>
                       </td>
                       <td>
@@ -7398,7 +7404,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <html>
   <head>
   <title>hyperCMS</title>
-  <meta charset=\"UTF-8\">
+  <meta charset=\"UTF-8\" />
   <body>
   ".$viewstore."
   </body>
@@ -9299,6 +9305,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   else $result['result'] = true;
 
   // return result array
+  $result['charset']= $charset;
   $result['view'] = $viewstore;
   $result['release'] = $wf_role; 
   $result['workflow_token'] = $wf_token; 
@@ -9564,7 +9571,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 <html>
 <head lang=\"".$lang."\">
   <title>hyperCMS</title>
-  <meta charset=\"".getcodepage ($lang)."\">
+  <meta charset=\"".getcodepage ($lang)."\" />
   <meta name=\"robots\" content=\"noindex, nofollow\" />
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/main.js\"></script>

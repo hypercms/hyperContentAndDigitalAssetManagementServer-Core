@@ -46,7 +46,7 @@ checkusersession ($user, false);
 #chat-area p
 {
   padding: 4px 0px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #333333;
 }
 </style>
 <script type="text/javascript" src="javascript/main.js" ></script>
@@ -157,7 +157,7 @@ function getusersonline ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceExplorer" onload="setInterval('chat.update()', 1000); setInterval('getusersonline()', 10000); adjust_height();" onresize="adjust_height();">
+<body class="hcmsWorkplaceGeneric" onload="setInterval('chat.update()', 1000); setInterval('getusersonline()', 10000); adjust_height();" onresize="adjust_height();">
 
 <?php echo showtopbar ($hcms_lang['chat'][$lang], $lang); ?>
 
@@ -169,12 +169,12 @@ function getusersonline ()
 
 <div id="page-wrap" style="margin:0; padding:0;">
    
-  <div id="chat-wrap" class="hcmsInfoBox" style="margin:8px;">
+  <div id="chat-wrap" style="margin:8px;">
     <div id="chat-area" style="height:300px; overflow:auto; padding:5px;"></div>
   </div>
         
   <form id="send-message-area" style="margin:8px;">
-    <textarea id="send-message-input" class="hcmsInfoBox" style="width:272px; height:60px; margin:0; padding:5px;" placeholder="<?php echo getescapedtext ($hcms_lang['your-message'][$lang]); ?>" maxlength="600"></textarea>
+    <textarea id="send-message-input" class="hcmsInfoBox" style="width:272px; height:60px; margin:0; padding:5px;" placeholder="<?php echo getescapedtext ($hcms_lang['your-message'][$lang]); ?>" maxlength="800"></textarea>
   </form>
   
 </div>

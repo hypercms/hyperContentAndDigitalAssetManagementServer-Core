@@ -1230,68 +1230,68 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
 	<script type=\"text/javascript\">  
     // set annotation buttons
-    function setAnnoationButtons ()
+    function setAnnotationButtons ()
     {
       if (document.getElementById('annotationStop'))
       {
         document.getElementById('annotationStop').src = '".getthemelocation()."img/button_file_lock.png';
-        document.getElementById('annotationStop').title = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool0').title = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationStop').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationRectangle'))
       {
         document.getElementById('annotationRectangle').src = '".getthemelocation()."img/button_rectangle.png';
-        document.getElementById('annotationRectangle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool1').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationRectangle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationCircle'))
       {
         document.getElementById('annotationCircle').src = '".getthemelocation()."img/button_circle.png';
-        document.getElementById('annotationCircle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool2').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationCircle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationText'))
       {
         document.getElementById('annotationText').src = '".getthemelocation()."img/button_textu.png';
-        document.getElementById('annotationText').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool3').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationText').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationArrow'))
       {
         document.getElementById('annotationArrow').src = '".getthemelocation()."img/button_arrow.png';
-        document.getElementById('annotationArrow').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool4').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationArrow').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationPen'))
       {
         document.getElementById('annotationPen').src = '".getthemelocation()."img/button_pen.png';
-        document.getElementById('annotationPen').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool5').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationPen').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationDownload'))
       {
         document.getElementById('annotationDownload').src = '".getthemelocation()."img/button_file_download.png';
-        document.getElementById('annotationDownload').title = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('download').title = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationDownload').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationUndo'))
       {
         document.getElementById('annotationUndo').src = '".getthemelocation()."img/button_history_back.png';
-        document.getElementById('annotationUndo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('undoaction').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationUndo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationRedo'))
       {
         document.getElementById('annotationRedo').src = '".getthemelocation()."img/button_history_forward.png';
-        document.getElementById('annotationRedo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('redoaction').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
       }
       
@@ -1349,7 +1349,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       });
       
       // set images for buttons
-      setAnnoationButtons();
+      setAnnotationButtons();
       
       // annotations download event
       $('#annotationDownload').click(function(event) {
@@ -1648,68 +1648,68 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
 	<script>
     // set annotation buttons
-    function setAnnoationButtons ()
+    function setAnnotationButtons ()
     {
       if (document.getElementById('annotationStop'))
       {
         document.getElementById('annotationStop').src = '".getthemelocation()."img/button_file_lock.png';
-        document.getElementById('annotationStop').title = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool0').title = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationStop').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationRectangle'))
       {
         document.getElementById('annotationRectangle').src = '".getthemelocation()."img/button_rectangle.png';
-        document.getElementById('annotationRectangle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool1').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationRectangle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationCircle'))
       {
         document.getElementById('annotationCircle').src = '".getthemelocation()."img/button_circle.png';
-        document.getElementById('annotationCircle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool2').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationCircle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationText'))
       {
         document.getElementById('annotationText').src = '".getthemelocation()."img/button_textu.png';
-        document.getElementById('annotationText').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool3').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationText').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationArrow'))
       {
         document.getElementById('annotationArrow').src = '".getthemelocation()."img/button_arrow.png';
-        document.getElementById('annotationArrow').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool4').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationArrow').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationPen'))
       {
         document.getElementById('annotationPen').src = '".getthemelocation()."img/button_pen.png';
-        document.getElementById('annotationPen').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('tool5').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationPen').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationDownload'))
       {
         document.getElementById('annotationDownload').src = '".getthemelocation()."img/button_file_download.png';
-        document.getElementById('annotationDownload').title = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('download').title = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationDownload').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationUndo'))
       {
         document.getElementById('annotationUndo').src = '".getthemelocation()."img/button_history_back.png';
-        document.getElementById('annotationUndo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('undoaction').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationUndo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
       }
       
       if (document.getElementById('annotationRedo'))
       {
         document.getElementById('annotationRedo').src = '".getthemelocation()."img/button_history_forward.png';
-        document.getElementById('annotationRedo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
+        document.getElementById('redoaction').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
       }
       
@@ -1740,7 +1740,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       });
 
       // set images for buttons
-      setAnnoationButtons();
+      setAnnotationButtons();
       
       // annotations download event
       $('#annotationDownload').click(function(event) {
@@ -2818,7 +2818,7 @@ $(document).ready(function()
     
     $result .= "
     <span class=\"hcmsHeadline\" style=\"padding:3px 0px 3px 0px; display:block;\">".getescapedtext ($hcms_lang['select-object'][$lang], $hcms_charset, $lang)."</span>
-    <span class=\"hcmsHeadlineTiny\" style=\"padding:3px 0px 3px 0px; display:block;\">".$location_name."</span>\n";
+    <span class=\"hcmsHeadlineTiny\" style=\"padding:3px 0px 3px 0px; display:block;\">".$location_name."</span>";
 
     // file upload    
     if ($compcat == "media" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1 && $search_expression == "")
@@ -2829,22 +2829,22 @@ $(document).ready(function()
       
       $result .= "
       <div style=\"text-align:left; padding:2px; width:100%;\">
-        <input name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" 
-        onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\" value=\"".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."\" />
+        <button name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" 
+        onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\">".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."</button>
         <img class=\"hcmsButtonTiny hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
-      <div style=\"clear:both;\"></div>\n";
+      <div style=\"clear:both;\"></div>";
     }
     // create new component
     elseif (($compcat == "single" || $compcat == "multi") && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1 && $search_expression == "")
     {
       $result .= "
       <div style=\"text-align:left; padding:2px; width:100%;\">
-        <input name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" 
-        onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\" value=\"".getescapedtext ($hcms_lang['new-component'][$lang], $hcms_charset, $lang)."\" />
+        <button name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" 
+        onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">".getescapedtext ($hcms_lang['new-component'][$lang], $hcms_charset, $lang)."</button>
         <img class=\"hcmsButtonTiny hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
-      <div style=\"clear:both;\"></div>\n";
+      <div style=\"clear:both;\"></div>";
     }
     
     // search form
@@ -2878,11 +2878,11 @@ $(document).ready(function()
     
       $result .= "
       </form>
-    </div>\n";
+    </div>";
     }
     
     $result .= "
-    <table class=\"hcmsTableNarrow\" style=\"width:90%;\">\n";
+    <table class=\"hcmsTableNarrow\" style=\"width:90%;\">";
 
     // parent directory
     if (
@@ -3110,7 +3110,8 @@ $(document).ready(function()
       }
     }
     
-    $result .= "</table>\n";
+    $result .= "
+    </table>";
     
     // result
     return $result;    
@@ -3150,7 +3151,8 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
     if (strpos ("_".$hypertagname, "comment") == 1) $classname = "class=\"is_comment\"";
     else $classname = "";
     
-    return "<textarea id=\"".$hypertagname."_".str_replace (":", "_", $id)."\" name=\"".$hypertagname."[".$id."]\" ".$classname.">".$contentbot."</textarea>
+    return "
+      <textarea id=\"".$hypertagname."_".str_replace (":", "_", $id)."\" name=\"".$hypertagname."[".$id."]\" ".$classname.">".$contentbot."</textarea>
       <script type=\"text/javascript\">
       <!--
         CKEDITOR.replace( '".$hypertagname."_".$id."',
@@ -3170,7 +3172,7 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
           cmsLink:	              						'".$mgmt_config['url_path_cms']."'
         });
       //-->
-      </script>\n";
+      </script>";
   }
   else return false;
 }
@@ -4839,7 +4841,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
   
       foreach ($scandir as $file)
       {
-        if ($file != "." && $file != ".." && substr ($file, -4) != ".off") $fileitem[] = $file;
+        if ($file != "." && $file != ".." && substr ($file, -4) != ".off" && substr ($file, -8) != ".recycle") $fileitem[] = $file;
       }
   
       if (sizeof ($fileitem) > 0)

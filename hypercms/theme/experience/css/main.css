@@ -1,0 +1,804 @@
+html, body
+{
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0; 
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 12px; 
+  font-weight: normal; 
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+img
+{
+  display: inline-block;
+  vertical-align: middle;
+  image-rendering: -webkit-optimize-contrast; // Safari 6, UC Browser 9.9
+  image-rendering: -webkit-crisp-edges; // Safari 7+
+  image-rendering: -moz-crisp-edges; // Firefox 3.6+
+  image-rendering: -o-crisp-edges; // Opera 12
+}
+
+input, select, textarea 
+{
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: normal;
+  color: #000000;
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+  border: 1px solid #FFFFFF;
+  background-color: #F3F3F3;;
+  margin: 0;
+  padding: 7px 4px;
+}
+
+a 
+{
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: bold;
+  text-decoration: none;
+  color: #FFFFFF;
+  outline: none;
+}
+
+a:link 
+{
+  color: #FFFFFF;
+}
+
+a:hover 
+{
+  color: #8EDCFD;
+}
+
+a:active 
+{
+  color: #FFFFFF;
+}
+
+ins
+{
+  color: green;
+}
+
+del
+{
+  color: red;
+}
+
+hr
+{
+  height: 1px;
+  border-width :0;
+  color: #0378AA;
+  background-color: #146080;
+}
+
+.hcmsCenter
+{
+  max-height: 100%;  
+  max-width: 100%; 
+  width: auto;
+  height: auto;
+  position: absolute;  
+  top: 0;  
+  bottom: 0;  
+  left: 0;  
+  right: 0;  
+  margin: auto;
+}
+
+.hcmsHomeSpacer
+{
+  width: 94%;
+  height: 32px;
+  display: block;
+}
+
+.hcmsStartBar
+{
+  width: 100%;
+  height: 80px;
+  margin: 0 0 120px 0;
+  padding: 0;
+}
+
+.hcmsStartScreen
+{
+  background-image: url('../img/backgrd_start.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center center; 
+  background-color: #CFD4DD;
+  font-size: 14px;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+}
+
+.hcmsLogonScreen
+{
+  width: 260px;
+  margin: auto;
+  padding: 20px; 
+  font-size: 14px;
+  text-align: left; 
+}
+
+.hcmsWorkplaceTop
+{
+  background-color: #DB7604;
+  background-image: url('../img/backgrd_top.png');
+  background-repeat: repeat;
+}
+
+.hcmsLogoTop
+{
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  float: left;
+}
+
+.hcmsWorkplaceTop input
+{
+  border: 1px solid #FFFFFF;
+  background-color: #A7D1DB;
+}
+
+.hcmsWorkplaceBar
+{
+  background-color: #424242;
+  border-bottom: 2px solid #3C95B3;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 38px;
+  margin: 0;
+  padding: 0;
+  z-index: 900;
+}
+
+.hcmsLocationBar
+{
+  width: 100%;
+  background-color: #3E3E3E;
+  margin: 0;
+  padding: 0px 3px;
+  border-left: 5px solid #EB6804;
+  display: block;
+}
+
+.hcmsContextMenu
+{
+  border: 1px solid #000000;
+  background-color: #44859A;
+  box-shadow: 3px 3px 10px #000000;
+  -webkit-box-shadow: 3px 3px 10px #000000;
+  -moz-box-shadow: 3px 3px 10px #000000;
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
+.hcmsChatBar
+{
+  border-left: 1px solid #000000;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
+.hcmsImageItem
+{
+  border: 1px solid #808080;
+  background-color: #FFFFFF;
+  margin-bottom: 4px;
+  box-shadow: 0px 3px 3px #000000;
+  -webkit-box-shadow: 0px 3px 3px #000000;
+  -moz-box-shadow: 0px 3px 3px #000000;
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='180',strength='4');
+}
+
+.hcmsWorkplaceControl
+{
+  margin: 0;
+  padding: 0;
+  background-color: #047399;
+}
+
+.hcmsWorkplaceControlWallpaper
+{
+  margin: 0;
+  padding: 0;
+  background-color: #047399;
+}
+
+.hcmsToolbar
+{
+  width: 100%;
+  height: 36px;
+  padding: 2px;
+  display: block;
+}
+
+.hcmsToolbarBlock
+{
+  float: left;
+  padding-right: 1px;
+  margin-right: 1px;
+  border-right: 2px solid #D8DADC; 
+}
+
+.hcmsWorkplaceExplorer
+{
+  margin: 0;
+  padding: 0;
+  background-color: #212121;
+}
+
+.hcmsWorkplaceObjectlist
+{
+  background-color: #D8DADC;
+}
+
+.hcmsWorkplaceWorkflow
+{
+  background-color: #5694A9;
+}
+
+.hcmsWorkplaceGeneric
+{
+  background-color: #424242;
+  margin: 0; 
+  padding: 0;
+  overflow: auto;
+}
+
+.hcmsWorkplaceFrame
+{
+  border: 0;
+  margin: 0; 
+  padding: 8px;
+}
+
+.hcmsMediaRendering
+{
+  border: 1px solid #FBAD04;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background-color: #737373;
+  box-shadow: 2px 2px 3px #000000;
+  -webkit-box-shadow: 2px 2px 3px #000000;
+  -moz-box-shadow: 2px 2px 3px #000000;
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='4');
+}
+
+.hcmsTemplateField
+{
+  border: 1px solid #000000;
+  background-color: #FFFFFF;
+}
+
+.hcmsFormRowLabel
+{
+  font-size: 14px;
+  padding: 14px 2px 6px 4px;
+  display: block;
+}
+
+.hcmsFormRowContent
+{
+  padding: 2px 2px 2px 4px;
+  display: block;
+}
+
+.hcmsRowHead1
+{
+  background-color: #E36804;
+}
+
+.hcmsRowHead2
+{
+  background-color: #1D1D1D;
+}
+
+.hcmsRowData1
+{
+  background-color: #ADADAD;
+}
+
+.hcmsRowData2
+{
+  background-color: #888888;
+}
+
+.hcmsPriorityAlarm
+{
+  background-color: #DE3E04;
+}
+
+.hcmsPriorityHigh
+{
+  background-color: #FB7C0C;
+}
+
+.hcmsPriorityMedium
+{
+  background-color: #FCB335;
+}
+
+.hcmsPriorityLow
+{
+  background-color: #83B2C6;
+}
+
+.hcmsMessage
+{
+  vertical-align: middle;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background-color: #737373;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
+.hcmsHomeBox
+{
+  z-index: 100;
+  padding: 5px;
+  overflow: auto;
+  filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;
+  vertical-align: middle;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  color: #FFFFFF;
+  font-size: 12px;
+  background-color: #292929;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
+.hcmsInfoBox
+{
+  z-index: 100;
+  padding: 5px;
+  overflow: auto;
+  filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;
+  vertical-align: middle;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background-color: #191919;
+  color: #FFFFFF;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
+.hcmsIconList
+{
+  width: 16px;
+  height: 16px;
+  border: 0;
+  margin: 0px 0px 2px 2px;
+  vertical-align: middle;
+}
+
+.hcmsButton
+{
+  cursor: pointer;
+  padding: 2px;
+  margin: 0;
+  border: 0;
+  float: left;
+}
+
+.hcmsButton:hover, .hcmsButtonActive
+{
+  padding: 1px;
+  margin: 0;
+  background-color: #FF8411;
+  border: 1px solid #C26003;
+}
+
+.hcmsButtonBlank
+{
+  cursor: pointer;
+  padding: 2px;
+  margin: 0;
+  border: 0;
+  float: left;
+}
+
+.hcmsButtonOff
+{
+  padding: 2px;
+  margin: 0;
+  border: 0;
+  filter: gray() alpha(opacity=30);  -moz-opacity: 0.3; opacity: 0.3;
+  float: left;
+  z-index: 0;
+}
+
+.hcmsButtonTiny
+{
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.hcmsButtonTiny:hover
+{
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background-color: #FF8411;
+}
+
+.hcmsButtonTinyBlank
+{
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.hcmsButtonTinyOff
+{
+  padding: 0;
+  margin: 0;
+  border: 0;
+  filter: gray() alpha(opacity=30); -moz-opacity: 0.3; opacity: 0.3;
+}
+
+.hcmsButtonClose
+{
+  cursor: pointer;
+  background-image: url(../img/button_close.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  margin: 0;
+  border: 0;
+  float: left;
+}
+
+.hcmsButtonClose:hover
+{
+  background-image: url(../img/button_close_over.png);
+}
+
+.hcmsButtonSizeSquare
+{
+  width: 32px;
+  height: 32px;
+}
+
+.hcmsButtonSizeNarrow
+{
+  width: 16px;
+  height: 32px;
+}
+
+.hcmsButtonSizeWide
+{
+  width: 50px;
+  height: 32px;
+}
+
+.hcmsButtonSizeHeight
+{
+  height: 32px;
+}
+
+.hcmsButtonMenu
+{
+  height: 32px;
+  line-height: 32px;
+  border-right: 1px solid #C0C0C0;
+  float: left;
+  padding: 0px 6px;
+  margin: 0;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hcmsButtonMenu:hover
+{
+  background-color: #FB8C0C;
+}
+
+.hcmsButtonMenu:active
+{
+  position: relative;
+  top: 1px;
+}
+
+.hcmsButtonMenuActive
+{
+  background-color: #FB8C0C;
+  position: relative;
+  top: 1px;
+}
+
+.hcmsButtonBlue
+{
+  color: #FFFFFF;
+  background-color: #3094D7;
+  border: 1px solid #469df5;
+  display: inline-block;
+  padding: 2px 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hcmsButtonBlue:hover
+{
+  background-color: #5BA9DE;
+}
+
+.hcmsButtonBlue:active
+{
+  position: relative;
+  top: 1px;
+}
+
+.hcmsButtonGreen
+{
+  color: #FFFFFF;
+  background-color: #69A738;
+  border: 1px solid #268a16;
+  display: inline-block;
+  padding: 2px 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hcmsButtonGreen:hover
+{
+  background-color: #7CD334;
+}
+
+.hcmsButtonGreen:active
+{
+  position:relative;
+  top:1px;
+}
+
+.hcmsButtonOrange
+{
+  color: #FFFFFF;
+  background-color: #E58912;
+  border: 1px solid #C28B2C;
+  display: inline-block;
+  padding: 2px 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hcmsButtonOrange:hover
+{
+  background-color: #ECA03C;
+}
+
+.hcmsButtonOrange:active
+{
+  position: relative;
+  top: 1px;
+}
+
+.hcmsSelector
+{
+  margin: 0;
+  padding: 1px;
+  background-color: #D25D03;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
+.hcmsSelectorItem
+{
+  font-size: 12px;
+  cursor: pointer;
+  margin: 0;
+  padding: 0 20px 0 0;
+  border: 0;
+}
+
+.hcmsSelectorItem:hover
+{
+  background-color: #FB8C14;
+}
+
+.hcmsHeadline 
+{  
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 12px; 
+  font-weight: bold; 
+  color: #FFFFFF; 
+  text-decoration: none;
+  padding: 3px 0px;
+}
+
+.hcmsHeadlineTiny 
+{  
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 12px; 
+  font-weight: normal; 
+  color: #FFFAEF; 
+  text-decoration: none;
+}
+
+.hcmsTextSmall 
+{  
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 9px; 
+  font-weight: normal; 
+  color: #FFFFFF; 
+  text-decoration: none;
+}
+
+.hcmsTabContainer
+{
+  width: 100%;
+  min-width: 500px;
+  height: 22px;
+  padding: 0;
+  margin: 0;
+  border-bottom: 1px solid #000000;
+  display: block;
+}
+
+.hcmsTabActive
+{
+  float: left;
+  background-color: #424242;
+  border-top: 1px solid #000000;
+  border-right: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-bottom: 2px solid #424242;
+  width: 116px;
+  height: 17px;
+  padding: 2px;
+  margin: 0px 0px -2px 3px;
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.hcmsTabPassive
+{
+  float: left;
+  background-color: #676767;
+  border-top: 1px solid #000000;
+  border-right: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-bottom: 0;
+  width: 116px;
+  height: 17px;
+  padding: 2px;
+  margin: 0px 0px -2px 3px;
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.hcmsLoadScreen
+{
+  z-index: 9000;
+  display: none;
+  width: 100%;
+  height: 100%;
+  background: url("../img/loading.gif") no-repeat center center #e3e4ec;
+  position: fixed;
+  opacity: 0.7;
+}
+
+.hcmsTextGreen
+{
+  color: #5AAD5A; 
+}
+
+.hcmsTextOrange
+{
+  color: #F78C31; 
+}
+
+.hcmsTextWhite
+{
+  color: #FFFFFF; 
+}
+
+.hcmsTextShadow
+{
+  text-shadow: 0px 0px 2px #000000;
+}
+
+.hcmsRequiredInput
+{
+  border: 1px solid red;
+  color: red;
+}
+
+.hcmsFace
+{
+  position: absolute;
+  z-index:  90000;
+  border: 2px solid #FFFFFF;
+  filter: alpha(opacity=70); -moz-opacity: 0.7; opacity: 0.7;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px #000000;
+  -webkit-box-shadow: 2px 2px 10px #000000;
+  -moz-box-shadow: 2px 2px 10px #000000;
+}
+
+ul.hcmsStructuredList
+{
+  list-style-type: none;
+  padding: 2px;
+  margin: 2px;
+}
+
+ul.hcmsStructuredList li
+{
+  padding-left: 14px;
+}
+
+table.hcmsTableStandard
+{
+  display: table;
+  table-layout: auto;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.hcmsTableStandard th, table.hcmsTableStandard td
+{
+  padding: 2px 2px 2px 4px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+table.hcmsTableNarrow
+{
+  display: table;
+  table-layout: auto;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.hcmsTableNarrow th, table.hcmsTableNarrow td
+{
+  height: 18px;
+  padding: 0;
+  text-align: left;
+  vertical-align: middle;
+}

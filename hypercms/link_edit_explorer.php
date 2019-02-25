@@ -119,26 +119,21 @@ $(document).ready(function()
 </div>
 
 <div id="Navigator" class="hcmsWorkplaceFrame">
-<table class="hcmsTabelStandard" style="table-layout:auto; width:90%;">
-  <tr>
-    <td class="hcmsHeadline" style="text-align:left; padding:3px 0px 3px 0px;" colspan="2"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?><td>
-  </tr>
-  <tr>
-    <td class="hcmsHeadlineTiny" align="left" colspan="2" style="white-space:nowrap;"><?php echo $location_name; ?></td>
-  </tr>
+  <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?></span>
+  <span class="hcmsHeadlineTiny" style="padding:3px 0px 3px 0px; display:block; white-space:nowrap;"><?php echo $location_name; ?></span>
+  
   <?php if ($mgmt_config['db_connect_rdbms'] != "") { ?>
-  <tr>
-    <td colspan="2" style="text-align:left;">
-      <form name="searchform_general" action="" method="post">
-        <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
-        <input type="hidden" name="site" value="<?php echo $site; ?>" />
-        <input type="text" name="search_expression" id="search_expression" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="<?php if ($search_expression != "") echo html_encode ($search_expression); ?>" 
-        style="width:184px;" maxlength="200" /><img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-      </form>
-    </td>
-  </tr>
+  <div id="searchForm" style="padding:2px; width:100%;">
+    <form name="searchform_general" action="" method="post">
+      <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
+      <input type="hidden" name="site" value="<?php echo $site; ?>" />
+      <input type="text" name="search_expression" id="search_expression" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="<?php if ($search_expression != "") echo html_encode ($search_expression); ?>" 
+      style="width:174px;" maxlength="200" /><img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+    </form>
+  </div>
   <?php } ?>
 
+  <table class="hcmsTableNarrow" style="width:90%;">
 <?php
 if (!empty ($dir) && !empty ($site))
 {  
@@ -261,7 +256,7 @@ if (!empty ($dir) && !empty ($site))
         {
           echo "
       <tr>
-        <td style=\"width:90%; text-align:left; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 24)."</a></td>
+        <td style=\"text-align:left; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 24)."</a></td>
         <td style=\"text-align:right;\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
       </tr>";
         }

@@ -7,9 +7,9 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
-// ===================================== FTP FUNCTIONS =========================================
+// ========================================= FTP FUNCTIONS =========================================
 
-// ----------------------------------------- ftp_userlogon ---------------------------------------------
+// ----------------------------------------- ftp_userlogon -----------------------------------------
 // function: ftp_userlogon()
 // input: FTP servername or IP [string], user name [string], password [string], SSL [true,false] (optional)
 // output: true / false on error

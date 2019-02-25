@@ -1176,7 +1176,7 @@ else
             $point->setOnMouseOut('hcms_resetContext();');
             $publication->addSubPoint($point);
           }
-          
+  
           // ----------------------------------------- page ----------------------------------------------
           // category of content: cat=page
           if (empty ($hcms_assetbrowser) && !empty ($mgmt_config[$site]['abs_path_page']) && is_dir ($mgmt_config[$site]['abs_path_page']) && checkglobalpermission ($site, 'page') && empty ($mgmt_config[$site]['dam']) && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "page"))
@@ -1201,7 +1201,7 @@ else
             }
             // use page root
             else $location_root = "%page%/".$site."/";
-            
+  
             $point = new hcms_menupoint($hcms_lang['pages'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=page&location=".url_encode($location_root)."&virtual=1", 'folder_page.png', 'page_'.$site);
             $point->setOnClick('hcms_jstree_open("page_'.$site.'", event);');
             $point->setTarget('workplFrame');

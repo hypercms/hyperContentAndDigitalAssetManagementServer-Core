@@ -146,7 +146,7 @@ if (@substr_count ($follow, "://") > 0 || @substr_count (strtolower ($follow), "
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-  echo "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['you-will-be-forwarded-to'][$lang])." </span>".$follow."<br \>\n";
+  echo "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['you-will-be-forwarded-to'][$lang])." </span>".$follow."<br \>\n";
   echo $add_code;
   echo "</body>\n</html>";
   exit;
@@ -159,6 +159,7 @@ else
     // ---------------------------- call template engine ---------------------------    
     $result = buildview ($site, $location, $page, $user, $view, $ctrlreload);
 
+    $charset = $result['charset'];
     $viewstore = $result['view'];
     $contentfile = $result['container'];
     $contentdata = $result['containerdata'];
@@ -183,7 +184,7 @@ else
         echo "</script>\n";
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-        echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-due-to-empty-template-'][$lang])."</p>\n";
+        echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-due-to-empty-template-'][$lang])."</p>\n";
         echo getescapedtext ($hcms_lang['the-template-holds-no-information'][$lang]).": '".$templatefile."'\n";
         echo "</body>\n</html>";
         exit;
@@ -202,7 +203,7 @@ else
         echo "</head>\n";    
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-        echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-due-to-empty-content-container'][$lang])."</p>\n";
+        echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-due-to-empty-content-container'][$lang])."</p>\n";
         echo getescapedtext ($hcms_lang['the-content-container-holds-no-information'][$lang]).": '".$contentfile."'\n";
         echo "</body>\n</html>";
         exit;
@@ -219,7 +220,7 @@ else
         echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-        echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-the-object'][$lang])."</p>\n";
+        echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-of-the-object'][$lang])."</p>\n";
         echo getescapedtext ($hcms_lang['an-error-occured-while-creating-the-view'][$lang])."\n";
         echo "</body>\n";
         echo "</html>";
@@ -228,6 +229,7 @@ else
       // output view
       else
       {
+        header ('Content-Type: text/html; charset='.$charset);
         echo $viewstore;
       }
     }
@@ -255,7 +257,7 @@ else
       echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n"; 
       echo "</head>\n";
       echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-      echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms-or-you-dont-have-access-to-it'][$lang])."</p><br /><br />\n";
+      echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms-or-you-dont-have-access-to-it'][$lang])."</p><br /><br />\n";
       echo "</body>\n";
       echo "</html>\n";
       exit;    
@@ -271,7 +273,7 @@ else
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-    echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-object-does-not-exist'][$lang])."</p>\n";
+    echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-object-does-not-exist'][$lang])."</p>\n";
     echo "</body>\n";
     echo "</html>";
     exit;

@@ -56,10 +56,9 @@ function sendOption(folder_name, folder_location)
 </div>
 
 <div id="Navigator" class="hcmsWorkplaceFrame">
+  <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['select-folder'][$lang]); ?></span>
+
   <table class="hcmsTableNarrow" style="width:90%;">
-    <tr>
-      <td class="hcmsHeadline" colspan="2" style="text-align:left; padding-bottom:8px;"><?php echo getescapedtext ($hcms_lang['select-folder'][$lang]); ?></td>
-    </tr>
   <?php
   if ($cat == "page" || $cat == "comp")
   {  
@@ -89,7 +88,7 @@ function sendOption(folder_name, folder_location)
     {
       echo "
       <tr>
-        <td style=\"width:90%; text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".png\" class=\"hcmsIconList\" /> ".$folder_name."</a></td>
+        <td style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".png\" class=\"hcmsIconList\" /> ".$folder_name."</a></td>
         <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:sendOption('/".$site."/', '%".$cat."%/".$site."/')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" /></a></td>
       </tr>";
     }

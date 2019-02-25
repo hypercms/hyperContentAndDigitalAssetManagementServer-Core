@@ -1363,8 +1363,8 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
     <br/>
     
     <div class="cell">
-      <input class="hcmsButtonGreen" type="button" name="save" onclick="submitform(true);" value="<?php echo getescapedtext ($hcms_lang['save'][$lang]); ?>">
-      <input class="hcmsButtonGreen" type="button" name="preview" onclick="showPreview();" value="<?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?>"> 
+      <button class="hcmsButtonGreen" type="button" name="save" onclick="submitform(true);"><?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></button>
+      <button class="hcmsButtonGreen" type="button" name="preview" onclick="showPreview();"><?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></button>
     </div>
   </form>
   <!-- end edit image -->

@@ -53,9 +53,10 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && c
   {
     // add new row after position
     $new_array = array();
+    $taxonomy_new = array();
     
     // create columns for new row based on first row columns
-    foreach ($taxonomy[1] as $langcode => $value)
+    foreach ($taxonomy[$saveindex_start] as $langcode => $value)
     {
       $new_array[$langcode] = "";
     }
@@ -66,18 +67,23 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && c
     {
       if ($row < $position)
       {
+        // remain
         $taxonomy_new[$row] = $temp_array;
       }
       elseif ($row == $position)
       {
+        // remain
         $taxonomy_new[$row] = $temp_array;
-        
+
         // add new row
-        $taxonomy_new[($row + 1)] = $new_array;
+        $new_id = intval ($row) + 1;
+        $taxonomy_new[$new_id] = $new_array;
       }
       elseif ($row > $position)
       {
-        $taxonomy_new[($row + 1)] = $temp_array;
+        // shift row
+        $new_id = intval ($row) + 1;
+        $taxonomy_new[$new_id] = $temp_array;
       }
     }
 
@@ -521,13 +527,18 @@ if (!empty ($languages) && is_array ($languages))
     <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
     <?php } ?>
   </div>
+  <br/>
 
-  <div style="clear:both; margin-top:10px;">
-    <div style="float:left; width:160px;"><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> </div>
-    <img name="Button1" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="savetaxonomy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" /><br />
-    <div style="float:left; width:160px;"><?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?> </div>
-    <img name="Button2" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="reindex()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
-  </div>
+  <table class="hcmsTableStandard" style="margin-top:10px;">
+    <tr>
+      <td><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> </td>
+      <td><img name="Button1" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="savetaxonomy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
+    </tr>
+    <tr>
+      <td><?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?> </div>
+      <td><img name="Button2" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="reindex()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
+    </tr>
+  </table>
   
 </form>
 

@@ -16,7 +16,7 @@ scriptend]
 	<head>
     <title>[hyperCMS:textu id='Title' infotype='meta']</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation(); scriptend]css/main.css" />
+		<link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("black"); scriptend]css/main.css" />
 	</head>
 	<body class="hcmsWorkplaceGeneric">
 	[hyperCMS:textu id='Author' height='15' infotype='meta' onPublish='hidden']

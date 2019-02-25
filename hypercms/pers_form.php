@@ -213,7 +213,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"
     </tr>
     <tr>
       <td colspan="2">
-        <textarea name="persdata" wrap="VIRTUAL" style="width:100%; height:600px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>><?php echo $persdata; ?></textarea>
+        <textarea name="persdata" wrap="VIRTUAL" style="width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>><?php echo $persdata; ?></textarea>
       </td>
     </tr>
   </table>  

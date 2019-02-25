@@ -914,7 +914,7 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
       
       <!-- save button -->
       <div class="row" style="margin-top:6px;">
-  		  <input class="hcmsButtonGreen" type="button" name="save" onclick="submitform();" value="<?php echo getescapedtext ($hcms_lang['save'][$lang]);?>" />
+  		  <button class="hcmsButtonGreen" type="button" name="save" onclick="submitform();"><?php echo getescapedtext ($hcms_lang['save'][$lang]);?></button>
       </div>
   	</div>
     

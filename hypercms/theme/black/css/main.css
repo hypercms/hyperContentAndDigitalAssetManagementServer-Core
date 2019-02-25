@@ -388,6 +388,7 @@ hr
   -webkit-border-radius: 5px;
   border-radius: 5px;
   background-color: #191919;
+  color: #FFFFFF;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -549,7 +550,8 @@ hr
 
 .hcmsButtonBlue
 {
-  background-color: #65B1FC;
+  color: #FFFFFF;
+  background-color: #3094D7;
   border: 1px solid #469df5;
   display: inline-block;
   padding: 2px 10px;
@@ -559,7 +561,7 @@ hr
 
 .hcmsButtonBlue:hover
 {
-  background-color: #7EBDFD;
+  background-color: #5BA9DE;
 }
 
 .hcmsButtonBlue:active
@@ -570,7 +572,8 @@ hr
 
 .hcmsButtonGreen
 {
-  background-color: #77d42a;
+  color: #FFFFFF;
+  background-color: #69A738;
   border: 1px solid #268a16;
   display: inline-block;
   padding: 2px 10px;
@@ -580,7 +583,7 @@ hr
 
 .hcmsButtonGreen:hover
 {
-  background-color: #99E75A;
+  background-color: #7CD334;
 }
 
 .hcmsButtonGreen:active
@@ -591,7 +594,8 @@ hr
 
 .hcmsButtonOrange
 {
-  background-color: #FB9004;
+  color: #FFFFFF;
+  background-color: #E58912;
   border: 1px solid #C28B2C;
   display: inline-block;
   padding: 2px 10px;
@@ -601,7 +605,7 @@ hr
 
 .hcmsButtonOrange:hover
 {
-  background-color: #FFC477;
+  background-color: #ECA03C;
 }
 
 .hcmsButtonOrange:active
@@ -614,8 +618,7 @@ hr
 {
   margin: 0;
   padding: 1px;
-  background-color: #FCB335;
-  border: 1px solid #FF8411;
+  background-color: #D25D03;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -631,13 +634,12 @@ hr
   cursor: pointer;
   margin: 0;
   padding: 0 20px 0 0;
-  background-color: #FCB335;
   border: 0;
 }
 
 .hcmsSelectorItem:hover
 {
-  background-color: #FF9000;
+  background-color: #FB8C14;
 }
 
 .hcmsHeadline 

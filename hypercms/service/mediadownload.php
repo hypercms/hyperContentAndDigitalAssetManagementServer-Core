@@ -182,7 +182,7 @@ elseif ($objectpath_esc != "")
     // load object file
     $object_info = getobjectinfo ($site, $location, ".folder", $user);
 
-    if ($user == "") $user_zip = "sys";
+    if (empty ($user)) $user_zip = "sys";
     else $user_zip = $user;
     
     $zip_filename = $object_id."_hcm".$object_info['container_id'];

@@ -790,7 +790,7 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
     </tr>
     <tr>
       <td style="text-align:center;">
-        <textarea name="contentfield" style="width:100%; height:700px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;"><?php echo $contentfield; ?></textarea>
+        <textarea name="contentfield" style="width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;"><?php echo $contentfield; ?></textarea>
       </td>
     </tr>
   </table>

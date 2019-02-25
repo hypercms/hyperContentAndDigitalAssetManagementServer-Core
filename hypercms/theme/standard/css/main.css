@@ -80,22 +80,8 @@ hr
 {
   height: 1px;
   border-width :0;
-  color: #0ACA03;
-  background-color: #8EA9EC;
-}
-
-.hcmsCenter
-{
-  max-height: 100%;  
-  max-width: 100%; 
-  width: auto;
-  height: auto;
-  position: absolute;  
-  top: 0;  
-  bottom: 0;  
-  left: 0;  
-  right: 0;  
-  margin: auto;
+  color: #7DA5DD;
+  background-color: #7DA5DD;
 }
 
 .hcmsCenter
@@ -382,7 +368,7 @@ hr
   border-radius: 5px;
   color: #FFFFFF;
   font-size: 12px;
-  background-color: #39689D;
+  background-color: #292929;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -655,7 +641,6 @@ hr
   cursor: pointer;
   margin: 0;
   padding: 0 20px 0 0;
-  background-color: #FCB335;
   border: 0;
 }
 

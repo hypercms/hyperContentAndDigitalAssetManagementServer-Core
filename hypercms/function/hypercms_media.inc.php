@@ -9,9 +9,231 @@
   
 // ========================================== MEDIA FUNCTIONS =======================================
 
+// ---------------------------------------- ocr_extractcontent --------------------------------------------
+// function: ocr_extractcontent()
+// input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string]
+// output: extracted content as text string / false
+
+// description:
+// This function extracts the text content of multimedia objects using OCR and returns the text.
+// It is a helper function for function indexcontent.
+
+
+function ocr_extractcontent ($site, $location, $file)
+{
+  global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $hcms_lang, $lang;
+
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && !empty ($mgmt_parser) && is_array ($mgmt_parser))
+  {
+    $usedby = "";
+    $file_content = "";
+    
+    // load tesseract language mapping
+    if (empty ($tesseract_lang) || !is_array ($tesseract_lang)) require ($mgmt_config['abs_path_cms']."include/tesseract_lang.inc.php");
+    
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";            
+  
+    // get file extension
+    $file_info = getfileinfo ($site, $file, "comp");
+    $file_ext = $file_info['ext'];
+
+    // image is already of TIFF format or conversion to TIFF format not available
+    $location_source = $location;
+    $file_source = $file;
+  
+    // temporary directory for extracting file
+    $temp_name = uniqid ("index");
+    $temp_dir = $mgmt_config['abs_path_temp'];
+
+    // convert to TIFF since Tesseract has best results with TIFF images
+    if (($file_ext != ".tif" && $file_ext != ".tiff" && $file_ext != ".png") && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
+    {
+      $cmd = "";
+      
+      // find image converter
+      foreach ($mgmt_imagepreview as $ext_image=>$converter)
+      {
+        if (substr_count (strtolower ($ext_image).".", $file_ext.".") > 0)
+        {
+          $cmd = $converter." -density 300 \"".shellcmd_encode ($location.$file)."\" -depth 8 -strip -background white -alpha off -auto-level -compress none \"".shellcmd_encode ($temp_dir.$temp_name).".temp-%0d.tiff\"";
+          break;
+        }
+      }
+      
+      if (!empty ($cmd))
+      {
+        @exec ($cmd, $buffer, $errorCode);
+      
+        // on error
+        if ($errorCode || !is_file ($temp_dir.$temp_name.".temp-0.tiff"))
+        {
+          $errcode = "20531";
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:".$errorCode.", command:".$cmd.") failed in indexcontent for file: ".$file;
+        }
+        // on success
+        else
+        {
+          $location_source = $temp_dir;
+          $file_source = $temp_name.".temp-0.tiff";
+          
+          // get new file extension
+          $file_info = getfileinfo ($site, $file_source, "comp");
+          $file_ext = $file_info['ext']; 
+        }
+      }
+    }
+
+    // extract text from image using OCR (if source is TIFF or PNG image)
+    if (!empty ($file_source) && is_file ($location_source.$file_source) && ($file_ext == ".tif" || $file_ext == ".tiff" || $file_ext == ".png"))
+    {
+      $lang_options_array = array();
+      
+      // use -l lang-id to set the language that should be used for the OCR, by default it is English
+      if (!empty ($lang)) $lang_options_array[] = $tesseract_lang[$lang];
+      
+      // scan for other languages
+      if (!empty ($mgmt_config[$site]['ocr']))
+      {
+        $temp_array = explode (",", trim ($mgmt_config[$site]['ocr'], ","));
+        
+        // max 3 additional languages for OCR due to execution time
+        $i = 1;
+        
+        foreach ($temp_array as $temp)
+        {
+          // get tesseract language code
+          if (trim ($temp) != "" && !empty ($tesseract_lang[$temp]))
+          {
+            $lang_options_array[] = $tesseract_lang[$temp];
+            $i++;
+            if ($i > 3) break;
+          }
+        }
+      }
+      
+      if (sizeof ($lang_options_array) > 0)
+      {
+        $lang_options_array = array_unique ($lang_options_array);
+        $lang_options = " -l ".implode ("+", $lang_options_array);
+      }
+      else $lang_options = "";
+      
+      // OCR options:
+      //   --tessdata-dir PATH   Specify the location of tessdata path.
+      //   --user-words PATH     Specify the location of user words file.
+      //   --user-patterns PATH  Specify the location of user patterns file.
+      //   -l LANG[+LANG]        Specify language(s) used for OCR.
+      //   -c VAR=VALUE          Set value for config variables. Multiple -c arguments are allowed.
+      //   --psm NUM             Specify page segmentation mode.
+      //   --oem NUM             Specify OCR Engine mode.
+      // NOTE: These options must occur before any configfile.
+      
+      // PSM - Page segmentation modes:
+      //   0    Orientation and script detection (OSD) only.
+      //   1    Automatic page segmentation with OSD.
+      //   2    Automatic page segmentation, but no OSD, or OCR.
+      //   3    Fully automatic page segmentation, but no OSD. (Default)
+      //   4    Assume a single column of text of variable sizes.
+      //   5    Assume a single uniform block of vertically aligned text.
+      //   6    Assume a single uniform block of text.
+      //   7    Treat the image as a single text line.
+      //   8    Treat the image as a single word.
+      //  9    Treat the image as a single word in a circle.
+      //  10    Treat the image as a single character.
+      //  11    Sparse text. Find as much text as possible in no particular order.
+      //  12    Sparse text with OSD.
+      //  13    Raw line. Treat the image as a single text line, bypassing hacks that are Tesseract-specific.
+      
+      // OCR Engine modes:
+      //   0    Legacy engine only.
+      //   1    Neural nets LSTM engine only.
+      //   2    Legacy + LSTM engines.
+      //   3    Default, based on what is available.
+          
+      // find parser (avoid conflicts with other parsers for PDF or MS Word
+      foreach ($mgmt_parser as $ext_parser=>$parser)
+      {
+        if (substr_count (strtolower ($ext_parser).".", $file_ext.".") > 0)
+        {
+          // temporary pages/images
+          if (is_file ($temp_dir.$temp_name.".temp-0.tiff"))
+          {
+            // count pages
+            for ($page_count = 0; $page_count <= 10000; $page_count++)
+            {
+              $temp_file = $temp_name.".temp-".$page_count.".tiff";
+              
+              // extract text from image using OCR
+              if (is_file ($temp_dir.$temp_file))
+              {
+                // create temp text file from TIFF image (file extension for text file will be added by Tesseract)
+                // using Orientation and script detection (OSD)
+                $cmd = $parser." \"".shellcmd_encode ($temp_dir.$temp_file)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"  ".$lang_options." -psm 1";
+
+                @exec ($cmd);
+      
+                // on error
+                if (!is_file ($temp_dir.$temp_name.".txt"))
+                {
+                  $errcode = "20532";
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of tesseract (command:".$cmd.") failed in indexcontent for file: ".$file;
+                }
+                // on success
+                else
+                {
+                  $file_content .= loadfile_fast ($temp_dir, $temp_name.".txt")." ";
+                  
+                  // remove temp files
+                  if (is_file ($temp_dir.$temp_file)) deletefile ($temp_dir, $temp_file, false);
+                  if (is_file ($temp_dir.$temp_name.".txt")) deletefile ($temp_dir, $temp_name.".txt", false);
+                }
+              }
+              // no more temp files to scan
+              else break;
+            }
+          }
+          // original source
+          else
+          {
+            // create temp text file from TIFF image (file extension for text file will be added by Tesseract)
+            // using Orientation and script detection (OSD)
+            $cmd = $parser." \"".shellcmd_encode ($location_source.$file_source)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"  ".$lang_options." -psm 1";
+  
+            @exec ($cmd);
+  
+            // on error
+            if (!is_file ($temp_dir.$temp_name.".txt"))
+            {
+              $errcode = "20532";
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of tesseract (command:".$cmd.") failed in indexcontent for file: ".$file;
+            }
+            // on success
+            else
+            {
+              $file_content = loadfile_fast ($temp_dir, $temp_name.".txt");
+              
+              // remove temp files
+              if (is_file ($temp_dir.$temp_name.".txt")) deletefile ($temp_dir, $temp_name.".txt", false);              
+              break;
+            }
+          }
+        }
+      }
+    }
+    
+    // save log
+    savelog (@$error);
+    
+    if (!empty ($file_content)) return $file_content;
+    else return false;
+  }
+  else return false;
+}
+
 // ---------------------------------------- indexcontent --------------------------------------------
 // function: indexcontent()
-// input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string], container name or ID [string] (optional), container XML-content [string] (optional), user name [string]
+// input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string], container name or ID [string] (optional), container XML-content [string] (optional), user name [string], return the content without saving it in the system [true,false] (optonal)
 // output: true / false
 
 // description:
@@ -19,7 +241,7 @@
 // The given charset of the publication (not set by default), container or publication (not set by default) will be used.
 // The default character set of default.meta.tpl is UTF-8, so all content should be saved in UTF-8.
 
-function indexcontent ($site, $location, $file, $container="", $container_content="", $user)
+function indexcontent ($site, $location, $file, $container="", $container_content="", $user, $return_content=false)
 {
   global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, $hcms_lang, $lang;
 
@@ -29,10 +251,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
-    // load tesseract language mapping
-    if (empty ($tesseract_lang) || !is_array ($tesseract_lang)) require ($mgmt_config['abs_path_cms']."include/tesseract_lang.inc.php");
-    
+
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";            
   
@@ -115,6 +334,12 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           $file_content = implode ("\n", $file_content);
         }
         else $file_content = "";  
+
+        // try OCR if no content has been extracted and create annotation images from PDF
+        if (trim ($file_content) == "")
+        {
+          $file_content = ocr_extractcontent ($site, $location, $file);
+        }
       }
       
       // ------------------------ OPEN OFFICE -----------------------
@@ -385,112 +610,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       // get file content from image formats using OCR
       elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['image']).".", $file_ext.".") > 0 && !empty ($mgmt_parser) && is_array ($mgmt_parser))
       {
-        foreach ($mgmt_parser as $ext_parser=>$parser)
-        {
-          if (substr_count (strtolower ($ext_parser).".", $file_ext.".") > 0)
-          {
-            // image is already of TIFF format or conversion to TIFF format not available
-            $location_source = $location;
-            $file_source = $file;
-          
-            // temporary directory for extracting file
-            $temp_name = uniqid ("index");
-            $temp_dir = $mgmt_config['abs_path_temp'];
-        
-            // convert image to TIFF since Tesseract has best results with TIFF images
-            if (($file_ext != ".tif" && $file_ext != ".tiff" && $file_ext != ".png") && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
-            {
-              $cmd = "";
-              
-              // find image converter
-              foreach ($mgmt_imagepreview as $ext_image=>$converter)
-              {
-                if (substr_count (strtolower ($ext_image).".", $file_ext.".") > 0)
-                {
-                  $cmd = $converter." \"".shellcmd_encode ($location.$file)."\" -auto-level -compress none \"".shellcmd_encode ($temp_dir.$temp_name).".tif\"";
-                  break;
-                }
-              }
-              
-              if (!empty ($cmd))
-              {
-                @exec ($cmd, $buffer, $errorCode);
-              
-                // on error
-                if ($errorCode || !is_file ($temp_dir.$temp_name.".tif"))
-                {
-                  $errcode = "20531";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:".$errorCode.", command:".$cmd.") failed in indexcontent for file: ".$file;
-                }
-                // on success
-                else
-                {
-                  $location_source = $temp_dir;
-                  $file_source = $temp_name.".tif";
-                }
-              }
-            }
-
-            // extract text from image using OCR
-            if (!empty ($file_source) && is_file ($location_source.$file_source))
-            {
-              $lang_options_array = array();
-              
-              // use -l lang-id to set the language that should be used for the OCR, by default it is English
-              if (!empty ($lang)) $lang_options_array[] = $tesseract_lang[$lang];
-              
-              // scan for other languages as well
-              if (!empty ($mgmt_config[$site]['translate']))
-              {
-                $temp_array = explode (",", $mgmt_config[$site]['translate']);
-                
-                // max 3 additional languages for OCR due to performance reasons
-                $i = 1;
-                
-                foreach ($temp_array as $temp)
-                {
-                  // get tesseract language code
-                  if (trim ($temp) != "" && !empty ($tesseract_lang[$temp]))
-                  {
-                    $lang_options_array[] = $tesseract_lang[$temp];
-                    $i++;
-                    if ($i > 3) break;
-                  }
-                }
-              }
-              
-              if (sizeof ($lang_options_array) > 0)
-              {
-                $lang_options_array = array_unique ($lang_options_array);
-                $lang_options = " -l ".implode ("+", $lang_options_array);
-              }
-              else $lang_options = "";
-            
-              // create temp text file from TIFF image (file extension for text file will be added by Tesseract)
-              $cmd = $parser." \"".shellcmd_encode ($location_source.$file_source)."\"".$lang_options." \"".shellcmd_encode ($temp_dir.$temp_name)."\"";
-
-              @exec ($cmd);
-
-              // on error
-              if (!is_file ($temp_dir.$temp_name.".txt"))
-              {
-                $errcode = "20532";
-                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of tesseract (command:".$cmd.") failed in indexcontent for file: ".$file;
-              }
-              // on success
-              else
-              {
-                $file_content = loadfile_fast ($temp_dir, $temp_name.".txt");
-                
-                // remove temp files
-                if (is_file ($temp_dir.$temp_name.".tif")) deletefile ($temp_dir, $temp_name.".tif", 0);
-                if (is_file ($temp_dir.$temp_name.".txt")) deletefile ($temp_dir, $temp_name.".txt", 0);
-                
-                break;
-              }
-            }
-          }
-        }
+        $file_content = ocr_extractcontent ($site, $location, $file);
       }
       else $file_content = "";
 
@@ -506,102 +626,115 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       } 
 
       // delete temp file
-      if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+      if (!empty ($temp['result']) && !empty ($temp['created'])) deletefile ($temp['templocation'], $temp['tempfile'], 0);
 
-      // write to content container
-      if (!empty ($file_content))
+      // write to content container and database
+      if (empty ($return_content))
+      {
+        if (!empty ($file_content))
+        {
+          // remove all tags
+          $file_content = strip_tags ($file_content);
+          $file_content = trim ($file_content);
+          $file = trim ($file);
+
+          // get destination character set
+          $charset_array = getcharset ($site, $container_content);
+          
+          // or set to UTF-8 if not available
+          if (is_array ($charset_array)) $charset_dest = strtoupper ($charset_array['charset']);
+          else $charset_dest = "UTF-8";
+          
+          // get encoding/charset of container
+          $xml_encoding = gethtmltag ($container_content, "?xml");
+              
+          if ($xml_encoding != false) $charset_container = getattribute ($xml_encoding, "encoding");
+          else $charset_container = "";
+                 
+          // set character set / encoding of content container of not set already
+          if ($charset_container == "" || $charset_container != $charset_dest)
+          {
+            $container_content_temp = setxmlparameter ($container_content, "encoding", $charset_dest);
+            if (!empty ($container_content_temp)) $container_content = $container_content_temp;
+          }
+          
+          // set array to save content as UTF-8 in database before converting it
+          $text_array[$file] = $file_content;
+          $type_array[$file] = "file";
+          
+          // convert content if destination charset is not UTF-8     
+          if ($charset_dest != "UTF-8")
+          {
+            $file_content = convertchars ($file_content, "UTF-8", $charset_dest);
+          }
+  
+          // update existing content
+          $container_contentnew = setcontent ($container_content, "<multimedia>", "<file>", $file, "", "");
+          
+          if ($container_contentnew != false)
+          {          
+            $container_contentnew = setcontent ($container_contentnew, "<multimedia>", "<content>", "<![CDATA[".$file_content."]]>", "", "");
+          }
+          // insert new multimedia xml-node
+          else
+          {
+            $multimedia_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "multimedia.schema.xml.php"));
+            
+            $multimedia_node = setcontent ($multimedia_schema_xml, "<multimedia>", "<file>", $file, "", "");
+            $multimedia_node = setcontent ($multimedia_node, "<multimedia>", "<content>", "<![CDATA[".$file_content."]]>", "", "");
+                    
+            if ($multimedia_node != false) $container_contentnew = insertcontent ($container_content, $multimedia_node, "<container>");
+          }
+  
+          // save log
+          savelog (@$error);
+  
+          // save container
+          if ($container_contentnew != false)
+          {
+            // relational DB connectivity
+            if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);  
+  
+            // set modified date in container
+            $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+            if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
+            
+            // save container
+            if ($container_contentnew != false)
+            {
+              savecontainer ($container, "published", $container_contentnew, $user);
+              return savecontainer ($container, "work", $container_contentnew, $user);
+            }
+          }
+        }
+        // if no content has been extracted, save user and date information
+        else
+        {
+          // relational DB connectivity
+          if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, "", "", $user);
+  
+          // set modified date in container
+          $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+          if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
+          
+          // save container
+          if ($container_content != false)
+          {
+            savecontainer ($container, "published", $container_content, $user);
+            return savecontainer ($container, "work", $container_content, $user);
+          }
+        }
+      }
+      // return content
+      elseif (!empty ($file_content))
       {
         // remove all tags
         $file_content = strip_tags ($file_content);
         $file_content = trim ($file_content);
-        $file = trim ($file);
-            
-        // get destination character set
-        $charset_array = getcharset ($site, $container_content);
-        
-        // or set to UTF-8 if not available
-        if (is_array ($charset_array)) $charset_dest = strtoupper ($charset_array['charset']);
-        else $charset_dest = "UTF-8";
-        
-        // get encoding/charset of container
-        $xml_encoding = gethtmltag ($container_content, "?xml");
-            
-        if ($xml_encoding != false) $charset_container = getattribute ($xml_encoding, "encoding");
-        else $charset_container = "";
-               
-        // set character set / encoding of content container of not set already
-        if ($charset_container == "" || $charset_container != $charset_dest)
-        {
-          $container_content_temp = setxmlparameter ($container_content, "encoding", $charset_dest);
-          if (!empty ($container_content_temp)) $container_content = $container_content_temp;
-        }
-        
-        // set array to save content as UTF-8 in database before converting it
-        $text_array[$file] = $file_content;
-        $type_array[$file] = "file";
-        
-        // convert content if destination charset is not UTF-8     
-        if ($charset_dest != "UTF-8")
-        {
-          $file_content = convertchars ($file_content, "UTF-8", $charset_dest);
-        }
-
-        // update existing content
-        $container_contentnew = setcontent ($container_content, "<multimedia>", "<file>", $file, "", "");
-        
-        if ($container_contentnew != false)
-        {          
-          $container_contentnew = setcontent ($container_contentnew, "<multimedia>", "<content>", "<![CDATA[".$file_content."]]>", "", "");
-        }
-        // insert new multimedia xml-node
-        else
-        {
-          $multimedia_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "multimedia.schema.xml.php"));
           
-          $multimedia_node = setcontent ($multimedia_schema_xml, "<multimedia>", "<file>", $file, "", "");
-          $multimedia_node = setcontent ($multimedia_node, "<multimedia>", "<content>", "<![CDATA[".$file_content."]]>", "", "");
-                  
-          if ($multimedia_node != false) $container_contentnew = insertcontent ($container_content, $multimedia_node, "<container>");
-        }
-
-        // save log
-        savelog (@$error);
-
-        // save container
-        if ($container_contentnew != false)
-        {
-          // relational DB connectivity
-          if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);  
-
-          // set modified date in container
-          $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
-          if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
-          
-          // save container
-          if ($container_contentnew != false)
-          {
-            savecontainer ($container, "published", $container_contentnew, $user);
-            return savecontainer ($container, "work", $container_contentnew, $user);
-          }
-        }
+        return $file_content;
       }
-      // if no content has been extracted, save user and date information
-      else
-      {
-        // relational DB connectivity
-        if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, "", "", $user);
-
-        // set modified date in container
-        $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
-        if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
-        
-        // save container
-        if ($container_content != false)
-        {
-          savecontainer ($container, "published", $container_content, $user);
-          return savecontainer ($container, "work", $container_content, $user);
-        }
-      }
+      else return false;
     }
   }
   
@@ -1221,7 +1354,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
 // function: createmedia()
 // input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], 
 //        format (file extension w/o dot) [string] (optional), 
-//        type of image/video/audio file [thumbnail(for thumbnails of images),origthumb(thumbnail made from original video/audio),original(to overwrite original video/audio file),any other string present in $mgmt_imageoptions/$mgmt_mediaoptions,temp(for temporary files)] (optional),
+//        type of image/video/audio file [thumbnail(for thumbnails of images),origthumb(thumbnail made from original video/audio),original(to overwrite original video/audio file),annotation(for annotation images),any other string present in $mgmt_imageoptions/$mgmt_mediaoptions,temp(for temporary files)] (optional),
 //        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
 // output: new file name / false on error
 
@@ -1597,13 +1730,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           }
         }
       }
-      
+
       // -------------- if Image conversion software is provided -----------------
       if (is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0)
       {
         // redefine type (for images thumbnail and origthumb are the same)
         if ($type == "origthumb") $type = "thumbnail";
-              
+      
         // define format if not set
         if ($format == "") $format_set = "jpg";
         else $format_set = $format;
@@ -1618,7 +1751,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           {
             reset ($mgmt_imageoptions);  
             $i = 1;
-  
+
             // extensions for certain image rendering options
             foreach ($mgmt_imageoptions as $imageoptions_ext => $imageoptions)
             {
@@ -1628,7 +1761,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               $check2 = $type != 'thumbnail' && substr_count ($imageoptions_ext.".", ".".$format_set.".") > 0;
               // we also need to check if the type array is present
               $check3 = array_key_exists ($type, $mgmt_imageoptions[$imageoptions_ext]);
-  
+
               // get image rendering options based on given destination format
               if (($check1 || $check2) && $check3)
               {
@@ -1929,7 +2062,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 if (!empty ($mgmt_imagepreview[$imagepreview_ext]) && $mgmt_imagepreview[$imagepreview_ext] != "GD")
                 {
                   $buffer_file = $path_source;
-                                    
+          
                   // delete thumbnail
                   if ($type == "thumbnail" && is_file ($location_dest.$file_name.".thumb.jpg"))
                   {
@@ -2002,7 +2135,26 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       // render all pages from document as images for annotations
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.jpg")."\"";
                     }
-                    else 
+                    elseif ($type == "temp")
+                    {
+                      // correct file name if thumbnail file is used as source
+                      if (substr ($file_name, -6) == ".thumb") $newfile = substr ($file_name, 0, -6).".temp";
+                      else $newfile = $file_name.".temp";
+                      
+                      // remove old temp image files
+                      if (is_file ($location_dest.$newfile."-0.".$format))
+                      { 
+                        for ($p=0; $p<=10000; $p++)
+                        {
+                          $temp = $newfile."-".$p.".".$format;
+                          deletefile ($location_dest, $temp, 0);
+                        }
+                      }
+                      
+                      // render all pages from document as images
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.".$format)."\"";
+                    }
+                    else
                     {
                       if ($type == "original") $newfile = $file_name.".".$imageformat;
                       else $newfile = $file_name.".".$type.".".$imageformat;

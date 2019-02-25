@@ -28,7 +28,7 @@ scriptend]
   <head>
     <title>hyperCMS.com</title>
     <meta charset='utf-8' />
-    <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation(); scriptend]css/main.css" />
+    <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("black"); scriptend]css/main.css" />
   </head>
   <body class="hcmsWorkplaceGeneric">
     <div class="hcmsWorkplaceFrame">

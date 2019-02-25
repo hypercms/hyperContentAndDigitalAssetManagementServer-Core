@@ -43,6 +43,9 @@ function minNavFrame ()
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('mainLayer').style.left = width + 'px';
+    window.frames['navFrame2'].document.getElementById('Navigator').style.display = 'none';
+    window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.left = '0px';
+    window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.right = '';
   }
 }
 
@@ -54,6 +57,9 @@ function maxNavFrame ()
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('mainLayer').style.left = width + 'px';
+    window.frames['navFrame2'].document.getElementById('Navigator').style.display = 'block';
+    window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.left = '';
+    window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.right = '0px';
   }
 }
 </script>

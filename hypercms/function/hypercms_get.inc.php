@@ -369,7 +369,7 @@ function getcalendarlang ($lang="en")
 // output: HTML escaped text
 
 // description:
-// If the destination character set is not supported by the language set of the presebtation, the text need to be HTML escaped.
+// If the destination character set is not supported by the language set of the presentation, the text need to be HTML escaped.
 
 function getescapedtext ($text, $charset="", $lang="")
 {
@@ -2932,7 +2932,7 @@ function getfileinfo ($site, $file, $cat="comp")
           // get file extension of file name minus .recycle
           $file_ext = strtolower (strrchr ($file_name, "."));
           
-          $file_published = true;
+          $file_published = false;
           $file_deleted = true;
         }
         // unpublished objects 

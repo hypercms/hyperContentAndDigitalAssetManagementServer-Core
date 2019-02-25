@@ -109,12 +109,12 @@ function submitLink (url)
   
     <?php if ($mgmt_config['db_connect_rdbms'] != "") { ?>
     <div style="display:block;">
-    <form name="searchform_general" method="post">
-      <input type="hidden" name="site" value="<?php echo $site; ?>" />
-      <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
-      <input type="text" name="search_expression" value="<?php if ($search_expression != "") echo html_encode ($search_expression); else echo $hcms_lang['search-expression'][$lang]; ?>" onblur="if (this.value=='') this.value='<?php echo $hcms_lang['search-expression'][$lang]; ?>';" onfocus="if (this.value=='<?php echo $hcms_lang['search-expression'][$lang]; ?>') this.value='';" style="width:210px;" maxlength="60" />
-      <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="document.forms['searchform_general'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" align="absmiddle" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-    </form>
+      <form name="searchform_general" method="post">
+        <input type="hidden" name="site" value="<?php echo $site; ?>" />
+        <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
+        <input type="text" name="search_expression" value="<?php if ($search_expression != "") echo html_encode ($search_expression); else echo $hcms_lang['search-expression'][$lang]; ?>" onblur="if (this.value=='') this.value='<?php echo $hcms_lang['search-expression'][$lang]; ?>';" onfocus="if (this.value=='<?php echo $hcms_lang['search-expression'][$lang]; ?>') this.value='';" 
+        style="width:174px;" maxlength="200" /><img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="document.forms['searchform_general'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" align="absmiddle" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+      </form>
     </div>
     <?php } ?>
     <hr />

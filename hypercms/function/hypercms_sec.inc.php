@@ -2451,7 +2451,7 @@ function valid_publicationname ($variable)
   {
     if (!is_array ($variable) && is_string ($variable))
     {
-      if (is_array ($siteaccess) && !in_array ($variable, $siteaccess)) return false;
+      if (!empty ($siteaccess) && is_array ($siteaccess) && !in_array ($variable, $siteaccess)) return false;
       if ($variable == "*Null*" || $variable == "*no_memberof*") return false;
       if (substr_count ($variable, "<") > 0) return false;
       if (substr_count ($variable, ">") > 0) return false;

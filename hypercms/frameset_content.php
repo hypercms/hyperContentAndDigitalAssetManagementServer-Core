@@ -51,7 +51,7 @@ function minControlFrame ()
 {
   if (document.getElementById('controlLayer'))
   {
-    var height = 34;
+    var height = 36;
     
     document.getElementById('controlLayer').style.height = height + 'px';
     document.getElementById('objLayer').style.top = height + 'px';

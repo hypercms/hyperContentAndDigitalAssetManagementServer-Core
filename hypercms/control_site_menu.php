@@ -20,7 +20,7 @@ require_once ("language/".getlanguagefile ($lang));
 // input parameters
 $action = getrequest_esc ("action");
 $site = getrequest_esc ("site"); // site can be *Null*
-$site_name = getrequest_esc ("site_name", "publicationname");
+$site_name = getrequest_esc ("site_name");
 $token = getrequest ("token"); 
 
 // publication management config

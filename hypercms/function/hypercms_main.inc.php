@@ -7,9 +7,9 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
-// ============================================ MAIN FUNCTIONS ========================================
+// ====================================== MAIN FUNCTIONS ========================================
 
-// ========================================== NUMBERS =======================================
+// ========================================== NUMBERS ===========================================
 
 // ------------------------------------- correctnumber ------------------------------------------
 
@@ -5754,7 +5754,7 @@ function deleteinstance ($instance_name, $user="sys")
 
 function createpublication ($site_name, $user="sys")
 {
-  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
+  global $siteaccess, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // eventsystem
   if ($eventsystem['oncreatepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
@@ -5771,6 +5771,9 @@ function createpublication ($site_name, $user="sys")
   // plugin.conf.php is the configuration file for the plugins and is saved in the same config-directory
   $forbidden[] = "plugin";
   
+  // IMPORTANT: siteaccess must be empty, otherwise valid_publicationname will return false
+  $siteaccess = "";
+
   // check if sent data is available
   if (!is_array ($mgmt_config) || !valid_publicationname ($site_name) || strlen ($site_name) > 100 || in_array ($site_name, $forbidden) || !valid_objectname ($user))
   {
@@ -17154,7 +17157,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang_to));
             }
 
-            if ($email_to != "")
+            if (!empty ($email_to))
             {
               // text options
               if ($event == "oncreate")

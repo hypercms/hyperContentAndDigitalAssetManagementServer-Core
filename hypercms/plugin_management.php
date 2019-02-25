@@ -101,7 +101,7 @@ if ($action)
     <form action="" method="POST" name="editplugins">
       <input type="hidden" name="action" value="change" />
       
-      <table class="hcmsTableStandard" style="width:95%; table-layout:auto;">
+      <table class="hcmsTableStandard" style="width:98%; table-layout:auto;">
         <tbody>
           <tr>
             <th class="hcmsHeadline" style="text-align:center; white-space:nowrap; width:20px;">#</th>
@@ -109,7 +109,7 @@ if ($action)
             <th class="hcmsHeadline" style="text-align:left; white-space:nowrap; width:180px;"><?php echo getescapedtext ($hcms_lang['author'][$lang]); ?></th>
             <th class="hcmsHeadline" style="text-align:left; white-space:nowrap; width:100px;"><?php echo getescapedtext ($hcms_lang['version'][$lang]); ?></th>
             <th class="hcmsHeadline" style="text-align:left; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['description'][$lang]); ?></th>
-            <th class="hcmsHeadline" style="text-align:left; white-space:nowrap; width:50px;"><?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></th>
+            <th class="hcmsHeadline" style="text-align:center; white-space:nowrap; width:40px;"><?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></th>
           </tr>
         <?php
         $cnt = 0;
@@ -136,14 +136,17 @@ if ($action)
         ?>
         </tbody>
       </table>
-      
-      <div style="margin-top:10px;">
-        <div style="width:260px; float:left;"><?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?> </div>
-        <img alt="OK" title="OK" onmouseover="hcms_swapImage('Button1','', '<?php echo getthemelocation(); ?>/img/button_ok_over.png',1)" onmouseout="hcms_swapImgRestore()" onclick="document.forms['editplugins'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" name="Button1">
-        <div style="clear:both;"></div>
-        <div style="width:260px; float:left;"><?php echo getescapedtext ($hcms_lang['check-for-new-or-changed-plugins'][$lang]); ?> </div>
-        <img alt="OK" title="OK" onmouseover="hcms_swapImage('Button2','', '<?php echo getthemelocation(); ?>/img/button_ok_over.png',1)" onmouseout="hcms_swapImgRestore()" onclick="window.location='?action=reparse'" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" name="Button2">
-      </div>
+      <br/>
+      <table class="hcmsTableStandard" style="margin-top:10px;">
+        <tr>
+          <td style="width:260px;"><?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?> </td>
+          <td><img alt="OK" title="OK" onmouseover="hcms_swapImage('Button1','', '<?php echo getthemelocation(); ?>/img/button_ok_over.png',1)" onmouseout="hcms_swapImgRestore()" onclick="document.forms['editplugins'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" name="Button1" /></td>
+        </tr>
+        <tr>
+          <td style="width:260px;"><?php echo getescapedtext ($hcms_lang['check-for-new-or-changed-plugins'][$lang]); ?> </td>
+          <td><img alt="OK" title="OK" onmouseover="hcms_swapImage('Button2','', '<?php echo getthemelocation(); ?>/img/button_ok_over.png',1)" onmouseout="hcms_swapImgRestore()" onclick="window.location='?action=reparse'" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" name="Button2" /></td>
+        </tr>
+      </table>
         
     </form>
     </div>

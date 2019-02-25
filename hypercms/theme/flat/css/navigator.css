@@ -72,8 +72,8 @@ hr
 {
   height: 1px;
   border-width :0;
-  color: #0ACA03;
-  background-color: #8EA9EC;
+  color: #7DA5DD;
+  background-color: #7DA5DD;
 }
 
 .hcmsWorkplaceExplorer
@@ -104,10 +104,6 @@ hr
 
 .hcmsWorkplaceObjectlistLinks
 {
-  margin: 0; 
-  padding: 0;
-  width: 100%;
-  height: 100%;
   background-color: #ADE6BA;
 }
 

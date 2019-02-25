@@ -5,7 +5,7 @@
 
 .rc_iframe_body {
 	margin: 0px;
-	background: #A2C5F9;
+	background: #EAEAEA;
 	border: 0px;
 	cursor: default;
 }
@@ -19,14 +19,14 @@
 	border-bottom: 1px solid #000000;
 	padding: 2px;
 	text-align: center;
-	color: #000;
+	color: #000000;
 	white-space: nowrap;
 }
 .rc_iframe_body .rc_time_tr td {
 	border-top: 1px solid #000000;
 	padding: 2px;
 	text-align: center;
-	color: #000;
+	color: #000000;
 	white-space: nowrap;
 }
 
@@ -35,7 +35,7 @@
 	border-bottom: 1px solid #000000;
 	padding: 2px;
 	text-align: center;
-	color: #000;
+	color: #000000;
 	white-space: nowrap;
 	font-weight: bold;
 }
@@ -44,7 +44,7 @@
 	border: 1px solid #fff;
 	padding: 4px 2px 4px 2px;
 	text-align: right;
-	color: #000;
+	color: #000000;
 	white-space: nowrap;
 	width: 20px;
 }
@@ -53,7 +53,7 @@
 	border-top: 1px solid #000000;
 	padding: 2px;
 	text-align: center;
-	color: #000;
+	color: #000000;
 	white-space: nowrap;
 }
 
@@ -73,8 +73,8 @@
 }
 
 .rc_iframe_body td.rc_current {
-	color: #fff;
-	background: #00f;
+	color: #FFFFFF;
+	background: #FB9000;
 	font-weight: bold;
 }
 
@@ -83,22 +83,22 @@
 }
 
 .rc_iframe_body td.rc_weekend_head {
-	color: #f00;
+	color: #E13B0D;
 }
 
 .rc_iframe_body td.rc_weekend_day {
-	color: #f00;
+	color: #E13B0D;
 }
 
 .rc_iframe_body tr.rc_highlight,
 .rc_iframe_body tr.rc_highlight td {
-	border: 1px solid #ccccff;
-	background: #ccccff;
+	border: 1px solid #ADADAD;
+	background: #ADADAD;
 }
 
 .rc_iframe_body tr.rc_highlight td.rc_highlight {
-	background: #3366cc;
-	border: 1px solid #9999ff;
+	background: #FDD296;
+	border: 1px solid #FDD296;
 }
 
 /* alt skin */
@@ -117,14 +117,14 @@
 .rc_iframe_body_alt .rc_table {
 	font-size: 12px;
 	font-family: verdana,tahoma,sans-serif,arial;
-	background: #0f0;
+	background: #15BA03;
 }
 
 .rc_iframe_body_alt .rc_wd_tr td {
 	border-bottom: 1px solid #000000;
 	padding: 2px;
 	text-align: center;
-	color: #000;
+	color: #000000;
 	white-space: nowrap;
 }
 
@@ -132,7 +132,7 @@
 	border-top: 1px solid #000000;
 	padding: 2px;
 	text-align: center;
-	color: #000;
+	color: #000000;
 	white-space: nowrap;
 }
 
@@ -141,16 +141,16 @@
 	border-bottom: 1px solid #000000;
 	padding: 2px;
 	text-align: center;
-	color: #000;
+	color: #000000;
 	white-space: nowrap;
 	font-weight: bold;
 }
 
 .rc_iframe_body_alt .rc_cal_tr td {
-	border: 1px solid #0f0;
+	border: 1px solid #464646;
 	padding: 4px 2px 4px 2px;
 	text-align: right;
-	color: #000;
+	color: #000000;
 	white-space: nowrap;
 	width: 25px;
 }
@@ -159,7 +159,7 @@
 	border-top: 1px solid #000000;
 	padding: 2px;
 	text-align: center;
-	color: #000;
+	color: #000000;
 	white-space: nowrap;
 }
 
@@ -180,9 +180,9 @@
 
 .rc_iframe_body_alt td.rc_current,
 .rc_iframe_body_alt tr.rc_highlight td.rc_current {
-	border: 1px solid #fff;
-	color: #00f;
-	background: #fff;
+	border: 1px solid #FFFFFF;
+	color: #000000;
+	background: #FFFFF;
 	font-weight: bold;
 }
 
@@ -191,11 +191,11 @@
 }
 
 .rc_iframe_body_alt td.rc_weekend_head {
-	color: #f00;
+	color: #000000;
 }
 
 .rc_iframe_body_alt td.rc_weekend_day {
-	color: #f00;
+	color: #000000;
 }
 
 .rc_iframe_body_alt tr.rc_highlight,
@@ -206,7 +206,7 @@
 
 .rc_iframe_body_alt tr.rc_highlight td.rc_highlight {
 	background: #66ff66;
-	border: 1px solid #9999ff;
+	border: 1px solid #E6E6E6;
 }
 
 /* alt skin */

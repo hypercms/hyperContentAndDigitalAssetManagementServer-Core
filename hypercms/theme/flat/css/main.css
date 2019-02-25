@@ -80,8 +80,8 @@ hr
 {
   height: 1px;
   border-width :0;
-  color: #0ACA03;
-  background-color: #8EA9EC;
+  color: #7DA5DD;
+  background-color: #7DA5DD;
 }
 
 .hcmsCenter
@@ -624,7 +624,6 @@ hr
   cursor: pointer;
   margin: 0;
   padding: 0 20px 0 0;
-  background-color: #FCB335;
   border: 0;
 }
 

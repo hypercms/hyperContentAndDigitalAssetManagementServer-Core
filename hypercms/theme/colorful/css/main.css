@@ -80,8 +80,8 @@ hr
 {
   height: 1px;
   border-width :0;
-  color: #0ACA03;
-  background-color: #8EA9EC;
+  color: #7DA5DD;
+  background-color: #7DA5DD;
 }
 
 .hcmsCenter
@@ -183,7 +183,7 @@ hr
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
-  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
 .hcmsChatBar
@@ -192,7 +192,7 @@ hr
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
-  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
 .hcmsImageItem
@@ -210,17 +210,14 @@ hr
 {
   margin: 0;
   padding: 0;
-  background-color: #6DA9FD;
+  background-color: #7FB3FC;
 }
 
 .hcmsWorkplaceControlWallpaper
 {
   margin: 0;
   padding: 0;
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #5994E8), color-stop(1, #7BB5FF) );
-  background: -moz-linear-gradient( center top, #5994E8 5%, #7BB5FF 100% );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5994E8', endColorstr='#7BB5FF');
-  background-color: #5994E8;
+  background-color: #4D90FC;
 }
 
 .hcmsToolbar
@@ -645,7 +642,6 @@ hr
   cursor: pointer;
   margin: 0;
   padding: 0 20px 0 0;
-  background-color: #FCB335;
   border: 0;
 }
 
