@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -243,13 +241,13 @@ function setwallpaper ()
   
   <!-- plus/minus button -->
   <?php if (!$is_mobile) { ?>
-  <div id="plusminus" style="position:fixed; top:5px; right:25px; z-index:200;">
+  <div id="plusminus" style="position:fixed; top:12px; right:28px; z-index:200;">
     <img id="button_plusminus" onClick="hcms_switchInfo('menubox');" class="hcmsButton" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
   </div>
   <?php } ?>
   
   <!-- add / remove boxes menu -->
-  <div id="menubox" class="hcmsHomeBox" style="position:fixed; top:32px; right:25px; z-index:200; display:none;">
+  <div id="menubox" class="hcmsHomeBox" style="position:fixed; top:36px; right:25px; z-index:200; display:none;">
     <form id="box_form" name="box_form" action="" method="post">
       <input type="hidden" name="action" value="save" />
       <input type="hidden" name="homeboxes" value="" />

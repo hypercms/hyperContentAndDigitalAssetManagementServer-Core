@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -631,6 +629,11 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
   .cell *
   {
     font-size: 11px;
+  }
+  
+  #renderOptions input[type=text], #renderOptions select
+  {
+    padding: 3px;
   }
   </style>
  
@@ -1925,7 +1928,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
     
     
     <!-- rendering settings -->
-    <div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin-top:36px; margin-left:10px" class="hcmsMediaRendering">
+    <div id="renderOptions" style="padding:2px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin:36px 10px 0px 10px;" class="hcmsMediaRendering">
     
       <?php if ($is_image) { ?>
       <!-- start edit image -->
@@ -2068,7 +2071,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
           <?php } ?>
           
         <!-- format -->
-        <div class="cell hcmsInfoBox" style="width:200px;">
+        <div class="cell" style="width:200px;">
           <div>
             <input type="checkbox" id="renderimage" name="renderimage" value="1" />
             <strong><label for="imageformat"><?php echo getescapedtext ($hcms_lang['save-as'][$lang], $charset, $lang); ?></label></strong>
@@ -2244,7 +2247,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
         <?php } ?>
         
         <!-- save as video format -->
-        <div class="cell hcmsInfoBox" style="witth:200px;">
+        <div class="cell" style="witth:200px;">
       		<input type="checkbox" id="rendervideo" name="rendervideo" value="1" />
           <strong><?php echo getescapedtext ($hcms_lang['save-as'][$lang], $charset, $lang); ?></strong><br />
       		<label for="filetype"><?php echo getescapedtext ($hcms_lang['file-type'][$lang], $charset, $lang); ?></label>

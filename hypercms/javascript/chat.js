@@ -1,7 +1,8 @@
-var instance = false;
-var state;
-var message;
-var file;
+var chat_instance = false;
+var chat_service = "service/chat.php";
+var chat_audio = "javascript/ding.mp3";
+var chat_state;
+var chat_file;
 
 function Chat ()
 {
@@ -10,6 +11,7 @@ function Chat ()
   this.getState = getStateOfChat;
   this.getInitState = getInitStateOfChat;
   this.inviteUser = inviteUserToChat;
+  this.uninviteUsers = uninviteUsersOf;
   this.check = checkChat;
   this.open = openChat;
 }
@@ -45,20 +47,20 @@ function openChat ()
 // get the inital state of the chat (number of lines in chat log)
 function getInitStateOfChat ()
 {
-  if(!instance)
+  if (!chat_instance)
   {
-    instance = true;
+    chat_instance = true;
     $.ajax({
       type: "POST",
-      url: "service/chat.php",
+      url: chat_service,
       data: {  
           'function': 'getInitState',
-          'file': file
+          'file': chat_file
       },
       dataType: "json",
       success: function(data){
-        state = data.state;
-        instance = false;
+        chat_state = data.state;
+        chat_instance = false;
       },
     });
   }	 
@@ -67,20 +69,20 @@ function getInitStateOfChat ()
 // get the state of the chat (number of lines in chat log)
 function getStateOfChat ()
 {
-  if(!instance)
+  if (!chat_instance)
   {
-    instance = true;
+    chat_instance = true;
     $.ajax({
       type: "POST",
-      url: "service/chat.php",
+      url: chat_service,
       data: {  
           'function': 'getState',
-          'file': file
+          'file': chat_file
       },
       dataType: "json",
       success: function(data){
-        state = data.state;
-        instance = false;
+        chat_state = data.state;
+        chat_instance = false;
       },
     });
   }	 
@@ -89,16 +91,16 @@ function getStateOfChat ()
 // update the chat
 function updateChat ()
 {
-  if (!instance)
+  if (!chat_instance)
   {
-    instance = true;
+    chat_instance = true;
     $.ajax({
       type: "POST",
-      url: "service/chat.php",
+      url: chat_service,
       data: {  
         'function': 'update',
-        'state': state,
-        'file': file
+        'state': chat_state,
+        'file': chat_file
       },
       dataType: "json",
       success: function(data){
@@ -115,11 +117,11 @@ function updateChat ()
           if (update == true) 
           {
             openChat();
-            audio.play();
+            chat_audio.play();
           }							  
         }
-        instance = false;
-        state = data.state;
+        chat_instance = false;
+        chat_state = data.state;
       },
     });
   }
@@ -132,12 +134,12 @@ function sendChat (message, nickname)
   updateChat();
   $.ajax({
     type: "POST",
-    url: "service/chat.php",
+    url: chat_service,
     data: {  
         'function': 'send',
         'message': message,
         'nickname': nickname,
-        'file': file
+        'file': chat_file
     },
     dataType: "json",
     success: function(data){
@@ -152,12 +154,32 @@ function inviteUserToChat (user, by)
   updateChat();
   $.ajax({
     type: "POST",
-    url: "service/chat.php",
+    url: chat_service,
     data: {  
         'function': 'invite',
         'message': user,
         'nickname': by,
-        'file': file
+        'file': chat_file
+    },
+    dataType: "json",
+    success: function(data){
+      updateChat();
+    },
+  });
+}
+
+// uninvite users
+function uninviteUsersOf (user)
+{
+  updateChat();
+  $.ajax({
+    type: "POST",
+    url: chat_service,
+    data: {  
+        'function': 'uninvite',
+        'message': user,
+        'nickname': user,
+        'file': chat_file
     },
     dataType: "json",
     success: function(data){
@@ -169,17 +191,17 @@ function inviteUserToChat (user, by)
 // check the chat for event
 function checkChat ()
 {
-  if (!instance)
+  if (!chat_instance)
   {
-    instance = true;
+    chat_instance = true;
     $.ajax({
       type: "POST",
-      url: "service/chat.php",
+      url: chat_service,
       data: {  
         'function': 'check',
-        'state': state,
+        'state': chat_state,
         'nickname': name,
-        'file': file
+        'file': chat_file
       },
       dataType: "json",
       success: function(data){
@@ -198,8 +220,8 @@ function checkChat ()
             openChat();
           }	  
         }
-        instance = false;
-        state = data.state;
+        chat_instance = false;
+        chat_state = data.state;
       },
     });
   }

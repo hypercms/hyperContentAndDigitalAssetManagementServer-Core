@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -207,6 +205,7 @@ function checkForm_import()
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <div class="hcmsLocationBar">
+  <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo $pagecomp; ?></b></td>
@@ -215,6 +214,9 @@ function checkForm_import()
       <td>&nbsp;</td>
     </tr>  
   </table>
+  <?php } else { ?>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo $pagecomp; ?></span>
+  <?php } ?>
 </div>
 
 <!-- toolbar -->
@@ -303,11 +305,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <table class="hcmsTableStandard" style="width:100%; height:60px;">
       <tr>
         <td>
-          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span>
-          <br/>
-          <?php echo $pagecomp; ?> <span class="hcmsTextSmall">(<?php echo getescapedtext ($hcms_lang['name-without-ext'][$lang]); ?>)</span>
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang])." ".$pagecomp; ?></span> <span class="hcmsTextSmall">(<?php echo getescapedtext ($hcms_lang['name-without-ext'][$lang]); ?>)</span><br />
           <span style="white-space:nowrap;">
-            <input type="text" name="template" maxlength="60" style="width:220px;" />
+            <input type="text" name="template" maxlength="100" style="width:160px;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>"/>
             <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_tpl_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
           </span>
         </td>
@@ -329,10 +329,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <table class="hcmsTableStandard" style="width:100%; height:60px;">
       <tr>
         <td>
-          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['import-list-comma-delimited'][$lang]); ?></span>
-          <br />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['import-list-comma-delimited'][$lang]); ?></span><br />
           <span style="white-space:nowrap;">
-            <input name="importfile" type="file" size="60" accept="text/*" />
+            <input name="importfile" type="file" style="width:160px;" accept="text/*" />
             <img src="<?php echo getthemelocation(); ?>img/button_info.png" class="hcmsButtonSizeSquare" style="cursor:pointer;" title="Example:
     level;de;en;it
     1;Typ;Type;Tipo
@@ -358,10 +357,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <table class="hcmsTableStandard" style="width:100%; height:60px;">
       <tr>
         <td style="white-space:nowrap;">
-          <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
-          <?php echo $pagecomp; ?>
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang])." ".$pagecomp; ?></span><br />
           <span style="white-space:nowrap;">
-            <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+            <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" style="width:160px;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>">
               <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
             <?php
             $template_option_edit = array();
@@ -402,9 +400,8 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td style="white-space:nowrap;">
-        <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
-        <?php echo $pagecomp; ?> 
-        <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+        <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang])." ".$pagecomp; ?></span><br />
+        <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" style="width:180px;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           if (sizeof ($template_option_edit) > 0)

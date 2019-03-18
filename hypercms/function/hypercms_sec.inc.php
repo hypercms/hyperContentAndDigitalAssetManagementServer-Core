@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
  
  // ===================================== PERMISSIONS =========================================
@@ -382,7 +380,7 @@ function accessgeneral ($site, $location, $cat)
 // requires: accessgeneral
 
 // description:
-// Evaluates page and component access permissions and returns group(s)
+// Evaluates page and component access permissions and returns group(s). Since version 8.0.0 this function does not evaluate the access based on access links anymore since explorer_objectlist verifies the access linking.
 
 function accesspermission ($site, $location, $cat)
 {
@@ -421,17 +419,6 @@ function accesspermission ($site, $location, $cat)
     
     // check general access permissions
     $access_passed = accessgeneral ($site, $location, $cat);
-
-    // check if hcms linking is available and current location is inside linking location
-    if ($access_passed == true && isset ($_SESSION['hcms_linking']) && is_array ($_SESSION['hcms_linking']))
-    {
-      // reset from session to be sure it is correct 
-      $hcms_linking = $_SESSION['hcms_linking'];
-      
-      // check if inside linking location
-      if (valid_locationname ($hcms_linking['location']) && substr_count ($location, $hcms_linking['location']) > 0) $access_passed = true;
-      else $access_passed = false;
-    }    
 
     // check access
     if ($access_passed == true)
@@ -504,7 +491,7 @@ function accesspermission ($site, $location, $cat)
         if (is_array ($result) && sizeof ($result) > 0) return $result;
       }
       // return default group as result if no group was located and hcms linking exists
-      elseif (isset ($_SESSION['hcms_linking']) && is_array ($_SESSION['hcms_linking']))
+      elseif (linking_valid())
       {
         $result[] = "default";
         return $result;
@@ -818,28 +805,25 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     // check object reference (ID) and object code (token) in version before and after version 5.5.8
     if ($mgmt_config['db_connect_rdbms'] != "" && ($objcode == hcms_crypt ($objref, 3, 12) || $objcode == hcms_crypt ($objref)))
     {
-      $objectpath = rdbms_getobject ($objref);
-      
-      if (!empty ($objectpath))
+      if (strpos ($objref, "|") > 0)
       {
-        $result['hcms_linking']['publication'] = getpublication ($objectpath);
-        $result['hcms_linking']['cat'] = getcategory ($result['hcms_linking']['publication'], $objectpath);
-        $objectpath = deconvertpath ($objectpath, "file");
-        
-        if (getobject ($objectpath) == ".folder")
+        $multiobject = link_db_getobject ($objref); 
+      }
+      else $multiobject = array ($objref);
+      
+      if (is_array ($multiobject))
+      {
+        foreach ($multiobject as $temp)
         {
-          $result['hcms_linking']['location'] = getlocation ($objectpath);
-          $result['hcms_linking']['object'] = "";
-          $result['hcms_linking']['type'] = "Folder";
+          $objectpath = rdbms_getobject ($temp);
+          $objecthash = rdbms_getobject_hash ($temp);
+          
+          if (!empty ($objectpath))
+          {
+            $result['hcms_linking'][$objecthash] = $objectpath;
+            $linking_auth = true;
+          }
         }
-        else
-        {
-          $result['hcms_linking']['location'] = getlocation ($objectpath);
-          $result['hcms_linking']['object'] = getobject ($objectpath);
-          $result['hcms_linking']['type'] = "Object";
-        }
-        
-        $linking_auth = true;
       }
     }
   }
@@ -1163,7 +1147,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
 
                   // if object linking is used assign group "default" if existing.
                   // user must have at least one group assigned to have access to the system!
-                  if (isset ($result['hcms_linking']) && is_array ($result['hcms_linking']) && !empty ($result['hcms_linking']['location']))
+                  if (isset ($result['hcms_linking']) && is_array ($result['hcms_linking']) && sizeof ($result['hcms_linking']) > 0)
                   {
                     $defaultgroup = selectcontent ($usergroupdata, "<usergroup>", "<groupname>", "default");
                     
@@ -1509,6 +1493,26 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|user '".$user."' with client IP ".$client_ip." failed to login";
   }
   
+  // clear user as host in chat relationships
+  $chat_relations_log = $mgmt_config['abs_path_temp']."/chat_relations.php";
+  
+  if ($result['auth'] == true && is_file ($chat_relations_log))
+  {
+    $chat_relations = file_get_contents ($chat_relations_log);
+    
+    if (!empty ($chat_relations))
+    {
+      $chat_relations_array = unserialize ($chat_relations);
+      
+      if (!empty ($chat_relations_array[$user]))
+      {
+        unset ($chat_relations_array[$user]);
+        $chat_relations = serialize ($chat_relations_array);      
+        if (!empty ($chat_relations)) file_put_contents ($chat_relations_log, $chat_relations);
+      }
+    }
+  }
+  
   // calculate checksum of permissions
   if (isset ($_SESSION['hcms_instance'])) $result['instance'] = $_SESSION['hcms_instance'];
   else $result['instance'] = false;
@@ -1563,6 +1567,9 @@ function registerinstance ($instance, $load_config=true)
 // input: instance name [string] (optional), result array of function userlogin [array], access link [array] (optional), download formats of access link provided by function rdbms_getaccessinfo [array] (optional), mobile browser result of client [0,1] (optional), is iOS browser result of client [0,1] (optional), HTML5 file support result of client [0,1] (optional)
 // output: result array / false on error
 // requires: hypercms_api.inc.php
+
+// description:
+// Registers all user related paramaters in the session. Access links can be provided with the login result or alternatively as the sperarate accesslink parameter.
 
 function registeruser ($instance="", $login_result, $accesslink=false, $hcms_objformats=false, $is_mobile=0, $is_iphone=0, $html5support=1)
 {
@@ -1650,12 +1657,12 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
     setsession ('hcms_labels', $login_result['labels']);
     
     // set object linking information in session
-    if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']))
+    if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']) && sizeof ($login_result['hcms_linking']) > 0)
     {
       setsession ('hcms_linking', $login_result['hcms_linking']);
       setsession ('hcms_temp_explorerview', "medium");
     }
-    elseif (!empty ($accesslink['hcms_linking']) && is_array ($accesslink['hcms_linking']))
+    elseif (!empty ($accesslink['hcms_linking']) && is_array ($accesslink['hcms_linking']) && sizeof ($accesslink['hcms_linking']) > 0)
     {
       setsession ('hcms_linking', $accesslink['hcms_linking']);
       setsession ('hcms_temp_explorerview', "medium");
@@ -2453,6 +2460,7 @@ function valid_publicationname ($variable)
     {
       if (!empty ($siteaccess) && is_array ($siteaccess) && !in_array ($variable, $siteaccess)) return false;
       if ($variable == "*Null*" || $variable == "*no_memberof*") return false;
+      if ($variable == "..") return false;
       if (substr_count ($variable, "<") > 0) return false;
       if (substr_count ($variable, ">") > 0) return false;
       if (substr_count ($variable, "/") > 0) return false;
@@ -3022,7 +3030,7 @@ function shellcmd_encode ($variable, $type="")
 // description:
 // Unidrectional encryption using crc32 and urlencode. Used to create tokens for simple view links in the system.
 // The tokens can be verified by calculating the hash of the media file name and comparing the hash values.
-// Don't use this function to secure any string or to for password hashing.
+// Don't use this function to secure any string or for password hashing.
 
 function hcms_crypt ($string, $start=0, $length=0)
 {

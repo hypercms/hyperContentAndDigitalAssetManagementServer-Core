@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -41,11 +39,11 @@ $add_onload = "";
 // define category name
 if ($cat == "tracking")
 {
-  $item_type = getescapedtext ($hcms_lang['customer-tracking'][$lang]);
+  $item_type = $hcms_lang['customer-tracking'][$lang];
 }
 elseif ($cat == "profile")
 {
-  $item_type = getescapedtext ($hcms_lang['customer-profile'][$lang]);
+  $item_type = $hcms_lang['customer-profile'][$lang];
 }
 
 // include scripts
@@ -149,14 +147,18 @@ function checkForm_item_create()
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <div class="hcmsLocationBar">
+  <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <td><b><?php echo $item_type; ?></b></td>
+      <td><b><?php echo getescapedtext ($item_type); ?></b></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>  
   </table>
+  <?php } else { ?>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($item_type); ?></span>
+  <?php } ?>
 </div>
 
 <!-- toolbar -->
@@ -205,10 +207,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td style="overflow:auto;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
-        <?php echo $item_type." ".getescapedtext ($hcms_lang['name'][$lang]); ?> 
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]." ".$item_type); ?></span><br />
         <span style="white-space:nowrap;">
-          <input type="text" name="persname" maxlength="100" style="width:220px;" />
+          <input type="text" name="persname" maxlength="100" style="width:180px;" title="<?php echo getescapedtext ($item_type); ?>" />
           <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_item_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
@@ -229,10 +230,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td style="overflow:auto;">
-        <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
-        <?php echo $item_type; ?>
+        <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]." ".$item_type); ?></span><br />
         <span style="white-space:nowrap;">
-          <select name="persfile" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+          <select name="persfile" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" style="width:160px;" title="<?php echo getescapedtext ($item_type); ?>">
             <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
             <?php
             $temp_dir = $mgmt_config['abs_path_data']."customer/".$site."/";
@@ -299,9 +299,8 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td style="overflow:auto;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
-        <?php echo $item_type; ?> 
-        <select name="persfile" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['edit'][$lang]." ".$item_type); ?></span><br />
+        <select name="persfile" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" style="width:180px;" title="<?php echo getescapedtext ($item_type); ?>">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           if (sizeof ($item_option_edit) > 0)

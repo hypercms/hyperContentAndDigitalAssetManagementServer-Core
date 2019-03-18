@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -44,7 +42,7 @@ $add_onload = "";
 // check group permissions
 if (!checkrootpermission ('site') || !checkrootpermission ('siteedit'))
 {
-  $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang])."</p>\n";
+  $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang])."</p>\n";
 }
 
 // check site permissions and save settings
@@ -412,6 +410,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?> </td>
       <td style="white-space:nowrap; vertical-align:top;">
         <select name="setting[theme]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>>
+          <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
         <?php
         $theme_dir = $mgmt_config['abs_path_cms']."theme/";
         $dir_handler = opendir ($theme_dir);
@@ -422,15 +421,8 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
           {
             if (strtolower($theme_opt) != "mobile" && $theme_opt != "." && $theme_opt != ".." && is_dir ($theme_dir.$theme_opt))
             {
-              if ($mgmt_config[$site_name]['theme'] == $theme_opt)
-              {
-                echo "<option value=\"".$theme_opt."\" selected=\"selected\">".ucfirst ($theme_opt)."</option>\n";
-              }
-              elseif ($mgmt_config[$site_name]['theme'] == "" && strtolower ($theme_opt) == "standard")
-              {
-                echo "<option value=\"".$theme_opt."\" selected=\"selected\">".ucfirst ($theme_opt)."</option>\n";
-              }
-              else echo "<option value=\"".$theme_opt."\">".ucfirst ($theme_opt)."</option>\n";
+              echo "
+            <option value=\"".$theme_opt."\" ".($mgmt_config[$site_name]['theme'] == $theme_opt ? "selected=\"selected\"" : "").">".ucfirst ($theme_opt)."</option>";
             }
           }
         }
@@ -441,7 +433,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     
     <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/")) { ?>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['enable-languages-for-translation'][$lang]); ?></td>
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['enable-languages-for-translation'][$lang]." / ".$hcms_lang['taxonomy'][$lang]); ?></td>
       <td style="white-space:nowrap; vertical-align:top;">
         <input type="hidden" name="setting[translate]" value="">
         
@@ -462,12 +454,12 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
                   if (!empty ($mgmt_config[$site_name]['translate']) && substr_count (",".$mgmt_config[$site_name]['translate'].",", ",".$code.",") > 0)
                   {
                     $list2_array[] = "
-                        <option value=\"".$code."\">".$lang_short."</option>";
+                  <option value=\"".$code."\">".$lang_short."</option>";
                   }
                   else
                   {
                     echo "
-                        <option value=\"".$code."\">".$lang_short."</option>";
+                  <option value=\"".$code."\">".$lang_short."</option>";
                   }
                 }
               }
@@ -520,12 +512,12 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
                   if (!empty ($mgmt_config[$site_name]['ocr']) && substr_count (",".$mgmt_config[$site_name]['ocr'].",", ",".$code.",") > 0)
                   {
                     $ocr2_array[] = "
-                        <option value=\"".$code."\">".$lang_short."</option>";
+                  <option value=\"".$code."\">".$lang_short."</option>";
                   }
                   else
                   {
                     echo "
-                        <option value=\"".$code."\">".$lang_short."</option>";
+                  <option value=\"".$code."\">".$lang_short."</option>";
                   }
                 }
               }

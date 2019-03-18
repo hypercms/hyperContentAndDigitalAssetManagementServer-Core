@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -95,7 +93,7 @@ function switchNav ()
   {
     if (document.getElementById('navLayer').style.width == '260px')
     {
-      minNavFrame (0);
+      minNavFrame ();
     }
     else
     {
@@ -106,34 +104,27 @@ function switchNav ()
 
 function minNavFrame (width)
 {
+  var offset = 36;
+  
   if (document.getElementById('navFrame'))
   {
-    width = typeof width !== 'undefined' ? width : 32;
+    width = typeof width !== 'undefined' ? width : 0;
     
     document.getElementById('navLayer').style.width = width + 'px';
-    document.getElementById('workplLayer').style.left = width + 'px';
+    document.getElementById('workplLayer').style.left = offset + 'px';
   }
 }
 
 function maxNavFrame (width)
 {
+  var offset = 36;
+  
   if (document.getElementById('navFrame'))
   {
     width = typeof width !== 'undefined' ? width : 260;
     
     document.getElementById('navLayer').style.width = width + 'px';
-    document.getElementById('workplLayer').style.left = width + 'px';
-  }
-}
-
-function submitForm ()
-{
-  if (document.forms['searchform_general'])
-  {
-    //if (parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen')) parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen').style.display='inline';
-    
-    var form = document.forms['searchform_general'];  
-    if (form.elements['search_expression'].value.trim() != '') form.submit();
+    document.getElementById('workplLayer').style.left = (width + offset) + 'px';
   }
 }
 
@@ -176,53 +167,47 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 {
 ?>
 <!-- top bar -->
-<div class="hcmsWorkplaceTop" style="position:fixed; left:0px; top:0px; width:100%; height:32px;">
-  <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
-    <tr> 
-      <td align="left" valign="middle" style="white-space:nowrap;">
-        <img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsButtonTiny hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
-        <?php if (empty ($hcms_linking)) { ?>
-        <img src="<?php echo getthemelocation(); ?>img/button_explorer.png" class="hcmsButtonTiny hcmsButtonSizeSquare" onclick="switchNav();" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
-        <img src="<?php echo getthemelocation(); ?>img/button_search.png" class="hcmsButtonTiny hcmsButtonSizeSquare" onclick="showSearch();" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
-        <img src="<?php echo getthemelocation(); ?>img/home.png" class="hcmsButtonTiny hcmsButtonSizeSquare" onclick="showHome();" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />
-        <?php } ?>
-        <img src="<?php echo getthemelocation(); ?>img/button_logout.png" class="hcmsButtonTiny hcmsButtonSizeSquare" onclick="top.location='userlogout.php';" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
-      </td>
-      <td align="right" valign="middle" style="white-space:nowrap;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></span>&nbsp;
-        <span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span>
-      </td>
-      <td width="20" style="white-space:nowrap;">&nbsp;&nbsp;</td>
-      <td width="180" align="left" valign="middle" style="white-space:nowrap;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?></span>&nbsp;&nbsp;
-        <?php $servertime->InstallClock(); ?>
-      </td>
-      <td width="20" style="white-space:nowrap;">&nbsp;&nbsp;</td>
-      <td width="260" style="white-space:nowrap;">
-      <?php if (!empty ($mgmt_config['db_connect_rdbms']) && empty ($hcms_linking['object'])) { ?>
-        <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
-          <input type="hidden" name="action" value="base_search" />
-          <input type="hidden" name="search_dir" value="" />
-          <input type="text" name="search_expression" id="search_expression" style="position:fixed; top:3px; right:40px; width:200px; height:20px; padding:2px;" maxlength="200" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="" />
-          <img src="<?php echo getthemelocation(); ?>img/button_search.png" style="cursor:pointer; position:fixed; top:5px; right:42px; width:22px; height:22px;" onClick="submitForm();" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
-        </form>
-      <?php } ?>
-      <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
-        <img src="<?php echo getthemelocation(); ?>img/button_chat.png" class="hcmsButtonTiny  hcmsButtonSizeSquare" style="position:fixed; top:0px; right:3px;" onClick="hcms_openChat();" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
-      <?php } ?>
-      </td>
-    </tr>
-  </table>
+<div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; bottom:0; width:36px;">
+  <img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsButtonTiny hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
+    
+  <?php if (linking_valid() == false) { ?>
+  <img src="<?php echo getthemelocation(); ?>img/home.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="showHome();" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />
+  <img src="<?php echo getthemelocation(); ?>img/button_explorer.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="switchNav();" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+  <img src="<?php echo getthemelocation(); ?>img/button_search.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="showSearch();" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+  <?php } ?>
+  
+  <?php if (linking_valid() == true)  { ?>
+  <a href="frameset_objectlist.php?action=linking" target="workplFrame"><img src="<?php echo getthemelocation(); ?>img/button_view_gallery_medium.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" /></a>
+  <a href="task/task_list.php" target="workplFrame"><img src="<?php echo getthemelocation(); ?>img/task.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" /></a>
+  <?php } ?>
+
+  <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
+  <img src="<?php echo getthemelocation(); ?>img/button_chat.png" class="hcmsButtonTiny  hcmsButtonSizeSquare" style="padding:2px;" onClick="hcms_openChat();" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
+  <?php } ?>
+  
+  <img src="<?php echo getthemelocation(); ?>img/button_logout.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="top.location='userlogout.php';" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
 </div>
+
+<!-- user info -->
+<img src="<?php echo getthemelocation(); ?>img/button_info.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="position:absolute; left:0; bottom:0; padding:2px; margin:32px 0px;" onclick="hcms_showInfo ('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
+  
+<div id="userInfoLayer" class="hcmsMessage" style="position:absolute; bottom:10px; left:32px; display:none; z-index:999; padding:4px; width:200px; min-height:80px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
+  <img src="<?php echo getthemelocation()."img/user.png"; ?>" class="hcmsIconList" /> <span class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></span><br/>
+  <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php echo getsession ('hcms_user'); ?></span><br/><br/>
+
+  <img src="<?php echo getthemelocation()."img/button_time.png"; ?>" class="hcmsIconList" /> <span class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?></span><br/>
+  <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php $servertime->InstallClock(); ?></span>
+</div>
+<?php $servertime->InstallClockBody(); ?>
+
 <?php
-  $servertime->InstallClockBody();
 }
 ?>
 
-<?php if (is_array ($hcms_linking) && sizeof ($hcms_linking) > 0) { ?>
+<?php if (linking_valid() == true) { ?>
 <!-- workplace -->
-<div id="workplLayer" style="position:fixed; top:32px; bottom:0; left:0; width:100%; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+<div id="workplLayer" style="position:fixed; top:0; bottom:0; left:36px; right:0; margin:0; padding:0;">
+  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php?action=linking" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
 </div>
 <?php } elseif (!empty ($hcms_assetbrowser)) {
   // location set by assetbrowser
@@ -234,7 +219,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
 <!-- workplace -->
 <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php?location=<?php echo url_encode($hcms_assetbrowser_location); ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php?location=<?php echo url_encode ($hcms_assetbrowser_location); ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
 </div>
 <?php } 
   // no location set by assetbrowser
@@ -251,19 +236,19 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 <?php }
 } else { ?>
 <!-- explorer -->
-<div id="navLayer" style="position:fixed; top:32px; bottom:0; left:0; width:260px; margin:0; padding:0;">
+<div id="navLayer" style="position:fixed; top:0; bottom:0; left:36px; width:260px; margin:0; padding:0;">
   <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php?refresh=1" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
 
 <!-- workplace -->
-<div id="workplLayer" style="position:fixed; top:32px; right:0; bottom:0; left:260px; margin:0; padding:0;">
+<div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:296px; margin:0; padding:0;">
   <iframe id="workplFrame" name="workplFrame" scrolling="no" src="home.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
 </div>
 <?php } ?>
 
 <!-- chat sidebar -->
-<?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
-<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:32px; right:0; bottom:0; width:300px; z-index:100; display:none;">
+<?php if (!empty ($mgmt_config['chat']) && empty ($hcms_assetbrowser)) { ?>
+<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:0px; right:0; bottom:0; width:300px; z-index:100; display:none;">
   <iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
 <?php } ?>

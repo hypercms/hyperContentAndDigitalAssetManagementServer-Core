@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -44,6 +42,7 @@ $maxhits = getrequest ("maxhits", "numeric");
 $search_save = getrequest ("search_save");
 $search_execute = getrequest ("search_execute");
 
+// initalize
 $cat = "";
 
 // set default value
@@ -220,6 +219,7 @@ $ownergroup = accesspermission ($site, $search_dir, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 if (
+     $action != "linking" && 
      $action != "base_search" && 
      $action != "recyclebin" &&
      $action != "favorites" && 
@@ -234,6 +234,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initalize
 $object_array = array();
 $search_dir_esc = array ();
 $exclude_dir_esc = array ();
@@ -248,8 +249,13 @@ if ($search_operator == "AND" || $search_operator == "OR")
   $mgmt_config['search_operator'] = $search_operator;
 }
 
+// access linking
+if ($action == "linking")
+{
+  $object_array = linking_objects();
+}
 // deleted objects of a user
-if ($action == "recyclebin" && $user != "")
+elseif ($action == "recyclebin" && $user != "")
 {
   if (!empty ($adminpermission)) $object_array = rdbms_getdeletedobjects ("", "", $maxhits, @array_keys ($objectlistcols_reduced));
   else $object_array = rdbms_getdeletedobjects ($user, "", $maxhits, @array_keys ($objectlistcols_reduced));
@@ -293,14 +299,6 @@ elseif ($container_id != "")
 // search for expression in content
 elseif ($action == "base_search" || $search_dir != "")
 {
-  // if linking is used
-  if (is_array ($hcms_linking) && ($location == "" || deconvertpath ($location, "file") == deconvertpath ($hcms_linking['location'], "file"))) 
-  {
-    $site = $hcms_linking['publication'];
-    $cat = $hcms_linking['cat'];
-    $search_dir = $hcms_linking['location'];
-  }
-
   // object name based search
   if ($search_cat == "file")
   {
@@ -403,46 +401,48 @@ $items_row = 0;
 
 if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array) > 0)
 {
-  // the hash can be used for the download and wrapper links
+  // the hash is used for download and wrapper links
   foreach ($object_array as $hash => $object_item)
   {
-    $container_id = "";
-    $mediafile = "";
-    $file_size = "";
-    $file_width = "";
-    $file_height = "";
-    $file_created = "";
-    $file_modified = "";
-    $file_owner = "";
-    $usedby = "";
-    $metadata = "";
-    $container_info = array();
-
+    // set object path
     if (!empty ($object_item['objectpath'])) $objectpath = $object_item['objectpath'];
     else $objectpath = $object_item;
-
-    if (is_array ($object_item))
+    
+    // hashcode and path must be provided
+    if ($hash != "count" && substr_count ($objectpath, "/") > 0)
     {
-      if (!empty ($object_item['container_id'])) $container_id = $object_item['container_id'];
-      if (!empty ($object_item['media'])) $mediafile = $object_item['media'];
-      if (!empty ($object_item['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($object_item['createdate']));
-      if (!empty ($object_item['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($object_item['date']));
-      if (!empty ($object_item['user'])) $file_owner = $object_item['user'];
-      if (!empty ($object_item['filesize'])) $file_size = number_format ($object_item['filesize'], 0, ".", " ");
-      if (!empty ($object_item['width'])) $file_width = $object_item['width'];
-      if (!empty ($object_item['height'])) $file_height = $object_item['height'];
-      
-      foreach ($object_item as $text_id=>$content)
+      $container_id = "";
+      $mediafile = "";
+      $file_size = "";
+      $file_width = "";
+      $file_height = "";
+      $file_created = "";
+      $file_modified = "";
+      $file_owner = "";
+      $usedby = "";
+      $metadata = "";
+      $container_info = array();
+
+      // media information and content
+      if (is_array ($object_item))
       {
-        if (substr ($text_id, 0, 5) == "text:") $container_info[$text_id] = $content;
+        if (!empty ($object_item['container_id'])) $container_id = $object_item['container_id'];
+        if (!empty ($object_item['media'])) $mediafile = $object_item['media'];
+        if (!empty ($object_item['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($object_item['createdate']));
+        if (!empty ($object_item['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($object_item['date']));
+        if (!empty ($object_item['user'])) $file_owner = $object_item['user'];
+        if (!empty ($object_item['filesize'])) $file_size = number_format ($object_item['filesize'], 0, ".", " ");
+        if (!empty ($object_item['width'])) $file_width = $object_item['width'];
+        if (!empty ($object_item['height'])) $file_height = $object_item['height'];
+        
+        foreach ($object_item as $text_id=>$content)
+        {
+          if (substr ($text_id, 0, 5) == "text:") $container_info[$text_id] = $content;
+        }
       }
-    }
 
-    // ---------------------------------------------------- folder items ----------------------------------------------------
-    if ($hash != "count" && getobject ($objectpath) == ".folder")
-    {
-      // check for location path inside folder variable
-      if (substr_count ($objectpath, "/") > 0)
+      // ---------------------------------------------------- folder items ----------------------------------------------------
+      if ($objectpath != "" && getobject ($objectpath) == ".folder")
       {
         // remove .folder file from path
         $objectpath = getlocation ($objectpath);
@@ -504,15 +504,15 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               }
               
               // link for copy & paste of download links (not if an access link is used)
-              if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
+              if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
               {
                 $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$folder."/.folder\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
                 $dlink_end = "</a>";
               }
               else
               {
-                $dlink_start = "";
-                $dlink_end = "";
+                $dlink_start = "<a data-href=\"javascript:void(0);\">";
+                $dlink_end = "</a>";
               }
             }
             
@@ -540,7 +540,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             
             // set context
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
-
+  
             // listview - view option for locked folders
             if ($usedby != "")
             {
@@ -549,7 +549,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             
             // metadata
             $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
-
+  
             $listview .= "
                          <tr id=g".$items_row." style=\"cursor:pointer\" align=\"left\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
@@ -558,7 +558,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                                <img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$dlink_start.$folder_name.$dlink_end."
                              </div>
                             </td>";
-
+  
             if (!$is_mobile)
             {
               $listview .= "
@@ -628,20 +628,16 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                             
             $items_row++;
           }
-        }
-      }        
-    }
-    // --------------------------------------------------------- object items ----------------------------------------------------
-    else
-    { 
-      // check for location path inside folder variable
-      if (substr_count ($objectpath, "/") > 0)
+        }     
+      }
+      // --------------------------------------------------------- object items ----------------------------------------------------
+      elseif ($objectpath != "")
       {
         // get site
         $item_site = getpublication ($objectpath);        
         // get category
         $item_cat = getcategory ($item_site, $objectpath); 
-        
+
         if (valid_publicationname ($item_site) && $item_cat != "")
         {
           // get location
@@ -655,7 +651,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
           $object = correctfile ($location, $object, $user); 
           $file_info = getfileinfo ($item_site, $location.$object, $item_cat);
           $object_name = $file_info['name'];
-
+  
           // check access permission
           $ownergroup = accesspermission ($item_site, $location, $item_cat);
           $setlocalpermission = setlocalpermission ($item_site, $ownergroup, $item_cat);
@@ -668,12 +664,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             elseif ($file_info['type'] == "Component") $file_type = getescapedtext ($hcms_lang['object-component'][$lang]);    
             // multimedia object 
             else $file_type = getescapedtext ($hcms_lang['file'][$lang])." (".$file_info['type'].")";
-
+  
             // read file
             if (empty ($container_id) || (empty ($mediafile)  && (is_supported ($mgmt_imagepreview, $object) || is_supported ($mgmt_mediapreview, $object) || is_supported ($mgmt_docpreview, $object))))
             {
               $objectdata = loadfile ($location, $object);
-
+  
               if (!empty ($objectdata))
               {
                 // get name of content file and load content container
@@ -726,15 +722,15 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 if (!empty ($mgmt_config['explorer_list_metadata']) && !$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
                 
                 // link for copy & paste of download links (not if an access link is used)
-                if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
+                if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
                 {
                   $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
                   $dlink_end = "</a>";
                 }
                 else
                 {
-                  $dlink_start = "";
-                  $dlink_end = "";
+                  $dlink_start = "<a data-href=\"javascript:void(0);\">";
+                  $dlink_end = "</a>";
                 }
               }    
               // object without media file
@@ -749,19 +745,19 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 $file_modified = date ("Y-m-d H:i", @filemtime ($location.$object));
                 
                 // link for copy & paste of download links (not if an access link is used)
-                if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
+                if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
                 {
                   $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-location=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?wl=".$hash."\">";
                   $dlink_end = "</a>";
                 }
                 else
                 {
-                  $dlink_start = "";
-                  $dlink_end = "";
+                  $dlink_start = "<a data-href=\"javascript:void(0);\">";
+                  $dlink_end = "</a>";
                 }
               }
             }
-
+  
             // open on double click
             if ($action != "recyclebin") $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
             else $openObject = "";
@@ -775,7 +771,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             
             // set context
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
-
+  
             // metadata
             $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;
             
@@ -802,7 +798,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             {
               $listview .= "
                            <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block;\">".$item_location."</div></td>";
-
+  
               if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
               {
                 $i = 2;
@@ -854,7 +850,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                
             $listview .= "
                          </tr>";  
-
+  
             // default value
             $ratio = "Width";
             
@@ -863,10 +859,10 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             {
               // get thumbnail location
               $thumbdir = getmedialocation ($site, $media_info['filename'].".thumb.jpg", "abs_path_media");
-
+  
               // prepare source media file
               preparemediafile ($item_site, $thumbdir.$item_site."/", $media_info['filename'].".thumb.jpg", $user);
-
+  
               // try to create thumbnail if not available
               if (!empty ($mgmt_config['recreate_preview']) && (!is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg")))
               {
@@ -948,7 +944,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             // if linking is used display download buttons, display edit button for mobile edition
             $linking_buttons = "";
             
-            if ($mediafile != false && is_array (getsession ('hcms_linking')) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
+            if ($mediafile != false && linking_valid() == true && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
             {
               // check download of original file
               if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
@@ -980,7 +976,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 
               $linking_buttons = "<div style=\"width:".$width."; margin:0px auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
             }
-
+  
             $galleryview .= "
                             <td id=\"t".$items_row."\" style=\"width:".$cell_width."; text-align:center; vertical-align:bottom;\" ".$selectclick.">
                               <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\">".
@@ -994,17 +990,17 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                             
             $items_row++;
           }
-        }      
+        }
       }
-    }
-    
-    // close tr if row is filled up
-    if (strpos (($items_row / $table_cells), ".") < 1)
-    {
-      $galleryview .= "
-                         </tr>
-                         <tr>";
-    }     
+      
+      // close tr if row is filled up
+      if (strpos (($items_row / $table_cells), ".") < 1)
+      {
+        $galleryview .= "
+                           </tr>
+                           <tr>";
+      }
+    } 
   }
 }
 ?>
@@ -1031,7 +1027,7 @@ var contextxmove = 1;
 var contextymove = 1;
 
 // explorer view option
-var explorerview = "<?php echo $temp_explorerview; ?>";
+var explorerview = "<?php echo getescapedtext ($temp_explorerview); ?>";
 var sidebar = <?php if ($temp_sidebar) echo "true"; else echo "false"; ?>;
 
 // define global variable for popup window name used in contextmenu.js
@@ -1091,7 +1087,7 @@ function sendtochat (text)
 {
   if (text != "")
   {
-    var username = '<?php echo $user; ?>';
+    var username = '<?php echo getescapedtext ($user); ?>';
     // strip tags
     username = username.replace(/(<([^>]+)>)/ig,"");
     chat.send(text, username);
@@ -1113,7 +1109,7 @@ function resizecols ()
 }
 
 // load control frame
-parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&from_page=search';
+parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&from_page=<?php echo getescapedtext ($action); ?>';
 </script>
 <style>
 .hcmsCell
@@ -1163,7 +1159,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
     <input type="hidden" name="media" value="" />
     <input type="hidden" name="folder" value="" />
     <input type="hidden" name="multiobject" value="" />
-    <input type="hidden" name="from_page" value="<?php if ($action == "recyclebin") echo "recyclebin"; else echo "search"; ?>" />
+    <input type="hidden" name="from_page" value="<?php echo $action; ?>" />
     <input type="hidden" name="token" value="" />
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
@@ -1171,14 +1167,14 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
     <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
       <tr>
         <td>
-          <?php if ($action == "favorites") { ?>
+          <?php if ($action == "favorites" && linking_valid() == false) { ?>
           <a href="javascript:void(0);" id="href_fav_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_delete');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_new.png" id="img_fav_delete" class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete-favorite'][$lang]); ?></a><br />        
           <hr />
-          <?php } elseif (checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1) { ?>
+          <?php } elseif (checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false) { ?>
           <a href="javascript:void(0);" id="href_fav_create" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_create');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_delete.png" id="img_fav_create" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['add-to-favorites'][$lang]); ?></a><br />
           <hr />        
           <?php } ?>
-          <?php if ($action == "checkedout") { ?>
+          <?php if ($action == "checkedout" && linking_valid() == false) { ?>
           <a href="javascript:void(0);" id="href_unlock" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('checkin');"><img src="<?php echo getthemelocation(); ?>img/button_file_unlock.png" id="img_unlock" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['check-in'][$lang]); ?></a><br />        
           <hr />
           <?php } ?>  
@@ -1187,7 +1183,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
           <a href="javascript:void(0);" id="href_cmsview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
           <a href="javascript:void(0);" id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" class="hcmsIconOn hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />
           <?php } ?>
-          <?php if ($action != "recyclebin" && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
+          <?php if ($action != "recyclebin" && !empty ($mgmt_config['chat'])) { ?>
           <a href="javascript:void(0);" id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.png" id="img_chat" class="hcmsIconOn hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
           <?php } ?>   
           <hr />
@@ -1209,7 +1205,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
           <?php } ?> 
           <?php
           // ----------------------------------------- plugins ----------------------------------------------
-          if ($action != "recyclebin" && $setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && !empty ($mgmt_plugin))
+          if ($action != "recyclebin" && $setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && linking_valid() == false && !empty ($mgmt_plugin))
           { 
             $plugin_items = "";
             

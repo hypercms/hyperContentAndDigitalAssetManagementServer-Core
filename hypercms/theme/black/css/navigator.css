@@ -1,4 +1,4 @@
-html, body, span 
+html, body
 {
   width: 100%;
   height: 100%;
@@ -21,18 +21,18 @@ img
   image-rendering: -o-crisp-edges; // Opera 12
 }
 
-input, select, textarea, button
+input, select, textarea, button, .hcmsTextArea 
 {
-  font-family: inherit;
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 
   font-weight: normal;
   color: #000000;
   text-decoration: none;
   display: inline-block;
   vertical-align: middle;
-  border: 1px solid #EB6804;
+  border: 1px solid #808080;
   background-color: #FFFFFF;
-  margin: 0;
+  margin: 1px 1px 1px 0px;
   padding: 7px 4px;
 }
 
@@ -298,7 +298,7 @@ hr
   background-color: #3094D7;
   border: 1px solid #469df5;
   display: inline-block;
-  padding: 2px 10px;
+  padding: 4px 6px;
   text-decoration: none;
   cursor: pointer;
 }
@@ -320,7 +320,7 @@ hr
   background-color: #69A738;
   border: 1px solid #268a16;
   display: inline-block;
-  padding: 2px 10px;
+  padding: 4px 6px;
   text-decoration: none;
   cursor: pointer;
 }
@@ -342,7 +342,7 @@ hr
   background-color: #E58912;
   border: 1px solid #C28B2C;
   display: inline-block;
-  padding: 2px 10px;
+  padding: 4px 6px;
   text-decoration: none;
   cursor: pointer;
 }
@@ -378,7 +378,7 @@ hr
 
 .hcmsHeadline
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: inherit;
   font-size: 12px; 
   font-weight: bold; 
   color: #FFFFFF; 
@@ -387,7 +387,7 @@ hr
 
 .hcmsHeadlineTiny 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: inherit;
   font-size: 11px; 
   font-weight: normal; 
   color: #FFFAEF; 
@@ -396,7 +396,7 @@ hr
 
 .hcmsTextSmall 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: inherit;
   font-size: 11px; 
   font-weight: normal; 
   color: #FFFFFF; 
@@ -526,12 +526,12 @@ hr
 
 .hcmsRowData1
 {
-  background-color: #ADADAD;
+  background-color: #777777;
 }
 
 .hcmsRowData2
 {
-  background-color: #888888;
+  background-color: #909090;
 }
 
 .hcmsLoadScreen

@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -41,38 +39,6 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
-$show = "";
-
-// save content to file
-if ($save == "yes" && valid_objectname ($mediafile) && checktoken ($token, $user) && checkglobalpermission ($site, 'tpledit'))
-{
-  // decode characters
-  $content = html_decode ($content, $hcms_lang_codepage[$lang]);
-  // save file
-  $savefile = savefile ($mgmt_config['abs_path_rep']."media_tpl/", $mediafile, $content);
-
-  if ($savefile == false) $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span>\n";
-  else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
-}
-?>
-<!DOCTYPE html>
-<html>
-<head>
-<title>hyperCMS</title>
-<meta charset="<?php echo getcodepage ($lang); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="javascript/main.js" type="text/javascript"></script>
-</head>
-
-<body class="hcmsWorkplaceGeneric">
-
-<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
-
-<?php
-echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;")
-?>
-
-<?php
 // read media file from media object
 if ($mediaobject != "")
 {
@@ -101,11 +67,49 @@ if ($mediaobject != "")
   // convert object name
   $name = convertchars ($file_info['name'], "UTF-8", $charset);
 }
+// if publication name is not included in mediafile (function showmedia provides publication and media file name separately)
+elseif ($mediafile != "")
+{
+  // media file
+  if (strpos ($mediafile, "/") < 1) $mediafile = $site."/".$mediafile;
+}
 
+$show = "";
+
+// save content to file
+if ($save == "yes" && valid_objectname ($mediafile) && checktoken ($token, $user) && checkglobalpermission ($site, 'tpledit'))
+{
+  // decode characters
+  $content = html_decode ($content, $hcms_lang_codepage[$lang]);
+  // save file
+  $savefile = savefile ($mgmt_config['abs_path_rep']."media_tpl/", $mediafile, $content);
+
+  if ($savefile == false) $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span>\n";
+  else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>hyperCMS</title>
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<script src="javascript/main.js" type="text/javascript"></script>
+</head>
+
+<body class="hcmsWorkplaceGeneric">
+
+<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
+
+<?php
+echo showmessage ($show, 500, 70, $lang, "position:fixed; left:15px; top:50px;")
+?>
+
+<?php
 // media preview
 if (substr_count ($mediafile, "Null_media.png") == 1)
 {
-  echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['no-file-selected'][$lang])."</p>";
+  echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['no-file-selected'][$lang])."</p>";
 }
 elseif ($mediafile != "")
 {

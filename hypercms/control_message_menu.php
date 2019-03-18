@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -127,6 +125,7 @@ function submitTo(url, action, target, features, width, height)
 <?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
 
 <div class="hcmsLocationBar">
+  <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo getescapedtext ($hcms_lang['messages'][$lang]); ?></b></td>
@@ -163,6 +162,10 @@ function submitTo(url, action, target, features, width, height)
       </td>
     </tr>  
   </table>
+  <?php } else { ?>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['messages'][$lang]); ?></span>
+  <?php } ?>
+
 </div>
 
 <!-- toolbar -->
@@ -172,16 +175,16 @@ function submitTo(url, action, target, features, width, height)
     // DELETE BUTTON
     if ($message_id != "" && $messageuser != "" && checkrootpermission ('desktop'))
     {
-      echo 
-      "<img ".
-        "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-        "onClick=\"if (warning_delete()==true) ".
-        "submitTo('control_message_menu.php', 'delete', 'controlFrame'); \" ".
-        "name=\"media_delete\" src=\"".getthemelocation()."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />\n";
+      echo "
+      <img class=\"hcmsButton hcmsButtonSizeSquare\" ".
+      "onClick=\"if (warning_delete()==true) ".
+      "submitTo('control_message_menu.php', 'delete', 'controlFrame'); \" ".
+      "name=\"media_delete\" src=\"".getthemelocation()."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
     <?php
@@ -189,21 +192,26 @@ function submitTo(url, action, target, features, width, height)
     // mail
     if ($multiobject_count <= 1 && $message_id != "" && !empty ($mgmt_config['db_connect_rdbms']))
     {
-      echo "<img ".
-             "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-             "onClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."', '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);\" ".
-             "name=\"media_edit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />\n";
+      echo "
+      <img class=\"hcmsButton hcmsButtonSizeSquare\" ";
+      
+      if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."', '', 'status=yes,scrollbars=no,resizable=yes', 540, 800);\" ";
+      else echo "onClick=\"parent.openpopup('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."');\" ";
+      
+      echo "name=\"media_edit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />";
     }  
     else
     {
-      echo "<img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
   </div>
   
   <div class="hcmsToolbarBlock">
     <?php
-    echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />\n";
+    echo "
+    <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />";
     ?>
   </div>
   

@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -237,11 +235,14 @@ if ($pagestore != false)
       if ($mgmt_config['db_connect_rdbms'] != "" && !empty ($mgmt_config[$site]['accesslinkuser'])) $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
     }
 
-    // file access links
-    if (!empty ($filedirectlink)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['direct-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filedirectlink."</td></tr>\n";
-    if (!empty ($filewrapperlink)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['wrapper-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filewrapperlink."</td></tr>\n";
-    if (!empty ($filewrapperdownload)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['download-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filewrapperdownload."</td></tr>\n";
-    if (!empty ($fileaccesslink)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['access-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$fileaccesslink."</td></tr>\n";
+    // file links
+    if (linking_valid() == false)
+    {
+      if (!empty ($filedirectlink)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['direct-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filedirectlink."</td></tr>\n";
+      if (!empty ($filewrapperlink)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['wrapper-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filewrapperlink."</td></tr>\n";
+      if (!empty ($filewrapperdownload)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['download-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filewrapperdownload."</td></tr>\n";
+      if (!empty ($fileaccesslink)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['access-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$fileaccesslink."</td></tr>\n";
+    }
  
     // MD5 Checksum of media file
     if (!empty ($fileMD5)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['md5-code-of-the-file'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$fileMD5."</td></tr>\n";

@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -547,7 +545,7 @@ if ($login != "" && $login != false)
           <tr>
             <td>
               ".getescapedtext ($hcms_lang['groups'][$lang])."<br />
-              <select multiple name=\"list1\" style=\"width:210px; height:140px;\" size=\"10\">";
+              <select multiple name=\"list1\" style=\"width:210px; height:100px;\" size=\"10\">";
 
               $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
       
@@ -590,7 +588,7 @@ if ($login != "" && $login != false)
             </td>
             <td>
               ".getescapedtext ($hcms_lang['assigned-to-group'][$lang])."<br />
-              <select multiple name=\"list2\" style=\"width:210px; height:140px;\" size=\"10\">";
+              <select multiple name=\"list2\" style=\"width:210px; height:100px;\" size=\"10\">";
 
               if (is_array ($list2_array) && sizeof ($list2_array) >= 1)
               {
@@ -616,7 +614,7 @@ if ($login != "" && $login != false)
           <tr>
             <td>
               ".getescapedtext ($hcms_lang['publications'][$lang])."<br />
-              <select multiple name=\"list1\" style=\"width:210px; height:140px;\" size=\"10\">";
+              <select multiple name=\"list1\" style=\"width:210px; height:100px;\" size=\"10\">";
 
               $inherit_db = inherit_db_read ($user);
               
@@ -664,7 +662,7 @@ if ($login != "" && $login != false)
             </td>
             <td>
               ".getescapedtext ($hcms_lang['assigned-to-publication'][$lang])."<br />
-              <select multiple name=\"list2\" style=\"width:210px; height:140px;\" size=\"10\">";
+              <select multiple name=\"list2\" style=\"width:210px; height:100px;\" size=\"10\">";
 
               if (is_array ($list2_array) && sizeof ($list2_array) > 0)
               {

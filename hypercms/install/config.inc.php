@@ -193,7 +193,10 @@ $mgmt_config['explorerview'] = "medium";
 // How many items (folders and objects) should be displayed in the explorer object list initally
 $mgmt_config['explorer_list_maxitems'] = 500;
 
-// Window size for objects in pixel
+// Open messages in new window (true) or same window (false)
+$mgmt_config['message_newwindow'] = false;
+
+// Window size for objects in pixel (for new window)
 $mgmt_config['window_object_width'] = 1280;
 $mgmt_config['window_object_height'] = 1000;
 
@@ -210,6 +213,9 @@ $mgmt_config['sidebar'] = true;
 
 // Define if chat should be enabled (true) or disabled (false)
 $mgmt_config['chat'] = true;
+
+// Define if chat should be "public" for all user of the same publication of "private" (only invited users can see the messages)
+$mgmt_config['chat_type'] = "public";
 
 // Define support user name for chat that will always be present for chat or leave empty
 $mgmt_config['chat-support'] = "";
@@ -268,22 +274,53 @@ $mgmt_config['screensize']['desktop']['20&quot; Desktop'] = "1600 x 900";
 $mgmt_config['screensize']['desktop']['22&quot; Desktop'] = "1680 x 1050";
 // Tablet screen sizes
 $mgmt_config['screensize']['tablet']['Apple iPad (All)'] = "768 x 1024";
+$mgmt_config['screensize']['tablet']['Apple iPad Pro'] = "1024 x 1366";
 $mgmt_config['screensize']['tablet']['Google Nexus 7'] = "603 x 966";
+$mgmt_config['screensize']['tablet']['Google Nexus 9'] = "768 x 1024";
+$mgmt_config['screensize']['tablet']['Google Chromebook Pixel'] = "1280 x 850";
 $mgmt_config['screensize']['tablet']['Kindle Fire HD 7&quot;'] = "533 x 853";
 $mgmt_config['screensize']['tablet']['Kindle Fire'] = "600 x 800";
 $mgmt_config['screensize']['tablet']['Kindle Fire HD 8.9&quot;'] = "800 x 1280";
 $mgmt_config['screensize']['tablet']['Samsung Galaxy Tab'] = "600 x 1024";
+$mgmt_config['screensize']['tablet']['Samsung Galaxy Tab 10'] = "800 x 1280";
 // Phone screen sizes
 $mgmt_config['screensize']['phone']['Apple iPhone 3/4'] = "320 x 480";
 $mgmt_config['screensize']['phone']['Apple iPhone 5'] = "320 x 568";
 $mgmt_config['screensize']['phone']['Apple iPhone 6'] = "375 x 667";
 $mgmt_config['screensize']['phone']['Apple iPhone 6 Plus'] = "414 x 736";
+$mgmt_config['screensize']['phone']['Apple iPhone 7'] = "375 x 667";
+$mgmt_config['screensize']['phone']['Apple iPhone 7 Plus'] = "414 x 736";
+$mgmt_config['screensize']['phone']['Apple iPhone 8'] = "375 x 667";
+$mgmt_config['screensize']['phone']['Apple iPhone 8 Plus'] = "414 x 736";
+$mgmt_config['screensize']['phone']['Apple iPhone X'] = "375 x 812";
+$mgmt_config['screensize']['phone']['Apple iPhone XR'] = "	414 x 896";
+$mgmt_config['screensize']['phone']['Apple iPhone XS'] = "375 x 812";
+$mgmt_config['screensize']['phone']['Apple iPhone XS Max'] = "414 x 896";
 $mgmt_config['screensize']['phone']['ASUS Galaxy 7'] = "320 x 533";
 $mgmt_config['screensize']['phone']['BlackBerry 8300'] = "320 x 240";
+$mgmt_config['screensize']['phone']['Google Nexus 5X'] = "412 x 732";
+$mgmt_config['screensize']['phone']['Google Nexus 6P'] = "412 x 732";
+$mgmt_config['screensize']['phone']['Google Pixel'] = "412 x 732";
+$mgmt_config['screensize']['phone']['Google Pixel XL'] = "412 x 732";
+$mgmt_config['screensize']['phone']['Google Pixel 2 XL'] = "412 x 732";
+$mgmt_config['screensize']['phone']['Google Pixel 3'] = "412 x 824";
+$mgmt_config['screensize']['phone']['Google Pixel 3 XL'] = "412 x 847";
 $mgmt_config['screensize']['phone']['LG Optimus S'] = "320 x 480";
+$mgmt_config['screensize']['phone']['LG G5'] = "480 x 853";
+$mgmt_config['screensize']['phone']['One Plus 3'] = "480 x 853";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S2'] = "320 x 533";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S3/4'] = "320 x 640";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S5'] = "360 x 640";
+$mgmt_config['screensize']['phone']['Samsung Galaxy S5'] = "360 x 640";
+$mgmt_config['screensize']['phone']['Samsung Galaxy S7'] = "360 x 640";
+$mgmt_config['screensize']['phone']['Samsung Galaxy S7 Edge'] = "360 x 640";
+$mgmt_config['screensize']['phone']['Samsung Galaxy S8'] = "360 x 740";
+$mgmt_config['screensize']['phone']['Samsung Galaxy S8+'] = "360 x 740";
+$mgmt_config['screensize']['phone']['Samsung Galaxy S9'] = "360 x 740";
+$mgmt_config['screensize']['phone']['Samsung Galaxy S9+'] = "360 x 740";
+$mgmt_config['screensize']['phone']['Samsung Galaxy Note 5'] = "480 x 853";
+$mgmt_config['screensize']['phone']['Samsung Galaxy Note 9'] = "360 x 740";
+
 
 // --------------------------------- Language settings ---------------------------------------
 

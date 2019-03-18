@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -33,6 +31,9 @@ checkusersession ($user, false);
 // chat log file
 $chat_log = $mgmt_config['abs_path_data']."log/chat.log";
 
+// chat relationships log file
+$chat_relations_log = $mgmt_config['abs_path_temp']."/chat_relations.php";
+
 // date and time
 $date = date ("Y-m-d H:i:s", time());
 
@@ -42,6 +43,13 @@ else $sites = "";
 
 // if chat log file does not exist, create it
 if (!is_file ($chat_log)) file_put_contents ($chat_log, "");
+
+// load invited user names (relationships)
+if (is_file ($chat_relations_log))
+{
+  $chat_relations = file_get_contents ($chat_relations_log);
+  if (!empty ($chat_relations)) $chat_relations_array = unserialize ($chat_relations);
+}
 
 $log = array();
 
@@ -79,13 +87,36 @@ switch ($function)
             $line = str_replace ("\n", "", $line);
             
             // get chat message log entries
-            list ($chat_date, $chat_sites, $chat_text) = explode ("|", $line);
+            list ($chat_date, $chat_sites, $chat_user, $chat_text) = explode ("|", $line);
             
             foreach ($siteaccess as $site)
             {
+              // verify publication access
               if (substr_count (";".$chat_sites.";", ";".$site.";") > 0)
               {
-                $text[] = $chat_text;
+                // users own messages
+                if ($user == $chat_user)
+                {
+                  $text[] = $chat_text;
+                }
+                // private chat
+                elseif (!empty ($mgmt_config['chat_type']) && strtolower ($mgmt_config['chat_type']) == "private" && !empty ($chat_relations_array) && is_array ($chat_relations_array))
+                {
+                  // verify host and invited users (guests) against chat user entry
+                  foreach ($chat_relations_array as $host=>$guest_array)
+                  {
+                    if ((in_array ($user, $guest_array) && in_array ($chat_user, $guest_array)) || ($chat_user == $host && in_array ($user, $guest_array)) || ($user == $host && in_array ($chat_user, $guest_array)))
+                    {
+                      $text[] = $chat_text;
+                    }
+                  }
+                }
+                // public chat
+                elseif (empty ($mgmt_config['chat_type']) || strtolower ($mgmt_config['chat_type']) == "public")
+                {
+                  $text[] = $chat_text;
+                }
+                
                 break;
               } 
             }
@@ -119,7 +150,7 @@ switch ($function)
         $message = str_replace ($message, '&gt;&gt; <a href="#" onclick="'.$message.'">Object-Link</a>', $message);
       }
  	
-    	fwrite (fopen ($chat_log, 'a'), $date."|".$sites."|<span>".$nickname."</span>".$message = str_replace ("\n", " ", $message)."\n"); 
+    	fwrite (fopen ($chat_log, 'a'), $date."|".$sites."|".$user."|<span>".$nickname."</span>".$message = str_replace ("\n", " ", $message)."\n"); 
     }
     
     break;
@@ -132,14 +163,52 @@ switch ($function)
     $to_user = $message;
     $to_user_clean = htmlentities (strip_tags ($to_user));
  
-    if (($to_user_clean) != "\n")
+    if ($to_user_clean != "\n")
     {
-    	fwrite (fopen ($chat_log, 'a'), $date."|".$sites."|<span>".$from_user_clean."</span> &gt;&gt; <span data-action=\"invite\">".$to_user_clean."</span>\n"); 
+      // save invited user names (relationships)
+      if (!empty ($chat_relations_array[$user]) && is_array ($chat_relations_array[$user]))
+      {
+        $chat_relations_array[$user][$to_user_clean] = $to_user_clean;
+      }
+      else
+      {
+        $chat_relations_array[$user] = array ();
+        $chat_relations_array[$user][$to_user_clean] = $to_user_clean;
+      }
+      
+      $chat_relations = serialize ($chat_relations_array);      
+      if (!empty ($chat_relations)) file_put_contents ($chat_relations_log, $chat_relations);
+      
+      // write to chat log
+    	fwrite (fopen ($chat_log, 'a'), $date."|".$sites."|".$user."|<span>".$from_user_clean."</span> &gt;&gt; <span data-action=\"invite\">".$to_user_clean."</span>\n");
 
       // send message to user
       sendmessage ($user, $to_user, str_replace ("%user%", "'".$user."'", $hcms_lang['user-wants-to-chat-with-you'][$lang]), $hcms_lang['open-link'][$lang].": ".$mgmt_config['url_path_cms']."\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang]);
     }
     
+    break;
+    
+  // uninvite all users (clear chat relationships of the host user to his guests)
+  case ('uninvite'):
+  
+    $host_user = $message;
+    $host_user_clean = htmlentities (strip_tags ($host_user));
+  
+    if (!empty ($chat_relations))
+    {
+      $chat_relations_array = unserialize ($chat_relations);
+      
+      if (!empty ($chat_relations_array[$host_user]))
+      {
+        unset ($chat_relations_array[$host_user]);
+        $chat_relations = serialize ($chat_relations_array);      
+        if (!empty ($chat_relations)) file_put_contents ($chat_relations_log, $chat_relations);
+      }
+    }
+    
+    // write to chat log
+  	fwrite (fopen ($chat_log, 'a'), $date."|".$sites."|".$user."|<span>".$host_user_clean."</span> &lt;&lt; <span data-action=\"invite\">".$hcms_lang['all-users'][$lang]."</span>\n");
+      
     break;
     
   // check chat log for an invitation

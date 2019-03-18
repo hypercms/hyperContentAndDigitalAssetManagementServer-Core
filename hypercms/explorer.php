@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
  
 // session
@@ -34,6 +32,13 @@ $token = getrequest ("token");
 
 // check session of user
 checkusersession ($user, false);
+
+// no access if linking is in use
+if (linking_valid() == true)
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang], $lang);
+  exit;
+}
 
 // --------------------------------- logic section ----------------------------------
 
@@ -660,27 +665,14 @@ else
 
   // create secure token
   $token_new = createtoken ($user);
-  
-  // redefine siteaccess if linking is used
-  if (isset ($hcms_linking['publication']) && valid_publicationname ($hcms_linking['publication']))
-  {
-    $siteaccess = array ($hcms_linking['publication']);
-  }
-  elseif (is_array ($siteaccess))
+
+  if (is_array ($siteaccess))
   {
     natcasesort ($siteaccess);
     reset ($siteaccess);
   }
 
   // create main Menu points
-  // ---------------------------------------- logout ---------------------------------------------
-  if (empty ($hcms_assetbrowser) && $is_mobile)
-  {
-    $point = new hcms_menupoint ($hcms_lang['logout'][$lang], '#', 'button_logout.png');
-    $point->setOnClick('javascript:top.location="userlogout.php"');
-    $point->setOnMouseOver('hcms_resetContext();');
-    $maintree .= $point->generateHTML();
-  }
 
   // ----------------------------------------- home ---------------------------------------------- 
   if (empty ($hcms_assetbrowser) && $is_mobile)
@@ -693,7 +685,7 @@ else
   }
   
   // ----------------------------------------- desktop ---------------------------------------------- 
-  if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && checkrootpermission ('desktop'))
+  if (empty ($hcms_assetbrowser) && checkrootpermission ('desktop'))
   {
     $point = new hcms_menupoint($hcms_lang['desktop'][$lang], '#desktop', 'desk.png', 'desktop');
     $point->setOnClick('hcms_jstree_toggle_preventDefault("desktop", event);');
@@ -802,7 +794,7 @@ else
   }
 
   // ----------------------------------------- plugins ----------------------------------------------
-  if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && !empty ($mgmt_plugin))
+  if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin))
   { 
     foreach ($mgmt_plugin as $key => $data)
     {
@@ -839,7 +831,7 @@ else
 
         // Publication specific Menu Points
         // ----------------------------------------- main administration ----------------------------------------------  
-        if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && $set_site_admin == false && $mgmt_config[$site]['site_admin'] == true)
+        if (empty ($hcms_assetbrowser) && $set_site_admin == false && $mgmt_config[$site]['site_admin'] == true)
         {
           $set_site_admin = true;
         
@@ -933,7 +925,7 @@ else
           $publication->setOnMouseOver('hcms_resetContext();');
         
           // -------------------------------------------- administration ------------------------------------------------
-          if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && (checkglobalpermission ($site, 'user') || checkglobalpermission ($site, 'group')))
+          if (empty ($hcms_assetbrowser) && (checkglobalpermission ($site, 'user') || checkglobalpermission ($site, 'group')))
           {
             $point = new hcms_menupoint($hcms_lang['administration'][$lang], '#admin_'.$site, 'admin.png', 'admin_'.$site);
             $point->setOnMouseOver('hcms_resetContext();');
@@ -980,7 +972,7 @@ else
           }
 
           // ------------------------------------------ personalization -------------------------------------------------
-          if (empty ($hcms_assetbrowser) && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'pers') && empty ($mgmt_config[$site]['dam']))
+          if (empty ($hcms_assetbrowser) && checkglobalpermission ($site, 'pers') && empty ($mgmt_config[$site]['dam']))
           {
             $point = new hcms_menupoint($hcms_lang['personalization'][$lang], '#pers_'.$site, 'pers_registration.png', 'pers_'.$site);
             $point->setOnClick('hcms_jstree_toggle_preventDefault("pers_'.$site.'", event);');
@@ -1007,7 +999,7 @@ else
           }
           
           // --------------------------------------------- workflow -----------------------------------------------------
-          if (empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'workflow'))
+          if (empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && !$is_mobile && checkglobalpermission ($site, 'workflow'))
           {
             $point = new hcms_menupoint($hcms_lang['workflow'][$lang], '#wrkflw_'.$site, 'workflow.png', 'wrkflw_'.$site);
             $point->setOnClick('hcms_jstree_toggle_preventDefault("wrkflw_'.$site.'", event);');
@@ -1034,7 +1026,7 @@ else
           }
           
           // --------------------------------------------- template ---------------------------------------------------
-          if (empty ($hcms_assetbrowser) && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'template'))
+          if (empty ($hcms_assetbrowser) && !$is_mobile && checkglobalpermission ($site, 'template'))
           {
             $point = new hcms_menupoint($hcms_lang['templates'][$lang], '#template_'.$site, 'template.png', 'template_'.$site);
             $point->setOnMouseOver('hcms_resetContext();');
@@ -1089,7 +1081,7 @@ else
           }
           
           // ----------------------------------------- plugins ----------------------------------------------
-          if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && !empty ($mgmt_plugin))
+          if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin))
           { 
             foreach ($mgmt_plugin as $key => $data)
             {
@@ -1103,7 +1095,7 @@ else
           }
           
           // ----------------------------------------- taxonomy ----------------------------------------------
-          if (!empty ($mgmt_config[$site]['taxonomy']) && !isset ($hcms_linking['location']) && (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page')))
+          if (!empty ($mgmt_config[$site]['taxonomy']) && (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page')))
           {
             $point = new hcms_menupoint($hcms_lang['taxonomy'][$lang], '#tax_'.$site, 'folder_taxonomy.png', 'tax_'.$site);
             $point->setOnClick('hcms_jstree_open("tax_'.$site.'", event);');
@@ -1113,7 +1105,7 @@ else
           }
           
           // --------------------------------- metadata/content hierarchy -------------------------------------
-          if (!isset ($hcms_linking['location']) && (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page')))
+          if (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page'))
           {
             $hierarchy = gethierarchy_defintion ($site);
             
@@ -1142,30 +1134,17 @@ else
           
           // ----------------------------------------- component ---------------------------------------------
           // category of content: cat=comp
-          if (is_dir ($mgmt_config['abs_path_comp'].$site."/") && checkglobalpermission ($site, 'component') && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "comp"))
+          if (is_dir ($mgmt_config['abs_path_comp'].$site."/") && checkglobalpermission ($site, 'component'))
           {
             // since version 5.6.3 the root folders also need to have containers
             // update comp/assets root
             $comp_root = deconvertpath ("%comp%/".$site."/", "file");
-            // create folder object if it does not exist  
-            if (!is_file ($comp_root.".folder")) createobject ($site, $comp_root, ".folder", "default.meta.tpl", "sys");
             
-            // reset root location if linking is used
-            if (isset ($hcms_linking['location']) && valid_locationname ($hcms_linking['location']))
-            {
-              if (isset ($hcms_linking['object']) && valid_objectname ($hcms_linking['object']))
-              {
-                $file_info = getfileinfo ($site, $hcms_linking['location'].$hcms_linking['object'], "comp");
-                
-                if ($file_info['type'] == "Folder") $location_root = $hcms_linking['location'].$hcms_linking['object']."/";
-                else $location_root = "";
-              }
-              else $location_root = $hcms_linking['location'];
-              
-              $location_root = convertpath ($site, $location_root, "comp");
-            }
+            // create folder object if it does not exist  
+            if (!is_file ($comp_root.".folder") && is_writable ($comp_root)) createobject ($site, $comp_root, ".folder", "default.meta.tpl", "sys");
+            
             // use component root
-            else $location_root = "%comp%/".$site."/";
+            $location_root = "%comp%/".$site."/";
     
             $point = new hcms_menupoint($hcms_lang['assets'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=comp&location=".url_encode($location_root)."&virtual=1", 'folder_comp.png', 'comp_'.$site);
             $point->setOnClick('hcms_jstree_open("comp_'.$site.'", event);');
@@ -1179,28 +1158,17 @@ else
   
           // ----------------------------------------- page ----------------------------------------------
           // category of content: cat=page
-          if (empty ($hcms_assetbrowser) && !empty ($mgmt_config[$site]['abs_path_page']) && is_dir ($mgmt_config[$site]['abs_path_page']) && checkglobalpermission ($site, 'page') && empty ($mgmt_config[$site]['dam']) && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "page"))
+          if (empty ($hcms_assetbrowser) && !empty ($mgmt_config[$site]['abs_path_page']) && is_dir ($mgmt_config[$site]['abs_path_page']) && checkglobalpermission ($site, 'page') && empty ($mgmt_config[$site]['dam']))
           {
             // since version 5.6.3 the root folders also need to have containers
             // update page root
             $page_root = deconvertpath ("%page%/".$site."/", "file");
+            
             // create folder object if it does not exist
-            if (!is_file ($page_root.".folder")) createobject ($site, $page_root, ".folder", "default.meta.tpl", "sys");
-              
-            // reset root location if linking is used
-            if (isset ($hcms_linking['location']) && valid_locationname ($hcms_linking['location']))
-            {
-              if (isset ($hcms_linking['object']) && valid_objectname ($hcms_linking['object']))
-              {
-                $file_info = getfileinfo ($site, $hcms_linking['location'].$hcms_linking['object'], "page");
-                if ($file_info['type'] == "Folder") $location_root = $hcms_linking['location'].$hcms_linking['object']."/";
-              }
-              else $location_root = $hcms_linking['location'];
-              
-              $location_root = convertpath ($site, $location_root, "page");
-            }
+            if (!is_file ($page_root.".folder") && is_writable ($page_root)) createobject ($site, $page_root, ".folder", "default.meta.tpl", "sys");
+
             // use page root
-            else $location_root = "%page%/".$site."/";
+            $location_root = "%page%/".$site."/";
   
             $point = new hcms_menupoint($hcms_lang['pages'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=page&location=".url_encode($location_root)."&virtual=1", 'folder_page.png', 'page_'.$site);
             $point->setOnClick('hcms_jstree_open("page_'.$site.'", event);');
@@ -1247,6 +1215,7 @@ else
     <script type="text/javascript" src="javascript/rich_calendar/rc_lang_pt.js"></script>
     <script type="text/javascript" src="javascript/rich_calendar/rc_lang_ru.js"></script>
     <script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
+    
     <!-- Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php echo $mgmt_config['googlemaps_appkey']; ?>"></script>
 
@@ -1987,22 +1956,22 @@ else
     </div>
     
     <!-- search form -->
-    <div id="search" style="position:absolute; top:12px; left:4px; right:4px; text-align:top; visibility:hidden;">
+    <div id="search" style="position:absolute; top:8px; left:4px; right:4px; text-align:top; visibility:hidden;">
       <form name="searchform_advanced" method="post" action="search_objectlist.php" target="mainFrame">
         <input type="hidden" name="action" value="base_search" />
         <input type="hidden" name="search_dir" value="" />
 
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></span>
-          <img onClick="activateFulltextSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onClick="activateFulltextSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        <div id="fulltextLayer" style="display:none;"> 
         
+        <div id="fulltextLayer" style="display:none; clear:right;"> 
           <div style="padding-bottom:3px;">
             <label for="search_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
-            <input type="text" id="search_expression" name="search_expression" style="width:220px;" maxlength="200" />
+            <input type="text" id="search_expression" name="search_expression" onkeydown="if (hcms_enterKeyPressed(event) && document.getElementById('search_expression').value.trim() != '') startSearch('post');" style="width:193px; padding-right:30px;" maxlength="200" />
+            <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" style="cursor:pointer; width:22px; height:22px; margin-left:-30px;" onClick="if (document.getElementById('search_expression').value.trim() != '') startSearch('post');" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
           </div>
-          
           <div style="padding-bottom:3px;">
             <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
             <select id="publication" name="site" style="width:230px;">
@@ -2020,22 +1989,19 @@ else
             ?>
             </select>
           </div>
-          
           <div style="padding-bottom:3px;">
             <label><input type="checkbox" name="search_cat" value="file" /> <?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?></label><br />
-          </div>
-        
+          </div> 
         </div>
         <hr />
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></span>
-          <img onClick="activateAdvancedSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onClick="activateAdvancedSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        <div id="advancedLayer" style="display:none;">
         
+        <div id="advancedLayer" style="display:none; clear:right;">
           <label for="template"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?></label><br />
-          
           <select id="template" name="template" style="width:230px;" onChange="loadForm();">
             <option value="">&nbsp;</option>
           <?php
@@ -2106,28 +2072,27 @@ else
           }
           ?>
           </select><br />
-
           <iframe id="contentFRM" name="contentFRM" width="0" height="0" frameborder="0"></iframe> 
           <div class="hcmsObjectSelected" style="border:1px solid #000000; width:226px; height:200px; padding:2px; overflow:auto;">
             <div id="contentLayer"></div>
           </div>
-
           <div style="margin-top:5px;">
             <label for="search_operator"><?php echo getescapedtext ($hcms_lang['link-fields-with'][$lang]); ?></label><br />
             <select id="search_operator" name="search_operator" style="width:230px;">
               <option value="AND" <?php if (empty ($mgmt_config['search_operator']) || (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "AND")) echo "selected"; ?>>AND</option>
               <option value="OR" <?php if (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "OR") echo "selected"; ?>>OR</option>
             </select>
-          </div>
-          
+          </div>   
         </div>
         <hr />
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['keywords'][$lang]); ?></span>
-          <img onClick="activateKeywordSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onClick="activateKeywordSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        <div id="keywordsLayer" style="display:none;">
+        
+        <div id="keywordsLayer" style="display:none; clear:right;">
+        
           <!--
           <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
           <select id="publication" name="site" style="width:230px;">
@@ -2148,6 +2113,7 @@ else
           ?>
           </select><br /> 
           -->
+          
           <table class="hcmsTableNarrow" style="width:100%; margin-top:4px;">
           <?php
           $count = rdbms_getemptykeywords ($siteaccess);
@@ -2189,13 +2155,12 @@ else
           </table>
         </div>
         <hr />
-        
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media'][$lang]); ?></span>
-          <img onClick="activateImageSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onClick="activateImageSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        <div id="imageLayer" style="display:none;">
-
+        
+        <div id="imageLayer" style="display:none; clear:right;">
           <div id="filetypeLayer" style="padding-bottom:3px;">
             <?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?><br />
             <input type="checkbox" id="search_format_page" name="search_format[]" value="page" checked="checked" />&nbsp;<label for="search_format_page"><?php echo getescapedtext ($hcms_lang['page'][$lang]); ?></label><br />
@@ -2205,7 +2170,6 @@ else
             <input type="checkbox" id="search_format_video" name="search_format[]" value="video" checked="checked" />&nbsp;<label for="search_format_video"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label><br />
             <input type="checkbox" id="search_format_audio" name="search_format[]" value="audio" checked="checked" />&nbsp;<label for="search_format_audio"><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label><br />
           </div>
-          
           <div style="padding-bottom:3px;">
             <?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?><br />
             <select name="search_filesize_operator">
@@ -2216,7 +2180,6 @@ else
             </select>
             <input type="number" name="search_filesize" style="width:70px;" maxlength="10" min="1" max="9999999999" /> KB
           </div>
-          
           <div style="padding-bottom:3px;">
             <label for="search_imagesize"><?php echo getescapedtext ($hcms_lang['media-size'][$lang]); ?></label><br />
             <select id="search_imagesize" name="search_imagesize" style="width:230px;" onchange="if (this.options[this.selectedIndex].value=='exact') document.getElementById('searchfield_imagesize').style.display='block'; else document.getElementById('searchfield_imagesize').style.display='none';">
@@ -2231,7 +2194,6 @@ else
               <input type="text" name="search_imageheight" style="width:40px;" maxlength="8" /> px
             </div>
           </div>
-          
           <div style="padding-bottom:3px;">
             <label for="search_imagetype"><?php echo getescapedtext ($hcms_lang['image-type'][$lang]); ?></label><br />
             <select id="search_imagetype" name="search_imagetype" style="width:230px;">
@@ -2241,7 +2203,6 @@ else
               <option value="square"><?php echo getescapedtext ($hcms_lang['square'][$lang]); ?></option>
             </select>
           </div>
-          
           <div style="padding-bottom:3px;">
             <label><?php echo getescapedtext ($hcms_lang['image-color'][$lang]); ?></label><br />
             <div style="display:block;">
@@ -2261,16 +2222,16 @@ else
               <div style="clear:both;"></div>
             </div>
           </div>
-          
         </div>
         <hr />
 
         <?php if (!$is_mobile) { ?>
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></span>
-          <img onClick="activateGeolocationSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onClick="activateGeolocationSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        <div id="mapLayer" style="display:none;">
+        
+        <div id="mapLayer" style="display:none; clear:right;">
           <div style="position:relative; left:185px; top:15px; width:22px; height:22px; z-index:1000;">
             <img src="<?php echo getthemelocation(); ?>img/info.png" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" onmouseover="hcms_showInfo('helpmapLayer');" onmouseout="hcms_hideInfo('helpmapLayer');" class="hcmsButtonSizeSquare" style="cursor:pointer;" />
             <div id="helpmapLayer" style="display:none; position:absolute; top:20px; right:10px;"><img src="<?php echo getthemelocation(); ?>img/info-right-click-drag.png" /></div>
@@ -2286,10 +2247,10 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?></span>
-          <img onClick="activateLastmodifiedSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onClick="activateLastmodifiedSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
         
-        <div id="dateLayer" style="display:none;">        
+        <div id="dateLayer" style="display:none; clear:right;">        
           <table class="hcmsTableStandard">     
             <tr>
               <td> 
@@ -2313,10 +2274,10 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></span>
-          <img onClick="activateIdSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onClick="activateIdSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
         
-        <div id="idLayer" style="display:none;">        
+        <div id="idLayer" style="display:none; clear:right;">        
           <div style="padding-bottom:3px;">
             <label nowrap="object_id"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></label><br />
             <input type="text" id="object_id" name="object_id" value="" style="width:220px;" />
@@ -2330,10 +2291,10 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></span>
-          <img onClick="activateRecipientSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onClick="activateRecipientSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
         
-        <div id="recipientLayer" style="display:none;">        
+        <div id="recipientLayer" style="display:none; clear:right;">        
           <div style="padding-bottom:3px;">
             <label for="from_user"><?php echo getescapedtext ($hcms_lang['sender'][$lang]); ?></label><br />
             <input type="text" id="from_user" name="from_user" style="width:220px;" maxlength="200" />
@@ -2365,9 +2326,9 @@ else
 
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['save-search'][$lang]); ?></span>
-          <img onClick="activateSaveSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onClick="activateSaveSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        <div id="saveLayer" style="display:none;">
+        <div id="saveLayer" style="display:none; clear:right;">
         
           <?php
           if (is_file ($mgmt_config['abs_path_data']."/log/".$user.".search.log"))
@@ -2445,8 +2406,7 @@ else
         </div>
         <hr />
         
-        <label><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?></label>
-    	  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('post');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
+        <button type="button" class="hcmsButtonGreen" style="width:100%;" onclick="startSearch('post');"><?php echo getescapedtext ($hcms_lang['search'][$lang]); ?></button>
       </form>
     </div>
     

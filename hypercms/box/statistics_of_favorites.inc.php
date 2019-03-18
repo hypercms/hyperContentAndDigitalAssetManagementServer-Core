@@ -51,7 +51,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
         $download_total_count = 0;
         $upload_total_filesize = 0;
         $upload_total_count = 0;
-      
+
         // loop through days of month
         for ($i=1; $i<=date("t", strtotime($date_from)); $i++)
         {
@@ -63,7 +63,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
           // views
           $view_axis[$i]['value'] = 0;
           $view_axis[$i]['text'] = "";
-          
+
           if (isset ($result_view) && is_array ($result_view)) 
           { 
             foreach ($result_view as $row)
@@ -148,8 +148,8 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
         echo '
         <div style="margin:35px 0px 0px 40px;">
           <div style="height:16px;"><div style="width:16px; height:16px; background:#6fae30; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['views'][$lang]).' ('.number_format ($view_total_count, 0, ".", " ").' Hits / '.number_format (($view_total_filesize / 1024), 0, ".", " ").' MB)</div>
-          <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#108ae7; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['downloads'][$lang]).' ('.number_format ($download_total_count, 0, "", ".").' Hits / '.number_format (($download_total_filesize / 1024), 0, "", ".").' MB)</div>
-          <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['uploads'][$lang])." (".number_format ($upload_total_count, 0, "", ".").' Hits / '.number_format (($upload_total_filesize / 1024), 0, "", ".").' MB)</div>
+          <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#108ae7; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['downloads'][$lang]).' ('.number_format ($download_total_count, 0, ".", " ").' Hits / '.number_format (($download_total_filesize / 1024), 0, ".", " ").' MB)</div>
+          <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['uploads'][$lang])." (".number_format ($upload_total_count, 0, ".", " ").' Hits / '.number_format (($upload_total_filesize / 1024), 0, ".", " ").' MB)</div>
         </div>';
     
         echo "

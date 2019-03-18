@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
   
 // ========================================== MEDIA FUNCTIONS =======================================
@@ -18,12 +16,11 @@
 // This function extracts the text content of multimedia objects using OCR and returns the text.
 // It is a helper function for function indexcontent.
 
-
 function ocr_extractcontent ($site, $location, $file)
 {
   global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $hcms_lang, $lang;
 
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && !empty ($mgmt_parser) && is_array ($mgmt_parser))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && !empty ($mgmt_parser) && is_array ($mgmt_parser) && is_supported ($mgmt_parser, $file))
   {
     $usedby = "";
     $file_content = "";
@@ -47,7 +44,7 @@ function ocr_extractcontent ($site, $location, $file)
     $temp_dir = $mgmt_config['abs_path_temp'];
 
     // convert to TIFF since Tesseract has best results with TIFF images
-    if (($file_ext != ".tif" && $file_ext != ".tiff" && $file_ext != ".png") && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
+    if (($file_ext != ".tif" && $file_ext != ".tiff" && $file_ext != ".png") && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0)
     {
       $cmd = "";
       
@@ -154,7 +151,7 @@ function ocr_extractcontent ($site, $location, $file)
       // find parser (avoid conflicts with other parsers for PDF or MS Word
       foreach ($mgmt_parser as $ext_parser=>$parser)
       {
-        if (substr_count (strtolower ($ext_parser).".", $file_ext.".") > 0)
+        if (!empty ($file_ext) && substr_count (strtolower ($ext_parser).".", $file_ext.".") > 0 && trim ($parser) != "")
         {
           // temporary pages/images
           if (is_file ($temp_dir.$temp_name.".temp-0.tiff"))
@@ -311,7 +308,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
       // ------------------------ Adobe PDF -----------------------
       // get file content from PDF
-      if (($file_ext == ".pdf" || $file_ext == ".ai") && $mgmt_parser['.pdf'] != "")
+      if (($file_ext == ".pdf" || $file_ext == ".ai") && !empty ($mgmt_parser['.pdf']))
       {
         // use of XPDF to parse PDF files.
         // please note: the executable "pdftotext" must be located in the "bin" directory!
@@ -344,7 +341,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       
       // ------------------------ OPEN OFFICE -----------------------
       // get file content from Open Office Text (odt) in UTF-8
-      elseif (($file_ext == ".odt" || $file_ext == ".ods" || $file_ext == ".odp") && $mgmt_uncompress['.zip'] != "")   
+      elseif (($file_ext == ".odt" || $file_ext == ".ods" || $file_ext == ".odp") && !empty ($mgmt_uncompress['.zip']))   
       {
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
@@ -385,7 +382,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       }      
       // ------------------------ MS WORD -----------------------
       // get file content from MS Word before 2007 (doc) in UTF-8
-      elseif (($file_ext == ".doc") && $mgmt_parser['.doc'] != "")
+      elseif (($file_ext == ".doc") && !empty ($mgmt_parser['.doc']))
       {
         @exec ($mgmt_parser['.doc']." -t -i 1 -m UTF-8.txt \"".shellcmd_encode ($location.$file)."\"", $file_content, $errorCode); 
 
@@ -403,7 +400,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         else $file_content = "";        
       }
       // get file content from MS Word 2007+ (docx) in UTF-8
-      elseif (($file_ext == ".docx") && $mgmt_uncompress['.zip'] != "")
+      elseif (($file_ext == ".docx") && !empty ($mgmt_uncompress['.zip']))
       {
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
@@ -444,7 +441,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       }
       // ------------------------ MS EXCEL -----------------------
       // get file content from MS EXCEL 2007 (xlsx) in UTF-8
-      elseif (($file_ext == ".xlsx") && $mgmt_uncompress['.zip'] != "")
+      elseif (($file_ext == ".xlsx") && !empty ($mgmt_uncompress['.zip']))
       {
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
@@ -528,7 +525,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         }           
       }      
       // get file content from MS Powerpoint 2007 (pptx) in UTF-8
-      elseif (($file_ext == ".pptx" || $file_ext == ".ppsx") && $mgmt_uncompress['.zip'] != "")
+      elseif (($file_ext == ".pptx" || $file_ext == ".ppsx") && !empty ($mgmt_uncompress['.zip']))
       {
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
@@ -608,7 +605,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       }
       // -------------------------- OCR FOR IMAGES -------------------------
       // get file content from image formats using OCR
-      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['image']).".", $file_ext.".") > 0 && !empty ($mgmt_parser) && is_array ($mgmt_parser))
+      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['image']).".", $file_ext.".") > 0 && !empty ($mgmt_parser))
       {
         $file_content = ocr_extractcontent ($site, $location, $file);
       }
@@ -902,7 +899,7 @@ function reindexcontent ($site, $container_id_array="")
 // output: new file name / false on error
 
 // description:
-// Decodes a base64 encoded straing and saves it to the file system.
+// Decodes a base64 encoded string and saves it to as a file.
 
 function base64_to_file ($base64_string, $location, $file)
 {
@@ -1174,7 +1171,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
         }
            
         // check file extension
-        if ($fileinfo['ext'] != "" && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0 && !empty ($mgmt_mediapreview[$mediapreview_ext]))
+        if (!empty ($fileinfo['ext']) && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0 && !empty ($mgmt_mediapreview[$mediapreview_ext]))
         {
           // remove destination file if it exists
           deletefile ($location_dest, $newfile, 0);
@@ -1312,7 +1309,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
         }
 
         // check file extension
-        if ($fileinfo['ext'] != "" && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0 && !empty ($mgmt_mediapreview[$mediapreview_ext]))
+        if (!empty ($fileinfo['ext']) && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0 && !empty ($mgmt_mediapreview[$mediapreview_ext]))
         {
           // remove destination file if it exists
           deletefile ($location_dest, $newfile, 0);
@@ -1513,7 +1510,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           foreach ($mgmt_imagepreview as $imagepreview_ext => $imagepreview)
           {
             // check file extension
-            if ($file_ext != "" && substr_count (strtolower ($imagepreview_ext).".", $file_ext.".") > 0)
+            if (!empty ($file_ext) && substr_count (strtolower ($imagepreview_ext).".", $file_ext.".") > 0 && trim ($imagepreview) != "")
             {
               $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($path_source)."\" \"".shellcmd_encode ($location_dest.$file_name).".jpg\"";
 
@@ -1621,9 +1618,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       // defined extension for maximum file size restriction in MB
       foreach ($mgmt_maxsizepreview as $maxsizepreview_ext => $maxsizepreview)
       {        
-        if ($file_ext != "" && substr_count (strtolower ($maxsizepreview_ext).".", $file_ext.".") > 0)
+        if (!empty ($file_ext) && substr_count (strtolower ($maxsizepreview_ext).".", $file_ext.".") > 0 && $maxsizepreview > 0)
         {
-          if ($mgmt_maxsizepreview[$maxsizepreview_ext] > 0 && ($filesize_orig / 1024) > $mgmt_maxsizepreview[$maxsizepreview_ext]) $skip = true;
+          if (($filesize_orig / 1024) > $mgmt_maxsizepreview[$maxsizepreview_ext]) $skip = true;
         }
       }
     }
@@ -1747,7 +1744,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         foreach ($mgmt_imagepreview as $imagepreview_ext => $imagepreview)
         {
           // check file extension
-          if ($file_ext != "" && substr_count (strtolower ($imagepreview_ext).".", $file_ext.".") > 0)
+          if (!empty ($file_ext) && substr_count (strtolower ($imagepreview_ext).".", $file_ext.".") > 0 && trim ($imagepreview) != "")
           {
             reset ($mgmt_imageoptions);  
             $i = 1;
@@ -2613,7 +2610,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
         // original video info
         $videoinfo = getvideoinfo ($location_source.$file);
-              
 
         reset ($mgmt_mediapreview);
 
@@ -2621,7 +2617,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         foreach ($mgmt_mediapreview as $mediapreview_ext => $mediapreview)
         {
           // check file extension
-          if ($file_ext != "" && substr_count (strtolower ($mediapreview_ext).".", $file_ext.".") > 0 && !empty ($mediapreview))
+          if (!empty ($file_ext) && substr_count (strtolower ($mediapreview_ext).".", $file_ext.".") > 0 && !empty ($mediapreview))
           {
             reset ($mgmt_mediaoptions);  
 
@@ -2900,7 +2896,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           @exec ($cmd, $buffer, $errorCode);
 
                           // on error
-                          if ($errorCode)
+                          if ($errorCode || !is_file ($location_temp.shellcmd_encode ($file_name)."-1.ts"))
                           {
                             $errcode = "20239";
                             $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;           
@@ -2932,7 +2928,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
                           
                       // on error
-                      if ($errorCode)
+                      if ($errorCode || !is_file ($location_temp.shellcmd_encode ($file_orig)))
                       {
                         $errcode = "20240";
                         $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file_orig;           
@@ -2941,6 +2937,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       else
                       {
                         $location_source = $location_temp;
+                        $path_source = $location_temp.shellcmd_encode ($file_orig);
                         $file = $file_orig;
                       }
                     }
@@ -3527,7 +3524,8 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
     }
 
     // convert-config is not supported when we are using createdocument
-    if (is_document ($mediafile))
+    // createdocument only supports documents as target format
+    if (is_document ($mediafile) && !is_image ("dummy.".$format))
     {
       $result_conv = createdocument ($site, $location_source, $location_dest, $mediafile, $format, $force_no_encrypt);
     }
@@ -5006,7 +5004,7 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
   {  
     $destDir = $destination."/".specialchr_decode (getobject ($source));
     @mkdir ($destDir, $mgmt_config['fspermission'], true);
-    
+
     if ($scandir = scandir ($source))
     {
       foreach ($scandir as $file)
@@ -5033,8 +5031,15 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
             if ($objectdata != false)
             {
               $mediafile = getfilename ($objectdata, "media");
+              $contentfile = getfilename ($objectdata, "content");
               
-              if ($mediafile != false)
+              if (!empty ($contentfile))
+              {
+                $containerinfo = getcontainername ($contentfile);  
+              }
+
+              // if container is not locked by a another user
+              if (!empty ($mediafile) && (empty ($containerinfo['user']) || $user == $containerinfo['user']))
               {
                 $container_id = getmediacontainerid ($mediafile);
                 $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
@@ -5119,15 +5124,17 @@ function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
 // ---------------------- zipfiles -----------------------------
 // function: zipfiles()
 // input: publication name [string], array with path to source files [array], destination location (if this is null then the $location where the zip-file resists will be used) [string], 
-//        name of ZIP-file [string], user name [string], activity that need to be set for daily stats [download] (optional)
+//          name of ZIP-file [string], user name [string], activity that need to be set for daily stats [download] (optional), flat hierarchy means no directories [true,false] (optional) 
 // output: true/false
 
 // description:
 // Compresses all media files and includes their folder structure in a ZIP file.
 
-function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $user, $activity="")
+function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $user, $activity="", $flatzip=false)
 {
-  global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission;
+  global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
+  
+  if (empty ($lang)) $lang = "en";
 
   // valid_locationname ($destination) && valid_objectname ($zipfilename) && valid_objectname ($user)
   if (!empty ($mgmt_compress['.zip']) && valid_publicationname ($site) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 0 && is_dir ($destination) && valid_locationname ($destination) && valid_objectname ($zipfilename) && valid_objectname ($user))
@@ -5138,10 +5145,16 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
     if ($mgmt_config['db_connect_rdbms'] != "")
     {
       $filesize = 0;
+
+      $multiobject_array = array_unique ($multiobject_array);
       
       // get total file size of all files which will be zipped
       foreach ($multiobject_array as $multiobject)
       {
+        // get publication from path
+        $site_temp = getpublication ($multiobject);
+        if (valid_publicationname ($site_temp)) $site = $site_temp;
+        
         $multiobject = convertpath ($site, $multiobject, "comp");
         
         // get file size in KB
@@ -5162,7 +5175,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
         // get ZIP file size in kB
         $zipfilesize = round ((filesize ($destination.$zipfilename.".zip") / 1024), 0);
        
-        // compare file sizes with 10% (5+5%) tolerance
+        // compare file sizes with 10% (-5+5%) tolerance
         if ($zipfilesize < ($filesize * 1.05) || $zipfilesize > ($filesize * 0.95))  return true;
         
         // query for files that are new or have been updated after the ZIP file has been created
@@ -5192,51 +5205,63 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
 
     // temporary directory for file collection
     $tempDir = $mgmt_config['abs_path_temp'];
-  
-    $commonRoot = getlocation ($multiobject_array[0]);
-  
-    // find common root folder for different file paths
-    if (sizeof ($multiobject_array) > 1)
-    {
-      for ($i=0; $i<sizeof($multiobject_array); $i++)
-      {
-        if ($multiobject_array[$i] != "")
-        {
-          $fileParts = explode ("/", $multiobject_array[$i]);
-          $commonRootParts = explode ("/", $commonRoot);
     
-          $commonRoot = "";
-          $j = 0;
-        
-          while ($fileParts[$j] == $commonRootParts[$j] && $j < sizeof ($fileParts))
+    if ($flatzip == false)
+    {
+      $commonRoot = getlocation ($multiobject_array[0]);
+    
+      // find common root folder for different file paths
+      if (sizeof ($multiobject_array) > 1)
+      {
+        for ($i=0; $i<sizeof($multiobject_array); $i++)
+        {
+          if ($multiobject_array[$i] != "")
           {
-            $commonRoot .= $fileParts[$j]."/";
-            $j++;
+            // get publication from path
+            $fileParts = explode ("/", $multiobject_array[$i]);
+            $commonRootParts = explode ("/", $commonRoot);
+      
+            $commonRoot = "";
+            $j = 0;
+          
+            while ($fileParts[$j] == $commonRootParts[$j] && $j < sizeof ($fileParts))
+            {
+              $commonRoot .= $fileParts[$j]."/";
+              $j++;
+            }
           }
         }
       }
+     
+      $commonRoot = deconvertpath ($commonRoot, "file");
     }
-   
-    $commonRoot = deconvertpath ($commonRoot, "file");
 
     // create unique temp directory to collect the files for compression
     $tempFolderName = uniqid ("zip");
     $tempFolder = $tempDir.$tempFolderName;
     @mkdir ($tempFolder, $mgmt_config['fspermission'], true);
-    
+
     // walk through objects and get the multimedia files reference
     for ($i=0; $i<sizeof($multiobject_array); $i++)
     {
       if ($multiobject_array[$i] != "")
-      {    
+      {
+        $site_temp = getpublication ($multiobject_array[$i]);
+        if (valid_publicationname ($site_temp)) $site = $site_temp;
+        
         $filename = getobject ($multiobject_array[$i]);
         $location = getlocation ($multiobject_array[$i]);
         $location = deconvertpath ($location, "file");
-        
+        $cat = getcategory ($site, $multiobject_array[$i]);
+
         if (valid_locationname ($location) && valid_objectname ($filename))
         {
-          $destinationFolder = str_replace ($commonRoot, "", $location);
-          @mkdir ($tempFolder."/".$destinationFolder, $mgmt_config['fspermission'], true);
+          if (!empty ($commonRoot))
+          {
+            $destinationFolder = str_replace ($commonRoot, "", $location);
+            @mkdir ($tempFolder."/".$destinationFolder, $mgmt_config['fspermission'], true);
+          }
+          else $destinationFolder = "";
           
           // exclude files matching the temp file pattern and in recycle bin (double check of recycle bin object and location, since a folder is maybe in the recycle bin)
           if (!is_tempfile ($filename) && strpos ($location.$filename, ".recycle") === false)
@@ -5248,8 +5273,15 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
               if ($objectdata != false)
               {
                 $mediafile = getfilename ($objectdata, "media");
+                $contentfile = getfilename ($objectdata, "content");
                 
-                if ($mediafile != false)
+                if (!empty ($contentfile))
+                {
+                  $containerinfo = getcontainername ($contentfile);  
+                }
+
+                // if container is not locked by a another user
+                if (!empty ($mediafile) && (empty ($containerinfo['user']) || $user == $containerinfo['user']))
                 {
                   $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
                   
@@ -5270,8 +5302,20 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
                   }
   
                   // copy file to new location
-                  copy ($mediadir.$mediafile, $tempFolder."/".specialchr_decode ($destinationFolder.$filename));
+                  $mediatarget = $tempFolder."/".specialchr_decode ($destinationFolder.$filename);
                   
+                  for ($c=1; $c<=100; $c++)
+                  {
+                    if (is_file ($mediatarget))
+                    {
+                      $fileinfo = getfileinfo ($site, $filename, $cat);
+                      $mediatarget = $tempFolder."/".specialchr_decode ($destinationFolder.$fileinfo['filename']."-".$c."".$fileinfo['ext']);
+                    }
+                    else break;
+                  }
+
+                  copy ($mediadir.$mediafile, $mediatarget);
+
                   // remove decrypted temporary file
                   if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
                 }
@@ -5285,7 +5329,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
                 // cut off last /
                 $location = substr ($location, 0, -1);
               }
-              
+
               clonefolder ($site, $location.$filename, $tempFolder."/".specialchr_decode ($destinationFolder), $user, $activity);
             }
           }
@@ -5293,16 +5337,21 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
       }
     }
     
-    // ZIP files
+    // save info file is nothing to pack
+    if (is_emptyfolder ($tempFolder)) savefile ($tempFolder, $hcms_lang['no-results-available'][$lang], "");
+
     // Windows
     if ($mgmt_config['os_cms'] == "WIN")
-    { 
-      $cmd = "cd \"".shellcmd_encode ($location)."\" & ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";  
+    {
+      $cmd = "cd \"".shellcmd_encode ($tempFolder)."\" & ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";  
       $cmd = str_replace ("/", "\\", $cmd);
     }
     // UNIX
-    else $cmd = "cd \"".shellcmd_encode ($tempFolder)."\" ; ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
-    
+    else
+    {
+      $cmd = "cd \"".shellcmd_encode ($tempFolder)."\" ; ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
+    }
+
     // compress files to ZIP format
     @exec ($cmd, $error_array);
   

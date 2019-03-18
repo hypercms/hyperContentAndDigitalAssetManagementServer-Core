@@ -4320,12 +4320,11 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
 {
   global $mgmt_config;
   
-  if ($hash != "" && $object_id != "" && (($type == "al" && valid_objectname ($user)) || $type == "dl"))
+  if ($hash != "" && (is_array ($object_id) || $object_id != "") && (($type == "al" && valid_objectname ($user)) || $type == "dl"))
   { 
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     $hash = $db->escape_string ($hash);
-    $object_id = $db->escape_string ($object_id);
     $type = $db->escape_string ($type);
     if ($user != "") $user = $db->escape_string ($user);
     if ($lifetime != "") $lifetime = $db->escape_string ($lifetime);
@@ -4337,19 +4336,55 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
     // define time of death based on lifetime
     if ($lifetime > 0) $deathtime = time() + intval ($lifetime);
     else $deathtime = 0;
+    
+    // get object IDs
+    $object_id_array = array();
+    
+    // check if object is folder or page/component
+    if (!is_array ($object_id) && substr_count ($object_id, "|") > 0)
+    {
+      // split multiobject into array
+      $object_id = link_db_getobject ($object_id);
+    }
+    // create array for single element
+    elseif (!is_array ($object_id)) $object_id = array ($object_id);
+    
+    // get object IDs from object path
+    if (is_array ($object_id) && sizeof ($object_id) > 0)
+    {
+      foreach ($object_id as $temp)
+      {
+        if (trim ($temp) != "")
+        {
+          if ($temp > 0)
+          {
+            $object_id_array[] = intval ($temp);
+          }
+          else
+          {
+            $temp = rdbms_getobject_id ($temp);
+            if ($temp > 0) $object_id_array[] = intval ($temp);
+          }
+        }
+      }
+    }
 
-    // insert access link info
-    $sql = 'INSERT INTO accesslink (hash, date, object_id, type, user, deathtime, formats) ';    
-    $sql .= 'VALUES ("'.$hash.'", "'.$date.'", "'.intval ($object_id).'", "'.$type.'", "'.$user.'", '.intval ($deathtime).', "'.$formats.'")';
-         
-    $errcode = "50007";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
-
-    // save log
-    savelog ($db->getError ());    
-    $db->close();
-        
-    return true;
+    if (sizeof ($object_id_array) > 0)
+    {
+      // insert access link info
+      $sql = 'INSERT INTO accesslink (hash, date, object_id, type, user, deathtime, formats) ';    
+      $sql .= 'VALUES ("'.$hash.'", "'.$date.'", "'.implode ("|", $object_id_array).'", "'.$type.'", "'.$user.'", '.intval ($deathtime).', "'.$formats.'")';
+           
+      $errcode = "50007";
+      $db->query ($sql, $errcode, $mgmt_config['today']);
+  
+      // save log
+      savelog ($db->getError ());    
+      $db->close();
+          
+      return true;
+    }
+    else return false;
   }
   else return false;
 } 
@@ -4378,7 +4413,8 @@ function rdbms_getaccessinfo ($hash)
       $row = $db->getResultRow ("select");
       
       $result['date'] = $row['date'];
-      $result['object_id'] = $row['object_id']; 
+      $result['object_id'] = $row['object_id'];
+      $result['object_ids'] = explode ("|", $row['object_id']);
       $result['type'] = $row['type']; 
       $result['user'] = $row['user']; 
       $result['deathtime'] = $row['deathtime'];
@@ -5084,15 +5120,15 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       $objectpath = $db->escape_string ($objectpath);
       $objectpath = str_replace ('%', '*', $objectpath);
 
-      $sqlfilesize = ', SUM(media.filesize) filesize';
+      $sqlfilesize = ', SUM(media.filesize) AS filesize';
       $sqltable = ", media, object";
-      $sqlwhere = " WHERE dailystat.id = media.id";
+      $sqlwhere = " WHERE dailystat.id=media.id";
     }
     else
     {
       $sqlfilesize = ', media.filesize';
       $sqltable = ", media";
-      $sqlwhere = " WHERE dailystat.id = media.id";
+      $sqlwhere = " WHERE dailystat.id=media.id";
     }
   }
   // object
@@ -5103,15 +5139,15 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
     $sqlwhere = " WHERE dailystat.id!=''";
   }
   
-  $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) count'.$sqlfilesize.', user FROM dailystat'.$sqltable.' '.$sqlwhere; 
+  $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) AS count'.$sqlfilesize.', dailystat.user FROM dailystat'.$sqltable.' '.$sqlwhere; 
   
   if ($objectpath != "")
   {
     // search by objectpath
-    $sql .= ' AND dailystat.id = object.id';
+    $sql .= ' AND dailystat.id=object.id';
     
     if ($object_info['type'] == 'Folder') $sql .= ' AND object.objectpath like "'.$location.'%"';
-    else $sql .= ' AND object.objectpath = "'.$objectpath.'"';
+    else $sql .= ' AND object.objectpath="'.$objectpath.'"';
   }
   elseif ($container_id != "")
   { 

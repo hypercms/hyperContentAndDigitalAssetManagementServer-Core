@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -273,6 +271,11 @@ $token_new = createtoken ($user);
 .cell *
 {
   font-size: 11px;
+}
+
+#renderOptions input[type=text], #renderOptions select
+{
+  padding: 3px;
 }
 </style>
 
@@ -1170,7 +1173,7 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin:-4px 10px 0px 10px" class="hcmsMediaRendering">    
+<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin:-4px 10px 0px 10px;" class="hcmsMediaRendering">    
   <!-- start edit image -->
   <form name="mediaconfig" id="mediaconfig" action="service/renderimage.php" method="post">
     <input type="hidden" id="action" name="action" value="rendermedia">
@@ -1363,8 +1366,8 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
     <br/>
     
     <div class="cell">
-      <button class="hcmsButtonGreen" type="button" name="save" onclick="submitform(true);"><?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></button>
-      <button class="hcmsButtonGreen" type="button" name="preview" onclick="showPreview();"><?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></button>
+      <button type="button" class="hcmsButtonGreen" name="save" onclick="submitform(true);"><img src="<?php echo getthemelocation()."img/button_save.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></button>
+      <button type="button" class="hcmsButtonGreen" name="preview" onclick="showPreview();"><img src="<?php echo getthemelocation()."img/button_file_preview.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></button>
     </div>
   </form>
   <!-- end edit image -->

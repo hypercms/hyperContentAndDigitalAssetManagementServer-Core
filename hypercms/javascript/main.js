@@ -294,8 +294,17 @@ function hcms_translateTextField (textarea_id, sourcelang_id, targetlang_id)
 
 // --------------------------- standard functions ----------------------------
 
-function hcms_stripTags (html)
+function hcms_enterKeyPressed (event)
 {
+  // Cross Browser
+  if (!event) var event = e || window.event;
+   
+  if (event.which == 13 || event.keyCode == 13) return true;
+  else return false;
+}
+
+function hcms_stripTags (html)
+{    
    var tmp = document.createElement("DIV");
    tmp.innerHTML = html;
    return tmp.textContent || tmp.innerText || "";
@@ -736,7 +745,7 @@ function hcms_showInfo (id, sec)
     if (sec > 0)
     {
       var function_hide = "hcms_hideInfo('" + id + "')";
-      setTimeout (function_hide, sec);
+      setTimeout (function_hide, (sec * 1000));
     }
 
     return true;

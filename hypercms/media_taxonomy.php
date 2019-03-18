@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -46,7 +44,7 @@ $selectedlang_temp = $selectedlang;
 // create secure token
 $token_new = createtoken ($user);
 
-if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && checktoken ($token, $user))
+if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && !empty ($taxonomy[$saveindex_start]) && checktoken ($token, $user))
 {
   // create new row and save as CSV
   if ($action == "createrow")
@@ -137,6 +135,12 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && c
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/jquery/jquery-3.3.1.min.js"></script>
+<style>
+#taxonomy select
+{
+  padding:3px;
+}
+</style>
 <script type="text/javascript">
 var changed = false;
 var text = "";
@@ -177,7 +181,7 @@ function reindex ()
 
 function createrow (position)
 {
-  if (position > 0)
+  if (position >= 0)
   {
     var form = document.forms['taxonomyform'];
   
@@ -190,7 +194,7 @@ function createrow (position)
 
 function deleterow (position)
 {
-  if (position > 0)
+  if (position >= 0)
   {
     var form = document.forms['taxonomyform'];
   
@@ -328,17 +332,33 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
 // load languages
 $languages = getlanguageoptions ();
 
+// evaluate activated language options and set default language if no language is set active for the publication 
+$activelanguage = array();
+
+if (is_array ($languages))
+{
+  foreach ($languages as $langcode => $langname)
+  {
+    if (is_activelanguage ($site, $langcode))
+    {
+      $activelanguage[$langcode] = $langname;
+    }
+  }
+}
+
+if (sizeof ($activelanguage) < 1) $activelanguage['en'] = "English";
+
 // prepare taxonomy for table 
 $result = loadtaxonomy ($site, $start, $perpage);
 
-// no taxonomy available
+// no taxonomy available, set first taxonomy element
 if (empty ($result))
 {
-  $result[0]['level'] = 1;
+  $result[1]['level'] = 1;
   
-  foreach ($languages as $langcode => $langname)
+  foreach ($activelanguage as $langcode => $langname)
   {
-    $result[0][$langcode] = "";
+    $result[1][$langcode] = "";
   }
 }
 
@@ -379,31 +399,28 @@ foreach ($result as $row => $temp_array)
           </td>";
   }
   
-  // language columns
-  if (!empty ($languages) && is_array ($languages))
+  // language columns / input fields
+  if (!empty ($activelanguage) && is_array ($activelanguage))
   {
-    reset ($languages);
+    reset ($activelanguage);
     
-    foreach ($languages as $langcode => $langname)
+    foreach ($activelanguage as $langcode => $langname)
     {
-      if (is_activelanguage ($site, $langcode))
-      {
-        // memorize selected languages initially
-        if (empty ($selectedlang_temp)) $selectedlang[$langcode] = $langcode;
+      // memorize selected languages initially
+      if (empty ($selectedlang_temp)) $selectedlang[$langcode] = $langcode;
 
-        // text
-        if (!empty ($result[$row][$langcode])) $text = $result[$row][$langcode];
-        else $text = "";
-        
-        // display or hide based on selected languages
-        if (empty ($selectedlang[$langcode])) $style = "display:none;";
-        else $style = "";
+      // text
+      if (!empty ($result[$row][$langcode])) $text = $result[$row][$langcode];
+      else $text = "";
+      
+      // display or hide based on selected languages
+      if (empty ($selectedlang[$langcode])) $style = "display:none;";
+      else $style = "";
 
-        $show_taxonomy .= "
-            <td class=\"".$langcode."\" style=\"".$style."\">
-              <input type=\"text\" name=\"taxonomy[".$row."][".$langcode."]\" value=\"".$text."\" onkeyup=\"settext(this);\" class=\"hcmsRowData1\" style=\"position:relative; left:274px;\" />
-            </td>";
-       }
+      $show_taxonomy .= "
+          <td class=\"".$langcode."\" style=\"".$style."\">
+            <input type=\"text\" name=\"taxonomy[".$row."][".$langcode."]\" value=\"".$text."\" onkeyup=\"settext(this);\" class=\"hcmsRowData1\" style=\"position:relative; left:274px;\" />
+          </td>";
      }
   }
   
@@ -412,21 +429,6 @@ foreach ($result as $row => $temp_array)
           
   $id++;
 }
-
-// language options
-$show_language = "";
-
-if (!empty ($languages) && is_array ($languages))
-{
-  foreach ($languages as $langcode => $langname)
-  {
-    if (is_activelanguage ($site, $langcode))
-    {
-      $show_language .= "
-            <label style=\"display:inline-block; width:200px;\"><input type=\"checkbox\" id=\"".$langcode."\" name=\"selectedlang[".$langcode."]\" value=\"".$langcode."\" onclick=\"switchlanguage(this);\" ".(!empty ($selectedlang[$langcode]) ? "checked" : "")."> ".$languages[$langcode]."</label>";
-    }
-  }
-} 
 ?>
           
 <form name="taxonomyform" action="" method="post">
@@ -439,23 +441,36 @@ if (!empty ($languages) && is_array ($languages))
   <input type="hidden" name="saveindex_stop" value="<?php echo ($start + $perpage - 1); ?>" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
 
-  <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['selected-languages'][$lang]); ?></p>           
-  <div style="width:94%; max-height:160px; overflow:auto;">
-    <?php echo $show_language; ?>
-  </div>
-  <hr />
-  
-  <div style="width:94%;">
-    <?php
+  <?php
+  // language options / checkpose only if more than 1 language option is active
+  if (sizeof ($activelanguage) > 1)
+  {
     echo "
+  <!-- language options to display -->
+  <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['selected-languages'][$lang])."</p>
+  <div style=\"width:94%; max-height:160px; overflow:auto;\">";
+  
+    foreach ($activelanguage as $langcode => $langname)
+    {
+      echo "
+            <label style=\"display:inline-block; width:200px;\"><input type=\"checkbox\" id=\"".$langcode."\" name=\"selectedlang[".$langcode."]\" value=\"".$langcode."\" onclick=\"switchlanguage(this);\" ".(!empty ($selectedlang[$langcode]) ? "checked" : "")."> ".$languages[$langcode]."</label>";
+    }
+    
+    echo "
+  </div>
+  <hr />";
+  
+    echo "
+  <!-- translation -->
+  <div style=\"width:94%;\">
     <span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['translate'][$lang])."</span>&nbsp;
     <select id=\"sourceLang\" style=\"width:165px;\">";
 
-    if (!empty ($languages) && is_array ($languages))
+    if (!empty ($activelanguage) && is_array ($activelanguage))
     {
-      foreach ($languages as $langcode => $langname)
+      foreach ($activelanguage as $langcode => $langname)
       {
-        if (is_activelanguage ($site, $langcode)) echo "
+        echo "
       <option value=\"".$langcode."\">".$langname."</option>";
       }
     }
@@ -465,22 +480,25 @@ if (!empty ($languages) && is_array ($languages))
     &#10095;
     <select id=\"targetLang\" style=\"width:165px;\">";
 
-    if (!empty ($languages) && is_array ($languages))
+    if (!empty ($activelanguage) && is_array ($activelanguage))
     {
-      foreach ($languages as $langcode => $langname)
+      foreach ($activelanguage as $langcode => $langname)
       {
-        if (is_activelanguage ($site, $langcode)) echo "
+        echo "
       <option value=\"".$langcode."\">".$langname."</option>";
       }
     }
 
     echo "
     </select>
-    <img name=\"Button_translate\" onClick=\"translatelanguage('sourceLang', 'targetLang');\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" style=\"margin-right:2px;\" src=\"".getthemelocation()."img/button_ok.png\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button_translate','','".getthemelocation()."img/button_ok_over.png',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />";
-    ?>
+    <img name=\"Button_translate\" onClick=\"translatelanguage('sourceLang', 'targetLang');\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" style=\"margin-right:2px;\" src=\"".getthemelocation()."img/button_ok.png\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button_translate','','".getthemelocation()."img/button_ok_over.png',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />
   </div>
-  <hr />
+  <hr />";
+  }
+  ?>
 
+
+  <!-- taxonomy -->
   <div style="width:94%; overflow:auto; padding-bottom:6px;">
     <table id="taxonomy" class="hcmsTableStandard">
       <thead>
@@ -491,9 +509,9 @@ if (!empty ($languages) && is_array ($languages))
           <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:right; width:38px; height:20px; position:absolute; left:160px; z-index:2; white-space:nowrap;\">&nbsp;ID&nbsp;</th>
           <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:right; width:82px; height:20px; position:absolute; left:198px; z-index:2; white-space:nowrap;\">&nbsp;&nbsp;</th>";
 
-        if (!empty ($languages) && is_array ($languages))
+        if (!empty ($activelanguage) && is_array ($activelanguage))
         {
-          foreach ($languages as $langcode => $langname)
+          foreach ($activelanguage as $langcode => $langname)
           {
             if (empty ($selectedlang[$langcode])) $style = "display:none;";
             else $style = "";

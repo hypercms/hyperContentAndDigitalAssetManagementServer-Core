@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
  
 // ====================================== MAIN FUNCTIONS ========================================
@@ -1191,7 +1189,7 @@ function createfilename ($filename)
 
   if (valid_objectname ($filename))
   {
-    if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 400;
+    if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
     
     // check if filename includes special characters
     if (specialchr ($filename, ".-_") == true)
@@ -1221,8 +1219,8 @@ function createfilename ($filename)
       if (substr ($filename_new, -2, 1) == "~") $filename_new = substr ($filename_new, 0, -2);
       if (substr ($filename_new, -1, 1) == "~") $filename_new = substr ($filename_new, 0, -1);
       
-      // escpaed character muste be even for multibyte characters
-      if (substr_count($filename_new, "~") % 2 != 0) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
+      // escaped character must be even for multibyte characters
+      if (substr_count ($filename_new, "~") % 2 != 0) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
       
       $filename_new = $filename_new.$file_ext;
       
@@ -1814,7 +1812,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
   // if object includes special characters
   if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
 
-  if (((valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "") || $object_id != "") && (($type == "al" && valid_objectname ($login)) || $type == "dl") && isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
+  if (((valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "") || $object_id != "") && (($type == "al" && valid_objectname ($login)) || $type == "dl"))
   {
     // check if object is folder or page/component
     if ($site != "" && $location != "" && $object != "")
@@ -1847,7 +1845,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
 
       // create access link in DB
       $result_db = rdbms_createaccesslink ($hash, $object_id, $type, $login, $lifetime, $formats);
-   
+
       // object link
       // deprecated since version 5.6.1:
       // if ($mgmt_config['secure_links'] == true) return $mgmt_config['url_path_cms']."?hcms_user_token=".hcms_encrypt ($object_id.":".$timetoken."@".$login.":".$password_crypted);
@@ -2030,7 +2028,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     }
     else
     {
-      $errcode = "40912";
+      $errcode = "40913";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createwrapperlink failed due to missing object id for: ".$location.$object.", ".$object_id.", ".$container_id;
       
       savelog (@$error);  
@@ -2123,8 +2121,52 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     }
     else
     {
-      $errcode = "40912";
+      $errcode = "40914";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createdownloadlink failed due to missing object id for: ".$location.$object.", ".$object_id.", ".$container_id;
+      
+      savelog (@$error);  
+      
+      return false;
+    }
+  }
+  else return false;
+}
+
+// ---------------------- createmultiaccesslink -----------------------------
+// function: createaccesslink()
+// input: multiobject [path1|path2] or [array], user login name [string], link type [al,dl] (optional), token lifetime in seconds [integer] (optional), formats [string] (optional)
+// output: URL for access to given object / false on error
+
+function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $formats="")
+{
+  global $user, $mgmt_config, $hcms_lang, $lang;
+
+  if (!empty ($multiobject) && is_array ($multiobject) && (($type == "al" && valid_objectname ($login)) || $type == "dl"))
+  {
+    // check if object is folder or page/component
+    if (!is_array ($multiobject) && substr_count ($multiobject, "|") > 0)
+    {
+      // split multiobject into array
+      $multiobject = link_db_getobject ($multiobject);
+    }
+
+    // object access link
+    if (is_array ($multiobject) && sizeof ($multiobject) > 0)
+    {
+      // create hash
+      $hash = createuniquetoken ();
+
+      // create access link in DB
+      $result_db = rdbms_createaccesslink ($hash, $multiobject, $type, $login, $lifetime, $formats);
+   
+      // object link
+      if ($result_db) return $mgmt_config['url_path_cms']."?".$type."=".$hash;
+      else return false;
+    }
+    else
+    {
+      $errcode = "40915";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createmultiaccesslink failed due to missing input: $multiobject";
       
       savelog (@$error);  
       
@@ -2136,7 +2178,8 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 
 // --------------------------------------- createmultidownloadlink -------------------------------------------
 // function: createmultidownloadlink ()
-// input: publication name [string], multiobject string [string] (optional), media file name [string] (optional), location [string] (optional), presentation name [string] (optional), user name [string], conversion type (format, e.g: jpg) [string], media configuration used for conversion (e.g.: 1024x768px) [string], link type [wrapper,download] (optional)
+// input: publication name [string], multiobject [string] (optional), media file name [string] (optional), location [string] (optional), presentation name [string] (optional), user name [string], conversion type (format, e.g: jpg) [string], 
+//          media configuration used for conversion (e.g.: 1024x768px) [string], link type [wrapper,download] (optional), flat hierarchy means no directories [true,false] (optional) 
 // output: download link / false on error
 
 // description:
@@ -2146,10 +2189,10 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 // 2nd...media file
 // 3rd...folder
 
-function createmultidownloadlink ($site, $multiobject="", $media="", $location="", $name="", $user, $type="", $mediacfg="", $linktype="download")
+function createmultidownloadlink ($site, $multiobject="", $media="", $location="", $name="", $user, $type="", $mediacfg="", $linktype="download", $flatzip=false)
 {
   global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
-  
+
   if (valid_publicationname ($site) && valid_objectname ($user) && (valid_locationname ($location) || valid_locationname ($multiobject) || valid_objectname ($media)))
   {
     // add slash if not present at the end of the location string
@@ -2157,13 +2200,16 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
     
     // deconvert path
     $location = deconvertpath ($location, "file");     
-    
-    // download zip-file for multiobjects
+
+    // split multiobject into array
     if ($multiobject != "" && substr_count ($multiobject, "|") > 1)
     {
-      // split multiobject into array
       $multiobject_array = link_db_getobject ($multiobject);
-      
+    }
+    
+    // download zip-file for multiobjects
+    if (!empty ($multiobject_array) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 1)
+    {
       // create hash that represents all objects
       sort ($multiobject_array);
       $hash = md5 (implode ("", $multiobject_array));
@@ -2179,7 +2225,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
       if (!is_dir ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
      
       // zip files
-      $result_zip = zipfiles ($site, $multiobject_array, $mediadir, $zip_filename, $user);
+      $result_zip = zipfiles ($site, $multiobject_array, $mediadir, $zip_filename, $user, "", $flatzip);
       
       if ($location == "") $location = $multiobject_array[0];
       
@@ -2193,7 +2239,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
       else $name = "Download.zip";
     }
     // for a single file
-    elseif ($media != "")
+    elseif (trim ($media) != "")
     {
       $result_zip = true;
       // multimedia file (publication/file)
@@ -2217,9 +2263,9 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
       if (!is_dir ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
   
       // set multiobject array
-      $multiobject_array[0] = $location;
+      $multiobject_array[0] = convertpath ($site, $location, "");
      
-      $result_zip = zipfiles ($site, $multiobject_array, $mediadir, $zip_filename, $user);
+      $result_zip = zipfiles ($site, $multiobject_array, $mediadir, $zip_filename, $user, "", $flatzip);
       
       $media = $zip_filename.".zip";
       $media_info = getfileinfo ($site, getobject ($location).".zip", "comp");
@@ -6241,7 +6287,7 @@ function editpublication ($site_name, $setting, $user="sys")
       
     // theme
     if (array_key_exists ('theme', $setting)) $theme_new = $setting['theme'];
-    else $theme_new = "Standard";    
+    else $theme_new = "";    
     
     // storage limit
     if (array_key_exists ('storage_limit', $setting) && is_numeric ($setting['storage_limit'])) $storage_limit_new = $setting['storage_limit'];
@@ -7816,7 +7862,7 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
 // ------------------------------------------- edituser --------------------------------------------
 // function: edituser()
 // input: publication name [string], user login name [string], new login name [string] (optional), password [string] (optional), confirmed password [string] (optional), super administrator [0,1] (optional), real name [string] (optional), language setting [en,de,...] (optional), time zone [string] (optional)
-//        theme name (optional), email [string] (optional), phone (optional), usergroup string [group1|group2] (optional), member of publication(s) string [site1|site2] (optional), user name [string] (optional)
+//        theme name (optional), email [string] (optional), phone (optional), member of usergroup string [group1|group2] (optional), member of publications string [site1|site2] (optional), user name [string] (optional)
 // output: result array
 
 // description:
@@ -7845,14 +7891,14 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       else $theme = "standard";
     }
     
-    if ($userdata != false)
+    if (!empty ($userdata))
     {
       // Updates in XML nodes:
       // before version 5.4.6 new hashcode nodes needs to be inserted
       if (substr_count ($userdata, "<hashcode>") == 0)
       {
         $userdata = str_replace ("</password>", "</password>\n<hashcode></hashcode>", $userdata);
-      }       
+      }
       // before version 5.5.11 new admin nodes needs to be inserted
       if (substr_count ($userdata, "<admin>") == 0)
       {
@@ -7862,11 +7908,11 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       if (substr_count ($userdata, "<theme>") == 0)
       {
         $userdata = str_replace ("</language>", "</language>\n<theme>".$theme."</theme>", $userdata);
-      }         
+      }
  
       // check if password was changed
-      if ($password != "" && $password != "*Leave*")
-      {        
+      if (!empty ($userdata) && $password != "" && $password != "*Leave*")
+      {
         // check if submitted old password is valid if user changes his own password
         if ($login == $user)
         {
@@ -7892,7 +7938,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
                   
           $add_onload = "";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['password-insufficient'][$lang]."</span><br />\n".checkpassword ($password)."\n";
-        } 
+        }
         // check if submitted passwords has at least 10 digits
         elseif (strlen ($password) < 10)
         {
@@ -7901,7 +7947,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
                 
           $add_onload = "";
           $show = "<span class=hcmsHeadline>".$hcms_lang['the-password-has-less-than-digits'][$lang]."</span><br />".$hcms_lang['please-select-a-password-with-at-least-digits'][$lang]."\n";
-        }  
+        }
         // check if submitted passwords are equal
         elseif ($password != $confirm_password)
         {
@@ -7910,7 +7956,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
                 
           $add_onload = "";
           $show = "<span class=hcmsHeadline>".$hcms_lang['your-submitted-passwords-are-not-equal'][$lang]."</span><br />".$hcms_lang['please-try-it-again'][$lang]."\n";
-        }       
+        } 
         // password is correct
         else
         {
@@ -7929,14 +7975,14 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }
 
       // check if super admin was changed
-      if ($superadmin == "1" || $superadmin == "0")
+      if (!empty ($userdata) && ($superadmin == "1" || $superadmin == "0") && $show == "")
       {              
         // insert values into xml schema
         $userdata = setcontent ($userdata, "<user>", "<admin>", $superadmin, "<login>", $login); 
       }     
 
       // check if realname was changed
-      if (isset ($realname) && $realname != "*Leave*" && $show == "")
+      if (!empty ($userdata) && isset ($realname) && $realname != "*Leave*" && $show == "")
       {
         // escape special characters
         $realname = strip_tags ($realname);
@@ -7947,7 +7993,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }
 
       // check if lanuage was changed
-      if (valid_objectname ($language) && $language != "*Leave*" && $show == "")
+      if (!empty ($userdata) && valid_objectname ($language) && $language != "*Leave*" && $show == "")
       {
         // escape special characters
         $language = strip_tags ($language);
@@ -7958,7 +8004,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }
       
       // check if phone was changed
-      if (isset ($timezone) && $timezone != "*Leave*" && $show == "")
+      if (!empty ($userdata) && isset ($timezone) && $timezone != "*Leave*" && $show == "")
       {
         // escape special characters
         $timezone = strip_tags ($timezone);
@@ -7968,7 +8014,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }  
 
       // check if theme was changed
-      if (valid_objectname ($theme) && $theme != "*Leave*" && $show == "")
+      if (!empty ($userdata) && valid_objectname ($theme) && $theme != "*Leave*" && $show == "")
       {
         // escape special characters
         $theme = strip_tags ($theme);
@@ -7979,7 +8025,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }      
 
       // check if email was changed
-      if (isset ($email) && $email != "*Leave*" && $show == "")
+      if (!empty ($userdata) && isset ($email) && $email != "*Leave*" && $show == "")
       {
         // escape special characters
         $email = strip_tags ($email);
@@ -7989,39 +8035,27 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       }
 
       // check if phone was changed
-      if (isset ($phone) && $phone != "*Leave*" && $show == "")
+      if (!empty ($userdata) && isset ($phone) && $phone != "*Leave*" && $show == "")
       {
         // escape special characters
         $phone = strip_tags ($phone);
               
         // insert values into xml schema
         $userdata = setcontent ($userdata, "<user>", "<phone>", "<![CDATA[".$phone."]]>", "<login>", $login);
-      }  
+      }
 
       // check if email was changed
-      if (isset ($signature) && $signature != "*Leave*" && $show == "")
+      if (!empty ($userdata) && isset ($signature) && $signature != "*Leave*" && $show == "")
       {
         // escape special characters
         $signature = strip_tags ($signature);
               
         // insert values into xml schema
         $userdata = setcontent ($userdata, "<user>", "<signature>", "<![CDATA[".$signature."]]>", "<login>", $login);
-      }      
-
-      // check if usergroup was changed
-      if (isset ($usergroup) && valid_objectname ($usergroup) && $usergroup != "*Leave*" && $show == "")
-      {
-        if ($usergroup == "*Null*") $usergroup = "";
-        else $usergroup = "|".trim ($usergroup, "|")."|";
-        
-        // insert values into xml schema
-        $user_node = selectcontent ($userdata, "<user>", "<login>", $login);
-        if (is_array ($user_node)) $user_node = setcontent ($user_node[0], "<memberof>", "<usergroup>", $usergroup, "<publication>", $site);    
-        if ($user_node != "") $userdata = setcontent ($userdata, "<user>", "<user>", $user_node, "<login>", $login);
-      }  
+      }
 
       // check if usersite was changed
-      if (isset ($usersite) && $usersite != "" && $usersite != "*Leave*" && $show == "")
+      if (!empty ($userdata) && isset ($usersite) && $usersite != "" && $usersite != "*Leave*" && $show == "")
       {
         if ($usersite == "*Null*") 
         {
@@ -8061,14 +8095,14 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         // membership of publications
         $memberof_node = "";
         
-        foreach ($new_usersite as $new_site)
+        foreach ($new_usersite as $temp)
         {   
-          if ($new_site != "" && substr_count ($user_node, "<publication>".$new_site."</publication>") == 0)
+          if ($temp != "" && substr_count ($user_node, "<publication>".$temp."</publication>") == 0)
           { 
-            $memberof_node = $memberof_node.setcontent ($memberof_schema_xml, "<memberof>", "<publication>", $new_site, "", "")."\n";
+            $memberof_node = $memberof_node.setcontent ($memberof_schema_xml, "<memberof>", "<publication>", $temp, "", "")."\n";
           }       
         }
-        
+
         // insert new site access of user
         if ($memberof_node != "") $user_node_new = insertcontent ($user_node_new, $memberof_node, "<user>");
             
@@ -8077,10 +8111,43 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         {
           $userdata = updatecontent ($userdata, $user_node, $user_node_new);
         }
-      }   
+      }
+
+      // check if usergroup was changed
+      if (!empty ($userdata) && isset ($usergroup) && valid_objectname ($usergroup) && $usergroup != "*Leave*" && $show == "")
+      {
+        if ($usergroup == "*Null*") $usergroup = "";
+        else $usergroup = "|".trim ($usergroup, "|")."|";
+        
+        // get user node
+        $user_node = selectcontent ($userdata, "<user>", "<login>", $login);
+        
+        // insert values into user node
+        if (!empty ($user_node[0]))
+        {
+          $user_node = $user_node[0];
+          
+          // for all publications provided
+          if (!empty ($new_usersite) && is_array ($new_usersite) && sizeof ($new_usersite) > 0)
+          {
+            foreach ($new_usersite as $temp)
+            {
+              $user_node = setcontent ($user_node, "<memberof>", "<usergroup>", $usergroup, "<publication>", $temp);    
+            }
+            
+            if (!empty ($user_node)) $userdata = setcontent ($userdata, "<user>", "<user>", $user_node, "<login>", $login);
+          }
+          // for one publication
+          else
+          {
+            $user_node = setcontent ($user_node, "<memberof>", "<usergroup>", $usergroup, "<publication>", $site);    
+            if (!empty ($user_node)) $userdata = setcontent ($userdata, "<user>", "<user>", $user_node, "<login>", $login);
+          }
+        }
+      }
 
       // save user xml file
-      if ($userdata != false && $show == "")
+      if (!empty ($userdata) && $show == "")
       {
         // eventsystem
         if ($eventsystem['onsaveuser_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
@@ -9568,7 +9635,7 @@ function createfolder ($site, $location, $foldernew, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 400;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
   
   $add_onload = "";
   $show = "";
@@ -9721,7 +9788,7 @@ function createfolders ($site, $location, $foldernew, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 400;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && accessgeneral ($site, $location, $cat) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
@@ -10045,7 +10112,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 400;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
   
   $add_onload = "";
   $show = "";
@@ -10353,7 +10420,7 @@ function createobject ($site, $location, $page, $template, $user)
 {
   global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 400;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
   
   $show = "";
   $add_onload = "";
@@ -10813,7 +10880,8 @@ function createobject ($site, $location, $page, $template, $user)
       }      
     }
   }
-  else
+  // only report error if basic input ha been provided
+  elseif ($site != "" && $location != "" && $page != "" && $user != "")
   {
     $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-fill-in-a-name'][$lang]."\n";
@@ -11074,7 +11142,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     }
     
     // error if file name is too long
-    if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 400;
+    if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
     
     if (strlen ($global_files['Filedata']['name']) > $mgmt_config['max_digits_filename'])
     {
@@ -13884,7 +13952,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
 {      
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 400;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && !strpos ($pagenew, ".recycle")  && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   { 
@@ -13930,7 +13998,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
 {      
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 400;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {    
@@ -15568,7 +15636,7 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
     $data['intention'] = "sendmail";
     $data['token'] = createtoken ($user);
   
-    // call service
+    // call sendmail service
     HTTP_Post ($mgmt_config['url_path_cms']."service/sendmail.php", $data, "application/x-www-form-urlencoded", "UTF-8");
     
     return true;
@@ -17092,7 +17160,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   global $user, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
   
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
   $lang_to = "en";
   
   $location = deconvertpath ($location, "file"); 
@@ -17154,7 +17222,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
             // load language of user if it has not been loaded
             if (!empty ($lang_to) && empty ($hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to]))
             {
-              require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang_to));
+               require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang_to));
             }
 
             if (!empty ($email_to))
@@ -17215,7 +17283,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
                 
                 // log notification
                 $errcode = "00802";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|notification has been sent to ".$notify['user']." (".$email_to.") on object ".$location_esc.$object; 
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|notification has been sent to ".$notify['user']." (".$email_to.") on object ".$location_esc.$object; 
               }
               else
               {
@@ -18236,4 +18304,132 @@ function sendmessage ($from_user="", $to_user, $title, $message, $object_id="", 
   }
   else return false;
 }
+
+// ========================================== ACCESS LINKING =======================================
+
+// ---------------------------------------------- linking_valid ----------------------------------------------
+// function: linking_valid()
+// input: %
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// Verifies if a valid access linking exists.
+
+function linking_valid ()
+{
+  global $mgmt_config, $hcms_linking;
+  
+  if (!empty ($_SESSION['hcms_linking']) && is_array ($_SESSION['hcms_linking']) && sizeof ($_SESSION['hcms_linking']) > 0) return true;
+  elseif (!empty ($hcms_linking) && is_array ($hcms_linking) && sizeof ($hcms_linking) > 0) return true;
+  else return false;
+}
+
+// ---------------------------------------------- linking_objects ----------------------------------------------
+// function: linking_objects()
+// text IDs to be returned [array] (optional)
+// output: result array / false on error
+// requires: config.inc.php
+
+// description:
+// Verifies if a valid access linking exists.
+
+function linking_objects ($return_text_id=array())
+{
+  global $mgmt_config, $hcms_linking;
+  
+  // get objects form session
+  if (!empty ($_SESSION['hcms_linking']) && is_array ($_SESSION['hcms_linking']) && sizeof ($_SESSION['hcms_linking']) > 0)
+  {
+    $hcms_linking = $_SESSION['hcms_linking'];
+  }
+
+  if (is_array ($hcms_linking) && sizeof ($hcms_linking) > 0)
+  {
+    $object_path_array = array();
+    
+    foreach ($hcms_linking as $hash=>$objectpath)
+    {
+      // collect requested content
+      if ($hash != "" && is_array ($return_text_id) && sizeof ($return_text_id) > 0)
+      {
+        $object_info = rdbms_getobject_info ($hash, $return_text_id);
+       
+        if (!empty ($object_info['objectpath'])) 
+        {
+          $object_path_array[$hash] = $object_info;
+        }
+      }
+      // object path only
+      else
+      {
+        $object_path_array[$hash]['objectpath'] = $objectpath;
+      }
+    }
+    
+    if (sizeof ($object_path_array) > 0)
+    {
+      return $object_path_array;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ---------------------------------------------- linking_inscope ----------------------------------------------
+// function: linking_inscope()
+// input: publication name [string] (optional), location [string], object name [string] (optional), object category [comp,page] (optional)
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// Verifies if the provided location path is in the scope of the access linking.
+
+function linking_inscope ($site="", $location, $page="", $cat="")
+{
+  global $mgmt_config, $hcms_linking;
+  
+  // access linking available
+  if (valid_locationname ($location) && !empty ($hcms_linking) && is_array ($hcms_linking) && sizeof ($hcms_linking) > 0)
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+  
+    if (valid_publicationname ($site)) $location = convertpath ($site, $location, $cat);
+    
+    // location must be a inside a linking location path (only links to folders)
+    foreach ($hcms_linking as $temp)
+    {
+      if ($temp != "")
+      {
+        // link to folder
+        if (getobject ($temp) == ".folder" || $page == ".folder")
+        {
+          $temp = getlocation ($temp);
+
+          if (strpos ("_".$location, $temp) > 0) return true;
+        }
+        // exact link to object
+        elseif ($page != "")
+        {
+          // remove extension from unpublished pages or components
+          if (substr ($page, -4) == ".off") $page = substr ($page, 0, (strlen ($page) - 4));
+          
+          if ($location.$page == $temp) return true;
+        }
+        // link to object (must be in exact same location)
+        else
+        {
+          $temp = getlocation ($temp);
+          
+          if ($location == $temp) return true;
+        }
+      }
+    }
+  }
+  // no access linking available
+  elseif (valid_locationname ($location)) return true;
+  
+  return false;
+} 
 ?>

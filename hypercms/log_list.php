@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -97,6 +95,7 @@ function resizecols()
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:105px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>
       </td>
+      <?php if (!$is_mobile) { ?>
       <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>
       </td>
@@ -105,7 +104,8 @@ function resizecols()
       </td>
       <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:55px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['code'][$lang]); ?>
-      </td>    
+      </td>
+      <?php } ?>
       <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['description'][$lang]); ?>
       </td>
@@ -166,10 +166,14 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
 
       echo "
 <tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top;\">
-  <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">&nbsp;<a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', '600', '200');\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</a></td>
+  <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">&nbsp;<a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', '600', '200');\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</a></td>";
+
+      if (!$is_mobile) echo "
   <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
   <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$source."</td>
-  <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$errorcode."</td>
+  <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$errorcode."</td>";
+  
+      echo "
   <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', 600, 400);\">".$description_short."</a></td>
  </tr>";
 

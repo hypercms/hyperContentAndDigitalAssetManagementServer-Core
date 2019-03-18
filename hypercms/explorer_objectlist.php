@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -30,20 +28,10 @@ $token = getrequest ("token");
 $site = getpublication ($location);
 $cat = getcategory ($site, $location); 
 
-// initalize object linking
+// initalize
 $objects_total = 0;
 $folder_array = array();
 $object_array = array();
-
-if (is_array ($hcms_linking) && ($location == "" || deconvertpath ($location, "file") == deconvertpath ($hcms_linking['location'], "file"))) 
-{
-  if (!empty ($hcms_linking['publication']) && valid_publicationname ($hcms_linking['publication'])) $site = $hcms_linking['publication'];
-  if (!empty ($hcms_linking['cat']) && valid_objectname ($hcms_linking['cat'])) $cat = $hcms_linking['cat'];
-  if (!empty ($hcms_linking['location']) && valid_locationname ($hcms_linking['location'])) $location = $hcms_linking['location'];
-  if (!empty ($hcms_linking['object'])) $object_array[] = $hcms_linking['object'];
-
-  $objects_total = sizeof ($object_array);
-}
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -120,12 +108,11 @@ elseif (strtolower ($cat) == "comp")
 
 // collect all objects for list
 if (
-     (valid_locationname ($location) && empty ($hcms_linking['location'])) || 
-     (!empty ($hcms_linking['location']) && empty ($hcms_linking['object']) && substr_count ($location, $hcms_linking['location']) > 0)
+     (valid_locationname ($location)) 
    )
 {  
   // generate page or component list using access permission data
-  if (accesspermission ($site, $location, $cat) == false)
+  if (accesspermission ($site, $location, $cat) == false && linking_valid() == false)
   {
     if (!empty ($access) && is_array ($access) && sizeof ($access) > 0 && is_array ($access[$site]))
     {
@@ -161,23 +148,32 @@ if (
     {
       foreach ($scandir as $file) 
       {
-        if ($location.$file != "" && $file != '.' && $file != '..' && substr ($file, -8) != ".recycle") 
+        if ($location.$file != "" && $file != "." && $file != ".." && substr ($file, -8) != ".recycle") 
         {
-          if (is_dir ($location.$file))
+          // if linking is not used or object is in linking scope
+          if (linking_inscope ($site, $location, $file, $cat) == true)
           {
-            $group_array = accesspermission ($site, $location.$file."/", "$cat");
-            $setlocalpermission = setlocalpermission ($site, $group_array, "$cat");
-               
-            if ($setlocalpermission['root'] == 1)
+            if (is_dir ($location.$file))
             {
-              $folder_array[] = $file;            
-              $objects_total++;
+              $group_array = accesspermission ($site, $location.$file."/", $cat);
+              $setlocalpermission = setlocalpermission ($site, $group_array, $cat);
+
+              if ($setlocalpermission['root'] == 1)
+              {
+                $folder_array[] = $file;            
+                $objects_total++;
+              }
+            }
+            elseif (is_file ($location.$file) && $file != ".folder")
+            {
+              $object_array[] = $file;            
+              $objects_total++;     
             }
           }
-          elseif (is_file ($location.$file) && $file != ".folder")
+          // forward if access linking is used and object is out of linking scope
+          elseif (linking_valid () == true) 
           {
-            $object_array[] = $file;            
-            $objects_total++;     
+            header ("Location: search_objectlist.php?action=linking");
           }
         }
       }
@@ -192,6 +188,7 @@ $table_cells = getobjectlistcells ($viewportwidth, $is_mobile);
 // define cell width of table
 if ($table_cells > 0) $cell_width = floor (100 / $table_cells)."%"; 
 
+// initialize
 $galleryview = "";
 $listview = "";
 $items_row = 0;
@@ -266,15 +263,15 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
           }
           
           // link for copy & paste of download links (not if an access link is used)
-          if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
+          if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
           {
             $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$folder."/.folder\" data-href=\"\">";
             $dlink_end = "</a>";
           }
           else
           {
-            $dlink_start = "";
-            $dlink_end = "";
+            $dlink_start = "<a data-href=\"javascript:void(0);\">";
+            $dlink_end = "</a>";
           }
         }
         
@@ -499,15 +496,15 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             else $metadata = "";
             
             // link for copy & paste of download links (not if an access link is used)
-            if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
+            if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
             {
               $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$object."\" data-href=\"\">";
               $dlink_end = "</a>";
             }
             else
             {
-              $dlink_start = "";
-              $dlink_end = "";
+              $dlink_start = "<a data-href=\"javascript:void(0);\">";
+              $dlink_end = "</a>";
             }
           }
           // object without media file
@@ -522,15 +519,15 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             $file_size = number_format ($file_size, 0, ".", " ");
 
             // link for copy & paste of download links (not if an access link is used)
-            if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && !is_array ($hcms_linking))
+            if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
             {
               $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-location=\"".$location_esc.$object."\" data-href=\"\">";
               $dlink_end = "</a>";
             }
             else
             {
-              $dlink_start = "";
-              $dlink_end = "";
+              $dlink_start = "<a data-href=\"javascript:void(0);\">";
+              $dlink_end = "</a>";
             }
           }      
         }
@@ -715,7 +712,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         // if linking is used display download buttons, display edit button for mobile edition
         $linking_buttons = "";
 
-        if ($mediafile != false && is_array (getsession ('hcms_linking')) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
+        if ($mediafile != false && linking_valid() == true && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
         {
           // check download of original file
           if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
@@ -843,7 +840,7 @@ function toggleview (viewoption)
 
   return true;
 }
-  
+
 // start chat
 var chat =  new Chat();
 
@@ -939,7 +936,7 @@ function openobjectview (location, object, view)
     <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
       <tr>
         <td>
-          <?php if (checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1) { ?>
+          <?php if (checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false) { ?>
           <a href="javascript:void(0);" id="href_fav_create" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_create');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_delete.png" id="img_fav_create" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['add-to-favorites'][$lang]); ?></a><br />
           <hr />        
           <?php } ?>
@@ -954,7 +951,7 @@ function openobjectview (location, object, view)
           <?php } else { ?>
           <a href="javascript:void(0);" id="_href_notify" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="_img_notify" class="hcmsIconOff">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br /> 
           <?php } ?>
-          <?php if ($setlocalpermission['root'] == 1 && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
+          <?php if ($setlocalpermission['root'] == 1 && !empty ($mgmt_config['chat'])) { ?>
           <a href="javascript:void(0);" id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.png" id="img_chat" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
           <?php } ?>
           <hr />
@@ -1006,7 +1003,7 @@ function openobjectview (location, object, view)
           <?php } ?>
           <?php
           // ----------------------------------------- plugins ----------------------------------------------
-          if ($setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && !empty ($mgmt_plugin))
+          if ($setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && linking_valid() == false && !empty ($mgmt_plugin))
           { 
             $plugin_items = "";
             

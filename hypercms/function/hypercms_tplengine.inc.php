@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // ===================================== TEMPLATE ENGINE CORE ===========================================
@@ -8493,6 +8491,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       
   function detectFaceOnImage ()
   {
+    // if not an img tag
+    if ($('#hcms_mediaplayer_asset').is('img') == false) return false;
+    
     // remove existing face markers
     if ($('#hcms_mediaplayer_asset').length)
     {
@@ -8524,7 +8525,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             imageface_id.push(i);
             var offset = (216 - faces[i].width) / 2;
             
-            $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'></textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
+            $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
           }
         },
         error:function (code, message) {
@@ -8565,7 +8566,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           imageface_id.push(i);
           var offset = (216 - faces[i].width) / 2;
           
-          $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height * scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'>\" + faces[i].name + \"</textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
+          $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height * scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'>\" + faces[i].name + \"</textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
         }
       }
     }
@@ -8574,6 +8575,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   function initFaceOnVideo (type)
   {
     if (typeof (type) === 'undefined') type = '';
+    
+    // if not a video tag (same id can be used for img tag)
+    if ($('#hcms_mediaplayer_asset').is('img')) return false;
     
     // remove existing face selector
     $('#hcmsFaceSelector').remove();
@@ -8626,7 +8630,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         
         if (type == 'all')
         {
-          // existing face defintions
+          // existing face definitions
           for (var i = 0; i < faces.length; i++)
           {
             if (faces[i].time != '' && faces[i].name != '')
@@ -8655,7 +8659,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               videoface_id.push(id);
               var offset = (216 - faces[i].width) / 2;
     
-              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height *scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'>\" + faces[i].name + \"</textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height *scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'>\" + faces[i].name + \"</textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
             }
           }
         }
@@ -8712,7 +8716,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             videoface_id.push(id);
             var offset = (216 - Math.round (faces[i].width)) / 2;
 
-            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (Math.round (faces[i].x) - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'></textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (Math.round (faces[i].x) - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
           }
         },
         error:function (code, message) {
@@ -8847,7 +8851,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           imageface_id.push(id);
           var offset = (216 - width) / 2;
       
-          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"x\\\":\" + Math.round(pos_x / scale) + \", \\\"y\\\":\" + Math.round(pos_y / scale) + \", \\\"width\\\":\" + Math.round(width / scale) + \", \\\"height\\\":\" + Math.round(height / scale) + \"' /><textarea type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'></textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"x\\\":\" + Math.round(pos_x / scale) + \", \\\"y\\\":\" + Math.round(pos_y / scale) + \", \\\"width\\\":\" + Math.round(width / scale) + \", \\\"height\\\":\" + Math.round(height / scale) + \"' /><textarea type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
         }
       }
     }
@@ -8920,7 +8924,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           videoface_id.push(id);
           var offset = (216 - width) / 2;
       
-          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' style='width:200px; height:25px;'></textarea><img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
         }
       }
     }

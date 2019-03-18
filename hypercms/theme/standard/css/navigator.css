@@ -1,13 +1,13 @@
-html, body, span
+html, body
 {
   width: 100%;
   height: 100%;
   padding: 0;
-  margin: 0; 
+  margin: 0;
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 11px; 
   font-weight: normal;
-  color: #000000;
+  color: #FFFFFF;
   white-space: nowrap;
 }
 
@@ -21,7 +21,7 @@ img
   image-rendering: -o-crisp-edges; // Opera 12
 }
 
-input, select, textarea, button
+input, select, textarea, button, .hcmsTextArea
 {
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 
@@ -30,82 +30,81 @@ input, select, textarea, button
   text-decoration: none;
   display: inline-block;
   vertical-align: middle;
-  border: 1px solid #808080;
-  background-color: #FFFFFF;
-  margin: 0;
+  border: 1px solid #FFFFFF;
+  background-color: #F3F3F3;;
+  margin: 1px 1px 1px 0px;
   padding: 7px 4px;
 }
 
 a 
 {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-family: inherit;
   font-size: 11px;
   line-height: 16px !important;
   font-style: normal;
   text-decoration: none;
-  color: #000000;
+  color: #FFFFFF;
   outline: none;
 }
 
 a:link 
 {
-  color: #000000;
+  color: #FFFFFF;
 }
 
 a:hover 
 {
-  color: #004ACE;
+  color: #8EDCFD;
 }
 
 a:visited 
 {
-  color: #000000;
+  color: #FFFFFF;
 }
 
 a:active 
 {  
-  background-color: #A3C5F9;
-  color: #000000;
+  background-color: #7B7B7B;
+  color: #FFFFFF;
 }
 
 hr
 {
   height: 1px;
-  border-width :0;
-  color: #7DA5DD;
-  background-color: #7DA5DD;
+  border-width: 0;
+  color: #0378AA;
+  background-color: #146080;
 }
 
 .hcmsWorkplaceExplorer
 {
+  width: 100%;
+  height: 100%;
   margin: 0;
   padding: 0;
-  background-image: url('../img/backgrd_explorer.jpg');
-  background-repeat: repeat;
-  background-attachment: fixed;
-  background-color: #FFFFFF;
+  background-color: #212121;
 }
 
 .hcmsWorkplaceControl
 {
   margin: 0;
   padding: 0;
-  background-color: #71ABFF;
+  background-color: #0375A2;
 }
 
 .hcmsWorkplaceWorkflow
 {
-  background-color: #7BB5FF;
+  background-color: #5694A9;
 }
 
 .hcmsWorkplaceObjectlist
 {
-  background-color: #B8D2FC;
+  background-color: #565656;
 }
 
 .hcmsWorkplaceObjectlistLinks
 {
-  background-color: #ADE6BA;
+  background-color: #39819D;
 }
 
 .hcmsWorkplaceFrame
@@ -117,8 +116,8 @@ hr
 
 .hcmsWorkplaceBar
 {
-  background-color: #A2C5F9;
-  border-left: 5px solid #EB6804;
+  background-color: #424242;
+  border-bottom: 2px solid #3C95B3;
   position: fixed;
   top: 0;
   left: 0;
@@ -132,7 +131,7 @@ hr
 .hcmsContextMenu
 {
   border: 1px solid #000000;
-  background-color: #FFFFFF;
+  background-color: #44859A;
   box-shadow: 3px 3px 10px #000000;
   -webkit-box-shadow: 3px 3px 10px #000000;
   -moz-box-shadow: 3px 3px 10px #000000;
@@ -155,7 +154,7 @@ hr
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
-  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
 .hcmsInfoBox
@@ -167,11 +166,12 @@ hr
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
-  background-color: #EFF6FF;
+  background-color: #191919;
+  color: #FFFFFF;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
-  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
 .hcmsImageItem
@@ -205,11 +205,8 @@ hr
 {
   padding: 1px;
   margin: 0;
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
-	background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
-	background-color: #FFC477;
-  border: 1px solid #FF8411;
+  background-color: #FF8411;
+  border: 1px solid #C26003;
 }
 
 .hcmsButtonBlank
@@ -267,10 +264,7 @@ hr
   padding: 0;
   margin: 0;
   border: 0;
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
-	background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
-	background-color: #FFC477;
+  background-color: #FF8411;
 }
 
 .hcmsButtonTinyBlank
@@ -294,17 +288,18 @@ hr
 
 .hcmsButtonBlue
 {
-  background-color: #65B1FC;
+  color: #FFFFFF;
+  background-color: #3094D7;
   border: 1px solid #469df5;
   display: inline-block;
-  padding: 2px 10px;
+  padding: 4px 10px;
   text-decoration: none;
   cursor: pointer;
 }
 
 .hcmsButtonBlue:hover
 {
-  background-color: #7EBDFD;
+  background-color: #5BA9DE;
 }
 
 .hcmsButtonBlue:active
@@ -315,17 +310,18 @@ hr
 
 .hcmsButtonGreen
 {
-  background-color: #77d42a;
+  color: #FFFFFF;
+  background-color: #69A738;
   border: 1px solid #268a16;
   display: inline-block;
-  padding: 2px 10px;
+  padding: 4px 10px;
   text-decoration: none;
   cursor: pointer;
 }
 
 .hcmsButtonGreen:hover
 {
-  background-color: #99E75A;
+  background-color: #7CD334;
 }
 
 .hcmsButtonGreen:active
@@ -336,17 +332,18 @@ hr
 
 .hcmsButtonOrange
 {
-  background-color: #FB9004;
+  color: #FFFFFF;
+  background-color: #E58912;
   border: 1px solid #C28B2C;
   display: inline-block;
-  padding: 2px 10px;
+  padding: 4px 10px;
   text-decoration: none;
   cursor: pointer;
 }
 
 .hcmsButtonOrange:hover
 {
-  background-color: #FFC477;
+  background-color: #ECA03C;
 }
 
 .hcmsButtonOrange:active
@@ -357,52 +354,52 @@ hr
 
 .hcmsMore
 {
-  border-top: 1px solid #C0C0C0;
-  background-color: #E2ECF5;
+  border-top: 1px solid #6F6F6F;
+  background-color: #7B7B7B;
   cursor: pointer; 
 }
 
 .hcmsMore:hover
 {
-  background-color: #C7DBED;
+  background-color: #3E3E3E;
 }
 
 .hcmsStatusbar
 {
-  border-top: 1px solid #C0C0C0;
-  background-color: #E2ECF5;
+  border-top: 1px solid #6F6F6F;
+  background-color: #7B7B7B;
 }
 
 .hcmsHeadline
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+{  
+  font-family: inherit;
   font-size: 12px; 
   font-weight: bold; 
-  color: #000000; 
+  color: #FFFFFF; 
   text-decoration: none
 }
 
 .hcmsHeadlineTiny 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: inherit;
   font-size: 11px; 
   font-weight: normal; 
-  color: #000000; 
+  color: #FFFAEF; 
   text-decoration: none
 }
 
 .hcmsTextSmall 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: inherit;
   font-size: 11px; 
   font-weight: normal; 
-  color: #000000; 
+  color: #FFFFFF; 
   text-decoration: none
 }
 
 .hcmsObjectSelected
 {
-  background-color: #A3C5F9;
+  background-color: #7B7B7B;
 }
 
 .hcmsObjectUnselected
@@ -412,8 +409,8 @@ hr
 
 .hcmsIconTree
 {
-  background-repeat: no-repeat !important;
-  background-position: 0 !important;
+  background-repeat:no-repeat !important;
+  background-position:0 !important;
   background-size: 16px 16px !important;
   height: 16px !important;
   width: 16px !important;
@@ -422,8 +419,8 @@ hr
 
 .hcmsIconList
 {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border: 0;
   margin: 0px 0px 2px 2px;
   vertical-align: middle;
@@ -447,9 +444,7 @@ hr
 
 .hcmsTableHeader
 {
-  text-align: left;
-  font-weight: normal;
-  border-left: 3px solid #EB6804;
+  border-left: 3px solid #EB7B04;
   border-right: 0;
   border-top: 0;
   border-bottom: 0;
@@ -458,8 +453,8 @@ hr
 
 .hcmsTableHeader:hover
 {
-  background-color: #7BB5FF;
-  border-left: 3px solid #EB6804;
+  background-color: #EB7B04;
+  border-left: 3px solid #EB7B04;
   border-right: 0;
   border-top: 0;
   border-bottom: 0;
@@ -513,43 +508,42 @@ hr
   height: 124px;
   border: 0;
 }
-
 .hcmsRowHead1
 {
-  background-color: #42B551;
+  background-color: #909090;
 }
 
 .hcmsRowHead2
 {
-  background-color: #94CE9C;
+  background-color: #7C756A;
 }
 
 .hcmsRowData1
 {
-  background-color: #B7CFF4;
+  background-color: #777777;
 }
 
 .hcmsRowData2
 {
-  background-color: #C7D9F5;
+  background-color: #909090;
 }
 
 .hcmsLoadScreen
 {
-	z-index: 9000;
-	display: none;
-	width: 100%;
-	height: 100%;
-	background: url("../img/loading.gif") no-repeat center center #C8DCFF;
-	position: fixed;
-	opacity: 0.7;
+  z-index: 9000;
+  display: none;
+  width: 100%;
+  height: 100%;
+  background: url("../img/loading.gif") no-repeat center center #e3e4ec;
+  position: fixed;
+  opacity: 0.7;
 }
 
 .hcmsSelectArea
 {
-	display: none;
-  border: 1px solid #359FFC;
-  background-color: #65B3FC;
+  display: none;
+  border: 1px solid #44859A;
+  background-color: #5CA4BC;
   position: absolute;
   z-index: 5;
   filter: gray() alpha(opacity=70);

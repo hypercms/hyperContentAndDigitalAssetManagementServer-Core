@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -48,7 +46,6 @@ $year_template = Null;
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 function submitform ()
 {
   var contentdate = document.forms['history'].elements['content_year'].value + "-" + document.forms['history'].elements['content_month'].value + "-" + document.forms['history'].elements['content_day'].value;
@@ -72,7 +69,6 @@ function cleandate ()
   
   return true;
 }
-//-->
 </script>
 </head>
 <?php
@@ -205,11 +201,11 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
     </tr>
     <tr> 
       <td style="white-space:nowrap;">&nbsp;</td>
-      <td colspan="3"><button name="ButtonSet" class="hcmsButtonGreen" onClick="submitform();"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?></button></td>
+      <td colspan="3"><button type="button" name="ButtonSet" class="hcmsButtonGreen" style="width:98%" onClick="submitform();"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?></button></td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">&nbsp;</td>
-      <td colspan="3"><button name="ButtonClean" class="hcmsButtonOrange" onClick="cleandate();"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?></button></td>
+      <td colspan="3"><button type="button" name="ButtonClean" class="hcmsButtonOrange" style="width:98%" onClick="cleandate();"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?></button></td>
     </tr>
   </table>
 </form>

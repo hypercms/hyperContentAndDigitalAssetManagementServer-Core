@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
  
 // session
@@ -187,6 +185,11 @@ else echo showvideoplayer_head (false);
 .cell *
 {
   font-size: 11px;
+}
+
+#renderOptions input[type=text], #renderOptions select
+{
+  padding: 3px;
 }
 </style>
 <script type="text/javascript">
@@ -728,7 +731,7 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; vertical-align:top; z-index:1; display:none; margin:-4px 10px 0px 10px" class="hcmsMediaRendering">
+<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; vertical-align:top; z-index:1; display:none; margin:-4px 10px 0px 10px;" class="hcmsMediaRendering">
   <form name="mediaconfig" action="service/rendervideo.php" method="post">
   	<input type="hidden" name="action" value="rendermedia" />
     <input type="hidden" name="savetype" value="editor_so">
@@ -914,7 +917,7 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
       
       <!-- save button -->
       <div class="row" style="margin-top:6px;">
-  		  <button class="hcmsButtonGreen" type="button" name="save" onclick="submitform();"><?php echo getescapedtext ($hcms_lang['save'][$lang]);?></button>
+  		  <button type="button" class="hcmsButtonGreen" name="save" onclick="submitform();"><img src="<?php echo getthemelocation()."img/button_save.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['save'][$lang]);?></button>
       </div>
   	</div>
     

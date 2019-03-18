@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -114,6 +112,13 @@ if ($action != "" && checktoken ($token, $user))
 // define name: publication or usergroup
 if (valid_publicationname ($site)) $item_name = getescapedtext ($hcms_lang['group'][$lang]);
 else $item_name = getescapedtext ($hcms_lang['publication'][$lang]);
+
+// count multiobjects
+if (!empty ($multiobject))
+{
+  $multiobject_count = sizeof (link_db_getobject ($multiobject));
+}
+else $multiobject_count = 0;
 
 // create secure token
 $token_new = createtoken ($user);
@@ -257,6 +262,7 @@ function goToURL()
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <div class="hcmsLocationBar">
+  <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo getescapedtext ($hcms_lang['user-management'][$lang]); ?></b></td>
@@ -265,13 +271,7 @@ function goToURL()
       <td>
         <b><?php if ($login != "") echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;</b>
         <span class="hcmsHeadlineTiny">
-          <?php
-            if ($multiobject != "")
-            {
-              $multiobject_count = sizeof (link_db_getobject ($multiobject));
-            }
-            else $multiobject_count = 0;
-            
+          <?php            
             if ($multiobject_count > 1)
             {
               echo $multiobject_count." ".getescapedtext ($hcms_lang['users-selected'][$lang]);
@@ -280,7 +280,7 @@ function goToURL()
             {
               echo str_replace ("|", "", $multiobject);
             }
-            elseif ($login != "")
+            elseif (!empty ($login))
             {
               echo $login;
             }
@@ -289,6 +289,9 @@ function goToURL()
       </td>
     </tr>  
   </table>
+  <?php } else { ?>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['user-management'][$lang])." &gt; ".(!empty ($login) ? $login : ""); ?></span>
+  <?php } ?>
 </div>
 
 <!-- toolbar -->
@@ -309,7 +312,7 @@ function goToURL()
     ?>
     <?php
     // DELETE BUTTON
-    if ($login != "" && ((!valid_publicationname ($site)  && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'userdelete'))))
+    if (($login != "" || $multiobject != "") && ((!valid_publicationname ($site)  && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'userdelete'))))
     {
       echo 
       "<img ".
@@ -329,7 +332,7 @@ function goToURL()
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-             "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'status=yes,scrollbars=no,resizable=yes', 520, 680);\" ".
+             "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'status=yes,scrollbars=no,resizable=yes', 520, 690);\" ".
              "name=\"media_edit\" src=\"".getthemelocation()."img/button_user_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
     }    
     else

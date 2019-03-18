@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
  
 // ======================================== UPDATE FUNCTIONS ============================================
@@ -1110,6 +1108,43 @@ function update_config_7010 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v800 ----------------------------------------------
+// function: update_database_v800()
+// input: %
+// output: true / false
+
+// description: 
+// Modifies object_id of table accesslink for support of version 8.0.0
+
+function update_database_v800 ()
+{
+  global $mgmt_config;
+  
+  $logdata = loadlog ("update", "string");
+  
+  if (empty ($logdata) || strpos ($logdata, "|8.0.0|") < 1)
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    // alter table
+    $sql = "ALTER TABLE accesslink MODIFY object_id varchar(4000);";
+    $errcode = "50095";
+    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->getError ());
+    savelog (@$error);
+    $db->close();
+    
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|8.0.0|updated to version 8.0.0"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -1136,5 +1171,6 @@ function updates_all ()
   update_database_v708();
   update_users_709();
   update_config_7010();
+  update_database_v800 ();
 }
 ?>

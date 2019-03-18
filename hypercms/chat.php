@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -55,13 +53,13 @@ checkusersession ($user, false);
 <script type="text/javascript">
 // user name    
 var username = "<?php echo $user; ?>";
-<?php if (!empty ($temp_chatstate)) echo "state = ".$temp_chatstate.";\n"; ?>
+<?php if (!empty ($temp_chatstate)) echo "chat_state = ".$temp_chatstate.";\n"; ?>
 
 // strip tags
 username = username.replace(/(<([^>]+)>)/ig,"");
 
 // audio file
-var audio = new Audio('javascript/ding.mp3');
+var chat_audio = new Audio('javascript/ding.mp3');
 	
 // start chat
 var chat =  new Chat();
@@ -118,6 +116,14 @@ function invite (inviteuser)
   }
 }
 
+function uninvite ()
+{
+  if (username != "")
+  {
+    chat.uninviteUsers(username);
+  }
+}
+
 function adjust_height ()
 {
   var height = hcms_getDocHeight();  
@@ -159,24 +165,38 @@ function getusersonline ()
 
 <body class="hcmsWorkplaceGeneric" onload="setInterval('chat.update()', 1000); setInterval('getusersonline()', 10000); adjust_height();" onresize="adjust_height();">
 
-<?php echo showtopbar ($hcms_lang['chat'][$lang], $lang); ?>
-
-<div style="position:fixed; top:2px; right:8px; z-index:1000;">
-  <button class="hcmsButtonOrange hcmsButtonSizeHeight" style="white-space:nowrap;" onClick="hcms_switchSelector('select_user');"><?php echo getescapedtext ($hcms_lang['invite-online-user'][$lang]); ?></button>
-  <div id="select_user" class="hcmsSelector" style="position:absolute; top:32px; right:0px; visibility:hidden; z-index:999; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
-  </div>
+<!-- top bar -->
+<div class="hcmsWorkplaceBar" style="width:100%;">
+  <table class="hcmsTableNarrow" style="width:100%;">
+    <tr>
+      <td style="width:38px; height:38px; text-align:left; white-space:nowrap;">
+        <img src="<?php echo getthemelocation(); ?>img/button_user_new.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:3px;" onClick="hcms_switchSelector('select_user');" alt="<?php echo getescapedtext ($hcms_lang['invite-online-user'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['invite-online-user'][$lang]); ?>" />
+        <div id="select_user" class="hcmsSelector" style="position:absolute; top:32px; left:5px; visibility:hidden; z-index:999; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;"></div>
+        <?php if (!empty ($mgmt_config['chat_type']) && strtolower ($mgmt_config['chat_type']) == "private") { ?>
+        <img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:3px;" onClick="uninvite();" alt="<?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?>" />
+        <?php } ?>
+      </td>
+      <td class="hcmsHeadline" style="text-align:center;">
+        <?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>
+      </td>
+      <td style="width:38px; text-align:center;">
+        <?php if (!$is_mobile) { ?>
+        <img name="closechat" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closechat','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="parent.hcms_openChat();" />
+        <?php } ?>
+      </td>
+    </tr>
+  </table>
 </div>
+<div style="width:100%; height:38px;">&nbsp;</div>
 
+<!-- chat area -->
 <div id="page-wrap" style="margin:0; padding:0;">
-   
   <div id="chat-wrap" style="margin:8px;">
     <div id="chat-area" style="height:300px; overflow:auto; padding:5px;"></div>
-  </div>
-        
+  </div>        
   <form id="send-message-area" style="margin:8px;">
     <textarea id="send-message-input" class="hcmsInfoBox" style="width:272px; height:60px; margin:0; padding:5px;" placeholder="<?php echo getescapedtext ($hcms_lang['your-message'][$lang]); ?>" maxlength="800"></textarea>
   </form>
-  
 </div>
 
 </body>

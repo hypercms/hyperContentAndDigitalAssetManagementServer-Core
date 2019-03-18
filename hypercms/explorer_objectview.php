@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -195,8 +193,8 @@ if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt
   foreach ($mgmt_config['screensize'] as $device => $name_array)
   {
     echo "
-  <div onClick=\"closeselectors(); hcms_switchSelector('select_view_".$device."');\" class=\"hcmsButton hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/icon_".$device.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\" hcmsButtonSizeNarrow\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /></div>
-    <div id=\"select_view_".$device."\" class=\"hcmsSelector\" style=\"position:absolute; top:26px; left:".(38 * $i + 5)."px; visibility:hidden; z-index:999; max-height:200px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
+  <div onmouseover=\"closeselectors();\" onclick=\"hcms_switchSelector('select_view_".$device."');\" class=\"hcmsButton hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/icon_".$device.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\" hcmsButtonSizeNarrow\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /></div>
+    <div id=\"select_view_".$device."\" class=\"hcmsSelector\" style=\"position:absolute; top:32px; left:".(54 * $i + 5)."px; visibility:hidden; z-index:999; max-height:200px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
 
     foreach ($name_array as $name => $size)
     {

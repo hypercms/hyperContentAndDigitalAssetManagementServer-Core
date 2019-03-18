@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
  
 // ======================================== SERVER PARAMETERS ===========================================
@@ -1961,7 +1959,7 @@ function getcontainername ($container)
       return $result;
     }
     // container exists and is locked by current user
-    elseif (is_file ($location.$containerwrk.".@".$_SESSION['hcms_user']))
+    elseif (!empty ($_SESSION) && is_file ($location.$containerwrk.".@".$_SESSION['hcms_user']))
     {
       // return result
       $result['result'] = true;
@@ -2988,6 +2986,18 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_icon = "file_pdf.png";
           $file_type = "Adobe Acrobat";
         }
+        // Adobe Illustrator
+        elseif ($file_ext == ".ai")
+        {
+          $file_icon = "file_ai.png";
+          $file_type = "Adobe Illustrator";
+        }
+        // Adobe InDesign
+        elseif ($file_ext == ".indd" || $file_ext == ".idml")
+        {
+          $file_icon = "file_indd.png";
+          $file_type = "Adobe InDesign";
+        }
         // Open Office Text
         elseif ($file_ext == ".odt" || $file_ext == ".fodt")
         {
@@ -3006,18 +3016,12 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_icon = "file_odp.png";
           $file_type = "OO Presentation";
         }                      
-        // text based documents in proprietary format    
-        elseif (@substr_count (strtolower ($hcms_ext['bintxt']).".", $file_ext.".") > 0)
+        // text based documents in proprietary format or clear text 
+        elseif (@substr_count (strtolower ($hcms_ext['bintxt']).".", $file_ext.".") > 0 || @substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_txt.png";
           $file_type = "Text";
-        }
-        // text based documents in clear text  
-        elseif (@substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
-        {
-          $file_icon = "file_txt.png";
-          $file_type = "Text";
-        }        
+        }       
         // image files 
         elseif (@substr_count (strtolower ($hcms_ext['image'].$hcms_ext['rawimage']).".", $file_ext.".") > 0)
         {
@@ -3053,6 +3057,12 @@ function getfileinfo ($site, $file, $cat="comp")
         {
           $file_icon = "file_zip.png";
           $file_type = "compressed";
+        }
+        // Fonts
+        elseif (@substr_count (strtolower ($hcms_ext['font']).".", $file_ext.".") > 0)
+        {
+          $file_icon = "file_font.png";
+          $file_type = "Font";
         }
         // CMS template files
         elseif (@substr_count (strtolower ($hcms_ext['template']).".", $file_ext.".") > 0)
@@ -4261,7 +4271,7 @@ function getlockedobjects ($user, $return_text_id=array())
 
 // --------------------------------------- getfavorites -------------------------------------------
 // function: getfavorites ()
-// input: user name [string], output [path,id] (optional), text IDs to be returned if output=path [array] (optional)
+// input: user name [string], output format [path,id] (optional), text IDs to be returned if output=path [array] (optional)
 // output: object info or object id array of users favorites / false
 
 function getfavorites ($user, $output="path", $return_text_id=array())
@@ -5535,7 +5545,7 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
     }
     
     // if user own items and the predecessors have not passed their items
-    if (is_array ($useritem_array) && sizeof ($useritem_array) > 0)
+    if (!empty ($useritem_array) && is_array ($useritem_array) && sizeof ($useritem_array) > 0)
     { 
       // check if predecessors are available and if they passed their item
       foreach ($useritem_array as $useritem)

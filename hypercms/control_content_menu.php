@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -237,38 +235,67 @@ var locklayer = false;
 
 function submitToWindow (url, action, windowname, features, width, height)
 {
-  if (features == undefined) features = 'scrollbars=no,resizable=no';
-  if (width == undefined) width = 400;
-  if (height == undefined) height = 180;
-  if (windowname == '') windowname = Math.floor(Math.random()*9999999);
-  
-  hcms_openWindow('', windowname, features, width, height);
-  
-  var form = /*parent.frames['objframe'].*/document.forms['pagemenu_object'];
-  
-  form.attributes['action'].value = url;
-  form.elements['action'].value = action;
-  form.elements['site'].value = '<?php echo $site; ?>';
-  form.elements['cat'].value = '<?php echo $cat; ?>';
-  form.elements['location'].value = '<?php echo $location_esc; ?>';
-  form.elements['page'].value = '<?php echo $page; ?>';
-  form.elements['pagename'].value = '<?php echo $pagename; ?>';
-  form.elements['folder'].value = '<?php echo $folder; ?>';
-  form.elements['force'].value = 'start';
-  form.elements['token'].value = '<?php echo $token_new; ?>';
-  form.target = windowname;
-  form.submit();
+  if (document.forms['pagemenu_object'])
+  {
+    if (features == undefined) features = 'scrollbars=no,resizable=no';
+    if (width == undefined) width = 400;
+    if (height == undefined) height = 180;
+    if (windowname == '') windowname = Math.floor(Math.random()*9999999);
+    
+    hcms_openWindow('', windowname, features, width, height);
+    
+    var form = document.forms['pagemenu_object'];
+    
+    form.attributes['action'].value = url;
+    form.elements['action'].value = action;
+    form.elements['site'].value = '<?php echo $site; ?>';
+    form.elements['cat'].value = '<?php echo $cat; ?>';
+    form.elements['location'].value = '<?php echo $location_esc; ?>';
+    form.elements['page'].value = '<?php echo $page; ?>';
+    form.elements['pagename'].value = '<?php echo $pagename; ?>';
+    form.elements['folder'].value = '<?php echo $folder; ?>';
+    form.elements['force'].value = 'start';
+    form.elements['token'].value = '<?php echo $token_new; ?>';
+    form.target = windowname;
+    form.submit();
+  }
+}
+
+function submitToFrame (url, action)
+{
+  if (document.forms['pagemenu_object'])
+  {
+    var form = document.forms['pagemenu_object'];
+    
+    form.attributes['action'].value = url;
+    form.elements['action'].value = action;
+    form.elements['site'].value = '<?php echo $site; ?>';
+    form.elements['cat'].value = '<?php echo $cat; ?>';
+    form.elements['location'].value = '<?php echo $location_esc; ?>';
+    form.elements['page'].value = '<?php echo $page; ?>';
+    form.elements['pagename'].value = '<?php echo $pagename; ?>';
+    form.elements['folder'].value = '<?php echo $folder; ?>';
+    form.elements['force'].value = 'start';
+    form.elements['token'].value = '<?php echo $token_new; ?>';
+    form.target = "objectview";
+    
+    parent.openpopup('empty.php');
+    form.submit();
+  }
 }
 
 function submitToSelf (action)
 {
-  var form = document.forms['download'];
-  
-  form.elements['action'].value = action;
-  form.elements['location'].value = '<?php echo $location_esc; ?>';
-  form.elements['page'].value = '<?php echo $page; ?>';
-  form.elements['wf_token'].value = '<?php echo $wf_token; ?>';
-  form.submit();
+  if (document.forms['download'])
+  {
+    var form = document.forms['download'];
+    
+    form.elements['action'].value = action;
+    form.elements['location'].value = '<?php echo $location_esc; ?>';
+    form.elements['page'].value = '<?php echo $page; ?>';
+    form.elements['wf_token'].value = '<?php echo $wf_token; ?>';
+    form.submit();
+  }
 }
 
 function checkForm_chars(text, exclude_chars)
@@ -651,14 +678,17 @@ else
     
   <div class="hcmsToolbarBlock">
     <?php    
-    // SendMail Button
+    // Send Mail Button
     if ($page != "" && !empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && !empty ($mgmt_config['db_connect_rdbms']))
     {
         echo "
-        <img onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'scrollbars=yes,resizable=no', 600, 800);\" ".
-                   "class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" ".
-                   "src=\"".getthemelocation()."img/button_user_sendlink.png\" ".
-                   "alt=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" title=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" />";
+        <img class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" ";
+        
+        if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'scrollbars=yes,resizable=no', 540, 800);\" ";
+        else echo "onClick=\"submitToFrame('user_sendlink.php', 'sendlink');\" ";
+        
+        echo "src=\"".getthemelocation()."img/button_user_sendlink.png\" ".
+                "alt=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" title=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" />";
     }
     else
     {
@@ -669,7 +699,7 @@ else
 
     <?php
     // Favorite Button
-    if ($page != "" && checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1)
+    if ($page != "" && checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false)
     {
       if (!$is_favorite)
       {
@@ -685,7 +715,7 @@ else
     
     <?php
     // Checked out Button
-    if ($page != "" && $wf_role == 5 && checkrootpermission ('desktopcheckedout') && ((empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || (!empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
+    if ($page != "" && $wf_role == 5 && checkrootpermission ('desktopcheckedout') && linking_valid() == false && ((empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || (!empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
     {
       if ($usedby == "")
       {
@@ -830,7 +860,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         ?> 
       </td>
       <td style="white-space:nowrap">
-        <input type="text" name="page" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:220px;" />
+        <input type="text" name="page" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:180px;"  title="<?php echo getescapedtext ($hcms_lang['new-object'][$lang]); ?>"/>
       </td>
     </tr>
     <tr>
@@ -838,7 +868,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <?php echo getescapedtext ($hcms_lang['template-auto-preview'][$lang]); ?> 
       </td>
       <td style="white-space:nowrap">
-        <select name="template" onChange="hcms_jumpMenu('parent.frames[\'objFrame\']',this,0)" style="width:230px;">
+        <select name="template" onChange="hcms_jumpMenu('parent.frames[\'objFrame\']',this,0)" style="width:190px;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select-template'][$lang]); ?></option>
           <?php
           $template_array = gettemplates ($site, $cat);

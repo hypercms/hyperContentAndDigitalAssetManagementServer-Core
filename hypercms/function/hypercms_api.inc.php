@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
  
 // ======================================== API loader ==========================================
@@ -14,6 +12,9 @@ if (empty ($mgmt_config['abs_path_cms']) && is_file ("../config.inc.php"))
 {
   require_once ("../config.inc.php");
 }
+
+// initalize
+if (empty ($mgmt_config['today'])) $mgmt_config['today'] = date ("Y-m-d H:i", time());
 
 // include Get API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_get.inc.php"))

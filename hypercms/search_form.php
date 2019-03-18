@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -386,13 +384,15 @@ $(document).ready(function()
   <div id="searchtab_general" style="position:absolute; width:520px; height:580px; z-index:1; left:8px; top:22px; visibility:visible;"> 
     <form name="searchform_general" method="post" action="search_objectlist.php">
       <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
+      <input type="hidden" name="action" value="search" />
       <?php if ($cat == "page") { ?><input type="hidden" name="search_format[]" value="page" /><?php } ?>
        
       <table class="hcmsTableStandard" style="table-layout:auto; width:100%; border:1px solid #000000; border-collapse:collapse; border-spacing:0;">       
         <tr>
           <td style="width:180px; white-space:nowrap; vertical-align:top; padding-top:10px;"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?> </td>
           <td style="padding-top:10px;">
-            <input type="text" name="search_expression" id="search_expression" style="width:220px;" maxlength="200" />
+            <input type="text" name="search_expression" id="search_expression" onkeydown="if (hcms_enterKeyPressed(event) && document.getElementById('search_expression').value.trim() != '') startSearch('general');" style="width:193px; padding-right:30px;" maxlength="200" />
+            <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" style="cursor:pointer; width:22px; height:22px; margin-left:-30px;" onClick="if (document.getElementById('search_expression').value.trim() != '') startSearch('general');" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
           </td>
         </tr>
         <tr>
@@ -480,6 +480,7 @@ $(document).ready(function()
   <div id="searchtab_advanced" style="position:absolute; width:520px; height:580px; z-index:1; left:8px; top:22px; visibility:hidden;"> 
     <form name="searchform_advanced" method="post" action="search_objectlist.php">
       <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
+      <input type="hidden" name="action" value="search" />
       <?php if ($cat == "page") { ?><input type="hidden" name="search_format[]" value="page" /><?php } ?>
   
       <table class="hcmsTableStandard" style="table-layout:auto; width:100%; border:1px solid #000000; border-collapse:collapse; border-spacing:0;">
@@ -648,6 +649,7 @@ $(document).ready(function()
   <div id="searchtab_replace" style="position:absolute; width:520px; height:580px; z-index:1; left:8px; top:22px; visibility:hidden;"> 
     <form name="searchform_replace" method="post" action="search_objectlist.php">
       <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
+      <input type="hidden" name="action" value="search" />
       <?php if ($cat == "page") { ?><input type="hidden" name="search_format[]" value="page" /><?php } ?>
       
       <table class="hcmsTableStandard" style="table-layout:auto; width:100%; border:1px solid #000000; border-collapse:collapse; border-spacing:0;">
@@ -724,7 +726,7 @@ $(document).ready(function()
   <div id="searchtab_images" style="position:absolute; width:520px; height:580px; z-index:1; left:8px; top:22px; visibility:hidden;"> 
     <form name="searchform_images" method="post" action="search_objectlist.php">
       <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
-  
+      <input type="hidden" name="action" value="search" />
       <table class="hcmsTableStandard" style="table-layout:auto; width:100%; border:1px solid #000000; border-collapse:collapse; border-spacing:0;">        
         <tr>
           <td style="width:180px; white-space:nowrap; padding-top:10px;"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?> </td>

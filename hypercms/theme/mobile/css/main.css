@@ -7,7 +7,7 @@ html, body
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 15px; 
   font-weight: normal; 
-  color: #000000; 
+  color: #FFFFFF;
   text-decoration: none;
 }
 
@@ -21,20 +21,19 @@ img
   image-rendering: -o-crisp-edges; // Opera 12
 }
 
-input, select, textarea, button
+input, select, textarea, button, .hcmsTextArea
 {
-  font-family: inherit;
-  font-size: inherit;
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 15px;
   font-weight: normal;
   color: #000000;
   text-decoration: none;
   display: inline-block;
   vertical-align: middle;
-  border: 1px solid #808080;
-  border-radius: 6px;
-  background-color: #FFFFFF;
-  margin: 0;
-  padding: 4px;
+  border: 1px solid #FFFFFF;
+  background-color: #F3F3F3;;
+  margin: 2px 2px 2px 0px;
+  padding: 7px 2px;
 }
 
 a 
@@ -43,28 +42,23 @@ a
   font-size: inherit;
   font-weight: bold;
   text-decoration: none;
-  color: #000000;
+  color: #FFFFFF;
   outline: none;
 }
 
 a:link 
 {
-  color: #000000;
+  color: #FFFFFF;
 }
 
 a:hover 
 {
-  color: #004ACE;
-}
-
-a:visited 
-{
-  color: #000000;
+  color: #8EDCFD;
 }
 
 a:active 
 {
-  color: #000000;
+  color: #FFFFFF;
 }
 
 ins
@@ -80,9 +74,9 @@ del
 hr
 {
   height: 1px;
-  border-width: 0;
-  color: #0ACA03;
-  background-color: #8EA9EC;
+  border-width :0;
+  color: #0378AA;
+  background-color: #146080;
 }
 
 .hcmsCenter
@@ -111,19 +105,15 @@ hr
   width: 100%;
   height: 80px;
   background-color: #FFFFFF;
-  margin: 0 0 120px 0;
+  margin: 0 0 40px 0;
   padding: 0;
-  border-bottom: 2px solid #5AAD5A;
+  border-bottom: 4px solid #5AAD5A;
 }
 
 .hcmsStartScreen
 {
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center center; 
-  background-color: #ABC7F1;
-  font-size: 18px;
+  background-color: #61A3BF;
+  font-size: 14px;
   text-align: left;
   padding: 0;
   margin: 0;
@@ -133,20 +123,15 @@ hr
 {
   width: 260px;
   margin: auto;
-  padding: 20px;
+  padding: 20px; 
   font-size: 14px;
   text-align: left; 
 }
 
-.hcmsWorkplaceTop
-{
-  background-color: #6D9FFD;
-  background-repeat: repeat;
-}
-
 .hcmsLogoTop
 {
-  height: 32px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   margin: 0;
   border: 0;
@@ -155,8 +140,8 @@ hr
 
 .hcmsWorkplaceBar
 {
-  background-color: #A2C5F9;
-  border-left: 5px solid #EB6804;
+  background-color: #424242;
+  border-bottom: 2px solid #3C95B3;
   position: fixed;
   top: 0;
   left: 0;
@@ -170,7 +155,7 @@ hr
 .hcmsLocationBar
 {
   width: 100%;
-  background-color: #AECFFE;
+  background-color: #3E3E3E;
   margin: 0;
   padding: 0px 3px;
   border-left: 5px solid #EB6804;
@@ -180,11 +165,11 @@ hr
 .hcmsContextMenu
 {
   border: 1px solid #000000;
-  background-color: #FFFFFF;
-  box-shadow: 3px 3px 12px #000000;
-  -webkit-box-shadow: 3px 3px 12px #000000;
-  -moz-box-shadow: 3px 3px 12px #000000;
-  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+  background-color: #44859A;
+  box-shadow: 3px 3px 10px #000000;
+  -webkit-box-shadow: 3px 3px 10px #000000;
+  -moz-box-shadow: 3px 3px 10px #000000;
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
 .hcmsChatBar
@@ -201,63 +186,64 @@ hr
   border: 1px solid #808080;
   background-color: #FFFFFF;
   margin-bottom: 4px;
-  box-shadow: 2px 2px 3px #000000;
-  -webkit-box-shadow: 2px 2px 3px #000000;
-  -moz-box-shadow: 2px 2px 3px #000000;
-  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='4');
+  box-shadow: 0px 3px 3px #000000;
+  -webkit-box-shadow: 0px 3px 3px #000000;
+  -moz-box-shadow: 0px 3px 3px #000000;
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='180',strength='4');
 }
 
 .hcmsWorkplaceControl
 {
   margin: 0;
   padding: 0;
-  background-color: #90BEFB;
+  background-color: #3881A0;
 }
 
 .hcmsWorkplaceControlWallpaper
 {
   margin: 0;
   padding: 0;
-  background-color: #90BEFB;
+  background-color: #3881A0;
 }
 
 .hcmsToolbar
 {
   width: 100%;
-  margin: 0;
-  padding: 0;
+  height: 34px;
+  padding: 2px;
   display: block;
 }
 
 .hcmsToolbarBlock
 {
   float: left;
-  padding: 0;
-  margin: 0;
+  padding-right: 1px;
+  margin-right: 1px;
+  border-right: 2px solid #D8DADC; 
 }
 
 .hcmsWorkplaceExplorer
 {
-  background-color: #A2C5F9;
+  margin: 0;
+  padding: 0;
+  background-color: #353535;
 }
 
 .hcmsWorkplaceObjectlist
 {
-  background-color: #D7E6FE;
+  background-color: #D8DADC;
 }
 
 .hcmsWorkplaceWorkflow
 {
-  background-color: #7BB5FF;
+  background-color: #4E4E4E;
 }
 
 .hcmsWorkplaceGeneric
 {
-  background-color: #C8DCFF;
+  background-color: #424242;
   margin: 0; 
-  padding: 0;  
-  width: 100%;
-  height: 100%;
+  padding: 0;
   overflow: auto;
 }
 
@@ -270,11 +256,11 @@ hr
 
 .hcmsMediaRendering
 {
-  border: 1px solid #4294FF;
+  border: 1px solid #FBAD04;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
-  background-color: #ECF3F9;
+  background-color: #737373;
   box-shadow: 2px 2px 3px #000000;
   -webkit-box-shadow: 2px 2px 3px #000000;
   -moz-box-shadow: 2px 2px 3px #000000;
@@ -289,8 +275,8 @@ hr
 
 .hcmsFormRowLabel
 {
-  font-size: 18px;
-  padding: 16px 2px 6px 4px;
+  font-size: 14px;
+  padding: 14px 2px 6px 4px;
   display: block;
 }
 
@@ -302,52 +288,51 @@ hr
 
 .hcmsRowHead1
 {
-  background-color: #42B551;
+  background-color: #E36804;
 }
 
 .hcmsRowHead2
 {
-  background-color: #94CE9C;
+  background-color: #1D1D1D;
 }
 
 .hcmsRowData1
 {
-  background-color: #B7CFF4;
+  background-color: #777777;
 }
 
 .hcmsRowData2
 {
-  background-color: #C7D9F5;
+  background-color: #909090;
 }
 
 .hcmsPriorityAlarm
 {
-  background-color: #FC5041;
+  background-color: #DE3E04;
 }
 
 .hcmsPriorityHigh
 {
-  background-color: #FC9A45;
+  background-color: #FB7C0C;
 }
 
 .hcmsPriorityMedium
 {
-  background-color: #FDCE7E;
+  background-color: #FCB335;
 }
 
 .hcmsPriorityLow
 {
-  background-color: #AECDFE;
+  background-color: #83B2C6;
 }
 
 .hcmsMessage
 {
   vertical-align: middle;
-  border: 2px solid #4294FF;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
-  background-color: #ABD0FF;
+  background-color: #737373;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -364,8 +349,9 @@ hr
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
+  color: #FFFFFF;
   font-size: 12px;
-  background-color: #DFEBFE;
+  background-color: #292929;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -376,13 +362,14 @@ hr
 {
   z-index: 100;
   padding: 5px;
-  overflow: scroll;
+  overflow: auto;
   filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;
   vertical-align: middle;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
-  background-color: #EFF6FF;
+  background-color: #191919;
+  color: #FFFFFF;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -391,8 +378,8 @@ hr
 
 .hcmsIconList
 {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border: 0;
   margin: 0px 0px 2px 2px;
   vertical-align: middle;
@@ -411,14 +398,8 @@ hr
 {
   padding: 1px;
   margin: 0;
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
-  background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
-  background-color: #FFC477;
-  border: 1px solid #FF8411;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
+  background-color: #FF8411;
+  border: 1px solid #C26003;
 }
 
 .hcmsButtonBlank
@@ -435,9 +416,7 @@ hr
   padding: 2px;
   margin: 0;
   border: 0;
-  filter: gray() alpha(opacity=30);
-  -moz-opacity: 0.3;
-  opacity: 0.3;
+  filter: gray() alpha(opacity=30);  -moz-opacity: 0.3; opacity: 0.3;
   float: left;
   z-index: 0;
 }
@@ -455,13 +434,7 @@ hr
   padding: 0;
   margin: 0;
   border: 0;
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
-  background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
-  background-color: #FFC477;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
+  background-color: #FF8411;
 }
 
 .hcmsButtonTinyBlank
@@ -477,9 +450,7 @@ hr
   padding: 0;
   margin: 0;
   border: 0;
-  filter: gray() alpha(opacity=30);
-  -moz-opacity: 0.3;
-  opacity: 0.3;
+  filter: gray() alpha(opacity=30); -moz-opacity: 0.3; opacity: 0.3;
 }
 
 .hcmsButtonClose
@@ -501,33 +472,34 @@ hr
 
 .hcmsButtonSizeSquare
 {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
 }
 
 .hcmsButtonSizeNarrow
 {
-  width: 16px;
-  height: 32px;
+  width: 15px;
+  height: 30px;
 }
 
 .hcmsButtonSizeWide
 {
-  width: 50px;
-  height: 32px;
+  width: 47px;
+  height: 30px;
 }
 
 .hcmsButtonSizeHeight
 {
-  height: 32px;
+  height: 30px;
 }
 
 .hcmsButtonMenu
 {
-  height: 32px;
-  border-right: 1px solid #CEE0FE;
+  height: 30px;
+  line-height: 30px;
+  border-right: 1px solid #C0C0C0;
   float: left;
-  padding: 6px 10px 0px 10px;
+  padding: 0px 6px;
   margin: 0;
   text-decoration: none;
   cursor: pointer;
@@ -535,10 +507,7 @@ hr
 
 .hcmsButtonMenu:hover
 {
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #6A9FEF) );
-  background: -moz-linear-gradient( center top, #C8DCFF 5%, #6A9FEF 100% );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#6A9FEF');
-  background-color: #A2C5F9;
+  background-color: #FB8C0C;
 }
 
 .hcmsButtonMenu:active
@@ -549,20 +518,15 @@ hr
 
 .hcmsButtonMenuActive
 {
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #6A9FEF) );
-  background: -moz-linear-gradient( center top, #C8DCFF 5%, #6A9FEF 100% );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#6A9FEF');
-  background-color: #A2C5F9;
+  background-color: #FB8C0C;
   position: relative;
   top: 1px;
 }
 
 .hcmsButtonBlue
 {
-  background-color: #65B1FC;
-	-moz-border-radius: 4px;
-	-webkit-border-radius:4px;
-	border-radius: 4px;
+  color: #FFFFFF;
+  background-color: #3094D7;
   border: 1px solid #469df5;
   display: inline-block;
   padding: 4px 10px;
@@ -572,7 +536,7 @@ hr
 
 .hcmsButtonBlue:hover
 {
-  background-color: #7EBDFD;
+  background-color: #5BA9DE;
 }
 
 .hcmsButtonBlue:active
@@ -583,10 +547,8 @@ hr
 
 .hcmsButtonGreen
 {
-  background-color: #77d42a;
-	-moz-border-radius: 4px;
-	-webkit-border-radius:4px;
-	border-radius: 4px;
+  color: #FFFFFF;
+  background-color: #69A738;
   border: 1px solid #268a16;
   display: inline-block;
   padding: 4px 10px;
@@ -596,7 +558,7 @@ hr
 
 .hcmsButtonGreen:hover
 {
-  background-color: #99E75A;
+  background-color: #7CD334;
 }
 
 .hcmsButtonGreen:active
@@ -607,10 +569,8 @@ hr
 
 .hcmsButtonOrange
 {
-  background-color: #FB9004;
-	-moz-border-radius: 4px;
-	-webkit-border-radius:4px;
-	border-radius: 4px;
+  color: #FFFFFF;
+  background-color: #E58912;
   border: 1px solid #C28B2C;
   display: inline-block;
   padding: 4px 10px;
@@ -620,7 +580,7 @@ hr
 
 .hcmsButtonOrange:hover
 {
-  background-color: #FFC477;
+  background-color: #ECA03C;
 }
 
 .hcmsButtonOrange:active
@@ -629,24 +589,44 @@ hr
   top: 1px;
 }
 
-.hcmsMore
+.hcmsButtonDownload
 {
-  border-top: 1px solid #C0C0C0;
-  background-color: #E2ECF5;
-  cursor: pointer; 
+  width: 100%;
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-bottom: 4px; 
+  padding: 1px;
+  float: left;
+  text-align: center;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 1px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #FFFFFF;
+  box-shadow: 2px 2px 3px #000000;
+  -webkit-box-shadow: 2px 2px 3px #000000;
+  -moz-box-shadow: 2px 2px 3px #000000;
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='4');
+  cursor: pointer;
 }
 
-.hcmsMore:hover
+.hcmsButtonDownload:hover
 {
-  background-color: #C7DBED;
+  margin-top: 1px;
+  margin-bottom: 3px;
+  box-shadow: 1px 1px 1px #000000;
+  -webkit-box-shadow: 1px 1px 1px #000000;
+  -moz-box-shadow: 1px 1px 1px #000000;
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='2');  
 }
 
 .hcmsSelector
 {
   margin: 0;
   padding: 1px;
-  background-color: #FCB335;
-  border: 1px solid #FF8411;
+  background-color: #D25D03;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -658,48 +638,50 @@ hr
 
 .hcmsSelectorItem
 {
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
   margin: 0;
-  padding: 0;
+  padding: 0 20px 0 0;
   border: 0;
 }
 
 .hcmsSelectorItem:hover
 {
-  background-color: #FF9000;
+  background-color: #FB8C14;
 }
 
 .hcmsHeadline 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 16px; 
+  font-family: inherit;
+  font-size: 15px; 
   font-weight: bold; 
+  color: #FFFFFF; 
   text-decoration: none;
   padding: 3px 0px;
 }
 
 .hcmsHeadlineTiny 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 16px; 
+  font-family: inherit;
+  font-size: 15px; 
   font-weight: normal; 
-  color: #000080; 
+  color: #FFFAEF; 
   text-decoration: none;
 }
 
 .hcmsTextSmall 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 14px; 
+  font-family: inherit; 
+  font-size: 9px; 
   font-weight: normal; 
+  color: #FFFFFF; 
   text-decoration: none;
 }
 
 .hcmsTabContainer
 {
   width: 100%;
-  min-width: 500px;
+  min-width: 320px;
   height: 22px;
   padding: 0;
   margin: 0;
@@ -710,11 +692,11 @@ hr
 .hcmsTabActive
 {
   float: left;
-  background-color: #CEDEFF;
+  background-color: #424242;
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;
   border-left: 1px solid #000000;
-  border-bottom: 2px solid #CEDEFF;
+  border-bottom: 2px solid #424242;
   width: 116px;
   height: 17px;
   padding: 2px;
@@ -727,7 +709,7 @@ hr
 .hcmsTabPassive
 {
   float: left;
-  background-color: #CEDEFF;
+  background-color: #676767;
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;
   border-left: 1px solid #000000;
@@ -747,7 +729,7 @@ hr
   display: none;
   width: 100%;
   height: 100%;
-  background: url("../img/loading.gif") no-repeat center center #C8DCFF;
+  background: url("../img/loading.gif") no-repeat center center #e3e4ec;
   position: fixed;
   opacity: 0.7;
 }
@@ -781,7 +763,7 @@ hr
 .hcmsFace
 {
   position: absolute;
-  z-index: 100;
+  z-index:  90000;
   border: 2px solid #FFFFFF;
   filter: alpha(opacity=70); -moz-opacity: 0.7; opacity: 0.7;
   cursor: pointer;
@@ -799,7 +781,7 @@ ul.hcmsStructuredList
 
 ul.hcmsStructuredList li
 {
-  padding-left: 16px;
+  padding-left: 14px;
 }
 
 table.hcmsTableStandard

@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -223,23 +221,24 @@ if (is_array ($content_array))
   // compare old version to new version
   foreach ($content_array as $id => $content)
   {
-    if (empty ($content[0])) $content[0] = "";
-    if (empty ($content[1])) $content[1] = "";
-
-    $result_diff = html_diff ($content[0], $content[1]);
-    
-    if (!empty ($hcms_lang['by-user'][$lang]) && !empty ($textuser[$id][0]) && !empty ($textuser[$id][1])) $user_compare = " (".$hcms_lang['by-user'][$lang].": ".$textuser[$id][0]." &#10095; ".$textuser[$id][1].")";
-    else $user_compare = "";
-    
-    $result[$id] = "<p><span class=\"hcmsHeadline\">".$id."</span>".$user_compare."<br /><div style=\"margin:2px; padding:2px; width:760px; border:1px solid #000000; background:#FFFFFF; min-height:18px;\">".$result_diff."</div></p>";
+    // exclude comments
+    if (strpos ("_".$id, "Comment:") < 1 && $id != "Faces-JSON")
+    {
+      if (empty ($content[0])) $content[0] = "";
+      if (empty ($content[1])) $content[1] = "";
+  
+      $result_diff = html_diff ($content[0], $content[1]);
+      
+      if (!empty ($hcms_lang['by-user'][$lang]) && !empty ($textuser[$id][0]) && !empty ($textuser[$id][1])) $user_compare = " (".$hcms_lang['by-user'][$lang].": ".$textuser[$id][0]." &#10095; ".$textuser[$id][1].")";
+      else $user_compare = "";
+      
+      $result[$id] = "<p><span class=\"hcmsHeadline\">".$id."</span>".$user_compare."<br /><div class=\"hcmsTextArea\" style=\"margin:2px; width:760px; min-height:18px;\">".$result_diff."</div></p>";
+    }
   }
   
   // output results
   if (is_array ($result))
   {
-    sort ($result);
-    reset ($result);
-    
     foreach ($result as $print) echo $print;
   }
 }

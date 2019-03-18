@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -20,7 +18,7 @@ require_once ("language/".getlanguagefile ($lang));
 // input parameters
 $action = getrequest_esc ("action");
 $site = getrequest_esc ("site"); // site can be *Null*
-$site_name = getrequest_esc ("site_name");
+$site_name = getrequest_esc ("site_name", "publicationname");
 $token = getrequest ("token"); 
 
 // publication management config
@@ -139,6 +137,7 @@ function checkForm()
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <div class="hcmsLocationBar">
+  <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo getescapedtext ($hcms_lang['publication-management'][$lang]); ?></b></td>
@@ -147,6 +146,9 @@ function checkForm()
       <td>&nbsp;</td>
     </tr>  
   </table>
+  <?php } else { ?>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['publication-management'][$lang]); ?></span>
+  <?php } ?>
 </div>
 
 <!-- toolbar -->
@@ -195,10 +197,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td>
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang])." ".getescapedtext ($hcms_lang['publication'][$lang]); ?></span><br />
         <span style="white-space:nowrap;">
-          <input type="text" name="site_name" maxlength="100" style="width:220px;" />
+          <input type="text" name="site_name" maxlength="100" style="width:160px;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>" />
           <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
@@ -219,10 +220,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td style="white-space:nowrap;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang])." ".getescapedtext ($hcms_lang['publication'][$lang]); ?></span><br />
         <span style="white-space:nowrap;">
-          <select name="site_name" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+          <select name="site_name" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" style="width:160px;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>">
             <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
             if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ();
@@ -273,9 +273,8 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td style="white-space:nowrap;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?> 
-        <select name="site_name" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['edit'][$lang])." ".getescapedtext ($hcms_lang['publication'][$lang]); ?></span><br />
+        <select name="site_name" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" style="width:180px;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           if (is_array ($item_option_edit) && sizeof ($item_option_edit) > 0)

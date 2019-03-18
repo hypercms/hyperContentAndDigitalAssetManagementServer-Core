@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -83,7 +81,8 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
       $object_name = $file_info['name'];
       
       // open on double click
-      $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$message_time."', 'status=yes,scrollbars=no,resizable=yes', 600, 800);\"";
+      if (!empty ($mgmt_config['message_newwindow'])) $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$message_time."', 'status=yes,scrollbars=no,resizable=yes', 540, 800);\"";
+      else $openObject = "onDblClick=\"parent.openpopup('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."');\"";
       
       // onclick for marking objects
       $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlMessageMenu();\"";
@@ -94,15 +93,28 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
       // listview
       $class_image = "class=\"hcmsIconList\"";
       
-      // include message file
+      // message
       if (is_file ($dir.$message_file))
       {
+        // initalize
+        $email_title = "";
+        
+        // include message file
         include ($dir.$message_file);
       
-        $recipients = implode (", ", $user_login);
+        // recipients
+        $recipients = array();
+        if (is_array ($user_login) && sizeof ($user_login) > 0) $recipients[] = implode (", ", $user_login);
+        if (is_array ($email_to) && sizeof ($email_to) > 0) $recipients[] = implode (", ", $email_to);
+        if (!empty ($group_login)) $recipients[] = $group_login;
+        $recipients = implode (", ", $recipients);
         
+        // new variable names since version 8.0.0 (map old to new ones)
+        if (!empty ($mail_title)) $email_title = $mail_title;
+        if (!empty ($mail_body)) $email_body = $mail_body;
+
         // search
-        if (trim ($search) != "" && strpos (" ".$mail_title." ".$mail_body." ".$recipients, trim ($search)) > 0) $found = true;
+        if (trim ($search) != "" && strpos (" ".$email_title." ".$email_body." ".$recipients, trim ($search)) > 0) $found = true;
         else $found = false;
       }
   
@@ -116,7 +128,7 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
                     <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>
                 </div>
               </td>
-              <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$mail_title."</span></td>
+              <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$email_title."</span></td>
               <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$recipients."</span></td>
               <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
               <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">sent</span></td>

@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
  
 // =================================== META DATA FUNCTIONS =======================================
@@ -506,7 +504,7 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
     }
 
     // verify taxonomy languages
-    if (is_array ($taxonomy_new))
+    if (!empty ($taxonomy_new) && is_array ($taxonomy_new))
     {
       // keep language
       $keep = array();
@@ -520,6 +518,9 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
           if (trim ($label) != "" && is_activelanguage ($site, $langcode)) $keep[$langcode] = true;
         }
       }
+      
+      // set English as default if no language option has been defined for the publication
+      if (sizeof ($keep) < 1) $keep['en'] = true;
       
       // remove empty language columns
       if (sizeof ($keep) > 0)

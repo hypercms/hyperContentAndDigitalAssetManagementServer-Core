@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -46,6 +44,14 @@ if (!empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlangu
   require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
 }
 
+// ------------------------------ permission section --------------------------------
+
+if (empty ($mgmt_config['userregistration']))
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang], $lang);
+  exit;
+}
+
 // --------------------------------- logic section ----------------------------------
 
 $show = "";
@@ -56,19 +62,8 @@ if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes") $themename 
 elseif (!empty ($theme)) $themename = $theme;
 else $themename = "";
 
-// wallpaper
-$wallpaper = "";
-
-if ($theme != "mobile")
-{
-  if (is_file ($mgmt_config['abs_path_cms']."theme/".$themename."/img/wallpaper.jpg")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$themename."/img/wallpaper.jpg");
-  elseif (is_file ($mgmt_config['abs_path_cms']."theme/".$themename."/img/wallpaper.png")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$themename."/img/wallpaper.png");
-  elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
-  else $wallpaper = getwallpaper ($mgmt_config['version']);
-}
-
 // save user
-if ($action == "user_register" && checktoken ($token, "sys"))
+if ($action == "user_register" && checktoken ($token, "sys") && !empty ($mgmt_config['userregistration']))
 {
   // reload GUI
   $add_onload = "";
@@ -116,6 +111,17 @@ if ($action == "user_register" && checktoken ($token, "sys"))
   
   // save log
   savelog (@$error);
+}
+
+// wallpaper
+$wallpaper = "";
+
+if ($themename != "mobile")
+{
+  if (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg");
+  elseif (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.png")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.png");
+  elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
+  else $wallpaper = getwallpaper ($mgmt_config['version']);
 }
 
 // create secure token
@@ -319,8 +325,8 @@ function checkForm ()
 <?php } ?>
 
 <div class="hcmsStartBar">
-  <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($theme); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
-  <div style="position:absolute; top:15px; right:15px; text-align:right;"><?php echo $mgmt_config['version']; ?></div>
+  <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
+  <div style="position:absolute; top:15px; right:15px; text-align:right;"></div>
 </div>
 
 <div class="hcmsLogonScreen" style="width:300px;">

@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -148,6 +146,7 @@ function goToURL()
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <div class="hcmsLocationBar">
+  <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo getescapedtext ($hcms_lang['group-management'][$lang]); ?></b></td>
@@ -156,6 +155,9 @@ function goToURL()
       <td>&nbsp;</td>
     </tr>  
   </table>
+  <?php } else { ?>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['group-management'][$lang]); ?></span>
+  <?php } ?>
 </div>
 
 <!-- toolbar -->
@@ -202,9 +204,8 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td style="white-space:nowrap;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?> 
-        <input type="text" name="group_name" maxlength="100" style="width:150px;" />
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang])." ".getescapedtext ($hcms_lang['group'][$lang]); ?></span><br />
+        <input type="text" name="group_name" maxlength="100" style="width:160px;" title="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>" />
         <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
       </td>
       <td style="width:38px; text-align:right; vertical-align:top;">
@@ -223,9 +224,8 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td style="white-space:nowrap;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['group'][$lang]); ?> 
-        <select name="group_name" style="width:150px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang])." ".getescapedtext ($hcms_lang['group'][$lang]); ?></span><br />
+        <select name="group_name" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" style="width:160px;" title="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
         <?php
           if (!isset ($usergroupdata) || $usergroupdata == false)
@@ -268,9 +268,8 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td style="white-space:nowrap;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['group'][$lang]); ?> 
-        <select name="group_name" style="width:150" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['edit'][$lang])." ".getescapedtext ($hcms_lang['group'][$lang]); ?></span><br />
+        <select name="group_name" style="width:150" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" style="width:180px;" title="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           if (sizeof ($item_option_edit) > 0)

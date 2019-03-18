@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -27,7 +25,7 @@ $hcms_objid = getrequest ("hcms_objid");
 $hcms_token = getrequest ("hcms_token");
 // secure input parameters
 $hcms_id_token = getrequest ("hcms_id_token");
-// new hash parameter for download-link sinve version 5.6.0
+// new hash parameter for download-link since version 5.6.0
 $dl = getrequest ("dl", "url");
 // new crpyted media parameter since version 5.6.3
 $dm = getrequest ("dm", "url");
@@ -57,7 +55,7 @@ if ($dl != "" && !empty ($mgmt_config['db_connect_rdbms']))
   $result_dl = rdbms_getaccessinfo ($dl);
   
   // if download link uses access hash
-  if (!empty ($result_dl['object_id']))
+  if (!empty ($result_dl['object_id']) && $result_dl['object_id'] > 0)
   {
     $object_id = $result_dl['object_id'];
     $objectpath_esc = rdbms_getobject ($object_id);
@@ -172,7 +170,7 @@ elseif ($objectpath_esc != "")
   $site = getpublication ($objectpath_esc);
   $cat = getcategory ($site, $objectpath_esc);
   $objectpath = deconvertpath ($objectpath_esc, "file");
-  
+
   // if folder
   if (getobject ($objectpath) == ".folder")
   {

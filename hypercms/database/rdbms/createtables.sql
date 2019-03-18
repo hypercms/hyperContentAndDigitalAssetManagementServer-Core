@@ -17,7 +17,7 @@ DROP TABLE IF EXISTS `accesslink`;
 CREATE TABLE `accesslink` (
   `hash` char(20) NOT NULL,
   `date` datetime NOT NULL,
-  `object_id` int(11) NOT NULL,
+  `object_id` varchar(4000) NOT NULL,
   `type` char(2) DEFAULT NULL,
   `user` varchar(600) DEFAULT NULL,
   `deathtime` int(11) DEFAULT NULL,

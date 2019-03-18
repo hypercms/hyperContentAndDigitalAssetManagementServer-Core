@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -108,26 +106,30 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
           else $class_image = "class=\"hcmsIconList\"";
     
           $listview .= "
-                <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
+                <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
                   <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                     <input id=\"queue_id\" type=\"hidden\" value=\"".$queue_id."\" />
                     <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
                         <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." />&nbsp;
                         <span title=\"".$object_name."\">".$object_name."</span>&nbsp;
                     </div>
-                  </td>
+                  </td>";
+                  
+          if (!$is_mobile) $listview .= "
                   <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$site."\">&nbsp;&nbsp;".$site."</span></td>
                   <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$location_name."\">&nbsp;&nbsp;".$location_name."</span></td>
                   <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
                   <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
-                  <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>
+                  <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>";
+                  
+          $listview .= "
                 </tr>";
       
           $items_row++;  
         }
       }
       // mail
-      elseif ($queue['object_id'] > 0)
+      elseif ($queue['object_id'] > 0 && $user == $queueuser)
       {
         $mailfile = $queue['object_id'].".".$queueuser.".mail";
         $cat = "comp";
@@ -148,19 +150,23 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
         $class_image = "class=\"hcmsIconList\"";
     
         $listview .= "
-              <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
+              <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
                 <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                   <input id=\"queue_id\" type=\"hidden\" value=\"".$queue_id."\" />
-                  <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >&nbsp; 
-                      <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> 
-                      <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span> 
+                  <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
+                      <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." />&nbsp;
+                      <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>&nbsp;
                   </div>
-                </td>
-                <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext."></span></td>
-                <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext."></span></td>
-                <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$action."</span></td>
-                <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$queueuser."</span></td>
+                </td>";
+                
+          if (!$is_mobile) $listview .= "
+                <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
+                <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
+                <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
+                <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>";
+                
+          $listview .= "
               </tr>";
               
         $items_row++;  
@@ -277,6 +283,7 @@ function resizecols()
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
+      <?php if (!$is_mobile) { ?>
       <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:100px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
       </td>
@@ -292,6 +299,7 @@ function resizecols()
       <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader" style="white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
       </td>
+      <?php } ?>
     </tr>
   </table>
   

@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -147,20 +145,19 @@ echo showtopbar ($hcms_lang['file-download-from-ftp-server'][$lang], $lang);
 if (empty ($conn_id))
 {
 ?>
-<div class="hcmsLogonScreen" style="margin-top:60px;">
+<div class="hcmsLogonScreen">
   <form name="login" method="post" action="">
     <input type="hidden" name="action" value="logon" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
 
     <table class="hcmsTableStandard">
       <tr>
-        <td>&nbsp;</td>
-        <td class="hcmsTextOrange"><strong><?php echo $show; ?></strong></td>
+        <td colspan="2" class="hcmsTextOrange"><?php echo $show; ?></td>
       </tr>
       <tr>
-        <td><b><?php echo getescapedtext ($hcms_lang['server'][$lang]); ?></b></td>
+        <td><?php echo getescapedtext ($hcms_lang['server'][$lang]); ?></td>
         <td>
-          <input type="text" name="sentserver" maxlength="100" style="width:150px; height:16px;" />
+          <input type="text" name="sentserver" maxlength="100" style="width:150px;" />
         </td>
       </tr>
       <tr>
@@ -170,15 +167,15 @@ if (empty ($conn_id))
         </td>
       </tr>
       <tr>
-        <td><b><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></b></td>
+        <td><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></td>
         <td>
-          <input type="text" name="sentuser" maxlength="100" style="width:150px; height:16px;" />
+          <input type="text" name="sentuser" maxlength="100" style="width:150px;" />
         </td>
       </tr>
       <tr>
-        <td><b><?php echo getescapedtext ($hcms_lang['password'][$lang]); ?></b></td>
+        <td><?php echo getescapedtext ($hcms_lang['password'][$lang]); ?></td>
         <td>
-          <input type="password" name="sentpasswd" maxlength="100" style="width:150px; height:16px;" />
+          <input type="password" name="sentpasswd" maxlength="100" style="width:150px;" />
         </td>
       </tr>
       <tr>
@@ -186,11 +183,7 @@ if (empty ($conn_id))
         <td>
           <button class="hcmsButtonGreen" style="width:160px;" onClick="document.forms['login'].submit();">Log in</button>
         </td>
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-      </tr>          
+      </tr>         
     </table>
   </form>
 </div>

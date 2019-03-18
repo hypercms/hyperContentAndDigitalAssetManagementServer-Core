@@ -21,18 +21,18 @@ img
   image-rendering: -o-crisp-edges; // Opera 12
 }
 
-input, select, textarea, button
+input, select, textarea, button, .hcmsTextArea 
 {
-  font-family: inherit;
-  font-size: inherit;
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 12px;
   font-weight: normal;
   color: #000000;
   text-decoration: none;
   display: inline-block;
   vertical-align: middle;
-  border: 1px solid #808080;
+  border: 1px solid #C0C0C0;
   background-color: #FFFFFF;
-  margin: 0;
+  margin: 1px 1px 1px 0px;
   padding: 7px 4px;
 }
 
@@ -145,7 +145,8 @@ hr
 
 .hcmsLogoTop
 {
-  height: 32px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   margin: 0;
   border: 0;
@@ -346,11 +347,10 @@ hr
 .hcmsMessage
 {
   vertical-align: middle;
-  border: 2px solid #4294FF;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
-  background-color: #ABD0FF;
+  background-color: #7EB967;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -551,7 +551,7 @@ hr
   background-color: #65B1FC;
   border: 1px solid #469df5;
   display: inline-block;
-  padding: 2px 10px;
+  padding: 4px 10px;
   text-decoration: none;
   cursor: pointer;
 }
@@ -572,7 +572,7 @@ hr
   background-color: #77d42a;
   border: 1px solid #268a16;
   display: inline-block;
-  padding: 2px 10px;
+  padding: 4px 10px;
   text-decoration: none;
   cursor: pointer;
 }
@@ -593,7 +593,7 @@ hr
   background-color: #FB9004;
   border: 1px solid #C28B2C;
   display: inline-block;
-  padding: 2px 10px;
+  padding: 4px 10px;
   text-decoration: none;
   cursor: pointer;
 }
@@ -652,7 +652,7 @@ hr
 
 .hcmsHeadline 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: inherit;
   font-size: 12px; 
   font-weight: bold; 
   text-decoration: none;
@@ -661,7 +661,7 @@ hr
 
 .hcmsHeadlineTiny 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: inherit;
   font-size: 12px; 
   font-weight: normal; 
   color: #000080; 
@@ -670,7 +670,7 @@ hr
 
 .hcmsTextSmall 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: inherit;
   font-size: 9px; 
   font-weight: normal; 
   color: #000000; 
@@ -680,7 +680,7 @@ hr
 .hcmsTabContainer
 {
   width: 100%;
-  min-width: 500px;
+  min-width: 320px;
   height: 22px;
   padding: 0;
   margin: 0;

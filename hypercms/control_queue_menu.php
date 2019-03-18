@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -168,6 +166,7 @@ function jumpTo (target)
 <?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
 
 <div class="hcmsLocationBar">
+  <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
       <td><b><?php echo getescapedtext ($hcms_lang['publishing-queue-management'][$lang]); ?></b></td>
@@ -220,6 +219,10 @@ function jumpTo (target)
       </td>
     </tr>  
   </table>
+  <?php } else { ?>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['publishing-queue'][$lang])." &gt; ".$pagename; ?></span>
+  <?php } ?>
+
 </div>
 
 <!-- toolbar -->
@@ -315,8 +318,7 @@ function jumpTo (target)
   </div>
   <div class="hcmsToolbarBlock">    
     <div style="padding:3px; float:left;">
-      <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?> 
-      <select name="queueuser" onChange="jumpTo('parent.frames[\'mainFrame\']')">
+      <select name="queueuser" onChange="jumpTo('parent.frames[\'mainFrame\']')" title="<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['all-users'][$lang]); ?></option>
         <?php
         // select user

@@ -3171,4 +3171,120 @@ Release 02/2019
 - Bug fix: Function createnavigation in UI API did not exclude recycled objects from the navigation
 - Bug fix: Function setmetadata in Meta API used wrong tag-ID to set Quality-data in container
 - Bug fix: Media assets of publications that doesn't use UTF-8 as character set have not been displayed as UTF-8 (Media assets and their XML schemas use always UTF-8)
-- Bug fix: Taxonomy editor did not add new rows after 1st page due to wrong index for inital language setup of the new row
+- Bug fix: Taxonomy editor did not add new rows after 1st page due to wrong index for initial language setup of the new row
+
+Version 8.0.0
+Release 03/2019
+- Implementation of the new system GUI version 8
+- Implementation of the new left bar that replaces the old top bar
+- Removed general search from the left
+- Design modifications in home, explorer, chat, frameset_main, image_rendering, media_rendering, search_form, page_multiedit, image_rendering, media_rendering, and control_media_menu
+- Design modifications in function showmedia in UI API
+- Design modifications in Project Management module
+- Design modifications in user_edit
+- Design modifications in popup_ftp for upload and Import/Export module of the Connector
+- Removed flat design theme from system
+- Modifications in all design themes for the new GUI
+- Implementation of new JS function hcms_enterKeyPressed in main.js
+- Implementation of enter key event for general search fields in order to execute search without pressing the search button
+- New standard design theme is the previous experience design theme (old standard theme has been renamed to blue)
+- Removed display of the version number from userregister
+- Update of all manuals
+- Design modifications of the facename input fields in the template engine
+- Design modifications in Workflow Management module
+- Design modifications in user_sendlink using new layers for the message options taht can be opened and closed
+- Moved the tab for download formats to a new layer in user_sendlink
+- Minor modifications in task_list
+- Modifications in site_edit_form in order to explain that the selected language options for the automated translation also applies for the taxonomy 
+- Modifications in taxonomy editor in order to improve usability and performance (only display language options if more than one language has been defined in the publication settings)
+- Define English as default language for the taxonomy if no language option has been defined in the publication settings
+- Modifications in site_edit_form in order to enable an unassigned design theme
+- Modifications in function editpublication in Main API in order to enable an empty design theme in the publication settings
+- Modifications in function rdms_getdailystat in DB Connect
+- Modifications in explorer_objectview in order to add an mouseover event to the buttons so the selector layers will close automatically
+- Modifications in version_content_compare and version_template_compare in order to assign a CSS class for the fields
+- Modifications in version_content_compare in order to exclude comments and Faces-JSON
+- Added idml file extension to format_ext
+- Added font as new file extension type to format_ext
+- Implementation of support for AI and INDD files in function getfileinfo in Get API
+- Implementation of font files in function getfileinfo in Get API
+- Implementation of new devices and their screen sizes in the main configuration
+- Implementation of new input parameter for user in function getprojectstructure in the Project Management API
+- Update of the language files regarding the Workflow module
+- Implementation of a private chat by the introduction of relationsships based on user invitations (modifications in chat, service/chat, chat.js)
+- Implementation of new chat log format including the user/sender in a separate row
+- New main configuration setting for public or private chat
+- Modifications in function valid_publicationname in Security API in order to set ".." as false name
+- Modifications in function userlogin in Security API in order to remove user as host in chat relationships
+- Updates in Security API
+- Implementation of new JQuery mobile version 1.4.5 and JQuery mobile theme
+- Removed JQuery mobile version 1.3.1
+- Implementation of the new Mobile Edition including a new design
+- Modifications of all controls (including Import/Export, Instance, Report and Workflow modules) for the new Mobile Edition
+- Modification in control_objectlist_menu in order to improve the conditions for the button actions
+- Implementation of a new input parameter and logic in function zipfiles in Media API in order to support the packing of unstructured files
+- Modifications in function zipfiles in Media API in order to verify container user before including the file in the packed file and to extract the publication name from the path (for objects from different publications)
+- Modifications in function zipfiles in Media API in order to place message in packed file in case no files are available due to locking by other users or no media objects
+- Modifications in function zipfiles in Media API in order to set directory for Windows ZIP to temp directory (same as UNIX)
+- Implementation of a new input parameter and logic in function createmultidownloadlink in Main API in order to support the packing of unstructured files
+- Implementation of send mail link for all of the users favorite objects (without selecting any objects)
+- Modifications in search_objectlist in order to assign explorer action to variable from_page and enable differentiation based on different from_page values
+- Modifications in function getcontainername in Get API in order to verify session before accessing its values (for locked containers)
+- Imlpemenatation of popup window/layer in frameset_objectlist and frameset_content
+- Design modifications in JS and CSS of javascript/jstree
+- Modifications in sendmail service in order to separate the creation of new user accounts and the send messages process
+- Modifications in user_sendmail service in order to support publication as input parameter for function getallusers
+- Modifications in function edituser in Main API in order to support multiple publication memberships and assign the group memberships to all of the publication memberships
+- Implementation of new function createmultiaccesslink in Main API in order to create a unique access link for a collection of objects
+- Modifications in function rdbms_createaccesslink in DB Connect in order to support multiple object paths or object IDs as input
+- Modifications in function rdbms_getaccessinfo in DB Connect in order to support multiple object IDs as output
+- Changed object_id attribute in table accesslink from integer to varchar in order to support multiple object IDs
+- Modifications in function userlogin in Security API in order to support multiobject linking for access links
+- Modifications in message_objectlist in order to support new message variables and to display recipients including users, new users by e-mail and user groups
+- Implementation of new function linking_valid, linking_inscope in Main API
+- Implementation of new function update_database_v800 in Update API
+- Modifications in function registeruser in Security API in order to support the new access linking
+- Modifications in function accesspermission in Security API in order to support the new access linking (removed access links evaluation from function since explorer_objectlist verifies the access links)
+- Modifications in JQuery UI CSS files in order to inherit font-family and font-size
+- Modifications in explorer in order to implement new access linking (disable explorer)
+- Modifications in page_info in order to disable all links if access linking is used
+- Modifications in frameset_main in order to include task management button in the left bar in case of access linking
+- Modifications in frameset_mobile in order to include task management button instead of navigation button in the top bar in case of access linking
+- Moved srt file extension for video subtitles from video to clear text format in include/format_ext.inc.php
+- Implementation of new main configuration setting $mgmt_config['message_newwindow'] in order to define if messages will be opened in a new or the same window
+- Implementation of window controls for same or new window of messages in frameset_messages, control_message_menu, and message_objectlist
+- Implementation of window controls for same or new window of messages in frameset_objectlist, and control_objectlist_menu
+- Modifications in function showgallery in UI API in order to support full path names image titles and to open objects if used inside iframe
+- Moved logout button from explorer to top frame in Mobile Edition
+- Design modifications in userlogout
+- Modification in number format of home boxes for access statistics
+- Modifications in function showAPIdocs in UI API in order to verify array elements
+- Modifications in various functions of the Media API in order to verify that the executable link is not empty
+- Modifications in various functions of the Main API in order to set max_digit_filename to 236
+- Modifications in function createobject in Main API in order to exlude error loging and messages if basic input has been provided but input parameters failed the verification
+- Implementation of initalization of date and time into hyperCMS API loader in case it is not provided by the main configuration
+- Hide userregistration form if accessed directly and if registration of new users is disabled
+- Modifications in template engine in order to assign CSS class hcmsTextArea to facename text area fields
+- Modifications in template engine face marker and detection functions in order to verify the tag is a certain element type before executing (to prevent display of all markers on videos after a marker has been removed)
+- Modifications in function creatmedia in order to verify the created video segment files and the joined video file
+- Modifications in function showmedia in order to display full width editor window for text-based template media
+- Modifications in function showmedia in order to initalize variables and verify if template media file exists
+- Modifications in Report Management module in order to apply labels to radio buttons of the report chart types
+- Design modifications in Report Management 
+- Removed JQuery UI 1.10.2 CSS files
+- Implementation of update.log in install directory in order to disable the update process for new installations
+- Bug fix: JS function hcms_showInfo in main.js did not convert the input from seconds to milliseconds
+- Bug fix: Variable counter has not been declared in task_list in case of an empty task list of a user
+- Bug fix: function savetaxonomy in Meta API will not save the taxonomy if not language option has been defined in the publication settings
+- Bug fix: Taxonomy editor used wrong index number for first taxonomy element if no taxonomy is available
+- Bug fix: Delete button for users in task bar has not been enabled for a multiple selection in control_user_menu
+- Bug fix: Function convertmedia in Media API did not exclude image target formats for the conversion of documents (call of function createdocument)
+- Bug fix: Undefined variable $onclick and $clipboard_array in task_list
+- Bug fix: Undefined variable $useritem_array in function getworkflowitem in Get API
+- Bug fix: Undefined variable $multiobject_count in control_user_menu
+- Bug fix: sendmail service used wrong input parameter for usergroup in edituser function call
+- Bug fix: sendmail service did not implode e-mail addresses for log entry
+- Bug fix: Function tasknotification in Task API did use wrong input parameter (start and end date) for call of function rdbms_gettask
+- Bug fix: Previews of single objects have not been displayed in user_sendmail if multiobject has not been set
+- Bug fix: Function createmedia in Media API dd not provide the new full source path to the new video file that has been created from the video segments
+- Bug fix: media_view did not add publication name to media variable in case it has not been provided (function showmedia provides publication and media file name separately)

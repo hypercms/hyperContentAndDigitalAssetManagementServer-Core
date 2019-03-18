@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
  
  // session
@@ -36,7 +34,7 @@ $lang = getrequest ("lang", "objectname", $mgmt_lang_shortcut_default);
 $token = getrequest ("token");
 $action = getrequest ("action");
 $require = getrequest ("require");
-$theme = getrequest ("theme");
+$theme = getrequest_esc ("theme", "objectname");
 // input parameters (assetbrowser)
 $sentinstance = getrequest ("instance", "publicationname");
 $userhash = getrequest ("userhash");
@@ -96,31 +94,21 @@ if ($al != "")
 }
 
 // object access link since version 6.1.12
+// only works if a access link user has been defined for the publication (must have a valid user hashcode for access)
 $accesslink = false;
     
 if ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
 {
   $objectpath_esc = rdbms_getobject ($oal);
+  $objecthash = rdbms_getobject_hash ($oal);
   
   if ($objectpath_esc != "")
   {
-    $accesslink = array();
-    $accesslink['hcms_linking']['publication'] = $site = getpublication ($objectpath_esc);
-    $accesslink['hcms_linking']['cat'] = getcategory ($site, $objectpath_esc);
-    $objectpath = deconvertpath ($objectpath_esc, "file");
+    // access link
+    $accesslink['hcms_linking'][$objecthash] = $objectpath_esc;
     
-    if (getobject ($objectpath) == ".folder")
-    {
-      $accesslink['hcms_linking']['location'] = getlocation ($objectpath);
-      $accesslink['hcms_linking']['object'] = "";
-      $accesslink['hcms_linking']['type'] = "Folder";
-    }
-    else
-    {
-      $accesslink['hcms_linking']['location'] = getlocation ($objectpath);
-      $accesslink['hcms_linking']['object'] = getobject ($objectpath);
-      $accesslink['hcms_linking']['type'] = "Object";
-    }
+    // get publication
+    $site = getpublication ($objectpath_esc);
 
     // publication management config
     if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -257,7 +245,7 @@ if (checkuserip (getuserip ()) == true)
   // login
   else
   {
-    // hcms_linking logon /since version 5.6.2)
+    // hcms_linking logon (since version 5.6.2)
     if (!empty ($hcms_user) && !empty ($hcms_objref) && !empty ($hcms_objcode) && $ignore_password == true)
     {
       $login_result = userlogin ($hcms_user, "", "", $hcms_objref, $hcms_objcode, $ignore_password);
@@ -284,7 +272,7 @@ if (checkuserip (getuserip ()) == true)
       // register user in session
       $login_result = registeruser ($sentinstance, $login_result, $accesslink, $hcms_objformats, $is_mobile, $is_iphone, $html5support);
       
-      // user hash is provided for the assetbrowser or object access links
+      // user hash is provided for the assetbrowser and no access linking is used
       if (!empty ($userhash) && empty ($oal))
       {
         registerassetbrowser ($userhash, $objecthash);

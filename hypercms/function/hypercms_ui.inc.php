@@ -3,8 +3,6 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
- *
- * You should have received a copy of the License along with hyperCMS.
  */
  
 // ================================ USER INTERFACE / LAYOUT ITEMS ===============================
@@ -696,6 +694,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   // define document type extensions that are convertable into pdf or which the document viewer (google doc viewer) can display
   $doc_ext = ".pages.pdf.doc.docx.ppt.pptx.xls.xlsx.odt.ods.odp";
   
+  // initalize
+  $media_root = "";
+  $mediafilesize = "";
+  $mediafiletime = "";
+  $width_orig = "";
+  $height_orig = "";
+  $mediaview = "";
+  $style = "";
+  
   // set html media tag ID if not set
   if (empty ($id)) $id = "media_".uniqid(); 
   
@@ -751,19 +758,22 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     {
       $media_root = $thumb_root = $mgmt_config['abs_path_tplmedia'].$site."/";
       
-      // get file size in kB
-      $mediafilesize = round (@filesize ($media_root.$mediafile) / 1024, 0);
-      
-      // get modified date
-      $mediafiletime = date ("Y-m-d H:i", filemtime ($media_root.$mediafile));
-    
-      // get dimensions of original media file
-      $temp = @getimagesize ($media_root.$mediafile);
-      
-      if (!empty ($temp[0]) && !empty ($temp[1]))
+      if (is_file ($media_root.$mediafile))
       {
-        $width_orig = $temp[0];
-        $height_orig = $temp[1];
+        // get file size in kB
+        $mediafilesize = round (@filesize ($media_root.$mediafile) / 1024, 0);
+        
+        // get modified date
+        $mediafiletime = date ("Y-m-d H:i", filemtime ($media_root.$mediafile));
+      
+        // get dimensions of original media file
+        $temp = @getimagesize ($media_root.$mediafile);
+        
+        if (!empty ($temp[0]) && !empty ($temp[1]))
+        {
+          $width_orig = $temp[0];
+          $height_orig = $temp[1];
+        }
       }
     }
     // define media file root directory for assets
@@ -851,9 +861,6 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       }
     }
     
-    $mediaview = "";
-    $style = "";
-    
     // if watermark is used, force recreation
     if (is_image ($mediafile))
     {
@@ -864,7 +871,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       if ($mgmt_config['publicdownload'] == true) $containerdata = loadcontainer ($container_id, "work", "sys");
       else $containerdata = loadcontainer ($container_id, "published", "sys");
       
-      if ($containerdata != "")
+      if (!empty ($containerdata))
       {
         $wmlocation = getmedialocation ($site, $mediafile, "abs_path_media");
         $wmnode = selectcontent ($containerdata, "<media>", "<media_id>", "Watermark");
@@ -1601,7 +1608,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // add image rendering button
           $mediaview .= "
           <tr>
-            <td style=\"text-align:center;\"><button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('imagerendering_so', '', 'post');\">".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button></td>
+            <td style=\"text-align:center;\"><button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('imagerendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button></td>
           </tr>";
         }
         // options button
@@ -1609,7 +1616,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $mediaview .= "
           <tr>
-            <td style=\"text-align:center;\"><button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\">".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button></td>
+            <td style=\"text-align:center;\"><button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button></td>
           </tr>";
         }
 
@@ -1879,16 +1886,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             $mediaview .= "
                 <input type=\"hidden\" id=\"VTT\" name=\"\" value=\"\" />
-                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\">".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\">".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
+                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>&nbsp;
+                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
           }
           // cut, embed, options button
           elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))
           {
             $mediaview .= "
-                <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint()\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" style=\"height:12px;\" /> ".getescapedtext ($hcms_lang['audio-montage'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\" style=\"display:none;\">".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\">".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
+                <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint()\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['audio-montage'][$lang], $hcms_charset, $lang)."</button>&nbsp;
+                <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>&nbsp;
+                <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
           }
         }
         
@@ -2054,20 +2061,20 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             $mediaview .= "
                 <input type=\"hidden\" id=\"VTT\" name=\"\" value=\"\" />
-                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"hcms_openVTTeditor('vtt_container');\">".getescapedtext ($hcms_lang['video-text-track'][$lang], $hcms_charset, $lang)."</button>&nbsp;";
+                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"hcms_openVTTeditor('vtt_container');\"><img src=\"".getthemelocation()."img/button_textl.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['video-text-track'][$lang], $hcms_charset, $lang)."</button>&nbsp;";
             if (!empty ($mgmt_config['facedetection'])) $mediaview .= "
-                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"detectFaceOnVideo();\">".getescapedtext ($hcms_lang['detect-faces'][$lang], $hcms_charset, $lang)."</button>&nbsp;";
+                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"detectFaceOnVideo();\"><img src=\"".getthemelocation()."img/pers_registration.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['detect-faces'][$lang], $hcms_charset, $lang)."</button>&nbsp;";
             $mediaview .= "
-                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\">".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\">".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
+                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>&nbsp;
+                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
           }
           // cut, options, embed button
           elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))
           {
             $mediaview .= "
-                <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint()\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" style=\"height:12px;\" /> ".getescapedtext ($hcms_lang['video-montage'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\" style=\"display:none;\">".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\">".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
+                <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint()\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['video-montage'][$lang], $hcms_charset, $lang)."</button>&nbsp;
+                <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>&nbsp;
+                <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
           }
         }
         
@@ -2249,7 +2256,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $width = round (($height * 0.73), 0);
             $style = "style=\"width:".$width."px; height:".$height."px;\"";
           }
-          else $style = "style=\"width:580px; height:620px;\"";   
+          else $style = "style=\"width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;\"";   
           
           if ($viewtype == "template") $mediaview .= "
         <form name=\"editor\" method=\"post\">
@@ -2260,7 +2267,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           <input type=\"hidden\" name=\"token\" value=\"".createtoken ($user)."\" />";
           
           if ($viewtype == "template") $mediaview .= "
-        <table class=\"hcmsTableNarrow\" style=\"border:1px solid #000000; margin:2px;\">";
+        <table class=\"hcmsTableNarrow\" style=\"width:100%; border:1px solid #000000; margin:2px;\">";
           else $mediaview .= "
         <table>";
           
@@ -2281,7 +2288,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           
           if ($viewtype != "media_only") $mediaview .= "
           <tr>
-            <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
+            <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td>
           </tr>
         </table>";
           
@@ -2401,7 +2408,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             $downloads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;">
-                <button class="hcmsButtonBlue" onclick="'.$download_link.'"><img src="'.getthemelocation().'img/button_file_download.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button>
+                <button class="hcmsButtonBlue" onclick="'.$download_link.'"><img src="'.getthemelocation().'img/button_file_download.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button>
               </td>';
             
             // Youtube upload
@@ -2409,7 +2416,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {		
               $youtube_uploads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openpopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
+                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openpopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
               </td>';
             }
           }
@@ -2502,7 +2509,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   {
                     $downloads[$media_extension] = '
                       <td class="hcmsHeadlineTiny" style="text-align:left;">
-                        <button class="hcmsButtonBlue" onclick="'.$download_link.'"><img src="'.getthemelocation().'img/button_file_download.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button>
+                        <button class="hcmsButtonBlue" onclick="'.$download_link.'"><img src="'.getthemelocation().'img/button_file_download.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button>
                       </td>'; 
                     
                     // Youtube upload
@@ -2510,7 +2517,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                     {	
                       $youtube_uploads[$media_extension] = '
                       <td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                        <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openpopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
+                        <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openpopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
                       </td>';
                     }
                   }
@@ -4569,7 +4576,7 @@ function showAPIdocs ($file, $return="html")
           {
             $result .= "<b>Input parameters</b><br/>\n";
             
-            $var_text = explode (", ", $input[$name]);
+            if (!empty ($input[$name])) $var_text = explode (", ", $input[$name]);
             
             for ($i=0; $i<count($input_vars); $i++)
             {
@@ -5263,8 +5270,11 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
       $location = deconvertpath ($location_esc, "file");
       $cat = getcategory ($site, $object);
       $page = getobject ($object);
+      $location_name = getlocationname ($site, $location_esc, $cat);
 
       $objectinfo = getobjectinfo ($site, $location, $page);
+      
+      $openobject = "";
       
       if (!empty ($openlink))
       {
@@ -5274,11 +5284,13 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
 
         if ($setlocalpermission['root'] == 1)
         {
-          // open on double click
-          $openobject = "onclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
+          $functioncall = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")";
+          
+          // open on double click (parent must be used if function is called from iframe!)
+          $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; ".
+          "else ".$functioncall.";\"";
         }
       }
-      else $openobject = "";
       
       // media asset
       if (!empty ($objectinfo['media']))
@@ -5315,12 +5327,12 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
           if ($imgwidth < $thumbsize && $imgheight < $thumbsize) $style_size = "";
           else $style_size = $ratio;
           
-          $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$objectinfo['name']."\" title=\"".$objectinfo['name']."\" /></div>";;
+          $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";;
         }
         // no thumbnail available
         else
         {                 
-           $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$mediainfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$objectinfo['name']."\" /></div>";
+           $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$mediainfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
         }
       }
       // object or folder
@@ -5328,7 +5340,7 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
       {
         $fileinfo = getfileinfo ($site, $location_esc.$page, $cat);
         
-        $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$objectinfo['name']."\" /></div>";
+        $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
       }
     }
     
