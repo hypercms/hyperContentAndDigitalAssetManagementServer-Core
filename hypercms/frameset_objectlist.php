@@ -45,6 +45,11 @@ function openobjectview (location, object, view)
   var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 
   document.getElementById('objectview').src = 'explorer_objectview.php?location=' + location + '&page=' + object + '&width=' + width + '&height=' + height + '&view=' + view;
+  
+  // load screen
+  if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
+  
+  // object view
   hcms_showInfo('objectviewLayer',0);
 }
 
@@ -81,7 +86,7 @@ function openBrWindowLink (url, winName, features)
 
 <!-- popup for preview/live-view and forms --> 
 <div id="objectviewLayer" class="hcmsWorkplaceExplorer" style="display:none; overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:8;">
-  <div style="position:fixed; right:4px; top:4px; z-index:9000;">
+  <div style="position:fixed; right:4px; top:4px; z-index:9001;">
     <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closeobjectview();" />
   </div>
   <iframe id="objectview" name="objectview" src="" frameBorder="0" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> <?php if (!$is_iphone) echo 'style="width:100%; height:100%; border:0; margin:0; padding:0;"'; ?> sandbox="allow-same-origin allow-scripts allow-forms" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>

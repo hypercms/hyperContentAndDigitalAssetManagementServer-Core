@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -72,7 +74,7 @@ else
   echo "<meta charset=\"".$mgmt_config[$site]['default_codepage']."\" />\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
   echo "</head>\n";
-  echo "<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" onload=\"parent.hcms_showPage('contentLayer');\">\n";
+  echo "<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" onload=\"parent.hcms_showPage('contentFrame', 'contentLayer');\">\n";
   echo "</body>\n";
   echo "</html>";
 }

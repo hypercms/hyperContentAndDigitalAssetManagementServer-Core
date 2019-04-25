@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -49,7 +51,7 @@ $objectdata = loadfile ($location, $object);
 $media = getfilename ($objectdata, "media");
 
 // max digits in file name
-if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
+if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
 
 // get file info
 $file_info = getfileinfo ($site, $location.$object, $cat);

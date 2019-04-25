@@ -60,6 +60,7 @@ $temp_longitude = getsession ("hcms_temp_longitude");
 $temp_chatstate = getsession ("hcms_temp_chatstate");
 $temp_balancer_id = getsession ("hcms_temp_balancer_id");
 $temp_project_id = getsession ("hcms_temp_project_id");
+$temp_appendcontent = getsession ("hcms_temp_appendcontent");
 // the temporary storage is used to pass container content of files between functions
 // and to trigger saving of the file [yes/no]
 $temp_cache = getsession ("hcms_temp_cache", "");

@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -89,7 +91,16 @@ if ($ctrlreload == "") $ctrlreload = "yes";
 // set view in session
 if ($view != "")
 {
-  if ($view == "cmsview" || $view == "inlineview") setsession ('hcms_temp_objectview', $view, true);
+  if ($view == "cmsview" || $view == "inlineview")
+  {
+    setsession ('hcms_temp_objectview', $view, true);
+    
+    // save GUI settings
+    if (!empty ($_SESSION['hcms_temp_objectview']) && !empty ($_SESSION['hcms_temp_explorerview']) && isset ($_SESSION['hcms_temp_sidebar']) && !empty ($_SESSION['hcms_user']))
+    {
+      setguiview ($_SESSION['hcms_temp_objectview'], $_SESSION['hcms_temp_explorerview'], $_SESSION['hcms_temp_sidebar'], $_SESSION['hcms_user']);
+    }
+  }
 }
 // set default view
 else

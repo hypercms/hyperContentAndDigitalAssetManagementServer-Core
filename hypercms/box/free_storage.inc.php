@@ -21,7 +21,7 @@ if (function_exists ("disk_total_space") && function_exists ("disk_free_space"))
         else $add = 0;
         
         $space = $space_total/1024/1024/1024 + $add;
-        echo "Total <span style=\"font-size:32px;\">".number_format ($space, 2, ".", ",")." GB</span>"; 
+        echo "Total <span style=\"font-size:32px;\">".number_format ($space, 2, ".", " ")." GB</span>"; 
       }
       else echo "Total <span style=\"font-size:32px;\">Not available</span>";
       
@@ -31,7 +31,7 @@ if (function_exists ("disk_total_space") && function_exists ("disk_free_space"))
       
       if ($space_free)
       {
-        echo "Free <span style=\"font-size:32px;\">".number_format (($space_free/1024/1024/1024), 2, ".", ",")." GB</span>";
+        echo "Free <span style=\"font-size:32px;\">".number_format (($space_free/1024/1024/1024), 2, ".", " ")." GB</span>";
       }
       else echo "Free <span style=\"font-size:32px;\">Not available</span>";
       
@@ -40,11 +40,16 @@ if (function_exists ("disk_total_space") && function_exists ("disk_free_space"))
       $percentage = round ((($space_total - $space_free) / $space_total), 4) * 100;
       if ($percentage > 100) $percentage = 100;
       
+      if ($percentage > 90) $css_color = "hcmsPriorityAlarm";
+      elseif ($percentage > 80) $css_color = "hcmsPriorityHigh";
+      elseif ($percentage > 70) $css_color = "hcmsPriorityMedium";
+      else $css_color = "hcmsPriorityLow";
+      
       if ($percentage >= 0) echo "
       <table style=\"width:100%; padding:0; border:1px solid #000000; border-collapse:collapse;\">
         <tr> 
           <td>
-            <div class=\"hcmsRowHead1\" style=\"width:".ceil($percentage)."%; height:32px; text-align:center; font-size:26px; line-height:32px; overflow:hidden;\">".ceil($percentage)." %</div>
+            <div class=\"".$css_color."\" style=\"width:".ceil($percentage)."%; height:32px; text-align:center; font-size:26px; line-height:32px; overflow:hidden;\">".ceil($percentage)." %</div>
           </td>
         </tr>
       </table>";

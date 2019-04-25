@@ -66,13 +66,6 @@ if (checktoken ($token, $user)) loadbalancer ("uploadfile");
 $location = deconvertpath ($location, "file");
 $location_esc = convertpath ($site, $location, $cat);
 
-// log entry
-$errcode = "00011";
-$error[] = $mgmt_config['today']."|hypercms_api.inc.php|information|$errcode|new multimedia file upload by user '$user' using token '$token' ($site, $location_esc, $page, $cat, update:$media_update)";       
-
-// save log
-savelog (@$error);
-
 // upload file
 if ($token != "" && checktoken ($token, $user))
 {

@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
 // ================================ USER INTERFACE / LAYOUT ITEMS ===============================
@@ -45,7 +47,7 @@ function windowheight ($type="object")
 // output: true / false
 
 // description:
-// Sets explorer objectlist view parameter
+// Set explorer objectlist view parameter
 
 function toggleview ($view)
 {
@@ -56,13 +58,11 @@ function toggleview ($view)
   if (!empty ($view) && ($view == "detail" || $view == "small" || $view == "medium" || $view == "large"))
   {
     $_SESSION['hcms_temp_explorerview'] = $view;
-    return true;
   }
   // if not set and object linking is used, use medium gallery view
   elseif (empty ($_SESSION['hcms_temp_explorerview']) && is_array ($_SESSION['hcms_linking']))
   {
     $_SESSION['hcms_temp_explorerview'] = "small";
-    return true;
   }
   // if not set at all
   elseif (
@@ -71,9 +71,17 @@ function toggleview ($view)
   )
   {
     $_SESSION['hcms_temp_explorerview'] = $mgmt_config['explorerview'];
-    return true;
   }
   else return false;
+  
+  
+  // save GUI settings
+  if (!empty ($_SESSION['hcms_temp_objectview']) && !empty ($_SESSION['hcms_temp_explorerview']) && isset ($_SESSION['hcms_temp_sidebar']) && !empty ($_SESSION['hcms_user']))
+  {
+    setguiview ($_SESSION['hcms_temp_objectview'], $_SESSION['hcms_temp_explorerview'], $_SESSION['hcms_temp_sidebar'], $_SESSION['hcms_user']);
+  }
+  
+  return true;
 }
 
 // --------------------------------------- togglesidebar -------------------------------------------
@@ -92,13 +100,19 @@ function togglesidebar ($view)
   if (!empty ($view) && $view != false && $view != "false")
   {
     $_SESSION['hcms_temp_sidebar'] = true;
-    return true;
   }
   else
   {
     $_SESSION['hcms_temp_sidebar'] = false;
-    return true;
   }
+  
+  // save GUI settings
+  if (!empty ($_SESSION['hcms_temp_objectview']) && !empty ($_SESSION['hcms_temp_explorerview']) && isset ($_SESSION['hcms_temp_sidebar']) && !empty ($_SESSION['hcms_user']))
+  {
+    setguiview ($_SESSION['hcms_temp_objectview'], $_SESSION['hcms_temp_explorerview'], $_SESSION['hcms_temp_sidebar'], $_SESSION['hcms_user']);
+  }
+  
+  return true;
 }
 
 // --------------------------------------- setfilter -------------------------------------------
@@ -1163,7 +1177,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // document annotations
-        if (!empty ($mgmt_config['annotation']) && is_dir ($mgmt_config['abs_path_cms']."workflow/") && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+        if (!empty ($mgmt_config['annotation']) && is_dir ($mgmt_config['abs_path_cms']."workflow/") && is_file ($mgmt_config['abs_path_cms']."javascript/annotate/annotate.css") && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
         {
           // check for document annotation image (1st page)
           $annotation_page = $file_info['filename'].".annotation-0.jpg";

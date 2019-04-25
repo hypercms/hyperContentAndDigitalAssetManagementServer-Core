@@ -1,9 +1,21 @@
 <?php
 // ---------------------- STATS ---------------------
-if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
+if (isset ($siteaccess) && is_array ($siteaccess))
 {
   // language file
   require_once ("language/".getlanguagefile ($lang));
+  
+  // chart size in pixels
+  if (!empty ($is_mobile))
+  {
+    $chart_width = 480;
+    $chart_height = 220;
+  }
+  else
+  {
+    $chart_width = 600;
+    $chart_height = 270;
+  }
   
   // max history
   $maxcount = 30;
@@ -12,7 +24,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
   $event_array = loadlog ("serverload");
   
   // collect log data
-  if (is_array ($event_array) && sizeof ($event_array) > 0)
+  if (!empty ($event_array) && is_array ($event_array) && sizeof ($event_array) > 0)
   {
     // reverse array
     $event_array = array_reverse ($event_array);
@@ -33,7 +45,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
         list ($date, $time) = explode (" ", $datetime);
         if ($load > 1) $load = 1;
         
-        $date_axis[$i] = "<div style=\"transform:rotate(-45deg); transform-origin:right bottom 0; margin:2px 0px 0px -15px;\">".$time."</div>";
+        $date_axis[$i] = "<div style=\"transform:rotate(-45deg); transform-origin:right bottom 0; margin:2px 0px 0px -15px;\">".showdate ($time, "H:i","H:i")."</div>";
         $load_axis[$i]['value'] = round ($load * 100);
         $load_axis[$i]['text'] = round ($load * 100)."%";
         $mem_axis[$i]['value'] = round ($memory * 100);
@@ -44,10 +56,13 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
     // display log data
     if (!empty ($date_axis) && !empty ($load_axis))
     {
-      if ($is_mobile) $width = "92%";
+      if (!empty ($is_mobile)) $width = "92%";
       else $width = "670px";
       
       echo "
+      <script type=\"text/javascript\">
+      setInterval (function() { window.location.reload(); }, 300000); 
+      </script>
       <div id=\"stats_serverload\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
         <div class=\"hcmsHeadline\">Server load and memory usage</div>";
         
@@ -57,7 +72,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
         ksort ($load_axis);
         ksort ($mem_axis);
         
-        $chart = buildbarchart ("chart", 600, 270, 8, 40, $date_axis, $load_axis, $mem_axis, "", "border:1px solid #666666; background:white;", "background:#568A02; font-size:8px; cursor:pointer;", "background:#FCAA4D; font-size:8px; cursor:pointer;");
+        $chart = buildbarchart ("chart", $chart_width, $chart_height, 8, 40, $date_axis, $load_axis, $mem_axis, "", "border:1px solid #666666; background:white;", "background:#568A02; font-size:8px; cursor:pointer;", "background:#FCAA4D; font-size:8px; cursor:pointer;");
         echo $chart;
       }
 

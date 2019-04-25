@@ -1324,6 +1324,7 @@ $hcms_lang['select-fields-of-entities']['ru'] = "Выберите поля об�
 $hcms_lang['conditions']['ru'] = "Условия";
 $hcms_lang['sql-statement']['ru'] = "SQL";
 $hcms_lang['chart']['ru'] = "Диаграммы";
+$hcms_lang['area-chart']['ru'] = "Диаграмма площади";
 $hcms_lang['pie-chart']['ru'] = "Круговая диаграмма";
 $hcms_lang['column-chart']['ru'] = "Таблица рулевой колонки";
 $hcms_lang['timeline-chart']['ru'] = "На временной шкале";

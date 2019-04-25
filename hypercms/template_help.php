@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -164,6 +166,10 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">mediatype='...'</td>
     </tr>
     <tr> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['path-type-optional'][$lang]); ?></td>
+      <td class="hcmsRowData1">pathtype='...'</td>
+    </tr>
+    <tr> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['dpi-value-to-autoscale-images-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">dpi='...'</td>
     </tr>
@@ -178,6 +184,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     <tr> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['preview-window'][$lang]); ?> (textu)</td>
       <td class="hcmsRowData1">preview='url'</td>
+    </tr>
     
     <!-- media links -->
     <tr> 

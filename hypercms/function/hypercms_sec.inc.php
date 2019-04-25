@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
  // ===================================== PERMISSIONS =========================================
@@ -1395,7 +1397,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   
   if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".objectlistcols.json"))
   {
-    // load objectlist defintion file
+    // load objectlist definition file
     $temp_json = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json");
     
     // JSON decode the string
@@ -1471,6 +1473,20 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   
   // set labels definitions for result
   $result['labels'] = $labels;
+  
+  // get default GUI settings
+  $result['objectview'] = $mgmt_config['objectview'];
+  $result['explorerview'] = $mgmt_config['explorerview'];
+  $result['sidebar'] = $mgmt_config['sidebar'];
+  
+  // get users GUI settings
+  if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".gui.dat"))
+  {
+    // load gui definition file
+    $temp_dat = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".gui.dat");
+    
+    if (!empty ($temp_dat)) list ($result['objectview'], $result['explorerview'], $result['sidebar']) = explode ("|", $temp_dat);
+  }
 
   // message
   if (!$result['message'])
@@ -1636,10 +1652,10 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
     // register permanent view settings
     setsession ('hcms_mobile', $login_result['mobile']);
     setsession ('hcms_iphone', $login_result['iphone']);      
-    // register temporary view settings
-    setsession ('hcms_temp_explorerview', $mgmt_config['explorerview']);
-    setsession ('hcms_temp_objectview', $mgmt_config['objectview']);
-    setsession ('hcms_temp_sidebar', $mgmt_config['sidebar']);
+    // register temporary GUI view settings
+    setsession ('hcms_temp_explorerview', $login_result['explorerview']);
+    setsession ('hcms_temp_objectview', $login_result['objectview']);
+    setsession ('hcms_temp_sidebar', $login_result['sidebar']);
     // register chat state after logon
     setsession ('hcms_temp_chatstate', $login_result['chatstate']);
     // register theme settings

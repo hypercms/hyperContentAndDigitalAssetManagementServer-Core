@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -44,6 +46,7 @@ function gettagdata ($tag_array)
   {
     // get tag id
     $id = getattribute ($tagDefinition, "id");
+    
     // get visibility on edit
     $onedit = getattribute (strtolower ($tagDefinition), "onedit");
     
@@ -290,8 +293,13 @@ foreach ($multiobject_array as $object)
     // no thumbnail available
     else
     {                 
-       $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" style=\"border:0; width:100px;\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";
+       $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".getthemelocation()."img/".$oinfo['icon']."\" style=\"border:0; width:100px;\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";
     }
+  }
+  // standard thumbnail for non-multimedia objects
+  else
+  {                 
+     $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".getthemelocation()."img/".$oinfo['icon']."\" style=\"border:0; width:100px;\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";
   }
   
   // container
@@ -443,10 +451,10 @@ else
 // loop through each tagdata array
 foreach ($tagdata_array as $id => $tagdata) 
 {
-  // We kick the fields out if there should be groups checked and the user isn't allowed to view/edit it
+  // we kick the fields out if there should be groups checked and the user isn't allowed to view/edit it
   if ($tagdata->groupaccess) 
   {
-    // If we don't have access through groups we will remove the field completely
+    // if we don't have access through groups we will remove the field completely
     foreach ($groups as $group)
     {
       
@@ -460,20 +468,36 @@ foreach ($tagdata_array as $id => $tagdata)
   
   foreach ($allTexts as $object) 
   {
-    // If the current element isn't ignored we continue
-    if (isset($tagdata->ignore) && $tagdata->ignore == true) continue;
+    // if the current element isn't ignored we continue
+    if (isset ($tagdata->ignore) && $tagdata->ignore == true) continue;
     
-    // Calculate the value we use
-    $value = (array_key_exists($id, $object) ? $object[$id] : $tagdata->defaultvalue);
+    // calculate the value we use
+    $value = (array_key_exists ($id, $object) ? $object[$id] : $tagdata->defaultvalue);
     
-    if (!isset($tagdata->fieldvalue)) 
+    if (!isset ($tagdata->fieldvalue)) 
     {
       $tagdata->fieldvalue = $value;
       $tagdata->ignore = false;
     }
     else
     {
-      if ($tagdata->fieldvalue != $value)
+      // if content should be appended instead of edited (replaced)
+      if (getsession ("temp_appendcontent") == true)
+      {
+        // if content is not the same
+        if ($tagdata->fieldvalue != $value)
+        {
+          $tagdata->ignore = false;
+          $tagdata->fieldvalue = "";
+          $tagdata->constraint = "";
+        }
+        else
+        {
+          $tagdata->ignore = true;
+          $tagdata->constraint = "";
+        }
+      }
+      elseif ($tagdata->fieldvalue != $value)
       {
         $tagdata->ignore = true;
         $tagdata->constraint = "";
@@ -572,9 +596,10 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
   <meta charset="<?php echo $charset; ?>" />
   <meta name="viewport" content="width=580, initial-scale=0.9, maximum-scale=1.0, user-scalable=1" />
   
-  <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-1.12.4.min.js"></script>
-  <script src="javascript/jquery/plugins/jquery.color.js"></script>
-  <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
+  <!-- JQuery and JQuery UI -->
+  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-1.12.4.min.js"></script>
+  <script type="text/javascript" src="javascript/jquery/plugins/jquery.color.js"></script>
+  <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
   <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
   
   <!-- Tag it script -->
@@ -582,15 +607,16 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
   <link href="javascript/tag-it/jquery.tagit.css" rel="stylesheet" type="text/css" />
   <link href="javascript/tag-it/tagit.ui-zendesk.css" rel="stylesheet" type="text/css" />
 
-  <script src="<?php echo $mgmt_config['url_path_cms']; ?>editor/ckeditor/ckeditor.js"></script>
+  <!-- CKEditor -->
+  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>editor/ckeditor/ckeditor.js"></script>
   <script> CKEDITOR.disableAutoInline = true;</script>
   
   <!-- Richcalendar -->
   <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.css" />
-  <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.js"></script>
-  <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_en.js"></script>
-  <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_de.js"></script>
-  <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/domready.js"></script>
+  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.js"></script>
+  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_en.js"></script>
+  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_de.js"></script>
+  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/domready.js"></script>
   
   <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
   
@@ -637,13 +663,35 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
   }
   </style>
  
-  <script src="javascript/main.js"></script>
+  <script type="text/javascript" src="javascript/main.js"></script>
 
   <script type="text/javascript">
   
   var image_checked = false;
   var video_checked = false;
-    
+  
+  // ----- Form view lock and unlock -----
+  function unlockFormBy (element)
+  {
+    if (element)
+    {
+      // form locked
+      if (element.checked == true)
+      {
+        // AJAX request to set appendcontent
+        $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/setappendcontent.php", {appendcontent: false});
+      }
+      // form unlocked
+      else
+      {
+        // AJAX request to set appendcontent
+        $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/setappendcontent.php", {appendcontent: true});
+      }
+      
+      // reload
+      setTimeout (function(){ location.reload(true); }, 500);
+    }
+  }
   
   // ----- Field controls for form views -----
   
@@ -837,14 +885,14 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
       // get objects from multiobject and content fields
       var obj = $('#objs').val().split("|");
       var fields = $('#fields').val().split("|");
-      
-      
+
       // init content post data
       var postdata_content = {
         'savetype' : 'auto',
         'db_connect': '<?php echo $db_connect; ?>',
         'contenttype': '<?php echo $contenttype; ?>',
-        'token': '<?php echo $token; ?>'
+        'token': '<?php echo $token; ?>',
+        'appendcontent': '<?php if (getsession ("temp_appendcontent") == true) echo "yes"; ?>'
       };
       
       for (var nr in fields)
@@ -2308,8 +2356,8 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
     <div class="hcmsWorkplaceFrame">
     <form id="sendform">
       <div style="display:block; margin-top:8px;">
-        <span class="hcmsHeadlineTiny">
-          <?php echo getescapedtext ($hcms_lang['only-fields-marked-with-*-hold-the-same-content-may-be-changed'][$lang], $charset, $lang); ?>
+        <span class="hcmsHeadline">
+          <label><input type="checkbox" id="unlockform" value="1" <?php if (getsession ("temp_appendcontent") == false) echo "checked=\"checked\""; ?> onclick="unlockFormBy(this)" style="margin-left:4px;" /> <?php echo getescapedtext ($hcms_lang['only-fields-marked-with-*-hold-the-same-content-may-be-changed'][$lang], $charset, $lang); ?></label>
         </span>
         <?php
         $ids = array();

@@ -1,3 +1,11 @@
+// general context menu options
+var contextenable = true;
+var is_mobile = false;
+
+// contect menu move options
+var contextxmove = true;
+var contextymove = true;
+
 // temporary variables to hold mouse x-y position
 var tempX = 0;
 var tempY = 0;
@@ -238,8 +246,8 @@ function hcms_positionContextmenu ()
     if (tempY > hcms_getWindowHeight()/2) yoffset = parseInt(contextelement.style.height) + 0;
     else yoffset = 5;
     
-    if (eval (contextxmove) && contextxmove == 1) contextelement.style.left = tempX - 5 + "px";
-    if (eval (contextymove) && contextymove == 1) contextelement.style.top = tempY - yoffset + "px";   
+    if (contextxmove) contextelement.style.left = tempX - 5 + "px";
+    if (contextymove) contextelement.style.top = tempY - yoffset + "px";   
     contextelement.style.visibility = 'visible';
   }
   else if (document.layers)
@@ -249,8 +257,8 @@ function hcms_positionContextmenu ()
     if (tempY > hcms_getWindowHeight()/2) yoffset = parseInt(contextelement.style.height) + 0;
     else yoffset = 5;
     
-    if (eval (contextxmove) && contextxmove == 1) contextelement.left = tempX - 5 + "px";
-    if (eval (contextymove) && contextymove == 1) contextelement.top = tempY - yoffset + "px";
+    if (contextxmove) contextelement.left = tempX - 5 + "px";
+    if (contextymove) contextelement.top = tempY - yoffset + "px";
     contextelement.visibility = 'visible';
   } 
   else 
@@ -260,8 +268,8 @@ function hcms_positionContextmenu ()
     if (tempY > hcms_getWindowHeight()/2) yoffset = parseInt(contextelement.style.height) + 0;
     else yoffset = 5;
     
-    if (eval (contextxmove) && contextxmove == 1) contextelement.style.left = tempX - 5 + "px";
-    if (eval (contextymove) && contextymove == 1) contextelement.style.top = tempY - yoffset + "px";
+    if (contextxmove) contextelement.style.left = tempX - 5 + "px";
+    if (contextymove) contextelement.style.top = tempY - yoffset + "px";
     contextelement.style.visibility = 'visible';
   }    
   
@@ -278,7 +286,7 @@ function hcms_showContextmenu ()
     var contexttype = document.forms['contextmenu_object'].elements['contexttype'].value;
     var multiobject = document.forms['contextmenu_object'].elements['multiobject'].value;
 
-    if (contextenable == 1)
+    if (contextenable)
     {
       if (contexttype == "object" || contexttype == "folder" || (multiobject != "" && contexttype == "media"))
       {
@@ -872,7 +880,7 @@ function hcms_selectObject (row_id, event)
   }
 
   // if ctrl-key is pressed or select area is used
-  if (hcms_keyPressed('ctrl', event) == true || event == 'selectarea')
+  if (hcms_keyPressed('ctrl', event) == true || event == 'selectarea' || is_mobile)
   {
     var multiobject_str = contextmenu_form.elements['multiobject'].value;
     var multiobject_str2 = multiobject_str + '|';
@@ -1003,7 +1011,7 @@ function hcms_updateControlObjectListMenu()
   document.forms['contextmenu_object'].attributes['target'].value = 'controlFrame';
   document.forms['contextmenu_object'].elements['action'].value = '';
   
-  if (allow_tr_submit)
+  if (allow_tr_submit && document.forms['contextmenu_object'].elements['location'].value != '')
   {
     document.forms['contextmenu_object'].submit();
   }

@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
 // =================================== META DATA FUNCTIONS =======================================
@@ -367,11 +369,41 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
   // load languages
   $languages = getlanguageoptions ();
   
-  // load taxonomy of publication (CSV source)
+  // load CSV source of taxonomy of publication (if available)
   if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv"))
   {
+    $csv = $mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv";
+  }
+  // load default taxonomy (if available)
+  elseif (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.csv"))
+  {
+    $csv = $mgmt_config['abs_path_data']."include/default.taxonomy.csv";
+  }
+  else
+  {
+    $csv = false;
+  }
+  
+  // deployed taxonomy of the publication (if available)
+  if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+  {
+    $deployed = $mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php";
+  }
+  // load default taxonomy (if available)
+  elseif (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+  {
+    $deployed = $mgmt_config['abs_path_data']."include/default.taxonomy.inc.php";
+  }
+  else
+  {
+    $deployed = false;
+  }
+
+  // load taxonomy of publication (CSV source)
+  if (!empty ($csv) && is_file ($csv))
+  {
     // load CSV file
-    $taxonomy = load_csv ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv", ";", '"', "utf-8");
+    $taxonomy = load_csv ($csv, ";", '"', "utf-8");
 
     // prepare taxonomy
     if (!empty ($taxonomy) && is_array ($taxonomy))
@@ -393,11 +425,11 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
       }
     }
   }
-  // load taxonomy of publication (PHP source)
-  elseif (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+  // load taxonomy of publication (deployed PHP source)
+  elseif (!empty ($deployed) && is_file ($deployed))
   {
     // load PHP file
-    include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+    include ($deployed);
     
     // prepare taxonomy
     if (!empty ($taxonomy) && is_array ($taxonomy))
@@ -448,8 +480,8 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
       }
     }
   }
-  
-  if (!empty ($result) && sizeof ($result) > 0) return $result;
+
+  if (!empty ($result) && is_array ($result) && sizeof ($result) > 0) return $result;
   else return false;
 }
 
@@ -707,7 +739,7 @@ function createtaxonomy ($site_name="", $recreate=false)
 // output: keywords as array / false on error
 
 // description:
-// Generates a keyword list from a text by splitting and transforming the comma seperated string.
+// Generates a keyword list from a text by splitting and transforming the comma separated string.
 
 function splitkeywords ($keywords, $charset="UTF-8")
 {
@@ -719,7 +751,7 @@ function splitkeywords ($keywords, $charset="UTF-8")
     foreach ($keyword_array as $keyword)
     {
       // max. length of keyword must not exceed 100 and must not include tags
-      if (is_string ($keyword) && strlen (trim ($keyword)) > 1 && strlen (trim ($keyword)) <= 100)
+      if (is_keyword ($keyword))
       {
         $tag_start = strpos ("_".$keyword, "<");
         $tag_end = strpos ("_".$keyword, ">");

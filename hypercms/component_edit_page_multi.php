@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -293,9 +295,11 @@ function openBrWindowComp (winName, features, type)
                     {
                       $comp_entry_name = getlocationname ($site, $comp_entry, "comp", "path");
                       
-                      if (strlen ($comp_entry_name) > 50) $comp_entry_name = "...".substr (substr ($comp_entry_name, -50), strpos (substr ($comp_entry_name, -50), "/")); 
+                      if (strlen ($comp_entry_name) > 36) $comp_entry_name_short = "...".substr (substr ($comp_entry_name, -36), strpos (substr ($comp_entry_name, -36), "/"));
+                      else $comp_entry_name_short = $comp_entry_name;
                                        
-                      echo "<option value=\"".$comp_entry."\">".$comp_entry_name."</option>\n";
+                      echo "
+                    <option value=\"".$comp_entry."\" title=\"".$comp_entry_name."\">".$comp_entry_name_short."</option>";
                     }
                   }
                 }
@@ -355,9 +359,12 @@ function openBrWindowComp (winName, features, type)
               foreach ($item_files as $persfile)
               {
                 $cond_name = substr ($persfile, 0, strpos ($persfile, ".prof.dat"));
+                
                 if ($cond_name == $condition) $selected = "selected=\"selected\"";
                 else $selected = "";
-                echo "<option value=\"".$cond_name."\" ".$selected.">".$cond_name."</option>\n";
+                
+                echo "
+              <option value=\"".$cond_name."\" ".$selected.">".$cond_name."</option>";
               }
             }
           }

@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
 // ====================================== MAIN FUNCTIONS ========================================
@@ -18,12 +20,12 @@
 function correctnumber ($number)
 {
   global $mgmt_config;
-  
+
   if ($number != "")
   {
     $comma = strpos ($number, ",");
     $dot = strpos ($number, ".");
-  
+
     // example: 1.200,50 => 1200.50
     if ($comma > $dot)
     {
@@ -53,7 +55,7 @@ function correctnumber ($number)
 function cleancontent ($text, $charset="UTF-8")
 {
   global $mgmt_config;
-  
+
   // list of preg* regular expression patterns to search for, used in conjunction with $replace
   $search = array(
     "/\r/",                                           // Non-legal carriage return
@@ -78,7 +80,7 @@ function cleancontent ($text, $charset="UTF-8")
     '/<span class="_html2text_ignore">.+?<\/span>/i', // <span class="_html2text_ignore">...</span>
     '/<(img)\b[^>]*alt=\"([^>"]+)\"[^>]*>/i',   // <img> with alt tag
   );
-    
+
   // list of pattern replacements corresponding to patterns searched
   $replace = array(
     '',                              // Non-legal carriage return
@@ -119,7 +121,7 @@ function cleancontent ($text, $charset="UTF-8")
     '|+|amp|+|', // Ampersand: see converter()
     ' ',         // Runs of spaces, post-handling
   );
-  
+
   if ($text != "" && $charset != "")
   {
     if (!is_array ($text))
@@ -128,10 +130,10 @@ function cleancontent ($text, $charset="UTF-8")
       $text = preg_replace ($search, $replace, $text);
       $text = strip_tags ($text);
       $text = preg_replace ($entSearch, $entReplace, $text);
-      
+
       // decode characters
       $text = html_decode ($text, $charset);
-  
+
       // replace characters
       $text = str_replace (array(".....", "....", "...", ".."), ".", $text);
       $text = str_replace (array(",,,,,", ",,,,", ",,,", ",,"), ",", $text);
@@ -184,7 +186,7 @@ function remove_utf8_bom ($text)
 function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
 {
   global $mgmt_config;
-  
+
   if ($expression != "" && $charset_to != "")
   {
     $expression_orig = $expression;
@@ -223,7 +225,7 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
             $value = convertchars ($value, $charset_from, $charset_to);
           }
         }
-        
+
         if ($expression != "") return $expression;
         else return $expression_orig;      
       }
@@ -248,7 +250,7 @@ function specialchr ($expression, $accept="")
   {
     // escape chars:  . \ + * ? [ ^ ] $ ( ) { } = ! < > | : -
     $accept = preg_quote ($accept);
-    
+
     // check if expression is on watch list 
     if (preg_match ("/^[a-zA-Z0-9".$accept."]+$/", $expression)) return false;
     else return true;
@@ -272,7 +274,7 @@ function specialchr_encode ($expression, $remove="no")
   {
     $expression_parts = array();
     $result_parts = array();
-    
+
     // check if expression holds a path
     if (substr_count ($expression, "/") > 0)
     {
@@ -291,7 +293,7 @@ function specialchr_encode ($expression, $remove="no")
         $strip = array ("~", "%", "`", "!", "@", "#", "$", "^", "&", "*", "=", 
                         "\\", "|", ";", ":", "\"", "&quot;", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
                         "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", ",", "<", "&lt;", ">", "&gt;", "?");
-                         
+           
         $expression = str_replace ($strip, "", strip_tags ($expression));
         // replace multiple spaces
         $expression = preg_replace ('/\s+/', " ", $expression);
@@ -305,7 +307,7 @@ function specialchr_encode ($expression, $remove="no")
       
       $result_parts[] = $expression;
     }
-  
+
     if (sizeof ($result_parts) > 1) return implode ("/", $result_parts);
     else return $result_parts[0];
   }
@@ -328,13 +330,13 @@ function specialchr_decode ($expression)
   { 
     // replace % to avoid urldecoding 
     $expression = str_replace ("~", "%", $expression);
-    
+
     // url encoding for file name transformation (replace all special characters according to RFC 1738)
     $expression = rawurldecode ($expression);
-    
+
     // encode to UTF-8 if name is not utf-8 coded
     if (!is_utf8 ($expression)) $expression = utf8_encode ($expression);
-  
+
     return $expression;
   }
   else return false;
@@ -402,26 +404,26 @@ function object_exists ($path)
   {
     // get file extension
     $file_ext = strrchr ($path, ".");
-    
+
     $location = getlocation ($path);
     $file = getobject ($path);
 
     // transform special characters 
     if (substr ($location, 0, 7) == "%page%/" || substr ($location, 0, 7) == "%comp%/") $location = specialchr_encode ($location, "no");
     $file = specialchr_encode ($file, "no");
-    
+
     // absolute path
     $location = deconvertpath ($location, "file");
 
     // recycled object exists
     if ($file_ext == ".recycle" && (is_file ($location.$file) || is_file ($location.substr ($file, -8)))) return true;
-    
+
     // unpublished object exists
     if ($file_ext == ".off" && (is_file ($location.$file) || is_file ($location.substr ($file, -4)))) return true;
-    
+
     // object file exists
     if (is_file ($location.$file) || is_file ($location.$file.".off") || is_file ($location.$file.".recycle")) return true;
-    
+
     // folder exists
     if (is_dir ($location.$file) || is_file ($location.$file."/.folder") || is_file ($location.$file."/.folder.recycle")) return true;
 
@@ -443,23 +445,23 @@ function object_exists ($path)
 function is_utf8 ($str)
 {
   $strlen = strlen ($str);
-  
+
   for ($i=0; $i<$strlen; $i++)
   {
     $ord = ord ($str[$i]);
-    
+
     if ($ord < 0x80) continue; // 0bbbbbbb
     elseif (($ord&0xE0)===0xC0 && $ord>0xC1) $n = 1; // 110bbbbb (exkl C0-C1)
     elseif (($ord&0xF0)===0xE0) $n = 2; // 1110bbbb
     elseif (($ord&0xF8)===0xF0 && $ord<0xF5) $n = 3; // 11110bbb (exkl F5-FF)
     else return false; // invalid UTF-8 character
-    
+
     for ($c=0; $c<$n; $c++) // $n Folgebytes? // 10bbbbbb
     {
       if (++$i===$strlen || (ord ($str[$i])&0xC0)!==0x80) return false; // not a valid UTF-8 character
     }
   }
-  
+
   return true; // no not valid UTF-8 character was found, string must be UTF-8
 }
 
@@ -487,13 +489,13 @@ function makestring ($array)
   if (is_array ($array))
   {
     $result = "";
-    
+
     foreach ($array as $item) 
     {
       if (is_array ($item)) $result .= makestring ($item);
       else $result .= $item;
     }
-    
+
     return $result;
   }
   elseif (is_string ($array)) return $array;
@@ -512,7 +514,7 @@ function splitstring ($string)
     $string = str_replace ("\n", "", $string);
     $result_array = array();
     $array1 = explode (",", $string);
-        
+ 
     foreach ($array1 as $entry1)
     {
       $entry1 = trim ($entry1);
@@ -520,11 +522,11 @@ function splitstring ($string)
       if ($entry1 != "")
       {
         $array2 = explode (";", $entry1);
-            
+
         foreach ($array2 as $entry2)
         {
           $entry2 = trim ($entry2);
-          
+
           if ($entry2 != "")
           {
             $result_array[] = $entry2;
@@ -550,13 +552,13 @@ function splitstring ($string)
 function is_emptyfolder ($dir)
 {
   global $mgmt_config;
-  
+
   // deconvert path
   if (substr_count ($dir, "%page%") == 1 || substr_count ($dir, "%comp%") == 1)
   {
     $dir = deconvertpath ($dir, "file");
   }
-    
+
   if ($dir != "" && is_dir ($dir))
   {
     $scandir = scandir ($dir);
@@ -565,7 +567,7 @@ function is_emptyfolder ($dir)
     {
       if ($entry != "." && $entry != ".." && $entry != ".folder" && substr ($entry, -4) != ".off") return false;
     }
-    
+
     return true;
   }
   else return false;
@@ -593,7 +595,7 @@ function is_supported ($preview_array, $file)
       if (substr_count ($preview_ext.".", ".".$ext.".") > 0 && trim ($preview_exec) != "") return true;
     }
   }
-  
+
   return false;
 }
 
@@ -608,7 +610,7 @@ function is_supported ($preview_array, $file)
 function is_cloudstorage ($site="")
 {
   global $mgmt_config;
-  
+
   // if cloud connector is available
   if (is_array ($mgmt_config) && is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php"))
   {
@@ -626,20 +628,20 @@ function is_cloudstorage ($site="")
         return false;
       }
     }
-  
+
     // AWS S3 cloud storage
     if (!empty ($mgmt_config['aws_access_key_id']) && !empty ($mgmt_config['aws_secret_access_key']) && !empty ($mgmt_config['aws_bucket']))
     {
       return true;
     }
-    
+
     // Google cloud storage
     if (!empty ($mgmt_config['gs_access_key_id']) && !empty ($mgmt_config['gs_secret_access_key']) && !empty ($mgmt_config['gs_bucket']))
     {
       return true;
     }
   }
-  
+
   return false;
 }
 
@@ -649,7 +651,7 @@ function is_cloudstorage ($site="")
 // output: true / false
 
 // description:
-// This functions verifies if an object/file is available in the cloud storage
+// This function verifies if an object/file is available in the cloud storage
 
 function is_cloudobject ($file)
 {
@@ -669,7 +671,7 @@ function is_cloudobject ($file)
     {
       $result = is_GSobject ($mgmt_config['gs_bucket'], getobject ($file));
     }
-    
+
     return $result;
   }
   else return false;
@@ -688,7 +690,7 @@ function is_date ($date, $format="Y-m-d")
   if ($date != "" && $format != "")
   {
     $date_check = DateTime::createFromFormat ($format, $date);
-    
+
     if ($date_check && $date_check->format($format) == $date) return true;
     else return false;
   }
@@ -701,14 +703,23 @@ function is_date ($date, $format="Y-m-d")
 // output: if file is a temp file true / false on error
 
 // description:
-// This functions checks if the provided file name is a temporary file
+// This function checks if the provided file name is a temporary file
 
 function is_tempfile ($path)
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
-  // load patterns
-  @require ($mgmt_config['abs_path_cms']."include/tempfilepatterns.inc.php");
+  // patterns
+  $tempfile_patterns = array (
+    '/^.*\.recycle$/',    // object in recycle bin
+    '/^__MACOSX$/',    // OS/X folder
+    '/^\._(.*)$/',     // OS/X resource forks
+    '/^.DS_Store$/',   // OS/X custom folder settings
+    '/^\.(.*)-Spotlight$/', // OS/X Spotlight files
+    '/^desktop.ini$/', // Windows custom folder settings
+    '/^Thumbs.db$/',   // Windows thumbnail cache
+    '/^.(.*).swp$/',   // ViM temporary files
+    '/^\.dat(.*)$/',   // Smultron seems to create these
+    '/^~lock.(.*)#$/', // Windows 7 lockfiles
+  );
 
   if ($path != "" && is_array ($tempfile_patterns))
   {
@@ -719,8 +730,27 @@ function is_tempfile ($path)
     {
       if (preg_match ($pattern, $object)) return true;
     }
-  
+
     return false;
+  }
+  else return false;
+}
+
+// -------------------------------------- is_keyword -------------------------------------------
+// function: is_keyword()
+// input: keyword [string]
+// output: if expression can be used as a keyword true / false on error
+
+// description:
+// This function checks if the provided expression can be used as a keyword
+
+function is_keyword ($keyword)
+{
+  $keyword = trim ($keyword);
+
+  if (is_string ($keyword) && strlen (trim ($keyword)) > 2 && strlen (trim ($keyword)) <= 80 && strpos ("_".$keyword, "???") < 1 && strpos ("_".$keyword, "...") < 1 && strpos ("_".$keyword, "?>") < 1 && (ctype_alnum ($keyword[0]) || $keyword[0] == "#"))
+  {
+    return true;
   }
   else return false;
 }
@@ -731,16 +761,14 @@ function is_tempfile ($path)
 // output: if file is a thumbnail file true / false on error
 
 // description:
-// This functions checks if the provided file name is a thumbnail file
+// This function checks if the provided file name is a thumbnail file
 
 function is_thumbnail ($media, $images_only=true)
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
   if ($media != "")
   {
     $container_id = getmediacontainerid ($media);
-    
+
     if ($container_id != "")
     {
       if ($images_only == true && substr_count ($media, "hcm".$container_id.".thumb.jpg") > 0) return true;
@@ -759,16 +787,14 @@ function is_thumbnail ($media, $images_only=true)
 // output: if file is a config file true / false if not
 
 // description:
-// This functions checks if the provided file name is a config file
+// This function checks if the provided file name is a config file
 
 function is_config ($media)
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
   if ($media != "")
   {
     $container_id = getmediacontainerid ($media);
-    
+
     if ($container_id != "")
     {
       if (substr_count($media, "hcm".$container_id.".config.") > 0) return true;
@@ -785,12 +811,12 @@ function is_config ($media)
 // output: true / false
 
 // description:
-// This functions checks if the provided file is encrypted
+// This function checks if the provided file is encrypted
 
 function is_encryptedfile ($location, $file)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
-  
+
   if (valid_locationname ($location) && valid_objectname ($file))
   {
     // add slash if not present at the end of the location string
@@ -821,16 +847,16 @@ function is_encryptedfile ($location, $file)
 function is_document ($file)
 {
   global $mgmt_config, $hcms_ext;
-  
+
   if ($file != "")
   {
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get file extension
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
-    
+
     if (substr_count (strtolower ($hcms_ext['cleartxt'].$hcms_ext['bintxt']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
@@ -848,16 +874,16 @@ function is_document ($file)
 function is_image ($file)
 {
   global $mgmt_config, $hcms_ext;
-  
+
   if ($file != "")
   {
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get file extension
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
-    
+
     if (substr_count (strtolower ($hcms_ext['image']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
@@ -875,16 +901,16 @@ function is_image ($file)
 function is_rawimage ($file)
 {
   global $mgmt_config, $hcms_ext;
-  
+
   if ($file != "")
   {
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get file extension
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
-    
+
     if (substr_count (strtolower ($hcms_ext['rawimage']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
@@ -906,7 +932,7 @@ function is_aiimage ($file)
     // get file extension
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
-    
+
     if (substr_count (".ai.eps.", ".".$ext.".") > 0) return true;
     else return false;
   }
@@ -924,16 +950,16 @@ function is_aiimage ($file)
 function is_video ($file)
 {
   global $mgmt_config, $hcms_ext;
-  
+
   if ($file != "")
   {
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get file extension
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
-    
+
     if (substr_count (strtolower ($hcms_ext['video']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
@@ -951,16 +977,16 @@ function is_video ($file)
 function is_rawvideo ($file)
 {
   global $mgmt_config, $hcms_ext;
-  
+
   if ($file != "")
   {
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get file extension
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
-    
+
     if (substr_count (strtolower ($hcms_ext['rawvideo']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
@@ -978,16 +1004,16 @@ function is_rawvideo ($file)
 function is_audio ($file)
 {
   global $mgmt_config, $hcms_ext;
-  
+
   if ($file != "")
   {
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get file extension
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
-    
+
     if (substr_count (strtolower ($hcms_ext['audio']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
@@ -1005,16 +1031,16 @@ function is_audio ($file)
 function is_compressed ($file)
 {
   global $mgmt_config, $hcms_ext;
-  
+
   if ($file != "")
   {
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get file extension
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
-    
+
     if (substr_count (strtolower ($hcms_ext['compressed']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
@@ -1036,7 +1062,7 @@ function is_mobilebrowser ()
   if (!empty ($_SERVER['HTTP_USER_AGENT']))
   {
     $useragent = $_SERVER['HTTP_USER_AGENT'];
-    
+
     if (
        preg_match ('/android|playbook|silk|(bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ipad|iphone|ipod|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i',$useragent) || 
        preg_match ('/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i', substr ($useragent, 0, 4))
@@ -1060,11 +1086,11 @@ function is_mobilebrowser ()
 function is_iOS ()
 {
   global $user, $mgmt_config;
-  
+
   if (!empty ($_SERVER['HTTP_USER_AGENT']))
   {
     $useragent = $_SERVER['HTTP_USER_AGENT'];
-    
+
     if (preg_match ('/ipad|iphone|ipod/i',$useragent))
     {
       return true;
@@ -1086,12 +1112,12 @@ function is_iOS ()
 function is_activelanguage ($site, $langcode)
 {
   global $mgmt_config;
-  
+
   if (valid_publicationname ($site) && empty ($mgmt_config[$site]['translate']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
   {
     require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
   }
-  
+
   if (valid_publicationname ($site) && $langcode != "")
   {
     if (substr_count  (",".$mgmt_config[$site]['translate'].",", ",".$langcode.",") > 0) return true;
@@ -1111,12 +1137,12 @@ function is_activelanguage ($site, $langcode)
 function copyrecursive ($src, $dst)
 {
   $result = true;
-  
+
   // create directory
   if (!is_dir ($dst)) @mkdir ($dst);
-  
+
   $scandir = scandir ($src);
-  
+
   if ($scandir)
   {
     foreach ($scandir as $file)
@@ -1130,7 +1156,7 @@ function copyrecursive ($src, $dst)
       }
     }
   }
-  
+
   return $result;
 }
 
@@ -1167,7 +1193,7 @@ function in_array_substr ($search, $array)
     {
       if (strpos (" ".$value, $search) > 0)  return true;
     }
-    
+
     return false;
   }
   else return false;
@@ -1190,7 +1216,7 @@ function createfilename ($filename)
   if (valid_objectname ($filename))
   {
     if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
-    
+
     // check if filename includes special characters
     if (specialchr ($filename, ".-_") == true)
     {
@@ -1200,7 +1226,7 @@ function createfilename ($filename)
     {
       $filename_new = trim ($filename);
     }
-    
+
     // escaped or input file name is too long (11 digits for the hcms identifier)
     if ((strlen ($filename_new) + 11) > $mgmt_config['max_digits_filename'])
     {
@@ -1214,19 +1240,19 @@ function createfilename ($filename)
       else $file_ext  = "";
 
       $filename_new = substr ($filename_new, 0, ($mgmt_config['max_digits_filename'] - 11 - strlen ($file_ext)));
-      
+
       // remove escaped character at the end of the file name that is not fully presented
       if (substr ($filename_new, -2, 1) == "~") $filename_new = substr ($filename_new, 0, -2);
       if (substr ($filename_new, -1, 1) == "~") $filename_new = substr ($filename_new, 0, -1);
-      
+
       // escaped character must be even for multibyte characters
       if (substr_count ($filename_new, "~") % 2 != 0) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
-      
+
       $filename_new = $filename_new.$file_ext;
-      
+
       $errcode = "00911";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|$errcode|object name '".$filename."' has been truncated to '".specialchr_decode ($filename_new)."'";
-      
+
       savelog (@$error);  
 
       if (strlen ($filename_new) > 0) return $filename_new;
@@ -1259,7 +1285,7 @@ function correctfile ($abs_path, $filename, $user="")
       // encode file name if it is not locked (locked file name means it is already encoded)
       if (strpos ($filename, ".@") < 1) $filename = createfilename ($filename);
     }
-    
+
     // if given file or directory exists
     if (is_file ($abs_path.$filename) || is_dir ($abs_path.$filename) || is_link ($abs_path.$filename))
     {
@@ -1305,7 +1331,7 @@ function correctpath ($path, $slash="/")
   {
     // correct all backslashes
     $path = str_replace ("\\", $slash, $path);
-    
+
     // append $slash at the end of the path
     if (substr ($path, strlen ($path)-1, 1) != $slash)
     {
@@ -1352,17 +1378,17 @@ function convertpath ($site, $path, $cat="")
 
       // define category if undefined
       if ($cat == "") $cat = getcategory ($site, $path);
-      
+
       // convert path
       if (strtolower ($cat) == "page" && is_array ($mgmt_config[$site])) 
       {
         // URL can be with our without http://domain
         $path_page_url = trim ($mgmt_config[$site]['url_path_page']);
         $path_page_abs = trim ($mgmt_config[$site]['abs_path_page']);
-        
+
         if (substr ($path_page_url, -1) == "/") $root_var_url = "%page%/".$site."/";
         else $root_var_url = "%page%/".$site;
-        
+
         if (substr ($path_page_abs, -1) == "/") $root_var_abs = "%page%/".$site."/";
         else $root_var_abs = "%page%/".$site;
 
@@ -1382,7 +1408,7 @@ function convertpath ($site, $path, $cat="")
           {
             $path_page_url = cleandomain ($path_page_url);
             $path = cleandomain ($path);
-            
+
             $path = str_replace ($path_page_url, $root_var_url, $path);
           }
         }
@@ -1415,7 +1441,7 @@ function convertpath ($site, $path, $cat="")
           {
             $path_comp_url = cleandomain ($path_comp_url);
             $path = cleandomain ($path);
-            
+
             $path = str_replace ($path_comp_url, $root_var_url, $path);
           }
         }     
@@ -1423,7 +1449,7 @@ function convertpath ($site, $path, $cat="")
 
       // remove added slash
       if (!empty ($remove_slash) && substr ($path, -1) == "/") $path = substr ($path, 0, -1);
-  
+
       if ($path != "") return $path;
       else return false;
     }
@@ -1452,7 +1478,7 @@ function convertlink ($site, $path, $cat)
       $path = $path."/";
       $remove_slash = true;
     }
-    
+
     if (substr_count ($path, "%page%") == 0 && substr_count ($path, "%comp%") == 0 && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
     {
       // load ini
@@ -1532,7 +1558,7 @@ function convertlink ($site, $path, $cat)
 
       // remove added slash
       if (!empty ($remove_slash) && substr ($path, -1) == "/") $path = substr ($path, 0, -1);
-  
+
       if ($path != "") return $path;
       else return false;
     }
@@ -1559,17 +1585,17 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
   if (is_string ($objectpath) && $objectpath != "" && (strtolower ($type) == "file" || strtolower ($type) == "url") && is_array ($mgmt_config))
   {
     $type = strtolower ($type);
-    
+
     $path_parts = array();
     $result_parts = array();
-    
+
     // check if expression holds a path seperator for multiple pathes and is not some sort of code
     if (substr_count ($objectpath, "|") > 0 && substr_count ($objectpath, "<") == 0 && substr_count ($objectpath, ">") == 0 && substr_count ($objectpath, "<") == 0 && substr_count ($objectpath, " || ") == 0)
     {
       $path_parts = explode ("|", trim ($objectpath, "|"));
     }
     else $path_parts[0] = $objectpath;
-    
+
     foreach ($path_parts as $path)
     {
       if ($path != "")
@@ -1585,7 +1611,7 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
           {      
             $path = specialchr_encode ($path, "no");
           }
-        
+
           // extract publication from the converted path for page locations (first found path entry only!)
           if (substr_count ($path, "%page%") > 0)
           {
@@ -1597,7 +1623,7 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
               require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
             }        
           }
-        
+
           // if absolute file path is reuquested
           if ($type == "file") 
           {   
@@ -1609,7 +1635,7 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
     
               $path = str_replace ($root_var, $mgmt_config[$site]['abs_path_page'], $path);      
             }
-                  
+   
             // deconvert component locations 
             if (substr_count ($path, "%comp%") > 0 && !empty ($mgmt_config['abs_path_comp']))
             {
@@ -1630,7 +1656,7 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
               
               $path = str_replace ($root_var, $mgmt_config[$site]['url_path_page'], $path);
             }
-               
+
             // deconvert component locations
             if (substr_count ($path, "%comp%") > 0 && !empty ($mgmt_config['url_path_comp']))
             {
@@ -1641,7 +1667,7 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
             }
           }
         }
-        
+
         // assign path to result array
         $result_parts[] = $path;
       }
@@ -1668,16 +1694,16 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
 function deconvertlink ($path, $type="url")
 {
   global $user, $mgmt_config, $publ_config, $hcms_lang, $lang;
-  
+
   if (valid_locationname ($path) && isset ($mgmt_config) && ($type == "url" || $type == "file"))
   {
     $path = trim ($path);
-    
+
     // extract publication from the converted path (first found path entry only!)
     if (@substr ($path, 0, 6) == "%page%") $root_var = "%page%/";
     elseif (@substr ($path, 0, 6) == "%comp%") $root_var = "%comp%/";
     else $root_var = false;
-  
+
     // get publication from path
     if ($root_var != false)
     {
@@ -1717,7 +1743,7 @@ function deconvertlink ($path, $type="url")
         if ($type == "url") $path = str_replace ($root_var, $publ_config['url_publ_comp'], $path);
         elseif ($type == "file") $path = str_replace ($root_var, $publ_config['abs_publ_comp'], $path);
       } 
-      
+
       return $path;
     }
     else return $path;    
@@ -1742,16 +1768,16 @@ function mediapublicaccess ($mediafile)
   {
     // if public download is enabled the asset does not need to be published
     if (!empty ($mgmt_config['publicdownload'])) return true;
-  
+
     // if mediafile is provided as path, extract the media file name
     if (substr_count ($mediafile, "/") > 0) $mediafile = getobject ($mediafile);
-    
+
     $container_id = getmediacontainerid ($mediafile);
-    
+
     if ($container_id != "")
     {
       $contentdata = loadcontainer ($container_id, "published", "sys");
-      
+
       if ($contentdata != "")
       {
         $published = getcontent ($contentdata, "<contentpublished>");
@@ -1778,20 +1804,20 @@ function mediapublicaccess ($mediafile)
 function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type="wrapper")
 {
   global $user, $mgmt_config;
-  
+
   // if mediafile is provided as path, extract the media file name
   if ($mediafile != "" && substr_count ($mediafile, "/") > 0) $mediafile = getobject ($mediafile);
 
   if (isset ($mgmt_config) && valid_publicationname ($site) && valid_objectname ($mediafile))
   {
     $add = "";
-    
+
     if (is_string ($name) && trim ($name) != "") $add .= "&name=".urlencode($name);
     if ($force_reload) $add .= "&ts=".time();
 
     if (strtolower ($type) == "download") $servicename = "mediadownload";
     else $servicename = "mediawrapper";
-    
+
     return $mgmt_config['url_path_cms']."service/".$servicename.".php?site=".urlencode($site)."&media=".urlencode($site."/".$mediafile)."&token=".hcms_crypt ($site."/".$mediafile).$add;
   }
   else return false;
@@ -1901,7 +1927,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
       // get object id
       $object_hash = rdbms_getobject_hash ($objectpath);
       
-      // try to recreate object entry in database
+      // recreate object entry in database
       if ($object_hash == false)
       {
         $object_info = getobjectinfo ($site, $location, $object, $user);
@@ -4112,7 +4138,10 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
       elseif (is_numeric ($container)) $container_id = $container;
          
       // write stats
-      if (is_numeric ($container_id) && $container_id > 0) rdbms_insertdailystat ("download", intval($container_id), $user);
+      if ($user == "sys") $user_stats = getuserip();
+      else $user_stats = $user;
+
+      if (is_numeric ($container_id) && $container_id > 0) rdbms_insertdailystat ("download", intval($container_id), $user_stats);
       
       // echo content
       echo $content;
@@ -4339,8 +4368,11 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       
       if ($container_id > 0)
       {
-        if ($force == "download") rdbms_insertdailystat ("download", $container_id, $user);
-        else rdbms_insertdailystat ("view", $container_id, $user);
+        if ($user == "sys") $user_stats = getuserip();
+        else $user_stats = $user;
+      
+        if ($force == "download") rdbms_insertdailystat ("download", $container_id, $user_stats);
+        else rdbms_insertdailystat ("view", $container_id, $user_stats);
       }
     }
     
@@ -5807,6 +5839,8 @@ function createpublication ($site_name, $user="sys")
     oncreatepublication_pre ($site_name, $user); 
     
   $result_ok = false;
+  $add_onload = "";
+  $show = "";
   
   // set default language
   if ($lang == "") $lang = "en";
@@ -6204,10 +6238,19 @@ function editpublication ($site_name, $setting, $user="sys")
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   $result_ok = false;
+  $add_onload = "";
+  $show = "";
   $exclude_folders_new = "";
 
   // set default language
   if ($lang == "") $lang = "en";
+  
+  // check if publication name is an attribute of the request string
+  if (strpos ($site_name, ".php?") > 0)
+  {
+    // extract login
+    $site_name = getattribute ($site_name, "site_name");
+  }
   
   if (valid_publicationname ($site_name) && is_array ($setting) && valid_objectname ($user))
   {
@@ -6783,6 +6826,15 @@ function editpublicationsetting ($site_name, $setting, $user="sys")
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   $result_ok = false;
+  $add_onload = "";
+  $show = "";
+  
+  // check if publication name is an attribute of the request string
+  if (strpos ($site_name, ".php?") > 0)
+  {
+    // extract login
+    $site_name = getattribute ($site_name, "site_name");
+  }
   
   if (valid_publicationname ($site_name) && is_array ($setting) && valid_objectname ($user))
   {        
@@ -6879,265 +6931,270 @@ function deletepublication ($site_name, $user="sys")
   global $mgmt_config, $eventsystem, $hcms_lang, $lang;
 
   $result_ok = false;
+  $add_onload = "";
+  $show = "";
   
   // set default language
   if ($lang == "") $lang = "en";
   
-  // check if login is an attribute of a sent string
+   // check if publication name is an attribute of the request string
   if (strpos ($site_name, ".php?") > 0)
   {
     // extract login
     $site_name = getattribute ($site_name, "site_name");
   }
-  
-  $file_count = 0;
-  
-  // check if component folder is empty
-  $comp_root = deconvertpath ("%comp%/".$site_name."/", "file");
 
-  $scandir = @scandir ($comp_root);
-  
-  if ($scandir)
-  {
-    foreach ($scandir as $file)
-    {
-      if ($file != "." && $file != ".." && $file != ".folder") $file_count++;
-    }
-  }
-  
-  // check if page folder is empty
-  $page_root = deconvertpath ("%page%/".$site_name."/", "file");
-
-  $scandir = @scandir ($page_root);
-  
-  if ($scandir)
-  {
-    foreach ($scandir as $file)
-    {
-      if ($file != "." && $file != ".." && $file != ".folder") $file_count++;
-    }
-  }
-
-  if ($file_count > 0)
-  {
-    $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-cannot-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-publication-still-holds-folders-or-objects'][$lang]."\n";
-  }
-  // check if sent data is available
-  elseif (!valid_publicationname ($site_name) || !valid_objectname ($user))
-  {
-    $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-a-publication'][$lang]."\n";
-  }
-  else
-  {
-    // eventsystem
-    if ($eventsystem['ondeletepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-      ondeletepublication_pre ($site_name, $user); 
-
-    // load publication list from inheritance database
-    $inherit_db = inherit_db_load ($user);
+  if (valid_publicationname ($site_name) && valid_objectname ($user))
+  { 
+    $file_count = 0;
     
-    if ($inherit_db != false && valid_publicationname ($site_name))
-    {
-      // -------------------------------------- delete files of site ------------------------------------------
+    // check if component folder is empty
+    $comp_root = deconvertpath ("%comp%/".$site_name."/", "file");
+  
+    $scandir = @scandir ($comp_root);
     
-      // page root
-      deleteobject ($site_name, "%page%/".$site_name."/", ".folder", "sys");
-      deletefile ($mgmt_config['abs_path_comp'], $site_name, 1);
-      
-      // component root
-      deleteobject ($site_name, "%comp%/".$site_name."/", ".folder", "sys");
-      deletefile ($mgmt_config['abs_path_comp'], $site_name, 1);
-      
-      // template media
-      deletefile ($mgmt_config['abs_path_rep']."media_tpl/", $site_name, 1);
-      
-      // content media
-      deletefile ($mgmt_config['abs_path_rep']."media_cnt/", $site_name, 1);
-      
-      // load user file
-      $userdata = loadlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", 5);
-      
-      if ($userdata != false)
+    if ($scandir)
+    {
+      foreach ($scandir as $file)
       {
-        // delete user
-        $userdata = deletecontent ($userdata, "<memberof>", "<publication>", $site_name);    
-            
+        if ($file != "." && $file != ".." && $file != ".folder") $file_count++;
+      }
+    }
+    
+    // check if page folder is empty
+    $page_root = deconvertpath ("%page%/".$site_name."/", "file");
+  
+    $scandir = @scandir ($page_root);
+    
+    if ($scandir)
+    {
+      foreach ($scandir as $file)
+      {
+        if ($file != "." && $file != ".." && $file != ".folder") $file_count++;
+      }
+    }
+  
+    if ($file_count > 0)
+    {
+      $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-cannot-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-publication-still-holds-folders-or-objects'][$lang]."\n";
+    }
+    else
+    {
+      // eventsystem
+      if ($eventsystem['ondeletepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+        ondeletepublication_pre ($site_name, $user); 
+  
+      // load publication list from inheritance database
+      $inherit_db = inherit_db_load ($user);
+      
+      if ($inherit_db != false && valid_publicationname ($site_name))
+      {
+        // -------------------------------------- delete files of site ------------------------------------------
+      
+        // page root
+        deleteobject ($site_name, "%page%/".$site_name."/", ".folder", "sys");
+        deletefile ($mgmt_config['abs_path_comp'], $site_name, 1);
+        
+        // component root
+        deleteobject ($site_name, "%comp%/".$site_name."/", ".folder", "sys");
+        deletefile ($mgmt_config['abs_path_comp'], $site_name, 1);
+        
+        // template media
+        deletefile ($mgmt_config['abs_path_rep']."media_tpl/", $site_name, 1);
+        
+        // content media
+        deletefile ($mgmt_config['abs_path_rep']."media_cnt/", $site_name, 1);
+        
+        // load user file
+        $userdata = loadlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", 5);
+        
         if ($userdata != false)
         {
-          // save user xml file
-          $test = savelockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", $userdata);   
-          
-          if ($test == false) 
-          {
-            $errcode = "10121";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savelockfile failed for user.xml.php";
-          
-            // unlock file
-            unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");           
-          }     
-        }     
-        else 
-        {  
-          $errcode = "10123";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletecontent failed for user.xml.php";
-     
-          // unlock file
-          unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");       
-        }  
-      }
-      else 
-      {
-        $errcode = "10122";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|loadfile failed for user.xml.php";
-            
-        // unlock file
-        unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
-      }
-      
-      // usergroup
-      deletefile ($mgmt_config['abs_path_data']."user/", $site_name.".usergroup.xml.php", 0);
-    
-      // media   
-      deletefile ($mgmt_config['abs_path_data']."media/", $site_name.".media.tpl.dat", 0);
-
-      // link
-      deletefile ($mgmt_config['abs_path_data']."link/", $site_name.".link.dat", 0);
-       
-      // templates
-      deletefile ($mgmt_config['abs_path_data']."template/", $site_name, 1);    
-      
-      // workflow
-      deletefile ($mgmt_config['abs_path_data']."workflow/", $site_name, 1);   
-    
-      $dir_temp = $mgmt_config['abs_path_data']."workflow_master/";
-      $scandir = scandir ($dir_temp);
-    
-      if ($scandir)
-      {
-        foreach ($scandir as $entry)
-        {
-          if (is_file ($dir_temp.$entry) && preg_match ("/^".$site_name."./", $entry))
-          {
-            deletefile ($dir_temp, $entry, 0);
-          }
-        }
-      }  
-      
-      // customer files
-      deletefile ($mgmt_config['abs_path_data']."customer/", $site_name, 1);      
-       
-      // config files
-      deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php", 0);
-      deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".ini", 0);
-      deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".properties", 0);
-
-      // mapping configuration file
-      if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".media.map.php"))
-      {
-        deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".media.map.php", 0);  
-      }
-      
-      // hierarchy configuration file
-      if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".hierarchy.dat"))
-      {
-        deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".hierarchy.dat", 0);  
-      }
-      
-      // taxonomy configuration file
-      $dir_temp = $mgmt_config['abs_path_data']."include/";
-      $scandir = scandir ($dir_temp);
-    
-      if ($scandir)
-      {
-        foreach ($scandir as $entry)
-        {
-          if (is_file ($dir_temp.$entry) && strpos ("_".$entry, $site_name.".") > 0 && (strpos ($entry, ".taxonomy.dat") > 0 || strpos ($entry, ".taxonomy.inc.php") > 0))
-          {
-            deletefile ($dir_temp, $entry, 0);
-          }
-        }
-      }  
-     
-      // remove site_name value from inheritance database
-      $inherit_db = inherit_db_deleteparent ($inherit_db, $site_name);
-    
-      if ($inherit_db != false)
-      {
-        // save site file
-        $test = inherit_db_save ($inherit_db, $user);
-    
-        if ($test != false)
-        {
-          // remove publication information from user session
-          if (is_array ($_SESSION['hcms_siteaccess']))
-          {
-            $buffer = null;
-            
-            foreach ($_SESSION['hcms_siteaccess'] as $value)
-            {
-              if ($value != $site_name) $buffer[] = $value;
-            }
-            
-            $_SESSION['hcms_siteaccess'] = $buffer;
-            
-            // get crypted password of current user
-            $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-         
-            if ($userdata != false)
-            {
-              $user_node = selectcontent ($userdata, "<user>", "<login>", $user);
+          // delete user
+          $userdata = deletecontent ($userdata, "<memberof>", "<publication>", $site_name);    
               
-              if (!empty ($user_node[0])) 
+          if ($userdata != false)
+          {
+            // save user xml file
+            $test = savelockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", $userdata);   
+            
+            if ($test == false) 
+            {
+              $errcode = "10121";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savelockfile failed for user.xml.php";
+            
+              // unlock file
+              unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");           
+            }     
+          }     
+          else 
+          {  
+            $errcode = "10123";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletecontent failed for user.xml.php";
+       
+            // unlock file
+            unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");       
+          }  
+        }
+        else 
+        {
+          $errcode = "10122";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|loadfile failed for user.xml.php";
+              
+          // unlock file
+          unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
+        }
+        
+        // usergroup
+        deletefile ($mgmt_config['abs_path_data']."user/", $site_name.".usergroup.xml.php", 0);
+      
+        // media   
+        deletefile ($mgmt_config['abs_path_data']."media/", $site_name.".media.tpl.dat", 0);
+  
+        // link
+        deletefile ($mgmt_config['abs_path_data']."link/", $site_name.".link.dat", 0);
+         
+        // templates
+        deletefile ($mgmt_config['abs_path_data']."template/", $site_name, 1);    
+        
+        // workflow
+        deletefile ($mgmt_config['abs_path_data']."workflow/", $site_name, 1);   
+      
+        $dir_temp = $mgmt_config['abs_path_data']."workflow_master/";
+        $scandir = scandir ($dir_temp);
+      
+        if ($scandir)
+        {
+          foreach ($scandir as $entry)
+          {
+            if (is_file ($dir_temp.$entry) && preg_match ("/^".$site_name."./", $entry))
+            {
+              deletefile ($dir_temp, $entry, 0);
+            }
+          }
+        }  
+        
+        // customer files
+        deletefile ($mgmt_config['abs_path_data']."customer/", $site_name, 1);      
+         
+        // config files
+        deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php", 0);
+        deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".ini", 0);
+        deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".properties", 0);
+  
+        // mapping configuration file
+        if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".media.map.php"))
+        {
+          deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".media.map.php", 0);  
+        }
+        
+        // hierarchy configuration file
+        if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".hierarchy.dat"))
+        {
+          deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".hierarchy.dat", 0);  
+        }
+        
+        // taxonomy configuration file
+        $dir_temp = $mgmt_config['abs_path_data']."include/";
+        $scandir = scandir ($dir_temp);
+      
+        if ($scandir)
+        {
+          foreach ($scandir as $entry)
+          {
+            if (is_file ($dir_temp.$entry) && strpos ("_".$entry, $site_name.".") > 0 && (strpos ($entry, ".taxonomy.dat") > 0 || strpos ($entry, ".taxonomy.inc.php") > 0))
+            {
+              deletefile ($dir_temp, $entry, 0);
+            }
+          }
+        }  
+       
+        // remove site_name value from inheritance database
+        $inherit_db = inherit_db_deleteparent ($inherit_db, $site_name);
+      
+        if ($inherit_db != false)
+        {
+          // save site file
+          $test = inherit_db_save ($inherit_db, $user);
+      
+          if ($test != false)
+          {
+            // remove publication information from user session
+            if (is_array ($_SESSION['hcms_siteaccess']))
+            {
+              $buffer = null;
+              
+              foreach ($_SESSION['hcms_siteaccess'] as $value)
               {
-                $passwd_node = getcontent ($user_node[0], "<password>");
+                if ($value != $site_name) $buffer[] = $value;
+              }
+              
+              $_SESSION['hcms_siteaccess'] = $buffer;
+              
+              // get crypted password of current user
+              $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+           
+              if ($userdata != false)
+              {
+                $user_node = selectcontent ($userdata, "<user>", "<login>", $user);
                 
-                if (!empty ($passwd_node[0]))
+                if (!empty ($user_node[0])) 
                 {
-                  $passwd = $passwd_node[0];
-                
-                  // register new checksum
-                  killsession ($user, false);
-                  writesession ($user, $passwd, createchecksum (), $_SESSION['hcms_siteaccess']);
+                  $passwd_node = getcontent ($user_node[0], "<password>");
+                  
+                  if (!empty ($passwd_node[0]))
+                  {
+                    $passwd = $passwd_node[0];
+                  
+                    // register new checksum
+                    killsession ($user, false);
+                    writesession ($user, $passwd, createchecksum (), $_SESSION['hcms_siteaccess']);
+                  }
                 }
               }
             }
-          }
-        
-          // eventsystem
-          if ($eventsystem['oncreatepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-            ondeletepublication_post ($site_name, $user);        
-        
-          $add_onload = "top.frames['navFrame'].location='explorer.php?refresh=1'; parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-          $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-was-deleted-successfully'][$lang]."</span><br />\n".$hcms_lang['all-publication-entries-were-removed-successfully'][$lang]."<br>\n";
           
-          // success
-          $result_ok = true;
+            // eventsystem
+            if ($eventsystem['oncreatepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+              ondeletepublication_post ($site_name, $user);        
+          
+            $add_onload = "top.frames['navFrame'].location='explorer.php?refresh=1'; parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
+            $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-was-deleted-successfully'][$lang]."</span><br />\n".$hcms_lang['all-publication-entries-were-removed-successfully'][$lang]."<br>\n";
+            
+            // success
+            $result_ok = true;
+          }
+          else
+          {
+            // unlock file
+            inherit_db_close ($user);
+          }
         }
         else
         {
           // unlock file
           inherit_db_close ($user);
+      
+          $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-cannot-be-removed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
         }
       }
       else
       {
         // unlock file
         inherit_db_close ($user);
-    
+      
         $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-cannot-be-removed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
       }
     }
-    else
-    {
-      // unlock file
-      inherit_db_close ($user);
-    
-      $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
-    }
+  }
+  // check if sent data is available
+  else
+  {
+    $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-a-publication'][$lang]."\n";
   }
   
   // save log
@@ -7684,8 +7741,8 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]."!</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
   }
-  // test if login name contains special characters
-  elseif (specialchr ($login, "-_") == true)
+  // test if login name contains special characters except ".-_@"
+  elseif (specialchr ($login, ".-_@") == true)
   {
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
@@ -8281,8 +8338,11 @@ function deleteuser ($site, $login, $user="sys")
         // remove favorites file of user
         deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".fav", 0);
 
-        // remove objectlist defintion file of user
+        // remove objectlist definition file of user
         deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".objectlistcols.json", 0);
+        
+        // remove GUI definition file of user
+        deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".gui.dat", 0);
 
         // remove saved searches of user
         deletefile ($mgmt_config['abs_path_data']."/log/", $login.".search.log", 0);
@@ -9629,7 +9689,7 @@ function deletefrommediacat ($site, $mediafile)
 // output: result array
 
 // description:
-// This function creates a new folder. The folder name must not match the temp file patterns defined in include/tempfilepatterns.inc.php
+// This function creates a new folder. The folder name must not match any temp file pattern.
 
 function createfolder ($site, $location, $foldernew, $user)
 {
@@ -10942,7 +11002,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
   // set default language
   if ($lang == "") $lang = "en";
 
-  if (valid_publicationname ($site) && valid_locationname ($location) && $cat != "" && accessgeneral ($site, $location, $cat) && is_array ($global_files) && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && $cat != "" && accessgeneral ($site, $location, $cat) && is_array ($global_files) && !is_tempfile ($global_files['Filedata']['name']) && valid_objectname ($user))
   {
     // publication management config
     if (!isset ($mgmt_config[$site]['abs_path_comp']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
@@ -10957,6 +11017,13 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     $location = deconvertpath ($location, "file");
     $location_esc = $result['location_esc'] = convertpath ($site, $location, $cat);
     
+    // log entry
+    $errcode = "00011";
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|uploadfile(".$site.", ".$location_esc.", ".$page.", ".$cat.") -> new multimedia file upload '".$global_files['Filedata']['name']."' by user '".$user."'";  
+         
+    // write log
+    savelog (@$error);
+    
     // result
     $result['publication'] = $site;
         
@@ -10969,7 +11036,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if ($setlocalpermission['root'] != 1 || $setlocalpermission['upload'] != 1)
     {
       $errcode = "30501";
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> no permissions to upload file to ".$location." for user '".$user."'";
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> no permissions to upload file to '".$location."' for user '".$user."'";
         
       // write log
       savelog (@$error);
@@ -11109,7 +11176,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         return $result;
       }
     }
-    
+
     // eventsystem
     if ($eventsystem['onfileupload_pre'] == 1) onfileupload_pre ($site, $cat, $location, $global_files['Filedata']['name'], $user);
   
@@ -11117,7 +11184,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (!empty ($global_files['Filedata']['error']) && $global_files['Filedata']['error'] != UPLOAD_ERR_OK)
     {
       $errcode = "20504";
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$location_esc.$global_files['Filedata']['name']."' could not be saved or only partialy-saved (Please check upload_max_filesize in your php.ini)";
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$location_esc.$global_files['Filedata']['name']."' could not be saved or only partialy-saved. Please check upload_max_filesize in your php.ini. Upload input details: temp-name:".$global_files['Filedata']['tmp_name']. ", file-name:".$global_files['Filedata']['name'].", file-size:".$global_files['Filedata']['size'].", file-type:".$global_files['Filedata']['type'];
         
       // write log
       savelog (@$error);
@@ -11585,7 +11652,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             // write stats for upload
             if ($container_id != "" && !is_thumbnail ($media_update, false))
             {
-              rdbms_insertdailystat ("upload", $container_id, $user);
+              if ($user == "sys") $user_stats = getuserip();
+              else $user_stats = $user;
+                
+              rdbms_insertdailystat ("upload", $container_id, $user_stats);
             }
 
             // get media size
@@ -11756,7 +11826,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 // output: result array
 
 // description:
-// This function creates an asset (multimedia object) by reading a given source file. The file name must not match the temp file patterns defined in include/tempfilepatterns.inc.php and .recycle for recycled files.
+// This function creates an asset (multimedia object) by reading a given source file. The file name must not match any temp file pattern.
 // The metadata template is based on the template of the folder the objects resides in.
 
 function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0, $leavefile=false)
@@ -11814,7 +11884,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
       // create new multimedia object
       $result = createobject ($site, $location, $file, $template, $user);
 
-      // copy file
+      // move uploaded file into media repository
       if (!empty ($result['result']) && !empty ($result['mediafile']) && !empty ($result['container_id']) && !empty ($result['container_content']))
       {
         $file_name = substr ($result['object'], 0, strrpos ($result['object'], "."));
@@ -11837,10 +11907,10 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
         {
           // move multimedia file to content media repository
           // case "upload": move uploaded file from temp directory
-          $result_move = @move_uploaded_file ($path_source_file, $medialocation.$mediafile);
+          $result_move = move_uploaded_file ($path_source_file, $medialocation.$mediafile);
           
           // case "import": move import file from source directory 
-          if (!$result_move) $result_move = @rename ($path_source_file, $medialocation.$mediafile);
+          if (!$result_move) $result_move = rename ($path_source_file, $medialocation.$mediafile);
         }
 
         if ($result_move)
@@ -11958,7 +12028,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
 // description:
 // This function creates media objects by reading all media files from a given source location (used after unzipfile). 
-// The file namey must not match the temp file patterns defined in include/tempfilepatterns.inc.php
+// The file name must not match any temp file pattern.
 
 function createmediaobjects ($site, $location_source, $location_destination, $user)
 {
@@ -15824,7 +15894,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
 // This function is used to perform actions on multiple objects and is mainly used by popup_status.php.
 // This functions should only be used in connection with the GUI of the system.
 
-function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=0, $user, $tempfile="", $maxitems=5)
+function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=0, $user, $tempfile="", $maxitems=10)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
       
@@ -17604,8 +17674,8 @@ function sendresetpassword ($login, $link=false, $instance="")
     // send mail
     $mail = sendmessage ("", $login, $hcms_lang['password'][$lang]." ".$hcms_lang['reset'][$lang], $message);
 
-    if ($mail == false) return $hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang].$email[0];
-    else return $hcms_lang['e-mail-was-sent-successfully-to-'][$lang].$email[0];
+    if ($mail == false) return $hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang]." ".$email[0];
+    else return $hcms_lang['e-mail-was-sent-successfully-to-'][$lang]." ".$email[0];
   }
 }
 

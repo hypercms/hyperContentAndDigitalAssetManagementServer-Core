@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
 // ======================================== API loader ==========================================
@@ -157,7 +159,7 @@ if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_dev.inc.php"))
 if (defined ("SESSION") && constant ("SESSION") == "create" && is_file ($mgmt_config['abs_path_cms']."include/session.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."include/session.inc.php");
-  
+
   // get instance from session
   if (!empty ($_SESSION['hcms_instance']))
   {
@@ -174,7 +176,7 @@ if (defined ("SESSION") && constant ("SESSION") == "create" && is_file ($mgmt_co
 
 // include language file for API functions
 if (empty ($lang)) $lang = "en";
- 
+
 if ((empty ($hcms_lang) || is_string ($hcms_lang)) && !empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)))
 {
   require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));

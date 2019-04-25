@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -160,12 +162,12 @@ else $objects_counted = 0;
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript">
-// context menu
-var contextenable = 1;
 
-// set contect menu move options
-var contextxmove = 1;
-var contextymove = 1;
+// context menu
+contextenable = true;
+is_mobile = <?php if (!empty ($is_mobile)) echo "true"; else echo "false"; ?>;
+contextxmove = true;
+contextymove = true;
 
 // define global variable for popup window name used in contextmenu.js
 var session_id = '<?php echo session_id(); ?>';

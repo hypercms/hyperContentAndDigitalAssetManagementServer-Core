@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -19,7 +21,7 @@ $site = getrequest ("site", "publicationname");
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if (!checkrootpermission ('site') && !checkrootpermission ('user')) killsession ($user);
+if ((!valid_publicationname ($site) && !checkrootpermission ('site')) && !checkrootpermission ('user')) killsession ($user);
 
 // check session of user
 checkusersession ($user);

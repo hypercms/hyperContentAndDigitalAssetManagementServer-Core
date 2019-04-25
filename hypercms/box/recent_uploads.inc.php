@@ -6,10 +6,10 @@ $maxcount = 20;
 $object_array = array();
 
 // get downloads stats of user
-$stats_array = rdbms_getmediastat ("", "", "upload", "", "", $user);
+$stats_array = rdbms_getmediastat ("", "", "upload", "", "", $user, false);
 
 // prepare array
-if (is_array ($stats_array) && sizeof ($stats_array) > 0)
+if (!empty ($stats_array) && is_array ($stats_array) && sizeof ($stats_array) > 0)
 {
   $stats_array = array_reverse ($stats_array);
   reset ($stats_array);

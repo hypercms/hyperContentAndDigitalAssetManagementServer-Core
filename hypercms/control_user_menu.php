@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -187,7 +189,7 @@ function checkForm()
     return false;
   }    
   
-  if (!checkForm_chars (userlogin.value, "-_"))
+  if (!checkForm_chars (userlogin.value, ".-_@"))
   {
     userlogin.focus();
     return false;
@@ -200,7 +202,7 @@ function checkForm()
     return false;
   }
   
-  if (!checkForm_chars (userpassword.value, "-_#+*[]%$§!?@"))
+  if (!checkForm_chars (userpassword.value, ".-_#+*[]%$§!?@"))
   {
     userpassword.focus();
     return false;

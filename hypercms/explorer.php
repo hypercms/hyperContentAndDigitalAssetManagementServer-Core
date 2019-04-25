@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
 // session
@@ -281,8 +283,9 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
             if ($setlocalpermission['root'] == 1)
             {
               $folder_array[] = $folder;
+              
               // create folder object if it does not exist
-              if (!is_file ($location.$folder."/.folder")) createobject ($site, $location.$folder."/", ".folder", "default.meta.tpl", "sys");
+              if (!is_file ($location.$folder."/.folder") && is_writable ($location.$folder)) createobject ($site, $location.$folder."/", ".folder", "default.meta.tpl", "sys");
             }
           }
         }
@@ -1193,9 +1196,9 @@ else
     <meta charset="<?php echo getcodepage ($lang); ?>" />
     <meta name="viewport" content="width=260, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     
-    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
+    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css?ts=<?php echo time(); ?>" />
     
-    <!-- JQuery -->
+    <!-- JQuery (for navigation tree and autocomplete) -->
     <script type="text/javascript" src="javascript/jquery/jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>  
     <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
@@ -1203,6 +1206,7 @@ else
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.hotkeys.js"></script>
     <script type="text/javascript" src="javascript/jstree/jquery.jstree.js"></script>
     
+    <!-- main and contextmenu library -->
     <script type="text/javascript" src="javascript/main.js"></script>
     <script type="text/javascript" src="javascript/contextmenu.js"></script>
     
@@ -1224,9 +1228,9 @@ else
     var lastSelected = "";
 
     // set contect menu option
-    var contextxmove = 0;
-    var contextymove = 1;
-    var contextenable = 1;
+    contextenable = true;
+    contextxmove = false;
+    contextymove = true;
 
     // define global variable for popup window name used in contextmenu.js
     var session_id = '<?php session_id(); ?>';
@@ -1340,22 +1344,7 @@ else
     {
       document.getElementById('unsetcolors').checked = false;
     }
-      
-    function checkForm (select)
-    {
-      if (select.elements['search_expression'].value == "")
-      {
-        alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-search-expression'][$lang]); ?>"));
-        select.elements['search_expression'].focus();
-        return false;
-      }
-      
-      // load screen
-      if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline';
-      
-      select.submit();
-    }
-    
+
     function loadForm ()
     {
       var selectbox = document.forms['searchform_advanced'].elements['template'];
@@ -1363,12 +1352,12 @@ else
       
       if (template != "")
       {
-        hcms_loadPage('contentLayer', null, 'search_form_advanced.php?template=' + template + '&css_display=block');
+        hcms_loadPage('contentFrame', 'search_form_advanced.php?template=' + template + '&css_display=block');
         return true;
       }
       else
       {
-        hcms_loadPage('contentLayer', null, 'search_form_advanced.php?template=&css_display=block');
+        hcms_loadPage('contentFrame', 'search_form_advanced.php?template=&css_display=block');
         return true;
       }
     }
@@ -1539,6 +1528,11 @@ else
     {
       if (document.getElementById('keywordsLayer').style.display == 'none')
       {
+        if (document.getElementById('keywordsFrame').src.indexOf('explorer_keywords.php') == -1)
+        {
+          document.getElementById('keywordsFrame').src = "explorer_keywords.php";
+        }
+      
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
         hcms_hideInfo('fulltextLayer');
         hcms_hideInfo('advancedLayer');
@@ -1667,6 +1661,14 @@ else
         if (!iframe)
         {
           parent.frames['workplFrame'].location = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_objectlist.php';
+        }
+        
+        // full text search
+        if (document.getElementById('fulltextLayer').style.display != 'none' && form.elements['search_expression'].value.trim() == "")
+        {
+          alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-search-expression'][$lang]); ?>"));
+          form.elements['search_expression'].focus();
+          return false;
         }
 
         // delete search_dir
@@ -1831,13 +1833,13 @@ else
     
     function showSearch ()
     {
-      hcms_showHideLayers ('menu','','hide','search','','show'); 
+      hcms_showHideLayers ('menu','','hide','search','','show');
     }
     
     function showNav ()
     {
       window.scrollTo (0, 0);
-      hcms_showHideLayers ('menu','','show','search','','hide'); 
+      hcms_showHideLayers ('menu','','show','search','','hide');
     }
 
     // Google Maps JavaScript API v3: Map Simple
@@ -1906,7 +1908,10 @@ else
   </head>
   
   <body class="hcmsWorkplaceExplorer">
-  
+    
+  <!-- load screen --> 
+  <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
+    
   <?php /* Saves the token for the context menu */ ?>
   <span id="context_token" style="display:none;"><?php echo $token_new; ?></span>
   <div id="contextLayer" style="position:absolute; width:150px; height:128px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
@@ -1949,7 +1954,7 @@ else
     </div>
 
     <!-- navigator -->
-    <div id="menu" style="position:absolute; top:4px; left:0px;">
+    <div id="menu" style="position:absolute; top:4px; left:0px; visibility:hidden;">
       <ul id="menupointlist">
         <?php echo $maintree.$tree; ?>
       </ul>
@@ -1969,8 +1974,8 @@ else
         <div id="fulltextLayer" style="display:none; clear:right;"> 
           <div style="padding-bottom:3px;">
             <label for="search_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
-            <input type="text" id="search_expression" name="search_expression" onkeydown="if (hcms_enterKeyPressed(event) && document.getElementById('search_expression').value.trim() != '') startSearch('post');" style="width:193px; padding-right:30px;" maxlength="200" />
-            <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" style="cursor:pointer; width:22px; height:22px; margin-left:-30px;" onClick="if (document.getElementById('search_expression').value.trim() != '') startSearch('post');" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+            <input type="text" id="search_expression" name="search_expression" onkeydown="if (hcms_enterKeyPressed(event)) startSearch('post');" style="width:193px; padding-right:30px;" maxlength="2000" />
+            <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" style="cursor:pointer; width:22px; height:22px; margin-left:-30px;" onClick="startSearch('post');" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
           </div>
           <div style="padding-bottom:3px;">
             <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
@@ -2072,7 +2077,7 @@ else
           }
           ?>
           </select><br />
-          <iframe id="contentFRM" name="contentFRM" width="0" height="0" frameborder="0"></iframe> 
+          <iframe id="contentFrame" name="contentFrame" width="0" height="0" frameborder="0"  style="width:0; height:0; frameborder:0;"></iframe> 
           <div class="hcmsObjectSelected" style="border:1px solid #000000; width:226px; height:200px; padding:2px; overflow:auto;">
             <div id="contentLayer"></div>
           </div>
@@ -2092,69 +2097,12 @@ else
         </div>
         
         <div id="keywordsLayer" style="display:none; clear:right;">
-        
-          <!--
-          <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
-          <select id="publication" name="site" style="width:230px;">
-            <option value=""><?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></option>
-          <?php
-          $keywords = array();
-          
-          if (!empty ($siteaccess) && is_array ($siteaccess))
-          {
-            $template_array = array();
-            
-            foreach ($siteaccess as $site)
-            {
-              if (!empty ($site)) echo "
-            <option value=\"".$site."\">".$site."</option>";
-            }
-          }
-          ?>
-          </select><br /> 
-          -->
-          
-          <table class="hcmsTableNarrow" style="width:100%; margin-top:4px;">
-          <?php
-          $count = rdbms_getemptykeywords ($siteaccess);
-          ?>
-            <tr class="hcmsRowData1"><td style="text-align:left;" title="<?php echo getescapedtext ($hcms_lang['none'][$lang]); ?>"><label><input type="checkbox" onclick="startSearch('auto')" name="search_textnode[]" value="%keyword%/" />&nbsp;<?php echo getescapedtext ($hcms_lang['none'][$lang]); ?></label></td><td style="text-align:right;"><?php echo $count; ?>&nbsp;</td></tr>
-          <?php
-          $keywords = getkeywords ($siteaccess);
-          
-          if (is_array ($keywords) && sizeof ($keywords) > 0)
-          {
-            $color = false;
-            
-            foreach ($keywords as $keyword_id => $keyword_array)
-            {
-              foreach ($keyword_array as $count => $keyword)
-              {
-                // define row color
-                if ($color == true)
-                {
-                  $rowcolor = "hcmsRowData1";
-                  $color = false;
-                }
-                else
-                {
-                  $rowcolor = "hcmsRowData2";
-                  $color = true;
-                }
-                
-                echo "
-            <tr class=\"".$rowcolor."\"><td style=\"text-align:left;\" title=\"".$keyword."\"><label><input type=\"checkbox\" onclick=\"startSearch('auto')\" name=\"search_textnode[]\" value=\"%keyword%/".$keyword_id."\" />&nbsp;".getescapedtext (showshorttext ($keyword, 22))."</label></td><td style=\"text-align:right;\">".$count."&nbsp;</td></tr>";
-              }
-            }
-          }
-          else
-          {
-            echo "<tr><td>".getescapedtext ($hcms_lang['no-items-were-found'][$lang])."</td></tr>";
-          }
-          ?>
-          </table>
+          <iframe id="keywordsFrame" name="keywordsFrame" width="0" height="0" frameborder="0"  style="width:0; height:0; frameborder:0;"></iframe> 
+          <div id="keywordsTarget" style="width:100%; min-height:64px; max-height:500px; overflow:auto; background:url('<?php echo getthemelocation(); ?>/img/loading.gif') no-repeat center center;">
+          </div>
         </div>
         <hr />
+        
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media'][$lang]); ?></span>
           <img onClick="activateImageSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
@@ -2409,6 +2357,15 @@ else
         <button type="button" class="hcmsButtonGreen" style="width:100%;" onclick="startSearch('post');"><?php echo getescapedtext ($hcms_lang['search'][$lang]); ?></button>
       </form>
     </div>
+        
+    <!-- initalize -->
+    <script>
+    // load screen
+    if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';
+    
+    // navigation tree
+    showNav();
+    </script>
     
   </body>
 </html>

@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -223,13 +225,14 @@ function selectAll ()
           <table class="hcmsTableNarrow">
             <tr>
               <td>
-                <select name="folder" style="width:250px;" size="10">
+                <select name="folder" size="10" style="width:250px;">
                   <?php
                   if (isset ($folderaccesslist) && is_array ($folderaccesslist) && sizeof ($folderaccesslist) > 0)
                   {
                     foreach ($folderaccesslist as $object_id)
                     {
                       $object_id = trim ($object_id);
+                      
                       // versions before 5.6.3 used folder path instead of object id
                       if (substr_count ($object_id, "/") == 0) $folder_path = rdbms_getobject ($object_id);
                       else $folder_path = $object_id;
@@ -239,7 +242,10 @@ function selectAll ()
                         // get location name
                         $folder_name = getlocationname ($site, $folder_path, $cat, "path");
                         
-                        echo "<option value=\"".$object_id."\">".$folder_name."</option>\n";
+                        if (strlen ($folder_name) > 36) $folder_name_short = "...".substr (substr ($folder_name, -36), strpos (substr ($folder_name, -36), "/"));
+                        else $folder_name_short = $folder_name;
+                        
+                        echo "<option value=\"".$object_id."\" title=\"".$folder_name."\">".$folder_name_short."</option>\n";
                       }
                     }
                   }

@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
 // ===================================== LINK DATABASE FUNCTIONS =========================================
@@ -1013,15 +1015,15 @@ function extractlinks ($textcontent, $identifier)
   if ($textcontent != "" && $identifier != "")
   {
     // remove freespaces   
-    $string = str_replace ("   ", " ", $textcontent);
-    $string = str_replace ("  ", " ", $textcontent);
+    $string = str_replace (array ("    ", "   ", "  "), " ", $textcontent);
+    $string = str_replace ("= ", "=", $textcontent);
     $string = str_replace (" =", "=", $textcontent);
   
     // link identifier seach string, e.g. " href="
     $identifier_search = " ".$identifier."=";
     
     $subtext = $textcontent;
-    $link_array = Null;
+    $link_array = array();
     $i = 0;
     
     while (strpos (strtolower ($subtext), strtolower ($identifier_search)) > 0)
@@ -1044,7 +1046,7 @@ function extractlinks ($textcontent, $identifier)
     }
     
     // return result
-    if (is_array ($link_array)) return $link_array;
+    if (is_array ($link_array) && sizeof ($link_array) > 0) return $link_array;
     else return false;
   }
   else return false;

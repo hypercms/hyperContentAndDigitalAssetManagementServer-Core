@@ -19,6 +19,7 @@ $location = getrequest_esc ("location", "locationname");
 $page = getrequest ("page", "objectname");
 $contenttype = getrequest_esc ("contenttype");
 $token = getrequest ("token");
+$appendcontent = getrequest ("appendcontent");
 
 // get publication and category
 $site = getpublication ($location);
@@ -40,6 +41,25 @@ if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermiss
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
+
+// helper function for appending text content in multiedit mode
+function appendcontent_helper ($xmlcontent, $text, $delimiter=" ")
+{
+  if (is_array ($text) && sizeof ($text) > 0 && !empty ($xmlcontent))
+  {
+    foreach ($text as $key=>$value)
+    {
+      // get content
+      $temp = selectcontent ($xmlcontent, "<text>", "<text_id>", $key);
+      if (!empty ($temp[0])) $temp_content = getcontent ($temp[0], "<textcontent>");
+      
+      // append content
+      if (!empty ($temp_content[0])) $text[$key] = $temp_content[0].$delimiter.$value;
+    }
+  }
+  
+  return $text;
+}
 
 // extract character set from content-type
 $result_charset = getcharset ($site, $contenttype);
@@ -266,7 +286,17 @@ if ($usedby == "" || $usedby == $user)
         // remove empty entries
         $textu['Faces-JSON'] = str_replace (", , ", ", ", $faces);
       }
-    
+      
+      // append content (only for textu, textf, textk)
+      if (!empty ($appendcontent))
+      {
+        $textf = appendcontent_helper ($contentdatanew, $textf);
+        $arttextf = appendcontent_helper ($contentdatanew, $arttextf);
+        $textu = appendcontent_helper ($contentdatanew, $textu);
+        $arttextu = appendcontent_helper ($contentdatanew, $arttextu);
+        $textk = appendcontent_helper ($contentdatanew, $textk, ",");
+      }
+
       // text content
       if (isset ($textf) && is_array ($textf) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textf, "f", "no", $user, $user, $charset);
       if (isset ($arttextf) && is_array ($arttextf) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextf, "f", "yes", $user, $user, $charset);

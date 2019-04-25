@@ -2604,7 +2604,7 @@ Release 03/2018
 - Bug fix: The template engine did use an undeclared variable in a JS function
 - Bug fix: Function rdbms_getmedia in DB connect did not convert the container ID to an integer provide the geolocation for non-multimedia objects
 - Bug fix: control_content_menu did not verify if the published key exists 
-- Bug fix: Some variables have not been initalized in template_change if no template has been assigned to an object
+- Bug fix: Some variables have not been initialized in template_change if no template has been assigned to an object
 - Bug fix: Function checkworkflow in Main API did not return the standard workflow role if no workflow has been assigned to an object
 - Bug fix: The template engine and checkbox editor did not evaluate the saved value of checkboxes properly
 - Bug fix: JS function openBrWindowMedia in media _edit_page did not access proper URL variables
@@ -3157,7 +3157,7 @@ Release 02/2019
 - Removed version number on logon screen
 - Implementation of error logging in function setmetadata in Meta API
 - Removed false as return value in function setmetadata in Meta API
-- Modifications in template engine ion order to reset the character set for media assets to UTF-8 and return character set in result
+- Modifications in template engine in order to reset the character set for media assets to UTF-8 and return character set in result
 - Minor design modifications in page_view
 - Modifications in page_view in order to set character set in HTTP header
 - Modifications in function showmedia in UI API in order to use titles on div layers of annotation buttons instead of input elements due to display issues
@@ -3261,14 +3261,14 @@ Release 03/2019
 - Modifications in function showAPIdocs in UI API in order to verify array elements
 - Modifications in various functions of the Media API in order to verify that the executable link is not empty
 - Modifications in various functions of the Main API in order to set max_digit_filename to 236
-- Modifications in function createobject in Main API in order to exlude error loging and messages if basic input has been provided but input parameters failed the verification
-- Implementation of initalization of date and time into hyperCMS API loader in case it is not provided by the main configuration
+- Modifications in function createobject in Main API in order to exclude error loging and messages if basic input has been provided but input parameters failed the verification
+- Implementation of initialization of date and time into hyperCMS API loader in case it is not provided by the main configuration
 - Hide userregistration form if accessed directly and if registration of new users is disabled
 - Modifications in template engine in order to assign CSS class hcmsTextArea to facename text area fields
 - Modifications in template engine face marker and detection functions in order to verify the tag is a certain element type before executing (to prevent display of all markers on videos after a marker has been removed)
 - Modifications in function creatmedia in order to verify the created video segment files and the joined video file
 - Modifications in function showmedia in order to display full width editor window for text-based template media
-- Modifications in function showmedia in order to initalize variables and verify if template media file exists
+- Modifications in function showmedia in order to initialize variables and verify if template media file exists
 - Modifications in Report Management module in order to apply labels to radio buttons of the report chart types
 - Design modifications in Report Management 
 - Removed JQuery UI 1.10.2 CSS files
@@ -3279,12 +3279,107 @@ Release 03/2019
 - Bug fix: Taxonomy editor used wrong index number for first taxonomy element if no taxonomy is available
 - Bug fix: Delete button for users in task bar has not been enabled for a multiple selection in control_user_menu
 - Bug fix: Function convertmedia in Media API did not exclude image target formats for the conversion of documents (call of function createdocument)
-- Bug fix: Undefined variable $onclick and $clipboard_array in task_list
-- Bug fix: Undefined variable $useritem_array in function getworkflowitem in Get API
-- Bug fix: Undefined variable $multiobject_count in control_user_menu
+- Bug fix: Undefined variable onclick and clipboard_array in task_list
+- Bug fix: Undefined variable useritem_array in function getworkflowitem in Get API
+- Bug fix: Undefined variable multiobject_count in control_user_menu
 - Bug fix: sendmail service used wrong input parameter for usergroup in edituser function call
 - Bug fix: sendmail service did not implode e-mail addresses for log entry
 - Bug fix: Function tasknotification in Task API did use wrong input parameter (start and end date) for call of function rdbms_gettask
 - Bug fix: Previews of single objects have not been displayed in user_sendmail if multiobject has not been set
 - Bug fix: Function createmedia in Media API dd not provide the new full source path to the new video file that has been created from the video segments
 - Bug fix: media_view did not add publication name to media variable in case it has not been provided (function showmedia provides publication and media file name separately)
+
+Version 8.0.1
+Release 04/2019
+- Modifications in function manipulateallobjects in Main API in order to process 10 objects at once (new default value)
+- Modifications in popup_status in order to change the JS function for refreshing of the window
+- Modifications in function editpublication, editpublicationsetting, and deletepublication in Main API in order to verify input parameters before scanning for files
+- Modifications in control_site_menu in order to exclude verification of publication name of the request (will be verified by function editpublication, editpublicationsetting, and deletepublication)
+- Implementation of new night design theme
+- Modifications in user_sendlink in order to remove unused input parameter
+- Design modifications in user_sendlink in order to align delete buttons for recipients correctly
+- Removed deprecated Convert API functions
+- Design modifications of tabs in Mobile Edition
+- Modifications in number format of home boxes free_storage and free_storage_per_publication
+- Removed file size from views in home boxes statistics_of_favorites and up_and_download
+- Removed file size from views in page_info_stats
+- Modifications in function rdbms_getmediastat in DB Connect in order to use inner joins instead of where statement to join tables
+- Modifications in function rdbms_getmediastat in DB Connect in order to optimize the dynamic SQL creation of the statement
+- Modifications in function rdbms_getmediastat in DB Connect in order to return total filesize in result array
+- Modifications in function rdbms_getmediastat in DB Connect in order to replace string as input parameter by boolean for the filesize result request
+- Modifications in page_info_recipients, page_info_stats in order to support the new input parameters of function rdbms_getmediastat
+- Modifications in home boxes statistics_of_favorites, up_and_download, recent_downlods, recent_uploadlinks, and recent_uploads in order to support the new input parameters of function rdbms_getmediastat
+- Modifications in page_info_stats in order to summarize values for statistics based on new return result from function rdbms_getmediastat
+- Modifications in page_info_stats in order to modify chart size for mobile devices
+- Enable home boxes server_load, statistics_of_favorites and up_and_download for mobile devices with responsive chart size
+- Removed file extension srt from $mgmt_mediapreview from the main configuration in the install directory
+- Modifications in function generateExplorerTree in explorer in order to verify if folder is writeable
+- Modifications in function uploadfile in order to expand error reporting on upload error of 3 (no or partial file upload)
+- Modifications in function uploadfile in order to move logging event from service uploadfile to function uploadfile and expand logging information
+- Modifications in DB Connect functions in order to verify result before adding it to the result array
+- Modifications in function createuser in Main API in order to allow special characters (.-_@) for the user name
+- Modifications in control_user_menu in order to allow special characters (.-_@) for the user name
+- Design modifications in group_edit_form
+- Design modifications in explorer_objectlist and search_objectlist for the gallery view
+- Implementation of new function setguiview in Set API in order to save the users GUI preferences
+- Modifications in function toggleview and togglesidebar in UI API in order to save the users GUI settings
+- Modifications in page_view in order to save the users GUI settings
+- Modifications in function deleteuser in Main API in order to remove users GUI settings
+- Modifications in function userlogin and registeruser in Security API in order to get and set users GUI settings
+- Implementation of load screen in explorer
+- Modifications in explorer and home in order to force reloading the CSS files (avoid old files from browser cache)
+- Design modifications in all design themes for the load screen
+- Modifications in function loadtaxonomy in Meta API in order to load default taxonomy if no publication specific taxonomy is available
+- Design modifications in all editors
+- Modifications in function rdbms_searchcontent in DB Connect in order to remove 2nd search expression for MATCH AGAINST search since it is only used for LIKE
+- Modifications in function rdbms_getkeywords in DB Connect in order to return keywords with more than 2 digits
+- Implementation of explorer_keywords in order to create keyword list for explorer on demand
+- Modifications in explorer in order to request keyword list on demand
+- Modifications in JS function hcms_loadPage and hcms_showPage in main.js in order to remove support of Netscape and IE4 and support source frame as input
+- Modifications in search_form_advanced in order to support the new parameters of JS function hcms_showPage
+- Modifications in function buildsearchform in template engine in order to support the new parameters of JS function hcms_showPage
+- Modifications in function cleancontent in Main API in order to remove additional characters
+- Modifications in function splitkeywords in Meta API in order to exclude keywords
+- Modifications in template engine in order to add padding for report search forms
+- Implementation of pathtype attribute for hyperCMS text tags in order to define media link type used for images and links
+- Modifications in template_help and template engine in order to support the new pathtype attribute for text content and render the result based on the pathtype defined in the template
+- Modifications in explorer and search_form in order to set maxlength to 2000 for the general search expression (useful when searching for an object path)
+- Modifications in home box server_load, up_and_download in order to apply time zone of user
+- Modifications in page_info_stats in order to apply time zone of user
+- Implementation of new function is_keyword in Main API
+- Modifications in function spitkeywords in  Meta API and rdbms_getkeywords in DB Connect in order to apply function is_keyword
+- Modifications in various function of Main API in order to remove unused global variables
+- Modifications in function is_tempfile in order to verify temp file patterns file before loading it
+- Modifications in function rdbms_insertdailystat in DB Connect in order to set user to "unknown" if no user name or IP address is available
+- Modifications in function clonefolder in Media API and function downloadobject, downloadfile, uploadfile in Main API in order to set IP instead of sys user name for daily statistics
+- Modifications in component_edit_page_multi and component_edit_page_single in order to display the full path on mouse over
+- Modifications in group_access_form in order to shorten the folder path and display the full folder path on mouse over
+- Modifications in function is_tempfile in Main API in order to include tempfile patterns in function instead of loading the patterns from the include directory
+- Implementation of multi select support for mobile devices in contextmenu.js and all list views (explorer_objectlist, search_objectlist, queue_objectlist, message_objectlist, user_objectlist)
+- Modifications in home box server_load in order to reload the page every 5 minutes
+- Modifications in page_multiedit in order to display standard thumbnails for folders and non-multimedia objects
+- Modifications in explorer and search_form in order to verify search expression for fulltext search
+- Removed autocomplete feature from frameset_main since search is no longer needed
+- Modifications in explorer_objectview in order to locate object view outside the windows scopes while loading
+- Implemenation of a load screen for the object view in frameset_objectlist and explorer_objectview
+- Implemenation of new color schema for the display of the used storage in the home boxes
+- Implementation of new multiedit lock and unlock feature for appending content if the content of the same fields does not match
+- Modifications in service savecontent and page_multiedit in order to support the text content appending in multiedit mode
+- Implementation of new function appendcontent_helper in service savecontent in order to append text content to XML containers
+- Implemenation of new service setappendcontent in order to lock and unlock the multiedit form
+- Imlpementation of new session parameter for appendcontent to include/session.inc.php
+- Minor design modifications in function sendresetpassword in Main API
+- Modifications in template engine in order to implement the %publication% template variable for the publication access of a user (used for reports)
+- Implementation of new main configuration setting $mgmt_config['workflow_loop'] in order to enable a loop for workflows
+- Modifications in Workflow Management in order to enable the redirect to the start user (in order to create a loop)
+- Modifications in Workflow Management in order to display full workflow folder path in workflow_folder_form on mouse over
+- Modifications in Import/Export API in order to display each import/export result immediately
+- Implemenation of the new area chart and function showareachart in Report Management module
+- Bug fix: control_site_menu did not accept the publication name as parameter of the request string
+- Bug fix: popup_status did not execute if page or folder variable was empty
+- Bug fix: Function rdbms_getmediastat in DB Connect did not escape object path before executing SQL statement
+- Bug fix: Report Management did wrap the search form in a div layer
+- Bug fix: Modifications in control_log_menu and log_list in order to enable users to access publication event log
+- Bug fix: Function rdbms_searchcontent in DB Connect did not use LIKE search pattern if set in main configuration
+- Bug fix: Function is_tempfile did not load tempfile patterns from external file
+- Bug fix: JS function hcms_updateControlObjectListMenu in contextmenu.js did not verify if location has been provided before the submit of data

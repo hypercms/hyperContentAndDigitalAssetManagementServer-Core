@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -69,7 +71,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   
   $file_info = getfileinfo ($site, $location.$page, $cat);
   $object_info = getobjectinfo ($site, $location, $page, $user);
-
+  
   // media live-view
   if (!empty ($object_info['media']))
   {
@@ -102,7 +104,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <script type="text/javascript" src="javascript/click.js"></script>
 <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false); ?>
 <?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false); ?>
-<script>
+<script type="text/javascript">
 function setscreensize (size)
 {
   if (size != "")
@@ -168,6 +170,12 @@ function centercontainer ()
   
   if (margintop > 0) document.getElementById('container').style.marginTop = margintop+"px";
   else document.getElementById('container').style.marginTop = "30px";
+  
+  document.getElementById('container').style.marginRight = "0px";
+  document.getElementById('container').style.marginBottom = "0px";
+  
+  // load screen
+  if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display = 'none';
 }
 
 function closeselectors ()
@@ -182,8 +190,9 @@ function closeselectors ()
 </script>
 </head>
 
-<body onload="centercontainer();">
+<body onload="centercontainer()">
 
+<!-- toolbar -->
 <div id="toolbar" style="position:fixed; top:5px; left:5px; text-align:left;">
 <?php
 if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt_config['screensize']))
@@ -213,11 +222,12 @@ if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt
 }
 ?>
 <?php if ($cat == "page") { ?>
-  <div onClick="if (document.getElementById('objectiframe')) var url = document.getElementById('objectiframe').src; else url=''; parent.openBrWindowLink(url, 'preview', 'scrollbars=yes,resizable=yes')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
+  <div onClick="if (document.getElementById('objectiframe')) var url = document.getElementById('objectiframe').src; else var url=''; parent.openBrWindowLink(url, 'preview', 'scrollbars=yes,resizable=yes')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
 <?php } ?>
 </div>
 
-<div id="container">
+<!-- object view -->
+<div id="container" style="position:fixed; top:0px; left:0px; margin:-1900px 0px 0px 0px;">
 <?php if (!empty ($objectview)) echo $objectview; ?>
 </div>
 

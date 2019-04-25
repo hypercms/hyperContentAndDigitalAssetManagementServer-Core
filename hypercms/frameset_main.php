@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -30,13 +32,13 @@ checkusersession ($user, false);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=1024, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?ts=<?php echo time(); ?>" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
-<!-- Jquery and Jquery UI Autocomplete -->
+
+<!-- JQuery used for AJAX viewport set request -->
 <script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
-<script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
+
 <?php
 // set time zone for user
 if (!empty ($_SESSION['hcms_timezone']) && $_SESSION['hcms_timezone'] != "standard")
@@ -130,15 +132,6 @@ function maxNavFrame (width)
 
 $(document).ready(function()
 {
-  <?php
-  $keywords = getsearchhistory ($user);
-  ?>
-  var available_expressions = [<?php if (is_array ($keywords)) echo implode (",\n", $keywords); ?>];
-
-  $("#search_expression").autocomplete({
-    source: available_expressions
-  });
-  
   setviewport();
   
   // set window width and height for contextmenu

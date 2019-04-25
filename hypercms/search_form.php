@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -98,7 +100,7 @@ function loadForm ()
   
   if (template != "")
   {
-    hcms_loadPage('contentLayer',null,'search_form_advanced.php?location=<?php echo url_encode($location_esc); ?>&template=' + template + '&css_display=inline-block');
+    hcms_loadPage('contentFrame', 'search_form_advanced.php?location=<?php echo url_encode($location_esc); ?>&template=' + template + '&css_display=inline-block');
   }
 }
 
@@ -121,14 +123,22 @@ function setColors ()
   document.getElementById('unsetcolors').checked = false;
 }
 
-function startSearch (form)
+function startSearch (formname)
 {
-  if (eval (document.forms['searchform_'+form]))
+  if (document.forms['searchform_'+formname])
   {
-    parent.frames['controlFrame'].location = 'loading.php';
+    var form = document.forms['searchform_'+formname];
+  
+    // search expression
+    if (form.elements['search_expression'] && form.elements['search_expression'].value.trim() == "")
+    {
+      alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-search-expression'][$lang]); ?>"));
+      form.elements['search_expression'].focus();
+      return false;
+    }
     
     // check if all file-types have been checked
-    var filetypeLayer = document.getElementById('filetype_'+form);
+    var filetypeLayer = document.getElementById('filetype_'+formname);
 
     if (filetypeLayer && filetypeLayer.style.display != "none")
     {
@@ -156,12 +166,12 @@ function startSearch (form)
         }
       }
     }
-    
+
     // load screen
     if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline';
     
     // submit form
-    document.forms['searchform_'+form].submit();
+    form.submit();
     
     // enable checkboxes for file-type
     if (filetypeLayer && filetypeLayer.style.display != "none")
@@ -355,7 +365,7 @@ $(document).ready(function()
 </script>
 
 </head>
-<body class="hcmsWorkplaceGeneric" onload="<?php if ($template != "") echo "hcms_loadPage('contentLayer',null,'search_form_advanced.php?location=".url_encode($location_esc)."&template=".url_encode($template)."&css_display=".url_encode("inline-block"); ?>');">
+<body class="hcmsWorkplaceGeneric" onload="<?php if ($template != "") echo "hcms_loadPage('contentFrame', 'search_form_advanced.php?location=".url_encode($location_esc)."&template=".url_encode($template)."&css_display=".url_encode("inline-block"); ?>');">
 
 <!-- top bar -->
 <?php echo showtopbar ($hcms_lang['search'][$lang], $lang, $mgmt_config['url_path_cms']."explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)); ?>
@@ -391,8 +401,8 @@ $(document).ready(function()
         <tr>
           <td style="width:180px; white-space:nowrap; vertical-align:top; padding-top:10px;"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?> </td>
           <td style="padding-top:10px;">
-            <input type="text" name="search_expression" id="search_expression" onkeydown="if (hcms_enterKeyPressed(event) && document.getElementById('search_expression').value.trim() != '') startSearch('general');" style="width:193px; padding-right:30px;" maxlength="200" />
-            <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" style="cursor:pointer; width:22px; height:22px; margin-left:-30px;" onClick="if (document.getElementById('search_expression').value.trim() != '') startSearch('general');" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+            <input type="text" name="search_expression" id="search_expression" onkeydown="if (hcms_enterKeyPressed(event)) startSearch('general');" style="width:193px; padding-right:30px;" maxlength="2000" />
+            <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" style="cursor:pointer; width:22px; height:22px; margin-left:-30px;" onClick="startSearch('general');" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
           </td>
         </tr>
         <tr>
@@ -568,7 +578,7 @@ $(document).ready(function()
         </tr>
         <tr>
           <td colspan="2" style="white-space:nowrap; vertical-align:top;">
-            <iframe id="contentFRM" name="contentFRM" width="0" height="0" frameborder="0"></iframe> 
+            <iframe id="contentFrame" name="contentFrame" width="0" height="0" frameborder="0" style="width:0; height:0; frameborder:0;"></iframe> 
             <div id="contentLayer" class="hcmsWorkplaceExplorer" style="border:1px solid #000000; width:486px; height:150px; padding:2px; overflow:auto; visibility:hidden;"></div>
           </td>			  
         </tr>

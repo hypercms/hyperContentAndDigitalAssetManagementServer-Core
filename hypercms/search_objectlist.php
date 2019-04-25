@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -395,8 +397,8 @@ $table_cells = getobjectlistcells ($viewportwidth, $is_mobile);
 // define cell width of table
 if ($table_cells > 0) $cell_width = floor (100 / $table_cells)."%"; 
 
-$galleryview = Null;
-$listview = Null;
+$galleryview = "";
+$listview = "";
 $items_row = 0;
 
 if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array) > 0)
@@ -554,7 +556,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                          <tr id=g".$items_row." style=\"cursor:pointer\" align=\"left\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                              <input type=\"hidden\" value=\"".$location_esc.$folder."\">
-                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" style=\"display:block; padding:0px 5px;\">
+                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\">
                                <img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$dlink_start.$folder_name.$dlink_end."
                              </div>
                             </td>";
@@ -615,9 +617,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             
             $listview .= "
                          </tr>";
-        
+
             $galleryview .= "
-                            <td id=t".$items_row." style=\"width:".$cell_width."; text-align:center; vertical-align:bottom;\" ".$selectclick.">
+                            <td id=t".$items_row." style=\"width:".$cell_width.";\" ".$selectclick.">
                               <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\">".
                                 $dlink_start."
                                   <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"border:0;\" /></div>
@@ -789,7 +791,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                          <tr id=\"g".$items_row."\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                              <input type=\"hidden\" value=\"".$location_esc.$object."\" />
-                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"display:block; padding:0px 5px;\">
+                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\">
                                <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$dlink_start.$object_name.$dlink_end."
                              </div>
                            </td>";
@@ -978,7 +980,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             }
   
             $galleryview .= "
-                            <td id=\"t".$items_row."\" style=\"width:".$cell_width."; text-align:center; vertical-align:bottom;\" ".$selectclick.">
+                            <td id=\"t".$items_row."\" style=\"width:".$cell_width.";\" ".$selectclick.">
                               <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\">".
                                 $dlink_start."
                                   ".$thumbnail."
@@ -1017,14 +1019,27 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
 <script type="text/javascript" src="javascript/lazysizes/lazysizes.min.js" async=""></script>
+<style type="text/css">
+.hcmsObjectListMarker
+{
+  display: block;
+  padding: 0px 5px;
+}
+
+#objectgallery td
+{
+  text-align: center;
+  vertical-align: bottom;
+  padding: 2px;
+}
+</style>
 <script type="text/javascript">
 
 // context menu
-var contextenable = 1;
-
-// set contect menu move options
-var contextxmove = 1;
-var contextymove = 1;
+contextenable = true;
+is_mobile = <?php if (!empty ($is_mobile)) echo "true"; else echo "false"; ?>;
+contextxmove = true;
+contextymove = true;
 
 // explorer view option
 var explorerview = "<?php echo getescapedtext ($temp_explorerview); ?>";
@@ -1318,7 +1333,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 if ($galleryview != "")
 {
   echo "
-  <table id=\"objectgallery\" name=\"objectgallery\" style=\"table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;\">
+  <table id=\"objectgallery\" name=\"objectgallery\" style=\"table-layout:fixed; border-collapse:separate; border:0; border-spacing:4px; padding:0; width:100%;\">
     <tr>";
   
   // add table cells till table row adds up to the defined table cells in a row

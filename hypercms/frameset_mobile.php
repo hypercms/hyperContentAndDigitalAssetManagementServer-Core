@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -38,11 +40,17 @@ toggleview ($view);
 <link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon114.png" />
 <!-- 57 x 57 Nokia icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
+
+ <!-- main library -->
 <script type="text/javascript" src="javascript/main.js"></script>
+
+<!-- JQuery -->
+<script type="text/javascript" src="javascript/jquery/jquery-1.12.4.min.js"></script>
+
+<!-- JQuery Mobile -->
 <link rel="stylesheet" href="javascript/jquery-mobile-theme/mobile.min.css" />
 <link rel="stylesheet" href="javascript/jquery-mobile-theme/jquery.mobile.icons.min.css" />
 <link rel="stylesheet" href="javascript/jquery-mobile/jquery.mobile.structure-1.4.5.min.css" />
-<script type="text/javascript" src="javascript/jquery/jquery-1.12.4.min.js"></script>
 <script type="text/javascript" src="javascript/jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
 </head> 
 

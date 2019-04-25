@@ -150,7 +150,10 @@ if ($label == "") $label = $id;
         <td>
           <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorc_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
           <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorc_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" />
-          <br />
+         </td>
+       </tr>
+       <tr>
+         <td>
           <input type="hidden" name="<?php echo $tagname."[".$id."]"; ?>" id="dummy" value="" />
           <label><input type="checkbox" name="<?php echo $tagname."[".$id."]"; ?>" onclick="if (this.ckecked) document.getElementById('dummy').disabled=true;" value="<?php echo $value; ?>"<?php echo $checked; ?> /> <?php echo $value; ?></label>
         </td>

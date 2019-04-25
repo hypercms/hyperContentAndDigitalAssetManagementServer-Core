@@ -8,11 +8,7 @@
 
 /*
 The Server-Date-Time script
-
-Purpose: Install a digital clock showing server date and time 
-using php and javascript
-
-Browser: IE, NS
+Purpose: Install a digital clock showing server date and time using php and javascript
 
 the original javascript-code comes from 
 http://javascript.internet.com/clocks/basic-clock.html

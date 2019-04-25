@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -582,8 +584,7 @@ elseif ($preview == "yes")
       <td style="text-align:center;"><input type="checkbox" name="permission[comprename]" value="1" <?php if ($comprename==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowData1"> 
-      <td style="white-space:nowrap;">
-        <?php echo getescapedtext ($hcms_lang['publishunpublish-assets'][$lang]); ?></td>
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['publishunpublish-assets'][$lang]); ?></td>
       <td style="text-align:center;"><input type="checkbox" name="permission[comppublish]" value="1" <?php if ($comppublish==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <?php if (!$mgmt_config[$site]['dam']) { ?>
@@ -632,8 +633,8 @@ elseif ($preview == "yes")
       <td style="text-align:center;"><input type="checkbox" name="permission[pagepublish]" value="1" <?php if ($pagepublish==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <?php } ?>
-    <tr class="hcmsRowData2"> 
-      <td style="white-space:nowrap;">&nbsp;</td>
+    <tr> 
+      <td>&nbsp;</td>
       <td>&nbsp;</td>
     </tr>
     <?php

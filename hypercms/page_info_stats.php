@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -44,6 +46,18 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// chart size in pixels
+if (!empty ($is_mobile))
+{
+  $chart_width = 480;
+  $chart_height = 280;
+}
+else
+{
+  $chart_width = 700;
+  $chart_height = 400;
+}
+
 // get name 
 $fileinfo = getfileinfo ($site, $location.$page, $cat);
 $pagename = $fileinfo['name'];
@@ -80,10 +94,12 @@ echo showtopbar ($hcms_lang['access-statistics-for'][$lang]." ".$pagename, $lang
 // define default date
 if ($date_from == "" || $date_to == "")
 {
-  $date_from = date ("Y-m-01", time());
-  $date_to = date ("Y-m-t", time());
-  $date_year = date ("Y", time());
-  $date_month = date ("m", time());
+  if (!empty ($_SESSION['hcms_timezone'])) date_default_timezone_set ($_SESSION['hcms_timezone']);
+  $time = time();
+  $date_from = date ("Y-m-01", $time);
+  $date_to = date ("Y-m-t", $time);
+  $date_year = date ("Y", $time);
+  $date_month = date ("m", $time);
 }
 else
 {
@@ -133,30 +149,29 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 // show results
 // -------------------------- daily statistics --------------------------
 if (!empty ($container_id))
-{  
+{
   if ($page == ".folder")
   {
-    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc.$page, "");
-    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc.$page, "");
-    $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc.$page, "");
+    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc.$page, "", false);
+    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc.$page, "", true);
+    $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc.$page, "", true);
   }
   elseif ($media != "")
   {
-    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", intval ($container_id), "", "");
-    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "");
-    $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", intval ($container_id), "", "");
+    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", intval ($container_id), "", "", false);
+    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "", true);
+    $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", intval ($container_id), "", "", true);
   }
   else
   {
-    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", intval ($container_id), "", "", "object");
-    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "", "object");
+    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", intval ($container_id), "", "", false);
+    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "", false);
   }
 
   $date_axis = array();
   $view_axis = array();
   $download_axis = array();
   $upload_axis = array();
-  $view_total_filesize = 0;
   $view_total_count = 0;
   $download_total_filesize = 0;
   $download_total_count = 0;
@@ -177,19 +192,19 @@ if (!empty ($container_id))
     
     if (isset ($result_view) && is_array ($result_view)) 
     { 
+      // collect data for same day
       foreach ($result_view as $row)
       {
         if ($row['date'] == $date_year."-".$date_month."-".$day)
         {
-          if ($view_axis[$i]['text'] != "") $seperator = ", ";
-          else $seperator = "";
+          if ($view_axis[$i]['text'] != "") $delimiter = ", ";
+          else $delimiter = "";
    
           $view_axis[$i]['value'] = $view_axis[$i]['value'] + $row['count'];
-          $view_axis[$i]['text'] = $view_axis[$i]['text'].$seperator.$row['user'];
+          if (strpos (" ".$view_axis[$i]['text'].",", " ".$row['user'].",") === false) $view_axis[$i]['text'] .= $delimiter.$row['user'];
           
           // total
           $view_total_count = $view_total_count + $row['count'];
-          $view_total_filesize = $view_total_filesize + ($row['count'] * $row['filesize']);
         }
       }
       
@@ -203,19 +218,20 @@ if (!empty ($container_id))
 
     if (isset ($result_download) && is_array ($result_download)) 
     { 
+      // collect data for same day
       foreach ($result_download as $row)
       {
         if ($row['date'] == $date_year."-".$date_month."-".$day)
         {
-          if ($download_axis[$i]['text'] != "") $seperator = ", ";
-          else $seperator = "";
+          if ($download_axis[$i]['text'] != "") $delimiter = ", ";
+          else $delimiter = "";
    
           $download_axis[$i]['value'] = $download_axis[$i]['value'] + $row['count'];
-          $download_axis[$i]['text'] = $download_axis[$i]['text'].$seperator.$row['user'];
+          if (strpos (" ".$download_axis[$i]['text'].",", " ".$row['user'].",") === false) $download_axis[$i]['text'] .= $delimiter.$row['user'];
           
           // total
           $download_total_count = $download_total_count + $row['count'];
-          $download_total_filesize = $download_total_filesize + ($row['count'] * $row['filesize']);
+          $download_total_filesize = $download_total_filesize + $row['totalsize'];
         }
       }
       
@@ -229,19 +245,20 @@ if (!empty ($container_id))
       
     if (isset ($result_upload) && is_array ($result_upload)) 
     {
+      // collect data for same day
       foreach ($result_upload as $row)
       {
         if ($row['date'] == $date_year."-".$date_month."-".$day)
         {
-          if ($upload_axis[$i]['text'] != "") $seperator = ", ";
-          else $seperator = "";
+          if ($upload_axis[$i]['text'] != "") $delimiter = ", ";
+          else $delimiter = "";
                   
           $upload_axis[$i]['value'] = $upload_axis[$i]['value'] + $row['count'];
-          $upload_axis[$i]['text'] = $upload_axis[$i]['text'].$seperator.$row['user'];
+          if (strpos (" ".$upload_axis[$i]['text'].",", " ".$row['user'].",") === false) $upload_axis[$i]['text'] .= $delimiter.$row['user'];
      
           // total
           $upload_total_count = $upload_total_count + $row['count'];
-          $upload_total_filesize = $upload_total_filesize + ($row['count'] * $row['filesize']);
+          $upload_total_filesize = $upload_total_filesize + $row['totalsize'];
         }
       }
       
@@ -252,19 +269,28 @@ if (!empty ($container_id))
     
   if (is_array ($view_axis) || is_array ($download_axis) || is_array ($upload_axis))
   {
-    $chart = buildbarchart ("chart", 700, 400, 10, 40, $date_axis, $view_axis, $download_axis, $upload_axis, "border:1px solid #666666; background:white;", "background:#6fae30; font-size:10px; cursor:pointer;", "background:#108ae7; font-size:10px; cursor:pointer;", "background:#ff8219; font-size:10px; cursor:pointer;");
+    $chart = buildbarchart ("chart", $chart_width, $chart_height, 10, 40, $date_axis, $view_axis, $download_axis, $upload_axis, "border:1px solid #666666; background:white;", "background:#6fae30; font-size:10px; cursor:pointer;", "background:#108ae7; font-size:10px; cursor:pointer;", "background:#ff8219; font-size:10px; cursor:pointer;");
     echo $chart;
   }
 }
 ?>
   <div style="margin:30px 0px 0px 40px;">
-    <div style="height:16px;"><div style="width:16px; height:16px; background:#6fae30; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['views'][$lang])." (".number_format ($view_total_count, 0, ".", " ")." Hits / ".number_format (($view_total_filesize / 1024), 0, ".", " ")." MB)"; ?></div>
+    <div style="height:16px;"><div style="width:16px; height:16px; background:#6fae30; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['views'][$lang])." (".number_format ($view_total_count, 0, ".", " ")." Hits)"; ?></div>
     <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#108ae7; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['downloads'][$lang])." (".number_format ($download_total_count, 0, ".", " ")." Hits / ".number_format (($download_total_filesize / 1024), 0, ".", " ")." MB)"; ?></div>
     <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['uploads'][$lang])." (".number_format ($upload_total_count, 0, ".", " ")." Hits / ".number_format (($upload_total_filesize / 1024), 0, ".", " ")." MB)"; ?></div>
   </div>
   
   <div style="margin:10px 0px 0px 40px;">
   <?php
+  if ($page == ".folder")
+  {
+    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc.$page, "", false);
+  }
+  elseif ($media != "")
+  {
+    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "", false);
+  }
+  
   if (is_array ($result_download)) 
   { 
     echo "
@@ -272,7 +298,7 @@ if (!empty ($container_id))
       <tr>
         <td class=\"hcmsHeadline\" style=\"width:150px; white-space:nowrap;\">".getescapedtext ($hcms_lang['download'][$lang])."</td>
         <td class=\"hcmsHeadline\" style=\"width:250px; white-space:nowrap;\">".getescapedtext ($hcms_lang['users'][$lang])."/IP </td>
-        <td class=\"hcmsHeadline\" style=\"width:50px; white-space:nowrap;\">Hits</td>
+        <td class=\"hcmsHeadline\" style=\"width:30px; white-space:nowrap;\">Hits</td>
       </tr>";
   
     $color = false;

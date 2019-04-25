@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -83,7 +85,6 @@ if (($setlocalpermission['root'] == 1 || $action == "emptybin") && checktoken ($
     {
       if ($location != "" && $page != "" && !is_file ($location.correctfile ($location, $page, $user))) $authorized = false;
       elseif ($location != "" && $folder != "" && !is_dir ($location)) $authorized = false;
-      elseif ($location != "" && $page == "" && $folder == "") $authorized = false;
     }
   }
 }
@@ -174,13 +175,15 @@ if ($authorized == true || $force == "stop")
     if ($action == "paste" && $method != "cut")
     {
       // not suitable for EasyEdit
-      $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();  
+      $add_javascript = "
+    if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();  
     self.close();\n";
     }
     elseif ($action == "paste" && $method == "cut")
     {
       // not suitable for EasyEdit
-      $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();  
+      $add_javascript = "
+    if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();  
     self.close();\n";
     }  
     elseif ($action == "delete" || $action == "deletemark" || $action == "deleteunmark" || $action == "restore" || $action == "emptybin")
@@ -189,14 +192,16 @@ if ($authorized == true || $force == "stop")
       if ($from_page == "recyclebin")
       {
         // not suitable for EasyEdit
-        $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?virtual=1&action=recyclebin';
+        $add_javascript = "
+    if (opener.parent.frames['mainFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?virtual=1&action=recyclebin';
     opener.parent.frames['mainFrame'].location.reload();  
     self.close();\n";
       }
       else
       {
         // not suitable for EasyEdit
-        $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+        $add_javascript = "
+    if (opener.parent.frames['mainFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
     opener.parent.frames['mainFrame'].location.reload();  
     self.close();\n";
       }
@@ -272,12 +277,12 @@ if ($progress == 0) $progress = 1;
 <script>
 window.innerHeight = 120;
 
-function closepopup ()
+function refreshpopup ()
 {
   <?php echo $add_javascript; ?>
 }
 
-setTimeout('closepopup()', 1000);
+setTimeout ('refreshpopup()', 1000);
 </script>
 </head>
 

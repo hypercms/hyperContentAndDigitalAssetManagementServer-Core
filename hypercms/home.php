@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -52,7 +54,11 @@ if ($hcms_themename != "mobile")
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+
+<!-- JQuery (for AJAX geolocation set request) -->
 <script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+
+ <!-- main library -->
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 

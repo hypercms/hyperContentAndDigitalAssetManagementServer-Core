@@ -730,7 +730,7 @@ hr
 	height: 100%;
 	background: url("../img/loading.gif") no-repeat center center #C8DCFF;
 	position: fixed;
-	opacity: 0.7;
+	opacity: 0.9;
 }
 
 .hcmsTextGreen

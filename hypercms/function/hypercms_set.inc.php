@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
 // =========================================== SESSION ==============================================
@@ -1406,7 +1408,7 @@ function setfilename ($filedata, $tagname, $value)
   else return false;
 }
 
-// ====================================== HOME BOXES =========================================
+// ================================== USER GUI SETTINGS =====================================
 
 // --------------------------------------- setboxes -------------------------------------------
 // function: setboxes ()
@@ -1454,6 +1456,31 @@ function setboxes ($name_array, $user)
     
     // save file
     return savefile ($dir, $file, $data);
+  }
+  else return false;
+}
+
+// --------------------------------------- setguiview -------------------------------------------
+// function: setguiview ()
+// input: object view name [formedit,cmsview,inlineview], explorer view name [detail,small,medium,large], show sidebar [true=1,false=0], user name [string]
+// output: true / false
+
+function setguiview ($objectview, $explorerview, $sidebar, $user)
+{
+  global $mgmt_config;
+  
+  if (($objectview == "formedit" || $objectview == "cmsview" || $objectview == "inlineview") && ($explorerview == "detail" || $explorerview == "small" || $explorerview == "medium" || $explorerview == "large") && valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".gui.dat";
+    
+    if (!empty ($sidebar)) $sidebar = "1";
+    else $sidebar = "0";
+    
+    $view = $objectview."|".$explorerview."|".$sidebar;
+
+    // save file
+    return savefile ($dir, $file, $view);
   }
   else return false;
 }

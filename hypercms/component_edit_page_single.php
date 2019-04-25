@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -74,7 +76,9 @@ $component = getobjectlink ($component);
 
 // get name
 $component_name = getlocationname ($site, $component, "comp", "path");
-if (strlen ($component_name) > 50) $component_name = "...".substr (substr ($component_name, -50), strpos (substr ($component_name, -50), "/")); 
+
+if (strlen ($component_name) > 36) $component_name_short = "...".substr (substr ($component_name, -36), strpos (substr ($component_name, -36), "/"));
+else $component_name_short = $component_name;
 
 if (substr_count ($tagname, "art") == 1) $art = "art";
 else $art = "";
@@ -184,7 +188,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['selected-component'][$lang]); ?> </td>
       <td style="white-space:nowrap;">
-        <input type="text" name="comp_name" style="width:220px;" value="<?php echo $component_name; ?>" disabled="disabled" />
+        <input type="text" name="comp_name" style="width:220px;" value="<?php echo $component_name_short; ?>" title="<?php echo $component_name; ?>" disabled="disabled" />
         <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" alt="<?php echo getescapedtext ($hcms_lang['select'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select'][$lang]); ?>" />                          
         <img onClick="deleteEntry(document.forms['component']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
         <img onclick="submitSingleComp(document.forms['component']);" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1);" alt="OK" title="OK" />    

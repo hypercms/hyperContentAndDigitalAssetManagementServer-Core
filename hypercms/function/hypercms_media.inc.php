@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
   
 // ========================================== MEDIA FUNCTIONS =======================================
@@ -5058,7 +5060,10 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
                 else copy ($mediadir.$mediafile, $destDir."/".specialchr_decode ($file));
                 
                 // write stats
-                if ($container_id != "" && !is_thumbnail ($mediafile, false)) rdbms_insertdailystat ("download", $container_id, $user);
+                if ($user == "sys") $user_stats = getuserip();
+                else $user_stats = $user;
+                
+                if ($container_id != "" && !is_thumbnail ($mediafile, false)) rdbms_insertdailystat ("download", $container_id, $user_stats);
               }
             }        
           }
@@ -5136,7 +5141,6 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
   
   if (empty ($lang)) $lang = "en";
 
-  // valid_locationname ($destination) && valid_objectname ($zipfilename) && valid_objectname ($user)
   if (!empty ($mgmt_compress['.zip']) && valid_publicationname ($site) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 0 && is_dir ($destination) && valid_locationname ($destination) && valid_objectname ($zipfilename) && valid_objectname ($user))
   {  
     // check max file size (set default value to 2000 MB)

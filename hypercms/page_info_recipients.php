@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -130,11 +132,11 @@ if ($result_array != false && sizeof ($result_array) > 0)
 
       if (is_array ($object_info))
       {
-        $result_stats = rdbms_getmediastat ($result['date'], "", "download", $object_info['container_id'], "", $result['to_user'], "object");
+        $result_stats = rdbms_getmediastat ($result['date'], "", "download", $object_info['container_id'], "", $result['to_user'], false);
       }
       else
       {
-        $result_stats = rdbms_getmediastat ($result['date'], "", "download", "", $location_esc.$page, $result['to_user'], "object");
+        $result_stats = rdbms_getmediastat ($result['date'], "", "download", "", $location_esc.$page, $result['to_user'], false);
       }
 
       if (is_array ($result_stats))

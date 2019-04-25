@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the License along with hyperCMS.
  */
 
 // session
@@ -851,8 +853,7 @@ function toggle_sharpen ()
   {
     sigma.prop('disabled', true);
     radius.prop('disabled', true);
-    
-   sigma.spinner("option", "disabled", true);
+    sigma.spinner("option", "disabled", true);
   }
 }
 

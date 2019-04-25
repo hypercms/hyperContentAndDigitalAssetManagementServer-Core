@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
  // session
@@ -119,8 +121,10 @@ if ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
       $accesslinkuser = $mgmt_config[$site]['accesslinkuser'];
       
       // get user data
+      $memory_user = $user;
       $user = "sys";
       $userdata = getuserinformation ();
+      $user = $memory_user;
       
       // get user hashcode
       if (!empty ($userdata[$site][$accesslinkuser]['hashcode'])) $userhash = $userdata[$site][$accesslinkuser]['hashcode'];

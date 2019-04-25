@@ -120,29 +120,20 @@ function hcms_ajaxService (url)
 
 // ----------------- loading content from iframe to div ---------------------
 
-function hcms_loadPage (id, nestref, url)
+function hcms_loadPage (id, url)
 {
-  // layer width
-  var content_width = 460;
-  
-  if (nn4)
+  if (id != "" && document.getElementById(id))
   {
-    var lyr = (nestref)? eval('document.'+nestref+'.document.'+id) : document.layers[id]
-    lyr.load(url,content_width)
+    document.getElementById(id).src = url;
   }
-  else if (ie4) parent.contentFRM.location = url;
-  else if (ie5 || nn6) document.getElementById('contentFRM').src = url;
 }
 
-function hcms_showPage (id)
+function hcms_showPage (id_frame, id_layer)
 {
-  if (ie4)
+  if (id_frame != "" && id_layer != "" && document.getElementById(id_layer))
   {
-    document.all[id].innerHTML = parent.contentFRM.document.body.innerHTML;
-  }  
-  else if (nn6 || ie5)
-  { 
-    document.getElementById(id).innerHTML = window.frames['contentFRM'].document.getElementById('hcms_htmlbody').innerHTML;
+    if (window.frames[id_frame]) document.getElementById(id_layer).innerHTML = window.frames[id_frame].document.getElementById('hcms_htmlbody').innerHTML;
+    else if (document.getElementById(id_frame)) document.getElementById(id_layer).innerHTML = document.getElementById(id_frame).document.getElementById('hcms_htmlbody').innerHTML;
   }
 }
 

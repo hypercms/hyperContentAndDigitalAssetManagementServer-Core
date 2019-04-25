@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // ===================================== TEMPLATE ENGINE CORE ===========================================
@@ -2754,6 +2756,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $label = "";
       $language_info = "";
       $add_submittext = "";
+      $dpi = "";
+      $colorspace = "";
+      $iccprofile = "";
+      $mediapathtype = "";
       $prefix = "";
       $suffix = "";
       $replace = "";
@@ -2916,6 +2922,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // get colorspace and ICC profile
             $colorspace = getattribute ($hypertag, "colorspace");
             $iccprofile = getattribute ($hypertag, "iccprofile");
+            
+            // get path type [file,url,abs,wrapper,download]
+            $mediapathtype = getattribute ($hypertag, "pathtype");
             
             // preview window for URL
             $preview_window = getattribute ($hypertag, "preview");
@@ -3155,6 +3164,49 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   if (!empty ($imagelocation['source']) && !empty ($imagelocation['destination']))
                   {
                     $contentbot = str_replace ($imagelocation['source'], $imagelocation['destination'], $contentbot);
+                  }
+                }
+
+                // replace img-src with reference to the requested pathtype (file, url, uri, download, wrapper)
+                if (!empty ($contentbot) && $buildview == "publish" && !empty ($mediapathtype) && $mediapathtype != "url")
+                {
+                  $link_array = extractlinks ($contentbot, "href");
+                  
+                  if (is_array ($link_array) && sizeof ($link_array) > 0)
+                  {
+                    foreach ($link_array as $temp)
+                    {
+                      // only replace media links
+                      if (strpos ("_".$temp, "%media%/") > 0)
+                      {
+                        // file path
+                        if ($mediapathtype == "file")
+                        {
+                          // replace the media variables with the media root
+                          $temp_new = str_replace ("%media%", substr ($publ_config['abs_publ_media'], 0, strlen ($publ_config['abs_publ_media'])-1), $temp);     
+                        }
+                        // if pathytpe == uri (deprecated value: abs) (URI = URL w/o protocol and domain)
+                        elseif ($mediapathtype == "uri" || $mediapathtype == "abs")
+                        {
+                          // replace the media variables with the media root
+                          $temp_new = str_replace ("%media%", substr ($publ_config['url_publ_media'], 0, strlen ($publ_config['url_publ_media'])-1), $temp);                          
+                          $temp_new = cleandomain ($temp_new);
+                        }
+                        // if pathytpe == wrapper (wrapper link)
+                        elseif ($mediapathtype == "wrapper" && getmediacontainerid ($temp))
+                        {
+                          $temp_new = createwrapperlink ("", "", "", "", "", getmediacontainerid ($temp));
+                        }
+                        // if pathytpe == download (download link)
+                        elseif ( $mediapathtype == "download" && getmediacontainerid ($temp))
+                        {
+                          $temp_new = createdownloadlink ("", "", "", "", "", getmediacontainerid ($temp));
+                        }
+                        
+                        // replace media link
+                        if (!empty ($temp)) $contentbot = str_replace ($temp, $temp_new, $contentbot);
+                      }
+                    }
                   }
                 }
                 
@@ -4045,6 +4097,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $onpublish_height = array();
       $onedit_file = array();
       $label = array();
+      $mediadpi= array();
+      $mediacolorspace = array();
+      $mediaiccprofile = array();
+      $mediapathtype = array();
       $language_info = array();
 
       foreach ($searchtag_array as $searchtag)
@@ -4269,9 +4325,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 }
                 // get dpi for scaling
                 $mediadpi[$id] = getattribute ($hypertag, "dpi");
+                
                 // get colorspace and ICC profile
                 $mediacolorspace[$id][$tagid] = getattribute ($hypertag, "colorspace");
                 $mediaiccprofile[$id][$tagid] = getattribute ($hypertag, "iccprofile");
+                
                 // get path type [file,url,abs,wrapper,download]
                 $mediapathtype[$id][$tagid] = getattribute ($hypertag, "pathtype");
               }                  
@@ -9356,7 +9414,7 @@ function unescapeview ($viewstore, $application="php")
 
 function buildsearchform ($site="", $template="", $report="", $ownergroup="", $css_display="inline-block", $css_width_field="90%")
 { 
-  global $user, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang;    
+  global $user, $siteaccess, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang;    
              
   // ----------------------------------- build view of page -----------------------------------------
 
@@ -9486,6 +9544,12 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 
                 // add seperator
                 if ($list_add != "") $list = $list_add."|".$list;
+                
+                // template variable %publication%
+                if (@substr_count ($list, "%publication%") > 0 && !empty ($siteaccess) && is_array ($siteaccess) && sizeof ($siteaccess) > 0)
+                {
+                  $list = str_replace ("%publication%", implode ("|", $siteaccess), $list);
+                }
 
                 // get list entries
                 if (!empty ($list))
@@ -9628,8 +9692,8 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
   }
   </script>
 </head>
-<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" ".($template != "" ? "onload=\"parent.hcms_showPage('contentLayer');\"" : "").">
-".($report != "" ? "<form action=\"".$mgmt_config['url_path_cms']."report/\" methode=\"post\">\n <input type=\"hidden\" name=\"reportname\" value=\"".$report."\" />" : "")."
+<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" ".($template != "" ? "onload=\"parent.hcms_showPage('contentFrame', 'contentLayer');\"" : "").">
+".($report != "" ? "<form action=\"".$mgmt_config['url_path_cms']."report/\" methode=\"post\" style=\"padding:4px;\">\n <input type=\"hidden\" name=\"reportname\" value=\"".$report."\" />" : "")."
     ";
 
     if (isset ($formitem) && is_array ($formitem))

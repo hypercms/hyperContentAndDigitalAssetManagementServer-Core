@@ -1258,8 +1258,11 @@ function rdbms_getduplicate_file ($site, $md5_hash)
     {
       while ($row = $db->getResultRow ('main'))
       {
-        $row['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
-        $media[] = $row;
+        if (!empty ($row['objectpath']))
+        {
+          $row['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $media[] = $row;
+        }
       }
     }
     
@@ -1318,26 +1321,29 @@ function rdbms_renameobject ($object_old, $object_new)
     {
       while ($row = $db->getResultRow ('select'))
       {
-        $object_id = $row['object_id'];
-        $container_id = $row['id'];
-        $object = $row['objectpath'];
-        $object = str_replace ($object_old, $object_new, $object);
-        $fileext = strrchr ($object, ".");
-        $filetype = getfiletype ($fileext);
-
-        // update object 
-        $sql = 'UPDATE object SET objectpath="'.$object.'" WHERE object_id="'.$object_id.'"';
-        
-        $errcode = "50011";
-        $db->query ($sql, $errcode, $mgmt_config['today'], $i++);        
-        
-        // update media file-type
-        if ($filetype != "")
+        if (!empty ($row['object_id']))
         {
-          $sql = 'UPDATE media SET filetype="'.$filetype.'" WHERE id="'.$container_id.'"';
+          $object_id = $row['object_id'];
+          $container_id = $row['id'];
+          $object = $row['objectpath'];
+          $object = str_replace ($object_old, $object_new, $object);
+          $fileext = strrchr ($object, ".");
+          $filetype = getfiletype ($fileext);
   
-          $errcode = "50012";
-          $db->query ($sql, $errcode, $mgmt_config['today'], $i++);
+          // update object 
+          $sql = 'UPDATE object SET objectpath="'.$object.'" WHERE object_id="'.$object_id.'"';
+          
+          $errcode = "50011";
+          $db->query ($sql, $errcode, $mgmt_config['today'], $i++);        
+          
+          // update media file-type
+          if ($filetype != "")
+          {
+            $sql = 'UPDATE media SET filetype="'.$filetype.'" WHERE id="'.$container_id.'"';
+    
+            $errcode = "50012";
+            $db->query ($sql, $errcode, $mgmt_config['today'], $i++);
+          }
         }
       }
     }
@@ -1578,11 +1584,14 @@ function rdbms_deletepublicationkeywords ($site)
     {
       while ($row = $db->getResultRow ('select'))
       {
-        // delete taxonomy
-        $sql = 'DELETE FROM keywords_container WHERE id="'.$row['id'].'"';
-           
-        $errcode = "50054";
-        $db->query ($sql, $errcode, $mgmt_config['today']);
+        if (!empty ($row['id']))
+        {
+          // delete taxonomy
+          $sql = 'DELETE FROM keywords_container WHERE id="'.$row['id'].'"';
+             
+          $errcode = "50054";
+          $db->query ($sql, $errcode, $mgmt_config['today']);
+        }
       }
     }
     
@@ -1631,11 +1640,14 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
     {
       while ($row = $db->getResultRow ('select'))
       {
-        // delete taxonomy
-        $sql = 'DELETE FROM taxonomy WHERE id="'.$row['id'].'"';
-
-        $errcode = "50054";
-        $db->query ($sql, $errcode, $mgmt_config['today']);
+        if (!empty ($row['id']))
+        {
+          // delete taxonomy
+          $sql = 'DELETE FROM taxonomy WHERE id="'.$row['id'].'"';
+  
+          $errcode = "50054";
+          $db->query ($sql, $errcode, $mgmt_config['today']);
+        }
       }
     }
     
@@ -1667,7 +1679,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   
   // enable search log by default if not set
   if (!isset ($mgmt_config['search_log'])) $mgmt_config['search_log'] = true;
-  
+
   // define default search query syntax "like" or "match"
   if (!isset ($mgmt_config['search_query_match'])) $mgmt_config['search_query_match'] = "match";
 
@@ -2080,15 +2092,16 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   
                   $synonym_expression = trim ($synonym_expression);
                   $synonym_expression = html_decode ($synonym_expression, convert_dbcharset ($mgmt_config['dbcharset']));
-                  
-                  // deprecated since version 7.0.8 due to migration to MATCH AGAINST
-                  if ($mgmt_config['search_query_match'] == "like")
+
+                  if (strtolower ($mgmt_config['search_query_match']) == "like")
                   {
                     // transform wild card characters for search
                     $synonym_expression = str_replace ("%", '\%', $synonym_expression);
                     $synonym_expression = str_replace ("_", '\_', $synonym_expression);          
                     $synonym_expression = str_replace ("*", "%", $synonym_expression);
                     $synonym_expression = str_replace ("?", "_", $synonym_expression);
+                    
+                    // replace space with wildcard for 2nd search expression
                     if (substr_count ($synonym_expression, "\"") < 2) $synonym_expression_2 = str_replace (" ", "%", $synonym_expression);
                   
                     // remove double quotes
@@ -2111,21 +2124,29 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   {
                     // search for path in textcontent
                     if (strpos ("_".$synonym_expression, "/") > 0) $mgmt_config['search_query_match'] = "like";
-                    else $mgmt_config['search_query_match'] = "match";
-                    
-                    // deprecated since version 7.0.8 due to migration to MATCH AGAINST
-                    if ($mgmt_config['search_query_match'] == "like")
+
+                    // LIKE search does not use stopwords or wildcards supported by MATCH AGAINST
+                    if (strtolower ($mgmt_config['search_query_match']) == "like")
                     {
                       if (!empty ($synonym_expression_2)) $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression.'%" OR tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression_2.'%"))';
                       else $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression.'%")';
                     }
                     else
                     {
+                      // Boolean search permits the use of special operators:
+                      // +	The word is mandatory in all rows returned.
+                      // -	The word cannot appear in any row returned.
+                      // <	The word that follows has a lower relevance than other words, although rows containing it will still match
+                      // >	The word that follows has a higher relevance than other words.
+                      // ()	Used to group words into subexpressions.
+                      // ~	The word following contributes negatively to the relevance of the row (which is different to the '-' operator, which specifically excludes the word, or the '<' operator, which still causes the word to contribute positively to the relevance of the row.
+                      // *	The wildcard, indicating zero or more characters. It can only appear at the end of a word.
+                      // "	Anything enclosed in the double quotes is taken as a whole (so you can match phrases, for example).
                       if (preg_match('/["*()@~<>+-]/', $synonym_expression)) $boolean_mode = " IN BOOLEAN MODE";
                       else $boolean_mode = "";
                       
-                      if (!empty ($synonym_expression_2)) $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.') OR MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression_2.'"'.$boolean_mode.'))';
-                      else $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.'))';
+                      // MATCH AGAINST uses stop words (e.g. search for "hello" will not be included in the search result)
+                      $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.'))';
                     }
                   }
  
@@ -2174,15 +2195,16 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                     foreach ($synonym_array as $synonym_expression)
                     {
                       $synonym_expression = html_decode ($synonym_expression, convert_dbcharset ($mgmt_config['dbcharset']));
-                    
-                      // deprecated since version 7.0.8 due to migration to MATCH AGAINST
-                      if ($mgmt_config['search_query_match'] == "like")
+
+                      if (strtolower ($mgmt_config['search_query_match']) == "like")
                       {
                         // transform wild card characters for search
                         $synonym_expression = str_replace ("%", '\%', $synonym_expression);
                         $synonym_expression = str_replace ("_", '\_', $synonym_expression);        
                         $synonym_expression = str_replace ("*", "%", $synonym_expression);
                         $synonym_expression = str_replace ("?", "_", $synonym_expression);
+                        
+                        // replace space with wildcard for 2nd search expression
                         if (substr_count ($synonym_expression, "\"") < 2) $synonym_expression_2 = str_replace (" ", "%", $synonym_expression);
                       
                         // remove double quotes
@@ -2208,21 +2230,29 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                       {
                         // search for path in textcontent
                         if (strpos ("_".$synonym_expression, "/") > 0) $mgmt_config['search_query_match'] = "like";
-                        else $mgmt_config['search_query_match'] = "match";
-                    
-                        // deprecated since version 7.0.8 due to migration to MATCH AGAINST
-                        if ($mgmt_config['search_query_match'] == "like")
+
+                        // LIKE search does not use stopwords or wildcards supported by MATCH AGAINST
+                        if (strtolower ($mgmt_config['search_query_match']) == "like")
                         {
                           if (!empty ($synonym_expression_2)) $sql_where_textnodes .= '(tng.textcontent LIKE _utf8"%'.$synonym_expression.'%" OR tng.textcontent LIKE _utf8"%'.$synonym_expression_2.'%")';
                           else $sql_where_textnodes .= 'tng.textcontent LIKE _utf8"%'.$synonym_expression.'%"';
                         }
                         else
                         {
-                          if (preg_match('/["*()@~<>+-]/', $synonym_expression)) $boolean_mode = " IN BOOLEAN MODE";
+                          // Boolean search permits the use of special operators:
+                          // +	The word is mandatory in all rows returned.
+                          // -	The word cannot appear in any row returned.
+                          // <	The word that follows has a lower relevance than other words, although rows containing it will still match
+                          // >	The word that follows has a higher relevance than other words.
+                          // ()	Used to group words into subexpressions.
+                          // ~	The word following contributes negatively to the relevance of the row (which is different to the '-' operator, which specifically excludes the word, or the '<' operator, which still causes the word to contribute positively to the relevance of the row.
+                          // *	The wildcard, indicating zero or more characters. It can only appear at the end of a word.
+                          // "	Anything enclosed in the double quotes is taken as a whole (so you can match phrases, for example).
+                          if (preg_match ('/["*()@~<>+-]/', $synonym_expression)) $boolean_mode = " IN BOOLEAN MODE";
                           else $boolean_mode = "";
-                      
-                          if (!empty ($synonym_expression_2)) $sql_where_textnodes .= '(MATCH (tng.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.') OR MATCH (tng.textcontent) AGAINST ("%'.$synonym_expression_2.'%"'.$boolean_mode.'))';
-                          else $sql_where_textnodes .= 'MATCH (tng.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.')';
+                          
+                          // MATCH AGAINST uses stop words (e.g. search for "hello" will not be included in the search result)
+                          $sql_where_textnodes .= 'MATCH (tng.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.')';
                         }
                       }
                       
@@ -3176,7 +3206,10 @@ function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user=""
     {
       while ($row = $db->getResultRow ())
       {
-        $result[$row['text_id']] = $row['textcontent'];
+        if (!empty ($row['text_id']))
+        {
+          $result[$row['text_id']] = $row['textcontent'];
+        }
       }
     }
 
@@ -3209,7 +3242,7 @@ function rdbms_getkeywords ($sites="")
   
   $sql = 'SELECT keywords.keyword_id, keywords.keyword, COUNT(keywords_container.id) AS count FROM keywords INNER JOIN keywords_container ON keywords.keyword_id=keywords_container.keyword_id';
   
-  if (is_array ($sites))
+  if (is_array ($sites) && sizeof ($sites) > 0)
   {
     $i = 0;
     
@@ -3238,7 +3271,7 @@ function rdbms_getkeywords ($sites="")
   {
     while ($row = $db->getResultRow ())
     {
-      if ($row['keyword_id'] != "" && $row['keyword'] != "" && $row['count'] > 0)
+      if (!empty ($row['keyword_id']) && is_keyword ($row['keyword']) && $row['count'] > 0)
       {
         $id = $row['keyword_id'];
         $count = $row['count'];
@@ -4528,14 +4561,17 @@ function rdbms_getrecipients ($object)
       
       while ($row = $db->getResultRow ('select'))
       {
-        $recipient[$i]['recipient_id'] = $row['recipient_id'];
-        $recipient[$i]['object_id'] = $row['object_id'];
-        $recipient[$i]['date'] = $row['date'];
-        $recipient[$i]['from_user'] = $row['from_user']; 
-        $recipient[$i]['to_user'] = $row['to_user'];  
-        $recipient[$i]['email'] = $row['email'];
-               
-        $i++;
+        if (!empty ($row['recipient_id']))
+        {
+          $recipient[$i]['recipient_id'] = $row['recipient_id'];
+          $recipient[$i]['object_id'] = $row['object_id'];
+          $recipient[$i]['date'] = $row['date'];
+          $recipient[$i]['from_user'] = $row['from_user']; 
+          $recipient[$i]['to_user'] = $row['to_user'];  
+          $recipient[$i]['email'] = $row['email'];
+                 
+          $i++;
+        }
       }
     }
 
@@ -4663,14 +4699,18 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
       // insert recipients
       while ($row = $db->getResultRow ('select'))
       {
-        $queue[$i]['queue_id'] = $row['queue_id'];
-        $queue[$i]['action'] = $row['action'];
-        $queue[$i]['object_id'] = $row['object_id'];
-        $queue[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
-        $queue[$i]['date'] = $row['date'];
-        $queue[$i]['published_only'] = $row['published_only'];
-        $queue[$i]['user'] = $row['user'];        
-        $i++;
+        if (!empty ($row['queue_id']))
+        {
+          $queue[$i]['queue_id'] = $row['queue_id'];
+          $queue[$i]['action'] = $row['action'];
+          $queue[$i]['object_id'] = $row['object_id'];
+          $queue[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $queue[$i]['date'] = $row['date'];
+          $queue[$i]['published_only'] = $row['published_only'];
+          $queue[$i]['user'] = $row['user'];
+          
+          $i++;
+        }
       }        
     }
   
@@ -4857,7 +4897,7 @@ function rdbms_getnotification ($event="", $object="", $user="")
           {
             while ($row = $db->getResultRow ('connected'))
             {
-              $object_id_array[] = $row['object_id'];
+              if (!empty ($row['object_id'])) $object_id_array[] = $row['object_id'];
             }
           }
         }
@@ -4875,7 +4915,7 @@ function rdbms_getnotification ($event="", $object="", $user="")
         {
           while ($row = $db->getResultRow ('linked'))
           {
-            $object_id_array[] = $row['object_id'];
+            if (!empty ($row['object_id'])) $object_id_array[] = $row['object_id'];
           }
         }
       }
@@ -4900,16 +4940,19 @@ function rdbms_getnotification ($event="", $object="", $user="")
       // insert recipients
       while ($row = $db->getResultRow ('select'))
       {
-        $queue[$i]['notify_id'] = $row['notify_id'];
-        $queue[$i]['object_id'] = $row['object_id'];
-        $queue[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
-        $queue[$i]['user'] = $row['user']; 
-        $queue[$i]['oncreate'] = $row['oncreate'];
-        $queue[$i]['onedit'] = $row['onedit'];
-        $queue[$i]['onmove'] = $row['onmove'];
-        $queue[$i]['ondelete'] = $row['ondelete'];
-
-        $i++;
+        if (!empty ($row['notify_id'])) 
+        {
+          $queue[$i]['notify_id'] = $row['notify_id'];
+          $queue[$i]['object_id'] = $row['object_id'];
+          $queue[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $queue[$i]['user'] = $row['user']; 
+          $queue[$i]['oncreate'] = $row['oncreate'];
+          $queue[$i]['onedit'] = $row['onedit'];
+          $queue[$i]['onmove'] = $row['onmove'];
+          $queue[$i]['ondelete'] = $row['ondelete'];
+  
+          $i++;
+        }
       }        
     }
 
@@ -4991,19 +5034,23 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
       
       while ($row = $db->getResultRow ())
       {
-        $objectpath = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['path']);
-        $licenseend = $row['cnt']; 
-        $site = getpublication ($objectpath);
-        $location = getlocation ($objectpath);    
-        $object = getobject ($objectpath);
-        $cat = getcategory ($site, $location);
-     
-        $result[$i]['publication'] = $site;
-        $result[$i]['location'] = $location;
-        $result[$i]['object'] = $object;
-        $result[$i]['category'] = $cat;
-        $result[$i]['date'] = $licenseend;
-        $i++;
+        if (!empty ($row['path'])) 
+        {
+          $objectpath = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['path']);
+          $licenseend = $row['cnt']; 
+          $site = getpublication ($objectpath);
+          $location = getlocation ($objectpath);    
+          $object = getobject ($objectpath);
+          $cat = getcategory ($site, $location);
+       
+          $result[$i]['publication'] = $site;
+          $result[$i]['location'] = $location;
+          $result[$i]['object'] = $object;
+          $result[$i]['category'] = $cat;
+          $result[$i]['date'] = $licenseend;
+          
+          $i++;
+        }
       }
     }
 
@@ -5038,10 +5085,12 @@ function rdbms_insertdailystat ($activity, $container_id, $user="")
     $date = date ("Y-m-d", time());
 
     // set user if not defined
-    if ($user == "")
+    if (trim ($user) == "")
     {
       if (!empty ($_SESSION['hcms_user'])) $user = $_SESSION['hcms_user'];
-      else $user = getuserip ();
+      else $user = getuserip();
+      
+      if (empty ($user)) $user = "unknown";
     }
     
     // check to see if there is a row
@@ -5089,7 +5138,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="")
 
 // ----------------------------------------------- get statistics from dailystat -------------------------------------------------
 
-function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $container_id="", $objectpath="", $user="", $type="media")
+function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $container_id="", $objectpath="", $user="", $return_filesize=true)
 {
   global $mgmt_config;
 
@@ -5101,6 +5150,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   if ($date_to != "") $date_to = $db->escape_string ($date_to);
   if ($activity != "") $activity = $db->escape_string ($activity);
   if ($container_id != "") $container_id = $db->escape_string (intval($container_id));
+  if ($objectpath != "") $objectpath = $db->escape_string ($objectpath);
   if ($user != "") $user = $db->escape_string ($user);
   
   // get object info
@@ -5109,57 +5159,63 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
     $site = getpublication ($objectpath);
     $cat = getcategory ($site, $objectpath);
     $object_info = getfileinfo ($site, $objectpath, $cat);
+    $objectpath = str_replace ('%', '*', $objectpath);
     if (getobject ($objectpath) == ".folder") $location = getlocation ($objectpath);
   }
   
-  // media file
-  if ($type == "media")
-  {
-    if ($objectpath != "")
-    {
-      $objectpath = $db->escape_string ($objectpath);
-      $objectpath = str_replace ('%', '*', $objectpath);
-
-      $sqlfilesize = ', SUM(media.filesize) AS filesize';
-      $sqltable = ", media, object";
-      $sqlwhere = " WHERE dailystat.id=media.id";
-    }
-    else
-    {
-      $sqlfilesize = ', media.filesize';
-      $sqltable = ", media";
-      $sqlwhere = " WHERE dailystat.id=media.id";
-    }
-  }
-  // object
-  else
-  {
-    $sqlfilesize = "";
-    $sqltable = "";
-    $sqlwhere = " WHERE dailystat.id!=''";
-  }
+  $sqlfilesize = "";
+  $sqltable = "";
+  $sqlwhere = "";
+  $sqlgroup = "";
   
-  $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) AS count'.$sqlfilesize.', dailystat.user FROM dailystat'.$sqltable.' '.$sqlwhere; 
-  
-  if ($objectpath != "")
+  // include media table for file size
+  if (!empty ($return_filesize))
   {
     // search by objectpath
-    $sql .= ' AND dailystat.id=object.id';
-    
-    if ($object_info['type'] == 'Folder') $sql .= ' AND object.objectpath like "'.$location.'%"';
-    else $sql .= ' AND object.objectpath="'.$objectpath.'"';
+    if ($objectpath != "")
+    {
+      $sqlfilesize = ', SUM(media.filesize) AS filesize';
+      $sqltable = "INNER JOIN media ON dailystat.id=media.id INNER JOIN object ON dailystat.id=object.id";
+      if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
+      else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
+      $sqlgroup = 'GROUP BY dailystat.id, dailystat.user ORDER BY dailystat.date';
+    }
+    // search by container id
+    elseif ($container_id != "")
+    {
+      $sqlfilesize = ', media.filesize AS filesize';
+      $sqltable = "INNER JOIN media ON dailystat.id=media.id";
+      $sqlwhere = 'AND dailystat.id='.$container_id;
+      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user ORDER BY dailystat.date';
+    }
   }
-  elseif ($container_id != "")
-  { 
-    // search by containerid
-    $sql .= ' AND dailystat.id='.$container_id;
+  else
+  {
+    // search by objectpath
+    if ($objectpath != "")
+    {
+      $sqlfilesize = "";
+      $sqltable = 'INNER JOIN object ON dailystat.id=object.id';
+      if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
+      else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
+      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user ORDER BY dailystat.date';
+    }
+    // search by container id
+    elseif ($container_id != "")
+    { 
+      $sqlfilesize = "";
+      $sqltable = '';
+      $sqlwhere = 'AND dailystat.id='.$container_id;
+      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user ORDER BY dailystat.date';
+    }
   }
   
-  if ($date_from != "") $sql .= ' AND dailystat.date>="'.date("Y-m-d", strtotime($date_from)).'"';
-  if ($date_to != "") $sql .= ' AND dailystat.date<="'.date("Y-m-d", strtotime($date_to)).'"';
-  if ($activity != "") $sql .= ' AND dailystat.activity="'.$activity.'"';
-  if ($user != "") $sql .= ' AND dailystat.user="'.$user.'"';
-  $sql .= ' GROUP BY dailystat.date, dailystat.user ORDER BY dailystat.date';
+  if ($date_from != "") $sqlwhere .= ' AND dailystat.date>="'.date("Y-m-d", strtotime($date_from)).'"';
+  if ($date_to != "") $sqlwhere .= ' AND dailystat.date<="'.date("Y-m-d", strtotime($date_to)).'"';
+  if ($activity != "") $sqlwhere .= ' AND dailystat.activity="'.$activity.'"';
+  if ($user != "") $sqlwhere .= ' AND dailystat.user="'.$user.'"';
+  
+  $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) AS count'.$sqlfilesize.', dailystat.user FROM dailystat '.$sqltable.' WHERE dailystat.id!="" '.$sqlwhere.' '.$sqlgroup;
 
   $errcode = "50039";
   $done = $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -5171,13 +5227,18 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
     // stats array
     while ($row = $db->getResultRow ())
     {
-      $dailystat[$i]['container_id'] = sprintf ("%07d", $row['id']);
-      $dailystat[$i]['date'] = $row['date'];
-      $dailystat[$i]['activity'] = $row['activity'];
-      $dailystat[$i]['count'] = $row['count'];
-      $dailystat[$i]['filesize'] = @$row['filesize'];
-      $dailystat[$i]['user'] = $row['user'];
-      $i++;
+      if (!empty ($row['id']))
+      {
+        $dailystat[$i]['container_id'] = sprintf ("%07d", $row['id']);
+        $dailystat[$i]['date'] = $row['date'];
+        $dailystat[$i]['activity'] = $row['activity'];
+        $dailystat[$i]['count'] = $row['count'];
+        $dailystat[$i]['filesize'] = @$row['filesize'];
+        $dailystat[$i]['totalsize'] = (@$row['filesize'] > 0 ? ($row['count'] * @$row['filesize']) : 0);
+        $dailystat[$i]['user'] = $row['user'];
+        
+        $i++;
+      }
     }
   }     
 
@@ -5185,7 +5246,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   savelog ($db->getError ());
   $db->close();
        
-  if (is_array (@$dailystat)) return $dailystat;
+  if (!empty ($dailystat) && is_array ($dailystat)) return $dailystat;
   else return false;
 }
 
@@ -5429,23 +5490,26 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
       // insert recipients
       while ($row = $db->getResultRow ('select'))
       {
-        $result[$i]['task_id'] = $row['task_id'];
-        $result[$i]['object_id'] = $row['object_id'];
-        $result[$i]['objectpath'] = rdbms_getobject($row['object_id']);
-        $result[$i]['project_id'] = $row['project_id'];
-        $result[$i]['taskname'] = $row['task'];
-        $result[$i]['from_user'] = $row['from_user']; 
-        $result[$i]['to_user'] = $row['to_user'];
-        $result[$i]['startdate'] = $row['startdate'];
-        $result[$i]['finishdate'] = $row['finishdate'];
-        $result[$i]['category'] = $row['category'];
-        $result[$i]['description'] = $row['description'];
-        $result[$i]['priority'] = $row['priority'];
-        $result[$i]['status'] = $row['status'];
-        $result[$i]['planned'] = $row['planned'];
-        $result[$i]['actual'] = $row['actual'];
-
-        $i++;
+        if (!empty ($row['task_id']))
+        {
+          $result[$i]['task_id'] = $row['task_id'];
+          $result[$i]['object_id'] = $row['object_id'];
+          $result[$i]['objectpath'] = rdbms_getobject($row['object_id']);
+          $result[$i]['project_id'] = $row['project_id'];
+          $result[$i]['taskname'] = $row['task'];
+          $result[$i]['from_user'] = $row['from_user']; 
+          $result[$i]['to_user'] = $row['to_user'];
+          $result[$i]['startdate'] = $row['startdate'];
+          $result[$i]['finishdate'] = $row['finishdate'];
+          $result[$i]['category'] = $row['category'];
+          $result[$i]['description'] = $row['description'];
+          $result[$i]['priority'] = $row['priority'];
+          $result[$i]['status'] = $row['status'];
+          $result[$i]['planned'] = $row['planned'];
+          $result[$i]['actual'] = $row['actual'];
+  
+          $i++;
+        }
       }        
     }
 
@@ -5633,17 +5697,20 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
       // insert recipients
       while ($row = $db->getResultRow ('select'))
       {
-        $result[$i]['project_id'] = $row['project_id'];
-        $result[$i]['subproject_id'] = $row['subproject_id'];
-        $result[$i]['object_id'] = $row['object_id'];
-        $result[$i]['objectpath'] = rdbms_getobject ($row['object_id']);
-        $result[$i]['projectname'] = $row['project'];
-        $result[$i]['user'] = $row['user']; 
-        $result[$i]['description'] = $row['description'];
-        if ($row['subproject_id'] > 0) $result[$i]['type'] = "Subproject";
-        else $result[$i]['type'] = "Project";
-
-        $i++;
+        if (!empty ($row['project_id']))
+        {
+          $result[$i]['project_id'] = $row['project_id'];
+          $result[$i]['subproject_id'] = $row['subproject_id'];
+          $result[$i]['object_id'] = $row['object_id'];
+          $result[$i]['objectpath'] = rdbms_getobject ($row['object_id']);
+          $result[$i]['projectname'] = $row['project'];
+          $result[$i]['user'] = $row['user']; 
+          $result[$i]['description'] = $row['description'];
+          if ($row['subproject_id'] > 0) $result[$i]['type'] = "Subproject";
+          else $result[$i]['type'] = "Project";
+  
+          $i++;
+        }
       }        
     }
 
@@ -5717,12 +5784,16 @@ function rdbms_gettableinfo ($table)
       
       while ($row = $db->getResultRow ('select'))
       {
-        $info[$i]['name'] = $row['Field'];
-        $info[$i]['type'] = $row['Type'];
-        $info[$i]['key'] = $row['Key'];
-        $info[$i]['default'] = $row['Default'];
-        $info[$i]['extra'] = $row['Extra'];
-        $i++;
+        if (!empty ($row['Field']))
+        {
+          $info[$i]['name'] = $row['Field'];
+          $info[$i]['type'] = $row['Type'];
+          $info[$i]['key'] = $row['Key'];
+          $info[$i]['default'] = $row['Default'];
+          $info[$i]['extra'] = $row['Extra'];
+          
+          $i++;
+        }
       }
     } 
 

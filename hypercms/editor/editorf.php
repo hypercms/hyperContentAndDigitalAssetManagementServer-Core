@@ -160,6 +160,19 @@ $token = createtoken ($user);
   </head>
   
   <body class="hcmsWorkplaceGeneric">
+  
+    <!-- auto save -->
+    <div id="messageLayer" style="position:absolute; width:300px; height:40px; z-index:999999; left:150px; top:120px; visibility:hidden;">
+      <table class="hcmsMessage hcmsTableStandard" style="width:300px; height:40px;">
+        <tr>
+          <td style="text-align:center; vertical-align:top;">
+            <div style="width:100%; height:100%; overflow:auto;">
+              <?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
 
     <!-- top bar -->
     <?php
@@ -207,19 +220,6 @@ $token = createtoken ($user);
           </tr>
         </table>
       </form>
-    </div>
-    
-    <!-- auto save -->
-    <div id="messageLayer" style="position:absolute; width:300px; height:40px; z-index:999999; left:150px; top:120px; visibility:hidden;">
-      <table class="hcmsMessage hcmsTableStandard" style="width:300px; height:40px;">
-        <tr>
-          <td style="text-align:center; vertical-align:top;">
-            <div style="width:100%; height:100%; overflow:auto;">
-              <?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?>
-            </div>
-          </td>
-        </tr>
-      </table>
     </div>
     
     <?php if (intval ($mgmt_config['autosave']) > 0) { ?>

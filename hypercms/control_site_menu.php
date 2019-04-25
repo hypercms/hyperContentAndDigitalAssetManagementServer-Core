@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
 // session
@@ -18,7 +20,7 @@ require_once ("language/".getlanguagefile ($lang));
 // input parameters
 $action = getrequest_esc ("action");
 $site = getrequest_esc ("site"); // site can be *Null*
-$site_name = getrequest_esc ("site_name", "publicationname");
+$site_name = getrequest_esc ("site_name"); // site can include get parameters
 $token = getrequest ("token"); 
 
 // publication management config

@@ -3,6 +3,8 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
 // include service
@@ -14,8 +16,8 @@ if (sizeof ($memory_site) <= 1 && !empty ($memory_site[0])) getallusers ($memory
 // definitions for fields
 if (!empty ($is_mobile))
 {
-  $css_width_field = "330px";
-  $css_width_selectbox = "340px";
+  $css_width_field = "310px";
+  $css_width_selectbox = "320px";
 }
 else
 {
@@ -136,7 +138,7 @@ $token_new = createtoken ($user);
     if (document.getElementById(id)) document.getElementById(id).checked = true;
   }
   
-  function initLinkType(id)
+  function initLinkType()
   {
     // download link -> single select
     if (document.getElementById('type_download') && document.getElementById('type_download').checked == true)
@@ -364,7 +366,10 @@ $token_new = createtoken ($user);
   
   $(document).ready(function()
   {
-    <?php if (empty ($format_img) && empty ($format_doc) && empty ($format_vid)) echo "initLinkType();"; ?>
+    <?php
+    // prevent reseting the checked boxes to default values
+    if (empty ($format_img) && empty ($format_doc) && empty ($format_vid)) echo "initLinkType();";
+    ?>
     hcms_setViewportScale();
     
     <?php 
@@ -431,7 +436,7 @@ $token_new = createtoken ($user);
                 var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.png\',1);" title="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_close.png" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
                 var input = '<input type="hidden" name="email_to[]" id="'+inputid+'" value="'+inputval+'"/>';
                 var divtext =  '<div id="'+divtextid+'"style="float:left">'+inputval+'&nbsp;</div>';
-                $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"<br /></div>");
+                $("div#emails").append("<div id=\""+mainname+"\" style=\"display:block; width:100%; height:16px;\">"+input+divtext+img+"</div>");
                 showHideLayers("attention_settings", 'visible');
                 $(this).val("");
               }
@@ -460,7 +465,7 @@ $token_new = createtoken ($user);
               var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.png\',1);" title="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_close.png" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
               var input = '<input type="hidden" name="user_login[]" id="'+inputid+'" value="'+ui.item.loginname+'"/>';
               var divtext =  '<div id="'+divtextid+'" style="float:left" title="'+ui.item.email+'">'+ui.item.username+'&nbsp;</div>';
-              $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"<br /></div>");
+              $("div#emails").append("<div id=\""+mainname+"\" style=\"display:block; width:100%; height:16px;\">"+input+divtext+img+"</div>");
             }
             else
             {
@@ -640,7 +645,7 @@ $token_new = createtoken ($user);
                     else $temp_email = "";
                     
                     echo "
-                    <div id=\"main_".$temp_user."\" style=\"width:355px; height:16px;\"><input type=\"hidden\" name=\"user_login[]\" id=\"user_login_".$temp_user."\" value=\"".$temp_user."\"/><div id=\"divtext_".$temp_user."\" style=\"float:left\" title=\"".$temp_email."\">".$temp_realname."&nbsp;</div><div><img onclick=\"remove_element('main_".$temp_user."');\" onmouseout=\"hcms_swapImgRestore();\" onmouseover=\"hcms_swapImage('delete_".$temp_user."', '', '".getthemelocation()."img/button_close_over.png', 1);\" title=\"".getescapedtext ($hcms_lang['delete-recipient'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['delete-recipient'][$lang])."\" src=\"".getthemelocation()."img/button_close.png\" name=\"delete_".$temp_user."\" style=\"width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;\"></div><br /></div>";
+                    <div id=\"main_".$temp_user."\" style=\"display:block; width:100%; height:16px;\"><input type=\"hidden\" name=\"user_login[]\" id=\"user_login_".$temp_user."\" value=\"".$temp_user."\"/><div id=\"divtext_".$temp_user."\" style=\"float:left\" title=\"".$temp_email."\">".$temp_realname."&nbsp;</div><div><img onclick=\"remove_element('main_".$temp_user."');\" onmouseout=\"hcms_swapImgRestore();\" onmouseover=\"hcms_swapImage('delete_".$temp_user."', '', '".getthemelocation()."img/button_close_over.png', 1);\" title=\"".getescapedtext ($hcms_lang['delete-recipient'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['delete-recipient'][$lang])."\" src=\"".getthemelocation()."img/button_close.png\" name=\"delete_".$temp_user."\" style=\"width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;\"></div></div>";
                   } 
                 }
                 ?>
