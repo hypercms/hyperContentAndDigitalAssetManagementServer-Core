@@ -540,24 +540,24 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
         // open on double click
         $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
-        
+
         // refresh sidebar
         if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
         else $sidebarclick = "";
-        
+
         // onclick for marking objects      
         $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
-        
+
         // set context
         $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$site."', '".$cat."', '".$location_esc."', '".$object."', '".$file_info['name']."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
-   
+
         // metadata
         $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;             
         
         // listview - view option for un/published objects
         if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
         else $class_image = "class=\"hcmsIconList\"";
-        
+
         // listview - view option for locked objects
         if (!empty ($usedby))
         {
@@ -623,13 +623,13 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             }
           }
         }
-              
+    
         $listview .= "
                       </tr>"; 
-        
+
         // default value
         $ratio = "Width";
-            
+
         // if there is a thumb file, display the thumb
         if ($mediafile != false && empty ($usedby))
         {
@@ -659,7 +659,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             {
               $imgsize = getimagesize ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg");
             }
-            
+
             // calculate image ratio to define CSS for image container div-tag
             if (is_array ($imgsize))
             {
@@ -676,20 +676,22 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             // galleryview - view option for locked multimedia objects
             if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsIconOff\"";
             else $class_image  = "class=\"lazyload hcmsImageItem\"";
-            
+
             // if thumbnail is smaller than defined thumbnail size
-            if ($imgwidth < 180 && $imgheight < 180)
+            if ($imgwidth < 100 && $imgheight < 100)
             {
               $div_id = "id=\"x".$items_row."\"";
               $class_size = "";
+              $style_image = "style=\"width:".$imgwidth."px; height:".$imgheight."px;\"";
             }
             else
             {
               $div_id = "id=\"".strtolower(substr($ratio, 0, 1)).$items_row."\"";
               $class_size = "class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"";
+              $style_image = "";
             }
-            
-            $thumbnail = "<div ".$div_id." ".$class_size."><img data-src=\"".createviewlink ($site, $media_info['filename'].".thumb.jpg")."\" ".$class_image." /></div>";
+
+            $thumbnail = "<div ".$div_id." ".$class_size."><img data-src=\"".createviewlink ($site, $media_info['filename'].".thumb.jpg")."\" ".$class_image." ".$style_image." /></div>";
           }
           // display file icon if thumbnail fails 
           else
@@ -731,14 +733,14 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           $linking_buttons .= "
           <button class=\"hcmsButtonDownload\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
         }
-        
+
         // if assetbrowser is used display edit button
         if (!empty ($hcms_assetbrowser) && $mediafile != "" && $setlocalpermission['root'] == 1)
         {   
           $linking_buttons .= "
           <button class=\"hcmsButtonDownload\" style=\"width:154px;\" onClick=\"parent.parent.returnMedia('".url_encode($location_esc.$object)."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_modified."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
         }
-        
+
         if ($linking_buttons != "")
         {
           if (!$is_mobile) $width = "160px";
@@ -1185,9 +1187,9 @@ if ($objects_counted >= $next_max)
 {
 ?>
 <!-- status bar incl. more button -->
-<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="window.location='<?php echo $_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
+<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo $_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
   <div style="padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
-  <div style="margin:0px auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <?php
 }

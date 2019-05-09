@@ -1868,49 +1868,6 @@ function getwallpaper ($version="")
  
 // ======================================== GET INFORMATION ===========================================
 
-// --------------------------------------- getmediasize -------------------------------------------
-// function: getmediasize()
-// input: path to media file [string]
-// output: Array with media width and height / false on error
-
-function getmediasize ($file)
-{
-  if (is_file ($file))
-  {
-    $result = array();
-
-    // get file width and heigth in pixels
-    $imagesize = @getimagesize ($file);
-
-    if (!empty ($imagesize))
-    {
-      $result['width'] = $imagesize[0];
-      $result['height'] = $imagesize[1];
-    }
-    // try to read values from file source (e.g. SVG files)
-    else
-    {
-      $header = loadfile_header (getlocation ($file), getobject ($file));
-      
-      if (!empty ($header))
-      {
-        // get SVG tag
-        $svg_tag = gethtmltag ($header, "svg");
-        
-        if (!empty ($svg_tag)) $header = $svg_tag;
-        
-        $result['width'] = getattribute ($header, "width", true);
-        $result['height'] = getattribute ($header, "height", true);
-      }
-    }
-
-    // return result
-    if (!empty ($result['width']) && !empty ($result['height'])) return $result;
-    else return false;
-  }
-  else return false;
-}
-
 // --------------------------------------- getcontainername -------------------------------------------
 // function: getcontainername()
 // input: container name (e.g. 0000112.xml.wrk) or container ID [string]
@@ -3534,13 +3491,427 @@ function getpreviewwidth ($site, $filepath, $width_orig="")
   else return 576;
 }
 
+// ---------------------- getimagecolorkey -----------------------------
+// function: getimagecolorkey()
+// input: image resource [resource]
+// output: color key of image / false on error
+
+// description:
+// Extracts the color key for an image that represents the 5 mostly used colors:
+// K...black
+// W...white
+// E...grey
+// R...red
+// G...green
+// B...blue
+// C...cyan
+// M...magenta
+// Y...yellow
+// O...orange
+// P...pink
+// N...brown
+
+function getimagecolorkey ($image)
+{
+  global $mgmt_config;
+  
+  if ($image)
+  {
+    $width = imagesx ($image);
+    $height = imagesy ($image);
+    
+    $colors = array (
+    "K"=>array(0,0,0), 			// Black
+    "W"=>array(255,255,255),	// White
+    "E"=>array(200,200,200),	// Grey
+    "E"=>array(140,140,140),	// Grey
+    "E"=>array(100,100,100),	// Grey
+    "R"=>array(255,0,0),		// Red
+    "R"=>array(128,0,0),		// Dark Red
+    "R"=>array(180,0,40),		// Dark Red
+    "G"=>array(0,255,0),		// Green
+    "G"=>array(0,128,0),		// Dark Green
+    "G"=>array(80,120,90),		// Faded Green
+    "G"=>array(140,170,90),		// Pale Green
+    "B"=>array(0,0,255),		// Blue
+    "B"=>array(0,0,128),		// Dark Blue
+    "B"=>array(90,90,120),		// Dark Blue
+    "B"=>array(60,60,90),		// Dark Blue
+    "B"=>array(90,140,180),		// Light Blue
+    "C"=>array(0,255,255),		// Cyan
+    "C"=>array(0,200,200),		// Cyan
+    "M"=>array(255,0,255),		// Magenta
+    "Y"=>array(255,255,0),		// Yellow
+    "Y"=>array(180,160,40),		// Yellow
+    "Y"=>array(210,190,60),		// Yellow
+    "O"=>array(255,128,0),		// Orange
+    "O"=>array(200,100,60),		// Orange
+    "P"=>array(255,128,128),	// Pink
+    "P"=>array(200,180,170),	// Pink
+    "P"=>array(200,160,130),	// Pink
+    "P"=>array(190,120,110),	// Pink
+    "N"=>array(110,70,50),		// Brown
+    "N"=>array(180,160,130),	// Pale Brown
+    "N"=>array(170,140,110),	// Pale Brown
+    );
+    
+    $table = array();
+    $depth = 50;
+    
+    for ($y=0; $y<$depth; $y++)
+    {
+      for ($x=0; $x<$depth; $x++)
+      {
+        $rgb = imagecolorat ($image, $x*($width/$depth), $y*($height/$depth));
+        $red = ($rgb >> 16) & 0xFF;
+        $green = ($rgb >> 8) & 0xFF;
+        $blue = $rgb & 0xFF;
+        // which color
+        $bestdist = 99999;
+        $bestkey = "";
+        
+        reset ($colors);
+        
+        foreach ($colors as $key=>$value)
+        {
+          $distance = sqrt (pow (abs ($red - $value[0]), 2) + pow (abs ($green - $value[1]), 2) + pow (abs ($blue - $value[2]), 2));
+          
+          if ($distance < $bestdist)
+          {
+            $bestdist = $distance;
+            $bestkey = $key;
+          }
+        }
+        
+        // add this color to the color table
+        if (array_key_exists ($bestkey, $table)) $table[$bestkey]++;
+        else $table[$bestkey] = 1;
+      }
+    }
+    
+    asort ($table);
+    reset ($table);
+    $colorkey = "";
+    foreach ($table as $key=>$value) $colorkey .= $key;
+    
+    // color key with the 5 mostyl used colors in the image
+    $colorkey = substr (strrev ($colorkey), 0, 5);
+    
+    return $colorkey;
+  }
+  else return false;
+}
+
+// ---------------------- getimagecolors -----------------------------
+// function: getimagecolors()
+// input: publication name [string], media file name [string]
+// output: result array / false on error
+
+// description:
+// Uses the thumbnail image to calculate the mean color (red, green, blue), defines the colorkey (5 most commonly used colors) and the image type (landscape, portrait, square)
+
+function getimagecolors ($site, $file)
+{
+  global $mgmt_config, $user;
+  
+  if (valid_publicationname ($site) && valid_objectname ($file))
+  {  
+    $media_root = getmedialocation ($site, $file, "abs_path_media").$site."/";
+    $file_info = getfileinfo ($site, $file, "comp");
+    $file = $file_info['file'];
+    
+    // try thumbnail image first
+    $thumbnail = $file_info['filename'].".thumb.jpg";
+
+    // use thumbnail image file
+    if (is_file ($media_root.$thumbnail))
+    {
+      $image = imagecreatefromjpeg ($media_root.$thumbnail);
+    }
+    // try original image
+    else
+    {
+      // prepare media file
+      $temp_source = preparemediafile ($site, $media_root, $file, $user);
+
+      // if encrypted
+      if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty ($temp_source['tempfile']))
+      {
+        $media_root = $temp_source['templocation'];
+        $file = $temp_source['tempfile'];
+      }
+      // if restored
+      elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && !empty ($temp_source['location']) && !empty ($temp_source['file']))
+      {
+        $media_root = $temp_source['location'];
+        $file = $temp_source['file'];
+      }
+      
+      // verify local media file
+      if (!is_file ($media_root.$file)) return false;
+
+      if ($file_info['ext'] == ".jpg") $image = imagecreatefromjpeg ($media_root.$file);
+      elseif ($file_info['ext'] == ".png") $image = imagecreatefrompng ($media_root.$file);
+      elseif ($file_info['ext'] == ".gif") $image = imagecreatefromgif ($media_root.$file);
+      else $image = false;
+      
+      // delete temp file
+      if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+    }
+
+    if (is_resource ($image))
+    {
+      $width = imagesx ($image);
+      $height = imagesy ($image);
+      $totalred = 0;
+      $totalgreen = 0;
+      $totalblue = 0;
+      $total = 0;
+      
+      for ($y=0; $y<20; $y++)
+      {
+        for ($x=0; $x<20; $x++)
+        {
+          $rgb = imagecolorat ($image, $x*($width/20), $y*($height/20));
+          $red = ($rgb >> 16) & 0xFF;
+          $green = ($rgb >> 8) & 0xFF;
+          $blue = $rgb & 0xFF;
+    
+          // calculate deltas (remove brightness factor)
+          $cmax = max ($red, $green, $blue);
+          $cmin = min ($red, $green, $blue);
+          // avoid division errors
+          if ($cmax == $cmin)
+          {
+            $cmax = 10;
+            $cmin = 0;
+          } 
+          
+          // ignore gray, white and black
+          if (abs ($cmax - $cmin) >= 20) 
+          {
+            $red = floor ((($red - $cmin) /($cmax - $cmin)) * 255);
+            $green = floor ((($green - $cmin) / ($cmax - $cmin)) * 255);
+            $blue = floor ((($blue - $cmin) / ($cmax - $cmin)) * 255);
+    
+            $total++;
+            $totalred += $red;
+            $totalgreen += $green;
+            $totalblue += $blue;
+          }
+        }
+      }
+      
+      if ($total == 0) $total = 1;
+      $totalred = floor ($totalred / $total);
+      $totalgreen = floor ($totalgreen / $total);
+      $totalblue = floor ($totalblue / $total);
+      
+      $colorkey = getimagecolorkey ($image);
+    
+      // set 'portrait', 'landscape' or 'square' for the image type
+      if ($width > $height) $imagetype = "landscape";
+      elseif ($height > $width) $imagetype = "portrait";
+      elseif ($height == $width) $imagetype = "square";
+      
+      // destroy image resource
+      if (is_resource ($image)) imagedestroy ($image);
+      
+      $result = array();
+      $result['red'] = $totalred;
+      $result['green'] = $totalgreen;
+      $result['blue'] = $totalblue;
+      $result['colorkey'] = $colorkey;
+      $result['imagetype'] = $imagetype;
+      
+      return $result;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// --------------------------------------- getmediasize -------------------------------------------
+// function: getmediasize()
+// input: path to media file [string]
+// output: Array with media width and height / false on error
+
+function getmediasize ($filepath)
+{
+  global $mgmt_config, $mgmt_imagepreview, $user;
+
+  if (valid_locationname ($filepath))
+  {
+    $result = array();
+
+    // get publication, location and media object
+    $site = getpublication ($filepath);
+    $location = getlocation ($filepath);
+    $media = getobject ($filepath);
+
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
+    
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
+    {
+      $location = $temp['templocation'];
+      $media = $temp['tempfile'];
+
+      // set new file path
+      $filepath = $location.$media;
+    }
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
+    {
+      $location = $temp['location'];
+      $media = $temp['file'];
+
+      // set new file path
+      $filepath = $location.$media;
+    }
+
+    // verify local media file
+    if (!is_file ($filepath)) return false;
+
+    // get file width and heigth in pixels
+    $imagesize = @getimagesize ($filepath);
+
+    if (!empty ($imagesize))
+    {
+      $result['width'] = $imagesize[0];
+      $result['height'] = $imagesize[1];
+    }
+    // try to read values from source file (e.g. SVG files)
+    else
+    {
+      // use ImageMagick
+      if (!empty ($mgmt_imagepreview) && is_supported ($mgmt_imagepreview, $filepath))
+      {
+        $cmdresult = exec ("identify -format \"%wx%h\" \"".shellcmd_encode ($filepath)."\"");
+
+        if (strpos ($cmdresult, "x") > 0) list ($result["width"], $result["height"]) = explode ("x", $cmdresult);
+      }
+      else
+      {
+        $header = loadfile_header (getlocation ($filepath), getobject ($filepath));
+      
+        if (!empty ($header))
+        {
+          // get SVG tag
+          $svg_tag = gethtmltag ($header, "svg");
+        
+          if (!empty ($svg_tag)) $header = $svg_tag;
+        
+          $result['width'] = getattribute ($header, "width", true);
+          $result['height'] = getattribute ($header, "height", true);
+        }
+      }
+    }
+
+    // delete temp file
+    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+
+    // return result
+    if (!empty ($result['width']) && !empty ($result['height'])) return $result;
+    else return false;
+  }
+  else return false;
+}
+
+// --------------------------------------- getimageinfo -------------------------------------------
+// function: getimageinfo()
+// input: path to media file [string]
+// output: Array with image information like md5 hash, width, height, colors / false on error
+
+function getimageinfo ($filepath)
+{
+  global $mgmt_config, $mgmt_imagepreview, $user;
+
+  if (valid_locationname ($filepath))
+  {
+    // get publication, location and media object
+    $site = getpublication ($filepath);
+    $location = getlocation ($filepath);
+    $media = getobject ($filepath);
+
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
+
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
+    {
+      $location = $temp['templocation'];
+      $media = $temp['tempfile'];
+
+      // set new file path
+      $filepath = $location.$media;
+    }
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
+    {
+      $location = $temp['location'];
+      $media = $temp['file'];
+
+      // set new file path
+      $filepath = $location.$media;
+    }
+
+    // verify local media file
+    if (!is_file ($filepath)) return false;
+
+    // MD5 hash of the original file
+    $md5_hash = md5_file ($filepath);
+
+    // get file-type
+    $filetype = getfiletype ($media);
+
+    // file size in kB
+    if (filesize ($filepath) > 0) $filesize = round (filesize ($filepath) / 1024, 0);
+    else $filesize = 0;
+
+    // image colors
+    $imagecolors = getimagecolors ($site, $media);
+
+    // image size
+    $imagesize = getmediasize ($filepath);
+
+    // file time (use thumbnail as first option)
+    $media_root = getmedialocation ($site, $media, "abs_path_media").$site."/";
+    $file_info = getfileinfo ($site, $media, "comp");
+    if (!empty ($file_info['filename'])) $thumbnail = $file_info['filename'].".thumb.jpg";
+
+    if (!empty ($thumbnail)) $filetime = date ("Y-m-d H:i", filemtime ($media_root.$thumbnail));
+    elseif (!empty ($filepath)) $filetime = date ("Y-m-d H:i", filemtime ($filepath));
+    else $filetime = false;
+
+    // delete temp file
+    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+
+    // result
+    $result = array();
+
+    if (is_array ($imagecolors) && is_array ($imagesize)) $result = array_merge ($imagecolors, $imagesize);
+    elseif (is_array ($imagecolors)) $result = $imagecolors;
+    elseif (is_array ($imagesize)) $result = $imagesize;
+
+    $result['md5_hash'] = $md5_hash;
+    $result['filetype'] = $filetype;
+    $result['filesize'] = $filesize;
+    $result['filetime'] = $filetime;
+
+    return $result;
+  }
+  else return false;
+}
+
 // ---------------------- getpdfinfo -----------------------------
 // function: getpdfinfo()
 // input: path to PDF file [string], box attribute [BleedBox,CropBox,MediaBox] (optional)
 // output: result array with width and height / false on error
 
 // description:
-// Extracts width and height in pixel of a PDF file based on the MediaBox in the filex content or ImageMagick as fallback
+// Extracts width and height in pixel of a PDF file based on the MediaBox in the files content or ImageMagick as fallback
 
 function getpdfinfo ($filepath, $box="MediaBox")
 {
@@ -3595,6 +3966,9 @@ function getpdfinfo ($filepath, $box="MediaBox")
 
     $stream = null;
 
+    // delete temp file
+    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+
     // use ImageMagick if MediaBox failed
     if ((empty ($result["width"]) || empty ($result["height"])) && is_supported ($mgmt_imagepreview, $media))
     {
@@ -3603,7 +3977,9 @@ function getpdfinfo ($filepath, $box="MediaBox")
       if (strpos ($cmdresult, "x") > 0) list ($result["width"], $result["height"]) = explode ("x", $cmdresult);
     }
 
-    return $result;
+    // return result
+    if (!empty ($result['width']) && !empty ($result['height'])) return $result;
+    else return false;
   }
   else return false;
 }
@@ -3616,12 +3992,12 @@ function getpdfinfo ($filepath, $box="MediaBox")
 // description:
 // Extract video metadata from video file.
 
-function getvideoinfo ($mediafile)
+function getvideoinfo ($filepath)
 {
   global $mgmt_config, $mgmt_mediapreview, $user;
   
   // read media information from media files
-  if ($mediafile != "")
+  if (valid_locationname ($filepath))
   {
   	$dimensionRegExp = "/, ([0-9]+x[0-9]+)/";
   	$durationRegExp = "/Duration: ([0-9\:\.]+)/i";
@@ -3641,36 +4017,43 @@ function getvideoinfo ($mediafile)
     $audio_frequenzy = "";
     $audio_channels = "";
 
-    $site = getpublication ($mediafile);
-    $location = getlocation ($mediafile);
-    $media = getobject ($mediafile);
+    // get publication, location and media object
+    $site = getpublication ($filepath);
+    $location = getlocation ($filepath);
+    $media = getobject ($filepath);
 
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
-    
-    // reset location if restored
-    if (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
+
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
+    {
+      $location = $temp['templocation'];
+      $media = $temp['tempfile'];
+
+      // set new file path
+      $filepath = $location.$media;
+    }
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
     {
       $location = $temp['location'];
       $media = $temp['file'];
+
+      // set new file path
+      $filepath = $location.$media;
     }
-    
-    // path of media file if encrypted
-    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
-    {
-      $mediafile = $temp['templocation'].$temp['tempfile'];
-    }
-    
+
     // verify media file
-    if (!is_file ($location.$media)) return false;
-    
+    if (!is_file ($filepath)) return false;
+
     // get video file size in MB
     $filesize = round (@filesize ($mediafile) / 1024 / 1024, 0)." MB";
     if ($filesize < 1) $filesize = "<1 MB";
-    
+
     // file extension
-    $file_info = getfileinfo ("", $mediafile, "comp");
-    
+    $file_info = getfileinfo ("", $filepath, "comp");
+
     if (!empty ($file_info['ext'])) $file_ext = $file_info['ext'];
     else $file_ext = "";
 
@@ -3681,10 +4064,10 @@ function getvideoinfo ($mediafile)
       {  
         $return = 1;
         $metadata = array();
-          
+
         // get info from video file using FFMPEG
-      	$cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($mediafile)."\" -y -f rawvideo -vframes 1 /dev/null 2>&1";
-        
+      	$cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($filepath)."\" -y -f rawvideo -vframes 1 /dev/null 2>&1";
+
         exec ($cmd, $metadata, $return); 
 
         // parsing the values
@@ -3696,13 +4079,13 @@ function getvideoinfo ($mediafile)
     			if (preg_match ($dimensionRegExp, implode ("\n", $metadata), $matches))
           {
     				$dimension = $matches[1];
-            
+
             if ($dimension != "")
             {
               list ($width, $height) = explode ("x", $dimension);
-              
+
               $dimension = $dimension." px";
-                
+ 
             	// set 'portrait', 'landscape' or 'square' for the image type
               if ($width > 0 && $height > 0)
               {
@@ -3721,7 +4104,7 @@ function getvideoinfo ($mediafile)
 
           // video duration in hours:minutes:seconds.milliseconds
     			$matches = array();
-          
+
     			if (preg_match ($durationRegExp, implode ("\n", $metadata), $matches))
           {
             // cut of milliseconds
@@ -3729,10 +4112,10 @@ function getvideoinfo ($mediafile)
             
             $duration = $matches[1];
     			}
-          
+
           // video bitrate in kB/s (flac file uses the same bitrate declaration as video streams)
     			$matches = array();
-          
+
     			if (preg_match ($bitRateRegExp, implode ("\n", $metadata), $matches))
           {
     				$video_bitrate = $matches[1];
@@ -3740,17 +4123,17 @@ function getvideoinfo ($mediafile)
 
           // video roation in degrees
           reset ($metadata);
-          
+
           foreach ($metadata as $line)
           {
             if (strpos ("_".$line, "rotate") > 0)
             {
               // Rotate    : 180
               $line = substr ($line, strpos ($line, "rotate") + 7);
-              
+
               // audio (audio bitrate might be missing in flac files)
               @list ($rest, $rotate) = explode (":", $line);
-              
+
               // clean
               if (!empty ($rotate)) $rotate = trim ($rotate);
 
@@ -3760,7 +4143,7 @@ function getvideoinfo ($mediafile)
 
           // audio and video information (codec, bitrate and frequenzy)
           reset ($metadata);
-          
+
           foreach ($metadata as $line)
           {
             if (strpos ("_".$line, " Audio: ") > 0)
@@ -3768,42 +4151,42 @@ function getvideoinfo ($mediafile)
               // MP4 Audio: aac (mp4a / 0x6134706D), 11025 Hz, mono, s16, 53 kb/s
               // MPEG Audio: mp2, 0 channels, s16p
               $line = substr ($line, strpos ($line, " Audio: ") + 8);
-              
+
               // audio (audio bitrate might be missing in flac files)
               if (substr_count ($line, ",") >= 4) list ($audio_codec, $audio_frequenzy, $audio_channels, $audio_sample, $audio_bitrate) = explode (", ", $line);
               elseif (substr_count ($line, ",") >= 2)  list ($audio_codec, $audio_channels, $audio_sample) = explode (", ", $line);
-              
+
               // clean codec name
               if (strpos ($audio_codec, "(") > 0) $audio_codec = substr ($audio_codec, 0, strpos ($audio_codec, "("));
               $audio_codec = strtoupper (trim ($audio_codec));
-              
+
               // verify frequenzy
               if (strpos (strtolower ($audio_frequenzy), "hz") < 1) $audio_frequenzy = "";
-              
+
               // verify audio channels
               if (strlen ($audio_channels) > 10) $audio_channels = "";
 
               break;
             }
           }
-          
+
           reset ($metadata);
-          
+
           foreach ($metadata as $line)
           {
             if (strpos ("_".$line, " Video: ") > 0)
             {
               // Video: wmv2 (WMV2 / 0x32564D57), yuv420p, 320x240, 409 kb/s, 25 tbr, 1k tbn, 1k tbc
-              
+
               // tbn = the time base in AVStream that has come from the container
               // tbc = the time base in AVCodecContext for the codec used for a particular stream
               // tbr = tbr is guessed from the video stream and is the value users want to see when they look for the video frame rate
 
               $line = substr ($line, strpos ($line, " Video: ") + 8);
-              
+
               // video
               @list ($video_codec, $colorspace) = explode (", ", $line);
-              
+
               // clean codec name
               if (strpos ($video_codec, "(") > 0) $video_codec = substr ($video_codec, 0, strpos ($video_codec, "("));
               $video_codec = strtoupper (trim ($video_codec));
@@ -3811,7 +4194,7 @@ function getvideoinfo ($mediafile)
               break;
             }
           }
-          
+
           // use video bitrate if audio is not available (for flac audio files)
           if (empty ($audio_bitrate) && !empty ($video_bitrate)) $audio_bitrate = $video_bitrate;
         }

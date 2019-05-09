@@ -3290,7 +3290,7 @@ Release 03/2019
 - Bug fix: media_view did not add publication name to media variable in case it has not been provided (function showmedia provides publication and media file name separately)
 
 Version 8.0.1
-Release 04/2019
+Release 05/2019
 - Modifications in function manipulateallobjects in Main API in order to process 10 objects at once (new default value)
 - Modifications in popup_status in order to change the JS function for refreshing of the window
 - Modifications in function editpublication, editpublicationsetting, and deletepublication in Main API in order to verify input parameters before scanning for files
@@ -3361,20 +3361,32 @@ Release 04/2019
 - Modifications in explorer and search_form in order to verify search expression for fulltext search
 - Removed autocomplete feature from frameset_main since search is no longer needed
 - Modifications in explorer_objectview in order to locate object view outside the windows scopes while loading
-- Implemenation of a load screen for the object view in frameset_objectlist and explorer_objectview
-- Implemenation of new color schema for the display of the used storage in the home boxes
+- Implementation of a load screen for the object view in frameset_objectlist and explorer_objectview
+- Implementation of new color schema for the display of the used storage in the home boxes
 - Implementation of new multiedit lock and unlock feature for appending content if the content of the same fields does not match
 - Modifications in service savecontent and page_multiedit in order to support the text content appending in multiedit mode
 - Implementation of new function appendcontent_helper in service savecontent in order to append text content to XML containers
-- Implemenation of new service setappendcontent in order to lock and unlock the multiedit form
+- Implementation of new service setappendcontent in order to lock and unlock the multiedit form
 - Imlpementation of new session parameter for appendcontent to include/session.inc.php
 - Minor design modifications in function sendresetpassword in Main API
+- Implementation of error logging into function deletelog in Main API
+- Modifications in function valid_objectname in Security API
+- Implementation of character set conversion to UTF-16LE in function create_csv in Main API in order to support MS Excel character encoding
+- Modifications in function createmedia in Media API in order to adjust density values for SVG graphics and to reduce thumbnail size of vector graphics if the original size is smaller than the thumbnail size
+- Modifications in function convertimage in Media API in order to adjust max. density (DPI) value to 2400 dpi
+- Modifications in explorer_objectlist in order to display the load screen if more button is used
+- Modifications in function getmediasize in Get API in order to support ImageMagick and encrypted media files
+- Modifications in function getvideoinfo and getpdfinfo in Get API in order to remove temporary media files after decryption
+- Modifications in function showmedia in UI API in order to apply function getmediasize and store non-existing media info in database
+- Moved functions getimagecolors and getimagecolorkey from Media to Get API
+- Implementation of new function getimageinfo in Get API in order to provide all information (MD5 hash, file size, image size, image colors, type, ...) of an image
+- Modifications in explorer_objectlist and search_objectlist in order to to set image size if CSS class is not applied
 - Modifications in template engine in order to implement the %publication% template variable for the publication access of a user (used for reports)
 - Implementation of new main configuration setting $mgmt_config['workflow_loop'] in order to enable a loop for workflows
 - Modifications in Workflow Management in order to enable the redirect to the start user (in order to create a loop)
 - Modifications in Workflow Management in order to display full workflow folder path in workflow_folder_form on mouse over
 - Modifications in Import/Export API in order to display each import/export result immediately
-- Implemenation of the new area chart and function showareachart in Report Management module
+- Implementation of the new area chart and function showareachart in Report Management module
 - Bug fix: control_site_menu did not accept the publication name as parameter of the request string
 - Bug fix: popup_status did not execute if page or folder variable was empty
 - Bug fix: Function rdbms_getmediastat in DB Connect did not escape object path before executing SQL statement

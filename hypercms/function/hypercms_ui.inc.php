@@ -831,12 +831,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $width_orig = $media_info['width'];
         $height_orig = $media_info['height'];
       }
-      
+
       // get media file information from media file (fallback)
-      if (empty ($mediafilesize) && is_file ($media_root.$mediafile))
+      if (empty ($mediafilesize) && file_exists ($media_root.$mediafile))
       {
-        $mediafiletime = date ("Y-m-d H:i", filemtime ($thumb_root.$mediafile));
-        
         // prepare media file
         $temp = preparemediafile ($site, $media_root, $mediafile, $user);
         
@@ -852,18 +850,21 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $media_root = $temp['location'];
           $mediafile = $temp['file'];
         }
+
+        // get information of original media file
+        $imageinfo = getimageinfo ($media_root.$mediafile);
         
-        if (filesize ($media_root.$mediafile) > 0) $mediafilesize = round (filesize ($media_root.$mediafile) / 1024, 0);
-        else $mediafilesize = 0;
-      
-        // get dimensions of original media file
-        $temp = @getimagesize ($media_root.$mediafile);
+        // file size
+        $mediafilesize = $imageinfo['filesize'];
         
-        if (!empty ($temp[0]) && !empty ($temp[1]))
+        if (!empty ($imageinfo['width']) && !empty ($imageinfo['height']))
         {
-          $width_orig = $temp[0];
-          $height_orig = $temp[1];
+          $width_orig = $imageinfo['width'];
+          $height_orig = $imageinfo['height'];
         }
+
+        // set media info
+        rdbms_setmedia ($container_id, $imageinfo['filesize'], $imageinfo['filetype'], $imageinfo['width'], $imageinfo['height'], $imageinfo['red'], $imageinfo['green'], $imageinfo['blue'], $imageinfo['colorkey'], $imageinfo['imagetype'], $imageinfo['md5_hash']);
       }
 
       // if object will be deleted automatically

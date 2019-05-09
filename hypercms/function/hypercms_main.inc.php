@@ -116,8 +116,8 @@ function cleancontent ($text, $charset="UTF-8")
 
   // list of pattern replacements corresponding to patterns searched
   $entReplace = array(
-    '™',         // TM symbol
-    '—',         // m-dash
+    'ï¿½',         // TM symbol
+    'ï¿½',         // m-dash
     '|+|amp|+|', // Ampersand: see converter()
     ' ',         // Runs of spaces, post-handling
   );
@@ -371,7 +371,7 @@ function convertdate ($date, $timezone1, $dateformat1="Y-m-d H:i:s", $timezone2,
 // ------------------------- offsettime -----------------------------
 // function: offsettime()
 // input: %
-// output: offset time in ±hh:mm from UTC
+// output: offset time in ï¿½hh:mm from UTC
 
 // description:
 // This function calculates the offset time from UTC (Coordinated Universal Time).
@@ -17155,7 +17155,7 @@ function deletelog ($logname="")
 
   // set default language
   if ($lang == "") $lang = "en";
-  
+
   // file name of log
   if ($logname != "") $logfile = $logname.".log";
   else $logfile = "event.log";
@@ -17168,14 +17168,20 @@ function deletelog ($logname="")
     {
       if (strpos ($logname, ".") > 0) $site = substr ($logname, 0, strpos ($logname, "."));
       else $site = "";
-      
+
       $add_onload = "parent.frames['mainFrame'].location='log_list.php?site=".url_encode($site)."'; ";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['cleared-all-events-from-list'][$lang]."</span>\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['cleared-all-events-from-list'][$lang]."</span>\n";
+
+      $errcode = "00821";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|log ".$logname." has been deleted by user ".$user;
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['events-list-could-not-be-cleared'][$lang]."</span><br />\n".$hcms_lang['event-log-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['events-list-could-not-be-cleared'][$lang]."</span><br />\n".$hcms_lang['event-log-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
+
+      $errcode = "10822";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|log ".$logname." could not be deleted by user ".$user;
     }  
   }
   else
@@ -17184,11 +17190,14 @@ function deletelog ($logname="")
     $show = "<span class=hcmsHeadline>".$hcms_lang['events-list-could-not-be-cleared'][$lang]."</span><br />\n".$hcms_lang['event-log-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
   }
   
+  // save log
+  savelog (@$error);
+
   $result = array();
-  
+
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;  
-  
+
   return $result;    
 }
 
@@ -17203,12 +17212,12 @@ function deletelog ($logname="")
 function debuglog ($code)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
-  
+
   // save log
   if ($code != "")
   {  
     $code = "\r\n<debug>\r\n<timestamp>".$mgmt_config['today']."</timestamp>\r\n<code>".$code."</code>\r\n</debug>\r\n";
-    
+
     if (is_file ($mgmt_config['abs_path_data']."log/debug.log")) return appendfile ($mgmt_config['abs_path_data']."log/", "debug.log", $code);
     else return savefile ($mgmt_config['abs_path_data']."log/", "debug.log", $code);  
   }
@@ -17228,42 +17237,42 @@ function debuglog ($code)
 function notifyusers ($site, $location, $object, $event, $user_from)
 {
   global $user, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
-  
+
   // set default language
   if (empty ($lang)) $lang = "en";
   $lang_to = "en";
-  
+
   $location = deconvertpath ($location, "file"); 
-      
+
   // if object includes special characters
   $object = createfilename ($object);
-  
+
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
-  
+
   if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($user_from))
   {
     $mail_sent = false;
-    
+
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
-    
+
     // convert location
     $cat = getcategory ($site, $location);
     $location_esc = convertpath ($site, $location, $cat);
-    
+
     // get notifications
     $notify_array = rdbms_getnotification ($event, $location_esc.$object);
-   
+
     if (is_array ($notify_array) && sizeof ($notify_array) > 0)
     {
       // load user file
       $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-      
+
       if ($userdata != "")
       {
         $user_memory = array();
-      
+
         // collect e-mail addresses
         foreach ($notify_array as $notify)
         {
@@ -17272,17 +17281,17 @@ function notifyusers ($site, $location, $object, $event, $user_from)
           {        
             // get user node and extract required information    
             $usernode = selectcontent ($userdata, "<user>", "<login>", $notify['user']);
-            
+
             // add user to memory to avoid multiple notifications for the same user
             $user_memory[] = $notify['user'];
-  
+
             if (is_array ($usernode))
             {
               // email
               $temp = getcontent ($usernode[0], "<email>");
               if (!empty ($temp[0])) $email_to = $temp[0];
               else $email_to = "";
-            
+
               // language
               $temp = getcontent ($usernode[0], "<language>");            
               if (!empty ($temp[0])) $lang_to = $temp[0];
@@ -17322,7 +17331,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
                 $object_name = getlocationname ($site, $location_esc.$object, $cat);
                 $accesslink = "";
               }
-            
+
               // mail notification
               $mail_title = $hcms_lang['hypercms-notification'][$lang_to];
               $mail_fullbody = "<b>".str_replace ("%user%", $user_from, $text_opt)."</b>\n";
@@ -17333,9 +17342,9 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               if ($accesslink != "") $mail_fullbody .=  " (".$accesslink.")";          
               $mail_fullbody .= "\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to];
               $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
-          
+
               $mailer = new HyperMailer();
-             
+
               // if the mailserver config entry is empty, the email address of the user will be used for FROM
               $mailer->IsHTML(true);
               $mailer->CharSet = $hcms_lang_codepage[$lang_to]; 
@@ -17345,12 +17354,12 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               $mailer->AddAddress ($email_to);
               $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang_to]);
               $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang_to]);
-             
+
               // send mail
               if ($mailer->Send())
               {
                 $mail_sent = true;
-                
+
                 // log notification
                 $errcode = "00802";
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|notification has been sent to ".$notify['user']." (".$email_to.") on object ".$location_esc.$object; 
@@ -17366,7 +17375,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 
         // save log
         savelog (@$error);
-        
+
         return $mail_sent;
       }
       else return false;
@@ -17399,10 +17408,10 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
   if (valid_publicationname ($site) && $cat != "" && valid_locationname ($folderpath) && valid_objectname ($text_id) && $date_begin != "" && $date_end != "" && (valid_objectname ($user) || is_array ($user)))
   {
     $mail_sent = false;
-    
+
     // convert path
     $folderpath = convertpath ($site, $folderpath, $cat);
-    
+
     // query license date
     $result_array = rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_end, $format);
 
@@ -17410,10 +17419,10 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
     {
       // load user data
       $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-      
+
       if (!is_array ($user)) $user_array = array($user);
       else $user_array = $user;
-         
+
       if ($userdata != false && is_array ($user))
       {
         foreach ($user_array as $user)
@@ -17452,12 +17461,12 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
                 $result['link'] = createaccesslink ($result['publication'], $result['location'], $result['object'], $result['category'], "", $user, "al");
                 $mail_fullbody .= $result['date'].": ".$result['link']."\n";
               }
-              
+
               $mail_fullbody .= "\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to];              
               $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
-             
+
               $mailer = new HyperMailer();
-             
+
               // if the mailserver config entry is empty, the email address of the user will be used for FROM
               $mailer->IsHTML(true);
               $mailer->CharSet = $hcms_lang_codepage[$lang]; 
@@ -17467,7 +17476,7 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
               $mailer->AddAddress ($email_to);
               $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
               $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang]);
-             
+
               // send mail
               if ($mailer->Send())
               {
@@ -17536,14 +17545,14 @@ function licensenotification ()
         if (is_array ($config_array) && sizeof ($config_array) > 0)
         {
           sort ($config_array);
-        
+
           foreach ($config_array as $config_folder)
           {
             $date_begin = "";
             $date_end = "";
-          
+
             list ($object_id, $text_id, $format, $period, $users) = explode ("|", $config_folder);
-             
+
             $location = rdbms_getobject ($object_id);
 
             // define format string (international date format that is used for queries in the database)
@@ -17583,7 +17592,7 @@ function licensenotification ()
                 // tomorrow
                 $date_end = $date_begin = date ($format_db, time() + (60*60*24));
               }
-              
+
               // split users into array
               $user_array = splitstring ($users);
             
@@ -17609,10 +17618,10 @@ function licensenotification ()
   {
     $errcode = "10742";
     $error[] = $mgmt_config['today']."|daily.php|error|$errcode|license notification can not be executed. Config directory is missing.";
-    
+
     // save log
     savelog (@$error); 
-    
+
     return false;
   }
 }
@@ -18165,7 +18174,7 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset="utf-8")
 // output: true / false on error
 
 // description:
-// Creates a CSV file from an associative data array and returns the file as download or writes the file to the file system if a valid path to a directory has been provided.
+// Creates a CSV file from an associative data array and returns the file as download or writes the file to the file system if a valid path to a directory has been provided. The encoding is UTF-16LE in order to support MS Excel.
 
 function create_csv ($assoc_array, $filename="export.csv", $filepath="php://output", $delimiter=";", $enclosure='"', $charset="utf-8")
 {
@@ -18182,7 +18191,7 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
       header('Expires: 0');
       header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
       header('Cache-Control: private', false);
-      header('Content-Type: text/csv; charset='.$charset);
+      header('Content-Type: text/csv; charset=UTF-16LE');
       header('Content-Disposition: attachment;filename='.$filename);
     }
     // absolute path to file
@@ -18201,6 +18210,9 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
 
       foreach ($assoc_array as $values)
       {
+        // For MS EXCEL: Make sure that you convert your UTF-8 text to UTF-16LE
+        $values = convertchars ($values, $charset, "UTF-16LE");
+      
         // write CSV record based on array holding all values
         fputcsv ($fp, $values, $delimiter, $enclosure);
       }

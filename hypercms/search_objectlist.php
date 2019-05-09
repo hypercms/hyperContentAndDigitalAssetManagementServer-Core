@@ -849,19 +849,19 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 }
               }
             }
-               
+ 
             $listview .= "
                          </tr>";  
-  
+
             // default value
             $ratio = "Width";
-            
+
             // if there is a thumb file, display the thumb
             if ($mediafile != false && empty ($usedby))
             {
               // get thumbnail location
               $thumbdir = getmedialocation ($site, $media_info['filename'].".thumb.jpg", "abs_path_media");
-  
+
               // prepare source media file
               preparemediafile ($item_site, $thumbdir.$item_site."/", $media_info['filename'].".thumb.jpg", $user);
   
@@ -870,7 +870,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               {
                 createmedia ($item_site, $thumbdir.$item_site."/", $thumbdir.$item_site."/", $media_info['file'], "", "thumbnail");
               }          
-              
+
               if (is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg"))
               {
                 // use original image size from RDBMS
@@ -891,7 +891,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 {
                   $imgsize = getimagesize ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg");
                 }
-                
+
                 // calculate image ratio to define CSS for image container div-tag
                 if (is_array ($imgsize))
                 {
@@ -904,24 +904,26 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   // image width < height
                   else $ratio = "Height";
                 }
-                          
+        
                 // galleryview - view option for locked multimedia objects
                 if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsIconOff\"";
                 else $class_image = "class=\"lazyload hcmsImageItem\"";               
                 
                 // if thumbnail is smaller than defined thumbnail size
-                if ($imgwidth < 180 && $imgheight < 180)
+                if ($imgwidth < 100 && $imgheight < 100)
                 {
                   $div_id = "id=\"x".$items_row."\"";
                   $class_size = "";
+                  $style_image = "style=\"width:".$imgwidth."px; height:".$imgheight."px;\"";
                 }
                 else
                 {
                   $div_id = "id=\"".strtolower(substr($ratio, 0, 1)).$items_row."\"";
                   $class_size = "class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"";
+                  $style_image = "";
                 }
-                
-                $thumbnail = "<div ".$div_id." ".$class_size."><img data-src=\"".createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name)."\" ".$class_image." /></div>";
+
+                $thumbnail = "<div ".$div_id." ".$class_size."><img data-src=\"".createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name)."\" ".$class_image." ".$style_image." /></div>";
               }
               // display file icon if thumbnail fails 
               else
@@ -942,10 +944,10 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                       
               $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /></div>";
             }
-            
+
             // if linking is used display download buttons, display edit button for mobile edition
             $linking_buttons = "";
-            
+
             if ($mediafile != false && linking_valid() == true && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
             {
               // check download of original file
@@ -956,7 +958,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 <a href=\"".createviewlink ($item_site, $mediafile, $object_name, false, "download")."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
               }
             }
-            
+
             // if mobile edition is used display edit button
             if ($is_mobile && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
             {   

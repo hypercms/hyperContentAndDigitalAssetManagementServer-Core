@@ -1840,7 +1840,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $imagerotate = "";
                   $imagerotation = "";
                 }
-                
+
                 // image density (DPI)
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-d ") > 0) 
                 {
@@ -1851,7 +1851,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   else $imagedensity = "-density ".$imagedensity;
                 }
                 else $imagedensity = "";
-                
+
                 // image quality / compression
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-q ") > 0) 
                 {
@@ -1862,27 +1862,27 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   else $imagequality = "-quality ".$imagequality;
                 }
                 else $imagequality = "";
-                
+
                 // image brightness
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-b ") > 0) 
                 {
                   $imagebrightness = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-b"));
-                  
+
                   if ($imagebrightness > 100) $imagebrightness = 100;
                   elseif ($imagebrightness < -100) $imagebrightness = -100;
                 }
                 else $imagebrightness = 0;
-                
+
                 // image contrast
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-k ") > 0) 
                 {
                   $imagecontrast = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-k"));
-  
+
                   if ($imagecontrast > 100) $imagecontrast = 100;
                   elseif ($imagecontrast < -100) $imagecontrast = -100;
                 }
                 else $imagecontrast = 0;
-                
+
                 // set image brightness parameters for ImageMagick
                 $imageBrightnessContrast = "";
                 
@@ -1896,88 +1896,88 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($imagecontrast == 0) $imageBrightnessContrast .= "0";
                   else $imageBrightnessContrast .= shellcmd_encode ($imagecontrast);
                 }
-                
+
                 // set image color space
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-cs ") > 0) 
                 {
                   $imagecolorspace = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-cs");
-                  
+
                   // enable alpha blending for colorspace transparent
                   if (strtolower ($imagecolorspace) == "transparent") $add = "-alpha on ";
                   else $add = "";
-                  
+
                   if ($imagecolorspace == "" || $imagecolorspace == false) $imagecolorspace = "";
                   else $imagecolorspace = $add."-colorspace ".shellcmd_encode ($imagecolorspace);
                 }
                 else $imagecolorspace = "";
-                
+
                 // set image icc profile 
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-p ") > 0) 
                 {
                   $iccprofile = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-p");
-                  
+
                   if ($iccprofile == "" || $iccprofile == false) $iccprofile = "";
                   else $iccprofile = "-profile ".shellcmd_encode ($iccprofile);
                 }
                 else $iccprofile = "";
-                
+
                 // set flip
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-fv ") > 0) 
                 {
                   $imageflipv = "-flop";
                 }
                 else $imageflipv = "";
-                
+
                 // set flop
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-fh ") > 0) 
                 {
                   $imagefliph = "-flip";
                 }
                 else $imagefliph = "";
-                
+
                 // Combine flip and flop into one
                 $imageflip = $imageflipv." ".$imagefliph;
-                
+
                 // set sepia
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sep ") > 0) 
                 {
                   $sepia = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sep");
-                  
+
                   if ($sepia == "" || $sepia == false) $sepia = "";
                   else $sepia = "-sepia-tone ".shellcmd_encode ($sepia);
                 }
                 else $sepia = "";
-                
+
                 // set sharpen
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sh ") > 0) 
                 {
                   $sharpen = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sh");
-                  
+
                   if ($sharpen == "" || $sharpen == false) $sharpen = "";
                   else $sharpen = "-sharpen ".shellcmd_encode ($sharpen);
                 }
                 else $sharpen = "";
-                
+
                 // set blur
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-bl ") > 0) 
                 {
                   $blur = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-bl");
-                  
+
                   if ($blur == "" || $blur == false) $blur = "";
                   else $blur = "-blur ".shellcmd_encode ($blur);
                 }
                 else $blur = "";
-                
+
                 // set sketch
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sk ") > 0) 
                 {
                   $sketch = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sk");
-                  
+
                   if ($sketch == "" || $sketch == false) $sketch = "";
                   else $sketch = "-sketch ".shellcmd_encode ($sketch);
                 }
                 else $sketch = "";
-                
+
                 // set paint
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-pa ") > 0) 
                 {
@@ -1987,7 +1987,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   else $paint = "-paint ".shellcmd_encode ($paint);
                 }
                 else $paint = "";
-                
+
                 // watermarking
                 // set watermark options if defined in publication settings and not already defined
                 if (!empty ($mgmt_config[$site]['watermark_image']) && strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-wm ") == 0)
@@ -1998,7 +1998,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-wm ") > 0) 
                 {
                   $watermarking = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-wm");
-  
+
                   if ($watermarking == "" || $watermarking == "0"  || $watermarking == "false" || $watermarking == false)
                   {
                     $watermark = "";
@@ -2010,12 +2010,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // -gravity ... sets where in the image the watermark should be added
                     // -geometry ... Can be used to modify the size of the watermark being passed in, and also the positioning of the watermark (relative to the gravity placement). 
                     //               It is specified in the form width x height +/- horizontal offset +/- vertical offset (<width>x<height>{+-}<xoffset>{+-}<yoffset>).
-                    // -composite ... parameter, which tells ImageMagick to add the watermark image we’ve just specified to the image. 
+                    // -composite ... parameter, which tells ImageMagick to add the watermark image weï¿½ve just specified to the image. 
                     list ($watermark, $gravity, $geometry) = explode ("->", $watermarking);
 
                     if (!empty ($geometry)) $geometry = intval ($geometry);
                     else $geometry = 0;
-                    
+ 
                     if (strtolower(trim($gravity)) == "topleft")
                     {
                       $gravity = "northwest";
@@ -2047,7 +2047,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       $gravity = "";
                       $geometry = "";
                     }
-                    
+
                     if ($watermark != "" && $gravity != "")
                     {
                       $watermark = "-compose multiply -gravity ".$gravity.($geometry != "" ? " -geometry ".shellcmd_encode(trim($geometry)) : "")." -background none \"".shellcmd_encode(trim($watermark))."\"";
@@ -2061,7 +2061,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 if (!empty ($mgmt_imagepreview[$imagepreview_ext]) && $mgmt_imagepreview[$imagepreview_ext] != "GD")
                 {
                   $buffer_file = $path_source;
-          
+
                   // delete thumbnail
                   if ($type == "thumbnail" && is_file ($location_dest.$file_name.".thumb.jpg"))
                   {
@@ -2091,15 +2091,27 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // set size for thumbnails
                     if ($type == "thumbnail" && !empty ($imagewidth_orig) && !empty ($imageheight_orig))
                     {
-                      // set size for for vector graphics like SVG in order to be rendered correctly (no density required in this case)
-                      $imagedensity = "-size ".$imagewidth_orig."x".$imageheight_orig;
-                      $imageresize = "-resize ".$imagewidth."x".$imageheight;
+                      // reduce thumbnail size if original image is smaller then the defined thumbnail image size
+                      if ($imagewidth_orig > 0 && $imagewidth_orig < $imagewidth && $imageheight_orig > 0 && $imageheight_orig < $imageheight)
+                      {
+                        $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
+
+                        // set the image density in oprder to keep the details in small graphics
+                        $imagedensity = "-density 100";
+                      }
+                      else
+                      {
+                        $imageresize = "-resize ".$imagewidth."x".$imageheight;
+
+                        // set size for for vector graphics like SVG in order to be rendered correctly (no density required in this case)
+                        $imagedensity = "-size ".$imagewidth_orig."x".$imageheight_orig;
+                      }
                     }
-                    else
+                    elseif (empty ($imagedensity))
                     {
-                      // density for SVG graphics
-                      if ($file_ext == ".svg" && empty ($imagedensity)) $imagedensity = "-density 288";
-                      elseif ($file_ext != ".pdf")  $imagedensity = "-density 144";
+                      // density for vector graphics (300 dpi for SVG only, do not use for EPS)
+                      if ($file_ext == ".svg") $imagedensity = "-density 300";
+                      elseif ($file_ext == ".pdf")  $imagedensity = "-density 150";
                     }
                     
                     if ($type == "thumbnail")
@@ -3683,7 +3695,7 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
     
     // validate DPI value
     if ($dpi < 72) $dpi = 72;
-    elseif ($dpi > 1200) $dpi = 1200;
+    elseif ($dpi > 2400) $dpi = 2400;
     
     $density_para = " -d ".$dpi;
     
@@ -3964,246 +3976,6 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
     }
     // file does not exist
     else return false;
-  }
-  else return false;
-}
-
-// ---------------------- getimagecolors -----------------------------
-// function: getimagecolors()
-// input: publication name [string], media file name [string]
-// output: result array / false on error
-
-// description:
-// Uses the thumbnail image to calculate the mean color (red, green, blue), defines the colorkey (5 most commonly used colors) and the image type (landscape, portrait, square)
-
-function getimagecolors ($site, $file)
-{
-  global $mgmt_config, $user;
-  
-  if ($mgmt_config['db_connect_rdbms'] != "" && valid_publicationname ($site) && valid_objectname ($file))
-  {  
-    $media_root = getmedialocation ($site, $file, "abs_path_media").$site."/";
-    $file_info = getfileinfo ($site, $file, "comp");
-    $file = $file_info['file'];
-    
-    // try thumbnail image first
-    $thumbnail = $file_info['filename'].".thumb.jpg";
-
-    // use thumbnail image file
-    if (is_file ($media_root.$thumbnail))
-    {
-      $image = imagecreatefromjpeg ($media_root.$thumbnail);
-    }
-    // try original image
-    else
-    {
-      // prepare media file
-      $temp_source = preparemediafile ($site, $media_root, $file, $user);
-
-      // if encrypted
-      if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty ($temp_source['tempfile']))
-      {
-        $media_root = $temp_source['templocation'];
-        $file = $temp_source['tempfile'];
-      }
-      // if restored
-      elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && !empty ($temp_source['location']) && !empty ($temp_source['file']))
-      {
-        $media_root = $temp_source['location'];
-        $file = $temp_source['file'];
-      }
-      
-      // verify local media file
-      if (!is_file ($media_root.$file)) return false;
-
-      if ($file_info['ext'] == ".jpg") $image = imagecreatefromjpeg ($media_root.$file);
-      elseif ($file_info['ext'] == ".png") $image = imagecreatefrompng ($media_root.$file);
-      elseif ($file_info['ext'] == ".gif") $image = imagecreatefromgif ($media_root.$file);
-      else $image = false;
-      
-      // delete temp file
-      if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
-    }
-
-    if (is_resource ($image))
-    {
-      $width = imagesx ($image);
-      $height = imagesy ($image);
-      $totalred = 0;
-      $totalgreen = 0;
-      $totalblue = 0;
-      $total = 0;
-      
-      for ($y=0; $y<20; $y++)
-      {
-        for ($x=0; $x<20; $x++)
-        {
-          $rgb = imagecolorat ($image, $x*($width/20), $y*($height/20));
-          $red = ($rgb >> 16) & 0xFF;
-          $green = ($rgb >> 8) & 0xFF;
-          $blue = $rgb & 0xFF;
-    
-          // calculate deltas (remove brightness factor)
-          $cmax = max ($red, $green, $blue);
-          $cmin = min ($red, $green, $blue);
-          // avoid division errors
-          if ($cmax == $cmin)
-          {
-            $cmax = 10;
-            $cmin = 0;
-          } 
-          
-          // ignore gray, white and black
-          if (abs ($cmax - $cmin) >= 20) 
-          {
-            $red = floor ((($red - $cmin) /($cmax - $cmin)) * 255);
-            $green = floor ((($green - $cmin) / ($cmax - $cmin)) * 255);
-            $blue = floor ((($blue - $cmin) / ($cmax - $cmin)) * 255);
-    
-            $total++;
-            $totalred += $red;
-            $totalgreen += $green;
-            $totalblue += $blue;
-          }
-        }
-      }
-      
-      if ($total == 0) $total = 1;
-      $totalred = floor ($totalred / $total);
-      $totalgreen = floor ($totalgreen / $total);
-      $totalblue = floor ($totalblue / $total);
-      
-      $colorkey = getimagecolorkey ($image);
-    
-      // set 'portrait', 'landscape' or 'square' for the image type
-      if ($width > $height) $imagetype = "landscape";
-      elseif ($height > $width) $imagetype = "portrait";
-      elseif ($height == $width) $imagetype = "square";
-      
-      // destroy image resource
-      if (is_resource ($image)) imagedestroy ($image);
-      
-      $result = array();
-      $result['red'] = $totalred;
-      $result['green'] = $totalgreen;
-      $result['blue'] = $totalblue;
-      $result['colorkey'] = $colorkey;
-      $result['imagetype'] = $imagetype;
-      
-      return $result;
-    }
-    else return false;
-  }
-  else return false;
-}
-
-// ---------------------- getimagecolorkey -----------------------------
-// function: getimagecolorkey()
-// input: image resource [resource]
-// output: color key of image / false on error
-
-// description:
-// Extracts the color key for an image that represents the 5 mostly used colors:
-// K...black
-// W...white
-// E...grey
-// R...red
-// G...green
-// B...blue
-// C...cyan
-// M...magenta
-// Y...yellow
-// O...orange
-// P...pink
-// N...brown
-
-function getimagecolorkey ($image)
-{
-  global $mgmt_config;
-  
-  if ($image)
-  {
-    $width = imagesx ($image);
-    $height = imagesy ($image);
-    
-    $colors = array (
-    "K"=>array(0,0,0), 			// Black
-    "W"=>array(255,255,255),	// White
-    "E"=>array(200,200,200),	// Grey
-    "E"=>array(140,140,140),	// Grey
-    "E"=>array(100,100,100),	// Grey
-    "R"=>array(255,0,0),		// Red
-    "R"=>array(128,0,0),		// Dark Red
-    "R"=>array(180,0,40),		// Dark Red
-    "G"=>array(0,255,0),		// Green
-    "G"=>array(0,128,0),		// Dark Green
-    "G"=>array(80,120,90),		// Faded Green
-    "G"=>array(140,170,90),		// Pale Green
-    "B"=>array(0,0,255),		// Blue
-    "B"=>array(0,0,128),		// Dark Blue
-    "B"=>array(90,90,120),		// Dark Blue
-    "B"=>array(60,60,90),		// Dark Blue
-    "B"=>array(90,140,180),		// Light Blue
-    "C"=>array(0,255,255),		// Cyan
-    "C"=>array(0,200,200),		// Cyan
-    "M"=>array(255,0,255),		// Magenta
-    "Y"=>array(255,255,0),		// Yellow
-    "Y"=>array(180,160,40),		// Yellow
-    "Y"=>array(210,190,60),		// Yellow
-    "O"=>array(255,128,0),		// Orange
-    "O"=>array(200,100,60),		// Orange
-    "P"=>array(255,128,128),	// Pink
-    "P"=>array(200,180,170),	// Pink
-    "P"=>array(200,160,130),	// Pink
-    "P"=>array(190,120,110),	// Pink
-    "N"=>array(110,70,50),		// Brown
-    "N"=>array(180,160,130),	// Pale Brown
-    "N"=>array(170,140,110),	// Pale Brown
-    );
-    
-    $table = array();
-    $depth = 50;
-    
-    for ($y=0; $y<$depth; $y++)
-    {
-      for ($x=0; $x<$depth; $x++)
-      {
-        $rgb = imagecolorat ($image, $x*($width/$depth), $y*($height/$depth));
-        $red = ($rgb >> 16) & 0xFF;
-        $green = ($rgb >> 8) & 0xFF;
-        $blue = $rgb & 0xFF;
-        // which color
-        $bestdist = 99999;
-        $bestkey = "";
-        
-        reset ($colors);
-        
-        foreach ($colors as $key=>$value)
-        {
-          $distance = sqrt (pow (abs ($red - $value[0]), 2) + pow (abs ($green - $value[1]), 2) + pow (abs ($blue - $value[2]), 2));
-          
-          if ($distance < $bestdist)
-          {
-            $bestdist = $distance;
-            $bestkey = $key;
-          }
-        }
-        
-        // add this color to the color table
-        if (array_key_exists ($bestkey, $table)) $table[$bestkey]++;
-        else $table[$bestkey] = 1;
-      }
-    }
-    
-    asort ($table);
-    reset ($table);
-    $colorkey = "";
-    foreach ($table as $key=>$value) $colorkey .= $key;
-    
-    // color key with the 5 mostyl used colors in the image
-    $colorkey = substr (strrev ($colorkey), 0, 5);
-    
-    return $colorkey;
   }
   else return false;
 }
