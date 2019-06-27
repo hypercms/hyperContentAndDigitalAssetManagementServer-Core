@@ -3,14 +3,6 @@
 // this file handles the data access and storage for relational database management systems. 
   
 // ============================================ database functions ============================================
-// the following input parameters are passed to the functions:
-
-// $container_id: ID of the content container [integer]
-// $object: converted path to the object [string]
-// $template: name of the used template [string]
-// $container: name of the content container: $container_id [string] (is unique inside hyperCMS over all sites)
-// $text_array: content inside the XML-text-nodes of the content container 
-// $user: name of the user who created the container [string]
 
 // Class that manages the database access
 class hcms_db
@@ -287,6 +279,10 @@ class hcms_db
 
 // ------------------------------------------------ ODBC escape string ------------------------------------------------
 
+// function: odbc_escape_string()
+// input: DB connection [resource], value [string]
+// output: escaped value as string
+
 // description:
 // Alternative to mysql_real_escape_string (PHP odbc_prepare would be optimal)
 
@@ -303,7 +299,7 @@ function odbc_escape_string ($connection, $value)
 // ------------------------------------------------ convert dbcharset ------------------------------------------------
 
 // function: convert_dbcharset()
-// input: character set
+// input: character set [string]
 // output: true / false
 
 // description:
@@ -328,17 +324,17 @@ function convert_dbcharset ($charset)
 // ------------------------------------------------ create object -------------------------------------------------
 
 // function: rdbms_createobject()
-// input: container ID, object path, template name, media name, content container name, user name
+// input: container ID [integer], object path [string], template name [string], media name [string], content container name [string], user name [string]
 // output: true / false
 
 // description:
-// Creates a new container in the database.
+// Creates a new object in the database.
 
-function rdbms_createobject ($container_id, $object, $template, $media="", $container, $user="")
+function rdbms_createobject ($container_id, $object, $template, $media="", $container="", $user="")
 {
   global $mgmt_config;
 
-  if (intval ($container_id) > 0 && $object != "" && $template != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0))
+  if (intval ($container_id) > 0 && $object != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) && $template != "")
   {
     // remove tailing slash
     $object = trim ($object);
@@ -375,17 +371,17 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
         savelog (@$error);
       }
     }
-    
+
     // insert values in table object
     if (trim ($media) != "")
     {
       $sql = 'INSERT INTO object (id, hash, objectpath, template, media) ';
-      $sql .= 'VALUES ('.intval ($container_id).', "'.$hash.'", "'.$object.'", "'.$template.'", "'.$media.'")';
+      $sql .= 'VALUES ('.$container_id.', "'.$hash.'", "'.$object.'", "'.$template.'", "'.$media.'")';
     }
     else
     {
       $sql = 'INSERT INTO object (id, hash, objectpath, template) ';
-      $sql .= 'VALUES ('.intval ($container_id).', "'.$hash.'", "'.$object.'", "'.$template.'")';
+      $sql .= 'VALUES ('.$container_id.', "'.$hash.'", "'.$object.'", "'.$template.'")';
     }
     
     $errcode = "50001";
@@ -429,10 +425,10 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
   else return false;
 }
 
-// ----------------------------------------------- get content -------------------------------------------------
+// ----------------------------------------------- copy content -------------------------------------------------
 
 // function: rdbms_copycontent()
-// input: source container ID, destination container ID, user name
+// input: source container ID [integer], destination container ID [integer], user name [string]
 // output: true / false
 
 // description:
@@ -534,7 +530,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
 // ----------------------------------------------- set content -------------------------------------------------
 
 // function: rdbms_setcontent()
-// input: publication name, container ID, content as array in form of array[text-ID]=text-content (optional), type as array in form of array[text-ID]=type (optional), user name (optional)
+// input: publication name [string], container ID [integer], content as array in form of array[text-ID]=text-content [array] (optional), type as array in form of array[text-ID]=type [array] (optional), user name [string] (optional)
 // output: true / false
 
 // description:
@@ -582,6 +578,8 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
         
         if ($text_id != "") 
         {
+          $text_id = $db->escape_string($text_id);
+
           $sql = 'SELECT id, textcontent, object_id FROM textnodes WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
                
           $errcode = "50004";
@@ -594,7 +592,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
             // define type
             if (!empty ($type_array[$text_id]))
             {
-              $type = $type_array[$text_id];
+              $type = $db->escape_string($type_array[$text_id]);
               
               // add text prefix only if a text type has been provided
               if ($type == "u" || $type == "f" || $type == "l" || $type == "c" || $type == "d" || $type == "k") $type = "text".$type;
@@ -632,7 +630,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
               }
               else $object_id = 0;
               
-              // clean text (will also HTML decode)
+              // clean text (includes HTML decode)
               if ($text != "")
               {
                 $text = cleancontent ($text, convert_dbcharset ($mgmt_config['dbcharset']));
@@ -687,7 +685,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
 // ----------------------------------------------- set keywords -------------------------------------------------
 
 // function: rdbms_setkeywords()
-// input: publication name, container ID, content as array in form of array[text-ID]=text-content
+// input: publication name [string], container ID [integer]
 // output: true / false
 
 // description:
@@ -813,7 +811,7 @@ function rdbms_setkeywords ($site, $container_id)
 // ----------------------------------------------- set keywords for a publication ------------------------------------------------- 
 
 // function: rdbms_setpublicationkeywords()
-// input: publication name, recreate [true,false]
+// input: publication name [string], recreate [true,false] (optional)
 // output: true / false
 
 // description:
@@ -842,8 +840,6 @@ function rdbms_setpublicationkeywords ($site, $recreate=false)
   
     if ($done)  
     {
-      $text_array = array();
-      
       while ($row = $db->getResultRow ())
       {
         rdbms_setkeywords ($site, $row['id']);
@@ -862,7 +858,7 @@ function rdbms_setpublicationkeywords ($site, $recreate=false)
 // ----------------------------------------------- set taxonomy -------------------------------------------------
 
 // function: rdbms_settaxonomy()
-// input: publication name, container ID, taxonomy array in form of array[text-ID][lang][taxonomy-ID]=keyword
+// input: publication name [string], container ID [integer], taxonomy array in form of array[text-ID][lang][taxonomy-ID]=keyword [array]
 // output: true / false
 
 // description:
@@ -1031,7 +1027,7 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
 // ----------------------------------------------- set template -------------------------------------------------
 
 // function: rdbms_settemplate()
-// input: object path, template file name
+// input: object path [string], template file name [string]
 // output: true / false
 
 // description:
@@ -1070,7 +1066,7 @@ function rdbms_settemplate ($object, $template)
 // ----------------------------------------------- set media name -------------------------------------------------
 
 // function: rdbms_settemplate()
-// input: container ID, media file name
+// input: container ID [integer], media file name [string]
 // output: true / false
 
 // description:
@@ -1105,7 +1101,7 @@ function rdbms_setmedianame ($id, $media)
 // ----------------------------------------------- set media attributes -------------------------------------------------
 
 // function: rdbms_setmedia()
-// input: container ID, file size in KB (optional), file type (optional), width in pixel (optional), heigth in pixel (optional), red color (optional), green color (optional), blue color (optional), colorkey (optional), image type (optional), MD5 hash (optional)
+// input: container ID [integer], file size in KB [integer] (optional), file type [string] (optional), width in pixel [integer] (optional), heigth in pixel [integer] (optional), red color [integer] (optional), green color [integer] (optional), blue color [integer] (optional), colorkey [string] (optional), image type [string] (optional), MD5 hash [string] (optional)
 // output: true / false
 
 // description:
@@ -1186,7 +1182,7 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
 // ------------------------------------------------ get media attributes -------------------------------------------------
 
 // function: rdbms_getmedia()
-// input: container ID, extended media object information [true,false] (optional)
+// input: container ID [integer], extended media object information [true,false] (optional)
 // output: result array with media object details / false on error
 
 // description:
@@ -1228,7 +1224,7 @@ function rdbms_getmedia ($container_id, $extended=false)
 // ------------------------------------------------ get duplicate file -------------------------------------------------
 
 // function: rdbms_getduplicate_file()
-// input: publication name, MD5 hash of the file content
+// input: publication name [string], MD5 hash of the file content [string]
 // output: object path array / false
 
 // description:
@@ -1279,7 +1275,7 @@ function rdbms_getduplicate_file ($site, $md5_hash)
 // ----------------------------------------------- rename object -------------------------------------------------
 
 // function: rdbms_renameobject()
-// input: location path of object, location path of object with new object name
+// input: location path of object [string], location path of object with new object name [string]
 // output: true / false
 
 // description:
@@ -1360,7 +1356,7 @@ function rdbms_renameobject ($object_old, $object_new)
 // ----------------------------------------------- delete object ------------------------------------------------- 
 
 // function: rdbms_deleteobject()
-// input: location path of object (optional) OR object ID (optional)
+// input: location path of object [string] (optional) OR object ID [integer] (optional)
 // output: true / false
 
 // description:
@@ -1516,7 +1512,7 @@ function rdbms_deleteobject ($object="", $object_id="")
 // ----------------------------------------------- delete content -------------------------------------------------
 
 // function: rdbms_deletecontent()
-// input: publication name, container ID, text ID
+// input: publication name [string], container ID [integer], text ID [string]
 // output: true / false
 
 // description:
@@ -1557,7 +1553,7 @@ function rdbms_deletecontent ($site, $container_id, $text_id)
 // ------------------------------------------ delete keywords of a publication --------------------------------------------
 
 // function: rdbms_deletepublicationkeywords()
-// input: publication name
+// input: publication name [string]
 // output: true / false
 
 // description:
@@ -1607,7 +1603,7 @@ function rdbms_deletepublicationkeywords ($site)
 // ------------------------------------------ delete taxonomy of a publication --------------------------------------------
 
 // function: rdbms_deletepublicationtaxonomy()
-// input: publication name, force delete if taxomoy of publication is disabled [true,false] (optional)
+// input: publication name [string], force delete if taxomoy of publication is disabled [true,false] (optional)
 // output: true / false
 
 // description:
@@ -1663,7 +1659,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // ----------------------------------------------- search content ------------------------------------------------- 
 
 // function: rdbms_searchcontent()
-// input: location [string]] (optional), exlude locations/folders (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
+// input: location [string] (optional), exlude locations/folders (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
 //        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), 
 //        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image color [array] (optional), image-type [portrait,landscape,square] (optional), 
 //        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned, eg. text:Title [array] (optional), count search result entries [true,false] (optional), log search expression [true/false] (optional), taxonomy level to include [integer] (optional)
@@ -1963,10 +1959,11 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       
       reset ($expression_array);
       $expression_log = array();
-      $sql_expr_advanced[$i] = "";
       
       foreach ($expression_array as $key => $expression)
       {
+        $sql_expr_advanced[$i] = "";
+        
         // define search log entry
         if (!empty ($mgmt_config['search_log']) && $expression != "" && is_string ($expression) && strpos ("_".$expression, "%taxonomy%/") < 1 && strpos ("_".$expression, "%keyword%/") < 1)
         {
@@ -2160,7 +2157,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
               if (!empty ($temp_operator) && $temp_operator != "none" && $sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] .= $temp_operator;
             }
             // general search in all textnodes
-            elseif (!empty ($mgmt_config['search_exact']) || $temp_expression != "")
+            elseif (!empty ($mgmt_config['search_exact']) || !empty ($temp_expression))
             {
               $temp_array = array();
               $sql_where_textnodes = "";
@@ -2613,7 +2610,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 // ----------------------------------------------- replace content -------------------------------------------------
 
 // function: rdbms_replacecontent()
-// input: location, object-type (optional), filter for start modified date (optional), filter for end modified date (optional), search expression, replace expression, user name (optional)
+// input: location path [string], object-type [string] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), search expression [string], replace expression [string], user name [string] (optional)
 // output: result array with object paths of all touched objects / false
 
 // description:
@@ -2884,7 +2881,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 // ----------------------------------------------- search user ------------------------------------------------- 
 
 // function: rdbms_searchuser()
-// input: publication name (optional), user name, max. hits (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional)
+// input: publication name [string] (optional), user name [string], max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional)
 // output: objectpath array with hashcode as key and path as value / false
 
 // description:
@@ -3014,7 +3011,7 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
 // ----------------------------------------------- search recipient ------------------------------------------------- 
 
 // function: rdbms_searchrecipient()
-// input: publication name, sender user name, recpient user name or e-mail address, from date, to date, max. hits (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional)
+// input: publication name [string], sender user name [string], recpient user name or e-mail address [string], from date [date], to date [date], max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional)
 // output: objectpath array with hashcode as key and path as value / false
 
 // description:
@@ -3171,7 +3168,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
 // ----------------------------------------------- get content -------------------------------------------------
 
 // function: rdbms_getcontent()
-// input: publication name, container ID, filter for text-ID (optional), filter for type (optional), filter for user name (optional)
+// input: publication name [string], container ID [integer], filter for text-ID [string] (optional), filter for type [string] (optional), filter for user name [string] (optional)
 // output: result array with text ID as key and content as value / false
 
 // description:
@@ -3226,7 +3223,7 @@ function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user=""
 // ----------------------------------------------- get keywords ------------------------------------------------- 
 
 // function: rdbms_getkeywords()
-// input: publication names as string or array (optional)
+// input: publication names as string [string] or array [array] (optional)
 // output: result array with keyword ID as key and keyword and count as value / false
 
 // description:
@@ -3292,7 +3289,7 @@ function rdbms_getkeywords ($sites="")
 // ----------------------------------------------- get empty keywords ------------------------------------------------- 
 
 // function: rdbms_getemptykeywords()
-// input: publication names as string or array (optional)
+// input: publication names as string [string] or array [array] (optional)
 // output: number of objects without keywords / false
 
 // description:
@@ -3355,13 +3352,13 @@ function rdbms_getemptykeywords ($sites="")
 // ----------------------------------------------- get hierarchy sublevel ------------------------------------------------- 
 
 // function: rdbms_gethierarchy_sublevel()
-// input: publication name, text ID that holds the content, conditions array with text ID as key and content as value (optional)
+// input: publication name [string], text ID that holds the content [string], conditions array with text ID as key and content as value [array] (optional)
 // output: array with hashcode as key and path as value / false
 
 // description:
 // Queries all values for a hierarachy level.
 
-function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
+function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array())
 {
   global $mgmt_config;
 
@@ -3464,7 +3461,7 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
 // ----------------------------------------------- get object_id ------------------------------------------------- 
 
 // function: rdbms_getobject_id()
-// input: location path of an object
+// input: location path of an object [string]
 // output: object ID / false
 
 // description:
@@ -3543,7 +3540,7 @@ function rdbms_getobject_id ($object)
 // ----------------------------------------------- get object_hash ------------------------------------------------- 
 
 // function: object_hash()
-// input: location path of an object (optional) OR container ID of an object (optional)
+// input: location path of an object [string] (optional) OR container ID of an object [integer] (optional)
 // output: object hash / false
 
 // description:
@@ -3633,7 +3630,7 @@ function rdbms_getobject_hash ($object="", $container_id="")
 // -------------------------------------------- get object by unique id or hash ----------------------------------------------- 
 
 // function: rdbms_getobject()
-// input: object identifier (object hash, object ID, access hash)
+// input: object identifier (object hash OR object ID OR access hash) [string]
 // output: object path / false
 
 // description:
@@ -3712,7 +3709,7 @@ function rdbms_getobject ($object_identifier)
 // -------------------------------------------- get object info by unique id or hash ----------------------------------------------- 
 
 // function: rdbms_getobject()
-// input: object identifier (object hash, object ID, access hash), text IDs to be returned [array] (optional)
+// input: object identifier (object hash OR object ID OR access hash) [string], text IDs to be returned [array] (optional)
 // output: array with object info / false
 
 // description:
@@ -3897,7 +3894,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
 // ------------------------------------------ get objects by container_id or temlpate name -------------------------------------------- 
 
 // function: rdbms_getobjects()
-// input: container ID (optional), template name (optional), text IDs to be returned [array] (optional)
+// input: container ID [integer] (optional), template name [string] (optional), text IDs to be returned [array] (optional)
 // output: 2 dimensional object path array / false
 
 // description:
@@ -4017,7 +4014,7 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
 // ----------------------------------------------- get deleted objects ------------------------------------------------- 
 
 // function: rdbms_getdeletedobjects()
-// input: user name (optional), older than date (optional), max. hits (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional)
+// input: user name [string] (optional), older than date [date] (optional), max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional)
 // output: objectpath array with hashcode as key and path as value / false
 
 // description:
@@ -4151,7 +4148,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
 // ----------------------------------------------- set deleted objects ------------------------------------------------- 
 
 // function: rdbms_setdeletedobjects()
-// input: 1 or 2 dimensional objects array, user name, mark or unmark as deleted [set,unset] (optional)
+// input: 1 or 2 dimensional objects array [array], user name [string], mark or unmark as deleted [set,unset] (optional)
 // output: true / false
 
 // description:
@@ -4349,6 +4346,13 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
 
 // ----------------------------------------------- create accesslink -------------------------------------------------
 
+// function: rdbms_createaccesslink()
+// input: object hash [string], object-ID [string], link type [al,dl] (optional), user login name [string] (optional), token lifetime in seconds [integer] (optional), formats [string] (optional)
+// output: true / false on error
+
+// description:
+// Creates a new access link in the database.
+
 function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifetime=0, $formats="")
 {
   global $mgmt_config;
@@ -4424,6 +4428,13 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
 
 // ------------------------------------------------ get access info -------------------------------------------------
 
+// function: rdbms_getaccessinfo()
+// input: object hash [string]
+// output: result array / false on error
+
+// description:
+// Returns all data for an access link as an array.
+
 function rdbms_getaccessinfo ($hash)
 {
   global $mgmt_config;
@@ -4481,6 +4492,13 @@ function rdbms_getaccessinfo ($hash)
 
 // ------------------------------------------------ create recipient -------------------------------------------------
 
+// function: rdbms_createrecipient()
+// input: object path [string], senders user name [string], recipients user name [string], recipients e-mail [string]
+// output: result array / false on error
+
+// description:
+// Creates a new recipient entry in the database.
+
 function rdbms_createrecipient ($object, $from_user, $to_user, $email)
 {
   global $mgmt_config;
@@ -4532,6 +4550,13 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
 }
 
 // ------------------------------------------------ get recipients -------------------------------------------------
+
+// function: rdbms_getrecipients()
+// input: object path [string]
+// output: result array / false on error
+
+// description:
+// Returns the recipients data as an array.
 
 function rdbms_getrecipients ($object)
 {
@@ -4586,6 +4611,13 @@ function rdbms_getrecipients ($object)
 }
 
 // ----------------------------------------------- delete recipient -------------------------------------------------
+
+// function: rdbms_deleterecipient()
+// input: recipient ID [integer]
+// output: true / false on error
+
+// description:
+// Deletes a recipient entry from the database.
 
 function rdbms_deleterecipient ($recipient_id)
 {

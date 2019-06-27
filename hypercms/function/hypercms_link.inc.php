@@ -151,10 +151,10 @@ function link_db_restore ($site="")
         }
       }
     }
-    
+
     $time_2 = time();    
     $duration = $time_2 - $time_1;    
-    
+
     // copy all containers to new location
     if (is_array ($link_db_entry) && is_array ($publication_array))
     {
@@ -178,7 +178,7 @@ function link_db_restore ($site="")
       
       // save log
       savelog (@$error); 
-      
+
       return true;
     }
     else return false;
@@ -232,10 +232,10 @@ function link_db_load ($site, $user)
     
       $link_db = false;
     }
-    
+
     // save log
     savelog (@$error);
-    
+
     return $link_db;
   }
   else return true;  
@@ -259,7 +259,7 @@ function link_db_read ($site)
   {
     // get locked file name
     $locked_info = getlockedfileinfo ($mgmt_config['abs_path_data']."link/", $site.".link.dat");
-    
+
     if ($locked_info != false)
     {
       // load file
@@ -295,7 +295,7 @@ function link_db_read ($site)
       
         $link_db = false;
       }
-      
+
       // save log
       savelog (@$error);
       
@@ -339,7 +339,7 @@ function link_db_close ($site, $user)
 function link_db_save ($site, $link_db, $user)
 {
   global $mgmt_config;
-  
+
   // if link management is enabled
   if ($mgmt_config[$site]['linkengine'] == true && valid_publicationname ($site) && valid_objectname ($user))
   {  
@@ -352,11 +352,11 @@ function link_db_save ($site, $link_db, $user)
           $link_db_array[] = implode (":|", $link_db_record);
         }
       }
-      
+
       if (is_array ($link_db_array)) 
       {      
         $link_db_data = implode ("\n", $link_db_array);
-            
+
         if ($link_db_data != false) 
         {
           return savelockfile ($user, $mgmt_config['abs_path_data']."link/", $site.".link.dat", $link_db_data);
@@ -405,7 +405,7 @@ function link_db_save ($site, $link_db, $user)
 function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", $link_curr="", $link_new="", $option)
 {
   global $mgmt_config;
-  
+
   // if link management is enabled
   if (valid_publicationname ($site) && $mgmt_config[$site]['linkengine'] == true && $attribute != "")
   {    
@@ -414,15 +414,15 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
       // remove last delimiter "|" if sent link is a list (multiple component)
       $link_curr = trim ($link_curr);
       $link_new = trim ($link_new);
-      
+
       if ($link_curr != "")
       {
         // get char of last position in string
         $endchar_curr = substr ($link_curr, strlen ($link_curr)-1);
-        
+
         // cut off last | in link list
         if ($endchar_curr == "|") $link_curr = substr ($link_curr, 0, strlen ($link_curr)-1);
-        
+
         // add root directory constants
         // if the link variable stores more references sperated by |
         if (@substr_count ($link_curr, "|") >= 1)
@@ -454,15 +454,15 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
           $link_curr = convertpath ($site, $link_curr, $cat);
         }
       }
-      
+
       if ($link_new != "")
       {
         // get char of last position in string
         $endchar_new = substr ($link_new, strlen ($link_new)-1);
-        
+
         // cut off last | in link list
         if ($endchar_new == "|") $link_new = substr ($link_new, 0, strlen ($link_new)-1);      
-        
+
         // if object link list
         if (@substr_count ($link_new, "|") >= 1)
         {    
@@ -493,7 +493,7 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
           $link_new = convertpath ($site, $link_new, $cat);
         }  
       }    
-  
+
       // add link to link management database
       if (sizeof ($link_db) > 0)
       {
@@ -504,9 +504,9 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
           {
             // get container name of current record
             $contentfile = $link_db_record['container'];
-            
+
             if ($contentfile != "")
-            { 
+            {
               // check if current link in use exists
               if ($link_curr != "")
               {    
@@ -559,8 +559,8 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
             if ($option == "unique")
             {
               $link_startpos = strpos ($link_db[$contentfile][$attribute], $link_curr);
-              $link_length = strlen ($link_curr);     
-                    
+              $link_length = strlen ($link_curr);
+   
               if (substr_count ($link_db[$contentfile][$attribute], $link_curr) > 0)
               { 
                 // update link if new link is not empty
@@ -592,7 +592,7 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
             $link_db[$contentfile][$attribute] = chop ($link_db[$contentfile][$attribute]).$link_new;
           }
         }
-        
+
         return $link_db;
       }
       else return false;    
@@ -626,10 +626,10 @@ function link_db_insert ($site, $link_db, $contentfile, $cat, $object="")
         // remove last delimiter "|" if sent link is a list (multiple component)
         $object = trim ($object);
         if ($object[strlen($object)-1] == "|") $object = substr ($object, 0, strlen ($object)-1);
-        
+
         // add root directory constants
         $object_array = explode ("|", $object);
-        
+
         if ($object_array != false && sizeof ($object_array) >= 1)
         {
           $object = "";
@@ -642,12 +642,12 @@ function link_db_insert ($site, $link_db, $contentfile, $cat, $object="")
           }  
         }
       }
-      
+
       // insert the new record
       $link_db[$contentfile]['container'] = $contentfile;
       $link_db[$contentfile]['object'] = $object;    
       $link_db[$contentfile]['link'] = "";
-      
+
       return $link_db;
     }
     else return false;
@@ -667,14 +667,14 @@ function link_db_insert ($site, $link_db, $contentfile, $cat, $object="")
 function link_db_delete ($site, $link_db, $contentfile)
 {
   global $mgmt_config;
-  
+
   // if link management is enabled
   if ($mgmt_config[$site]['linkengine'] == true && valid_publicationname ($site))
   {
     if (is_array ($link_db) && $contentfile != "" && isset ($link_db[$contentfile]))
     {
       $link_db[$contentfile] = null;
-      
+
       return $link_db;
     }
     else return false;
@@ -693,20 +693,20 @@ function link_db_delete ($site, $link_db, $contentfile)
 function link_db_getobject ($multiobject)
 {
   global $mgmt_config;
-  
+
   if (!is_array ($multiobject) && $multiobject != "")
   {
     // cut off whitespaces at the begin and end of the string
     $multiobject = trim ($multiobject);
-    
+
     // cut off | at the begin and end of the string
     $multiobject = trim ($multiobject, "|");  
 
     // remove empty string
-    if (strpos ($multiobject, "||") > 0) $multiobject = str_replace (array("||||","|||","||"), array("|","|","|"), $multiobject);    
+    if (strpos ($multiobject, "||") > 0) $multiobject = str_replace (array("||||","|||","||"), array("|","|","|"), $multiobject);
 
     $link_db_object = explode ("|", $multiobject); 
-    
+
     if (is_array ($link_db_object)) return $link_db_object;
     else return false; 
   }
@@ -729,7 +729,7 @@ function link_update ($site, $container, $link_old, $link_new)
   {
     // get container id
     $container_id = substr ($container, 0, strpos ($container, ".xml"));
-        
+  
     // load content container
     $container_data = loadcontainer ($container, "published", $user);
 
@@ -749,7 +749,7 @@ function link_update ($site, $container, $link_old, $link_new)
       {    
         $container_data = str_replace ($link_old, $link_new, $container_data);
       }
-      
+
       $test1 = savecontainer ($container, "published", $container_data, $user);   
     }
     else $test1 = false;
@@ -757,7 +757,7 @@ function link_update ($site, $container, $link_old, $link_new)
     // get working container
     $result = getcontainername ($container);
     $containerwrk = $result['container'];
-    
+
     // load working container
     $containerwrk_data = loadcontainer ($containerwrk, "work", $user);
 
@@ -776,17 +776,17 @@ function link_update ($site, $container, $link_old, $link_new)
       {          
         $containerwrk_data = str_replace ($link_old, $link_new, $containerwrk_data);
       }
-       
+
       $test2 = savecontainer ($containerwrk, "work", $containerwrk_data, $user);
     }
     else $test2 = true;
-    
+
     // update link index
     if ($mgmt_config[$site]['linkengine'] == true)
     {
       $linkindex = substr ($container, 0, strpos ($container, ".xml"));  
       $link_data = loadfile_fast ($mgmt_config['abs_path_link'], $linkindex);       
-    
+
       if ($link_data != false)
       { 
         if (substr ($link_old, 0, 6) == "%page%")
@@ -816,7 +816,7 @@ function link_update ($site, $container, $link_old, $link_new)
       else $test3 = true;    
     }  
     else $test3 = true;  
-    
+
     if ($test1 != false && $test2 != false && $test3 != false) return true;
     else return false;    
   }
@@ -835,22 +835,22 @@ function link_update ($site, $container, $link_old, $link_new)
 function getlinkedobject ($site, $location, $page, $cat)
 {
   global $mgmt_config;
-  
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
   {
     // load link management database
     $inherit_db = inherit_db_read ();
-    
+
     $site_array[0] = $site;
     $child_array = inherit_db_getchild ($inherit_db, $site);
     if ($child_array != false) $site_array = array_merge ($site_array, $child_array);
-    
+
     // get category if not set
     if ($cat == "") $cat = getcategory ($site, $location); 
-    
+
     // set result array counter
     $counter = 0;
-    
+
     // loop to all publications
     foreach ($site_array as $site)
     {
@@ -859,15 +859,15 @@ function getlinkedobject ($site, $location, $page, $cat)
       {
         require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
       }
-  
+
       // load link management database
       $link_db = link_db_read ($site);
-      
+
       if (is_array ($link_db) && sizeof ($link_db) > 0 && $location != "" && $page != "")
       { 
         // convert location
         $page_path = convertpath ($site, $location, $cat).$page;
-  
+
         // explore each record in link management database
         foreach ($link_db as $link_db_record)
         {
@@ -916,10 +916,10 @@ function getlinkedobject ($site, $location, $page, $cat)
         $result = true;
       }
     }
-    
+
     // save log
     savelog (@$error);
-    
+
     // return result
     if (isset ($result) && is_array ($result) && sizeof ($result) > 0) return $result;
     elseif (isset ($result) && $result == true) return $result;
@@ -949,7 +949,7 @@ function getconnectedobject ($container, $type="work")
     if ($container_data != "")
     {
       $object_array = getcontent ($container_data, "<contentobjects>");
-      
+ 
       if (!empty ($object_array[0])) $object_array = link_db_getobject ($object_array[0]);
       else $object_array = false;
     }
@@ -961,7 +961,7 @@ function getconnectedobject ($container, $type="work")
       // set result array counter
       $counter = 0;
       $result = array();
-  
+
       // collect objects and form result
       foreach ($object_array as $object_path)
       {  
@@ -973,7 +973,7 @@ function getconnectedobject ($container, $type="work")
           $cat = getcategory ($site, $location_converted);                         
           $location = deconvertpath ($location_converted, "file");
           $page = getobject ($object_path);
-         
+
           // result array
           $result[$counter]['publication']= $site;
           $result[$counter]['convertedlocation']= $location_converted;
@@ -989,12 +989,12 @@ function getconnectedobject ($container, $type="work")
     {      
       $errcode = "10188";
       $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|$errcode|could not extract objects from container $container";        
-    }      
+    }
 
     // save log
     savelog (@$error);
   }  
-  
+
   // return result
   if (isset ($result) && is_array ($result) && sizeof ($result) > 0) return $result;
   else return false;
@@ -1018,14 +1018,14 @@ function extractlinks ($textcontent, $identifier)
     $string = str_replace (array ("    ", "   ", "  "), " ", $textcontent);
     $string = str_replace ("= ", "=", $textcontent);
     $string = str_replace (" =", "=", $textcontent);
-  
+
     // link identifier seach string, e.g. " href="
     $identifier_search = " ".$identifier."=";
-    
+
     $subtext = $textcontent;
     $link_array = array();
     $i = 0;
-    
+
     while (strpos (strtolower ($subtext), strtolower ($identifier_search)) > 0)
     {
       $offset = strpos (strtolower ($subtext), strtolower ($identifier_search)) + strlen ($identifier_search);
@@ -1039,12 +1039,12 @@ function extractlinks ($textcontent, $identifier)
 
         if ($link != false) $link_array[] = $link;
       }
-      
+
       $i++;
       if ($i > 900) break;
       $subtext = substr ($subtext, $offset);
     }
-    
+
     // return result
     if (is_array ($link_array) && sizeof ($link_array) > 0) return $link_array;
     else return false;
@@ -1064,9 +1064,9 @@ function extractlinks ($textcontent, $identifier)
 function medialinks_to_complinks ($link_array)
 {
   global $mgmt_config;
-  
+
   $object_array = array();
-  
+
   if (is_array ($link_array))
   {
     foreach ($link_array as $link)
@@ -1127,7 +1127,7 @@ function medialinks_to_complinks ($link_array)
         }
       }
     }
-    
+
     // return result
     if (is_array ($object_array) && sizeof ($object_array) > 0) return $object_array;
     else return false;    
@@ -1147,7 +1147,7 @@ function medialinks_to_complinks ($link_array)
 function complinks_to_medialinks ($link_array)
 {
   global $mgmt_config;
-  
+
   if (is_array ($link_array))
   {
     foreach ($link_array as $link)
@@ -1177,7 +1177,7 @@ function complinks_to_medialinks ($link_array)
         }
       }
     }
-    
+
     // return result
     if (is_array ($mediafile_array)) return $mediafile_array;
     else return false;    

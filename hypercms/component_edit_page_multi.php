@@ -299,7 +299,7 @@ function openBrWindowComp (winName, features, type)
                       else $comp_entry_name_short = $comp_entry_name;
                                        
                       echo "
-                    <option value=\"".$comp_entry."\" title=\"".$comp_entry_name."\">".$comp_entry_name_short."</option>";
+                <option value=\"".$comp_entry."\" title=\"".$comp_entry_name."\">".$comp_entry_name_short."</option>";
                     }
                   }
                 }
@@ -317,7 +317,7 @@ function openBrWindowComp (winName, features, type)
         </table>
       </td>
     </tr>
-    <?php if (!$mgmt_config[$site]['dam']) { ?>
+    <?php if (empty ($mgmt_config[$site]['dam'])) { ?>
     <tr>
       <td colspan="2">&nbsp;</td>
     </tr>

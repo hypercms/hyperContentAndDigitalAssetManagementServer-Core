@@ -174,7 +174,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // save search parameters
 if (!empty ($search_save))
 {
-  $search_record = $mgmt_config['today']."|".$action."|".$site."|".$search_dir."|".$date_from."|".$date_to."|".$template."|".json_encode($search_textnode)."|".$search_expression."|".$search_cat."|".json_encode($search_format)."|".$search_filesize."|".$search_imagewidth."|".$search_imageheight."|".json_encode($search_imagecolor)."|".$search_imagetype."|".$geo_border_sw."|".$geo_border_ne."|".$object_id."|".$container_id;
+  $search_record = uniqid()."|".$mgmt_config['today']."|".$action."|".$site."|".$search_dir."|".$date_from."|".$date_to."|".$template."|".json_encode($search_textnode)."|".$search_expression."|".$search_cat."|".json_encode($search_format)."|".$search_filesize."|".$search_imagewidth."|".$search_imageheight."|".json_encode($search_imagecolor)."|".$search_imagetype."|".$geo_border_sw."|".$geo_border_ne."|".$object_id."|".$container_id;
 
   savelog (array($search_record), $user.".search");
 }
@@ -191,11 +191,17 @@ elseif (!empty ($search_execute))
       {
         if (strpos ($searchlog, "|") > 0)
         {
-          list ($date, $rest) = explode ("|", trim ($searchlog));
+          list ($search_id, $rest) = explode ("|", trim ($searchlog));
           
-          if ($date == $search_execute)
+          if ($search_id == $search_execute)
           {
-            list ($date, $action, $site, $search_dir, $date_from, $date_to, $template, $search_textnode, $search_expression, $search_cat, $search_format, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $object_id, $container_id) = explode ("|", trim ($searchlog));
+            // update to version 8.0.2
+            if (substr_count ($searchlog, "|") == 19)
+            {
+              $searchlog = "|".$searchlog;
+            }
+
+            list ($uniqid, $date, $action, $site, $search_dir, $date_from, $date_to, $template, $search_textnode, $search_expression, $search_cat, $search_format, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $object_id, $container_id) = explode ("|", trim ($searchlog));
             
             // JSON decode
             $search_textnode = json_decode ($search_textnode, true);

@@ -308,7 +308,7 @@ if (checkuserip (getuserip ()) == true)
           
     if (!empty ($mgmt_config['instances']) && is_dir ($mgmt_config['instances'])) $show .= "
         <div id=\"sentinstance_container\" ".($require == "password" ? "style=\"position:absolute; visibility:hidden;\"" :  "").">
-          <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" placeholder=\"".getescapedtext ($hcms_lang['instance'][$lang])."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"1\" /><br/>
+          <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" placeholder=\"".getescapedtext ($hcms_lang['instance'][$lang])."\" value=\"".$sentinstance."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"1\" /><br/>
         </div>";
           
     $show .= "
@@ -317,7 +317,7 @@ if (checkuserip (getuserip ()) == true)
           
     if (empty ($mgmt_config['multifactorauth']) || $require == "password") $show .= "
          <br/>
-         <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" placeholder=\"".getescapedtext ($hcms_lang['password'][$lang])."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"3\" />";
+         <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" placeholder=\"".getescapedtext ($hcms_lang['password'][$lang])."\" value=\"".$sentpasswd."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"3\" />";
     
     $show .= "
         </div>

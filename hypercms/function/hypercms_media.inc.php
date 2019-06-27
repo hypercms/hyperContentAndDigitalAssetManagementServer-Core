@@ -1580,7 +1580,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $imagewidth_orig = $temp['width'];
       $imageheight_orig = $temp['height'];
     }
-    
+ 
     // reset values if not available
     if (empty ($imagewidth_orig) || empty ($imageheight_orig))
     {
@@ -2179,7 +2179,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     @exec ($cmd, $buffer, $errorCode);
 
                     // on error
-                    if ($errorCode)
+                    if ($errorCode || !is_file ($location_dest.$newfile))
                     {
                       $errcode = "20231";
                       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;
@@ -2221,7 +2221,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     @exec ($cmd, $buffer, $errorCode);
       
                     // on error
-                    if ($errorCode)
+                    if ($errorCode || !is_file ($location_dest.$newfile))
                     {
                       $errcode = "20232";
                       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;   
@@ -2269,7 +2269,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     @exec ($cmd, $error_array, $errorCode);
 
                     // on error
-                    if ($errorCode)
+                    if ($errorCode || !is_file ($location_dest.$newfile))
                     {            
                       $errcode = "20234";
                       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file." (".implode (", ", $error_array).")";   

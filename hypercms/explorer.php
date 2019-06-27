@@ -44,13 +44,15 @@ if (linking_valid() == true)
 
 // --------------------------------- logic section ----------------------------------
 
-// delete saved search
-if (!empty ($search_delete) && checktoken ($token, $user))
+// delete entry from saved search log
+function searchlog_delete ($search_delete_id, $user)
 {
+  global $mgmt_config;
+
   if (is_file ($mgmt_config['abs_path_data']."log/".$user.".search.log"))
   {
     $searchlog_array = file ($mgmt_config['abs_path_data']."log/".$user.".search.log");
-  
+
     if ($searchlog_array != false && sizeof ($searchlog_array) > 0)
     {
       $data = "";
@@ -59,16 +61,24 @@ if (!empty ($search_delete) && checktoken ($token, $user))
       {
         if (strpos ($searchlog, "|") > 0)
         {
-          list ($date, $rest) = explode ("|", trim ($searchlog));
+          list ($search_id, $rest) = explode ("|", trim ($searchlog));
 
-          if ($date != $search_delete) $data .= $searchlog."\n";
+          if ($search_id != $search_delete_id) $data .= $searchlog."\n";
         }
       }
       
       // save search log
-      savefile ($mgmt_config['abs_path_data']."log/", $user.".search.log", $data); 
+      return savefile ($mgmt_config['abs_path_data']."log/", $user.".search.log", $data);
     }
   }
+
+  return false;
+}
+
+// delete saved search
+if (!empty ($search_delete) && checktoken ($token, $user))
+{
+  searchlog_delete ($search_delete, $user);
 }
 
 // class that represents a single menupoint with possible hcms_menupoint subpoints
@@ -1636,6 +1646,23 @@ else
       hcms_switchInfo('saveLayer');
     }
 
+    function selectedSavedSearch ()
+    {
+      if (document.getElementById('search_execute').value != "")
+      {
+        document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+        hcms_hideInfo('fulltextLayer');
+        hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('contentLayer');
+        hcms_hideInfo('keywordsLayer');
+        hcms_hideInfo('imageLayer');
+        hcms_hideInfo('mapLayer');
+        hcms_hideInfo('dateLayer');
+        hcms_hideInfo('idLayer');
+        hcms_hideInfo('recipientLayer');
+      }
+    }
+
     function startSearch (type)
     {
       // iframe for search result
@@ -1644,7 +1671,7 @@ else
       // search form
       var form = document.forms['searchform_advanced'];
 
-      // verify that at least one search tab is open
+      // verify if at least one search tab is open
       var opened = false;
 
       if (document.getElementById('fulltextLayer').style.display != 'none') opened = true;
@@ -1656,94 +1683,107 @@ else
       else if (document.getElementById('idLayer').style.display != 'none') opened = true;
       else if (document.getElementById('recipientLayer').style.display != 'none') opened = true;
 
+      // check if saved search has been selected (if no other search tab has been opened)
+      if (form && opened == false && document.getElementById('saveLayer').style.display != 'none' && document.getElementById('search_execute') && document.getElementById('search_execute').value == "")
+      {
+        return false;
+      }
+
+      // verify if the saved search tab is open
+      if (document.getElementById('saveLayer').style.display != 'none') opened = true;
+
       if (form && opened)
       {
         if (!iframe)
         {
           parent.frames['workplFrame'].location = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_objectlist.php';
         }
-        
-        // full text search
-        if (document.getElementById('fulltextLayer').style.display != 'none' && form.elements['search_expression'].value.trim() == "")
-        {
-          alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-search-expression'][$lang]); ?>"));
-          form.elements['search_expression'].focus();
-          return false;
-        }
 
-        // delete search_dir
-        if (document.getElementById('fulltextLayer').style.display != 'none')
+        // if no saved search has been selected
+        if (document.getElementById('saveLayer').style.display == 'none' || !document.getElementById('search_execute') || document.getElementById('search_execute').value == "")
         {
-          form.elements['search_dir'].value = "";
-        }
-        // set search dir
-        else if (document.getElementById('advancedLayer').style.display != 'none')
-        {
-          var selectbox = form.elements['template'];
-          var template = form.elements['template'].options[selectbox.selectedIndex].value;
-          
-          if (template != "")
+          // full text search
+          if (document.getElementById('fulltextLayer').style.display != 'none' && form.elements['search_expression'].value.trim() == "")
           {
-            var parts = template.split("/");
-            var domain = "%comp%";
-            
-            if (template.indexOf(".page.tpl") > 0) domain = "%page%";
-            
-            if (parts[0] != "") form.elements['search_dir'].value = domain + "/" + parts[0] + "/";
-          }
-        }
-
-        // check if at least one keyword has been checked
-        var keywordsLayer = document.getElementById('keywordsLayer');
-        var keywordChecked = false;
-        
-        if (keywordsLayer && keywordsLayer.style.display != "none")
-        {
-          var unchecked = false;
-          var childs = keywordsLayer.getElementsByTagName('*');
-          
-          for (var i=0; i<childs.length; i++)
-          {
-            // found unchecked element
-            if (childs[i].tagName == "INPUT" && childs[i].checked == true)
-            {
-              keywordChecked = true;
-              break;
-            }
-          }
-          
-          if (!keywordChecked)
-          {
+            alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-search-expression'][$lang]); ?>"));
+            form.elements['search_expression'].focus();
             return false;
           }
-        }
-        
-        
-        // check if all file-types have been checked
-        var filetypeLayer = document.getElementById('filetypeLayer');
-        
-        if (filetypeLayer && filetypeLayer.style.display != "none")
-        {
-          var unchecked = false;
-          var childs = filetypeLayer.getElementsByTagName('*');
-          
-          for (var i=0; i<childs.length; i++)
+
+          // delete search_dir
+          if (document.getElementById('fulltextLayer').style.display != 'none')
           {
-            // found unchecked element
-            if (childs[i].tagName == "INPUT" && childs[i].checked == false)
+            form.elements['search_dir'].value = "";
+          }
+          // set search dir
+          else if (document.getElementById('advancedLayer').style.display != 'none')
+          {
+            var selectbox = form.elements['template'];
+            var template = form.elements['template'].options[selectbox.selectedIndex].value;
+            
+            if (template != "")
             {
-              unchecked = true;
+              var parts = template.split("/");
+              var domain = "%comp%";
+              
+              if (template.indexOf(".page.tpl") > 0) domain = "%page%";
+              
+              if (parts[0] != "") form.elements['search_dir'].value = domain + "/" + parts[0] + "/";
+            }
+          }
+
+          // check if at least one keyword has been checked
+          var keywordsLayer = document.getElementById('keywordsLayer');
+          var keywordChecked = false;
+          
+          if (keywordsLayer && keywordsLayer.style.display != "none")
+          {
+            var unchecked = false;
+            var childs = keywordsLayer.getElementsByTagName('*');
+            
+            for (var i=0; i<childs.length; i++)
+            {
+              // found unchecked element
+              if (childs[i].tagName == "INPUT" && childs[i].checked == true)
+              {
+                keywordChecked = true;
+                break;
+              }
+            }
+            
+            if (!keywordChecked)
+            {
+              return false;
             }
           }
           
-          // disable checkboxes for file-type
-          if (unchecked == false)
+          
+          // check if all file-types have been checked
+          var filetypeLayer = document.getElementById('filetypeLayer');
+          
+          if (filetypeLayer && filetypeLayer.style.display != "none")
           {
+            var unchecked = false;
+            var childs = filetypeLayer.getElementsByTagName('*');
+            
             for (var i=0; i<childs.length; i++)
             {
-              if (childs[i].tagName == "INPUT")
+              // found unchecked element
+              if (childs[i].tagName == "INPUT" && childs[i].checked == false)
               {
-                childs[i].disabled = true;
+                unchecked = true;
+              }
+            }
+            
+            // disable checkboxes for file-type
+            if (unchecked == false)
+            {
+              for (var i=0; i<childs.length; i++)
+              {
+                if (childs[i].tagName == "INPUT")
+                {
+                  childs[i].disabled = true;
+                }
               }
             }
           }
@@ -1770,8 +1810,12 @@ else
             }
           }
           
-          // uncheck save search
-          document.forms['searchform_advanced'].elements['search_save'].checked = false;
+          // reload page for a new saved search
+          if (document.forms['searchform_advanced'].elements['search_save'].checked == true)
+          {
+            document.forms['searchform_advanced'].elements['search_save'].checked = false;
+            window.setTimeout('location.reload()', 1000);
+          }
           
           return true;
         }
@@ -1818,16 +1862,19 @@ else
       cal_obj = null;
     }
     
-    // delete search log entry
+    // delete saved search entry
     function deletesearch ()
     {
-      var form = document.forms['searchform_advanced'];
-      
-      check = confirm ("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>");
-    
-      if (check == true)
+      var element = document.forms['searchform_advanced'].elements['search_execute'];
+
+      if (element.options[element.selectedIndex].value != "")
       {
-        document.location='?search_delete=' + form.elements['search_execute'].options[form.elements['search_execute'].selectedIndex].value + '&token=<?php echo $token_new; ?>';
+        check = confirm ("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>");
+      
+        if (check == true)
+        {
+          document.location='?search_delete=' + element.options[element.selectedIndex].value + '&token=<?php echo $token_new; ?>';
+        }
       }
     }
     
@@ -2288,57 +2335,70 @@ else
               echo "
           <div style=\"padding-bottom:3px;\">
             <label>".getescapedtext ($hcms_lang['saved-searches'][$lang])."</label><br/>
-            <select name=\"search_execute\" style=\"width:230px;\">
-              <option value=\"\"></option>";
+            <select id=\"search_execute\" name=\"search_execute\" style=\"width:190px;\" onchange=\"selectedSavedSearch();\">
+              <option value=\"\">".getescapedtext ($hcms_lang['select'][$lang])."</option>";
               
               foreach ($searchlog_array as $searchlog)
               {
                 if (strpos ($searchlog, "|") > 0)
                 {
-                  list ($date, $action, $site, $search_dir, $date_from, $date_to, $template, $search_textnode, $search_expression, $search_cat, $search_format, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $object_id, $container_id) = explode ("|", trim ($searchlog));
+                  // update to version 8.0.2 (unique id as new parameter)
+                  if (substr_count ($searchlog, "|") == 19)
+                  {
+                    $searchlog = "|".$searchlog;
+                  }
+
+                  list ($uniqid, $date, $action, $site, $search_dir, $date_from, $date_to, $template, $search_textnode, $search_expression, $search_cat, $search_format, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $object_id, $container_id) = explode ("|", trim ($searchlog));
                   
+                  // update to version 8.0.2
+                  if (empty ($uniqid)) $uniqid = $date;
+
                   // text based search
-                  $search_text = "";
+                  $search_parameter = array();
                   $search_textnode = json_decode ($search_textnode, true);
     
                   if (is_array ($search_textnode) && sizeof ($search_textnode) > 0)
                   {
+                    $temp_array = array();
+                    
                     foreach ($search_textnode as $key => $value)
                     {
-                      if ($value != "") $search_text .= ", ".$key.":".$value;
+                      if (!is_numeric ($key) && $value != "")
+                      {
+                        $temp_array[] = $key.":".$value;
+                      }
+                      elseif (strpos ("_".$value, "%keyword%/") > 0)
+                      {
+                        $sql_array = rdbms_externalquery ("SELECT keyword FROM keywords WHERE keyword_id=".getobject ($value));
+                        if (!empty ($sql_array[0]['keyword'])) $temp_array[] = getescapedtext ($hcms_lang['keywords'][$lang])." (".$sql_array[0]['keyword'].")";
+                      }
                     }
+
+                    if (sizeof ($temp_array) > 0) $search_parameter['text'] = implode (", ", $temp_array);
                   }
-                  elseif (!empty ($search_expression)) $search_text .= ", ".$search_expression;
+                  elseif (!empty ($search_expression)) $search_parameter['text'] = $search_expression;
                   
                   // file based search
-                  $search_file = "";
                   $search_format = json_decode ($search_format, true);
                   
-                  if (is_array ($search_format) && sizeof ($search_format) > 0) $search_file .= ", ".getescapedtext ($hcms_lang['file-type'][$lang]);
-                  if (!empty ($search_filesize)) $search_file .= ", ".$search_filesize."KB";
+                  if (is_array ($search_format) && sizeof ($search_format) > 0) $search_parameter['file'] = getescapedtext ($hcms_lang['file-type'][$lang])." (".implode (", ", $search_format).")";
+                  if (!empty ($search_filesize)) $search_parameter['file'] = $search_filesize."KB";
                   
                   // image based search
-                  $search_image = "";
                   $search_imagecolor = json_decode ($search_imagecolor, true);
                   
-                  if (!empty ($search_imagewidth) || !empty ($search_imageheight)) $search_image .= ", ".$search_imagewidt.($search_imageheight != "" ? "" : "x".$search_imageheight);
-                  if (is_array ($search_imagecolor) && sizeof ($search_imagecolor) > 0) $search_image .= ", ".getescapedtext ($hcms_lang['image-color'][$lang]);
-                  if (!empty ($search_imagetype)) $search_image .= ", ".$search_imagetype;
+                  if (!empty ($search_imagewidth) || !empty ($search_imageheight)) $search_parameter['imagesize'] = $search_imagewidt.($search_imageheight != "" ? "" : "x".$search_imageheight);
+                  if (is_array ($search_imagecolor) && sizeof ($search_imagecolor) > 0) $search_parameter['imagecolor'] = getescapedtext ($hcms_lang['image-color'][$lang])." (".implode (", ", $search_imagecolor).")";
+                  if (!empty ($search_imagetype)) $search_parameter['imagetype'] = getescapedtext ($hcms_lang['image-type'][$lang])." (".$search_imagetype.")";
                   
-                  // ge location based search
-                  $search_geo = "";
-                  
-                  if (!empty ($geo_border_sw) && !empty ($geo_border_ne)) $search_geo .= ", ".getescapedtext ($hcms_lang['geo-location'][$lang]);
+                  // geo location based search
+                  if (!empty ($geo_border_sw) && !empty ($geo_border_ne)) $search_parameter['geo'] = getescapedtext ($hcms_lang['geo-location'][$lang])." SW ".$geo_border_sw." NE ".$geo_border_ne."";
                   
                   // specific search for ID
-                  $search_id = "";
-                  
-                  if (!empty ($object_id) || !empty ($container_id)) $search_id .= ", ".getescapedtext ($hcms_lang['object-id-link-id'][$lang]);
-                  
-                  $name = $date.$search_text.$search_file.$search_image.$search_geo.$search_id;
+                  if (!empty ($object_id) || !empty ($container_id)) $search_parameter['id'] .= getescapedtext ($hcms_lang['object-id-link-id'][$lang])." (".(!empty ($object_id) ? $object_id : $container_id).")";
                   
                   echo "
-                    <option value=\"".$date."\">".$name."</option>";
+                    <option value=\"".$uniqid."\">".implode (", ", $search_parameter)."</option>";
                 }
               }
               

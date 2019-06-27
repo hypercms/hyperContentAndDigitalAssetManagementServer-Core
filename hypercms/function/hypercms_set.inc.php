@@ -1106,16 +1106,16 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr=array()
       $userbuffer = $compuser;
       $compuser = Null;
     }  
-  
+
     reset ($component);
-    
+
     for ($i = 1; $i <= sizeof ($component); $i++)
     {
       // get key (position) of array item
       $id = key ($component);
       
       if ($id != "")
-      {  
+      {
         // convert object path to object ID if DAM
         $component_object_id[$id] = getobjectid ($component[$id]);
         
@@ -1135,13 +1135,13 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr=array()
         {
           // set the new content
           $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
-          
+
           if ($contentdatanew == false)
           {
             $contentdatanew = addcontent ($contentdata, $component_schema_xml, "", "", "", "<componentcollection>", "<component_id>", $id);
             $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
           }
-          
+
           if (!empty ($compuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
           if (isset ($condition[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentcond>", $condition[$id], "<component_id>", $id);        
         }
@@ -1150,10 +1150,10 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr=array()
         {
           // get the id of the article
           $artid = getartid ($id);
-    
+
           // set the new content
           $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
-          
+
           if ($contentdatanew == false)
           {
             $contentdatanew = addcontent ($contentdata, $component_schema_xml, "<article>", "<article_id>", $artid, "<articlecomponentcollection>", "<component_id>", $id);
@@ -1165,17 +1165,17 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr=array()
             }
             $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
           }
-          
+
           if (!empty ($compuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
           if (isset ($condition[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentcond>", $condition[$id], "<component_id>", $id);        
         }
-    
+
         // ------------------------- add link to link management file ---------------------------
-        
+
         if (empty ($component_curr[$id])) $component_curr[$id] = "";
-        $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $component_curr[$id], $component[$id], "unique"); 
-          
-        $contentdata = $contentdatanew;
+        $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $component_curr[$id], $component[$id], "unique");
+
+        if (!empty ($contentdatanew)) $contentdata = $contentdatanew;
         next ($component);
       }
     }
@@ -1184,7 +1184,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr=array()
     if (is_array ($link_db)) $test = link_db_save ($site, $link_db, $user);
     elseif ($link_db == true) $test = true;
     else $test = false;
-    
+
     if ($test == false)
     {
       // unlock file
@@ -1193,12 +1193,12 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr=array()
       $errcode = "20512";
       $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|$errcode|link management file is missing or you do not have write permissions for ".$site.".link.dat";  
     }
-    
+
     // save log
-    savelog (@$error);    
-    
+    savelog (@$error);
+
     // return container
-    if ($contentdatanew != false)
+    if (!empty ($contentdatanew))
     {
       // relational DB connectivity
       if (!empty ($mgmt_config['db_connect_rdbms']))
@@ -1338,6 +1338,113 @@ function sethead ($site, $contentdata, $contentfile, $headcontent=array(), $user
     else return false;    
   }
   else return false; 
+}
+
+// ---------------------------------------- setrelation --------------------------------------------
+// function: setrelation()
+// input: publication name [string], location path 1 [string], object name 1 for component link reference 2 [string], tag/content ID 1 for component reference to object 2 [string] (optional), 
+//        location path 2 [string], object name 2 for component link reference 2 [string], tag/content ID 2 for component reference to object 1 [string] (optional), user name [string]
+// output: true / false on error
+
+// description:
+// This function sets a relationship between two objects by adding the reference as a multi component link to the specified tag ID of both objects.
+
+function setrelation ($site, $location_1, $object_1, $id_1="Related", $location_2, $object_2, $id_2="Related", $user)
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site) && valid_locationname ($location_1) && valid_objectname ($object_1) && valid_locationname ($location_2) && valid_objectname ($object_2))
+  {
+    // convert locations and get object IDs
+    $location_1 = deconvertpath ($location_1, "file");
+    $location_esc_1 = convertpath ($site, $location_1, "comp");
+    $objectid_1 = getobjectid ($location_esc_1.$object_1);
+
+    $location_2 = deconvertpath ($location_2, "file");
+    $location_esc_2 = convertpath ($site, $location_2, "comp");
+    $objectid_2 = getobjectid ($location_esc_2.$object_2);
+
+    // set component link for object 1
+    if (!empty ($id_1))
+    {
+      $component_1 = $objectid_2."|";
+      $component_curr_1 = "";
+
+      // load object file and get container
+      $objectdata_1 = loadfile ($location_1, $object_1);
+      $contentfile_1 = getfilename ($objectdata_1, "content");
+
+      // read content from content container
+      if (!empty ($contentfile_1))
+      {
+        $container_id_1 = substr ($contentfile_1, 0, strpos ($contentfile_1, ".xml"));
+        $contentdata_1 = loadcontainer ($container_id_1, "work", $user);
+        $temp_array = selectcontent ($contentdata_1, "<component>", "<component_id>", $id_1);
+
+        if (!empty ($temp_array[0]))
+        {
+          $temp_array = getcontent ($temp_array[0], "<componentfiles>");
+          if (!empty ($temp_array[0])) $component_curr_1 = $temp_array[0];
+        }
+
+        // set component link
+        $contentdatanew_1 = setcomplink ($site, $contentdata_1, $contentfile_1, array($id_1 => $component_curr_1), array($id_1 => $component_curr_1.$component_1), "", "no", $user, $user);
+
+        // save working xml content container file
+        if (!empty ($contentdatanew_1)) $save_1 = savecontainer ($container_id_1, "work", $contentdatanew_1, $user);
+
+        if (empty ($save_1))
+        {
+          $errcode = "20601";
+          $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|$errcode|relation to ".$location_esc_2.$object_2." could not be saved for ".$location_esc_1.$object_1;     
+        }
+      }
+    }
+
+    // set component link for object 2
+    if (!empty ($id_2))
+    {
+      $component_2 = $objectid_1."|";
+      $component_curr_2 = "";
+
+      // load object file and get container
+      $objectdata_2 = loadfile ($location_2, $object_2);
+      $contentfile_2 = getfilename ($objectdata_2, "content");
+
+      // read content from content container
+      if (!empty ($contentfile_2))
+      {
+        $container_id_2 = substr ($contentfile_2, 0, strpos ($contentfile_2, ".xml"));
+        $contentdata_2 = loadcontainer ($container_id_2, "work", $user);
+        $temp_array = selectcontent ($contentdata_2, "<component>", "<component_id>", $id_2);
+
+        if (!empty ($temp_array[0]))
+        {
+          $temp_array = getcontent ($temp_array[0], "<componentfiles>");
+          if (!empty ($temp_array[0])) $component_curr_2 = $temp_array[0];
+        }
+
+        // set component link
+        $contentdatanew_2 = setcomplink ($site, $contentdata_2, $contentfile_2, array($id_2 => $component_curr_2), array($id_2 => $component_curr_2.$component_2), "", "no", $user, $user);
+
+        // save working xml content container file
+        if (!empty ($contentdatanew_2)) $save_2 = savecontainer ($container_id_2, "work", $contentdatanew_2, $user);
+
+        if (empty ($save_2))
+        {
+          $errcode = "20602";
+          $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|$errcode|relation to ".$location_esc_1.$object_1." could not be saved for ".$location_esc_2.$object_2;     
+        }
+      }
+    }
+
+    // save log
+    savelog (@$error);
+
+    if (!empty ($save_1) && !empty ($save_2)) return true;
+    else return false;
+  }
+  else return false;
 }
 
 // ===================================== FILEPOINTER =======================================

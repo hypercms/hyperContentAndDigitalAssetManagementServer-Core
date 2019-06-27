@@ -1816,8 +1816,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // check workflow role
     if (
          ($wf_role >= 1 && $wf_role <= 4) || 
-         ($wf_role == 5 && $mgmt_config[$site]['dam'] == true && ($user == "sys" || $ownergroup != false || (isset ($setlocalpermission['root']) && $setlocalpermission['root'] == 1))) || 
-         ($wf_role == 5 && $mgmt_config[$site]['dam'] != true) || 
+         ($wf_role == 5 && !empty ($mgmt_config[$site]['dam']) && ($user == "sys" || $ownergroup != false || (isset ($setlocalpermission['root']) && $setlocalpermission['root'] == 1))) || 
+         ($wf_role == 5 && empty ($mgmt_config[$site]['dam'])) || 
          $buildview == "template"
        )
     {
@@ -7707,7 +7707,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
     else return defaultvalue;
   }
-  
+
   function getSelectedOption (selectname, defaultvalue)
   {
     if (document.forms['hcms_formview'].elements[selectname] && document.forms['hcms_formview'].elements[selectname].options)
@@ -7716,8 +7716,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       return encodeURIComponent (selectbox.options[selectbox.selectedIndex].value);
     }
     else return defaultvalue;
-  }  
-    
+  }
+
   function moveSelected (select, down)
   {
     if (select.selectedIndex != -1) {
@@ -7735,32 +7735,31 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         else
           return;
       }
-  
+
       var swapOption = new Object();
-  
+
       swapOption.text = select.options[select.selectedIndex].text;
       swapOption.value = select.options[select.selectedIndex].value;
       swapOption.selected = select.options[select.selectedIndex].selected;
-      swapOption.defaultSelected = select.options[select.selectedIndex].defaultSelected;
   
       for (var property in swapOption) select.options[select.selectedIndex][property] = select.options[i][property];
       for (var property in swapOption) select.options[i][property] = swapOption[property];
     }
   }
-  
+
   function moveBoxEntry (fbox, tbox)
   {
     var arrFbox = new Array();
     var arrTbox = new Array();
     var arrLookup = new Array();
     var i;
-  
+
     for (i = 0; i < tbox.options.length; i++)
     {
       arrLookup[tbox.options[i].text] = tbox.options[i].value;
       arrTbox[i] = tbox.options[i].text;
     }
-  
+
     var fLength = 0;
     var tLength = arrTbox.length;
   

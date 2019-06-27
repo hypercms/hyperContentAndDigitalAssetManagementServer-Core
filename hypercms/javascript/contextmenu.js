@@ -28,7 +28,7 @@ var y4 = 0;
 function hcms_clearSelection()
 {
   // only used if a selectarea element exists (otherwise focus on input fields will be lost)
-  if (selectarea)
+  if (selectarea && activatelinks == false)
   {
     if (window.getSelection)
     {

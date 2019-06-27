@@ -3788,7 +3788,8 @@ function getmediasize ($filepath)
       // use ImageMagick
       if (!empty ($mgmt_imagepreview) && is_supported ($mgmt_imagepreview, $filepath))
       {
-        $cmdresult = exec ("identify -format \"%wx%h\" \"".shellcmd_encode ($filepath)."\"");
+        // get size of first page if document with more than oen page
+        $cmdresult = exec ("identify -format \"%wx%h\" \"".shellcmd_encode ($filepath)."[0]\"");
 
         if (strpos ($cmdresult, "x") > 0) list ($result["width"], $result["height"]) = explode ("x", $cmdresult);
       }
@@ -3873,9 +3874,6 @@ function getimageinfo ($filepath)
     // image colors
     $imagecolors = getimagecolors ($site, $media);
 
-    // image size
-    $imagesize = getmediasize ($filepath);
-
     // file time (use thumbnail as first option)
     $media_root = getmedialocation ($site, $media, "abs_path_media").$site."/";
     $file_info = getfileinfo ($site, $media, "comp");
@@ -3884,6 +3882,9 @@ function getimageinfo ($filepath)
     if (!empty ($thumbnail)) $filetime = date ("Y-m-d H:i", filemtime ($media_root.$thumbnail));
     elseif (!empty ($filepath)) $filetime = date ("Y-m-d H:i", filemtime ($filepath));
     else $filetime = false;
+
+    // image size
+    $imagesize = getmediasize ($filepath);
 
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
@@ -3919,7 +3920,7 @@ function getpdfinfo ($filepath, $box="MediaBox")
 
   if (valid_locationname ($filepath))
   {
-    $result = false;
+    $result = array();
 
     // get publication, location and media object
     $site = getpublication ($filepath);
@@ -3951,6 +3952,25 @@ function getpdfinfo ($filepath, $box="MediaBox")
     // verify local media file
     if (!is_file ($filepath)) return false;
 
+    // MD5 hash of the original file
+    $md5_hash = md5_file ($filepath);
+
+    // get file-type
+    $filetype = getfiletype ($media);
+
+    // file size in kB
+    if (filesize ($filepath) > 0) $filesize = round (filesize ($filepath) / 1024, 0);
+    else $filesize = 0;
+
+    // file time (use thumbnail as first option)
+    $media_root = getmedialocation ($site, $media, "abs_path_media").$site."/";
+    $file_info = getfileinfo ($site, $media, "comp");
+    if (!empty ($file_info['filename'])) $thumbnail = $file_info['filename'].".thumb.jpg";
+
+    if (!empty ($thumbnail)) $filetime = date ("Y-m-d H:i", filemtime ($media_root.$thumbnail));
+    elseif (!empty ($filepath)) $filetime = date ("Y-m-d H:i", filemtime ($filepath));
+    else $filetime = false;
+
     // read dimensions from file stream
     $stream = new SplFileObject ($filepath); 
 
@@ -3966,9 +3986,6 @@ function getpdfinfo ($filepath, $box="MediaBox")
 
     $stream = null;
 
-    // delete temp file
-    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
-
     // use ImageMagick if MediaBox failed
     if ((empty ($result["width"]) || empty ($result["height"])) && is_supported ($mgmt_imagepreview, $media))
     {
@@ -3977,9 +3994,16 @@ function getpdfinfo ($filepath, $box="MediaBox")
       if (strpos ($cmdresult, "x") > 0) list ($result["width"], $result["height"]) = explode ("x", $cmdresult);
     }
 
-    // return result
-    if (!empty ($result['width']) && !empty ($result['height'])) return $result;
-    else return false;
+    // delete temp file
+    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+
+    // result
+    $result['md5_hash'] = $md5_hash;
+    $result['filetype'] = $filetype;
+    $result['filesize'] = $filesize;
+    $result['filetime'] = $filetime;
+
+    return $result;
   }
   else return false;
 }
@@ -3995,7 +4019,7 @@ function getpdfinfo ($filepath, $box="MediaBox")
 function getvideoinfo ($filepath)
 {
   global $mgmt_config, $mgmt_mediapreview, $user;
-  
+
   // read media information from media files
   if (valid_locationname ($filepath))
   {
@@ -4047,9 +4071,24 @@ function getvideoinfo ($filepath)
     // verify media file
     if (!is_file ($filepath)) return false;
 
-    // get video file size in MB
-    $filesize = round (@filesize ($mediafile) / 1024 / 1024, 0)." MB";
+    // MD5 hash of the original file
+    $md5_hash = md5_file ($filepath);
+
+    // get file-type
+    $filetype = getfiletype ($media);
+
+    // file size in MB
+    $filesize = round (@filesize ($filepath) / 1024 / 1024, 0)." MB";
     if ($filesize < 1) $filesize = "<1 MB";
+
+    // file time (use thumbnail as first option)
+    $media_root = getmedialocation ($site, $media, "abs_path_media").$site."/";
+    $file_info = getfileinfo ($site, $media, "comp");
+    if (!empty ($file_info['filename'])) $thumbnail = $file_info['filename'].".thumb.jpg";
+
+    if (!empty ($thumbnail)) $filetime = date ("Y-m-d H:i", filemtime ($media_root.$thumbnail));
+    elseif (!empty ($filepath)) $filetime = date ("Y-m-d H:i", filemtime ($filepath));
+    else $filetime = false;
 
     // file extension
     $file_info = getfileinfo ("", $filepath, "comp");
@@ -4206,7 +4245,10 @@ function getvideoinfo ($filepath)
     
     // return result 
     $result = array();
+    $result['md5_hash'] = $md5_hash;
+    $result['filetype'] = $filetype;
     $result['filesize'] = $filesize;
+    $result['filetime'] = $filetime;
     $result['dimension'] = $dimension;
     $result['width'] = $width;
     $result['height'] = $height;
@@ -5773,7 +5815,7 @@ function getdirectoryfiles ($dir, $pattern="")
          natcasesort ($item_files);
          reset ($item_files);
       }
-      
+
       return $item_files;
     }
     else return false;
@@ -5796,9 +5838,9 @@ function getuserinformation ()
 
   // load user file
   $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-  
+
   $user_array = array();
-  
+
   if ($userdata != "")
   {
     // get publications
@@ -5815,10 +5857,10 @@ function getuserinformation ()
         }
       }
     }
-  
+
     // get user node and extract required information    
     $usernode = getcontent ($userdata, "<user>");
-  
+
     foreach ($usernode as $temp)
     {
       if ($temp != "")
@@ -5832,7 +5874,7 @@ function getuserinformation ()
         $language = getcontent ($temp, "<language>");
         $publication_array = getcontent ($temp, "<publication>");
         $usergroup_array = getcontent ($temp, "<usergroup>");
-        
+
         if (is_array ($publication_array))
         {
           foreach ($publication_array as $key=>$pub_temp)
@@ -5840,7 +5882,7 @@ function getuserinformation ()
             if (!empty ($pub_temp) && !empty ($usergroup_array[$key])) $usergroup[$pub_temp] = $usergroup_array[$key];
           }
         }
-        
+
         // standard user
         if (!empty ($login[0]) && (empty ($admin[0]) || $admin[0] == 0) && is_array ($publication_array))
         {
@@ -5880,7 +5922,7 @@ function getuserinformation ()
       }
     }
   }
-  
+
   if (!empty ($user_array) && is_array ($user_array)) return $user_array;
   else return false;
 }
@@ -5896,7 +5938,7 @@ function getuserinformation ()
 function getworkflowitem ($site, $workflow_file, $workflow, $user)
 {
   global $mgmt_config, $hcms_lang, $lang;
-  
+
   if (valid_publicationname ($site) && valid_objectname ($workflow_file) && $workflow != "" && valid_objectname ($user))
   {
     // get usergroup users
@@ -5906,10 +5948,10 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
     $buffer_array = getcontent ($buffer_array[0], "<usergroup>");  
     $group_str = substr ($buffer_array[0], 1, strlen ($buffer_array[0])-2);
     $group_array = explode ("|", $group_str);
-    
+
     // check if user owns workflow items
     $item_array = getxmlcontent ($workflow, "<item>");
-    
+
     foreach ($item_array as $item)
     {
       $type_array = getcontent ($item, "<type>");
@@ -5927,7 +5969,7 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
         if (in_array ($buffer_array[0], $group_array)) $useritem_array[] = $item;
       }
     }
-    
+
     // if user own items and the predecessors have not passed their items
     if (!empty ($useritem_array) && is_array ($useritem_array) && sizeof ($useritem_array) > 0)
     { 
@@ -6026,7 +6068,7 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
       }
     }
     else return false;
-   
+
     // check for free items of the user
     if (!empty ($freeitem_array) && is_array ($freeitem_array) && sizeof ($freeitem_array) > 0)
     {

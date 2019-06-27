@@ -3211,7 +3211,7 @@ Release 03/2019
 - Implementation of new devices and their screen sizes in the main configuration
 - Implementation of new input parameter for user in function getprojectstructure in the Project Management API
 - Update of the language files regarding the Workflow module
-- Implementation of a private chat by the introduction of relationsships based on user invitations (modifications in chat, service/chat, chat.js)
+- Implementation of a private chat by the introduction of relationships based on user invitations (modifications in chat, service/chat, chat.js)
 - Implementation of new chat log format including the user/sender in a separate row
 - New main configuration setting for public or private chat
 - Modifications in function valid_publicationname in Security API in order to set ".." as false name
@@ -3230,7 +3230,7 @@ Release 03/2019
 - Implementation of send mail link for all of the users favorite objects (without selecting any objects)
 - Modifications in search_objectlist in order to assign explorer action to variable from_page and enable differentiation based on different from_page values
 - Modifications in function getcontainername in Get API in order to verify session before accessing its values (for locked containers)
-- Imlpemenatation of popup window/layer in frameset_objectlist and frameset_content
+- Implemenatation of popup window/layer in frameset_objectlist and frameset_content
 - Design modifications in JS and CSS of javascript/jstree
 - Modifications in sendmail service in order to separate the creation of new user accounts and the send messages process
 - Modifications in user_sendmail service in order to support publication as input parameter for function getallusers
@@ -3367,7 +3367,7 @@ Release 05/2019
 - Modifications in service savecontent and page_multiedit in order to support the text content appending in multiedit mode
 - Implementation of new function appendcontent_helper in service savecontent in order to append text content to XML containers
 - Implementation of new service setappendcontent in order to lock and unlock the multiedit form
-- Imlpementation of new session parameter for appendcontent to include/session.inc.php
+- Implementation of new session parameter for appendcontent to include/session.inc.php
 - Minor design modifications in function sendresetpassword in Main API
 - Implementation of error logging into function deletelog in Main API
 - Modifications in function valid_objectname in Security API
@@ -3395,3 +3395,37 @@ Release 05/2019
 - Bug fix: Function rdbms_searchcontent in DB Connect did not use LIKE search pattern if set in main configuration
 - Bug fix: Function is_tempfile did not load tempfile patterns from external file
 - Bug fix: JS function hcms_updateControlObjectListMenu in contextmenu.js did not verify if location has been provided before the submit of data
+
+Version 8.0.2
+Release 07/2019
+- Modifications in function getpdfinfo and getvideoinfo in Get API in order to add support for MD5 hash, file time, file size, file type to output parameters
+- Modifications in function createobject in Main API in order to exclude the %publication% variable name from the conversion
+- Modifications in function rdbms_setcontent in DB Connect in order to escape the text ID
+- Modifications in function createmediaobject in Main API in order to display template name in error messages
+- Modifications in function rdbms_setpublicationkeywords in DB Connect in order to remove unused variable $text_array
+- Implementation of the new search save feature in the explorer and search_objectlist that is based on unique search IDs
+- Implementation of the new function searchlog_delete in explorer
+- Implementation of the new JS function selectedSavedSearch in explorer
+- Design modifications in search feature of explorer
+- Modifications in JS function deletesearch in explorer in order to verify selected saved search
+- Modifications in explorer in order to diplay the parameters of a saved search
+- Removed the display of the saved search date and time from the list of saved searches in explorer
+- Modifications in function createmedia in Media API in order to verify is new media file exists besides possible error codes that trigger an error event
+- Modifications in function createuser in Main API in order to change the max user name length and password length to 100 digits
+- Modifications in userlogin in order to display submitted instance name, user name and password
+- Modifications in function checkpassword in Security API in order to enable passwords of up to 100 digits
+- Update of all language files
+- Implementation of relationships between component objects in order to track the relations between the original and the copy of an asset
+- Implementation of the new function setrelation in Set API
+- Modifications in function manipulateobject in Main API in order to set the relationship when a copy will be pasted
+- Implementation of new main configuration settings for the source and destination content ID for the relationship
+- Modifications in function setcomplink in Set API in order to verify the container content
+- Bug fix: Function getvideoinfo in Get API did refer to the wrong media file for the file size
+- Bug fix: Function valid_objectname in Security API did not allow ":" in the object name (is a valid character on UNIX/Linux OS and must be accepted)
+- Bug fix: Function getpdfinfo in Get API did reset the result array after the width and height as part of the array have been calculated
+- Bug fix: Function getmediasize in Get API did return all page sizes of documents and not the size of the first page only
+- Bug fix: JS function hcms_clearSelection in contentmenu.js did not lock the function hcms_clearSelection if download links have been activated in the list view
+- Bug fix: Function deletelog in Main API used wrong log type entry for log event 00821
+- Bug fix: MS IE and Edge did not display close buttons used in frameset_objectlist, frameset_content, and user_sendlink due to nested fixed positioned div-layers
+- Bug fix: Function rdbms_searchcontent in DB Connect did not verify variable $temp_expression
+- Bug fix: Function rdbms_searchcontent in DB Connect did not initialize array elements $sql_expr_advanced[$i]

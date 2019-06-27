@@ -512,12 +512,12 @@ $token_new = createtoken ($user);
 
 <body class="hcmsWorkplaceGeneric" style="overflow:auto" onload="<?php echo $add_onload; ?>">
 
-  <!-- preview --> 
-  <div id="objectviewLayer" class="hcmsWorkplaceExplorer" style="display:none; overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:40px; right:0; bottom:0; z-index:9000;">
-    <div style="position:fixed; right:5px; top:45px; z-index:9000;">
+  <!-- preview (do not used nested fixed positioned div-layers due to MS IE and Edge issue) --> 
+  <div id="objectviewLayer" style="display:none;">
+    <div style="position:fixed; right:5px; top:45px; z-index:8001;">
       <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closeobjectview();" />
     </div>
-    <div id="objectview" style="width:100%; height:100%; overflow:auto;">
+    <div id="objectview" class="hcmsWorkplaceExplorer" style="overflow:auto; position:fixed; margin:0; padding:0; left:0; top:40px; right:0; bottom:0; z-index:8000;">
     <?php
     // transform single object to multi object
     if (empty ($multiobject_array) && $location_esc != "" && $page != "")

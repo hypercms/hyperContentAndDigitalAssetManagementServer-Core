@@ -971,7 +971,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               <button class=\"hcmsButtonGreen\" onclick=\"location.href='".createviewlink ($site, $mediafile_orig, $medianame, false, "download")."';\">".getescapedtext ($hcms_lang['download-file'][$lang], $hcms_charset, $lang)."</button>
             </td>
           </tr>";
-          
+
         $mediaview .= "
       </table>";
       }
@@ -980,10 +980,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       {
         $mediaview_doc = "";
         $mediaratio = 0;
-        
+
         // check for document PDF preview
         $mediafile_thumb = $file_info['filename'].".thumb.pdf";
-  
+
         // if original file is a pdf
         if (substr_count (".pdf", $file_info['orig_ext']) == 1) $mediafile_pdf = $mediafile_orig;
         // document thumb file is a pdf
@@ -1001,11 +1001,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $mediaratio = $pdf_info['width'] / $pdf_info['height'];
           }
         }
-        
+
         // define media ratio based on file extension
         if ($mediaratio == 0)
         {
-          // presentation and spreadsheet formats, older versiuons use 4:3
+          // presentation and spreadsheet formats, older versions use 4:3
           if (strpos ("_.ppt.pot.pps.otp.xls.xlsx.ods", $file_info['orig_ext']) > 0) 
           {
             $mediaratio = 4 / 3;
@@ -1018,7 +1018,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // use A4 format
           else $mediaratio = 0.707;
         }
-      
+
         // media size
         if (is_numeric ($width) && $width > 0 && is_numeric ($height) && $height > 0)
         {
@@ -1042,7 +1042,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $width = 320;
             $height = round (($width / $mediaratio), 0);
           }
-          
+
           $style .= "width=\"".$width."\" height=\"".$height."\"";
         }
         else

@@ -1,4 +1,4 @@
 <?php
 // current version
-$mgmt_config['version'] = "Version 8.0.1";
+$mgmt_config['version'] = "Version 8.0.2";
 ?>

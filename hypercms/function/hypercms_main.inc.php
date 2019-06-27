@@ -285,7 +285,7 @@ function specialchr_encode ($expression, $remove="no")
     foreach ($expression_parts as $expression)
     {
       // conditions before encoding
-      if ($expression != "" && specialchr ($expression, "~_-.") && $expression != "%comp%" && $expression != "%page%" && $expression != "%media%" && $expression != "%tplmedia%" && $expression != "%media%" && $expression != "%object%")
+      if ($expression != "" && specialchr ($expression, "~_-.") && $expression != "%comp%" && $expression != "%page%" && $expression != "%media%" && $expression != "%tplmedia%" && $expression != "%publication%" && $expression != "%object%")
       {
         // encode to UTF-8 if name is not utf-8 coded
         if (!is_utf8 ($expression)) $expression = utf8_encode (trim ($expression));
@@ -7730,7 +7730,7 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
   else $theme = "standard";
     
   // check if sent data is available
-  if (!valid_objectname ($login) || strlen ($login) > 60 || $password == "" || strlen ($password) > 20 || $confirm_password == "")
+  if (!valid_objectname ($login) || strlen ($login) > 100 || $password == "" || strlen ($password) > 100 || $confirm_password == "")
   {
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['necessary-user-information-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-fill-out-all-fields'][$lang]."\n";
@@ -10505,25 +10505,25 @@ function createobject ($site, $location, $page, $template, $user)
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
-    
+
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";  
-    
+
     // convert location
     $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, $cat); 
-    
+
     // create valid object file name
     $page_orig = $page;
     $page = createfilename ($page);
-    
+
     //  check if location exists
     if (!is_dir ($location))
     {
       $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['the-location-holding-the-new-object-does-not-exist'][$lang]."\n";
     }      
-    
+
     if ($show == "")
     {
       // check if page is a folder
@@ -10537,7 +10537,7 @@ function createobject ($site, $location, $page, $template, $user)
         $page_orig = $page;
         $page = createfilename ($page);
       }
-          
+
       // extract template file name from sent template information
       if (@substr_count ($template, ".php") >= 1) 
       {
@@ -10546,7 +10546,7 @@ function createobject ($site, $location, $page, $template, $user)
         $catpos2 = strpos ($templatefile, ".tpl");
         $template_cat = substr ($templatefile, $catpos1, $catpos2 - $catpos1);
         $cat = getcategory ($site, $location);
-        
+
         // if multimedia file
         if ($template_cat == "meta" && $page != ".folder") $mediatype = true;
         else $mediatype = false;
@@ -10558,7 +10558,7 @@ function createobject ($site, $location, $page, $template, $user)
         $catpos2 = strpos ($templatefile, ".tpl");
         $template_cat = substr ($templatefile, $catpos1, $catpos2 - $catpos1);   
         $cat = getcategory ($site, $location);
-        
+
         // if multimedia file
         if ($template_cat == "meta" && $page != ".folder") $mediatype = true;
         else $mediatype = false;
@@ -10569,11 +10569,11 @@ function createobject ($site, $location, $page, $template, $user)
         $templatefile = $template.".".$cat.".tpl";
         $mediatype = false;
       }
-     
+
       // eventsystem
       if ($eventsystem['oncreateobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
         oncreateobject_pre ($site, $cat, $location, $page, $template, $user);  
-      
+
       // define variables depending on content category
       if ($cat == "page")
       {
@@ -10583,18 +10583,18 @@ function createobject ($site, $location, $page, $template, $user)
       {
         $dir_name = "comp_dir";
       }       
-    
+
       // ------------------------------- read template file information -------------------------------- 
       // load template file
       $result = loadtemplate ($site, $templatefile);
-    
+
       if ($result['result'] == true)
       {
         $templatestore = $result['content'];
-      
+
         // get file extension from template
         $bufferarray = getcontent ($templatestore, "<extension>");
-        
+
         // for all pages and components
         if ($mediatype == false && $page != ".folder")
         {
@@ -10621,13 +10621,13 @@ function createobject ($site, $location, $page, $template, $user)
         {
           // ----------------------------- build content file (xml structure)----------------------------
           $contentstore = "";
-    
+
           // --------------------------------- hyperCMS content ------------------------------------
           // create the content file name:
-          
+
           // load content count file and add the new page
           $filedata = loadlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
-    
+
           if ($filedata != "")
           {
             $contentcount = trim ($filedata);
@@ -10635,7 +10635,7 @@ function createobject ($site, $location, $page, $template, $user)
             $contentcount++;
             // write
             $test = savelockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", $contentcount);
-  
+
             if ($test == false)
             {
               unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
@@ -10651,11 +10651,11 @@ function createobject ($site, $location, $page, $template, $user)
           {
             // unlock file
             unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
-       
+
             $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
-            
-            $errcode = "20885";
+
+            $errcode = "20886";
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) due to a contentcount failure (contentcount.dat could not be loaded)";
           }
         }
@@ -10664,34 +10664,34 @@ function createobject ($site, $location, $page, $template, $user)
           $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-name'][$lang]."\n";
         }
-        
+
         if ($show == "")
         {
           // create the name of the content file based on the unique content count value
           $container_id = correctcontainername ($contentcount);
           $contentfile = $container_id.".xml";
-    
+
           // define page URL for contentorigin
           $contentorigin = convertpath ($site, $location.$pagename, "$cat");
-    
+
           // define content-encoding for content container
           $result = getcharset ($site, $templatestore);
 
           $contenttype = $result['contenttype'];
-          
+
           // character set for meta-data of multimedia assets must be UTF-8
           if ($mediatype == true) $charset = "UTF-8";
           else $charset = $result['charset'];
 
           // --------------------------- load page xml schema -----------------------
           // there is just one page xml schema including different xml sub schemas for text, media and link information          
-          $page_box_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlschema/", "object.schema.xml.php"));      
-    
+          $page_box_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlschema/", "object.schema.xml.php"));
+
           if ($page_box_xml != false)
           {
             // write XML declaration parameter for text encoding
             if ($charset != "") $page_box_xml = setxmlparameter ($page_box_xml, "encoding", $charset);
-      
+
             // write <hyperCMS> content in xml structure
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentcontainer>", $contentfile, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentxmlschema>", "object/".$cat, "", "");
@@ -10701,34 +10701,34 @@ function createobject ($site, $location, $page, $template, $user)
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentcreated>", $mgmt_config['today'], "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentstatus>", "active", "", "");
-         
+
             // ------------------------ set workflow --------------------------------
             // set master workflow is set in template and create workflow
             $workflow_array = gethypertag ($templatestore, "workflow", 0);
-            
+
             if ($workflow_array != false && $workflow_array[0] != "")
             {
               $workflow_name = getattribute ($workflow_array[0], "name");
               $workflow_file = $site.".".$workflow_name.".xml";
-              
+
               if ($workflow_name != "" && fopen ($mgmt_config['abs_path_data']."workflow_master/".$workflow_file, "r+"))
               { 
                 // load workflow 
                 $workflow = loadfile ($mgmt_config['abs_path_data']."workflow_master/", $workflow_file);
-                
+
                 // get user of start item
                 $start_item_array = selectcontent ($workflow, "<item>", "<id>", "u.1");
                 if ($start_item_array != false) $start_user_array = getcontent ($start_item_array[0], "<user>");                
-                
+
                 if ($start_user_array[0] == "") 
                 {
                   // set start user in workflow if was not set already
                   $workflow = setcontent ($workflow, "<item>", "<user>", $user, "<id>", "u.1");
-                 
+
                   // reset passed status and date in workflow
                   $workflow = setcontent ($workflow, "<item>", "<passed>", 0, "", "");   
                   $workflow = setcontent ($workflow, "<item>", "<date>", "-", "", "");           
-                  
+
                   // save workflow
                   $workflow_save = savefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile, $workflow);              
                 }  
@@ -10739,7 +10739,7 @@ function createobject ($site, $location, $page, $template, $user)
                   $workflow_save = false;
                 }
                 else $workflow_save = false;
-                          
+
                 // set workflow in content container
                 if ($workflow_save != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentworkflow>", $workflow_name, "", "");              
               }
@@ -10751,17 +10751,17 @@ function createobject ($site, $location, $page, $template, $user)
             $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['could-not-create-new-content-container'][$lang]."\n";
             
-            $errcode = "20885";
+            $errcode = "20887";
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) because the content container could not be created";     
           }            
-    
+
           // ------------------------ add record in link management file --------------------------------
-    
+
           if ($page_box_xml != false && $workflow_save != false && $mgmt_config[$site]['linkengine'] == true)
           {
             // define new link database record
             $object = convertpath ($site, $location.$pagename, $cat)."|";
-            
+
             $link_db_record = "\n".$contentfile.":|".$object.":|";
 
             // append new record into link management file
@@ -10787,7 +10787,7 @@ function createobject ($site, $location, $page, $template, $user)
                 $errcode = "10885";
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|link index file ".$site.".link.dat could not be unlocked";     
               }
-        
+
               if ($result_unlock == true)
               {
                 // insert new record into link management file
@@ -10795,7 +10795,7 @@ function createobject ($site, $location, $page, $template, $user)
               }
               else $link_db_append = false;
             }              
-    
+
             if ($link_db_append == false)
             {
               $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
@@ -10808,7 +10808,7 @@ function createobject ($site, $location, $page, $template, $user)
           if ($link_db_append != false && $show == "")
           {   
             $container_location = getcontentlocation ($container_id, 'abs_path_content');
-            
+
             // create container directory
             $test = @mkdir ($container_location, $mgmt_config['fspermission']);
 
@@ -10817,19 +10817,19 @@ function createobject ($site, $location, $page, $template, $user)
             {
               $test = savecontainer ($container_id, "work", $page_box_xml, $user, true);
             }
-            
+
             if ($test == false)
             {
               $errcode = "10882";
               $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|working container ".$contentfile.".wrk could not be saved";                
             }
-                    
+
             // save container initally since savecontainer only saves data to existing containers
             if ($test != false)
             {
               $test = savecontainer ($container_id, "published", $page_box_xml, $user, true);
             }
-            
+
             if ($test == false)
             {
               $errcode = "10883";
@@ -10841,7 +10841,7 @@ function createobject ($site, $location, $page, $template, $user)
               // ------------------------------------ build page file ------------------------------------
               // insert template and content file name into page
               $sourcefiles = "<!-- hyperCMS:template file=\"".$templatefile."\" -->\n<!-- hyperCMS:content file=\"".$contentfile."\" -->\n<!-- hyperCMS:name file=\"".$page_orig."\" -->\n";
-              
+
               if ($mediatype == true && $page != ".folder")
               {
                 if (substr_count ($page, ".") > 0)
@@ -10856,22 +10856,22 @@ function createobject ($site, $location, $page, $template, $user)
                   $file_ext = "";
                   $mediafile = $file_name."_hcm".$container_id.$file_ext;  
                 }
-                             
+
                 $sourcefiles .= "<!-- hyperCMS:media file=\"".$mediafile."\" -->\n";
               }
-      
+
               clearstatcache ();             
-      
+
               // save object file
               $savefile = savefile ($location, $pagefile, $sourcefiles);
               $filetype = "cms";
-      
+
               // if object file could not be saved
               if ($savefile == false)
               {
                 $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
                 $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
-                
+
                 // log entry
                 $errcode = "10101";
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object '".$pagefile."'could not be created by user '$user' ($site, $location_esc, $page) due to missing write permissions for the object file";    
@@ -10884,19 +10884,19 @@ function createobject ($site, $location, $page, $template, $user)
                 {
                   rdbms_createobject ($container_id, $contentorigin, $templatefile, $mediafile, $contentfile, $user);             
                 } 
-              
+
                 $page = $pagefile;
-      
+
                 $add_onload = "parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&pagename=".url_encode($page_orig)."'; ";
                 $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-content'][$lang]."\n";
-                
+
                 // information log entry
                 $errcode = "00102";
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|new object created by user '$user' ($site, $location_esc, $page)";     
-                            
+
                 // remote client
                 remoteclient ("save", "abs_path_".$cat, $site, $location, "", $pagefile, "");                 
-                
+
                 // eventsystem
                 if ($eventsystem['oncreateobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
                   oncreateobject_post ($site, $cat, $location, $page, $template, $user);                  
@@ -10950,10 +10950,10 @@ function createobject ($site, $location, $page, $template, $user)
     $errcode = "20212";
     $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location, $page) due to wrong or missing input";
   }   
-  
+
   // save log
-  savelog (@$error);  
-  
+  savelog (@$error);
+
   // return results
   $result = array();
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
@@ -10971,7 +10971,7 @@ function createobject ($site, $location, $page, $template, $user)
   $result['container'] = @$contentfile;
   $result['container_id'] = @$container_id;
   $result['container_content'] = @$page_box_xml;
-  
+
   return $result;
 }
 
@@ -12000,7 +12000,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
       else
       {
         $errcode = "10502";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createmediaobject failed to successfully execute createobject ($site, $location_esc, $file, 'default.meta.tpl', $user)"; 
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createmediaobject failed to successfully execute createobject ($site, $location_esc, $file, $template, $user)"; 
           
         $result['result'] = false;
       }
@@ -12403,7 +12403,9 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           {
             // a clipboard array item has the following structure:
             // method|site|cat|location|object|object name|filetype
-            list ($method, $site_source, $cat_source, $location_source_esc, $page, $pagename, $filetype) = explode ("|", chop ($clipboard));
+            list ($method, $site_source, $cat_source, $location_source_esc, $page_source, $pagename, $filetype) = explode ("|", chop ($clipboard));
+
+            $page = $page_source;
     
             if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site_source])) require ($mgmt_config['abs_path_data']."config/".$site_source.".conf.php");
             
@@ -13399,16 +13401,16 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";           
         }
       }
-      
+
       // --------------------------------------- connected copy and paste object -----------------------------------
       elseif ($show == "" && $action == "page_paste" && $method == "linkcopy")
       {
         // new object
         $new_object = $location_esc.$pagename_sec;
-      
+
         // load link db
         $link_db = link_db_load ($site, $user);
-        
+
         // add new object to link database
         if (is_array ($link_db) && sizeof ($link_db) >= 1)
         {
@@ -13423,61 +13425,61 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $add_onload = "";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />\n".$hcms_lang['link-management-database-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";          
         }
-        
+
         // update container and execute action if link database returned a valid result
         if ($link_db)
         {
           // load container from file system
-          $bufferdata = loadcontainer ($contentfile_self_wrk, "work", $user);  
-          
+          $bufferdata = loadcontainer ($contentfile_self_wrk, "work", $user); 
+
           // get current objects
           if ($bufferdata != false) $objects = getcontent ($bufferdata, "<contentobjects>");
-  
+
           // insert new object into content container
-          if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects[0].$new_object."|", "", "");               
-              
-          if ($bufferdata != false) 
+          if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects[0].$new_object."|", "", "");         
+
+          if ($bufferdata != false)
           {         
             // save working container 
-            $test = savecontainer ($contentfile_self_wrk, "work", $bufferdata, $user);  
-            
+            $test = savecontainer ($contentfile_self_wrk, "work", $bufferdata, $user);
+
             // final container data
-            $containerdata = $bufferdata;                   
+            $containerdata = $bufferdata;              
           }
-          else $test = false;         
-          
+          else $test = false;
+
           if ($test == false)
           {
             $errcode = "10276";
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savecontainer failed for container ".$contentfile_self;           
           }        
-          
+
           if ($test != false)
           {
             // relational DB connectivity
             if ($mgmt_config['db_connect_rdbms'] != "")
             {
-              rdbms_createobject ($contentfile_id, convertpath ($site, $location.$page_sec, $cat), $templatefile_self, $mediafile_self, "", "");                     
+              rdbms_createobject ($contentfile_id, convertpath ($site, $location.$page_sec, $cat), $templatefile_self, $mediafile_self, "", "");
             }
-                        
+
             // copy connected object
-            $test = @copy ($location_source.$page, $location.$page_sec);          
-            
+            $test = @copy ($location_source.$page, $location.$page_sec);  
+
             if ($test != false)
             {
               // remote client
-              remoteclient ("copy", "abs_path_".$cat, $site, $location_source, $location, $page, $page_sec);  
+              remoteclient ("copy", "abs_path_".$cat, $site, $location_source, $location, $page, $page_sec);
             }
             else
             {
               $errcode = "10205";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|copy failed for ".$location_source.$page;           
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|copy failed for ".$location_source.$page;
             }              
-    
+
             if ($test != false)
             {
               $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); ";
-              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";              
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";
               $page = $page_sec;
               
               $error_switch = "no";
@@ -13491,11 +13493,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           else
           {
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />\n".$hcms_lang['an-error-occured-while-writing-data-to-the-link-management-database'][$lang]."\n";          
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />\n".$hcms_lang['an-error-occured-while-writing-data-to-the-link-management-database'][$lang]."\n";
           }
         }           
       }      
-  
+
       // ----------------------------------------- copy and paste object -------------------------------------
       elseif ($show == "" && $action == "page_paste" && $method == "copy")
       {
@@ -13507,13 +13509,13 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           if ($contentcount != "")
           {
             $contentcount = trim ($contentcount);
-  
+
             // add 1 to content count
             $contentcount++;
-  
+
             // write
             $test = savelockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", $contentcount);
-  
+
             if ($test == false) 
             {
               // unlock file
@@ -13526,7 +13528,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           {
             // unlock file
             unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
-  
+
             exit ("severe error: contentcount empty!");
           }
 
@@ -13585,7 +13587,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $test = true;
         }
         else $test = false;
-  
+
         // add record in link management database and copy object
         if ($test != false && $contentfile_self != "")
         {
@@ -13709,7 +13711,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                         // remote client
                         remoteclient ("copy", "abs_path_media", $site, getlocation ($temp_path), "", getobject ($temp_path), $mediafile_new_video);                     
                       }
-                      
+
                       // individiual video config files
                       $mediafile_self_video = $mediafile_self_name.".config".$video_ext;
                       $mediafile_new_video = $mediafile_new_name.".config".$video_ext;
@@ -13718,16 +13720,16 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                       {
                         if (is_link (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video)) $temp_path = readlink (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video);
                         else $temp_path = getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video;
-                      
+
                         @copy ($temp_path, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
                         
                         // remote client
-                        remoteclient ("copy", "abs_path_media", $site, getlocation ($temp_path), "", getobject ($temp_path), $mediafile_new_video);                     
+                        remoteclient ("copy", "abs_path_media", $site, getlocation ($temp_path), "", getobject ($temp_path), $mediafile_new_video);
                       }
                     }
                   }
                 }
-                
+
                 // video player config for thumbnail videos
                 $mediafile_self_thumb = $mediafile_self_name.".config.video";
                 $mediafile_new_thumb = $mediafile_new_name.".config.video";
@@ -13736,11 +13738,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                 {
                   if (is_link (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb)) $temp_path = readlink (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb);
                   else $temp_path = getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb;
-                        
+
                   @copy ($temp_path, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
                   
                   // remote client
-                  remoteclient ("copy", "abs_path_media", $site, getlocation ($temp_path), "", getobject ($temp_path), $mediafile_new_thumb);                     
+                  remoteclient ("copy", "abs_path_media", $site, getlocation ($temp_path), "", getobject ($temp_path), $mediafile_new_thumb);
                 }
               }
             }                 
@@ -13792,6 +13794,12 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|copy failed for ".$location_source.$page;                      
           }
         }
+      }
+
+      // ----------------------------------------- set relationship -------------------------------------
+      if ($error_switch == "no" && $cat == "comp" && !empty ($mediafile_self) && $contentfile_self != "" && $action == "page_paste" && $method == "copy" && (!empty ($mgmt_config['relation_source_id']) || !empty ($mgmt_config['relation_destination_id'])))
+      {
+        setrelation ($site, $location_source, $page_source, $mgmt_config['relation_source_id'], $location, $page_sec, $mgmt_config['relation_destination_id'], $user);
       }
     }  
       
@@ -17173,7 +17181,7 @@ function deletelog ($logname="")
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['cleared-all-events-from-list'][$lang]."</span>\n";
 
       $errcode = "00821";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|log ".$logname." has been deleted by user ".$user;
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|log ".$logname." has been deleted by user ".$user;
     }
     else
     {
@@ -17398,7 +17406,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $date_end, $user, $format="%Y-%m-%d")
 {
   global $eventsystem, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
-  
+
   // set default language
   if ($lang == "") $lang = "en";
   

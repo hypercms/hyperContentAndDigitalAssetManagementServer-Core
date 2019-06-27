@@ -2117,10 +2117,10 @@ function checkpassword ($password)
   
   if ($password != "")
   {
-    // must be at least 8 digits long
+    // must be at least 10 digits long
     if (strlen ($password) < 10) $error[] = $hcms_lang['the-passwords-has-less-than-digits'][$lang];
     // must not be longer than 20 gigits
-    if (strlen ($password) > 20)	$error[] = $hcms_lang['the-password-has-more-than-digits'][$lang];
+    if (strlen ($password) > 100)	$error[] = $hcms_lang['the-password-has-more-than-digits'][$lang];
     // must contain at least one number
     if (!preg_match ("#[0-9]+#", $password)) $error[] = $hcms_lang['password-must-include-at-least-one-number'][$lang];
     // must contain at least one letter
@@ -2380,7 +2380,7 @@ function allowuserip ($site)
 // output: true / false
 
 // description:
-// Checks if an object name includes forbidden characters in order to prevent directory browsing
+// Checks if an object name includes forbidden characters in order to prevent directory browsing.
 
 function valid_objectname ($variable)
 {
@@ -2392,6 +2392,7 @@ function valid_objectname ($variable)
       if ($variable == "..") return false;
       if (substr_count ($variable, "<") > 0) return false;
       if (substr_count ($variable, ">") > 0) return false;
+      if (substr_count ($variable, "./") > 0) return false;
       if (substr_count ($variable, "../") > 0) return false;
       if (substr_count ($variable, "\\") > 0) return false;
       if (substr_count ($variable, "\"") > 0) return false;
