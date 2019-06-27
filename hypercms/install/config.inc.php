@@ -321,6 +321,11 @@ $mgmt_config['screensize']['phone']['Samsung Galaxy S9+'] = "360 x 740";
 $mgmt_config['screensize']['phone']['Samsung Galaxy Note 5'] = "480 x 853";
 $mgmt_config['screensize']['phone']['Samsung Galaxy Note 9'] = "360 x 740";
 
+// Define the tag/content IDs for the source and destination container for the relationsship (source -> destination multimedia object) when using copy and paste
+// Leave empty if you do not want to save the relationship
+$mgmt_config['relation_source_id'] = "Related";
+$mgmt_config['relation_destination_id'] = "Related";
+
 // Enable (true) or disable (false) loops for workflows
 $mgmt_config['workflow_loop'] = false;
 
