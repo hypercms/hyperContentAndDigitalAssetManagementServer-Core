@@ -245,13 +245,14 @@ function setwallpaper ()
     <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>" />
   </div>
   
+<?php if (checkrootpermission ('desktop') && checkrootpermission ('desktopsetting')) { ?>
   <!-- plus/minus button -->
   <?php if (!$is_mobile) { ?>
   <div id="plusminus" style="position:fixed; top:12px; right:28px; z-index:200;">
     <img id="button_plusminus" onClick="hcms_switchInfo('menubox');" class="hcmsButton" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
   </div>
   <?php } ?>
-  
+
   <!-- add / remove boxes menu -->
   <div id="menubox" class="hcmsHomeBox" style="position:fixed; top:36px; right:25px; z-index:200; display:none;">
     <form id="box_form" name="box_form" action="" method="post">
@@ -330,7 +331,8 @@ function setwallpaper ()
       </table>
     </form>
   </div>
-  
+<?php } ?>
+
   <div class="hcmsHomeSpacer"></div>
 
   <!-- show boxes -->

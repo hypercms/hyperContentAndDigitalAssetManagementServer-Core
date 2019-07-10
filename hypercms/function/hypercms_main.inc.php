@@ -18422,7 +18422,7 @@ function linking_valid ()
 // requires: config.inc.php
 
 // description:
-// Verifies if a valid access linking exists.
+// Returns the all objects of an access link as an array.
 
 function linking_objects ($return_text_id=array())
 {

@@ -1417,4 +1417,5 @@ $hcms_lang ['please-sign-in']['de'] = "Bitte melden Sie sich an.";
 $hcms_lang ['please-wait-for-the-approval']['de'] = "Bitte warten Sie auf die Genehmigung.";
 $hcms_lang['popups-must-be-allowed']['de'] = "Popups müssen erlaubt sein";
 $hcms_lang['reset-password']['de'] = "Passwort zurücksetzen";
+$hcms_lang['related-assets']['de'] = "Verbundene Assets";
 ?>

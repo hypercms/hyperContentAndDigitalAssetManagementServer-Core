@@ -4084,10 +4084,10 @@ function getvideoinfo ($filepath)
     // file time (use thumbnail as first option)
     $media_root = getmedialocation ($site, $media, "abs_path_media").$site."/";
     $file_info = getfileinfo ($site, $media, "comp");
-    if (!empty ($file_info['filename'])) $thumbnail = $file_info['filename'].".thumb.jpg";
+    if (!empty ($file_info['filename'])) $thumbnail = str_replace (".orig.", ".", $file_info['filename']).".thumb.jpg";
 
-    if (!empty ($thumbnail)) $filetime = date ("Y-m-d H:i", filemtime ($media_root.$thumbnail));
-    elseif (!empty ($filepath)) $filetime = date ("Y-m-d H:i", filemtime ($filepath));
+    if (!empty ($thumbnail) && is_file ($media_root.$thumbnail)) $filetime = date ("Y-m-d H:i", filemtime ($media_root.$thumbnail));
+    elseif (!empty ($filepath) && is_file ($filepath)) $filetime = date ("Y-m-d H:i", filemtime ($filepath));
     else $filetime = false;
 
     // file extension

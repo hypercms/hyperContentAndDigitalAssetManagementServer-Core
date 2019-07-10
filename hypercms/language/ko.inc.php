@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['ko'] = "로그인 해주세요.";
 $hcms_lang['please-wait-for-the-approval']['ko'] = "승인을 기다려주십시오.";
 $hcms_lang['popups-must-be-allowed']['ko'] = "팝업을 허용해야합니다";
 $hcms_lang['reset-password']['ko'] = "암호를 재설정";
+$hcms_lang['related-assets']['ko'] = "관련 자산";
 ?>

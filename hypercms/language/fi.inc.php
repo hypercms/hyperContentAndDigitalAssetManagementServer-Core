@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['fi'] = "Please sign in.";
 $hcms_lang['please-wait-for-the-approval']['fi'] = "Please wait for the approval.";
 $hcms_lang['popups-must-be-allowed']['fi'] = "Popups must be allowed";
 $hcms_lang['reset-password']['fi'] = "Reset password";
+$hcms_lang['related-assets']['fi'] = "Aiheeseen liittyvät varat";
 ?>

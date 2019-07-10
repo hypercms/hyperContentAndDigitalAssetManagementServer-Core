@@ -3397,7 +3397,7 @@ Release 05/2019
 - Bug fix: JS function hcms_updateControlObjectListMenu in contextmenu.js did not verify if location has been provided before the submit of data
 
 Version 8.0.2
-Release 07/2019
+Release 06/2019
 - Modifications in function getpdfinfo and getvideoinfo in Get API in order to add support for MD5 hash, file time, file size, file type to output parameters
 - Modifications in function createobject in Main API in order to exclude the %publication% variable name from the conversion
 - Modifications in function rdbms_setcontent in DB Connect in order to escape the text ID
@@ -3429,3 +3429,25 @@ Release 07/2019
 - Bug fix: MS IE and Edge did not display close buttons used in frameset_objectlist, frameset_content, and user_sendlink due to nested fixed positioned div-layers
 - Bug fix: Function rdbms_searchcontent in DB Connect did not verify variable $temp_expression
 - Bug fix: Function rdbms_searchcontent in DB Connect did not initialize array elements $sql_expr_advanced[$i]
+
+Version 8.0.3
+Release 07/2019
+- Implementation of related assets viewer/gallery in sidebar
+- Implementation of a gallery view for the component explorer
+- Modifications in function showcompexplorer in UI API in order to support new input parameters and to generate a thumbnail view besides the list view
+- Modifications in function showcompexplorer in UI API in order to support the lazy image loader
+- Modifications in component_edit_explorer in order to automatically select the gallery view if multimedia objects will be selected (multmedia link or used as DAM)
+- Update of all language files
+- Modifications in Multiedit (page_multiedit) in order to support the samecontent property and set the "same content"
+- Modifications in Multiedit (page_multiedit) in order to support the locked property and set the "locked" marker for each field
+- Modifications in Multiedit (page_multiedit) in order to to open each selected object by click on the thumbnail
+- Modifications in function getvideoinfo in Get API in order to remove .orig file extension for the thumnail file name
+. Minor changes in function registeruser in Security API
+- Implementation of the new home box permission in the home screen that is based on the personal settings permissio, see function checkrootpermission ('desktopsetting')
+- Implementation of the home button in the main/left navigation bar if an access link is used for access
+- Bug fix: Multiple component select box was not able to move components in template engine (removed defaultSelected in JS function moveSelected)
+- Bug fix: Multiedit (page_multiedit) did lock all fields instead of unlocking them for editing when checkbox "Only fields marked with * hold the same content and may be changed. If unchecked the text will be appended to the existing content." has been used
+- Bug fix: Function getvideoinfo in Get API did not verify the thumbnail or video file before executing filemtime
+- Bug fix: Function createmedia in Media API did use function getvideoinfo before verifying that the provided file is a video file
+- Bug fix: The task management permission of the logged in user has not been verified in the main/left navigation bar (only if an access link has been used for access)
+- Bug fix: search_objectlist was not able to display the objects due to the missing object hash (userlogin did not use the provided object hash and used function rdbms_getobject_hash on an object hash)

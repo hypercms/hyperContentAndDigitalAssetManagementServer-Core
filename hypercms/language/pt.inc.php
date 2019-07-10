@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['pt'] = "Por favor, inscreva-se.";
 $hcms_lang['please-wait-for-the-approval']['pt'] = "Por favor, aguarde a aprovação.";
 $hcms_lang['popups-must-be-allowed']['pt'] = "Popups devem ser permitidos";
 $hcms_lang['reset-password']['pt'] = "Redefinir senha";
+$hcms_lang['related-assets']['pt'] = "Ativos relacionados";
 ?>

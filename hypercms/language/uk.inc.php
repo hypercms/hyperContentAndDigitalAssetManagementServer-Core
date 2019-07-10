@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['uk'] = "Будь ласка, увійдіть".;
 $hcms_lang['please-wait-for-the-approval']['uk'] = "Будь ласка, зачекайте на схвалення";
 $hcms_lang['popups-must-be-allowed']['uk'] = "спливаючі вікна повинні бути дозволені";
 $hcms_lang['reset-password']['uk'] = "Скинути пароль";
+$hcms_lang['related-assets']['uk'] = "Пов'язані активи";
 ?>

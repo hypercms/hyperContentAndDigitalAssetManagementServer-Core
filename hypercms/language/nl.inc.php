@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['nl'] = "Log in alstublieft.";
 $hcms_lang['please-wait-for-the-approval']['nl'] = "Wacht alstublieft op de goedkeuring.";
 $hcms_lang['popups-must-be-allowed']['nl'] = "Popups moeten worden toegestaan";
 $hcms_lang['reset-password']['nl'] = "Reset wachtwoord";
+$hcms_lang['related-assets']['nl'] = "Gerelateerde activa";
 ?>

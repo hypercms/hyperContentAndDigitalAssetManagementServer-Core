@@ -1274,7 +1274,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       }
     }
   }
-  
+
   // in case hash code has been provided
   if (empty ($user)) $user = $fileuser;
 
@@ -1288,7 +1288,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     {
       // include disk key
       require ($mgmt_config['abs_path_cms']."include/diskkey.inc.php");
-    
+
       // load content counter
       $containercounter = loadfile ($mgmt_config['abs_path_data'], "check.dat");
 
@@ -1299,15 +1299,15 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $mailer->Subject = "hyperCMS Started First Time";
         $mailer->Body = "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nLicense key: ".$diskhash."\n";
         $mailer->Send();
-        
+
         mail ("info@hypercms.net", "hyperCMS Started First Time", "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nLicense key: ".$diskhash."\n");
-        
+
         savefile ($mgmt_config['abs_path_data'], "check.dat", date ("Y-m-d", time()));
-        
+
         // information
         $errcode = "00221";
         $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|hyperCMS started first time by publication: ".$site_name;       
-        
+
         $checkresult = true;       
       }
       else
@@ -1322,7 +1322,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $mailer->Subject = "hyperCMS License Alert";
         $mailer->Body = "License limit reached by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nPublications: ".$site_collection."|\n";
         $mailer->Send();
-        
+
         // deletefile ($mgmt_config['abs_path_data'], "check.dat", 0);
         $result['message'] = $hcms_lang['your-action-is-not-confirm-to-the-licence-agreement'][$lang]." <a href=\"mailto:support@hypercms.net\">support@hypercms.net</a>";
         $checkresult = false;
@@ -1341,19 +1341,19 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       $mailer->Send();
       $result['message'] = $hcms_lang['your-action-is-not-confirm-to-the-licence-agreement'][$lang]." <a href=\"mailto:support@hypercms.net\">support@hypercms.net</a>";
       $checkresult = false;
-      
+
       // warning
       $errcode = "00223";
       $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|check.dat is missing for ".$mgmt_config['url_path_cms'];       
     }
   }
-  
+
   // count failed login attempts of same client IP address
   if ($locking == true && $result['auth'] == false)
   {
     // reset session array
     if (!isset ($_SESSION['temp_ip_counter']) || !is_array ($_SESSION['temp_ip_counter'])) $_SESSION['temp_ip_counter'] = array();
-    
+
     // get client IP address
     $client_ip = getuserip();
 
@@ -1368,33 +1368,33 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       if ($_SESSION['temp_ip_counter'][$user] > 9)
       {
         loguserip ($client_ip, $user);
-        
+
         // warning
         $errcode = "00101";
         $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|client IP ".$client_ip." is banned due to 10 failed logon attempts";      
-              
+     
         // reset counter
         $_SESSION['temp_ip_counter'][$user] = 1;
       }      
     }
     else $result['message'] = $hcms_lang['you-have-been-banned'][$lang];
   }
-  
+
   // auth. result
   $result['auth'] = ($ldap_auth && $linking_auth && $auth && $checkresult);
-  
+
   // detect mobile browsers
-  $result['mobile'] = is_mobilebrowser (); 
+  $result['mobile'] = is_mobilebrowser ();
 
   // state of chat
   $result['chatstate'] = getchatstate (false);
-  
+
   // read colum defintions of user
   $columns = array();
-  
+
   // read labels of templates
   $labels = array();
-  
+
   if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".objectlistcols.json"))
   {
     // load objectlist definition file
@@ -1415,13 +1415,13 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $columns[$temp_site]['comp'] = array('modifieddate'=>1, 'filesize'=>1, 'type'=>1);
         $update_columns = true;
       }
-      
+
       // read and set labels in templates for objectlist and metadata views
       $labels[$temp_site] = array();
-      
+
       // get all templates excluding tempate includes
       $template_array = gettemplates ($temp_site, "all");
-      
+
       if (is_array ($template_array) && sizeof ($template_array) > 0)
       {
         foreach ($template_array as $template)
@@ -1467,24 +1467,24 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       savefile ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json", json_encode ($columns));
     }
   }
-  
+
   // set columns definitions for result
   $result['objectlistcols'] = $columns;
-  
+
   // set labels definitions for result
   $result['labels'] = $labels;
-  
+
   // get default GUI settings
   $result['objectview'] = $mgmt_config['objectview'];
   $result['explorerview'] = $mgmt_config['explorerview'];
   $result['sidebar'] = $mgmt_config['sidebar'];
-  
+
   // get users GUI settings
   if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".gui.dat"))
   {
     // load gui definition file
     $temp_dat = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".gui.dat");
-    
+
     if (!empty ($temp_dat)) list ($result['objectview'], $result['explorerview'], $result['sidebar']) = explode ("|", $temp_dat);
   }
 
@@ -1494,7 +1494,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     if (!empty ($result['auth'])) $result['message'] = $hcms_lang['login-correct'][$lang];
     else $result['message'] = $hcms_lang['login-incorrect'][$lang];
   }
-  
+
   // log
   if (!empty ($result['auth']))
   { 
@@ -1508,7 +1508,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     $errcode = "00103";
     $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|user '".$user."' with client IP ".$client_ip." failed to login";
   }
-  
+
   // clear user as host in chat relationships
   $chat_relations_log = $mgmt_config['abs_path_temp']."/chat_relations.php";
   
@@ -1528,7 +1528,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       }
     }
   }
-  
+
   // calculate checksum of permissions
   if (isset ($_SESSION['hcms_instance'])) $result['instance'] = $_SESSION['hcms_instance'];
   else $result['instance'] = false;
@@ -1540,13 +1540,13 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   {
     onlogon_post ($user, $result['auth']);
   }
-  
+
   // save log
   savelog (@$error);
-  
+
   // replace placeholder with value
   if (!empty ($result['message'])) $result['message'] = str_replace ("%timeout%", $mgmt_config['logon_timeout'], $result['message']);
-  
+
   return $result;
 }
 
@@ -1564,7 +1564,7 @@ function registerinstance ($instance, $load_config=true)
   {
     // create session if it doesn not exist
     createsession ();
-     
+
     if (valid_publicationname ($instance) && is_file ($mgmt_config['instances'].$instance.".inc.php"))
     {
       $_SESSION['hcms_instance'] = $instance;
@@ -1585,7 +1585,7 @@ function registerinstance ($instance, $load_config=true)
 // requires: hypercms_api.inc.php
 
 // description:
-// Registers all user related paramaters in the session. Access links can be provided with the login result or alternatively as the sperarate accesslink parameter.
+// Registers all user related paramaters in the session. Access links can be provided with the login result or alternatively as the seperate accesslink parameter.
 
 function registeruser ($instance="", $login_result, $accesslink=false, $hcms_objformats=false, $is_mobile=0, $is_iphone=0, $html5support=1)
 {
@@ -1607,17 +1607,17 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
     {
       setsession ('hcms_rootpermission', $login_result['rootpermission']);
     }
-    
+
     if (!empty ($login_result['globalpermission']))
     {
       setsession ('hcms_globalpermission', $login_result['globalpermission']);
     }
-    
+
     if (!empty ($login_result['localpermission']))
     {
       setsession ('hcms_localpermission', $login_result['localpermission']);
     }
-      
+
     // register values for this session
     setsession ('hcms_user', $login_result['user']);
     setsession ('hcms_passwd', md5 ($login_result['passwd']));
@@ -1633,7 +1633,7 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
 
     // register download formats in case of an access link
     if (!empty ($hcms_objformats)) setsession ('hcms_downloadformats', $hcms_objformats);
-    
+
     // reset mobile settings by values of client side browser detection (JavaScript)
     if (is_mobilebrowser () || $is_mobile == 1 || $is_mobile == "yes")
     {
@@ -1641,14 +1641,14 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
       $login_result['themename'] = "mobile";
     }
     else $login_result['mobile'] = false;
-    
+
     // iphone setting
     if (is_iOS() || $is_iphone == 1 || $is_iphone == "yes")
     {
       $login_result['iphone'] = true;
     }
     else $login_result['iphone'] = false;
-    
+
     // register permanent view settings
     setsession ('hcms_mobile', $login_result['mobile']);
     setsession ('hcms_iphone', $login_result['iphone']);      
@@ -1671,13 +1671,14 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
     setsession ('hcms_objectlistcols', $login_result['objectlistcols']);
     // register template label defintions
     setsession ('hcms_labels', $login_result['labels']);
-    
-    // set object linking information in session
+
+    // set object linking information in session provided in as element in login_result
     if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']) && sizeof ($login_result['hcms_linking']) > 0)
     {
       setsession ('hcms_linking', $login_result['hcms_linking']);
       setsession ('hcms_temp_explorerview', "medium");
     }
+    // provided accesslink
     elseif (!empty ($accesslink['hcms_linking']) && is_array ($accesslink['hcms_linking']) && sizeof ($accesslink['hcms_linking']) > 0)
     {
       setsession ('hcms_linking', $accesslink['hcms_linking']);
@@ -1687,7 +1688,7 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
     {
       setsession ('hcms_linking', Null);
     }
-  
+
     // write hypercms session file
     $login_result['writesession'] = writesession ($login_result['user'], $login_result['passwd'], $login_result['checksum'], $login_result['siteaccess']);
 
@@ -1696,7 +1697,7 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
     {  
       $login_result['message'] = getescapedtext ($hcms_lang['session-information-could-not-be-saved'][$lang]);
     }
-    
+
     return $login_result;
   }
   else return false;

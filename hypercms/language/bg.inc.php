@@ -1416,4 +1416,5 @@ $hcms_lang['please-sign-in']['bg'] = "Please sign in.";
 $hcms_lang['please-wait-for-the-approval']['bg'] = "Please wait for the approval.";
 $hcms_lang['popups-must-be-allowed']['bg'] = "Popups must be allowed";
 $hcms_lang['reset-password']['bg'] = "Reset password";
+$hcms_lang['related-assets']['bg'] = "Свързани активи";
 ?>

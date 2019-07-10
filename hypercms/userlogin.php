@@ -89,7 +89,7 @@ if ($al != "")
     {
       $hcms_objformats = json_decode ($result_al['formats'], true);
     }
-    
+
     // if type is download link forward to file download
     if ($result_al['type'] == "dl") header ("Location: service/mediadownload.php?dl=".url_encode($al));
   }
@@ -102,19 +102,19 @@ $accesslink = false;
 if ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
 {
   $objectpath_esc = rdbms_getobject ($oal);
-  $objecthash = rdbms_getobject_hash ($oal);
-  
+  $objecthash = $oal;
+
   if ($objectpath_esc != "")
   {
     // access link
     $accesslink['hcms_linking'][$objecthash] = $objectpath_esc;
-    
+
     // get publication
     $site = getpublication ($objectpath_esc);
 
     // publication management config
     if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-    
+
     // if a user is set for general accesslinks
     if (!empty ($mgmt_config[$site]['accesslinkuser']))
     {
@@ -149,7 +149,7 @@ if ($hcms_user_token != "")
     if (checktimetoken ($hcms_timetoken)) $hcms_objcode = hcms_crypt ($hcms_objref);
     else $hcms_objcode = "invalid";
   }
-  
+
   // warning
   $errcode = "00111";
   $error[] = $mgmt_config['today']."|userlogin.php|warning|$errcode|deprecated user token provided for access (used before version 5.6.1)";

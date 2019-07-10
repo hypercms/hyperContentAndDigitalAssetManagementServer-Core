@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['sr'] = "Please sign in.";
 $hcms_lang['please-wait-for-the-approval']['sr'] = "Please wait for the approval.";
 $hcms_lang['popups-must-be-allowed']['sr'] = "Popups must be allowed";
 $hcms_lang['reset-password']['sr'] = "Reset password";
+$hcms_lang['related-assets']['sr'] = "Povezana sredstva";
 ?>

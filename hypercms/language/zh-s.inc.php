@@ -1416,4 +1416,5 @@ $hcms_lang['please-sign-in']['zh-s'] = "请登录。";
 $hcms_lang['please-wait-for-the-approval']['zh-s'] = "请等待批准。";
 $hcms_lang['popups-must-be-allowed']['zh-s'] = "必须允许弹出窗口";
 $hcms_lang['reset-password']['zh-s'] = "重设密码";
+$hcms_lang['related-assets']['zh-s'] = "相关资产";
 ?>

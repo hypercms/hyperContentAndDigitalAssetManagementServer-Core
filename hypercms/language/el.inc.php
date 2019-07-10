@@ -1417,4 +1417,5 @@ $hcms_lang['please-sign-in']['el'] = "Please sign in.";
 $hcms_lang['please-wait-for-the-approval']['el'] = "Please wait for the approval.";
 $hcms_lang['popups-must-be-allowed']['el'] = "Popups must be allowed";
 $hcms_lang['reset-password']['el'] = "Reset password";
+$hcms_lang['related-assets']['el'] = "Σχετικά στοιχεία ενεργητικού";
 ?>

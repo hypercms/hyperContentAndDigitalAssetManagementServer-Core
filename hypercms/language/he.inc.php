@@ -1416,4 +1416,5 @@ $hcms_lang['please-sign-in']['he'] = "אנא היכנס.";
 $hcms_lang['please-wait-for-the-approval']['he'] = "אנא המתן לאישור.";
 $hcms_lang['popups-must-be-allowed']['he'] = "חלונות קופצים חייבים להיות מותרים";
 $hcms_lang['reset-password']['he'] = "לאפס את הסיסמה";
+$hcms_lang['related-assets']['he'] = "נכסים קשורים";
 ?>

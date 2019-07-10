@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['tr'] = "Lütfen giriş yapın.";
 $hcms_lang['please-wait-for-the-approval']['tr'] = "Lütfen onay için bekleyin.";
 $hcms_lang['popups-must-be-allowed']['tr'] = "Popup'lara izin verilmelidir";
 $hcms_lang['reset-password']['tr'] = "Şifreyi yenile";
+$hcms_lang['related-assets']['tr'] = "İlgili varlıklar";
 ?>

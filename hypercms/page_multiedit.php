@@ -35,8 +35,11 @@ if (valid_publicationname ($site) && empty ($mgmt_config[$site])) require ($mgmt
 $location = deconvertpath ($location, "file");
 $location_esc = convertpath ($site, $location, $cat);
 
+// token
+$token = createtoken ($user);
+
 // function to collect tag data
-function gettagdata ($tag_array) 
+function gettagdata ($tag_array)
 {
   global $mgmt_config, $site;
   
@@ -186,28 +189,27 @@ foreach ($multiobject_array as $object)
   if (empty ($object)) continue;
 
   $count++;
-  $osite = getpublication ($object);
-  $olocation = getlocation ($object);
-  $ocat = getcategory ($osite, $object);
-  $ofile = getobject ($object);
+  $site_item = getpublication ($object);
+  $location_item_esc = getlocation ($object);
+  $location_item= deconvertpath ($location_item_esc, "file");
+  $cat_item = getcategory ($site_item, $object);
+  $file_item = getobject ($object);
   
   if (empty ($site))
   {
-    $site = $osite;
+    $site = $site_item;
   }
-  elseif ($site != $osite)
+  elseif ($site != $site_item)
   {
     $error = getescapedtext ($hcms_lang['the-files-must-be-from-the-same-publication'][$lang]);
     break;
   }
   
-  $clocation = deconvertpath ($olocation, "file");
-  
   // ------------------------------ permission section --------------------------------
   
   // check access permissions
-  $ownergroup = accesspermission ($site, $clocation, $ocat);
-  $setlocalpermission = setlocalpermission ($site, $ownergroup, $ocat);
+  $ownergroup = accesspermission ($site_item, $location_item_esc, $cat_item);
+  $setlocalpermission = setlocalpermission ($site_item, $ownergroup, $cat_item);
   
   // check localpermissions for DAM usage only
   if ($mgmt_config[$site]['dam'] == true && $setlocalpermission['root'] != 1)
@@ -218,8 +220,8 @@ foreach ($multiobject_array as $object)
   // check for general root element access since localpermissions are checked later
   elseif (
            !checkpublicationpermission ($site) || 
-           (!valid_objectname ($ofile) && ($setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1)) || 
-           !valid_publicationname ($site) || !valid_locationname ($olocation) || !valid_objectname ($ocat)
+           (!valid_objectname ($file_item) && ($setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1)) || 
+           !valid_publicationname ($site) || !valid_locationname ($location_item) || !valid_objectname ($cat_item)
          ) 
   {
     killsession ($user);
@@ -230,15 +232,23 @@ foreach ($multiobject_array as $object)
 
   $groups[] = $ownergroup;
   
-  $oinfo = getobjectinfo ($osite, $olocation, $ofile);
+  // object information
+  $objectinfo_item = getobjectinfo ($site_item, $location_item, $file_item);
+
+  // define link to open object
+  if ($setlocalpermission['root'] == 1)
+  {
+    $openobject = "onclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site_item)."&cat=".url_encode($cat_item)."&location=".url_encode($location_item_esc)."&page=".url_encode($file_item)."&token=".$token."', '".$objectinfo_item['container_id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"";
+  }
+  else $openobject = "";
   
   // media  
-  if (!empty ($oinfo['media']))
+  if (!empty ($objectinfo_item['media']))
   {
-    $mediafile = $oinfo['media'];
+    $mediafile = $objectinfo_item['media'];
     $media_info = getfileinfo ($site, $mediafile, "comp");
     $thumbnail = $media_info['filename'].".thumb.jpg";
-    $mediadir = getmedialocation ($site, $oinfo['media'], "abs_path_media").$site."/";
+    $mediadir = getmedialocation ($site, $objectinfo_item['media'], "abs_path_media").$site."/";
     
     // check media
     if (!is_image ($media_info['ext'])) $is_image = false;
@@ -288,28 +298,28 @@ foreach ($multiobject_array as $object)
       if ($imgwidth < 100 && $imgheight < 100) $style_size = "";
       else $style_size = $ratio;
       
-      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".createviewlink ($site, $thumbnail, $oinfo['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";;
+      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo_item['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$objectinfo_item['name']."\" title=\"".$objectinfo_item['name']."\" /></div>";;
     }
     // no thumbnail available
     else
     {                 
-       $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".getthemelocation()."img/".$oinfo['icon']."\" style=\"border:0; width:100px;\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";
+      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:100px;\" alt=\"".$objectinfo_item['name']."\" title=\"".$objectinfo_item['name']."\" /></div>";
     }
   }
   // standard thumbnail for non-multimedia objects
   else
   {                 
-     $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".getthemelocation()."img/".$oinfo['icon']."\" style=\"border:0; width:100px;\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";
+    $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:100px;\" alt=\"".$objectinfo_item['name']."\" title=\"".$objectinfo_item['name']."\" /></div>";
   }
   
   // container
-  $content = loadcontainer ($oinfo['container_id'], "work", $user);
+  $content = loadcontainer ($objectinfo_item['container_id'], "work", $user);
   
   if (empty ($template))
   {
-    $template = $oinfo['template'];
+    $template = $objectinfo_item['template'];
   }
-  elseif ($template != $oinfo['template'])
+  elseif ($template != $objectinfo_item['template'])
   {
     $error = getescapedtext ($hcms_lang['the-objects-must-use-the-same-template'][$lang]);
     break;
@@ -318,7 +328,7 @@ foreach ($multiobject_array as $object)
   if (empty ($templatedata))
   {
     // load template
-    $tcontent = loadtemplate ($osite, $template);
+    $tcontent = loadtemplate ($site_item, $template);
     $templatedata = $tcontent['content'];
     
     // try to get DB connectivity
@@ -384,7 +394,7 @@ foreach ($multiobject_array as $object)
     
     if (isset ($db_connect) && $db_connect != "") 
     {
-      $db_connect_data = db_read_text ($site, $oinfo['container_id'], $content, $id, "", $user);
+      $db_connect_data = db_read_text ($site, $objectinfo_item['container_id'], $content, $id, "", $user);
       
       if ($db_connect_data != false) 
       {
@@ -478,33 +488,49 @@ foreach ($tagdata_array as $id => $tagdata)
     {
       $tagdata->fieldvalue = $value;
       $tagdata->ignore = false;
+      $tagdata->samecontent = false;
     }
     else
     {
-      // if content should be appended instead of edited (replaced)
+      // content will be appended instead of edited/replaced (new since version 8.0.1)
       if (getsession ("temp_appendcontent") == true)
       {
-        // if content is not the same
+        // do not lock any field
+        $tagdata->locked = false;
+        $tagdata->fieldvalue = "";
+        $tagdata->constraint = "";
+
+        // content is different
         if ($tagdata->fieldvalue != $value)
         {
-          $tagdata->ignore = false;
-          $tagdata->fieldvalue = "";
-          $tagdata->constraint = "";
+          // do not ignore field
+          $tagdata->ignore = true;
+          $tagdata->samecontent = false;
         }
         else
         {
-          $tagdata->ignore = true;
-          $tagdata->constraint = "";
+          $tagdata->ignore = false;
+          $tagdata->samecontent = true;
         }
       }
-      elseif ($tagdata->fieldvalue != $value)
-      {
-        $tagdata->ignore = true;
-        $tagdata->constraint = "";
-      }
+      // content will be edited/replaced or locked
       else
       {
-        $tagdata->ignore = false;
+        // content is different and unlocked
+        if ($tagdata->fieldvalue != $value)
+        {
+          $tagdata->ignore = true;
+          $tagdata->samecontent = false;
+          $tagdata->locked = true;
+          $tagdata->constraint = "";
+        }
+        // content is the same and locked
+        else
+        {
+          $tagdata->ignore = false;
+          $tagdata->samecontent = true;
+          $tagdata->locked = false;
+        }
       }
     }
   }
@@ -526,8 +552,6 @@ if ($add_constraint != "") $add_constraint = "checkcontent = validateForm(".$add
 
 // check session of user
 checkusersession ($user);
-
-$token = createtoken ($user);
 
 // ------------------ image parameters ------------------------
 if ($is_image)
@@ -2364,21 +2388,21 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
         
         foreach ($tagdata_array as $key => $tagdata)
         {
-          $disabled = ($tagdata->ignore == true ? 'DISABLED="DISABLED" READONLY="READONLY"' : "");
+          $disabled = ($tagdata->locked == true ? 'DISABLED="DISABLED" READONLY="READONLY"' : "");
           $id = $tagdata->hypertagname.'_'.$key;
           $label = $tagdata->labelname;
           
-          if ($tagdata->ignore == false) $ids[] = $id;
+          if ($tagdata->locked == false) $ids[] = $id;
           ?>
           <div class="hcmsFormRowLabel <?php echo $id; ?>">
-            <label for="<?php echo $id; ?>"><b><?php if (trim ($label) != "") { echo $label; if ($tagdata->ignore == false) echo " *"; } ?></b></label>
+            <label for="<?php echo $id; ?>"><b><?php if (trim ($label) != "") { echo $label; if ($tagdata->samecontent == true) echo " *"; } ?></b></label>
           </div>
           <div class="hcmsFormRowContent <?php echo $id; ?>">
           <?php
           if ($tagdata->type == "u") 
           {
           ?>
-            <textarea id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> style="width:<?php echo $tagdata->width; ?>px; height:<?php echo $tagdata->height; ?>px;" <?php echo $disabled; ?>><?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?></textarea>
+            <textarea id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> style="width:<?php echo $tagdata->width; ?>px; height:<?php echo $tagdata->height; ?>px;" <?php echo $disabled; ?>><?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?></textarea>
           <?php 
           } 
           elseif ($tagdata->type == "k") 
@@ -2429,13 +2453,13 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
             }
           ?>
             <div style="display:inline-block; width:<?php echo $tagdata->width; ?>px;">
-              <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> <?php echo $disabled; ?> value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>" />
+              <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> <?php echo $disabled; ?> value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" />
             </div>
           <?php 
           } 
           elseif ($tagdata->type == "f")
           {
-            if ($tagdata->ignore == false)
+            if ($tagdata->locked == false)
             {
               echo showeditor ($site, $tagdata->hypertagname, $key, $tagdata->fieldvalue, $tagdata->width, $tagdata->height, $tagdata->toolbar, $lang, $tagdata->dpi);
             }
@@ -2453,9 +2477,9 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
             if (empty ($disabled)) $showcalendar = "onclick=\"show_cal(this, '".$id."', '".$format."');\"";
             else $showcalendar = "";
             ?>
-            <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>" readonly="readonly" <?php echo $disabled; ?> />
+            <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" readonly="readonly" <?php echo $disabled; ?> />
             <?php
-            if ($tagdata->ignore == false) 
+            if ($tagdata->locked == false) 
             {
             ?>
             <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" <?php echo $showcalendar; ?> class="hcmsButtonTiny hcmsButtonSizeSquare" style="z-index:9999999;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" <?php echo $disabled; ?> />
@@ -2484,7 +2508,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
             // get list entries
             $list_array = explode ("|", $list);
             ?>
-            <select name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" <?php echo $disabled; ?>>
+            <select name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> <?php echo $disabled; ?>>
             <?php
             foreach ($list_array as $list_entry)
             {
@@ -2499,7 +2523,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
               else $list_value = $list_text = $list_entry;
               ?>
               <option value="<?php echo $list_value; ?>"
-              <?php if ($tagdata->ignore == false && $list_value == $tagdata->fieldvalue) echo " selected"; ?>>
+              <?php if ($tagdata->locked == false && $list_value == $tagdata->fieldvalue) echo " selected"; ?>>
               <?php echo $list_text; ?>
               </option>
               <?php
@@ -2512,7 +2536,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
           elseif ($tagdata->type == "c")
           {
             ?>
-            <input type="checkbox" name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" value="<?php echo $tagdata->value; ?>" <?php if ($tagdata->ignore == false && $tagdata->value == $tagdata->fieldvalue) echo "checked"; echo $disabled; ?> /> <?php echo $tagdata->value; ?>
+            <input type="checkbox" name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" value="<?php echo $tagdata->value; ?>" <?php if ($tagdata->locked == false && $tagdata->value == $tagdata->fieldvalue) echo "checked"; echo $disabled; ?> /> <?php echo $tagdata->value; ?>
             <?php
           }
           else
@@ -2531,7 +2555,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
     </div>
     <?php
     }
-    
+
   // onload event / document ready
   if ($add_onload != "") echo "
   <script language=\"JavaScript\" type=\"text/javascript\">

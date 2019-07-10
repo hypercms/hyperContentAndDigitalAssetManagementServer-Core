@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['ru'] = "Пожалуйста войдите.";
 $hcms_lang['please-wait-for-the-approval']['ru'] = "Пожалуйста, дождитесь одобрения";
 $hcms_lang['popups-must-be-allowed']['ru'] = "Всплывающие окна должны быть разрешены";
 $hcms_lang['reset-password']['ru'] = "Сброс пароля";
+$hcms_lang['related-assets']['ru'] = "Связанные активы";
 ?>

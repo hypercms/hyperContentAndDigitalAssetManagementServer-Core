@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['sk'] = "Prosím prihlás sa.";
 $hcms_lang['please-wait-for-the-approval']['sk'] = "Prosím počkajte na schválenie.";
 $hcms_lang['popups-must-be-allowed']['sk'] = "Popupy musia byť povolené";
 $hcms_lang['reset-password']['sk'] = "Obnoviť heslo";
+$hcms_lang['related-assets']['sk'] = "Súvisiace aktíva";
 ?>

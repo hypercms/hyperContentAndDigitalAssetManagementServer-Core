@@ -53,10 +53,10 @@ checkusersession ($user);
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
 </head>
 
 <body class="hcmsWorkplaceObjectlist">
@@ -67,7 +67,12 @@ checkusersession ($user);
 </div>
 
 <div id="Navigator" class="hcmsWorkplaceFrame">
-<?php echo showcompexplorer ($site, $dir, $location, $page, $compcat, $search_expression, $search_format, $mediatype, $lang, "", $scaling); ?>
+<?php
+if ($compcat == "media" || !empty ($mgmt_config[$site]['dam'])) $view = "gallery";
+else $view = "list";
+
+echo showcompexplorer ($site, $dir, $location, $page, $compcat, $search_expression, $search_format, $mediatype, $lang, "", $scaling, $view, 120);
+?>
 </div>
 
 </body>

@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['ro'] = "Please sign in.";
 $hcms_lang['please-wait-for-the-approval']['ro'] = "Please wait for the approval.";
 $hcms_lang['popups-must-be-allowed']['ro'] = "Popups must be allowed";
 $hcms_lang['reset-password']['ro'] = "Reset password";
+$hcms_lang['related-assets']['ro'] = "Active conexe";
 ?>-

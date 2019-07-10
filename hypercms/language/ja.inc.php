@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['ja'] = "サインインしてください。";
 $hcms_lang['please-wait-for-the-approval']['ja'] = "承認待ちです。";
 $hcms_lang['popups-must-be-allowed']['ja'] = "ポップアップを許可する必要があります";
 $hcms_lang['reset-password']['ja'] = "パスワードを再設定する";
+$hcms_lang['related-assets']['ja'] = "関連資産";
 ?>

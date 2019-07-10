@@ -1414,4 +1414,5 @@ $hcms_lang['please-sign-in']['ar'] = "الرجاء تسجيل الدخول.";
 $hcms_lang['please-wait-for-the-approval']['ar'] = "الرجاء الانتظار للحصول على الموافقة.";
 $hcms_lang['popups-must-be-allowed']['ar'] = "يجب السماح بالنوافذ المنبثقة";
 $hcms_lang['reset-password']['ar'] = "إعادة تعيين كلمة المرور";
+$hcms_lang['related-assets']['ar'] = "الأصول ذات الصلة";
 ?>

@@ -2622,9 +2622,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           $format_set = strtolower ($format);
         }
 
-        // original video info
-        $videoinfo = getvideoinfo ($location_source.$file);
-
         reset ($mgmt_mediapreview);
 
         // supported extensions for media rendering
@@ -2641,6 +2638,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               // get media rendering options based on given destination format (skip default setting extensions)
               if ($mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio" && $mediaoptions_ext != "segments" && substr_count (strtolower ($mediaoptions_ext).".", ".".$format_set.".") > 0)
               {
+                // original video info
+                $videoinfo = getvideoinfo ($location_source.$file);
+
                 // media format (media file extension) definition
                 if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-f ") > 0)
                 {

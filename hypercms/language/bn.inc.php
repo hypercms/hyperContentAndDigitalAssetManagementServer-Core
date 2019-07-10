@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['bn'] = "সাইন ইন করুন.";
 $hcms_lang['please-wait-for-the-approval']['bn'] = "অনুমোদনের জন্য অপেক্ষা করুন।";
 $hcms_lang['popups-must-be-allowed']['bn'] = "পপআপগুলি অনুমোদিত হতে হবে";
 $hcms_lang['reset-password']['bn'] = "পাসওয়ার্ড রিসেট করুন";
+$hcms_lang['related-assets']['bn'] = "সম্পর্কিত সম্পদ";
 ?>

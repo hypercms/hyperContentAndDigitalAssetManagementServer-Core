@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['hu'] = "Please sign in.";
 $hcms_lang['please-wait-for-the-approval']['hu'] = "Please wait for the approval.";
 $hcms_lang['popups-must-be-allowed']['hu'] = "Popups must be allowed";
 $hcms_lang['reset-password']['hu'] = "Reset password";
+$hcms_lang['related-assets']['hu'] = "Kapcsolódó eszközök";
 ?>

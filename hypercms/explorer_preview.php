@@ -115,6 +115,31 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     
     if ($rows != "") $metadata = "<hr /><table class=\"hcmsTableStandard\">\n".$rows."</table>\n";
   }
+
+  // related assets (only childs)
+  if (!empty ($mgmt_config['relation_source_id']))
+  {
+    // read content from content container
+    $temp_array = selectcontent ($contentdata, "<component>", "<component_id>", $mgmt_config['relation_source_id']);
+
+    if (!empty ($temp_array[0]))
+    {
+      $temp_array = getcontent ($temp_array[0], "<componentfiles>");
+
+      // convert object ID to object path
+      if (!empty ($temp_array[0]))
+      {
+        $components = getobjectlink ($temp_array[0]);
+        $components_array = explode ("|", trim ($components, "|"));
+      }
+
+      // gallery
+      if (!empty ($components))
+      {
+        $relatedview = "<hr /><table class=\"hcmsTableStandard\"><tr><td>".getescapedtext ($hcms_lang['related-assets'][$lang])."</td></tr></table><br/>\n".showgallery ($components_array, 92, true, $user);
+      }
+    }
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -137,6 +162,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   <?php
   if (!empty ($mediaview)) echo $mediaview;
   if (!empty ($metadata)) echo $metadata;
+  if (!empty ($relatedview)) echo $relatedview;
   ?>
   </div>
 </div>

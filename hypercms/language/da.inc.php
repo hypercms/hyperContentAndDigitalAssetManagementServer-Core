@@ -1415,4 +1415,5 @@ $hcms_lang['please-sign-in']['da'] = "Please sign in.";
 $hcms_lang['please-wait-for-the-approval']['da'] = "Please wait for the approval.";
 $hcms_lang['popups-must-be-allowed']['da'] = "Popups must be allowed";
 $hcms_lang['reset-password']['da'] = "Reset password";
+$hcms_lang['related-assets']['da'] = "Tilknyttede aktiver";
 ?>

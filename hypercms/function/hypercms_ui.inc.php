@@ -2660,14 +2660,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 // function: showcompexplorer ()
 // input: publication name [string], current explorer location [string], object location [string] (optional), object name [string] (optional), 
 //        component category [single,multi,media] (optional), search expression [string] (optional), search format [object,document,image,video,audio,watermark] (optional), 
-//        media-type [audio,video,text,flash,image,compressed,binary] (optional), 
+//        media-type [audio,video,text,flash,image,compressed,binary] (optional), view tpye [list,gallery] (optional), thumbnail size in pixel [integer]
 //        callback of CKEditor [string] (optional), saclingfactor for images [integer] (optional)
 // output: explorer with search / false on error
 
 // description:
 // Creates component explorer including the search form
 
-function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="multi", $search_expression="", $search_format="", $mediatype="", $lang="en", $callback="", $scalingfactor="1")
+function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="multi", $search_expression="", $search_format="", $mediatype="", $lang="en", $callback="", $scalingfactor="1", $view="list", $thumbsize=100)
 {
   global $user, $mgmt_config, $siteaccess, $pageaccess, $compaccess, $rootpermission, $globalpermission, $localpermission, $hiddenfolder, $html5file, $temp_complocation, $hcms_charset, $hcms_lang;
   
@@ -2783,6 +2783,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     $result = "<!-- Jquery and Jquery UI Autocomplete -->
 <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.3.1.min.js\" type=\"text/javascript\"></script>
 <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
+<script src=\"javascript/lazysizes/lazysizes.min.js\" type=\"text/javascript\" async=\"\"></script>
 <script type=\"text/javascript\">
 function sendCompOption(newtext, newvalue)
 {
@@ -2917,22 +2918,22 @@ $(document).ready(function()
     
       if ($callback == "") $result .= "
       <tr>
-        <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td>
+        <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td>
       </tr>";
       else $result .= "
       <tr>
-        <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td>
+        <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td>
       </tr>";
     }
     elseif ($search_expression != "")
     {
       if ($callback == "") $result .= "
       <tr>
-        <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode("%comp%/")."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td>
+        <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode("%comp%/")."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td>
       </tr>";
       else $result .= "
       <tr>
-        <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode("%comp%/")."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td>
+        <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode("%comp%/")."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td>
       </tr>";
     }
     
@@ -3018,7 +3019,7 @@ $(document).ready(function()
 
     // -------------------------------- prepare output  -------------------------------- 
     if (isset ($comp_entry_dir) || isset ($comp_entry_file))
-    {      
+    {
       // folder
       if (isset ($comp_entry_dir) && is_array ($comp_entry_dir) && sizeof ($comp_entry_dir) > 0)
       {
@@ -3038,16 +3039,25 @@ $(document).ready(function()
             // define icon
             if ($dir == $mgmt_config['abs_path_comp']) $icon = getthemelocation()."img/site.png";
             else $icon = getthemelocation()."img/".$folder_info['icon'];
-              
+
+            if ($view == "gallery")
+            {
+              $thumbnail = "<img src=\"".$icon."\" style=\"margin-top:4px; height:".$thumbsize."px;\" /><br/>";
+            }
+            else
+            {
+              $thumbnail = "<img src=\"".$icon."\" class=\"hcmsIconList\" /> ";
+            }
+
             if ($folder_info != false && $folder_info['deleted'] == false)
             {
               if ($callback == "") $result .= "
             <tr>
-              <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."\" title=\"".$location_name."\"><img src=\"".$icon."\" class=\"hcmsIconList\" /> ".showshorttext($folder_info['name'], 24)."</a></td>
+              <td style=\"".($view == "gallery" ? "text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\" title=\"".$location_name."\">".$thumbnail.showshorttext($folder_info['name'], 20)."</a></td>
             </tr>";
               else $result .= "
             <tr>
-              <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."\" title=\"".$location_name."\"><img src=\"".$icon."\" class=\"hcmsIconList\" /> ".showshorttext($folder_info['name'], 24)."</a></td>
+              <td style=\"text-align:left; vertical-align:bottom; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\" title=\"".$location_name."\">".$thumbnail.showshorttext($folder_info['name'], 20)."</a></td>
             </tr>";
             }
           }
@@ -3066,16 +3076,16 @@ $(document).ready(function()
         {
           // object info
           $comp_info = getfileinfo ($site, $object, "comp");
-          
+
           if ($object != "" && $comp_info['deleted'] == false)
           {
             // correct extension if object is unpublished
             if (substr ($object, -4) == ".off") $object = substr ($object, 0, strlen ($object) - 4);
-  
+
             // get name
             $comp_name = getlocationname ($site, $object, "comp", "path");
             
-            if ($compcat != "media" && strlen ($comp_name) > 50) $comp_name = "...".substr (substr ($comp_name, -50), strpos (substr ($comp_name, -50), "/")); 
+            //if ($compcat != "media" && strlen ($comp_name) > 50) $comp_name = "...".substr (substr ($comp_name, -50), strpos (substr ($comp_name, -50), "/")); 
   
             if (
                  $comp_info != false && $comp_info['deleted'] == false && 
@@ -3088,42 +3098,91 @@ $(document).ready(function()
                )
             {
               $comp_path = $object;
-              
-              // listview - view option for un/published objects
-              if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
-              else $class_image = "class=\"hcmsIconList\"";
-  
+
               // warning if file extensions don't match and HTTP include is off and it is not a DAM
               if ($compcat != "media" && !$mgmt_config[$site]['dam'] && $mgmt_config[$site]['http_incl'] == false && ($comp_info['ext'] != $page_info['ext'] && $comp_info['ext'] != ".page")) $alert = "test = confirm(hcms_entity_decode('".getescapedtext ($hcms_lang['the-object-types-do-not-match'][$lang], $hcms_charset, $lang)."'));";    
               else $alert = "test = true;";
-              
+
+              // thumbnail of media asset 
+              $objectinfo = getobjectinfo ($site, $dir, getobject ($object));
+
+              if ($view == "gallery" && !empty ($objectinfo['media']))
+              {
+                $mediafile = $objectinfo['media'];
+                $mediainfo = getfileinfo ($site, $mediafile, "comp");
+                $thumbnail = $mediainfo['filename'].".thumb.jpg";
+                $mediadir = getmedialocation ($site, $objectinfo['media'], "abs_path_media").$site."/";
+                
+                // thumbnails preview
+                if (is_file ($mediadir.$thumbnail))
+                {
+                  $imgsize = getimagesize ($mediadir.$thumbnail);
+                  
+                  // calculate image ratio to define CSS for image container div-tag
+                  if (is_array ($imgsize))
+                  {
+                    $imgwidth = $imgsize[0];
+                    $imgheight = $imgsize[1];
+                    $imgratio = $imgwidth / $imgheight;   
+                    
+                    // image width >= height
+                    if ($imgratio >= 1) $ratio = "width:".$thumbsize."px;";
+                    // image width < height
+                    else $ratio = "height:".$thumbsize."px;";
+                  }
+                  // default value
+                  else
+                  {
+                    $ratio = "width:".$thumbsize."px;";
+                  }
+                  
+                  // if thumbnail is smaller than defined thumbnail size
+                  if ($imgwidth < $thumbsize && $imgheight < $thumbsize) $style_size = "";
+                  else $style_size = $ratio;
+
+                  // listview - view option for un/published objects
+                  if ($comp_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
+                  else $class_image = "class=\"lazyload hcmsImageItem\"";
+                  
+                  $thumbnail = "<img data-src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" ".$class_image." style=\"margin-top:10px; ".$style_size."\" /><br/>";
+                }
+              }
+              else
+              {
+                // listview - view option for un/published objects
+                if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+                else $class_image = "class=\"hcmsIconList\"";
+
+                $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." /> ";
+              }
+  
               if ($compcat == "single")
               {
                 $result .= "
               <tr>
-                <td style=\"text-align:left; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." /> ".showshorttext($comp_info['name'], 24)."</a></td>
-                <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+                <td style=\"".($view == "gallery" ? "text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
+                <td style=\"text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
               }
               elseif ($compcat == "multi")
               {
                 $result .= "
               <tr>
-                <td style=\"text-align:left; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." /> ".showshorttext($comp_info['name'], 24)."</a></td>
-                <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+                <td style=\"".($view == "gallery" ? "text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
+                <td style=\"text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
               }
               elseif ($compcat == "media")
               {
                 if ($callback == "") $result .= "
               <tr>
-                <td style=\"text-align:left; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." /> ".showshorttext($comp_info['name'], 24)."</a></td>
-                <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+                <td style=\"".($view == "gallery" ? "text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
+                <td style=\"text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
                 else $result .= "
               <tr>
-                <td style=\"text-align:left; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." /> ".showshorttext($comp_info['name'], 24)."</a></td>
-                <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+                <td style=\"".($view == "gallery" ? "text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
+                <td style=\"text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
               }
             }
@@ -5301,9 +5360,8 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
         {
           $functioncall = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")";
           
-          // open on double click (parent must be used if function is called from iframe!)
-          $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; ".
-          "else ".$functioncall.";\"";
+          // open on click (parent must be used if function is called from iframe!)
+          $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; else ".$functioncall.";\"";
         }
       }
       
@@ -5347,7 +5405,7 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
         // no thumbnail available
         else
         {                 
-           $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$mediainfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
+          $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$mediainfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
         }
       }
       // object or folder
