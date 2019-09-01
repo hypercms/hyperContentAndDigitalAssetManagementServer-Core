@@ -14,16 +14,16 @@ scriptend]
 <!DOCTYPE html> 
 <html>
 	<head>
-    <title>[hyperCMS:textu id='Title' infotype='meta']</title>
+    <title>[hyperCMS:textu id='Title' height='30' infotype='meta']</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("black"); scriptend]css/main.css" />
 	</head>
 	<body class="hcmsWorkplaceGeneric">
-	[hyperCMS:textu id='Author' height='15' infotype='meta' onPublish='hidden']
-	[hyperCMS:textu id='Title' height='15' infotype='meta' onPublish='hidden']
-	[hyperCMS:textu id='Subject' height='15' infotype='meta' onPublish='hidden']
-	[hyperCMS:textu id='Keywords' height='15' infotype='meta' onPublish='hidden']
-	[hyperCMS:textu id='TOC_title' height='15' label='Title of TOC' infotype='meta' default='Table of content' onPublish='hidden']
+	[hyperCMS:textu id='Author' height='30' infotype='meta' onPublish='hidden']
+	[hyperCMS:textu id='Title' height='30' infotype='meta' onPublish='hidden']
+	[hyperCMS:textu id='Subject' height='30' infotype='meta' onPublish='hidden']
+	[hyperCMS:textu id='Keywords' height='30' infotype='meta' onPublish='hidden']
+	[hyperCMS:textu id='TOC_title' height='30' label='Title of TOC' infotype='meta' default='Table of content' onPublish='hidden']
 	<br />
 	<div style="width: 595px; margin: 0 auto 0 auto;">[hyperCMS:componentm id='pages']</div>
 	<br />
@@ -42,10 +42,10 @@ elseif ('%view%' != 'template')
 
 	// set document information
 	$pdf->SetCreator(PDF_CREATOR);
-	$pdf->SetAuthor("[hyperCMS:textu id='Author' height='15' onEdit='hidden']");
-	$pdf->SetTitle("[hyperCMS:textu id='Title' height='15' onEdit='hidden']");
-	$pdf->SetSubject("[hyperCMS:textu id='Subject' height='15' onEdit='hidden']");
-	$pdf->SetKeywords("[hyperCMS:textu id='Keywords' height='15' onEdit='hidden']");
+	$pdf->SetAuthor("[hyperCMS:textu id='Author' onEdit='hidden']");
+	$pdf->SetTitle("[hyperCMS:textu id='Title' onEdit='hidden']");
+	$pdf->SetSubject("[hyperCMS:textu id='Subject' onEdit='hidden']");
+	$pdf->SetKeywords("[hyperCMS:textu id='Keywords' onEdit='hidden']");
 
 	// remove default header/footer
 	$pdf->setPrintHeader(false);

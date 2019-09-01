@@ -1659,7 +1659,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // ----------------------------------------------- search content ------------------------------------------------- 
 
 // function: rdbms_searchcontent()
-// input: location [string] (optional), exlude locations/folders (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
+// input: location [string] (optional), exlude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
 //        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), 
 //        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image color [array] (optional), image-type [portrait,landscape,square] (optional), 
 //        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned, eg. text:Title [array] (optional), count search result entries [true,false] (optional), log search expression [true/false] (optional), taxonomy level to include [integer] (optional)
@@ -1782,10 +1782,15 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     $sql_table = array();
     $sql_where = array();
 
-    // folder path => consider folderpath only when there is no filenamecheck
     if (!empty ($folderpath))
     {
-      if (!is_array ($folderpath) && $folderpath != "") $folderpath = array ($folderpath);      
+      // folder path => consider folderpath only when there is no filenamecheck
+      if (!is_array ($folderpath) && trim ($folderpath) != "")
+      {
+        $folderpath = trim ($folderpath);
+        $folderpath = array ($folderpath);      
+      }
+
       $sql_puffer = array();
       
       foreach ($folderpath as $path)
@@ -1804,10 +1809,15 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       if (is_array ($sql_puffer) && sizeof ($sql_puffer) > 0) $sql_where['folderpath'] = '('.implode (" OR ", $sql_puffer).')';
     }
     
-    // excludepath path
+    // exclude path
     if (!empty ($excludepath))
     {
-      if (!is_array ($excludepath) && $excludepath != "") $excludepath = array ($excludepath);
+      if (!is_array ($excludepath) && trim ($excludepath) != "")
+      {  
+        $excludepath = trim ($excludepath);
+        $excludepath = array ($excludepath);
+      }
+
       $sql_puffer = array();
       
       foreach ($excludepath as $path)
@@ -4014,13 +4024,13 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
 // ----------------------------------------------- get deleted objects ------------------------------------------------- 
 
 // function: rdbms_getdeletedobjects()
-// input: user name [string] (optional), older than date [date] (optional), max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional)
+// input: user name [string] (optional), older than date [date] (optional), max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional), return sub items [true,false] (optional)
 // output: objectpath array with hashcode as key and path as value / false
 
 // description:
-// Queries all marked as deleted objects of a user.
+// Queries all marked as deleted objects of a user. Subitems are marked displaying the user name in brackets [username].
 
-function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text_id=array(), $count=false)
+function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text_id=array(), $count=false, $subitems=false)
 {
   global $mgmt_config;
 
@@ -4088,9 +4098,13 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
   } 
   
   $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj ';
+
   if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
+
   if ($user != "") $sql .= 'WHERE obj.deleteuser="'.$user.'" ';
+  elseif ($subitems == true) $sql .= 'WHERE obj.deleteuser!="" ';
   else $sql .= 'WHERE obj.deleteuser!="" AND obj.deleteuser NOT LIKE "[%]" ';
+  
   if ($date != "") $sql .= 'AND obj.deletedate<"'.$date.'" ';  
   if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
 
@@ -4123,9 +4137,13 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
   if (!empty ($count))
   {
     $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj ';
+    
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
+
     if ($user != "") $sql .= 'WHERE deleteuser="'.$user.'" ';
+    elseif ($subitems == true) $sql .= 'WHERE obj.deleteuser!="" ';
     else $sql .= 'WHERE deleteuser!="" AND deleteuser NOT LIKE "[%]" ';
+
     if ($date != "") $sql .= 'AND deletedate<"'.$date.'" ';
     
     $errcode = "50327";
@@ -4152,7 +4170,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
 // output: true / false
 
 // description:
-// Marks objects as deleted for a specific user. Subitems will be marked as well but the user name is set in brackets [username]. 
+// Marks objects as deleted for a specific user. Subitems will be marked as well and the user name is set in brackets [username]. 
 
 function rdbms_setdeletedobjects ($objects, $user, $mark="set")
 {
@@ -4646,7 +4664,14 @@ function rdbms_deleterecipient ($recipient_id)
 
 // ----------------------------------------------- create queue entry -------------------------------------------------
 
-function rdbms_createqueueentry ($action, $object, $date, $published_only=0, $user)
+// function: rdbms_createqueueentry()
+// input: action [string], converted object path [string], execution date for the action [YYYY-MM-DD hh:mm], apply for published objects only [true,false], user name [string]
+// output: true / false on error
+
+// description:
+// Creates a new action in the queue.
+
+function rdbms_createqueueentry ($action, $object, $date, $published_only=false, $user)
 {
   global $mgmt_config;
 
@@ -4667,7 +4692,8 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only=0, $us
       $action = $db->escape_string ($action);
       $object = $db->escape_string ($object);
       $date = date ("Y-m-d H:i", strtotime ($date));
-      if ($published_only != "") $published_only = $db->escape_string ($published_only);
+      if (!empty ($published_only)) $published_only = 1;
+      else $published_only = 0;
       $user = $db->escape_string ($user);
       
       $sql = 'INSERT INTO queue (object_id, action, date, published_only, user) ';    
@@ -4689,6 +4715,13 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only=0, $us
 }
 
 // ------------------------------------------------ get queue entries -------------------------------------------------
+
+// function: rdbms_getqueueentries()
+// input: action [string], publication name [string] (optional), execution date for the action [YYYY-MM-DD hh:mm] (optional), user name [string] (optional), converted object path [string] (optional)
+// output: queue elements as array / false on error
+
+// description:
+// Returns the queue entries.
 
 function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $object="")
 {
@@ -4758,6 +4791,13 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
 }
 
 // ----------------------------------------------- delete queue entry -------------------------------------------------
+
+// function: rdbms_deletequeueentry()
+// input: queue ID [integer]
+// output: true / false on error
+
+// description:
+// Deletes an element from the queue by its ID.
 
 function rdbms_deletequeueentry ($queue_id)
 {
@@ -5097,20 +5137,25 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
 }
 
 // ----------------------------------------------- daily statistics -------------------------------------------------
-// Update the daily statistics after a loggable event.
+
+// function: rdbms_insertdailystat()
+// input: activity [string], container ID [integer,array], user name [string] (optional), include all sub objects in a folder if the container ID is not an array [true,false]
+// output: true / false on error
+
+// description:
+// Updates the daily access statistics.
 // The dailystat table contains a counter for each 'activity' (i.e. download) for each object (i.e. media file of container) per day.
 
-function rdbms_insertdailystat ($activity, $container_id, $user="")
+function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all=false)
 {
   global $mgmt_config;
   
-  if ($activity != "" && $container_id != "")
+  if ($activity != "" && (is_array ($container_id) || intval ($container_id) > 0))
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
     // clean input    
     $activity = $db->escape_string ($activity);
-    $container_id = $db->escape_string ($container_id);
     if ($user != "") $user = $db->escape_string ($user);
 
     // get current date
@@ -5124,46 +5169,90 @@ function rdbms_insertdailystat ($activity, $container_id, $user="")
       
       if (empty ($user)) $user = "unknown";
     }
-    
-    // check to see if there is a row
-    $sql = 'SELECT count(*) AS count FROM dailystat WHERE date="'.$date.'" AND user="'.$user.'" AND activity="'.$activity.'" AND id='.$container_id;
-    
-    $errcode = "50037";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
-    
-    if ($done)
+
+    // add input object to array
+    if (!is_array ($container_id)) $container_id_array = array ($container_id);
+    else $container_id_array = $container_id;
+
+    // get all container IDs of the objects in the folder
+    if ($include_all == true && !is_array ($container_id))
     {
-      $result = $db->getResultRow ('select', 0);
-      $count = $result['count'];
+      $sql = 'SELECT objectpath FROM object WHERE id='.$container_id;
 
-      if ($count == 0)
+      $errcode = "50039";
+      $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'objectpath');
+
+      if ($done)
       {
-        // insert
-        $sql = 'INSERT INTO dailystat (id,user,activity,date,count) VALUES ('.$container_id.',"'.$user.'","'.$activity.'","'.$date.'",1)';
+        $result = $db->getResultRow ('objectpath', 0);
+        $objectpath = $result['objectpath'];
+
+        if (strpos ($objectpath, ".folder") > 0)
+        {
+          // select all sub-objects that have not been deleted
+          $sql = 'SELECT id FROM object WHERE objectpath LIKE "'.getlocation ($objectpath).'%" AND deleteuser=""';
+
+          $errcode = "50040";
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'ids');
+
+          if ($done)
+          {
+            // stats array
+            while ($row = $db->getResultRow ('ids'))
+            {
+              if (!empty ($row['id']))
+              {
+                $container_id_array[] = $row['id'];
+              }
+            }
+          }
+        }
       }
-      else
-      {
-        // update
-        $sql = 'UPDATE dailystat SET count=count+1 WHERE date="'.$date.'" AND user="'.$user.'" AND activity="'.$activity.'" AND id='.$container_id;
-      }
-
-      $errcode = "50038";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'insertupdate');
-
-      // save log
-      savelog ($db->getError());
-      $db->close();    
-
-      return true;  
     }
-    else
+
+    // set access stats for each container ID
+    if (is_array ($container_id_array) && sizeof ($container_id_array) > 0)
     {
-      // save log
-      savelog ($db->getError());
-      $db->close();    
-      
-      return false;
+      foreach ($container_id_array as $container_id)
+      {
+        if (intval ($container_id) > 0)
+        {
+          $container_id = intval ($container_id);
+
+          // check to see if there is a row
+          $sql = 'SELECT count(*) AS count FROM dailystat WHERE date="'.$date.'" AND user="'.$user.'" AND activity="'.$activity.'" AND id='.$container_id;
+          
+          $errcode = "50037";
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
+          
+          if ($done)
+          {
+            $result = $db->getResultRow ('select', 0);
+            $count = $result['count'];
+
+            if ($count == 0)
+            {
+              // insert
+              $sql = 'INSERT INTO dailystat (id,user,activity,date,count) VALUES ('.$container_id.',"'.$user.'","'.$activity.'","'.$date.'",1)';
+            }
+            else
+            {
+              // update
+              $sql = 'UPDATE dailystat SET count=count+1 WHERE date="'.$date.'" AND user="'.$user.'" AND activity="'.$activity.'" AND id='.$container_id;
+            }
+
+            $errcode = "50038";
+            $db->query ($sql, $errcode, $mgmt_config['today'], 'insertupdate');
+          }
+        }
+      }
     }
+
+    // save log
+    savelog ($db->getError());
+    $db->close();    
+
+    return true;
   }
   else return false;  
 }
@@ -5207,7 +5296,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
     if ($objectpath != "")
     {
       $sqlfilesize = ', SUM(media.filesize) AS filesize';
-      $sqltable = "INNER JOIN media ON dailystat.id=media.id INNER JOIN object ON dailystat.id=object.id";
+      $sqltable = "LEFT JOIN media ON dailystat.id=media.id INNER JOIN object ON dailystat.id=object.id";
       if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
       else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
       $sqlgroup = 'GROUP BY dailystat.id, dailystat.user ORDER BY dailystat.date';
@@ -5216,7 +5305,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
     elseif ($container_id != "")
     {
       $sqlfilesize = ', media.filesize AS filesize';
-      $sqltable = "INNER JOIN media ON dailystat.id=media.id";
+      $sqltable = "LEFT JOIN media ON dailystat.id=media.id";
       $sqlwhere = 'AND dailystat.id='.$container_id;
       $sqlgroup = 'GROUP BY dailystat.date, dailystat.user ORDER BY dailystat.date';
     }
@@ -5227,7 +5316,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
     if ($objectpath != "")
     {
       $sqlfilesize = "";
-      $sqltable = 'INNER JOIN object ON dailystat.id=object.id';
+      $sqltable = 'LEFT JOIN object ON dailystat.id=object.id';
       if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
       else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
       $sqlgroup = 'GROUP BY dailystat.date, dailystat.user ORDER BY dailystat.date';

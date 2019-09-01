@@ -47,7 +47,7 @@ function maxstorage ($site)
   else return false;
 }
 
-if ($is_mobile) $width = "92%";
+if (!empty ($is_mobile)) $width = "92%";
 else $width = "320px";
 
 if (is_array ($siteaccess))
@@ -123,7 +123,7 @@ if (is_array ($siteaccess))
       
       echo "<br /><br /><br />";
       
-      $percentage = round ((($space_total - $space_free) / $space_total), 4) * 100;
+      if ($space_total > 0) $percentage = round ((($space_total - $space_free) / $space_total), 4) * 100;
       if ($percentage > 100) $percentage = 100;
       
       if ($percentage > 90) $css_color = "hcmsPriorityAlarm";

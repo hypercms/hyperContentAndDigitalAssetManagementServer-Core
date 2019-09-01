@@ -2,7 +2,7 @@
 // ---------------------- RECENT TASKS ---------------------
 if (checkrootpermission ('desktoptaskmgmt'))
 {
-  if ($is_mobile) $width = "92%";
+  if (!empty ($is_mobile)) $width = "92%";
   else $width = "320px";
 
   $task_array = rdbms_gettask ("", "", "", "", $user);

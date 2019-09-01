@@ -6,12 +6,12 @@
 <extension>php</extension>
 <application>php</application>
 <content><![CDATA[[hyperCMS:textc id='NavigationHide' label='Hide in Navigation' value='yes' infotype='meta' onPublish='hidden']
-[hyperCMS:textu id='NavigationSortOrder' label='Navigation Sort Order' constraint='inRange0:1000' infotype='meta' onPublish='hidden' height='25']
+[hyperCMS:textu id='NavigationSortOrder' label='Navigation Sort Order' constraint='inRange0:1000' infotype='meta' onPublish='hidden' height='30']
 [hyperCMS:fileinclude file='%abs_comp%/%publication%/configuration.php']
 <!DOCTYPE html>
 <html>
   <head>
-    <title>[hyperCMS:textu id='Title' infotype='meta' height='25' label='Page Title' constraint='R']</title>
+    <title>[hyperCMS:textu id='Title' infotype='meta' height='30' label='Page Title' constraint='R']</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -58,7 +58,7 @@
               <article class="featured-text">
                 [hyperCMS:scriptbegin $tmp_title = "[hyperCMS:textu id='slide_1_title' onEdit='hidden']"; if (!empty($tmp_title) || "%view%" == "cmsview") { scriptend]
                 <div class="featured-title">
-                  [hyperCMS:textu id='slide_1_title' height='25' label='Title for Slide 1']
+                  [hyperCMS:textu id='slide_1_title' height='30' label='Title for Slide 1']
                 </div><!-- .featured-title -->
                 [hyperCMS:scriptbegin } scriptend]
                 [hyperCMS:scriptbegin $tmp_content = "[hyperCMS:textf id='slide_1_text' onEdit='hidden']"; if (!empty($tmp_content) || "%view%" == "cmsview") { scriptend]
@@ -86,7 +86,7 @@
               <article class="featured-text">
                 [hyperCMS:scriptbegin $tmp_title = "[hyperCMS:textu id='slide_2_title' onEdit='hidden']"; if (!empty($tmp_title) || "%view%" == "cmsview") { scriptend]
                 <div class="featured-title">
-                  [hyperCMS:textu id='slide_2_title' height='25' label='Title for Slide 2']
+                  [hyperCMS:textu id='slide_2_title' height='30' label='Title for Slide 2']
                 </div><!-- .featured-title -->
                 [hyperCMS:scriptbegin } scriptend]
                 [hyperCMS:scriptbegin $tmp_content = "[hyperCMS:textf id='slide_2_text' onEdit='hidden']"; if (!empty($tmp_content) || "%view%" == "cmsview") { scriptend]
@@ -114,7 +114,7 @@
               <article class="featured-text">
                 [hyperCMS:scriptbegin $tmp_title = "[hyperCMS:textu id='slide_3_title' onEdit='hidden']"; if (!empty($tmp_title) || "%view%" == "cmsview") { scriptend]
                 <div class="featured-title">
-                  [hyperCMS:textu id='slide_3_title' height='25' label='Title for Slide 3']
+                  [hyperCMS:textu id='slide_3_title' height='30' label='Title for Slide 3']
                 </div><!-- .featured-title -->
                 [hyperCMS:scriptbegin } scriptend]
                 [hyperCMS:scriptbegin $tmp_content = "[hyperCMS:textf id='slide_3_text' onEdit='hidden']"; if (!empty($tmp_content) || "%view%" == "cmsview" ) { scriptend]
@@ -142,7 +142,7 @@
               <article class="featured-text">
                 [hyperCMS:scriptbegin $tmp_title = "[hyperCMS:textu id='slide_4_title' onEdit='hidden']"; if (!empty($tmp_title) || "%view%" == "cmsview") { scriptend]
                 <div class="featured-title">
-                  [hyperCMS:textu id='slide_4_title' height='25' label='Title for Slide 4']
+                  [hyperCMS:textu id='slide_4_title' height='30' label='Title for Slide 4']
                 </div><!-- .featured-title -->
                 [hyperCMS:scriptbegin } scriptend]
                 [hyperCMS:scriptbegin $tmp_content = "[hyperCMS:textf id='slide_4_text' onEdit='hidden']"; if (!empty($tmp_content) || "%view%" == "cmsview" ) { scriptend]
@@ -170,7 +170,7 @@
               <article class="featured-text">
                 [hyperCMS:scriptbegin $tmp_title = "[hyperCMS:textu id='slide_5_title' onEdit='hidden']"; if (!empty($tmp_title) || "%view%" == "cmsview") { scriptend]
                 <div class="featured-title">
-                  [hyperCMS:textu id='slide_5_title' height='25' label='Title for Slide 5']
+                  [hyperCMS:textu id='slide_5_title' height='30' label='Title for Slide 5']
                 </div><!-- .featured-title -->
                 [hyperCMS:scriptbegin } scriptend]
                 [hyperCMS:scriptbegin $tmp_content = "[hyperCMS:textf id='slide_5_text' onEdit='hidden']"; if (!empty($tmp_content) || "%view%" == "cmsview" ) { scriptend]
@@ -190,7 +190,7 @@
         <section class="slogan-wrap clearfix">
           <div class="container">
             <div class="slogan">
-              [hyperCMS:textu id='SloganTitle' label='Slogan Title' height='25']
+              [hyperCMS:textu id='SloganTitle' label='Slogan Title' height='30']
               <span class="continuation">[hyperCMS:textf id='SloganText' label='Slogan Text']</span>
             </div><!-- .slogan -->
           </div><!-- .container -->
@@ -203,7 +203,7 @@
             [hyperCMS:scriptbegin $tmp = "[hyperCMS:textu id='article_1_title' onEdit='hidden']"; if (!empty($tmp) || "%view%" == "cmsview") { scriptend]
             <div class="one-third fixed-row-height">
               <div class="service-item clearfix">
-                <h3 class="service-title">[hyperCMS:textu id='article_1_title' label='Title for Article 1'  height='25']</h3>
+                <h3 class="service-title">[hyperCMS:textu id='article_1_title' label='Title for Article 1'  height='30']</h3>
               </div><!-- .service-item -->
               <article>
                 <p>
@@ -218,7 +218,7 @@
             [hyperCMS:scriptbegin $tmp = "[hyperCMS:textu id='article_2_title' onEdit='hidden']"; if (!empty($tmp) || "%view%" == "cmsview") { scriptend]
             <div class="one-third fixed-row-height">
               <div class="service-item clearfix">
-                <h3 class="service-title">[hyperCMS:textu id='article_2_title' label='Title for Article 2'  height='25']</h3>
+                <h3 class="service-title">[hyperCMS:textu id='article_2_title' label='Title for Article 2' height='30']</h3>
               </div><!-- .service-item -->
               <article>
                 <p>
@@ -233,7 +233,7 @@
             [hyperCMS:scriptbegin $tmp = "[hyperCMS:textu id='article_3_title' onEdit='hidden']"; if (!empty($tmp) || "%view%" == "cmsview") { scriptend]
             <div class="one-third fixed-row-height">
               <div class="service-item clearfix">
-                <h3 class="service-title">[hyperCMS:textu id='article_3_title' label='Title for Article 3' height='25']</h3>
+                <h3 class="service-title">[hyperCMS:textu id='article_3_title' label='Title for Article 3' height='30']</h3>
               </div><!-- .service-item -->
               <article>
                 <p>
@@ -248,7 +248,7 @@
             [hyperCMS:scriptbegin $tmp = "[hyperCMS:textu id='article_4_title' onEdit='hidden']"; if (!empty($tmp) || "%view%" == "cmsview") { scriptend]
             <div class="one-third fixed-row-height">
               <div class="service-item clearfix">
-                <h3 class="service-title">[hyperCMS:textu id='article_4_title' label='Title for Article 4'  height='25']</h3>
+                <h3 class="service-title">[hyperCMS:textu id='article_4_title' label='Title for Article 4'  height='30']</h3>
               </div><!-- .service-item -->
               <article>
                 <p>
@@ -263,7 +263,7 @@
             [hyperCMS:scriptbegin $tmp = "[hyperCMS:textu id='article_5_title' onEdit='hidden']"; if (!empty($tmp) || "%view%" == "cmsview") { scriptend]
             <div class="one-third fixed-row-height">
               <div class="service-item clearfix">
-                <h3 class="service-title">[hyperCMS:textu id='article_5_title' label='Title for Article 5' height='25']</h3>
+                <h3 class="service-title">[hyperCMS:textu id='article_5_title' label='Title for Article 5' height='30']</h3>
               </div><!-- .service-item -->
               <article>
                 <p>
@@ -278,7 +278,7 @@
             [hyperCMS:scriptbegin $tmp = "[hyperCMS:textu id='article_6_title' onEdit='hidden']"; if (!empty($tmp) || "%view%" == "cmsview") { scriptend]
             <div class="one-third fixed-row-height">
               <div class="service-item clearfix">
-                <h3 class="service-title">[hyperCMS:textu id='article_6_title' label='Title for Article 6' height='25']</h3>
+                <h3 class="service-title">[hyperCMS:textu id='article_6_title' label='Title for Article 6' height='30']</h3>
               </div><!-- .service-item -->
               <article>
                 <p>

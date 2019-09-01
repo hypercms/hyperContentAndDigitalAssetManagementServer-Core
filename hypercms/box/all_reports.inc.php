@@ -5,7 +5,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
   // language file
   require_once ("language/".getlanguagefile ($lang));
   
-  if ($is_mobile) $width = "92%";
+  if (!empty ($is_mobile)) $width = "92%";
   else $width = "670px";
   
   echo "

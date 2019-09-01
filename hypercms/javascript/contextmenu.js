@@ -466,6 +466,10 @@ function hcms_createContextmenuItem (action)
   else var windowwidth = 800;
   if (localStorage.getItem('windowheight') !== null || localStorage.getItem('windowheight') > 0) var windowheight = localStorage.getItem('windowheight');
   else var windowheight = 1000;
+
+  // set user new window
+  if (localStorage.getItem('user_newwindow') !== null && localStorage.getItem('user_newwindow') == true) var user_newwindow = true;
+  else var user_newwindow = false;
   
   if (eval (document.forms['contextmenu_object']))
   {
@@ -605,7 +609,8 @@ function hcms_createContextmenuItem (action)
     
     if (action == "edit")
     {
-      hcms_openWindow('user_edit.php?site=' + site + '&group=' + group + '&login=' + login + '&token=' + token, 'edit', 'status=yes,scrollbars=no,resizable=yes', 520, 660);
+      if (user_newwindow == true) hcms_openWindow('user_edit.php?site=' + site + '&group=' + group + '&login=' + login + '&token=' + token, 'edit', 'status=yes,scrollbars=yes,resizable=yes', 560, 800);
+      else parent.openpopup('user_edit.php?site=' + site + '&group=' + group + '&login=' + login + '&token=' + token);
     }
     else if (action == "delete")
     {
@@ -1486,3 +1491,6 @@ document.oncontextmenu = hcms_Contextmenu;
 document.onmousedown = hcms_rightClick;
 document.onmouseup = hcms_endSelectArea;
 document.onclick = hcms_leftClick;
+
+// for alert in iframe
+window.alert = top.alert;

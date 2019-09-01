@@ -36,24 +36,24 @@ $token_new = createtoken ($user);
   <meta name="viewport" content="width=device-width, initial-scale=0.62, maximum-scale=1.0, user-scalable=1" />
   <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
   <script src="javascript/main.js" type="text/javascript"></script>
-  
+
   <!-- Jquery and Jquery UI Autocomplete -->
   <script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
   <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
   <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
-      
+
   <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
   <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
   <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
   <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
   <script src="javascript/rich_calendar/domready.js"></script>
-  
+
   <script type="text/javascript">
-  
+
   var cal_obj = null; 
   var cal_format = '%Y-%m-%d';
   var cal_field = null;
-  
+
   // show calendar
   function show_cal (el, field_id, format, time)
   {
@@ -73,7 +73,7 @@ $token_new = createtoken ($user);
     cal_obj.parse_date(datefield.value, cal_format);
   	cal_obj.show_at_element(datefield, "adj_right-top");
   }
-  
+
   // user defined onchange handler
   function cal_on_change(cal, object_code)
   {
@@ -84,14 +84,14 @@ $token_new = createtoken ($user);
   		cal_obj = null;
   	}
   }
-  
+
   // user defined onclose handler (used in pop-up mode - when auto_close is true)
   function cal_on_close(cal)
   {
   	cal.hide();
   	cal_obj = null;
   }
-  
+
   // user defined onautoclose handler
   function cal_on_autoclose(cal)
   {
@@ -101,7 +101,7 @@ $token_new = createtoken ($user);
   var maxoptions = <?php if (($maxoptions = max (array (sizeof ($mgmt_docoptions), sizeof ($mgmt_imageoptions)))) > 0) echo $maxoptions+1; else "1"; ?>;
   var singleselect = false;
   var folderincluded = <?php if ($allow_attachment) echo "0"; else echo "1"; ?>;
-  
+
   function selectCheckbox (id_prefix, id)
   {
     // select a single checkbox by id
@@ -126,7 +126,7 @@ $token_new = createtoken ($user);
       }
     }
   }
-  
+
   function selectLinkType(id)
   {
     // uncheck
@@ -137,7 +137,7 @@ $token_new = createtoken ($user);
     // check
     if (document.getElementById(id)) document.getElementById(id).checked = true;
   }
-  
+
   function initLinkType()
   {
     // download link -> single select
@@ -370,6 +370,7 @@ $token_new = createtoken ($user);
     // prevent reseting the checked boxes to default values
     if (empty ($format_img) && empty ($format_doc) && empty ($format_vid)) echo "initLinkType();";
     ?>
+    
     hcms_setViewportScale();
     
     <?php 
@@ -763,7 +764,7 @@ $token_new = createtoken ($user);
                     {
                       natcasesort ($allgroup_array);
                       reset ($allgroup_array);
-                        
+ 
                       foreach ($allgroup_array as $allgroup)
                       {
                         echo "
@@ -780,9 +781,9 @@ $token_new = createtoken ($user);
             </tr>
           </table>
         </div>
-        
+
       </div>
-                  
+     
       <div id="LayerMail" style="position:absolute; z-index:5; visibility:visible; left:0px; top:275px; padding-left:6px;">
       
         <hr/>
@@ -826,7 +827,7 @@ $token_new = createtoken ($user);
               if (!empty ($objectpath))
               {
                 $queue = rdbms_getqueueentries ("delete", "", "", "", $objectpath);
-  
+
                 if (is_array ($queue) && !empty ($queue[0]['date']))
                 {
                   $message = str_replace ("%date%", substr ($queue[0]['date'], 0, -3), $hcms_lang['the-link-will-be-active-till-date'][$lang]);
@@ -836,7 +837,7 @@ $token_new = createtoken ($user);
                     $email_body .= $message."\n";
                   }
                 }
-                
+
                 echo $email_body;
               }
               ?></textarea>
@@ -844,7 +845,7 @@ $token_new = createtoken ($user);
           </tr>
         </table>
         <hr/>
-        
+
       <?php if ($page != "" || is_array ($multiobject_array)) { ?>
         <!-- Links -->
         <div style="display:block; margin-bottom:3px;">
@@ -869,7 +870,7 @@ $token_new = createtoken ($user);
           </table>
         </div>
         <hr/>
-        
+
         <!-- Formats -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?></span>
@@ -888,25 +889,25 @@ $token_new = createtoken ($user);
               
               echo "<label><input id=\"format_img".$i."\" name=\"format_img[]\" onclick=\"selectCheckbox('format_img', this.id)\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
               $i++;
-              
+
               foreach ($mgmt_imageoptions as $ext => $imageconfig_array)
               {
                 if (is_array ($imageconfig_array))
                 {
                   $ext_array = explode (".", trim ($ext, "."));
                   $image_type = $ext_array[0];
-                  
+
                   foreach ($imageconfig_array as $image_config => $value)
                   {
                     if ($image_config != "original" && $image_config != "thumbnail")
                     {
                       $file_info = getfileinfo ($site, "file".$ext, "comp");
-                      
+
                       if (!empty ($format_img) && is_array ($format_img) && in_array ($image_type."|".$image_config, $format_img)) $checked = "checked=\"checked\"";
                       else $checked = "";
-                      
+
                       echo "<label><input id=\"format_img".$i."\" name=\"format_img[]\" onclick=\"selectCheckbox('format_img', this.id)\" type=\"checkbox\" value=\"".$image_type."|".$image_config."\" ".$checked." /> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".strtoupper($image_type)." ".$file_info['type']." ".$image_config."</label><br />\n";
-                      
+
                       $i++;
                     }
                   }
@@ -921,31 +922,31 @@ $token_new = createtoken ($user);
             if (is_array ($mgmt_mediaoptions) && sizeof ($mgmt_mediaoptions) > 0)
             {
               $i = 1;
-              
+
               if (!empty ($format_vid) && is_array ($format_vid) && in_array ("original", $format_vid)) $checked = "checked=\"checked\"";
               else $checked = "";
-              
+
               echo "
               <label><input id=\"format_vid".$i."\" name=\"format_vid[]\" onclick=\"selectCheckbox('format_vid', this.id)\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />";
               $i++;
-              
+
               if (!empty ($format_vid) && is_array ($format_vid) && in_array ("origthumb", $format_vid)) $checked = "checked=\"checked\"";
               else $checked = "";
-              
+
               echo "
               <label><input id=\"format_vid".$i."\" name=\"format_vid[]\" onclick=\"selectCheckbox('format_vid', this.id)\" type=\"checkbox\" value=\"origthumb\" ".$checked." /> <img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['preview'][$lang])."</label><br />";
               $i++;
-              
+
               if (!empty ($format_vid) && is_array ($format_vid) && in_array ("jpg", $format_vid)) $checked = "checked=\"checked\"";
               else $checked = "";
-              
+
               echo "
               <label><input id=\"format_vid".$i."\" name=\"format_vid[]\" onclick=\"selectCheckbox('format_vid', this.id)\" type=\"checkbox\" value=\"jpg\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (JPG)</label><br />";
               $i++;
-              
+
               if (!empty ($format_vid) && is_array ($format_vid) && in_array ("png", $format_vid)) $checked = "checked=\"checked\"";
               else $checked = "";
-              
+
               echo "
               <label><input id=\"format_vid".$i."\" name=\"format_vid[]\" onclick=\"selectCheckbox('format_vid', this.id)\" type=\"checkbox\" value=\"png\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (PNG)</label><br />";
               $i++;
@@ -960,34 +961,34 @@ $token_new = createtoken ($user);
               $print_first = "";
               $print_next = "";
               $i = 1;
-              
+
               if (!empty ($format_doc) && is_array ($format_doc) && in_array ("original", $format_doc)) $checked = "checked=\"checked\"";
               else $checked = "";
-                               
+                
               echo "<label><input id=\"format_doc".$i."\" name=\"format_doc[]\" onclick=\"selectCheckbox('format_doc', this.id)\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_txt.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
               $i++;
-              
+
               foreach ($mgmt_docoptions as $ext => $value)
               {
                 if ($ext != "" && !is_image ("_".$ext))
                 {
                   $ext_array = explode (".", trim ($ext, "."));
                   $doc_type = $ext_array[0];
-                    
+ 
                   $file_info = getfileinfo ($site, "file".$ext, "comp");
-                  
+
                   if (!empty ($format_doc) && is_array ($format_doc) && in_array ($doc_type, $format_doc)) $checked = "checked=\"checked\"";
                   else $checked = "";
-                  
+
                   $temp = "<label><input id=\"format_doc".$i."\" name=\"format_doc[]\" onclick=\"selectCheckbox('format_doc', this.id)\" type=\"checkbox\" value=\"".$doc_type."\" ".$checked." /> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$file_info['type']." (".strtoupper($doc_type).")</label><br />\n";
-                  
+
                   if (strtolower ($ext) == ".pdf") $print_first .= $temp;
                   else $print_next .= $temp;
                   
                   $i++;
                 }
               }
-              
+
               echo $print_first.$print_next;
             }
             ?>
@@ -995,7 +996,7 @@ $token_new = createtoken ($user);
           <div style="clear:both;"></div>
         </div>
         <hr/>
-        
+
         <!-- Validity -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['period-of-validity'][$lang]); ?></span>
@@ -1041,7 +1042,6 @@ $token_new = createtoken ($user);
                     <td><input type="text" name="task_enddate" id="task_enddate" readonly="readonly" style="width:80px;" value="<?php echo showdate ($task_enddate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_enddate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /></td>
                     </td>
                   </tr>
-                </div>
               </table>
             </tr>
           </table>
@@ -1050,23 +1050,23 @@ $token_new = createtoken ($user);
         <?php } ?>
 
       <?php } ?>
-      
+
         <table class="hcmsTableNarrow">
           <tr>
             <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </td>
           </tr>
           <tr>
             <td>
-              <?php if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?><label><input type="checkbox" name="email_ondate" id="email_ondate" value="yes" onclick="enablefield('email_date', this.checked);" <?php if ($email_ondate == "yes") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?></label> <input type="text" name="email_date" id="email_date" readonly="readonly" style="width:120px;" value="<?php echo showdate ($email_date, "Y-m-d H:i", "Y-m-d H:i"); ?>" /><img name="datepicker3" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'email_date', '%Y-%m-%d %H:%i', true);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /><?php } ?>
+              <?php if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?><label><input type="checkbox" name="email_ondate" id="email_ondate" value="yes" onclick="enablefield('email_date', this.checked);" <?php if ($email_ondate == "yes") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?></label> <input type="text" name="email_date" id="email_date" readonly="readonly" style="width:140px;" value="<?php echo showdate ($email_date, "Y-m-d H:i", "Y-m-d H:i"); ?>" /><img name="datepicker3" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'email_date', '%Y-%m-%d %H:%i', true);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /><?php } ?>
               <img name="ButtonSubmit" src="<?php echo getthemelocation(); ?>img/button_ok.png" onClick="if (checkForm()) document.forms['mailForm'].submit();" onMouseOver="hcms_swapImage('ButtonSubmit','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" onMouseOut="hcms_swapImgRestore()"  class="hcmsButtonTinyBlank hcmsButtonSizeSquare" title="OK" alt="OK" />
             </td>
           </tr>
         </table>
-        
+
       </div>
-      
+
     </form>
   </div>
-    
+
   </body>
 </html>

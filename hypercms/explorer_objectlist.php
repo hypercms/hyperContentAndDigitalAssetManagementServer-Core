@@ -418,7 +418,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       $object = correctfile ($location, $object, $user);  
       $file_info = getfileinfo ($site, $location.$object, $cat);
       $object_name = $file_info['name'];
-      
+
       $mediafile = false;
       $metadata = "";
       $file_size = "";
@@ -426,7 +426,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       $file_modified = "";
       $file_owner = "";
       $usedby = "";
-            
+    
       // eventsystem
       if ($eventsystem['onobjectlist_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
         onobjectlist_pre ($site, $cat, $location, $object, $user);  
@@ -440,17 +440,17 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         elseif ($file_info['type'] == "Component") $file_type = getescapedtext ($hcms_lang['object-component'][$lang]);
         // multimedia object 
         else $file_type = getescapedtext ($hcms_lang['file'][$lang])." (".$file_info['type'].")";
-  
+
         // read file
         $objectdata = loadfile ($location, $object);
-        
+
         // get name of media file
         if ($objectdata != false)
         {
           // get name of content file and load content container
           $contentfile = getfilename ($objectdata, "content");
           $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
-          
+
           // get user of locked container
           if ($contentfile != false)
           {
@@ -458,7 +458,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             
             if (!empty ($result['user'])) $usedby = $result['user'];       
           }
-          
+
           // get metadata of container
           if (is_array ($objectlistcols[$site][$cat]) && sizeof ($objectlistcols[$site][$cat]) > 0)
           {
@@ -472,10 +472,10 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
               if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
             }
           }
-                           
+
           // get media file
           $mediafile = getfilename ($objectdata, "media");
-        
+
           if ($mediafile != false)
           {
             // location of media file
@@ -489,14 +489,14 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
               
               $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$site."/".$mediafile));               
             }
-            
+
             // media file info
             $media_info = getfileinfo ($site, $mediafile, $cat);
-            
+
             // get metadata for media file
             if (!empty ($mgmt_config['explorer_list_metadata']) && !$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
             else $metadata = "";
-            
+
             // link for copy & paste of download links (not if an access link is used)
             if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
             {
@@ -553,7 +553,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
         // metadata
         $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;             
-        
+
         // listview - view option for un/published objects
         if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
         else $class_image = "class=\"hcmsIconList\"";
@@ -562,7 +562,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         if (!empty ($usedby))
         {
           $file_info['icon'] = "file_lock.png";
-        } 
+        }
 
         $listview .= "
                       <tr id=\"g".$items_row."\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
@@ -578,12 +578,12 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           if (is_array ($objectlistcols[$site][$cat]))
           {
             $i = 1;
-            
+
             foreach ($objectlistcols[$site][$cat] as $key => $active)
             {
               if ($i < sizeof ($objectlistcols[$site][$cat])) $style_td = "width:115px;";
               else $style_td = "";
-            
+
               if ($active == 1)
               {
                 $style_div = "";
@@ -614,7 +614,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
                   if (!empty ($container_info[$key])) $title = $container_info[$key];
                   else $title = "";
                 }
-                
+
                 $listview .= "
                         <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"padding-left:3px; ".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
               
@@ -623,7 +623,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             }
           }
         }
-    
+
         $listview .= "
                       </tr>"; 
 
@@ -804,8 +804,18 @@ else $objects_counted = 0;
   vertical-align: bottom;
   padding: 2px;
 }
+
+.hcmsCell
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
-<script>
+<script type="text/javascript">
+
+// select area
+var selectarea;
 
 // context menu
 contextenable = true;
@@ -902,15 +912,25 @@ function openobjectview (location, object, view)
   }
   else return false;
 }
-</script>
-<style>
-.hcmsCell
+
+function initalize ()
 {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  // set view
+  toggleview (explorerview);
+
+  // resize columns
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+
+  // select area
+  selectarea = document.getElementById('selectarea');
+
+  // load screen
+  if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='none';
+
+  // collect objects and set objects array
+  hcms_collectObjectpath ();
 }
-</style>
+</script>
 </head>
 
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" onresize="resizecols();">
@@ -1205,15 +1225,8 @@ else
 ?>
 
 <!-- initalize -->
-<script>
-// set view
-toggleview (explorerview);
-// resize columns
-$("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
-// select area
-var selectarea = document.getElementById('selectarea');
-// load screen
-if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='none';
+<script type="text/javascript">
+initalize();
 </script>
 
 </body>

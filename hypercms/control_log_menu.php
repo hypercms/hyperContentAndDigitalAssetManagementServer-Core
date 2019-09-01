@@ -42,7 +42,7 @@ if ((checkrootpermission ('site') || checkrootpermission ('user')) && checktoken
   // clear event log
   if ($action == "clear")
   {
-    if (valid_publicationname ($site)) $result = deletelog ($site.".custom");
+    if (valid_publicationname ($site)) $result = deletelog ($site.".publication");
     else $result = deletelog ();
   
     $add_onload =  $result['add_onload'];
@@ -100,7 +100,7 @@ function warning_delete()
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <td><b><?php if ($site != "") echo getescapedtext ($hcms_lang['custom-system-events'][$lang]); else echo getescapedtext ($hcms_lang['system-events'][$lang]); ?></b></td>
+      <td><b><?php echo getescapedtext ($hcms_lang['system-events'][$lang]); ?></b></td>
     </tr>
     <tr>
       <td>&nbsp;</td>

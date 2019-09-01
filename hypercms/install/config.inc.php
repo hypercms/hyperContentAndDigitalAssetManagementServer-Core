@@ -196,6 +196,9 @@ $mgmt_config['explorer_list_maxitems'] = 500;
 // Open messages in new window (true) or same window (false)
 $mgmt_config['message_newwindow'] = false;
 
+// Open users in new window (true) or same window (false)
+$mgmt_config['user_newwindow'] = false;
+
 // Window size for objects in pixel (for new window)
 $mgmt_config['window_object_width'] = 1280;
 $mgmt_config['window_object_height'] = 1000;
@@ -218,7 +221,7 @@ $mgmt_config['chat'] = true;
 $mgmt_config['chat_type'] = "public";
 
 // Define support user name for chat that will always be present for chat or leave empty
-$mgmt_config['chat-support'] = "";
+$mgmt_config['chat_support'] = "";
 
 // Define if annotations for images and documents should be enabled (true) or disabled (false)
 $mgmt_config['annotation'] = false;
@@ -244,10 +247,13 @@ $mgmt_config['showinfobox'] = true;
 
 // Define home boxes to show for each user if no indiviual selection has been made (use ; as seperarator)
 // Home boxes are located in directory hypercms/box/
-$mgmt_config['homeboxes'] = "news;tasks;recent_objects;up_and_downloads;recent_downloads;recent_uploads";
+$mgmt_config['homeboxes'] = "search;news;tasks;recent_objects;up_and_downloads;recent_downloads;recent_uploads";
+
+// Define a directory for individual home boxes (components) that are based on a template and can be edited
+$mgmt_config['homeboxes_directory'] = "HomeBoxes";
 
 // Define URL to show in welcome/news home box
-$mgmt_config['welcome'] = "https://cms.hypercms.net/home/update_info_en.xhtml";
+$mgmt_config['homebox_welcome'] = "https://cms.hypercms.net/home/update_info_en.xhtml";
 
 // Check for duplicate entries based on MD5 hash of files (true) or not (false)
 $mgmt_config['check_duplicates'] = true;
@@ -561,6 +567,8 @@ $mgmt_config['search_operator'] = "";
 
 // Use "like" or "match" syntax for full-text search queries
 // "match" has performance advantages if no wildcard-character is used
+// Please keep in mind that "match" uses the stopword list of the database 
+// and therefore will not find search expressions that are in the list of stopwords
 $mgmt_config['search_query_match'] = "match";
 
 // Maximum number of search results
@@ -571,7 +579,16 @@ $mgmt_config['search_max_results'] = 300;
 // If enabled, passwords will be checked regarding minimum security requirements
 $mgmt_config['strongpassword'] = true;
 
-// Enable (true) or disable (false) password reset on logon screen
+// Password dictionary of passwords that must not be used (blacklist), use "," as delimiter. 
+$mgmt_config['passwordblacklist'] = "";
+
+// Number of passwords in the history that can't be reused again
+$mgmt_config['passwordhistory'] = 0;
+
+// Password expiration in number of days (0 means it never expires)
+$mgmt_config['passwordexpires'] = 0;
+
+// Enable (true) or disable (false) the password reset on logon screen
 $mgmt_config['resetpassword'] = true;
 
 // Enable (true) or disable (false) multi-factor authentication
@@ -581,6 +598,17 @@ $mgmt_config['multifactorauth'] = false;
 // Enable (true) or disable (false) the registration link for new users in the sign-in mask
 $mgmt_config['userregistration'] = false;
 
+// User account expiration in number of days (0 means it never expires)
+// If no user activity has been logged for a certain time, the user can't login anymore
+// IMPORTANT: This feature requires $mgmt_config['user_log'] = true
+$mgmt_config['userexpires'] = 0;
+
+// Enable (true) or disable (false) concurrent users using the same account
+$mgmt_config['userconcurrent'] = true;
+
+// Enable (true) or disable (false) the permanent deletion of users that exceeded the valid date
+$mgmt_config['userdelete'] = true;
+
 // Log level for system events
 // Define the log level (all, warning, error, none) for the logging of system events
 $mgmt_config['loglevel'] = "all";
@@ -588,6 +616,10 @@ $mgmt_config['loglevel'] = "all";
 // Publication specific log files
 // Enable (true) or disable (false) publication specific log files besides the standard event log
 $mgmt_config['publication_log'] = false;
+
+// User specific log files
+// Enable (true) or disable (false) user specific log files besides the standard event log
+$mgmt_config['user_log'] = false;
 
 // User e-mail notification on system errors or warnings
 // Provide a list of comma separated user names for automated notification, or leave empty
@@ -608,8 +640,9 @@ $mgmt_config['aes256_key'] = "h1y2p3e4r5c6m7s8s9m0c1r2e3p4y5h6";
 
 // Template code
 // Use $mgmt_config['publication-name']['template_clean_level'] for publication specific settings
-// Cleaning level of template code from none = 0 to strong = 3 (no cleaning = 0, basic set of disabled functions = 1, 1 + file access functions = 2, 2 + include functions = 3)
-$mgmt_config['template_clean_level'] = 1;
+// Cleaning level of template code from none = 0 to strong = 5
+// (no cleaning = 0, basic set of disabled functions = 1, 1 + file access functions = 2, 2 + include functions = 3, 3 + hyperCMS API file functions = 4, No server side script allowed = 5)
+$mgmt_config['template_clean_level'] = 3;
 
 // Logon Timeout
 // How many minutes will an IP and user combination be locked after 10 failed attempts

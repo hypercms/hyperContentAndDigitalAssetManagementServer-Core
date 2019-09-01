@@ -97,9 +97,9 @@ if ($userdata != false)
               }
             }
           }
-        } 
-      } 
-    }    
+        }
+      }
+    }
   }
   // get users of a publication
   elseif (isset ($site) && $group == "")
@@ -185,9 +185,12 @@ if ($userdata != false)
           $i++;
         }
       }
-    }    
+    }
   }
 }
+
+// get online users
+$user_online_array = getusersonline ();
 
 // generate user list
 $objects_counted = 0;
@@ -212,10 +215,15 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
     
     if ($object_array['login'][$key] != "admin" && $object_array['login'][$key] != "sys" && !empty ($object_array['login'][$key]) && $object_array['login'][$key] != "hcms_download" && $items_row < $next_max)
     {
+      // user status
+      if (is_array ($user_online_array) && in_array ($object_array['login'][$key], $user_online_array)) $user_status = getescapedtext ($hcms_lang['active'][$lang]);
+      else $user_status = getescapedtext ($hcms_lang['logged-out'][$lang]);
+
       // open on double click
       if (checkrootpermission ('user') && checkrootpermission ('useredit') || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
       {
-        $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=no,resizable=yes', 520, 690);\"";
+        if (!empty ($mgmt_config['user_newwindow'])) $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 800);\"";
+        else $openUser = "onDblClick=\"parent.openpopup('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."');\"";
       }
       else $openUser = "";
       
@@ -236,7 +244,10 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
 
       if (!$is_mobile) $listview .= "
               <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['email'][$key]."</span></td>
-              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp; <span style=\"display:none;\">".date ("Ymd", strtotime ($object_array['date'][$key]))."</span>".showdate ($object_array['date'][$key], "Y-m-d", $hcms_lang_date[$lang])."</span></td>";
+              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;<span style=\"display:none;\">".date ("Ymd", strtotime ($object_array['date'][$key]))."</span>".showdate ($object_array['date'][$key], "Y-m-d", $hcms_lang_date[$lang])."</span></td>";
+      
+      $listview .= "
+              <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$user_status."</span></td>";
 
       $listview .= "
             </tr>";
@@ -258,18 +269,24 @@ else $objects_counted = 0;
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/contextmenu.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript">
 
+// select area
+var selectarea;
+
 // context menu
 contextenable = true;
 is_mobile = <?php if (!empty ($is_mobile)) echo "true"; else echo "false"; ?>;
 contextxmove = true;
 contextymove = true;
+
+// define global variable for popup window name used in contextmenu.js
+var session_id = '<?php session_id(); ?>';
 
 function confirm_delete ()
 {
@@ -293,16 +310,24 @@ function resizecols()
   var c2 = $('#c2').width();
   var c3 = $('#c3').width();
   var c4 = $('#c4').width();
+  var c5 = $('#c5').width();
 
   // set width for table columns
   $('.hcmsCol1').width(c1);
   $('.hcmsCol2').width(c2);
   $('.hcmsCol3').width(c3);
   $('.hcmsCol4').width(c4);
+  $('.hcmsCol5').width(c5);
 }
 
-// define global variable for popup window name used in contextmenu.js
-var session_id = '<?php session_id(); ?>';
+function initalize ()
+{
+  // resize columns
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+
+  // select area
+  selectarea = document.getElementById('selectarea');
+}
 </script>
 </head>
 
@@ -347,7 +372,7 @@ var session_id = '<?php session_id(); ?>';
 
 <!-- Table Header -->
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; width:100%; z-index:1; visibility:visible;">
-  <table id="objectlist_head" cols="4" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
+  <table id="objectlist_head" cols="5" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
@@ -359,10 +384,13 @@ var session_id = '<?php session_id(); ?>';
       <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:300px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>
       </td> 
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="white-space:nowrap;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?>
       </td>
       <?php } ?>
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="white-space:nowrap;">
+        &nbsp; <?php echo getescapedtext ($hcms_lang['status'][$lang]); ?>
+      </td>
     </tr>
   </table>
   
@@ -399,9 +427,8 @@ else
 ?>
 
 <!-- initalize -->
-<script>
-$("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
-var selectarea = document.getElementById('selectarea');
+<script type="text/javascript">
+initalize();
 </script>
   
 </body>

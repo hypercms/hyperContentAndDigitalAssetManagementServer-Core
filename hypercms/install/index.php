@@ -244,7 +244,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
   {
     if (trim ($password) != "" && trim ($confirm_password) != "" && trim ($language) != "" && trim ($email) != "")
     {
-      $result = edituser ("*Null*", "admin", "", trim ($password), trim ($confirm_password), "1", $realname, $language, "", "standard", trim ($email), "", "", "", $user);
+      $result = edituser ("*Null*", "admin", "", trim ($password), trim ($confirm_password), "1", $realname, $language, "*Leave*", "standard", trim ($email), "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", $user);
       if ($result['result'] == false) $show .= "<li>".strip_tags ($result['message'])."</li>\n";
     }
     else $show .= "<li>Please provide all information for the Administrator Account</li>\n";
@@ -653,7 +653,7 @@ $token_new = createtoken ($user);
 </style>
 </head>
 
-<body class="hcmsStartScreen" style="font-size:12px;">
+<body class="hcmsStartScreen" style="font-size:12px; position:relative;">
 
 <script type="text/javascript" src="../javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
@@ -992,10 +992,7 @@ Otherwise just provide the information below and install the most powerful Conte
       </td>
     </tr>
     <tr>
-      <td colspan="2" style="white-space:nowrap;">&nbsp;</td>
-    </tr>
-    <tr>
-      <td colspan="2" style="white-space:nowrap;">
+      <td colspan="2" style="white-space:nowrap; padding:10px 0px;">
         <input type="submit" class="button hcmsButtonGreen" style="width:100%; height:40px;" value="Install now" />
       </td>
     </tr>

@@ -476,9 +476,9 @@ if ($usedby == "" || $usedby == $user)
       if (isset ($pagelanguage)) $headcontent['pagelanguage'] = $pagelanguage;
       if (isset ($pagerevisit)) $headcontent['pagerevisit'] = $pagerevisit;
       if (isset ($pagetracking)) $headcontent['pagetracking'] = $pagetracking;
-  
+
       if ($contentdatanew != false && isset ($headcontent) && is_array ($headcontent)) $contentdatanew = sethead ($site, $contentdatanew, $contentfile, $headcontent, $user);
-      
+
       // geo location
       if ($geolocation != "")
       {
@@ -502,23 +502,23 @@ if ($usedby == "" || $usedby == $user)
       if ($eventsystem['onsaveobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
       {
         $contentdataevent = onsaveobject_pre ($site, $cat, $location, $page, $contentfile, $contentdatanew, $user);
-      
+
         // check if event returns a string, if so, the event returns the container and not true or false 
         if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdatanew = $contentdataevent;
       }
-    
+
       // insert new date into content file
       $contentdatanew = setcontent ($contentdatanew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
-      
+
       // set encoding 
-      $charset_old = getcharset ("", $contentdatanew); 
-      
+      $charset_old = getcharset ("", $contentdatanew);
+
       if (empty ($charset_old['charset']) || strtolower ($charset_old['charset']) != strtolower ($charset))
       {
         // write XML declaration parameter for text encoding
         if ($charset != "") $contentdatanew = setxmlparameter ($contentdatanew, "encoding", $charset);
       }
-      
+
       // save working xml content container file
       $savefile = savecontainer ($container_id, "work", $contentdatanew, $user);
 
@@ -544,17 +544,17 @@ if ($usedby == "" || $usedby == $user)
         // eventsystem
         if ($eventsystem['onsaveobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
           $contentdataevent = onsaveobject_post ($site, $cat, $location, $page, $contentfile, $contentdatanew, $user);
-              
+    
         // check if event returns a string, if so, the event returns the container and not true or false 
         if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdatanew = $contentdataevent;
-        
+
         // information log
         $errcode = "00101";
-        $error[] = date('Y-m-d H:i')."|savecontent|information|".$errcode."|object '".$location_esc.$page."' has been edited and saved by user '".$user."'";
-        
+        $error[] = date('Y-m-d H:i')."|savecontent.php|information|".$errcode."|object '".$location_esc.$page."' has been edited and saved by user '".$user."'";
+
         // notification
         notifyusers ($site, $location, $page, "onedit", $user);
-              
+
       	if (!$auto)
         {
          	// define meta tag
@@ -603,13 +603,13 @@ if ($usedby == "" || $usedby == $user)
          	{
             $add_onload =  "document.location='".$mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no';\n";
          	}
-          
+
          	// define message to display
          	$message = "<p class=hcmsHeadline>".$hcms_lang['refreshing-view-'][$lang]."</p>\n";
          	$message .= "<a href=\"page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no\">".$hcms_lang['manual-refresh'][$lang]."</a>\n";
       	}
       }
-  
+
       // ----------------------------------- write content into database --------------------------------------   
       // db_connect will save content in database 
       if (isset ($db_connect) && $db_connect != "") 
@@ -644,7 +644,7 @@ if ($usedby == "" || $usedby == $user)
   {
     // define meta tag
     $add_onload =  "";
-    
+
     //define message to display
     if ($auto)
     {
@@ -662,7 +662,7 @@ if ($usedby == "" || $usedby == $user)
   {
     // define meta tag
     $add_onload = "";
-    
+
     //define message to display
     if ($auto) 
     {
@@ -679,7 +679,7 @@ else
 {
   // define meta tag
   $add_onload = "";
-  
+
   //define message to display
   if ($auto) 
   {
@@ -702,7 +702,7 @@ if ($auto)
   {
     $message[] = $hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang];
   }
-  
+
   // request from autosave
   header ('Content-Type: application/json; charset=utf-8');
 	echo json_encode (array('message' => implode(", ", $message)));  

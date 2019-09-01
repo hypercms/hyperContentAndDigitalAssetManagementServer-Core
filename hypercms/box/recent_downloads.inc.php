@@ -38,7 +38,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 {
   $object_array = array_unique ($object_array);
   
-  if ($is_mobile) $width = "92%";
+  if (!empty ($is_mobile)) $width = "92%";
   else $width = "320px";
 
   echo "

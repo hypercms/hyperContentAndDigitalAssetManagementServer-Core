@@ -20,7 +20,7 @@
 function windowwidth ($type="object")
 {
   global $mgmt_config;
-  
+
   if ($type == "object" && !empty ($mgmt_config['window_object_width']) && $mgmt_config['window_object_width'] > 0) return $mgmt_config['window_object_width'] ;
   else return 800;
 }
@@ -36,7 +36,7 @@ function windowwidth ($type="object")
 function windowheight ($type="object")
 {
   global $mgmt_config;
-  
+
   if ($type == "object" && !empty ($mgmt_config['window_object_height']) && $mgmt_config['window_object_height'] > 0) return $mgmt_config['window_object_height'] ;
   else return 1000;
 }
@@ -52,7 +52,7 @@ function windowheight ($type="object")
 function toggleview ($view)
 {
   global $mgmt_config;
-  
+
   // register explorer view type
   // if set manually
   if (!empty ($view) && ($view == "detail" || $view == "small" || $view == "medium" || $view == "large"))
@@ -73,14 +73,14 @@ function toggleview ($view)
     $_SESSION['hcms_temp_explorerview'] = $mgmt_config['explorerview'];
   }
   else return false;
-  
-  
+
+
   // save GUI settings
   if (!empty ($_SESSION['hcms_temp_objectview']) && !empty ($_SESSION['hcms_temp_explorerview']) && isset ($_SESSION['hcms_temp_sidebar']) && !empty ($_SESSION['hcms_user']))
   {
     setguiview ($_SESSION['hcms_temp_objectview'], $_SESSION['hcms_temp_explorerview'], $_SESSION['hcms_temp_sidebar'], $_SESSION['hcms_user']);
   }
-  
+
   return true;
 }
 
@@ -95,7 +95,7 @@ function toggleview ($view)
 function togglesidebar ($view)
 {
   global $mgmt_config;
-  
+
   // register sidebar
   if (!empty ($view) && $view != false && $view != "false")
   {
@@ -105,13 +105,13 @@ function togglesidebar ($view)
   {
     $_SESSION['hcms_temp_sidebar'] = false;
   }
-  
+
   // save GUI settings
   if (!empty ($_SESSION['hcms_temp_objectview']) && !empty ($_SESSION['hcms_temp_explorerview']) && isset ($_SESSION['hcms_temp_sidebar']) && !empty ($_SESSION['hcms_user']))
   {
     setguiview ($_SESSION['hcms_temp_objectview'], $_SESSION['hcms_temp_explorerview'], $_SESSION['hcms_temp_sidebar'], $_SESSION['hcms_user']);
   }
-  
+
   return true;
 }
 
@@ -126,15 +126,15 @@ function togglesidebar ($view)
 function setfilter ($filter_set)
 {
   global $mgmt_config;
-  
+
   if (is_array ($filter_set))
   {
     // define filter names
     $filter_names = array ("comp", "image", "document", "video", "audio", "flash", "compressed", "binary");
-    
+
     // unset session variable
     unset ($_SESSION['hcms_objectfilter']);
-    
+
     foreach ($filter_names as $filter)
     {
       // register only active filters in session
@@ -143,7 +143,7 @@ function setfilter ($filter_set)
         $_SESSION['hcms_objectfilter'][$filter] = 1;
       }
     }
-    
+
     return true;
   }
   else return false;
@@ -160,19 +160,19 @@ function setfilter ($filter_set)
 function objectfilter ($file)
 {
   global $mgmt_config, $hcms_ext;
-  
+
   // load formats/file extensions
   if (!is_array ($hcms_ext)) require_once ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-  
+
   // get object filter from session
   $objectfilter = getsession ("hcms_objectfilter");
-  
+
   // check 
   if (!empty ($file) && is_array ($hcms_ext) && is_array ($objectfilter))
   {
     $file_ext = strtolower (strrchr ($file, "."));
     $ext = "";
-    
+
     foreach ($objectfilter as $filter => $value)
     {
       if ($filter == "comp" && $value == 1) $ext .= strtolower ($hcms_ext['cms']);
@@ -184,7 +184,7 @@ function objectfilter ($file)
       elseif ($filter == "compressed" && $value == 1) $ext .= strtolower ($hcms_ext['compressed']);
       elseif ($filter == "binary" && $value == 1) $ext .= strtolower ($hcms_ext['binary']);
     }
-    
+
     if (@substr_count (strtolower ($ext."."), $file_ext.".") > 0) return true;
     else return false;
   }
@@ -270,7 +270,7 @@ function showshorttext ($text, $length=0, $linebreak=false, $charset="UTF-8")
       if (mb_strlen ($text, $charset) > ($length * 3)) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, $length, $charset)."<br />\n".mb_substr ($text, ($length*2), ($length-2), $charset)."...";
       elseif (mb_strlen ($text, $charset) > ($length * 2)) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, $length, $charset)."<br />\n".mb_substr ($text, ($length*2), NULL, $charset);
       elseif (mb_strlen ($text, $charset) > $length) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, NULL, $charset);
-      
+
       // keep 
       return "<div style=\"vertical-align:top; height:50px; display:block;\">".$text."</div>";
     }
@@ -294,24 +294,24 @@ function showshorttext ($text, $length=0, $linebreak=false, $charset="UTF-8")
 function showtopbar ($show, $lang="en", $close_link="", $close_target="", $individual_button="", $id="bar")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang;
-        
+
   if ($show != "" && strlen ($show) < 600 && $lang != "" && $id != "")
   {
     $close_button_code = "";
     $individual_button_code = "";
-    
+
     // define close button
     if (trim ($close_link) != "")
     {
       $close_id = uniqid();
       $close_button_code = "<td style=\"width:36px; text-align:right; vertical-align:middle; padding-right:2px; margin:0;\"><a href=\"".$close_link."\" target=\"".$close_target."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\"><img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" /></a></td>\n";
     }
-    
+
     if (trim ($individual_button) != "")
     {
       $individual_button_code = "<td style=\"width:36px; text-align:right; vertical-align:middle; padding-right:2px; margin:0;\">".$individual_button."</td>";
     }
-    
+
     return "
   <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
     <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
@@ -337,7 +337,7 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
 function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_target="", $id="bar")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang;
-        
+
   if ($show != "" && is_array ($menu_array) && strlen ($show) < 600 && $lang != "" && $id != "")
   {
     // define close button
@@ -347,17 +347,17 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
       $close_button = "<td style=\"width:36px; text-align:right; vertical-align:middle; padding-right:2px; margin:0;\"><a href=\"".$close_link."\" target=\"".$close_target."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\"><img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" /></a></td>\n";
     }
     else $close_button = "";
-    
+
     // define text or button
     $menu_button = "";
     $id = 0;
-    
+
     foreach ($menu_array as $name => $events)
     {
       $menu_button .= "<div id=\"barbutton_".$id."\" class=\"hcmsButtonMenu\" ".$events.">".$name."</div>";
       $id++;
     }
-    
+
     return "
   <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
     <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
@@ -369,6 +369,58 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
     </table>
   </div>
   <div style=\"width:100%; height:38px;\">&nbsp;</div>";
+  }
+  else return false;
+}
+
+// --------------------------------------- showhomeboxes -------------------------------------------
+// function: showhomeboxes ()
+// input: home box names [array:file name => readable name]
+// output: path to home boxes as array / false on error
+
+// description:
+// Returns the file path to the home boxes
+
+function showhomeboxes ($homebox_array)
+{
+  global $mgmt_config;
+
+  if (!empty ($homebox_array) && is_array ($homebox_array))
+  {
+    $result = array();
+
+    // remove duplicates
+    $homebox_array = array_unique ($homebox_array);
+
+    // remove trailing slashes
+    if (!empty ($mgmt_config['homeboxes_directory'])) $mgmt_config['homeboxes_directory'] = trim ($mgmt_config['homeboxes_directory'], "/");
+
+    // show boxes
+    foreach ($homebox_array as $homebox_key => $homebox_name)
+    {
+      if ($homebox_name != "" && valid_locationname ($homebox_key))
+      {
+        // individual home boxes of a publication (publication/name)
+        if (!empty ($mgmt_config['homeboxes_directory']) && valid_locationname ($homebox_key) && strpos ($homebox_key, "/") > 0)
+        {
+          list ($site, $name) = explode ("/", $homebox_key);
+
+          if (is_file ($mgmt_config['abs_path_comp'].$site."/".$mgmt_config['homeboxes_directory']."/".$name.".php"))
+          {
+            $result[] = $mgmt_config['abs_path_comp'].$site."/".$mgmt_config['homeboxes_directory']."/".$name.".php";
+          }
+        }
+        // system home boxes (name)
+        elseif (valid_objectname ($homebox_key) && is_file ($mgmt_config['abs_path_cms']."box/".$homebox_key.".inc.php"))
+        {
+          $result[] = $mgmt_config['abs_path_cms']."box/".$homebox_key.".inc.php";
+        }
+      }
+    }
+
+    // return empty string
+    if (sizeof ($result) > 0) return $result;
+    else return false;
   }
   else return false;
 }
@@ -389,14 +441,14 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
   {
     // check mobile setting
     if (!empty ($_SESSION['hcms_mobile'])) $width = "90%";
-    
+
     // add unit if not set
     if (is_int ($width)) $width = $width."px";
     if (is_int ($height)) $height = $height."px";
-    
+
     // define unique name for close button
     $close_id = uniqid();
-    
+
     return "
   <div id=\"".$id."\" class=\"hcmsMessage\" style=\"".$style." width:".$width."; height:".$height."; z-index:9999; padding:0; margin:5px; visibility:visible;\">
     <table style=\"width:100%; height:100%; padding:0; border:0; border-spacing:0; border-collapse:collapse;\">
@@ -425,16 +477,16 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
 function showinfopage ($show, $lang="en", $onload="")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
-      
+
   if ($show != "" && strlen ($show) < 2400 && $lang != "")
-  {    
+  {
     return "<!DOCTYPE html>
 <html>
   <head>
     <title>hyperCMS</title>
     <meta charset=\"".getcodepage ($lang)."\" />
     <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
-  </head>  
+  </head>
   <body class=\"hcmsWorkplaceGeneric\" onload=\"".$onload."\">
     <div style=\"padding:20px;\">
       <img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" /> <span class=\"hcmsHeadline\">Info</span><br \>
@@ -462,7 +514,7 @@ function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
   {
     // define unique name for close button
     $close_id = uniqid();
-    
+
     return "
   <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"display:none; ".$style."\">
     <table style=\"width:100%; padding:0; border:0; border-spacing:0; border-collapse:collapse;\">
@@ -496,34 +548,34 @@ function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
 function showsharelinks ($link, $mediafile, $lang="en", $style="", $id="hcms_shareLayer")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
-     
+ 
   if (is_dir ($mgmt_config['abs_path_cms']."connector/") && $link != "" && $lang != "" && $id != "")
   {
     $result = "
   <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"".$style."\">".
     getescapedtext ($hcms_lang['share'][$lang])."<br />";
-    
+
     // Facebook (only images are supported by GET API)
     if (is_image ($mediafile)) $result .= "
     <img src=\"".getthemelocation()."img/icon_facebook.png\" title=\"Facebook\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkFacebook('".$link."') == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
-    
+
     // Twitter (support also videos and audio files as external links via GET API)
     $result .= "
     <img src=\"".getthemelocation()."img/icon_twitter.png\" title=\"Twitter\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkTwitter('".$link."', hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
-    
+
     // LinkedIn (only images are supported by GET API)
     if (is_image ($mediafile)) $result .= "
     <img src=\"".getthemelocation()."img/icon_linkedin.png\" title=\"LinkedIn\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkLinkedin('".$link."', hcms_getcontentByName('textu_Title'), hcms_getcontentByName('textu_Description'), hcms_getcontentByName('Creator')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
-    
+
     // Pinterest (only images are supported by GET API)
     if (is_image ($mediafile)) $result .= "
     <img src=\"".getthemelocation()."img/icon_pinterest.png\" title=\"Pinterest\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkPinterest('".$link."', hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
-    
+
     // Google+ (support also videos and audio files as external links via GET API)
     $result .= "
     <img src=\"".getthemelocation()."img/icon_googleplus.png\" title=\"Google+\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkGooglePlus('".$link."') == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />
   </div>";
-  
+
     return $result;
   }
   else return false;
@@ -537,7 +589,7 @@ function showsharelinks ($link, $mediafile, $lang="en", $style="", $id="hcms_sha
 function showmetadata ($data, $lang="en", $class_headline="hcmsRowData2")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
-  
+
   if (is_array ($data))
   {
     // XMP always using UTF-8 so should any other XML-based format
@@ -545,11 +597,11 @@ function showmetadata ($data, $lang="en", $class_headline="hcmsRowData2")
     $hcms_charset_dest = getcodepage ($lang);
 
     $result = "<ul class=\"hcmsStructuredList\">\n";
-  
+
     foreach ($data as $key => $value)
     {
       if (is_array ($value))
-      {        
+      {
         $subresult = showmetadata ($value);
 
         // html encode string
@@ -565,18 +617,18 @@ function showmetadata ($data, $lang="en", $class_headline="hcmsRowData2")
         {
           $value = "<img src=\"data:image/jpeg;base64,".strip_tags ($value)."\" />";
         }
-        
+
         // html encode string
         $key = html_encode (strip_tags ($key), $hcms_charset_source);
         // html encode string
         $value = html_encode (strip_tags ($value), $hcms_charset_source);
-        
+
         $result .= "  <li><div style=\"width:200px; float:left;\"><strong>".$key."</strong></div><div style=\"float:left;\">".$value."</div><div style=\"clear:both;\"></div></li>\n";
       }
     }
-    
+
     $result .= "</ul>";
-    
+
     if (strlen ($result) > 9) return $result;
     else return false;
   }
@@ -599,29 +651,29 @@ function showobject ($site, $location, $page, $cat="", $name="")
     $filetime = "";
     $filecount = 0;
     $filesize = 0;
-    
+
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location.$page);
-      
+
     $location_esc = convertpath ($site, $location.$page, $cat);
-  
+
     // get file info
     $file_info = getfileinfo ($site, $location.$page, $cat);
-    
+
     // define object name
     if ($name == "") $name = $object_info['name'];
-    
+
     // if folder
     if ($page == ".folder")
     {
       // get file time
       $filetime = date ("Y-m-d H:i", @filemtime ($location.$page));
-      
+
       // get file size
       if ($mgmt_config['db_connect_rdbms'] != "")
       { 
         $filesize_array = rdbms_getfilesize ("", $location_esc);
-      
+
         if (is_array ($filesize_array))
         {
           $filesize = $filesize_array['filesize'];
@@ -637,7 +689,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
       // get file size
       $filesize = round (@filesize ($location.$page) / 1024, 0);
     }
-  
+
     // format file size
     if ($filesize > 1000)
     {
@@ -645,7 +697,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
       $unit = "MB";
     }
     else $unit = "KB";
-    
+
     $filesize = number_format ($filesize, 0, ".", " ")." ".$unit;
 
     $mediaview = "
@@ -659,22 +711,22 @@ function showobject ($site, $location, $page, $cat="", $name="")
       <tr>
         <td>".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang)." </td><td class=\"hcmsHeadlineTiny\">".showdate ($filetime, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
       </tr>";
-    
+
     if (!empty ($filesize) && $filesize > 0) $mediaview .= "
       <tr>
         <td style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">".$filesize."</td>
       </tr>";
-    
+
     if (!empty ($filecount) && $filecount > 1) $mediaview .= "
       <tr>
         <td style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['number-of-files'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">".$filecount."</td>
       </tr>";
-      
+
     $mediaview .= "
     </table>";
-    
+
     return $mediaview;
   }
   else return false;
@@ -707,7 +759,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
   // define document type extensions that are convertable into pdf or which the document viewer (google doc viewer) can display
   $doc_ext = ".pages.pdf.doc.docx.ppt.pptx.xls.xlsx.odt.ods.odp";
-  
+
   // initalize
   $media_root = "";
   $mediafilesize = "";
@@ -716,16 +768,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   $height_orig = "";
   $mediaview = "";
   $style = "";
-  
+
   // set html media tag ID if not set
   if (empty ($id)) $id = "media_".uniqid(); 
-  
+
   // get publication 
   $site = substr ($mediafile, 0, strpos ($mediafile, "/"));
-  
+
   // get filename and save original media file name (required as reference)
   $mediafile_orig = $mediafile = getobject ($mediafile);
-  
+
   // check access permissions
   if (!is_array ($setlocalpermission) && valid_publicationname ($site) && valid_locationname ($location) && $cat == "comp")
   {
@@ -771,18 +823,18 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     if ($viewtype == "template" && valid_publicationname ($site))
     {
       $media_root = $thumb_root = $mgmt_config['abs_path_tplmedia'].$site."/";
-      
+
       if (is_file ($media_root.$mediafile))
       {
         // get file size in kB
         $mediafilesize = round (@filesize ($media_root.$mediafile) / 1024, 0);
-        
+
         // get modified date
         $mediafiletime = date ("Y-m-d H:i", filemtime ($media_root.$mediafile));
-      
+
         // get dimensions of original media file
         $temp = @getimagesize ($media_root.$mediafile);
-        
+
         if (!empty ($temp[0]) && !empty ($temp[1]))
         {
           $width_orig = $temp[0];
@@ -805,17 +857,17 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       {
         // locked by user
         $usedby_array = getcontainername ($container_id.".xml");
-  
+
         if (!empty ($usedby_array['user'])) $usedby = $usedby_array['user'];
         else $usedby = "";
-  
+
         // load container
         if (!empty ($usedby) && $usedby != $user)
         {
           $contentdata = loadcontainer ($container_id.".xml.wrk.@".$usedby, "version", $usedby);
         }
         else $contentdata = loadcontainer ($container_id, "work", $user);
-      
+
         // extract information from container
         $owner = getcontent ($contentdata, "<contentuser>");
         $date_published = getcontent ($contentdata, "<contentpublished>");
@@ -825,7 +877,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       if ($mgmt_config['db_connect_rdbms'] != "" && !$is_version)
       {
         $media_info = rdbms_getmedia ($container_id, true);
-        
+
         $mediafiletime = date ("Y-m-d H:i", strtotime ($media_info['date']));
         $mediafilesize = $media_info['filesize'];
         $width_orig = $media_info['width'];
@@ -837,7 +889,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       {
         // prepare media file
         $temp = preparemediafile ($site, $media_root, $mediafile, $user);
-        
+
         // if encrypted
         if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
         {
@@ -853,10 +905,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
         // get information of original media file
         $imageinfo = getimageinfo ($media_root.$mediafile);
-        
+
         // file size
         $mediafilesize = $imageinfo['filesize'];
-        
+
         if (!empty ($imageinfo['width']) && !empty ($imageinfo['height']))
         {
           $width_orig = $imageinfo['width'];
@@ -875,32 +927,33 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if (is_array ($queue) && !empty ($queue[0]['date'])) $date_delete = substr ($queue[0]['date'], 0, -3);
       }
     }
-    
-    // if watermark is used, force recreation
+
+    // if watermark is used
     if (is_image ($mediafile))
     {
       // get container ID
       $container_id = getmediacontainerid ($mediafile);
-      
+
       // get individual watermark
       if ($mgmt_config['publicdownload'] == true) $containerdata = loadcontainer ($container_id, "work", "sys");
       else $containerdata = loadcontainer ($container_id, "published", "sys");
-      
+
       if (!empty ($containerdata))
       {
         $wmlocation = getmedialocation ($site, $mediafile, "abs_path_media");
         $wmnode = selectcontent ($containerdata, "<media>", "<media_id>", "Watermark");
-        
+
         if (!empty ($wmnode[0]))
         {
           $temp = getcontent ($wmnode[0], "<mediafile>");
           if (!empty ($temp[0])) $wmfile = $temp[0];
-          
+
           $temp = getcontent ($wmnode[0], "<mediaalign>");
           if (!empty ($temp[0])) $wmalign = $temp[0];
           else $wmalign = "center";
-  
-          if (!empty ($wmfile)) $force_recreate = true;
+
+          // disabled since version 8.0.4
+          // if (!empty ($wmfile)) $force_recreate = true;
         }
       }
     }
@@ -913,10 +966,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       {
         // define version thumbnail file (append version file extension)
         $mediafile_thumb = $file_info['filename'].".thumb.jpg".strtolower (strrchr ($mediafile_orig, "."));
-        
+
         // prepare media file
         $temp = preparemediafile ($site, $thumb_root, $mediafile_thumb, $user);
-        
+
         // if encrypted
         if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
         {
@@ -929,7 +982,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $thumb_root = $temp['location'];
           $mediafile_thumb = $temp['file'];
         }
-        
+
         $style = "";
         if ($width > 0) $style .= "width:".intval($width)."px;";
         if ($height > 0) $style .= "height:".intval($height)."px;";
@@ -943,11 +996,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           <tr>
             <td style=\"text-align:left;\"><img src=\"".createviewlink ($site, $mediafile_thumb)."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style." /></td>
           </tr>";
-          
+
           if ($viewtype != "media_only") $mediaview .= "
           <tr>
             <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
-          </tr>";           
+          </tr>"; 
         }
         // if no thumbnail/preview exists
         else
@@ -957,7 +1010,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           <tr>
             <td style=\"text-align:left;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" ".$style." /></td>
           </tr>";
-          
+
           if ($viewtype != "media_only") $mediaview .= "
           <tr>
             <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
@@ -988,7 +1041,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if (substr_count (".pdf", $file_info['orig_ext']) == 1) $mediafile_pdf = $mediafile_orig;
         // document thumb file is a pdf
         elseif (is_file ($thumb_root.$mediafile_thumb) || is_cloudobject ($thumb_root.$mediafile_thumb)) $mediafile_pdf = $mediafile_thumb;
-  
+
         // calculate the ratio based ont the PDF file
         if (!empty ($mediafile_pdf))
         {
@@ -1035,7 +1088,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         elseif (is_numeric ($height) && $height > 0)
         {
           $width = round (($height * $mediaratio), 0);
-          
+
           // min. width is required for document viewer
           if ($width < 320)
           {
@@ -1049,7 +1102,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $width = 576;
           $height = $height = round (($width / $mediaratio), 0);
-          
+
           $style .= "width=\"".$width."\" height=\"".$height."\"";
         }
 
@@ -1080,10 +1133,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           else
           {
             $mediafile_thumb = $medianame_thumb = $file_info['filename'].".thumb.pdf";
-            
+
             // prepare media file
             $temp = preparemediafile ($site, $thumb_root, $mediafile_thumb, $user);
-            
+
             // if encrypted
             if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
             {
@@ -1097,12 +1150,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $mediafile_thumb = $temp['file'];
             }
 
-            // document thumb file exists in media repository            
+            // document thumb file exists in media repository
             if ((is_file ($thumb_root.$mediafile_thumb) || is_cloudobject ($thumb_root.$mediafile_thumb)) && (filemtime ($thumb_root.$mediafile_thumb) >= filemtime ($thumb_root.$mediafile_orig))) 
             {
               $thumb_pdf_exists = true;
             }
-            // sometimes libre office (UNOCONV) takes long time to convert to PDF and function createdocument is not able to rename the file from .pdf to .thumb.pdf  
+            // sometimes libre office (UNOCONV) takes long time to convert to PDF and function createdocument is not able to rename the file from .pdf to .thumb.pdf
             elseif ((is_file ($thumb_root.$file_info['filename'].".pdf") || is_cloudobject ($thumb_root.$file_info['filename'].".pdf")) && (filemtime ($thumb_root.$file_info['filename'].".pdf") >= filemtime ($thumb_root.$mediafile_orig)))
             {
               rename ($thumb_root.$file_info['filename'].".pdf", $thumb_root.$file_info['filename'].".thumb.pdf");
@@ -1125,10 +1178,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               if (is_file ($thumb_root.$mediafile_thumb))
               {
                 deletefile ($thumb_root, $mediafile_thumb, 0);
-                
+
                 // remove old annotation image files
                 $annotation_filename = $file_info['filename'].".annotation";
-                
+
                 if ((is_file ($thumb_root.$annotation_filename."-0.jpg") || is_cloudobject ($thumb_root.$annotation_filename."-0.jpg")))
                 { 
                   for ($p=0; $p<=10000; $p++)
@@ -1156,7 +1209,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $mediaview_doc .= "
             <script type=\"text/javascript\">
               hcms_ajaxService('".$doc_link."');
-              
+
               setTimeout(function() {
                 location.reload();
               }, 5000);
@@ -1200,7 +1253,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             // get PDF width and height
             $pdf_info = getpdfinfo ($thumb_root.$mediafile_pdf);
-              
+
             // use default values
             if (empty ($pdf_info['width']) || empty ($pdf_info['height']))
             {
@@ -1219,38 +1272,38 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             // reset
             $mediaview_doc = "";
-            
+
             // count pages 
             for ($page_count = 0; $page_count <= 10000; $page_count++)
             {
               if (!is_file ($thumb_root.$file_info['filename'].".annotation-".$page_count.".jpg") && !is_cloudobject ($thumb_root.$file_info['filename'].".annotation-".$page_count.".jpg")) break;
             }
-            
+
             if ($page_count > 1)
             {
               $mediaview_doc .= "
   <div style=\"position:absolute; width:".($width+15)."px; height:28px; text-align:right;".($width < 420 ? "margin-top:-38px;" : "margin-top:-8px;")."\">
     <img src=\"".getthemelocation()."img/button_arrow_left.png\" onclick=\"gotoPage('previous');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"display:inline-block; vertical-align:middle;\" alt=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" />
     <select id=\"pagenumber\" onchange=\"gotoPage('none');\" title=\"".getescapedtext ($hcms_lang['page'][$lang], $hcms_charset, $lang)."\" style=\"display:inline-block; width:70px;\">";
-    
+
               for ($i = 0; $i < $page_count; $i++)
               {
                 $mediaview_doc .= "
         <option value=\"".$i."\">".($i+1)."</option>";
               }
-      
+
               $mediaview_doc .= "
     </select> / ".$page_count."
     <img src=\"".getthemelocation()."img/button_arrow_right.png\" onclick=\"gotoPage('next');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"display:inline-block; vertical-align:middle;\" alt=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" />
   </div>";
             }
-  
+
            $mediaview_doc .= "
   <div style=\"margin-top:30px;\">
     <div id=\"annotation\" style=\"position:relative;\" class=\"".$class."\"></div>
   </div>
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
-	<script type=\"text/javascript\">  
+	<script type=\"text/javascript\">
     // set annotation buttons
     function setAnnotationButtons ()
     {
@@ -1260,63 +1313,63 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         document.getElementById('tool0').title = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationStop').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationRectangle'))
       {
         document.getElementById('annotationRectangle').src = '".getthemelocation()."img/button_rectangle.png';
         document.getElementById('tool1').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationRectangle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationCircle'))
       {
         document.getElementById('annotationCircle').src = '".getthemelocation()."img/button_circle.png';
         document.getElementById('tool2').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationCircle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationText'))
       {
         document.getElementById('annotationText').src = '".getthemelocation()."img/button_textu.png';
         document.getElementById('tool3').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationText').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationArrow'))
       {
         document.getElementById('annotationArrow').src = '".getthemelocation()."img/button_arrow.png';
         document.getElementById('tool4').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationArrow').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationPen'))
       {
         document.getElementById('annotationPen').src = '".getthemelocation()."img/button_pen.png';
         document.getElementById('tool5').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationPen').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationDownload'))
       {
         document.getElementById('annotationDownload').src = '".getthemelocation()."img/button_file_download.png';
         document.getElementById('download').title = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationDownload').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationUndo'))
       {
         document.getElementById('annotationUndo').src = '".getthemelocation()."img/button_history_back.png';
         document.getElementById('undoaction').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationUndo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationRedo'))
       {
         document.getElementById('annotationRedo').src = '".getthemelocation()."img/button_history_forward.png';
         document.getElementById('redoaction').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationHelp'))
       {
         document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_info.png';
@@ -1335,16 +1388,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
       pages_name = [];
       pages_link = [];";
-      
+
       for ($i = 0; $i < $page_count; $i++)
       {
         $mediaview_doc .= "
       pages_name[".$i."] = \"".$file_info['filename'].".annotation-".$i.".jpg\";
       pages_link[".$i."] = \"".createviewlink ($site, $file_info['filename'].".annotation-".$i.".jpg", $file_info['filename'].".annotation-".$i.".jpg")."&ts=\" + Date.now()";
       }
-      
+
       $mediaview_doc .= "
-      
+
       if (number >= 0 && number < ".$page_count.")
       {
         if (annotatestatus == true) autoSave(true);
@@ -1355,7 +1408,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         annotatestatus = false;
       }
     }
-  
+
 		$(document).ready(function(){
       // set annotation image file name
       $('#medianame').val('".$annotation_page."');
@@ -1369,10 +1422,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         unselectTool: true,
 				images: ['".createviewlink ($site, $annotation_page, $annotation_page)."?ts=".time()."']
       });
-      
+
       // set images for buttons
       setAnnotationButtons();
-      
+
       // annotations download event
       $('#annotationDownload').click(function(event) {
         $('#annotation').annotate('export', {type: 'image/jpeg', quality: 0.95}, function(data){
@@ -1384,7 +1437,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   ";
           }
         }
-        
+
         // add doc viewer
         $mediaview .= $mediaview_doc;
 
@@ -1395,14 +1448,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       {
         // media size
         $style = "";
-      
+
         if ($viewtype != "template")
         {
           $thumbfile = $file_info['filename'].".thumb.jpg";
-          
+
           // prepare media file
           $temp = preparemediafile ($site, $thumb_root, $thumbfile, $user);
-          
+
           // if encrypted
           if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
           {
@@ -1415,13 +1468,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $thumb_root = $temp['location'];
             $thumbfile = $temp['file'];
           }
-          
+
           // use thumbnail if it is valid
           if (is_file ($thumb_root.$thumbfile))
           {
             // get thumbnail image information
             $thumb_size = @getimagesize ($thumb_root.$thumbfile);
-            
+
             if (!empty ($thumb_size[0]) && !empty ($thumb_size[1]))
             {
               $mediaratio = $thumb_size[0] / $thumb_size[1];
@@ -1432,8 +1485,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {
               $width = round (($thumb_size[0] * 1.5), 0);
             }
-            
-            // calculate width or height if one is missing
+
+            // calculate width or height if one dimension is missing
             if ($width > 0 && empty ($height))
             {
               $height = round (($width / $mediaratio), 0);
@@ -1492,15 +1545,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               }
             }
 
-            // if thumbnail file is smaller than the defined size of a thumbnail due to a smaller original image
-            if (!empty ($mediaratio) && $thumb_size[0] < 180 && $thumb_size[1] < 180)
-            {
-              $width = $thumb_size[0];
-              $height = $thumb_size[1];
-              $mediafile = $thumbfile;
-            }
             // generate a new image file if the new image size is greater than 180% of the width or height of the thumbnail
-            elseif (!empty ($mediaratio) && ($width > 0 && $thumb_size[0] * 1.8 < $width) && ($height > 0 && $thumb_size[1] * 1.8 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
+            if (!empty ($mediaratio) && ($width > 0 && $thumb_size[0] * 1.8 < $width) && ($height > 0 && $thumb_size[1] * 1.8 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
             {
               // define parameters for view-images
               $viewfolder = $mgmt_config['abs_path_temp'];
@@ -1511,12 +1557,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $newname = $file_info['filename'].".".$typename.'.'.$newext;
 
               // generate new file only when another one wasn't already created or is outdated (use thumbnail since the date of the decrypted temporary file is not representative)
-              if (!is_file ($viewfolder.$newname) || @filemtime ($thumb_root.$thumbfile) > @filemtime ($viewfolder.$newname) || !empty ($force_recreate)) 
+              if (!is_file ($viewfolder.$newname) || (is_file ($thumb_root.$thumbfile) && @filemtime ($thumb_root.$thumbfile) > @filemtime ($viewfolder.$newname)) || !empty ($force_recreate)) 
               {
                 if (!empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
                 {
                   $mgmt_imageoptions['.jpg.jpeg'][$typename] = '-s '.$width.'x'.$height.' -q 98 -f '.$newext;
-                  
+
                   // create new temporary thumbnail
                   $result = createmedia ($site, $thumb_root, $viewfolder, $mediafile_orig, $newext, $typename, true);
 
@@ -1526,16 +1572,33 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               // we use the existing file
               else $mediafile = $newname;
             }
-            // use thumbnail image
-            else $mediafile = $thumbfile;
-            
+            // stretch view of thumbnail image
+            elseif (!empty ($mediaratio) && ($width > 0 && $thumb_size[0] * 1.8 < $width) && ($height > 0 && $thumb_size[1] * 1.8 < $height))
+            {
+              $width = ceil ($thumb_size[0] * 1.8);
+              $height = ceil ($thumb_size[1] * 1.8);
+              $mediafile = $thumbfile;
+            }
+            // if thumbnail file is smaller than the defined size of a thumbnail due to a smaller original image
+            elseif (!empty ($mediaratio) && $thumb_size[0] < 180 && $thumb_size[1] < 180)
+            {
+              $width = $thumb_size[0];
+              $height = $thumb_size[1];
+              $mediafile = $thumbfile;
+            }
+            // use thumbnail with requested dimension
+            else
+            {
+              $mediafile = $thumbfile;
+            }
+
             if ($width > 0 && $height > 0) $style = "style=\"width:".intval($width)."px; height:".intval($height)."px;\"";
-            
+
             // set width and height of media file as file-parameter
             $mediaview .= "
           <!-- hyperCMS:width file=\"".$width_orig."\" -->
           <!-- hyperCMS:height file=\"".$height_orig."\" -->";
-            
+
             // get file extension of new file (preview file)
             $file_info['ext'] = strtolower (strrchr ($mediafile, "."));
 
@@ -1549,7 +1612,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {
               // get annotation image size
               $temp = @getimagesize ($thumb_root.$annotation_file);
-    
+
               if (!$is_mobile && !empty ($temp[0]) && !empty ($temp[1]))
               {
                 $width_annotation = $temp[0];
@@ -1560,7 +1623,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 $width_annotation = $width;
                 $height_annotation = $height;
               }
-              
+
               $annotation_image = createviewlink ($site, $annotation_file, $annotation_file, true);
 
               $mediaview .= "
@@ -1577,15 +1640,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $mediaview .= "
               <div id=\"annotation\" style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, '".$id."');\"" : "")."><img src=\"".createviewlink ($site, $mediafile, $medianame, true)."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></div>";
             }
-            
+
             $mediaview .= "
               </td>
             </tr>";
-            
+
             if ($viewtype != "media_only") $mediaview .= "
             <tr>
               <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
-            </tr>";           
+            </tr>"; 
           }
           // if no thumbnail/preview exists
           else
@@ -1595,13 +1658,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             <tr>
               <td style=\"text-align:left;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" /></td>
             </tr>";
-            
+
             if ($viewtype != "media_only") $mediaview .= "
             <tr>
               <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
             </tr>";
           }
-        }      
+        }
         // if template media view
         elseif (is_file ($media_root.$mediafile))
         {
@@ -1610,13 +1673,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           <tr>
             <td style=\"text-align:left;\"><img src=\"".$mgmt_config['url_path_tplmedia'].$site."/".$mediafile."\" id=\"".$id."\" alt=\"".$mediafile."\" title=\"".$mediafile."\" class=\"".$class."\" ".$style."/></td>
           </tr>";
-          
+
           if ($viewtype != "media_only") $mediaview .= "
           <tr>
             <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($mediafile, 40, false)."<br /><hr /></td>
           </tr>";
-        }      
-  
+        }
+
         // image rendering (only if image conversion software and permissions are given)
         if ($viewtype == "preview" && is_supported ($mgmt_imagepreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) 
         {
@@ -1646,26 +1709,26 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             if (!is_file ($thumb_root.$file_info['filename'].".annotation-".$page_count.".jpg") && !is_cloudobject ($thumb_root.$file_info['filename'].".annotation-".$page_count.".jpg")) break;
           }
-          
+
           if ($page_count > 1)
           {
             $mediaview = "
   <div style=\"position:absolute; width:".($width+15)."px; height:28px; text-align:right; ".($width < 420 ? "margin-top:-38px;" : "margin-top:-8px;")."\">
     <img src=\"".getthemelocation()."img/button_arrow_left.png\" onclick=\"gotoPage('previous');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"display:inline-block; vertical-align:middle;\" alt=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" />
     <select id=\"pagenumber\" onchange=\"gotoPage('none');\" title=\"".getescapedtext ($hcms_lang['page'][$lang], $hcms_charset, $lang)."\" style=\"display:inline-block; width:70px;\">";
-    
+
             for ($i = 0; $i < $page_count; $i++)
             {
               $mediaview .= "
         <option value=\"".$i."\">".($i+1)."</option>";
             }
-      
+
             $mediaview .= "
     </select> / ".$page_count."
     <img src=\"".getthemelocation()."img/button_arrow_right.png\" onclick=\"gotoPage('next');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\"  style=\"display:inline-block; vertical-align:middle;\" alt=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" />
   </div>";
           }
-        
+
           $mediaview .= "
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
 	<script>
@@ -1678,79 +1741,79 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         document.getElementById('tool0').title = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationStop').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['none'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationRectangle'))
       {
         document.getElementById('annotationRectangle').src = '".getthemelocation()."img/button_rectangle.png';
         document.getElementById('tool1').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationRectangle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationCircle'))
       {
         document.getElementById('annotationCircle').src = '".getthemelocation()."img/button_circle.png';
         document.getElementById('tool2').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationCircle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationText'))
       {
         document.getElementById('annotationText').src = '".getthemelocation()."img/button_textu.png';
         document.getElementById('tool3').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationText').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationArrow'))
       {
         document.getElementById('annotationArrow').src = '".getthemelocation()."img/button_arrow.png';
         document.getElementById('tool4').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationArrow').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationPen'))
       {
         document.getElementById('annotationPen').src = '".getthemelocation()."img/button_pen.png';
         document.getElementById('tool5').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationPen').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationDownload'))
       {
         document.getElementById('annotationDownload').src = '".getthemelocation()."img/button_file_download.png';
         document.getElementById('download').title = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationDownload').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationUndo'))
       {
         document.getElementById('annotationUndo').src = '".getthemelocation()."img/button_history_back.png';
         document.getElementById('undoaction').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationUndo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationRedo'))
       {
         document.getElementById('annotationRedo').src = '".getthemelocation()."img/button_history_forward.png';
         document.getElementById('redoaction').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       if (document.getElementById('annotationHelp'))
       {
         document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_info.png';
         document.getElementById('annotationHelp').title = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
         document.getElementById('annotationHelp').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
       }
-      
+
       // display zoom feature (disabled)
       document.getElementById('zoomlayer').style.display='inline';
     }
-    
+
 		$(document).ready(function(){
-      
+
       // set annotation image file name
       $('#medianame').val('".$annotation_file."');
-      
+
       // create annotation image
 			$('#annotation').annotate({
         width: '".$width_annotation."',
@@ -1763,7 +1826,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
       // set images for buttons
       setAnnotationButtons();
-      
+
       // annotations download event
       $('#annotationDownload').click(function(event) {
         $('#annotation').annotate('export', {type: 'image/jpeg', quality: 0.95}, function(data){
@@ -1780,7 +1843,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       {
         // new size may exceed the original image size
         $newsize = mediasize2frame ($width_orig, $height_orig, $width, $height, true);
-        
+
         if (is_array ($newsize))
         {
           $width = $newsize['width'];
@@ -1791,12 +1854,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $width = "";
           $heigth = "";
         }
-      
+
         // use provided dimensions
         $style = "";
         if ($width > 0) $style .= " width=\"".$width."\"";
         if ($height > 0) $style .= " height=\"".$height."\"";
-        
+
         $mediaview .= "
       <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
         <tr>
@@ -1808,7 +1871,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             </object>
         </td>
         </tr>";
-        
+
         if ($viewtype != "media_only") $mediaview .= "
         <tr>
           <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
@@ -1838,7 +1901,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           // create thumbnail audio of original file
           $create_media = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, "", "origthumb");
-          
+
           if ($create_media) $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
         }
 
@@ -1849,7 +1912,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediaheight = $config['height'];
           $mediaratio = $config['width'] / $config['height'];
         }
-        
+
         // use default values
         if (empty ($mediawidth) || $mediawidth < 300 || empty ($mediaheight) || $mediaheight < 60)
         {
@@ -1857,21 +1920,21 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediaheight = 320;
           $mediaratio = $mediawidth / $mediaheight;
         }
-        
+
         // set width and height of media file as file-parameter
         $mediaview .= "
         <!-- hyperCMS:width file=\"".$mediawidth."\" -->
         <!-- hyperCMS:height file=\"".$mediaheight."\" -->";
-        
+
         // new size may exceed the original image size
         $newsize = mediasize2frame ($mediawidth, $mediaheight, $width, $height, true);
-        
+
         if (is_array ($newsize))
         {
           $mediawidth = $newsize['width'];
           $mediaheight = $newsize['height'];
         }
-        
+
         // add original file if config is empty
         if (empty ($config['mediafiles']) && strpos ($mediafile_orig, ".config.") == 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
         {
@@ -1880,7 +1943,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
         // generate player code
         $playercode = showaudioplayer ($site, $config['mediafiles'], $mediawidth, $mediaheight, "", $id, false, false, true, true);
-      
+
         $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
           <tr>
@@ -1889,13 +1952,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             <div id=\"videoplayer_container\" style=\"display:inline-block; text-align:center;\">
               ".$playercode."
               <div id=\"mediaplayer_segmentbar\" style=\"display:none; width:100%; height:22px; background-color:#808080; text-align:left; margin-bottom:8px;\"></div>";
-              
+
               if ($viewtype != "media_only") $mediaview .= "
               <div style=\"display:block; margin:3px;\">".showshorttext($medianame, 40, false)."<br /><hr /></div>";
-              
+
         // audio rendering and embedding (requires the JS function 'setSaveType' provided by the template engine)
         if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
-        {  
+        {
           // edit, embed button
           if ($viewtype == "preview")
           {
@@ -1913,7 +1976,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
           }
         }
-        
+
         $mediaview .= "
             </div>
             <!-- audio player end -->
@@ -1925,7 +1988,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       elseif ($file_info['ext'] != "" && is_video ($file_info['ext']))
       {
         $config = array();
-        
+
         // media player config file is given
         if (strpos ($mediafile_orig, ".config.") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
         {
@@ -1936,7 +1999,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         elseif (is_file ($thumb_root.$file_info['filename'].".config.orig") || is_cloudobject ($thumb_root.$file_info['filename'].".config.orig"))
         {
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
-          
+
           // set default width for preview of original video file if no width has been provided
           if (!is_numeric ($width) || $width == 0) $width = 320;
         }
@@ -1955,7 +2018,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           // create thumbnail video of original file
           $create_media = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, "", "origthumb");
-          
+
           if ($create_media) $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
         }
 
@@ -2010,10 +2073,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "
         <!-- hyperCMS:width file=\"".$mediawidth."\" -->
         <!-- hyperCMS:height file=\"".$mediaheight."\" -->";
-        
+
         // new size may exceed the original image size
         $newsize = mediasize2frame ($mediawidth, $mediaheight, $width, $height, true);
-        
+
         if (is_array ($newsize))
         {
           $mediawidth = $newsize['width'];
@@ -2029,25 +2092,25 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             <td style=\"text-align:left;\">
             <!-- video player begin -->
             <div id=\"videoplayer_container\" style=\"display:inline-block; text-align:center;\">";
-              
+
          if ((!empty ($mgmt_config['facedetection']) && $viewtype == "preview")) $mediaview .= "
               <div id=\"annotationToolbar\" style=\"width:auto; height:36px; margin:4px 0px;\">
                 <script type=\"text/javascript\">
                 var annotationmode = false;
-                
+
                 function annotateButtonActive (id)
                 {
-                  var toolbar = document.getElementById('annotationToolbar');      
+                  var toolbar = document.getElementById('annotationToolbar');
                   var div = toolbar.getElementsByClassName('hcmsButton');
                   var classes;
-                  
+
                   for (var i=0; i<div.length; i++)
                   {
                     classes = div[i].classList;
-                    
+
                     // dectivate toolbar buttons
                     if (classes.contains('hcmsButtonActive')) classes.remove('hcmsButtonActive');
-                    
+
                     // activate selected toolbar button
                     if (div[i].id == id) classes.add('hcmsButtonActive');
                   }
@@ -2061,16 +2124,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   <img id=\"annotationHelp\" src=\"".getthemelocation()."img/button_info.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" title=\"".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."\" alt=\"".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."\" />
                 </div>
               </div>";
-              
+
         $mediaview .= "
               <div style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"if (annotationmode) createFaceOnVideo (event);\"" : "").">".$playercode."</div>
               <div id=\"mediaplayer_segmentbar\" style=\"display:none; width:100%; height:22px; background-color:#808080; text-align:left; margin-bottom:8px;\"></div>";
               if ($viewtype != "media_only") $mediaview .= "
               <div style=\"display:block; margin:3px;\">".showshorttext($medianame, 40, false)."<br /><hr /></div>";
-              
+
         // video rendering and embedding (requires the JS function 'setSaveType' provided by the template engine)
         if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
-        {  
+        {
           // VTT, detect faces, edit, embed button
           if ($viewtype == "preview")
           {
@@ -2092,7 +2155,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
           }
         }
-        
+
         $mediaview .= "
             </div>
             <!-- video player end -->";
@@ -2104,29 +2167,29 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             // load language code index file
             $langcode_array = getlanguageoptions ();
-    
+
             if ($langcode_array != false)
             {
               $lang_select = "
                  <select id=\"vtt_language\" name=\"vtt_language\" style=\"width:318px;\" onchange=\"hcms_changeVTTlanguage()\">
                    <option value=\"\">".getescapedtext ($hcms_lang['language'][$lang], $hcms_charset, $lang)."</option>";
-              
+
               foreach ($langcode_array as $code => $language)
               {
                 $lang_select .= "
                     <option value=\"".$code."\">".$language."</option>";
               }
-              
+
               $lang_select .= "
                 </select>\n";
             }
-          
+
             $mediaview .= "
           </td>
         </tr>
         <tr>
           <td align=\"middle\">
-          
+
             <div id=\"vtt_container\" style=\"display:none; width:592px;\">
               <!-- VTT editor -->
               <div id=\"vtt_create\" class=\"hcmsInfoBox\" style=\"width:100%;\">
@@ -2161,17 +2224,17 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             function createVTTrecord ()
             {
               var result = hcms_createVTTrecord();
-            
+
               if (!result) alert (hcms_entity_decode ('".getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $hcms_charset, $lang)."'));
             }
-            
+
             function setPlayerTime (id)
             {
               ";
               // if projekktor is used, we need to check for the state beforehand
               if (strtolower ($mgmt_config['videoplayer']) ==  "projekktor") $mediaview .= "
               var player = projekktor('".$id."');
-              
+
               if (player.getState('PLAYING') || player.getState('PAUSED'))
               {
                 var time = player.getPosition();
@@ -2189,34 +2252,34 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               ";
               $mediaview .= "
               var seconds = Math.floor(time) % 60;
-              
+
               if (seconds > 0)
               {
                 var milliseconds = Math.floor((time % seconds) * 1000);
-                
+
                 if (milliseconds < 10) milliseconds = \"00\" + milliseconds;
                 else if (milliseconds < 100) milliseconds = \"0\" + milliseconds;
                 else if (milliseconds > 999) milliseconds = milliseconds.toString().substring(0,3);
               }
               else var milliseconds = \"000\";
-              
+
               var minutes = Math.floor(time / 60) % 60;
               var hours = Math.floor(time / 3600) % 24;
-              
+
               if (hours   < 10) hours = \"0\" + hours;
               if (minutes < 10) minutes = \"0\" + minutes;
               if (seconds < 10) seconds = \"0\" + seconds;
 
               if (id != '') document.getElementById(id).value = hours + ':' + minutes + ':' + seconds + '.' + milliseconds;
-              
+
               return time;
             }
             </script>
-            
+
             </td>
           </tr>";
           }
-        }     
+        } 
 
         $mediaview .= "
       </table>";
@@ -2226,7 +2289,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       {
         // prepare media file
         $temp = preparemediafile ($site, $media_root, $mediafile, $user);
-        
+
         // if encrypted
         if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
         {
@@ -2239,7 +2302,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $media_root = $temp['location'];
           $mediafile = $temp['file'];
         }
-      
+
         if (is_file ($media_root.$mediafile))
         {
           $content = loadfile ($media_root, $mediafile);
@@ -2249,14 +2312,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             if (is_latin1 ($content)) $content = iconv ("ISO-8859-1", "UTF-8//TRANSLIT", $content);
             else $content = utf8_encode ($content);
           }
-          
+
           // escape special characters
           if ($hcms_lang_codepage[$lang] == "") $hcms_lang_codepage[$lang] = "UTF-8";
           $content = html_encode ($content, "ASCII");
-          
+
           // media size
           $style = "";
-          
+
           if (is_numeric ($width) && $width > 0 && is_numeric ($height) && $height > 0)
           {
             $style = "style=\"width:".$width."px; height:".$height."px;\"";
@@ -2271,8 +2334,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $width = round (($height * 0.73), 0);
             $style = "style=\"width:".$width."px; height:".$height."px;\"";
           }
-          else $style = "style=\"width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;\"";   
-          
+          else $style = "style=\"width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;\""; 
+
           if ($viewtype == "template") $mediaview .= "
         <form name=\"editor\" method=\"post\">
           <input type=\"hidden\" name=\"site\" value=\"".$site."\" />
@@ -2280,35 +2343,35 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           <input type=\"hidden\" name=\"mediafile\" value=\"".$mediafile."\" />
           <input type=\"hidden\" name=\"save\" value=\"yes\" />
           <input type=\"hidden\" name=\"token\" value=\"".createtoken ($user)."\" />";
-          
+
           if ($viewtype == "template") $mediaview .= "
         <table class=\"hcmsTableNarrow\" style=\"width:100%; border:1px solid #000000; margin:2px;\">";
           else $mediaview .= "
         <table>";
-          
+
           // save button
           if ($viewtype == "template") $mediaview .= "
           <tr>
             <td style=\"text-align:left;\"><img onclick=\"document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['save'][$lang], $hcms_charset, $lang)."\" /></td>
           </tr>";
-          
+
           // disable text area
           if ($viewtype == "template") $disabled = "";
           else $disabled = "disabled=\"disabled\"";
-          
+
           $mediaview .= "
           <tr>
             <td style=\"text-align:left;\"><textarea name=\"content\" id=\"".$id."\" ".$style." ".$disabled.">".$content."</textarea></td>
           </tr>";
-          
+
           if ($viewtype != "media_only") $mediaview .= "
           <tr>
             <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td>
           </tr>
         </table>";
-          
+
           if ($viewtype == "template") $mediaview .= "
-        </form>";  
+        </form>";
         }
       }
     }
@@ -2323,7 +2386,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediafile = $file_info['filename'].".thumb.jpg";
         // get file extension of new file (preview file)
         $file_info['ext'] = strtolower (strrchr ($mediafile, "."));
-        
+
         $mediaview .= "
       <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
         <tr>
@@ -2331,7 +2394,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         </tr>
         <tr>
           <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
-        </tr>";           
+        </tr>"; 
       }
       // if no thumbnail/preview exists
       else
@@ -2341,16 +2404,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <tr>
           <td style=\"text-align:left;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" /></td>
         </tr>";
-        
+
         if ($viewtype != "media_only") $mediaview .= "
         <tr>
           <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
         </tr>";
       }
-      
+
       $mediaview .= "
       </table>";
-    }  
+    }
 
     // --------------------- properties of video and audio files (original and thumbnail files) --------------------------
     if ($viewtype != "media_only")
@@ -2369,21 +2432,21 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $filesizes = array();
         $downloads = array();
         $youtube_uploads = array();
-        
+
         // is file a video
         if (substr_count (strtolower ($hcms_ext['video']), $file_info['ext']) > 0) $is_video = true;
         else $is_video = false;
-        
+
         // get video info from config file
         $mediafile_config = substr ($mediafile_orig, 0, strrpos ($mediafile_orig, ".")).".config.orig";
         $videoinfo = readmediaplayer_config ($thumb_root, $mediafile_config);
-        
+
         // get video info from video file for older versions
         if (empty ($videoinfo['version']) || floatval ($videoinfo['version']) < 2.3)
         {
           // prepare media file
           $temp = preparemediafile ($site, $media_root, $mediafile, $user);
-          
+
           // if encrypted
           if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
           {
@@ -2396,10 +2459,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $media_root = $temp['location'];
             $mediafile = $temp['file'];
           }
-        
+
           $videoinfo = getvideoinfo ($media_root.$mediafile);
         }
-        
+
         // show the values
         if (is_array ($videoinfo))
         {
@@ -2407,7 +2470,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediaview .= "<input type=\"hidden\" id=\"mediaplayer_duration\" name=\"mediaplayer_duration\" value=\"".$videoinfo['duration']."\" />";
           $filesizes['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';
           $dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';
-          $rotations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['rotate'].' '.getescapedtext ($hcms_lang['degree'][$lang], $hcms_charset, $lang).'&nbsp;&nbsp;&nbsp;</td>';  
+          $rotations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['rotate'].' '.getescapedtext ($hcms_lang['degree'][$lang], $hcms_charset, $lang).'&nbsp;&nbsp;&nbsp;</td>';
           $durations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>'; 
           $video_codecs['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videocodec'].'&nbsp;&nbsp;&nbsp;</td>';
           $audio_codecs['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiocodec'].'&nbsp;&nbsp;&nbsp;</td>';
@@ -2415,9 +2478,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $audio_bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
           $audio_frequenzies['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
           $audio_channels['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
-          
+
           $download_link = "top.location.href='".createviewlink ($site, $mediafile_orig, $medianame, false, "download")."'; return false;";
-         
+ 
           // download button
           if (($viewtype == "preview" || $viewtype == "preview_download") && (empty ($downloadformats) || !empty ($downloadformats['video']['original'])))
           {
@@ -2425,9 +2488,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               <td class="hcmsHeadlineTiny" style="text-align:left;">
                 <button class="hcmsButtonBlue" onclick="'.$download_link.'"><img src="'.getthemelocation().'img/button_file_download.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button>
               </td>';
-            
-            // Youtube upload
-            if (!empty ($mgmt_config['youtube_oauth2_client_id']) && !empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
+
+            // Youtube upload (not for portals)
+            $portal = getsession ("hcms_portal");
+
+            if (!empty ($mgmt_config['youtube_oauth2_client_id']) && !empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php") && empty ($portal))
             {		
               $youtube_uploads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;"> 
@@ -2436,9 +2501,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             }
           }
         }
-  
+
         $videos = array ('<th style="text-align:left;">'.getescapedtext ($hcms_lang['original'][$lang], $hcms_charset, $lang).'</th>');
-  
+
         if (!$is_version && ($viewtype == "preview" || $viewtype == "preview_download"))
         {
           // look for available audio and video files 
@@ -2448,19 +2513,19 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {
               // remove dot
               $media_extension = str_replace (".", "", $media_extension);
-              
+
               // get video info from config file
               $mediafile_config = substr ($mediafile_orig, 0, strrpos ($mediafile_orig, ".")).".config.".$media_extension;
-      
+
               // verify if video config file exists
               if (is_file ($thumb_root.$mediafile_config) || is_cloudobject ($thumb_root.$mediafile_config))
               {
                 $videoinfo = readmediaplayer_config ($thumb_root, $mediafile_config);
-      
+
                 // verify and define video thumbnail file
                 // try individual video
                 $test_file = $file_info['filename'].".media.".$media_extension;
-                
+
                 if (is_file ($thumb_root.$test_file) || is_cloudobject ($thumb_root.$test_file))
                 {
                   $video_thumbfile = $test_file;
@@ -2469,19 +2534,19 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 {
                   // try use thumbnail video file
                   $test_file = $file_info['filename'].".thumb.".$media_extension;
-                  
+
                   if (is_file ($thumb_root.$test_file) || is_cloudobject ($thumb_root.$test_file))
                   {
                     $video_thumbfile = $test_file;
                   }
                 }
-      
+
                 // get video info from video file for older versions
                 if (!empty ($video_thumbfile) && (empty ($videoinfo['version']) || floatval ($videoinfo['version']) < 2.3))
                 {
                   // prepare media file
                   $temp = preparemediafile ($site, $thumb_root, $video_thumbfile, $user);
-      
+
                   // if encrypted
                   if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
                   {
@@ -2494,18 +2559,18 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                     $thumb_root = $temp['location'];
                     $video_thumbfile = $temp['file'];
                   }
-                
+
                   $videoinfo = getvideoinfo ($thumb_root.$video_thumbfile);
                 }
-    
+
                 // show the values
                 if (!empty ($video_thumbfile) && is_array ($videoinfo))
                 {
                   $videos[$media_extension] = '<th style="text-align:left;">'.$media_extension.'</th>';
-                 
-                  // define video file name          
+ 
+                  // define video file name
                   $video_filename = substr ($medianame, 0, strrpos ($medianame, ".")).".".$media_extension;
-                  
+
                   $filesizes[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';
                   $dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';
                   $rotations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['rotate'].' '.getescapedtext ($hcms_lang['degree'][$lang], $hcms_charset, $lang).'&nbsp;&nbsp;</td>';
@@ -2516,9 +2581,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   $audio_bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
                   $audio_frequenzies[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
                   $audio_channels[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
-      
+
                   $download_link = "top.location.href='".createviewlink ($site, $video_thumbfile, $video_filename, false, "download")."'; return false;";
-                 
+ 
                   // download button
                   if (($viewtype == "preview" || $viewtype == "preview_download") && (empty ($downloadformats) || !empty ($downloadformats['video']['original'])))
                   {
@@ -2526,9 +2591,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                       <td class="hcmsHeadlineTiny" style="text-align:left;">
                         <button class="hcmsButtonBlue" onclick="'.$download_link.'"><img src="'.getthemelocation().'img/button_file_download.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button>
                       </td>'; 
-                    
-                    // Youtube upload
-                    if (!empty ($mgmt_config['youtube_oauth2_client_id']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
+
+                    // Youtube upload (not for portals)
+                    $portal = getsession ("hcms_portal");
+
+                    if (!empty ($mgmt_config['youtube_oauth2_client_id']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php") && empty ($portal))
                     {	
                       $youtube_uploads[$media_extension] = '
                       <td class="hcmsHeadlineTiny" style="text-align:left;"> 
@@ -2541,8 +2608,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             }
           }
         }
-  
-        // generate output	    
+
+        // generate output	
         if (is_array ($videos)) $mediaview .= '<table style="border-collapse:separate; border-spacing:2px;"><tr><th>&nbsp;</th>'.implode("", $videos).'</tr>';		
         // Filesize
         if (is_array ($filesizes)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $filesizes).'</tr>';
@@ -2583,45 +2650,45 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $unit = "MB";
         }
         else $unit = "KB";
-        
+
         $mediafilesize = number_format ($mediafilesize, 0, ".", " ")." ".$unit;
-        
+
         // output information
         $col_width = "width:120px; ";
-        
+
         $mediaview .= "
       <table>";
-        
+
         if (!empty ($owner[0])) $mediaview .= "
         <tr>
           <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['owner'][$lang], $hcms_charset, $lang)." </td>
           <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$owner[0]."</td>
         </tr>";
-        
+
         $mediaview .= "
         <tr>
           <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang)." </td>
           <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($mediafiletime, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
         </tr>";
-        
+
         if (!empty ($date_published[0])) $mediaview .= "
         <tr>
           <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['published'][$lang], $hcms_charset, $lang)." </td>
           <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($date_published[0], "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
         </tr>";
-        
+
         if (!empty ($date_delete)) $mediaview .= "
         <tr>
           <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['will-be-removed'][$lang], $hcms_charset, $lang)." </td>
           <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($date_delete, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
         </tr>";
-        
+
         $mediaview .= "
         <tr>
           <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang)." </td>
           <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$mediafilesize."</td>
         </tr>\n";
-  
+
         if (!empty ($width_orig) && !empty ($height_orig))
         {
           // size in pixel of media file
@@ -2630,14 +2697,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." </td>
           <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$width_orig."x".$height_orig." px</td>
         </tr>\n";
-        
+
           // size in cm
           $mediaview .= "
         <tr>
           <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (72 dpi) </td>
           <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 72 * 2.54), 1)."x".round(($height_orig / 72 * 2.54), 1)." cm, ".round(($width_orig / 72), 1)."x".round(($height_orig / 72), 1)." inch</td>
         </tr>\n";
-        
+
           // size in inch
           $mediaview .= "
         <tr>
@@ -2645,7 +2712,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 300 * 2.54), 1)."x".round(($height_orig / 300 * 2.54), 1)." cm, ".round(($width_orig / 300), 1)."x".round(($height_orig / 300), 1)." inch</td>
         </tr>\n";
         }
-        
+
         $mediaview .= "
       </table>";
       }
@@ -2670,29 +2737,29 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="multi", $search_expression="", $search_format="", $mediatype="", $lang="en", $callback="", $scalingfactor="1", $view="list", $thumbsize=100)
 {
   global $user, $mgmt_config, $siteaccess, $pageaccess, $compaccess, $rootpermission, $globalpermission, $localpermission, $hiddenfolder, $html5file, $temp_complocation, $hcms_charset, $hcms_lang;
-  
+
   if (valid_publicationname ($site) && (valid_locationname ($dir) || $dir == ""))
   {
     // load file extension defintions
     require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get location in component structure from session
     if (!valid_locationname ($dir) && isset ($temp_complocation[$site])) 
     {
       $dir = $temp_complocation[$site];
-      
+
       if (!is_dir ($dir))
       {
         $dir = "";
         $temp_complocation[$site] = null;
         $_SESSION['hcms_temp_complocation'] = $temp_complocation;
-      }  
+      }
     }
 
     // load publication inheritance setting
     $inherit_db = inherit_db_read ();
     $parent_array = inherit_db_getparent ($inherit_db, $site);
-    
+
     // if not configured as DAM, define root location if no dir was provided
     if (empty ($mgmt_config[$site]['dam']) && $dir == "")
     {
@@ -2709,29 +2776,29 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     elseif (!empty ($mgmt_config[$site]['dam']) && $dir == "")
     {
       $comp_entry_dir = array();
-      
+
       if (!empty ($compaccess[$site]))
       {
         foreach ($compaccess[$site] as $group => $value)
-        {  
+        {
           if ($localpermission[$site][$group]['component'] == 1 && $value != "")
           { 
             // create path array
             $path_array = link_db_getobject ($value);
-            
+
             foreach ($path_array as $value)
             {
               // path must be inside the location, avoid double entries
               if ($value != "" && substr ($value, 0, strlen ($dir)) == $dir)
               {
                 if (substr ($value, 0, -7) != ".folder") $value = $value.".folder";
-                
+
                 $comp_entry_dir[] = convertpath ($site, $value, "comp");
-              }               
-            }  
+              } 
+            }
           }
         }
-        
+
         // set dir if user has access to component root folder
         if (sizeof ($comp_entry_dir) == 1 && $comp_entry_dir[0] == "%comp%/".$site."/.folder")
         {
@@ -2755,7 +2822,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     // convert location
     $dir = deconvertpath ($dir, "file");
     $location = deconvertpath ($location_esc, "file");
-    
+
     // local access permissions
     $ownergroup = accesspermission ($site, $dir, "comp");
     $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
@@ -2766,7 +2833,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
       $temp_complocation[$site] = $dir;
       $_SESSION['hcms_temp_complocation'] = $temp_complocation;
     }
-    
+
     // media format
     // only for watermark images
     if ($mediatype == "watermark") $format_ext = ".jpg.jpeg.png.gif";
@@ -2778,7 +2845,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     elseif ($mediatype == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
     elseif ($mediatype == "binary") $format_ext = strtolower ($hcms_ext['binary']);
     else $format_ext = "";
-    
+
     // javascript code
     $result = "<!-- Jquery and Jquery UI Autocomplete -->
 <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.3.1.min.js\" type=\"text/javascript\"></script>
@@ -2835,21 +2902,21 @@ $(document).ready(function()
   });
 });
 </script>";
-    
+
     // current location
     $location_name = getlocationname ($site, $dir, "comp", "path");
-    
+
     $result .= "
     <span class=\"hcmsHeadline\" style=\"padding:3px 0px 3px 0px; display:block;\">".getescapedtext ($hcms_lang['select-object'][$lang], $hcms_charset, $lang)."</span>
     <span class=\"hcmsHeadlineTiny\" style=\"padding:3px 0px 3px 0px; display:block;\">".$location_name."</span>";
 
-    // file upload    
+    // file upload
     if ($compcat == "media" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1 && $search_expression == "")
     {
       // Upload Button
       if ($html5file) $popup_upload = "popup_upload_html.php";
       else $popup_upload = "popup_upload_swf.php";
-      
+
       $result .= "
       <div style=\"text-align:left; padding:2px; width:100%;\">
         <button name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" 
@@ -2869,7 +2936,7 @@ $(document).ready(function()
       </div>
       <div style=\"clear:both;\"></div>";
     }
-    
+
     // search form
     if ($mgmt_config['db_connect_rdbms'] != "")
     {
@@ -2884,7 +2951,7 @@ $(document).ready(function()
         <input type=\"hidden\" name=\"mediatype\" value=\"".$mediatype."\" />
         <input type=\"hidden\" name=\"lang\" value=\"".$lang."\" />
         <input type=\"hidden\" name=\"callback\" value=\"".$callback."\" />
-        
+
         <input type=\"text\" name=\"search_expression\" id=\"search_expression\" placeholder=\"".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."\" value=\"".($search_expression != "" ? html_encode ($search_expression) : "")."\" 
         style=\"width:174px;\" maxlength=\"200\" onclick=\"showOptions();\" /><img name=\"SearchButton\" src=\"".getthemelocation()."img/button_ok.png\" onClick=\"submitForm();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_ok_over.png',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"OK\" title=\"OK\" />";
 
@@ -2898,12 +2965,12 @@ $(document).ready(function()
           <input type=\"checkbox\" name=\"search_format[video]\" value=\"video\" checked=\"checked\" />".$hcms_lang['video'][$lang]."<br />
           <input type=\"checkbox\" name=\"search_format[audio]\" value=\"audio\" checked=\"checked\" />".$hcms_lang['audio'][$lang]."<br />
         </div>";
-    
+
       $result .= "
       </form>
     </div>";
     }
-    
+
     $result .= "
     <table class=\"hcmsTableNarrow\" style=\"width:90%;\">";
 
@@ -2915,7 +2982,7 @@ $(document).ready(function()
     {
       //get parent directory
       $updir_esc = getlocation ($dir_esc);
-    
+
       if ($callback == "") $result .= "
       <tr>
         <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td>
@@ -2936,12 +3003,12 @@ $(document).ready(function()
         <td style=\"text-align:left; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode("%comp%/")."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td>
       </tr>";
     }
-    
+
     // -------------------------------- search results ------------------------------------
     if ($search_expression != "")
     {
       if ($mediatype != "") $search_format = array ($mediatype);
-          
+
       $object_array = rdbms_searchcontent ($dir_esc, "", $search_format, "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", 100);
 
       if (is_array ($object_array))
@@ -2949,18 +3016,18 @@ $(document).ready(function()
         foreach ($object_array as $hash=>$object_item)
         {
           $entry = $object_item['objectpath'];
-          
+
           if ($hash != "count" && $entry != "")
           {
             $authorized = false;
-            
+
             // if DAM
             if ($mgmt_config[$site]['dam'])
             {
               // local access permissions
               $ownergroup_entry = accesspermission ($site, $entry, "comp");
               $setlocalpermission_entry = setlocalpermission ($site, $ownergroup_entry, "comp");
-              
+
               if (isset ($setlocalpermission_entry['root']) && $setlocalpermission_entry['root'] == 1) $authorized = true;
             }
             // if CMS
@@ -3025,17 +3092,17 @@ $(document).ready(function()
       {
         natcasesort ($comp_entry_dir);
         reset ($comp_entry_dir);
-        
+
         foreach ($comp_entry_dir as $dirname)
         {
           // folder info
           $folder_info = getfileinfo ($site, $dirname, "comp");
-        
+
           if ($dirname != "" && $folder_info['deleted'] == false)
           {
             $folder_path = getlocation ($dirname);
             $location_name = getlocationname ($site, $folder_path, "comp", "path");
-            
+
             // define icon
             if ($dir == $mgmt_config['abs_path_comp']) $icon = getthemelocation()."img/site.png";
             else $icon = getthemelocation()."img/".$folder_info['icon'];
@@ -3063,10 +3130,10 @@ $(document).ready(function()
           }
         }
       }
-      
+
       // component/asset
       $page_info = getfileinfo ($site, $page, "comp");
-      
+
       if (isset ($comp_entry_file) && is_array ($comp_entry_file) && sizeof ($comp_entry_file) > 0)
       {
         natcasesort ($comp_entry_file);
@@ -3084,9 +3151,9 @@ $(document).ready(function()
 
             // get name
             $comp_name = getlocationname ($site, $object, "comp", "path");
-            
+
             //if ($compcat != "media" && strlen ($comp_name) > 50) $comp_name = "...".substr (substr ($comp_name, -50), strpos (substr ($comp_name, -50), "/")); 
-  
+
             if (
                  $comp_info != false && $comp_info['deleted'] == false && 
                  $dir.$object != $location.$page && 
@@ -3100,7 +3167,7 @@ $(document).ready(function()
               $comp_path = $object;
 
               // warning if file extensions don't match and HTTP include is off and it is not a DAM
-              if ($compcat != "media" && !$mgmt_config[$site]['dam'] && $mgmt_config[$site]['http_incl'] == false && ($comp_info['ext'] != $page_info['ext'] && $comp_info['ext'] != ".page")) $alert = "test = confirm(hcms_entity_decode('".getescapedtext ($hcms_lang['the-object-types-do-not-match'][$lang], $hcms_charset, $lang)."'));";    
+              if ($compcat != "media" && !$mgmt_config[$site]['dam'] && $mgmt_config[$site]['http_incl'] == false && ($comp_info['ext'] != $page_info['ext'] && $comp_info['ext'] != ".page")) $alert = "test = confirm(hcms_entity_decode('".getescapedtext ($hcms_lang['the-object-types-do-not-match'][$lang], $hcms_charset, $lang)."'));";
               else $alert = "test = true;";
 
               // thumbnail of media asset 
@@ -3112,19 +3179,19 @@ $(document).ready(function()
                 $mediainfo = getfileinfo ($site, $mediafile, "comp");
                 $thumbnail = $mediainfo['filename'].".thumb.jpg";
                 $mediadir = getmedialocation ($site, $objectinfo['media'], "abs_path_media").$site."/";
-                
+
                 // thumbnails preview
                 if (is_file ($mediadir.$thumbnail))
                 {
                   $imgsize = getimagesize ($mediadir.$thumbnail);
-                  
+
                   // calculate image ratio to define CSS for image container div-tag
                   if (is_array ($imgsize))
                   {
                     $imgwidth = $imgsize[0];
                     $imgheight = $imgsize[1];
-                    $imgratio = $imgwidth / $imgheight;   
-                    
+                    $imgratio = $imgwidth / $imgheight; 
+
                     // image width >= height
                     if ($imgratio >= 1) $ratio = "width:".$thumbsize."px;";
                     // image width < height
@@ -3135,7 +3202,7 @@ $(document).ready(function()
                   {
                     $ratio = "width:".$thumbsize."px;";
                   }
-                  
+
                   // if thumbnail is smaller than defined thumbnail size
                   if ($imgwidth < $thumbsize && $imgheight < $thumbsize) $style_size = "";
                   else $style_size = $ratio;
@@ -3143,7 +3210,7 @@ $(document).ready(function()
                   // listview - view option for un/published objects
                   if ($comp_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
                   else $class_image = "class=\"lazyload hcmsImageItem\"";
-                  
+
                   $thumbnail = "<img data-src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" ".$class_image." style=\"margin-top:10px; ".$style_size."\" /><br/>";
                 }
               }
@@ -3155,7 +3222,7 @@ $(document).ready(function()
 
                 $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." /> ";
               }
-  
+
               if ($compcat == "single")
               {
                 $result .= "
@@ -3190,12 +3257,12 @@ $(document).ready(function()
         }
       }
     }
-    
+
     $result .= "
     </table>";
-    
+
     // result
-    return $result;    
+    return $result;
   }
   else return false;
 }
@@ -3211,27 +3278,27 @@ $(document).ready(function()
 function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, $sizeheight=300, $toolbar="Default", $lang="en", $dpi=72)
 {
   global $mgmt_config, $publ_config;
-  
+
   if (is_array ($mgmt_config) && valid_publicationname ($site) && $hypertagname != "" && $id != "" && $lang != "")
   {
     if (valid_publicationname ($site) && !is_array ($publ_config)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
-    
+
     // transform language code for editor
     if ($lang == "zh-s") $lang = "zh";
-    
+
     //initialize scaling factor 
     $scalingfactor = 1;
-    
+
     //check if $dpi is valid and than calculate scalingfactor
     if ($dpi > 0 && $dpi < 1000) 
     {
       $scalingfactor = 72 / $dpi; 
     }
-    
+
     // define class-name for comment tags
     if (strpos ("_".$hypertagname, "comment") == 1) $classname = "class=\"is_comment\"";
     else $classname = "";
-    
+
     return "
       <textarea id=\"".$hypertagname."_".str_replace (":", "_", $id)."\" name=\"".$hypertagname."[".$id."]\" ".$classname.">".$contentbot."</textarea>
       <script type=\"text/javascript\">
@@ -3278,20 +3345,20 @@ function showinlineeditor_head ($lang)
     <script type=\"text/javascript\">
       CKEDITOR.disableAutoInline = true;
       var jq_inline = $.noConflict();
-      
+
       function hcms_validateForm() 
       {
         var i,p,q,nm,test,num,min,max,errors='',args=hcms_validateForm.arguments;
-        
+
         for (i=0; i<(args.length-2); i+=3) 
         { 
           test=args[i+2]; val=hcms_findObj(args[i]);
-          
+
           if (val) 
           { 
             nm=val.name;
             nm=nm.substring(nm.indexOf('_')+1, nm.length);
-            
+
             if ((val=val.value)!='') 
             {
               if (test.indexOf('isEmail')!=-1) 
@@ -3319,33 +3386,33 @@ function showinlineeditor_head ($lang)
             else if (test.charAt(0) == 'R') errors += '".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $hcms_charset, $lang).".\\n'; 
           }
         } 
-        
+
         if (errors) 
         {
           alert(hcms_entity_decode('".getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $hcms_charset, $lang).":\\n'+errors));
           return false;
-        }  
+        }
         else return true;
       }
-      
+
       function hcms_initTextarea(ta_id, width, height)
       {
         if (parseInt(width) < 5) width = '100%';
         else width = (parseInt(width)+25)+'px';
-        
+
         if (parseInt(height) < 5) height = '25px';
         else height = parseInt(height)+'px';
-        
+
         document.getElementById(ta_id).style.width = '100%';
         document.getElementById(ta_id).style.height = height;
       }
-      
+
       function hcms_adjustTextarea(ta)
       {
         if (ta.clientHeight < ta.scrollHeight)
         {
           ta.style.height = ta.scrollHeight + 'px';
-          
+
           if (ta.clientHeight < ta.scrollHeight)
           {
             ta.style.height = (ta.scrollHeight * 2 - ta.clientHeight) + 'px';
@@ -3421,7 +3488,7 @@ function showinlineeditor_head ($lang)
 function showinlinedatepicker_head ()
 {
   global $mgmt_config;
-  
+
   if (is_array ($mgmt_config))
   {
     return " 
@@ -3452,30 +3519,30 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
   // add confirm save on changes in inline editor or leave empty string
   // $confirm_save = " && confirm(hcms_entity_decode(\"".getescapedtext ($hcms_lang['do-you-want-to-save-the-changes'][$lang]."\"));";
   $confirm_save = "";
-  
+
   // get hypertagname
   $hypertagname = gethypertagname ($hypertag);
-  
+
   // get constraint
   $constraint = getattribute ($hypertag, "constraint");
-  
+
   // get tag id
   $id = $id_orig = getattribute ($hypertag, "id");
-  
+
   // get label text
-  $label = getattribute ($hypertag, "label");  
-  
+  $label = getattribute ($hypertag, "label");
+
   // get format (if date)
   $format = getattribute ($hypertag, "format"); 
-  if ($format == "") $format = "%Y-%m-%d";    
-  
+  if ($format == "") $format = "%Y-%m-%d";
+
   if (substr($hypertagname, 0, strlen("arttext")) == "arttext")
   {
     // get article id
     $artid = getartid ($id);
-    
+
     // element id
-    $elementid = getelementid ($id);           
+    $elementid = getelementid ($id); 
 
     // define label
     if ($label == "") $labelname = $artid." - ".$elementid;
@@ -3487,21 +3554,21 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
     if ($label == "") $labelname = $id;
     else $labelname = $label;
   }
-    
+
   // correct IDs of article
   if ($id != "" && strpos ("_".$id, ":") > 0) $id = str_replace (":", "_", $id);
-  
+
   if (is_array ($mgmt_config) && valid_publicationname ($site) && $hypertagname != "" && $id != "" && $lang != "")
   {
     if (valid_publicationname ($site) && !is_array ($publ_config)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
-    
+
     // Building the title for the element
     $title = $labelname.": ";
     // And the tag of the element containing the content
     $tag = "span";
     // is the contenteditable attribute set
     $contenteditable = false;
-    
+
     switch ($hypertagname)
     {
       case 'arttextu':
@@ -3526,26 +3593,26 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
       case 'arttextd':
       case 'textd':
         $title .= getescapedtext ($hcms_lang['pick-a-date'][$lang], $hcms_charset, $lang);
-        break;        
+        break;
     }
-    
+
     $defaultText = $title;
-    
+
     // Building the display of the content
     $return = "<".$tag." id=\"".$hypertagname."_".$id."\" title=\"".$title."\" class=\"hcms_editable\" ".($contenteditable ? 'contenteditable="true" ' : '').">".(empty($contentbot) ? $defaultText : $contentbot)."</".$tag.">";
-    
+
     // Building of the specific editor
     $element = "";
-    
+
     switch ($hypertagname)
     {
       // checkbox
       case 'arttextc':
       case 'textc':
-      
+
         // extract text value of checkbox
-        $value = getattribute ($hypertag, "value");  
-        
+        $value = getattribute ($hypertag, "value");
+
         $return .= "
           <script type=\"text/javascript\">
           jq_inline().ready(function() 
@@ -3554,28 +3621,28 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
             jq_inline('#".$hypertagname."_".$id."').click(function(event)
             {
               event.stopPropagation();
-            
+
               elem = jq_inline(this);
               checkbox = jq_inline('#hcms_checkbox_".$hypertagname."_".$id."');
               form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
-              
+
               oldcheck_".$hypertagname."_".$id." = jq_inline.trim(elem.text());
-              
+
               elem.hide();
               form.css('display', 'inline');
-              
+
               checkbox.focus();
             });
-            
+
             jq_inline('#hcms_checkbox_".$hypertagname."_".$id."').click(function(event) {
               event.stopPropagation();
             }).blur(function() {
               checkbox = jq_inline(this);
               form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
               elem = jq_inline('#".$hypertagname."_".$id."');
-              
+
               newcheck = (checkbox.prop('checked') ? jq_inline.trim(checkbox.val()) : '".$defaultText."');
-              
+
               if (oldcheck_".$hypertagname."_".$id." != newcheck".$confirm_save.")
               {
                 oldcheck_".$hypertagname."_".$id." = newcheck;
@@ -3591,14 +3658,14 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                   }, 
                   \"json\"
                 );
-                
+
                 elem.text((newcheck == \"&nbsp;\" ? '' : newcheck));
               }
               else
               {
                 checkbox.prop('checked', (oldcheck_".$hypertagname."_".$id." == \"\" ? false : true));
               }
-              
+
               form.hide();
               elem.show();
             });
@@ -3607,7 +3674,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         ";
         $element = "<input type=\"hidden\" name=\"".$hypertagname."[".$id_orig."]\" value=\"\"/><input title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-checkbox'][$lang], $hcms_charset, $lang)."\" type=\"checkbox\" id=\"hcms_checkbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" value=\"".$value."\"".($value == $contentbot ? ' checked ' : '').">".$labelname;
         break;
-        
+
       // date picker
       case 'arttextd':
       case 'textd':
@@ -3617,7 +3684,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           var format_".$hypertagname."_".$id." = '".$format."';
           // Variable where we check if the user is in the datepicker and therefor do not save/close everything on blur
           var preventSave_".$hypertagname."_".$id." = false;
-          
+
           jq_inline().ready(function() 
           {
             // onclose handler
@@ -3628,7 +3695,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               elem = jq_inline('#".$hypertagname."_".$id."');
               elem.show();
             }
-           
+ 
             // handling the saving
             var date_save_".$hypertagname."_".$id." = function () {
               if(preventSave_".$hypertagname."_".$id." == false)
@@ -3636,13 +3703,13 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 datefield = jq_inline('#hcms_datefield_".$hypertagname."_".$id."');
                 form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
                 elem = jq_inline('#".$hypertagname."_".$id."');
-                
+
                 newdate = jq_inline.trim(datefield.val());
                 var check = true;
-                
+
                 // confirm the changes
                 if (olddate_".$hypertagname."_".$id." != newdate".$confirm_save.") 
-                {  
+                {
                   olddate_".$hypertagname."_".$id." = newdate;
                   jq_inline.post(
                     \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
@@ -3656,23 +3723,23 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                     }, 
                     \"json\"
                   );
-                  
+
                   elem.html(newdate == \"\" ? '".$defaultText."' : newdate);
                 }
                 else if (!check)
                 {
                   datefield.focus();
-                  
+
                   // jump out without changing anything
                   return false;
                 }
-                
+
                 form.hide();
                 cal_obj_".$hypertagname."_".$id.".hide();
                 elem.show();
               }
             }
-            
+
             // onchange handler
             var cal_on_change_".$hypertagname."_".$id." = function (cal, object_code)
             {
@@ -3683,12 +3750,12 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 date_save_".$hypertagname."_".$id."();
               }
             }
-            
+
             function show_cal_".$hypertagname."_".$id." ()
             {
-              var datefield_".$hypertagname."_".$id." = document.getElementById('hcms_datefield_".$hypertagname."_".$id."');  
+              var datefield_".$hypertagname."_".$id." = document.getElementById('hcms_datefield_".$hypertagname."_".$id."');
               var form = document.getElementById('hcms_form_".$hypertagname."_".$id."');
-              
+
               if (cal_obj_".$hypertagname."_".$id.")
               {
                 cal_obj_".$hypertagname."_".$id.".parse_date(datefield_".$hypertagname."_".$id.".value, format_".$hypertagname."_".$id.");
@@ -3706,7 +3773,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 cal_obj_".$hypertagname."_".$id.".parse_date(datefield_".$hypertagname."_".$id.".value, format_".$hypertagname."_".$id.");
                 cal_obj_".$hypertagname."_".$id.".show_at_element(form, 'child');
               }
-              
+
               jq_inline('form#hcms_form_".$hypertagname."_".$id." iframe.rc_calendar').mouseover( function() {
                 preventSave_".$hypertagname."_".$id." = true;
               }).mouseout( function() {
@@ -3714,30 +3781,30 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 // We need to focus again on the field so that blur get's correctly called
                 jq_inline('#hcms_datefield_".$hypertagname."_".$id."').focus();
               });
-            }            
-            
+            }
+
             var olddate_".$hypertagname."_".$id." = \"\";
-            
+
             jq_inline('#".$hypertagname."_".$id."').click(function(event) {
               event.stopPropagation();
-            
+
               elem = jq_inline(this);
               datefield = jq_inline('#hcms_datefield_".$hypertagname."_".$id."');
               form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
-              
+
               olddate_".$hypertagname."_".$id." = datefield.val();
-              
+
               if (olddate_".$hypertagname."_".$id." == '".$defaultText."') olddate_".$hypertagname."_".$id." = '';
-              
+
               elem.hide();
               form.css('display', 'inline');
-              
+
               datefield.val('');
               datefield.focus();
               datefield.val(olddate_".$hypertagname."_".$id.");
               show_cal_".$hypertagname."_".$id."();
             });
-            
+
             jq_inline('#hcms_datefield_".$hypertagname."_".$id."').click(function(event) {
               event.stopPropagation();
             }).blur(date_save_".$hypertagname."_".$id.");
@@ -3746,7 +3813,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         ";
         $element = "<input title=\"".$labelname.": ".getescapedtext ($hcms_lang['pick-a-date'][$lang], $hcms_charset, $lang)."\" type=\"text\" id=\"hcms_datefield_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" value=\"".$contentbot."\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\" /><br>";
         break;
-        
+
       // unformatted text
       case 'arttextu':
       case 'textu':
@@ -3757,23 +3824,23 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
             var oldtext_".$hypertagname."_".$id." = \"\";
             jq_inline('#".$hypertagname."_".$id."').click(function(event) {
               event.stopPropagation();
-            
+
               elem = jq_inline(this);
               txtarea = jq_inline('#hcms_txtarea_".$hypertagname."_".$id."');
               form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
-              
+
               oldtext_".$hypertagname."_".$id." = hcms_entity_decode(elem.html().replace(/\<br\>/g, '\\n'));
-              
+
               if (oldtext_".$hypertagname."_".$id." == hcms_entity_decode('".$defaultText."')) oldtext_".$hypertagname."_".$id." = '';
-              
+
               elem.hide();
               form.css('display', 'inline');
-              
+
               txtarea.val('');
               txtarea.focus();
               txtarea.val(oldtext_".$hypertagname."_".$id.");
             });
-            
+
             jq_inline('#hcms_txtarea_".$hypertagname."_".$id."').click(function(event)
             {
               event.stopPropagation();
@@ -3782,13 +3849,13 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               txtarea = jq_inline(this);
               form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
               elem = jq_inline('#".$hypertagname."_".$id."');
-              
+
               newtext = jq_inline.trim(txtarea.val());
               var constraint = \"".$constraint."\";
               var check = true;
-              
+
               if (oldtext_".$hypertagname."_".$id." != newtext && (constraint == \"\" || (check = hcms_validateForm('hcms_txtarea_".$hypertagname."_".$id."','', constraint)))".$confirm_save.") 
-              {  
+              {
                 oldtext_".$hypertagname."_".$id." = newtext;
                 jq_inline.post(
                   \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
@@ -3810,12 +3877,12 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 // jump out without changing anything
                 return false;
               }
-              
+
               form.hide();
               elem.show();
             });
           });
-          
+
           // initalize size
           setTimeout(function(){ hcms_initTextarea('hcms_txtarea_".$hypertagname."_".$id."', document.getElementById('".$hypertagname."_".$id."').offsetWidth, document.getElementById('".$hypertagname."_".$id."').offsetHeight); }, 800);
           </script>
@@ -3823,10 +3890,10 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         // textarea
         $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" onkeyup=\"hcms_adjustTextarea(this);\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
         break;
-        
+
       // text options/list
       case 'arttextl':
-      case 'textl':      
+      case 'textl':
         $return .= "
           <script type=\"text/javascript\">
           jq_inline().ready(function() 
@@ -3834,19 +3901,19 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
             var oldselect_".$hypertagname."_".$id." = \"\";
             jq_inline('#".$hypertagname."_".$id."').click(function(event) {
               event.stopPropagation();
-            
+
               elem = jq_inline(this);
               selectbox = jq_inline('#hcms_selectbox_".$hypertagname."_".$id."');
               form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
-              
+
               oldselect_".$hypertagname."_".$id." = selectbox.val();
-              
+
               elem.hide();
               form.css('display', 'inline');
-              
+
               selectbox.focus();
             });
-            
+
             jq_inline('#hcms_selectbox_".$hypertagname."_".$id."').click(function(event)
             {
               event.stopPropagation();
@@ -3854,9 +3921,9 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               selectbox = jq_inline(this);
               form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
               elem = jq_inline('#".$hypertagname."_".$id."');
-              
+
               newselect = selectbox.val();
-              
+
               if (oldselect_".$hypertagname."_".$id." != newselect".$confirm_save.")
               {
                 oldselect_".$hypertagname."_".$id." = newselect;
@@ -3878,7 +3945,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               {
                 selectbox.val(oldselect_".$hypertagname."_".$id.");
               }
-              
+
               form.hide();
               elem.show();
             });
@@ -3888,30 +3955,30 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         // Building the select box
         $list = explode ("|", getattribute ($hypertag, "list"));
         $element = "<select title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-text-options'][$lang], $hcms_charset, $lang)."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\">\n";
-        
+
         foreach ($list as $elem)
         {
           $element .= "  <option value=\"".$elem."\"".($elem == $contentbot ? ' selected ' : '').">".$elem."</option>\n";
         }
-        
+
         $element .= "</select>\n";
         break;
-        
+
       // formatted text
       case 'arttextf':
       case 'textf':
         //get attribute dpi for right scaling of the images 72/dpi
         $dpi = getattribute ($hypertag, "dpi");
-        
+
         //initialize scaling factor 
         $scalingfactor = 1;
-        
+
         //check if $dpi is valid and than calculate scalingfactor
         if ($dpi > 0 && $dpi < 1000) 
         {
           $scalingfactor = 72 / $dpi; 
         }
-        
+
         $return .= "
           <script type=\"text/javascript\">
             jq_inline().ready(function() 
@@ -3947,13 +4014,13 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                     {
                       oldtext_".$hypertagname."_".$id." = '';
                     }
-                    
+
                     event.editor.setData(oldtext_".$hypertagname."_".$id.");
                   },
                   blur: function (event)
                   {
                     var newtext = jq_inline.trim(event.editor.getData());
-                    
+
                     if (oldtext_".$hypertagname."_".$id." != newtext".$confirm_save.")
                     {
                       oldtext_".$hypertagname."_".$id." = newtext;
@@ -3967,7 +4034,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                           {
                             alert(hcms_entity_decode(data.message));
                           }
-                          
+    
                         }, 
                         \"json\"
                       );
@@ -3976,7 +4043,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                     {
                       event.editor.setData(oldtext_".$hypertagname."_".$id.");
                     }
-                    
+
                     if (event.editor.getData() == '')
                     {
                       event.editor.setData('<p>".$defaultText."</p>');
@@ -3987,13 +4054,13 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
             });
           </script>
         ";
-        
+
         $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\">".$contentbot."</textarea>";
         break;
       default:
         break;
     }
-    
+
     // Adding the form that is submitted including the element that is sent
     $return .= "
       <form style=\"display:none;\" method=\"post\" id=\"hcms_form_".$hypertagname."_".$id."\">
@@ -4014,7 +4081,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         ".$element."
       </form>\n";
   }
-  
+
   return $return;
 }
 
@@ -4043,7 +4110,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_url="", $id="", $title="", $autoplay=true, $fullscreen=true, $loop=false, $muted=false, $controls=true, $iframe=false, $force_reload=false)
 {
   global $mgmt_config;
-  
+
   if ($width == "") $width = 320;
   if ($height == "") $height = 240;
 
@@ -4051,11 +4118,11 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
   {
     // prepare video array
     $sources = "";
-    
+
     // add timestamp to force reload of files
     if ($force_reload) $ts = "&ts=".time();
     else $ts = "";
-    
+
     foreach ($video_array as $value)
     {
       // only partial URL
@@ -4065,7 +4132,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
         if (strpos ("_".$value, "explorer_wrapper.php") > 0)
         {
           $media = getattribute ($value, "media");
-          
+
           if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
           else $type = "";
 
@@ -4079,14 +4146,14 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
         {
           if ($value != "") $type = "type=\"".getmimetype ($value)."\" ";
           else $type = "";
-            
+
           $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($value).$ts;
         }
         // version 2.1 (media reference and mimetype is given)
         elseif (strpos ($value, ";") > 0)
         {
           list ($media, $type) = explode (";", $value);
-           
+ 
           $type = "type=\"".$type."\" ";
           $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($media).$ts;
         }
@@ -4096,24 +4163,24 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       else
       {
         $media = getattribute ($value, "media");
-        
+
         if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
         else $type = "";
-        
+
         $url = $value.$ts;
       }
-      
+
       // define VTT file name
       if ($media != "")
       {
         $container_id = getmediacontainerid ($media);
-        
+
         if ($container_id > 0) $vtt_filename = $container_id;
       }
 
       if ($url != "") $sources .= "    <source src=\"".$url."\" ".$type."/>\n";
     }
-    
+
     // logo from video thumb image
     $logo_file = getobject ($media);
     $media_dir = getmedialocation ($site, $media, "abs_path_media");
@@ -4141,7 +4208,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       {
         $logo_name = substr ($logo_file, 0, strrpos ($logo_file, "."));
       }
-      
+
       // if logo is in media repository
       // IMPORTANT: Do not use a wrapperlink for the video poster image!
       if ($logo_name != "" && (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg") || is_cloudobject ($media_dir.$site."/".$logo_name.".thumb.jpg")))
@@ -4151,12 +4218,12 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
     }
 
     $flashplayer = $mgmt_config['url_path_cms']."javascript/video/jarisplayer.swf";
-    
+
     // if no logo is defined set default logo
     if (empty ($logo_url)) $logo_url = getthemelocation()."img/logo_player.jpg";
-    
+
     if (empty ($id)) $id = "media_".uniqid(); 
-  
+
     // PROJEKKTOR Player
     if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")
     {
@@ -4164,7 +4231,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
   <video id="'.$id.'" class="projekktor"'.(($loop) ? ' loop ' : ' ').(($muted) ? ' muted ' : ' ').((!empty($logo_url)) ? ' poster="'.$logo_url.'" ' : ' ').((!empty($title)) ? ' title="'.$title.'" ' : ' ').'width="'.$width.'" height="'.$height.'" '.($fullscreen ? 'allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" ' : '').(($controls) ? ' controls' : '').' onplay=\"if (typeof hideFaceOnVideo === \'function\') hideFaceOnVideo();\">'."\n";
 
       $return .= $sources;
-    
+
       $return .= '  </video>
   <script type="text/javascript">
   jQuery(document).ready(function() 
@@ -4174,10 +4241,10 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       useYTIframeAPI: false,
       height: '.intval($height).',
       width: '.intval($width).',';
-      
+
       if (!empty ($logo)) $return .= '
       poster: "'.$logo.'",';
-      
+
       $return .= '
       autoplay: '.(($autoplay) ? 'true' : 'false').',
       enableFullscreen: '.(($fullscreen) ? 'true' : 'false').',
@@ -4185,10 +4252,10 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       disablePause: false,
       disallowSkip: false,
       playerFlashMP4: "'.$flashplayer.'"';
-      
+
       if ($iframe) $return .= ',
       iframe: true';
-      
+
       $return .= '
     });
   });
@@ -4199,14 +4266,14 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
     {
       // get browser info
       $user_client = getbrowserinfo ();
-      
+
       if (isset ($user_client['msie']) && $user_client['msie'] > 0) $fallback = ", \"playerFallbackOrder\":[\"flash\", \"html5\", \"links\"]";
       else $fallback = "";
-    
+
       $return = "  <video id=\"".$id."\" class=\"video-js vjs-default-skin\" ".(($controls) ? " controls" : "").(($loop) ? " loop" : "").(($muted) ? " muted" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" width=\"".intval($width)."\" height=\"".intval($height)."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "")." data-setup='{\"loop\":".(($loop) ? "true" : "false").$fallback."}' title=\"".$title."\"".($fullscreen ? " allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "")." onplay=\"if (typeof hideFaceOnVideo === 'function') hideFaceOnVideo();\">\n";
-    
+
       $return .= $sources;
-      
+
       // create VTT track sources
       if (!empty ($vtt_filename))
       {
@@ -4224,7 +4291,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
           }
         }
       }
-      
+
       $return .= "  </video>\n";
     }
 
@@ -4273,7 +4340,7 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
   </script>\n";
     if ($fullscreen == false) $return .= "  <style> .vjs-fullscreen-control { display: none; } .vjs-default-skin .vjs-volume-control { margin-right: 20px; } </style>";
   }
-  
+
   return $return;
 }
 
@@ -4289,7 +4356,7 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
 function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url="", $id="", $autoplay=false, $loop=false, $controls=true, $force_reload=false)
 {
   global $mgmt_config;
-  
+
   if ($width == "") $width = 320;
   if ($height == "") $height = 320;
 
@@ -4298,10 +4365,10 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
     // add timestamp to force reload of files
     if ($force_reload) $ts = "&ts=".time();
     else $ts = "";
-     
+ 
     // prepare video array
     $sources = "";
-    
+
     foreach ($audioArray as $value)
     {
       // only partial URL
@@ -4311,10 +4378,10 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
         if (strpos ("_".$value, "explorer_wrapper.php") > 0)
         {
           $media = getattribute ($value, "media");
-          
+
           if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
           else $type = "";
-          
+
           // use new media streaming service
           if (substr_count ($media, "/") == 1) $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($media).$ts;
           // is not supported anymore since version 6.0.6
@@ -4332,7 +4399,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
         elseif (strpos ($value, ";") > 0)
         {
           list ($media, $type) = explode (";", $value);
-          
+
           $type = "type=\"".$type."\" ";
           $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media).$ts;
         }
@@ -4342,20 +4409,20 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
       else
       {
         $media = getattribute ($value, "media");
-        
+
         if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
         else $type = "";
-        
+
         $url = $value;
       }
-      
+
       if ($url != "") $sources .= "    <source src=\"".$url."\" ".$type."/>\n";
     }
-    
+
     // logo from audio thumb image
     $logo_file = getobject ($media);
     $media_dir = getmedialocation ($site, $media, "abs_path_media");
-    
+
     // define logo if undefined
     if ($logo_url == "" && $media_dir != "")
     {
@@ -4379,7 +4446,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
       {
         $logo_name = substr ($logo_file, 0, strrpos ($logo_file, "."));
       }
-      
+
       // if logo is in media repository
       // IMPORTANT: Do not use a wrapperlink for the video poster image!
       if ($logo_name != "" && (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg") || is_cloudobject ($media_dir.$site."/".$logo_name.".thumb.jpg")))
@@ -4387,27 +4454,27 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
         $logo_url = createviewlink ($site, $logo_name.".thumb.jpg").$ts;
       }
     }
-        
+
     if (empty ($id)) $id = "media_".uniqid(); 
-    
+
     // get browser info
     $user_client = getbrowserinfo ();
-      
+
     if (isset ($user_client['msie']) && $user_client['msie'] > 0) $fallback = ", \"playerFallbackOrder\":[\"flash\", \"html5\", \"links\"]";
     else $fallback = "";
-    
+
     // reset height if poster is not available
     if ($logo_url == "") $height = 60;
-    
+
     // loop audio 
     if ($loop == true || $loop == 1 || strtolower ($loop) == "true") $loop = "true";
     else $loop = "false";
-    
+
     $return = "  <audio id=\"".$id."\" class=\"video-js vjs-default-skin\"".(($controls) ? " controls" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" 
     width=\"".$width."\" height=\"".$height."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "").(($loop) ? " loop" : "")." data-setup='{\"loop\":".(($loop) ? "true" : "false").$fallback."}'>\n";
 
     $return .= $sources;
-    
+
     $return .= "  </audio>\n";
 
     return $return;
@@ -4423,7 +4490,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
 function showaudioplayer_head ($secureHref=true)
 {
   global $mgmt_config;
-  
+
   //return "<script src=\"".$mgmt_config['url_path_cms']."javascript/audio-js/audio.js\"></script>\n";
   return "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
   <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/video.js\"></script>
@@ -4445,11 +4512,11 @@ function showaudioplayer_head ($secureHref=true)
 function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFunctions=array())
 {
   if(!is_array($ignoreFunctions)) $ignoreFunctions = array();
-  
-  $ignoreFunctions[] = 'debug_getbacktracestring';  
-  $trace = debug_backtrace();  
+
+  $ignoreFunctions[] = 'debug_getbacktracestring';
+  $trace = debug_backtrace();
   $msg = array();
-  
+
   if (is_array ($trace))
   {
     //Running through the Stack
@@ -4460,12 +4527,12 @@ function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFuncti
       {
         continue;
       }
-      
+
       $specialcount = 1;
       //Building String for Function Variables
       $arguments = array();
       $add = array();
-      
+
       if (!empty ($stack['args']) && is_array($stack['args']))
       {
         foreach ($stack['args'] as $arg)
@@ -4478,14 +4545,14 @@ function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFuncti
           else $arguments[] = var_export($arg, true);
         }
       } 
-      
+
       // When $stack['class'] exists we can use $stack['type'] else it was not a class function and we don't ouput a class
       if (!isset($stack['class'])) $stack['class'] = "";
       else $stack['class'] .= $stack['type'];
 
-      // Building the arguments and the additional information      
+      // Building the arguments and the additional information
       $arguments = implode($valueSeparator, $arguments);
-      
+
       // We only put out add information when there is something to output
       if (!empty($add)) $add = $rowSeparator."Objects/Arrays:".$rowSeparator.implode($rowSeparator, $add);
       else $add = "";
@@ -4497,7 +4564,7 @@ function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFuncti
   {
     $msg[] = 'Trace was not an Array! ('.var_export($trace, true).')';
   }
-  
+
   // We only return something when we have anything
   if (empty($msg)) return "";
   else return implode ($rowSeparator, $msg).$rowSeparator;
@@ -4516,7 +4583,7 @@ function showAPIdocs ($file, $return="html")
   if (is_file ($file))
   {
     $data = file ($file);
-    
+
     if (is_array ($data))
     {
       $name = "";
@@ -4527,7 +4594,7 @@ function showAPIdocs ($file, $return="html")
       $requires = array();
       $function = array();
       $global = array();
-      
+
       // collect
       foreach ($data as $line)
       {
@@ -4610,7 +4677,7 @@ function showAPIdocs ($file, $return="html")
             $temp = trim (substr (trim ($line), strlen ("global ")));
             $temp = trim (htmlentities ($temp), ";")." ";
             $global[$name] = $temp;
-            
+
             if (strpos ("_".$line, ";") > 0) $open = "none";
             else $open = "global";
           }
@@ -4635,57 +4702,57 @@ function showAPIdocs ($file, $return="html")
       if ($return == "html" && !empty ($function) && sizeof ($function) > 0)
       {
         $result = "";
-        
+
         foreach ($function as $name=>$value)
         {
           $result .= "<h3>".$name."</h3><br/>\n";
-          $result .= "<b>Syntax</b><br/>\n";          
+          $result .= "<b>Syntax</b><br/>\n";
           $function[$name] = str_replace (",", ", ", $function[$name]);
           $result .= $function[$name]."<br/><br/>\n";
-          
+
           $temp = trim (substr ($value, strpos ($value, "(") + 1), ")");
           $input_vars = explode (", ", trim ($temp));
-          
+
           if (is_array ($input_vars) && sizeof ($input_vars) > 0)
           {
             $result .= "<b>Input parameters</b><br/>\n";
-            
+
             if (!empty ($input[$name])) $var_text = explode (", ", $input[$name]);
-            
+
             for ($i=0; $i<count($input_vars); $i++)
             {
               if (!empty ($input_vars[$i]))
               {
                 if (strpos ($input_vars[$i], "=") > 0) list ($var, $default) = explode ("=", $input_vars[$i]);
                 else $var = $input_vars[$i];
-                
+
                 if (trim ($var) == "") $var = "%";
-                
+
                 if (!empty ($var_text[$i]))
                 {
                   $var_text[$i] = str_replace (",", ", ", $var_text[$i]);
                   $text = " ... ".trim ($var_text[$i]);
                 }
                 else $text = "";
-              
+
                 $result .= trim ($var).$text."<br/>\n";
               }
             }
-            
+
             $result .= "<br/>\n";
           }
-          
+
           if (!empty ($global[$name]))
           {
             $result .= "<b>global input parameters</b><br/>\n";
             $result .= str_replace (", ", "<br/>\n", $global[$name]);
             $result .= "<br/><br/>\n";
           }
-          
+
           $result .= "<b>Output</b><br/>\n";
           $result .= str_replace (", ", "<br/>\n", $output[$name]);
           $result .= "<br/><br/>\n";
-          
+
           if (!empty ($description[$name]))
           {
             $description[$name] = str_replace (",", ", ", $description[$name]);
@@ -4698,7 +4765,7 @@ function showAPIdocs ($file, $return="html")
       else
       {
         $result = array();
-        
+
         $result['function'] = $function;
         $result['input'] = $input;
         $result['global'] = $global;
@@ -4706,7 +4773,7 @@ function showAPIdocs ($file, $return="html")
         $result['description'] = $description;
       }
     }
-    
+
     return $result;
   }
   else return false;
@@ -4727,7 +4794,7 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
   if (valid_publicationname ($site) && valid_locationname ($docroot) && valid_objectname ($object) && valid_objectname ($user))
   {
     $xmldata = getobjectcontainer ($site, $docroot, $object, $user);
-  
+
     if ($xmldata != false)
     {
       // if show/hide navigation text_id has been defined
@@ -4901,48 +4968,48 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
     {
       $docroot = deconvertpath ($docroot, "file");
     }
-    
+
     if (substr_count ($currentobject, "%page%") == 1 || substr_count ($currentobject, "%comp%") == 1)
     {
       $currentobject = deconvertpath ($currentobject, "file");
     }
-    
+
     // add slash if not present at the end of the location string
     if (substr ($docroot, -1) != "/") $docroot = $docroot."/";
     if (substr ($currentobject, -1) != "/") $currentobject = $currentobject."/";
-  
+
     // collect navigation data
     $scandir = scandir ($docroot);
-    
+
     if ($scandir)
     {
       $i = 0;
       $fileitem = array(); 
-      $navitem = array();  
-  
+      $navitem = array();
+
       foreach ($scandir as $file)
       {
         if ($file != "." && $file != ".." && substr ($file, -4) != ".off" && substr ($file, -8) != ".recycle") $fileitem[] = $file;
       }
-  
+
       if (sizeof ($fileitem) > 0)
       {
         natcasesort ($fileitem);
         reset ($fileitem);
-    
+
         foreach ($fileitem as $object)
         {
           // PAGE OBJECT -> standard navigation item
           if (is_file ($docroot.$object) && $object != ".folder" && (empty ($navi_config['index_file']) || $object == $navi_config['index_file']))
           {
             $navi = readnavigation ($site, $docroot, $object, $view, "sys");
-    
+
             if ($navi != false && $navi['hide'] == false)
             {
               // navigation display
               if (substr_count ($currentobject, $docroot.$object) == 1) $add_css = $navi_config['attr_li_active'];
               else $add_css = ""; 
-    
+
               $navitem[$navi['order'].'.'.$i]['item'] = $add_css."|".$navi['link']."|".$navi['title'];
               $navitem[$navi['order'].'.'.$i]['sub'] = "";
 
@@ -4953,7 +5020,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
           elseif ($recursive && is_dir ($docroot.$object) && !is_emptyfolder ($docroot.$object))
           {
             $navi = readnavigation ($site, $docroot, $object, $view, "sys");
-    
+
             if (is_array ($navi) && empty ($navi['hide']))
             {
               // use folder object data
@@ -4961,21 +5028,21 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
               {
                 // "X" means undefined sort order
                 if ($navi['order'] == "X") $navi['order'] = $i;
-                
+
                 // create main item for sub navigation
                 $navitem[$navi['order'].'.'.$i]['item'] = $navi_config['attr_li_dropdown']."|#|".$navi['title'];
                 $navitem[$navi['order'].'.'.$i]['sub'] = "";
               }
-    
+
               // create sub navigation
               $subnav = createnavigation ($site, $docroot.$object."/", $urlroot.$object."/", $view, $currentobject);
-    
+
               if (is_array ($subnav))
               {
                 ksort ($subnav, SORT_NUMERIC);
                 reset ($subnav);
                 $j = 1;
-    
+
                 foreach ($subnav as $key => $value)
                 {
                   // use page object data
@@ -4983,7 +5050,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
                   {
                     // "X" means undefined sort order
                     if ($navi['order'] == "X") $navi['order'] = $key;
-                    
+
                     // create main item for sub navigation
                     $navitem[$navi['order'].'.'.$i]['item'] = $value['item'];
                     $navitem[$navi['order'].'.'.$i]['sub'] = "";
@@ -4992,11 +5059,11 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
                   {
                     $navitem[$navi['order'].'.'.$i]['sub'][$key] = $value;
                   }
-                  
+
                   $j++;
                 }
               }
-    
+
               $i++;
             }
           }
@@ -5056,20 +5123,20 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
 function shownavigation ($navigation, $level=1)
 {
   global $mgmt_config, $navi_config;
-  
+
   if (is_array ($navigation))
   {
     $out = "";
     $sub = "";
-  
+
     ksort ($navigation, SORT_NUMERIC);
     reset ($navigation);
 
     list ($tag_ul_start, $tag_ul_end) = explode ("%list%", $navi_config['tag_ul']);
-    
+
     if ($level == 1) $out .= str_repeat ("  ", $level) . str_replace ("%attr_ul%", $navi_config['attr_ul_top'], $tag_ul_start."\n");
     else $out .= str_repeat ("  ", $level) . str_replace ("%attr_ul%", $navi_config['attr_ul_dropdown'], $tag_ul_start."\n");
-  
+
     foreach ($navigation as $key => $value)
     {
       list ($css, $link, $title) = explode ("|", $value['item']);
@@ -5088,7 +5155,7 @@ function shownavigation ($navigation, $level=1)
         $out = str_replace ("%sub%", "", $out);
       }
     }
-  
+
     $out .= $tag_ul_end;
 
     return $out;
@@ -5106,16 +5173,16 @@ function showselect ($value_array, $only_text=false, $selected_value="", $id="",
   if (is_array ($value_array) && ($attributes == "" || (strpos ("_".$attributes, "<") < 1 && strpos ("_".$attributes, ">") < 1)))
   {
     if ($id != "" && strpos ("_".$id, "<") < 1 && strpos ("_".$id, ">") < 1) $id = " id=\"".$id."\"";
-  
+
     $result = "  <select".$id." ".$attributes.">\n";
-    
+
     foreach ($value_array as $value=>$text)
     {
       // use option values and text
       if (!$only_text)
       {
         $value = " value=\"".$value."\"";
-        
+
         if ($value == $selected_value) $selected = " selected";
         else $selected = "";
       }
@@ -5123,16 +5190,16 @@ function showselect ($value_array, $only_text=false, $selected_value="", $id="",
       else
       {
         $value = "";
-        
+
         if ($text == $selected_value) $selected = " selected";
         else $selected = "";
       }
-      
+
       $result .= "    <option".$value.$selected.">".getescapedtext($text)."</option>\n";
     }
-    
+
     $result .= "  </select>\n";
-    
+
     return $result;
   }
   else return false;
@@ -5152,10 +5219,10 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
     // JS function to be used
     if ($type == "u") $JSfunction = "hcms_translateTextField";
     else $JSfunction = "hcms_translateRichTextField";
-    
+
     // define unique name for button
     $button_id = uniqid();
-  
+
     $result = "
   <div style=\"".$style."\">
     ".getescapedtext ($hcms_lang['translate'][$lang], $charset, $lang)."&nbsp;
@@ -5167,7 +5234,7 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
     if ($langcode_array != false)
     {
       reset ($langcode_array);
-      
+
       foreach ($langcode_array as $code => $lang_short)
       {
         if (is_activelanguage ($site, $code)) $result .= "
@@ -5183,7 +5250,7 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
     if ($langcode_array != false)
     {
       reset ($langcode_array);
-      
+
       foreach ($langcode_array as $code => $lang_short)
       {
         if (is_activelanguage ($site, $code)) $result .= "
@@ -5195,7 +5262,7 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
     </select>
     <img name=\"Button_".$button_id."\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" style=\"margin-right:2px;\" src=\"".getthemelocation()."img/button_ok.png\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button_".$button_id."','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" onClick=\"".$JSfunction."('".$id."', 'sourceLang_".$id."', 'targetLang_".$id."');\" />
   </div>";
-    
+
     return $result;
   }
   else return false;
@@ -5217,19 +5284,19 @@ function showmapping ($site, $lang="en")
   if (valid_publicationname ($site))
   {
     $mapping_data = getmapping ($site);
-    
+
     if (!empty ($mapping_data)) $mapping_array = explode (PHP_EOL, $mapping_data);
   }
-  
+
   $i = 0;
   $marker = "empty";
-  
+
   if (!empty ($mapping_array) && is_array ($mapping_array) && sizeof ($mapping_array) > 0)
   {
     $content = "
   <input name=\"mapping_data\" type=\"hidden\" value=\"".str_replace (array("<", ">"), array("&lt;", "&gt;"), addslashes ($mapping_data))."\" />
   <table class=\"hcmsTableStandard\" style=\"width:640px;\">";
-    
+
     foreach ($mapping_array as $mapping_data)
     {
       // row colors
@@ -5243,7 +5310,7 @@ function showmapping ($site, $lang="en")
       <tr>
         <td colspan=\"2\" ".($marker != "comment" ? "class=\"hcmsHeadline\"": "").">".trim (str_replace (array("//", "<", ">"), array("", "&lt;", "&gt;"), $mapping_data))."</td>
       </tr>";
-      
+
         // marker
         $marker = "comment";
       }
@@ -5251,15 +5318,15 @@ function showmapping ($site, $lang="en")
       elseif (strpos ($mapping_data, "=>") > 0)
       {
         list ($metatag, $hypertag) = explode ("=>", $mapping_data);
-                  
+
         // clean text (remove double and single quotes)
         $metatag = trim (str_replace (array("'", '"', "<", ">"), array("", "", "&lt;", "&gt;"), $metatag));
         $hypertag = trim (str_replace (array("'", '"', "<", ">"), array("", "", "&lt;", "&gt;"), $hypertag));
         $texttype = "";
-        
+
         if (strpos ($hypertag, ":") > 0) list ($texttype, $textid) = explode (":", $hypertag);
         else $textid = trim ($hypertag);
-        
+
         $content .= "
       <tr class=\"".$rowcolor."\">
         <td style=\"white-space:nowrap;\">".trim (str_replace ("'", "", $metatag))." </td>
@@ -5273,7 +5340,7 @@ function showmapping ($site, $lang="en")
         <input name=\"mapping_textid[".$metatag."]\" type=\"text\" class=\"".$rowcolor."\" value=\"".getescapedtext ($textid, $hcms_charset, $lang)."\" />
         </td>
       </tr>";
-      
+
         // marker
         $marker = "mapping";
       }
@@ -5285,7 +5352,7 @@ function showmapping ($site, $lang="en")
         <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>";
-      
+
         // marker
         $marker = "empty";
       }
@@ -5294,14 +5361,14 @@ function showmapping ($site, $lang="en")
       {
         break;
       }
-      
+
       $i++;
     }
-    
+
     $content .= "
   </table>";
   }
-  
+
   if (!empty ($content)) return $content;
   else return false;
 }
@@ -5322,23 +5389,23 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
   {
     $count = 0;
     $galleryview = "";
-    
+
     // create secure token
     $token = createtoken ($user);
-    
+
     // run through each object
     foreach ($multiobject as $object) 
     {
       $object = trim ($object);
-    
+
       // convert ID to path
       if (is_numeric ($object)) $object = rdbms_getobject ($object);
 
-      // ignore empty entries     
+      // ignore empty entries 
       if (empty ($object)) continue;
 
       $count++;
-      
+
       $site = getpublication ($object);
       $location_esc = getlocation ($object);
       $location = deconvertpath ($location_esc, "file");
@@ -5347,9 +5414,9 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
       $location_name = getlocationname ($site, $location_esc, $cat);
 
       $objectinfo = getobjectinfo ($site, $location, $page);
-      
+
       $openobject = "";
-      
+
       if (!empty ($openlink))
       {
         // check access permissions
@@ -5359,12 +5426,12 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
         if ($setlocalpermission['root'] == 1)
         {
           $functioncall = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")";
-          
+
           // open on click (parent must be used if function is called from iframe!)
           $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; else ".$functioncall.";\"";
         }
       }
-      
+
       // media asset
       if (!empty ($objectinfo['media']))
       {
@@ -5372,19 +5439,19 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
         $mediainfo = getfileinfo ($site, $mediafile, "comp");
         $thumbnail = $mediainfo['filename'].".thumb.jpg";
         $mediadir = getmedialocation ($site, $objectinfo['media'], "abs_path_media").$site."/";
-        
+
         // thumbnails preview
         if (is_file ($mediadir.$thumbnail))
         {
           $imgsize = getimagesize ($mediadir.$thumbnail);
-          
+
           // calculate image ratio to define CSS for image container div-tag
           if (is_array ($imgsize))
           {
         		$imgwidth = $imgsize[0];
         		$imgheight = $imgsize[1];
-            $imgratio = $imgwidth / $imgheight;   
-            
+            $imgratio = $imgwidth / $imgheight; 
+
             // image width >= height
             if ($imgratio >= 1) $ratio = "width:".$thumbsize."px;";
             // image width < height
@@ -5395,16 +5462,16 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
           {
             $ratio = "width:".$thumbsize."px;";
           }
-          
+
           // if thumbnail is smaller than defined thumbnail size
           if ($imgwidth < $thumbsize && $imgheight < $thumbsize) $style_size = "";
           else $style_size = $ratio;
-          
+
           $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";;
         }
         // no thumbnail available
         else
-        {                 
+        { 
           $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$mediainfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
         }
       }
@@ -5412,11 +5479,11 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
       else
       {
         $fileinfo = getfileinfo ($site, $location_esc.$page, $cat);
-        
+
         $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
       }
     }
-    
+
     return $galleryview;
   }
   else return false;

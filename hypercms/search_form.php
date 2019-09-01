@@ -401,14 +401,14 @@ $(document).ready(function()
         <tr>
           <td style="width:180px; white-space:nowrap; vertical-align:top; padding-top:10px;"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?> </td>
           <td style="padding-top:10px;">
-            <input type="text" name="search_expression" id="search_expression" onkeydown="if (hcms_enterKeyPressed(event)) startSearch('general');" style="width:193px; padding-right:30px;" maxlength="2000" />
+            <input type="text" name="search_expression" id="search_expression" onkeydown="if (hcms_enterKeyPressed(event)) startSearch('general');" style="width:230px; padding-right:30px;" maxlength="2000" />
             <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" style="cursor:pointer; width:22px; height:22px; margin-left:-30px;" onClick="startSearch('general');" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
           </td>
         </tr>
         <tr>
           <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?> </td>
           <td>
-            <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:220px;" disabled="disabled" />
+            <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:230px;" disabled="disabled" />
           </td>
         </tr>
         <tr>
@@ -445,7 +445,7 @@ $(document).ready(function()
                   <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;
                 </td>
                 <td>
-                  <input type="text" name="date_from" id="date_from_1" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from_1', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+                  <input type="text" name="date_from" id="date_from_1" readonly="readonly" value="" style="width:164px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from_1', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
                 </td>
               </tr>
               <tr>
@@ -453,7 +453,7 @@ $(document).ready(function()
                 <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp;
                 </td>
                 <td>
-                  <input type="text" name="date_to" id="date_to_1" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to_1', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
+                  <input type="text" name="date_to" id="date_to_1" readonly="readonly" value="" style="width:164px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to_1', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
                 </td>
               </tr>
             </table>
@@ -471,11 +471,11 @@ $(document).ready(function()
         </tr>
         <tr>
           <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['sw-coordinates'][$lang]); ?> </td>
-          <td style="white-space:nowrap;"><input type="text" name="geo_border_sw" style="width:220px;" maxlength="100" /></td>
+          <td style="white-space:nowrap;"><input type="text" name="geo_border_sw" style="width:230px;" maxlength="100" /></td>
         </tr>
         <tr>
           <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['ne-coordinates'][$lang]); ?> </td>
-          <td style="white-space:nowrap;"><input type="text" name="geo_border_ne" style="width:220px;" maxlength="100" /></td>
+          <td style="white-space:nowrap;"><input type="text" name="geo_border_ne" style="width:230px;" maxlength="100" /></td>
         </tr>
         <tr>
           <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?> </td>
@@ -497,7 +497,7 @@ $(document).ready(function()
         <tr> 
           <td style="width:180px; white-space:nowrap; padding-top:10px;"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?> </td>
           <td style="padding-top:10px;">
-            <select name="template" onChange="loadForm();" style="width:220px;">
+            <select name="template" onChange="loadForm();" style="width:230px;">
           <?php
           // load publication inheritance setting
           $site_array = array();
@@ -573,7 +573,7 @@ $(document).ready(function()
         <tr> 
           <td  style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?> </td>
           <td>
-            <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:220px;" disabled="disabled" /> 
+            <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:230px;" disabled="disabled" /> 
           </td>
         </tr>
         <tr>
@@ -585,7 +585,7 @@ $(document).ready(function()
         <tr>
           <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['link-fields-with'][$lang]); ?> </td>
           <td style="white-space:nowrap;">
-            <select id="search_operator" name="search_operator" style="width:220px;">
+            <select id="search_operator" name="search_operator" style="width:230px;">
                 <option value="AND" <?php if (empty ($mgmt_config['search_operator']) || (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator'])== "AND")) echo "selected"; ?>>AND</option>
                 <option value="OR" <?php if (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator'])== "OR") echo "selected"; ?>>OR</option>
             </select>
@@ -613,13 +613,13 @@ $(document).ready(function()
         <tr> 
           <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?> </td>
           <td style="white-space:nowrap;">
-            <input type="text" name="object_id" value="" style="width:220px;" /> 
+            <input type="text" name="object_id" value="" style="width:230px;" /> 
           </td>
         </tr>
         <tr> 
           <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['container-id'][$lang]); ?> </td>
           <td style="white-space:nowrap;">
-            <input type="text" name="container_id" value="" style="width:220px;" /> 
+            <input type="text" name="container_id" value="" style="width:230px;" /> 
           </td>
         </tr>
         <tr>
@@ -631,7 +631,7 @@ $(document).ready(function()
                   <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;
                 </td>
                 <td>
-                  <input type="text" name="date_from" id="date_from_2" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from_2', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+                  <input type="text" name="date_from" id="date_from_2" readonly="readonly" value="" style="width:164px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from_2', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
                 </td>
               </tr>
               <tr>
@@ -639,7 +639,7 @@ $(document).ready(function()
                 <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp; 
                 </td>
                 <td>
-                  <input type="text" name="date_to" id="date_to_2" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to_2', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
+                  <input type="text" name="date_to" id="date_to_2" readonly="readonly" value="" style="width:164px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to_2', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
                 </td>
               </tr>
             </table>
@@ -666,19 +666,19 @@ $(document).ready(function()
         <tr> 
           <td style="width:180px; white-space:nowrap; padding-top:10px;"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?> </td>
           <td style="white-space:nowrap; padding-top:10px;"> 
-            <input type="text" name="search_expression" style="width:220px;" />
+            <input type="text" name="search_expression" style="width:230px;" />
           </td>
         </tr>
         <tr> 
           <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['replace-with'][$lang]); ?> </td>
           <td style="white-space:nowrap;"> 
-            <input type="text" name="replace_expression" style="width:220px;" />
+            <input type="text" name="replace_expression" style="width:230px;" />
           </td>
         </tr>          
         <tr> 
           <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?> </td>
           <td style="white-space:nowrap;"> 
-            <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:220px;" disabled="disabled" />
+            <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:230px;" disabled="disabled" />
           </td>
         </tr>
         <?php if ($cat == "comp") { ?>
@@ -702,7 +702,7 @@ $(document).ready(function()
                   <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;
                 </td>
                 <td>
-                  <input type="text" name="date_from" id="date_from_3" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from_3', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+                  <input type="text" name="date_from" id="date_from_3" readonly="readonly" value="" style="width:164px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from_3', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
                 </td>
               </tr>
               <tr>
@@ -710,7 +710,7 @@ $(document).ready(function()
                 <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp; 
                 </td>
                 <td>
-                  <input type="text" name="date_to" id="date_to_3" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to_3', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
+                  <input type="text" name="date_to" id="date_to_3" readonly="readonly" value="" style="width:164px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to_3', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
                 </td>
               </tr>
             </table>
@@ -741,13 +741,13 @@ $(document).ready(function()
         <tr>
           <td style="width:180px; white-space:nowrap; padding-top:10px;"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?> </td>
           <td style="white-space:nowrap; padding-top:10px;">
-            <input type="text" name="search_expression" id="image_expression" style="width:220px;" maxlength="60" />
+            <input type="text" name="search_expression" id="image_expression" style="width:230px;" maxlength="60" />
           </td>
         </tr>
         <tr>
           <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?> </td>
           <td style="white-space:nowrap;">
-            <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:220px;" disabled="disabled" />
+            <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:230px;" disabled="disabled" />
           </td>
         </tr>
         <tr>
@@ -822,7 +822,7 @@ $(document).ready(function()
                   <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;
                 </td>
                 <td>
-                  <input type="text" name="date_from" id="date_from_4" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from_4', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+                  <input type="text" name="date_from" id="date_from_4" readonly="readonly" value="" style="width:164px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from_4', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
                 </td>
               </tr>
               <tr>
@@ -830,7 +830,7 @@ $(document).ready(function()
                 <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp; 
                 </td>
                 <td>
-                  <input type="text" name="date_to" id="date_to_4" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to_4', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
+                  <input type="text" name="date_to" id="date_to_4" readonly="readonly" value="" style="width:164px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to_4', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
                 </td>
               </tr>
             </table>

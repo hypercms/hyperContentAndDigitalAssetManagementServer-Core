@@ -37,8 +37,9 @@ $token = getrequest ("token");
 $action = getrequest ("action");
 $require = getrequest ("require");
 $theme = getrequest_esc ("theme", "objectname");
-// input parameters (assetbrowser)
-$sentinstance = getrequest ("instance", "publicationname");
+// input parameters (public portal access using user hash code)
+$portal = getrequest ("portal");
+// input parameters (asset browser)
 $userhash = getrequest ("userhash");
 $objecthash = url_encode (getrequest ("objecthash"));
 $filter = getrequest ("filter"); 
@@ -56,6 +57,11 @@ $hcms_id_token = getrequest ("hcms_id_token");
 $al = getrequest ("al");
 $oal = getrequest ("oal");
 
+// initalize
+$ignore_password = false;
+$hcms_objformats = false;
+$accesslink = false;
+
 // include language file
 if (!empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)))
 {
@@ -67,11 +73,49 @@ if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes") $themename 
 elseif (!empty ($theme)) $themename = $theme;
 else $themename = "";
 
-// access link since version 5.6.2
-$ignore_password = false;
-$hcms_objformats = false;
+// -------------------- link types ---------------------
 
-if ($al != "")
+// portal access link since version 8.0.4
+if (strpos ($portal, ".") > 0)
+{
+  list ($portal_site, $portal_theme) = explode (".", $portal);
+
+  if (valid_objectname ($portal_theme))
+  {
+    $portal_template = $portal_theme.".portal.tpl";
+
+    $portal_template = loadtemplate ($portal_site, $portal_template);
+
+    // get portal user and download formats
+    if (!empty ($portal_template['content']))
+    {
+      $temp_array = getcontent ($portal_template['content'], "<portaluser>");
+      if (!empty ($temp_array[0])) $portaluser = $temp_array[0];
+
+      if (!empty ($portaluser))
+      {
+        $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+
+        $temp_array = selectcontent ($userdata, "<user>", "<login>", $portaluser);
+      
+        if (!empty ($temp_array[0]))
+        {
+          $temp_array = getcontent ($temp_array[0], "<hashcode>");
+          if (!empty ($temp_array[0])) $userhash = $temp_array[0];
+        }
+      }
+
+      $temp_array = getcontent ($portal_template['content'], "<downloadformats>");
+
+      if (!empty ($temp_array[0]))
+      {
+        $hcms_objformats = json_decode ($temp_array[0], true);
+      }
+    }
+  }
+}
+// access link since version 5.6.2
+elseif ($al != "" && !empty ($mgmt_config['db_connect_rdbms']))
 {
   $result_al = rdbms_getaccessinfo ($al);
   
@@ -94,12 +138,9 @@ if ($al != "")
     if ($result_al['type'] == "dl") header ("Location: service/mediadownload.php?dl=".url_encode($al));
   }
 }
-
 // object access link since version 6.1.12
 // only works if a access link user has been defined for the publication (must have a valid user hashcode for access)
-$accesslink = false;
-    
-if ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
+elseif ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
 {
   $objectpath_esc = rdbms_getobject ($oal);
   $objecthash = $oal;
@@ -131,6 +172,8 @@ if ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
     }
   }
 }
+
+// ------------------- deprecateds link types -----------------------
 
 // deprecated since version 5.6.1 but still supported:
 // extract user and object information
@@ -218,7 +261,8 @@ if (is_array ($filter_array) && sizeof ($filter_array) > 0)
 // create secure token
 $token_new = createtoken ("sys");
 
-// logon
+// --------------------------- logon ---------------------------
+
 $rootpermission = null;
 $globalpermission = null;
 $localpermission = null;
@@ -236,12 +280,12 @@ $onload = "";
 // check IP and user logon name of client
 if (checkuserip (getuserip ()) == true)
 {
-  // reset password
+  // reset password without login link (forgot password)
   if ($action == "reset" && !empty ($mgmt_config['resetpassword']))
   {
     $show = sendresetpassword ($sentuser, false);
   }
-  // reset password and send login link
+  // reset password and send login link (for 2 factor authentication)
   elseif ($action == "request" && !empty ($mgmt_config['multifactorauth']))
   {
     $show = sendresetpassword ($sentuser, true);
@@ -259,10 +303,10 @@ if (checkuserip (getuserip ()) == true)
     {
       $login_result = userlogin ($hcms_user, $hcms_pass, "", $hcms_objref, $hcms_objcode);
     }
-    // user hash provided
+    // user hash provided (provided by portal or asset browser)
     elseif (!empty ($userhash))
     {
-      $login_result = userlogin ("", "", $userhash, "", "");
+      $login_result = userlogin ("", "", $userhash, "", "", false, true, $portal);
     }
     // standard user logon
     elseif (!empty ($sentuser) && !empty ($sentpasswd) && checktoken ($token, "sys"))
@@ -270,54 +314,57 @@ if (checkuserip (getuserip ()) == true)
       $login_result = userlogin ($sentuser, $sentpasswd);
     }
     else $login_result = false;
-  
+
+    // if logon was successful and user account has not been expired
     if (!empty ($login_result['auth']))
-    {	
+    {
       // register user in session
       $login_result = registeruser ($sentinstance, $login_result, $accesslink, $hcms_objformats, $is_mobile, $is_iphone, $html5support);
-      
-      // user hash is provided for the assetbrowser and no access linking is used
-      if (!empty ($userhash) && empty ($oal))
+
+      // register asset browser if a user hash is provided for the asset browser and no access linking or portal is used
+      if (!empty ($userhash) && empty ($oal) && empty ($portal))
       {
         registerassetbrowser ($userhash, $objecthash);
       }
-      
+
       // define frameset
       if (!empty ($login_result['mobile'])) $result_frameset = "frameset_mobile.php";
       else $result_frameset = "frameset_main.php";
     }
-  
+
     // user is logged in (forward)
     if (!empty ($login_result['writesession']))
     {
       $onload = "location.href='".$mgmt_config['url_path_cms'].$result_frameset."';";
-      
-      $show = $login_result['message'];
     }
-    // login name or password are false
-    elseif (isset ($login_result['auth']) && (empty ($login_result['auth']) || empty ($login_result['writesession'])))
+  
+    // user password is expired (forward) and no access link is used
+    if (!empty ($login_result['resetpassword']) && empty ($portal) && empty ($al) && empty ($oal))
     {
-      $show = $login_result['message'];
+      $onload = "location.href='".$mgmt_config['url_path_cms']."resetpassword.php?forward=".$result_frameset."';";
     }
+
+    // message from function userlogin
+    if (!empty ($login_result['message'])) $show = $login_result['message'];
   }
 
-  // login form (if login is missi8ng or failed)
+  // login form (if login is missing or failed)
   if (!isset ($login_result) || empty ($login_result['auth']))
   {
     if ($show != "") $show = "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".$show."</div>\n";
           
     if (!empty ($mgmt_config['instances']) && is_dir ($mgmt_config['instances'])) $show .= "
         <div id=\"sentinstance_container\" ".($require == "password" ? "style=\"position:absolute; visibility:hidden;\"" :  "").">
-          <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" placeholder=\"".getescapedtext ($hcms_lang['instance'][$lang])."\" value=\"".$sentinstance."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"1\" /><br/>
+          <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" placeholder=\"".getescapedtext ($hcms_lang['instance'][$lang])."\" value=\"".$sentinstance."\" maxlength=\"100\" style=\"box-sizing:border-box; width:100%; margin:3px 0px; padding:8px 5px;\" tabindex=\"1\" /><br/>
         </div>";
           
     $show .= "
         <div id=\"sentuser_container\">
-          <input type=\"".($require == "password" ? "hidden" : "text")."\" id=\"sentuser\" name=\"sentuser\" placeholder=\"".getescapedtext ($hcms_lang['user'][$lang])."\" value=\"".$sentuser."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"2\" />";
+          <input type=\"".($require == "password" ? "hidden" : "text")."\" id=\"sentuser\" name=\"sentuser\" placeholder=\"".getescapedtext ($hcms_lang['user'][$lang])."\" value=\"".$sentuser."\" maxlength=\"100\" style=\"box-sizing:border-box; width:100%; margin:3px 0px; padding:8px 5px;\" tabindex=\"2\" />";
           
     if (empty ($mgmt_config['multifactorauth']) || $require == "password") $show .= "
          <br/>
-         <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" placeholder=\"".getescapedtext ($hcms_lang['password'][$lang])."\" value=\"".$sentpasswd."\" maxlength=\"100\" style=\"width:250px; margin:3px 0px; padding:8px 5px;\" tabindex=\"3\" />";
+         <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" placeholder=\"".getescapedtext ($hcms_lang['password'][$lang])."\" value=\"".$sentpasswd."\" maxlength=\"100\" style=\"box-sizing:border-box; width:100%; margin:3px 0px; padding:8px 5px;\" tabindex=\"3\" />";
     
     $show .= "
         </div>
@@ -327,16 +374,16 @@ if (checkuserip (getuserip ()) == true)
         </div>
 
         <div style=\"padding:4px 0px;\">
-          <button type=\"submit\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:260px;\" tabindex=\"4\">".((empty ($mgmt_config['multifactorauth']) || $require == "password") ? getescapedtext ($hcms_lang['sign-in'][$lang]) : getescapedtext ($hcms_lang['send-e-mail'][$lang]))."</button>
+          <button type=\"submit\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:100%;\" tabindex=\"4\">".((empty ($mgmt_config['multifactorauth']) || $require == "password") ? getescapedtext ($hcms_lang['sign-in'][$lang]) : getescapedtext ($hcms_lang['send-e-mail'][$lang]))."</button>
         </div>
 
         <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal;\">".getescapedtext ($hcms_lang['popups-must-be-allowed'][$lang])."</div>";
         
       if (!empty ($mgmt_config['resetpassword']) && empty ($mgmt_config['multifactorauth'])) $show .= "
-        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"resetpassword()\">".getescapedtext ($hcms_lang['reset-password'][$lang])."</div>";
+        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"box-sizing:border-box; padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"resetpassword()\">".getescapedtext ($hcms_lang['reset-password'][$lang])."</div>";
         
       if (!empty ($mgmt_config['userregistration'])) $show .= "
-        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"location.href='userregister.php';\">".getescapedtext ($hcms_lang['sign-up'][$lang])."</div>";
+        <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"box-sizing:border-box; padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"location.href='userregister.php';\">".getescapedtext ($hcms_lang['sign-up'][$lang])."</div>";
   }
   // login successful
   else
@@ -355,10 +402,7 @@ $wallpaper = "";
 
 if ($themename != "mobile")
 {
-  if (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg");
-  elseif (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.png")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.png");
-  elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
-  else $wallpaper = getwallpaper ($mgmt_config['version']);
+  $wallpaper = getwallpaper ();
 }
 
 // save log
@@ -372,7 +416,7 @@ savelog (@$error);
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=380, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
 
-<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css" type="text/css">
+<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css?ts=<?php echo time(); ?>" type="text/css">
 
 <!-- Standard icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/favicon.ico"> 
@@ -556,8 +600,9 @@ function requestpassword()
 
 function setwallpaper ()
 {
+  // set background image
   <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
-  document.body.style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
+  document.getElementById('startScreen').style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
   return true;
   <?php } elseif (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
   if (html5support())
@@ -570,27 +615,35 @@ function setwallpaper ()
   <?php } ?>
 }
 
+function blurbackground (blur)
+{
+  if (blur == true) document.getElementById('startScreen').classList.add('hcmsBlur');
+  else document.getElementById('startScreen').classList.remove('hcmsBlur');
+}
+
 <?php if (!empty ($onload)) echo $onload; ?>
 </script>
 </head>
 
-<body class="hcmsStartScreen" onload="focusform(); is_mobilebrowser(); is_iOS(); html5support(); setwallpaper();">
+<body onload="focusform(); is_mobilebrowser(); is_iOS(); html5support(); setwallpaper();">
 
-  <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-  <video playsinline autoplay muted loop poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.png" id="videoScreen">
-    <source src="<?php echo $wallpaper; ?>" type="video/mp4">
-  </video>
-  <?php } ?>
-  
+  <div id="startScreen" class="hcmsStartScreen">
+    <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+    <video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.png">
+      <source src="<?php echo $wallpaper; ?>" type="video/mp4">
+    </video>
+    <?php } ?>
+  </div>
+
   <div class="hcmsStartBar">
     <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
     <div style="position:absolute; top:15px; right:15px; text-align:right;"></div>
   </div>
   
-  <div class="hcmsLogonScreen">
+  <div class="hcmsLogonScreen" onkeyup="blurbackground(true);" onmouseout="blurbackground(false);">
     <?php
     echo "
-    <form name=\"login\" method=\"post\" onsubmit=\"return ".((empty ($mgmt_config['multifactorauth']) || $require == "password") ? "submitlogin()" : "requestpassword()").";\" style=\"opacity:0.9;\" action=\"\">
+    <form name=\"login\" method=\"post\" onsubmit=\"return ".((empty ($mgmt_config['multifactorauth']) || $require == "password") ? "submitlogin()" : "requestpassword()").";\" style=\"width:260px; opacity:0.9;\" action=\"\">
       <input type=\"hidden\" name=\"token\" value=\"".$token_new."\" />
       <input type=\"hidden\" name=\"action\" value=\"login\" />
       <input type=\"hidden\" name=\"require\" value=\"\" />

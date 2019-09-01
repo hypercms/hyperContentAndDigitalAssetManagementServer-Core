@@ -355,7 +355,7 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
       else 
       {
         $errcode = "10178";
-        $error[] = $mgmt_config['today']."|explorer.php|error|$errcode|root directory for publication $site is missing";         
+        $error[] = $mgmt_config['today']."|explorer.php|error|".$errcode."|root directory for publication ".$site." is missing";         
     
         // save log
         savelog (@$error);   
@@ -696,9 +696,20 @@ else
     $point->setOnMouseOver('hcms_resetContext();');
     $maintree .= $point->generateHTML();
   }
+
+  // ----------------------------------------- favorites (only for portal) ---------------------------------------------- 
+
+  if (!empty ($hcms_portal) && checkrootpermission ('desktopfavorites'))
+  {
+    $point = new hcms_menupoint($hcms_lang['favorites'][$lang], "frameset_objectlist.php?virtual=1&action=favorites", 'favorites.png');
+    $point->setOnClick('changeSelection(this)');
+    $point->setTarget('workplFrame');
+    $point->setOnMouseOver('hcms_resetContext();');
+    $maintree .= $point->generateHTML();
+  }
   
   // ----------------------------------------- desktop ---------------------------------------------- 
-  if (empty ($hcms_assetbrowser) && checkrootpermission ('desktop'))
+  if (empty ($hcms_portal) && empty ($hcms_assetbrowser) && checkrootpermission ('desktop'))
   {
     $point = new hcms_menupoint($hcms_lang['desktop'][$lang], '#desktop', 'desk.png', 'desktop');
     $point->setOnClick('hcms_jstree_toggle_preventDefault("desktop", event);');
@@ -931,7 +942,7 @@ else
         }   
         
         // ------------------------------------------- publication node -----------------------------------------------
-        if ($site != "hcms_empty")
+        if ((empty ($hcms_portal) || !empty ($mgmt_config[$site]['portalaccesslink'])) && $site != "hcms_empty")
         {
           $publication = new hcms_menupoint($site, '#site_'.$site, 'site.png', 'site_'.$site);
           $publication->setOnClick('hcms_jstree_toggle_preventDefault("site_'.$site.'", event);');
@@ -971,8 +982,8 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            // display custom system log if a custom log file exists
-            elseif (checkglobalpermission ($site, 'user') && is_file ($mgmt_config['abs_path_data']."log/".$site.".custom.log"))
+            // display publication system log if a publication log file exists
+            elseif (checkglobalpermission ($site, 'user') && is_file ($mgmt_config['abs_path_data']."log/".$site.".publication.log"))
             {
               $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php?site=".url_encode($site), 'event.png');
               $subpoint->setOnClick('changeSelection(this)');
@@ -985,7 +996,7 @@ else
           }
 
           // ------------------------------------------ personalization -------------------------------------------------
-          if (empty ($hcms_assetbrowser) && checkglobalpermission ($site, 'pers') && empty ($mgmt_config[$site]['dam']))
+          if (empty ($hcms_assetbrowser) && !$is_mobile && checkglobalpermission ($site, 'pers') && empty ($mgmt_config[$site]['dam']))
           {
             $point = new hcms_menupoint($hcms_lang['personalization'][$lang], '#pers_'.$site, 'pers_registration.png', 'pers_'.$site);
             $point->setOnClick('hcms_jstree_toggle_preventDefault("pers_'.$site.'", event);');
@@ -1062,7 +1073,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkglobalpermission ($site, 'tpl'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['template-includes'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=inc", 'template_inc.png');
@@ -1084,6 +1095,15 @@ else
             if (checkglobalpermission ($site, 'tplmedia'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['template-media'][$lang], "frameset_media.php?site=".url_encode($site)."&mediacat=tpl", 'media.png');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+
+            if (!empty ($mgmt_config[$site]['portalaccesslink']) && checkglobalpermission ($site, 'tpl'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['portal-templates'][$lang], "frameset_portal.php?site=".url_encode($site), 'template_media.png');
               $subpoint->setOnClick('changeSelection(this)');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -1217,8 +1237,8 @@ else
     <script type="text/javascript" src="javascript/jstree/jquery.jstree.js"></script>
     
     <!-- main and contextmenu library -->
-    <script type="text/javascript" src="javascript/main.js"></script>
-    <script type="text/javascript" src="javascript/contextmenu.js"></script>
+    <script type="text/javascript" src="javascript/main.js?ts=<?php echo time(); ?>"></script>
+    <script type="text/javascript" src="javascript/contextmenu.js?ts=<?php echo time(); ?>"></script>
     
     <!-- Rich calendar -->
     <link  rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
@@ -1919,7 +1939,7 @@ else
         {
           foreach ($siteaccess as $site_name)
           {
-            if (!empty ($site_name) && is_array ($user_array[$site_name]))
+            if (!empty ($site_name) && !empty ($user_array[$site_name]) && is_array ($user_array[$site_name]))
             {
               foreach ($user_array[$site_name] as $login => $value)
               {           
@@ -2021,7 +2041,7 @@ else
         <div id="fulltextLayer" style="display:none; clear:right;"> 
           <div style="padding-bottom:3px;">
             <label for="search_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
-            <input type="text" id="search_expression" name="search_expression" onkeydown="if (hcms_enterKeyPressed(event)) startSearch('post');" style="width:193px; padding-right:30px;" maxlength="2000" />
+            <input type="text" id="search_expression" name="search_expression" onkeydown="if (hcms_enterKeyPressed(event)) startSearch('post');" style="width:230px; padding-right:30px;" maxlength="2000" />
             <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" style="cursor:pointer; width:22px; height:22px; margin-left:-30px;" onClick="startSearch('post');" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
           </div>
           <div style="padding-bottom:3px;">

@@ -53,8 +53,8 @@ if (sizeof ($config_files) > 0)
         $result = false;
     
         foreach ($queue_array as $queue)
-        {    
-          if ($queue['queue_id'] != "" && $queue['action'] != "" && ($queue['object_id'] != "" || $queue['objectpath'] != "") && $queue['published_only'] != "" && $queue['user'] != "")
+        {
+          if ($queue['queue_id'] != "" && $queue['action'] != "" && ($queue['object_id'] != "" || $queue['objectpath'] != "") && $queue['user'] != "")
           {
             // mail
             if ($queue['action'] == "mail" && $queue['object_id'] != "")

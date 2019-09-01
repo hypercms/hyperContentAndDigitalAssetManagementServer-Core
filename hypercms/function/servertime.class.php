@@ -16,7 +16,7 @@ http://javascript.internet.com/clocks/basic-clock.html
 copyright (c) 2001 by knito@knito.de
 http://www.ingoknito.de
 
-License: FREE        
+License: FREE
 */
 
 class servertime
@@ -26,7 +26,7 @@ class servertime
   var $divtag = 'span'; // other possibility: 'span'
   var $divclass = 'hcmsHeadlineTiny hcmsTextWhite'; // default empty
   var $title = '';
-  
+
   # Internal use only: $ok_head and $ok_clock
   #
   var $ok_head  = false; // InstallClockBody() and InstallClock() will check for this.
@@ -36,13 +36,13 @@ class servertime
   function InstallClockHead ()
   {
     echo "\n<script type=\"text/javascript\">\n<!--\n";
-    
+
     # Here is where the server time comes into the script:
     # date() is a php function which runs on the server, giving exactly
     # the time the server has.
     #
     echo 'var digital = new Date( "'.date('M, d Y H:i:s').'");'; // <-- this is the trick!
-    
+
     echo "\n\nfunction writeLayer(layerID,txt)".
     "\n{\n  if(document.getElementById)\n  {\n".
     "    document.getElementById(layerID).innerHTML=txt;\n".
@@ -50,12 +50,12 @@ class servertime
     "  }\n  else if(document.layers)\n  {\n".
     "    document.layers[layerID].document.open();\n".
     "    document.layers[layerID].document.write(txt);\n".
-    "    document.layers[layerID].document.close();\n  }\n}\n";   
-   
+    "    document.layers[layerID].document.close();\n  }\n}\n"; 
+ 
    echo "\n//-->\n</script>\n";
-   
+ 
    $this->ok_head = true; // Check later
-   
+ 
   } // eof InstallClockHead();
 
   # This is to be used where you want the clock to appear on your page.
@@ -64,18 +64,18 @@ class servertime
     # To have it work with NS 4.7 the style "position:absolute" MUST be given (knito)
     $klasse = strlen( trim( $this->divclass ) ) > 0 ? " class='".$this->divclass."'" : '';
     $style  = strlen( trim( $this->divstyle ) ) > 0 ? " style='".$this->divstyle."'" : '';
-    
+
     echo "<".$this->divtag." id='".$this->divid."'".$style.$klasse.">".$this->title."</".$this->divtag.">";
-    
+
     if( $this->ok_head == false )
     {
       die("InstallClockHead() is missing");
     }
-    
+
     $this->ok_clock = true;
   } // eof Clock() 
 
-  
+
   # This function is to be used at the end of the <body> section of the page.
   function InstallClockBody ()
   {
@@ -92,13 +92,13 @@ class servertime
     "  var dispTime;\n\n  digital.setMinutes( minutes+1 );\n\n".
     "  if (minutes < 10) minutes = '0' + minutes;\n".
     "  if (seconds < 10) seconds = '0' + seconds;\n";
-    
-    echo "  dispTime = year + \"-\" + month + \"-\" + day + \" \" + \" \" + hours + \":\" + minutes\n";      
-    
+
+    echo "  dispTime = year + \"-\" + month + \"-\" + day + \" \" + \" \" + hours + \":\" + minutes\n";
+
     echo "  writeLayer( '".$this->divid."', dispTime );\n".
     "  setTimeout(\"clock()\", 60000);\n}\n\n".
     "clock();\n//-->\n</script>\n";
-    
+
     if( $this->ok_head == false )
     {
       die("InstallClockHead() is missing");
@@ -107,6 +107,6 @@ class servertime
     {
       die("InstallClock() is missing");
     }
-  } // eof InstallClockBody  
+  } // eof InstallClockBody
 } // eoc ServerTime
 ?>

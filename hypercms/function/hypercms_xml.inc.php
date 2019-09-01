@@ -30,7 +30,7 @@ function valid_tagname ($tagname)
     $start = substr_count ($tagname, "<");
     $end = substr_count ($tagname, ">");
     $total = $start + $end;
-    
+
     if ($total == 0 || $total == 2) return true;
     else return false;
   }
@@ -53,20 +53,20 @@ function setxmlparameter ($xmldata, $parameter, $value)
     $xml_start = strpos ($xmldata, "<?");
     $xml_end = strpos ($xmldata, "?>") + 2;
     $xml_len = $xml_end - $xml_start;
-  
+
     if ($xml_len >= 4)
     {
       $xml_str = substr ($xmldata, $xml_start, $xml_len);
     }
     else $xml_str = "<?xml ?>";
-  
+
     // insert parameters & values into XML declaration
     if (strpos ($xml_str, $parameter) > 0)
     {
       $xml_str_start = strpos ($xml_str, $parameter) + strlen ($parameter);
       $xml_str_dq1 = strpos ($xml_str, "\"", $xml_str_start);
       $xml_str_end = strpos ($xml_str, "\"", $xml_str_dq1 + 1);
-  
+
       if ($xml_str_start > 0 && $xml_str_dq1 > 0 && $xml_str_end > 0)
       {
         $xml_str_new = substr ($xml_str, 0, $xml_str_dq1 + 1).$value.substr ($xml_str, $xml_str_end);
@@ -81,7 +81,7 @@ function setxmlparameter ($xmldata, $parameter, $value)
       $xml_str_start = strpos ($xml_str, "?>");
       $xml_str_new = chop (substr ($xml_str, 0, $xml_str_start))." $parameter=\"$value\" ?>";
     }
-  
+
     // insert xml declaration into xml code
     if (strlen ($xml_str_new) >= 4)
     {
@@ -122,15 +122,15 @@ function getcontent ($xmldata, $starttagname)
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   // manipulate starttag if wild card character is used for attribute
   if (@substr_count ($starttagname, "*") >= 1) 
   {
@@ -146,38 +146,38 @@ function getcontent ($xmldata, $starttagname)
   {
     // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
     $i = -1;
-    
+
     foreach ($record_array as $record)
     {
       if ($i != -1 && $record != "")
       {
         if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode ($endtagname, $record);
         else $content_record = $record;
-  
+
         // manipulate xml-string if wild card character is used for attribute
         if ($wildcard == true) 
         {
           $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-        }        
-          
+        }
+
         // remove CDATA and leave code in CDATA section as it is
         if (substr (trim ($content_record), 0, 9) == "<![CDATA[" && substr (trim ($content_record), strlen (trim ($content_record))-3, 3) == "]]>")
         {
           $content_record = trim ($content_record);
           $content_record = substr ($content_record, 9, strlen ($content_record)-12);
-          
+
           // unescape CDATA section (in template content) inside correct CDATA section
           $content_record = str_replace ("&lt;![CDATA[", "<![CDATA[", $content_record); 
-          $content_record = str_replace ("]]&gt;", "]]>", $content_record);   
-        }  
+          $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
+        }
         // unescape characters & < > if no CDATA section embraces the code
         elseif (@substr_count ($content_record, "<") == 0)
         {
           $content_record = str_replace ("&amp;", "&", $content_record);
           $content_record = str_replace ("&lt;", "<", $content_record);
-          $content_record = str_replace ("&gt;", ">", $content_record);  
+          $content_record = str_replace ("&gt;", ">", $content_record);
         } 
-        
+
         $result_set[$i] = $content_record;
       }
 
@@ -215,15 +215,15 @@ function geticontent ($xmldata, $starttagname)
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  elseif (@substr_count ($starttagname, "*") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   // manipulate starttag if wild card character is used for attribute
   if (@substr_count ($starttagname, "*") > 0) 
   {
@@ -231,7 +231,7 @@ function geticontent ($xmldata, $starttagname)
     $wildcard = true;
   }
   else $wildcard = false;
-  
+
   // for case insensitive explode we need to replace the tags
   $xmldata = str_ireplace ($starttagname, strtolower ($starttagname), $xmldata);
   $xmldata = str_ireplace ($endtagname, strtolower ($endtagname), $xmldata);
@@ -243,38 +243,38 @@ function geticontent ($xmldata, $starttagname)
   {
     // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
     $i = -1;
-    
+
     foreach ($record_array as $record)
     {
       if ($i != -1 && $record != "")
       {
         if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode (strtolower ($endtagname), $record);
         else $content_record = $record;
-  
+
         // manipulate xml-string if wild card character is used for attribute
         if ($wildcard == true) 
         {
           $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-        }        
-          
+        }
+
         // remove CDATA and leave code in CDATA section as it is
         if (substr (trim ($content_record), 0, 9) == "<![CDATA[" && substr (trim ($content_record), strlen (trim ($content_record))-3, 3) == "]]>")
         {
           $content_record = trim ($content_record);
           $content_record = substr ($content_record, 9, strlen ($content_record)-12);
-          
+
           // unescape CDATA section (in template content) inside correct CDATA section
           $content_record = str_replace ("&lt;![CDATA[", "<![CDATA[", $content_record); 
-          $content_record = str_replace ("]]&gt;", "]]>", $content_record);   
-        }  
+          $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
+        }
         // unescape characters & < > if no CDATA section embraces the code
         elseif (@substr_count ($content_record, "<") == 0)
         {
           $content_record = str_replace ("&amp;", "&", $content_record);
           $content_record = str_replace ("&lt;", "<", $content_record);
-          $content_record = str_replace ("&gt;", ">", $content_record);  
+          $content_record = str_replace ("&gt;", ">", $content_record);
         } 
-        
+
         $result_set[$i] = $content_record;
       }
 
@@ -310,18 +310,18 @@ function getxmlcontent ($xmldata, $starttagname)
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
-  
+
   // hold starttag in buffer
   $buffer = $starttagname;
 
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   // manipulate starttag if wild card character is used for attribute
   if (@substr_count ($starttagname, "*") >= 1) 
   {
@@ -335,14 +335,14 @@ function getxmlcontent ($xmldata, $starttagname)
   {
     // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
     $i = -1;
-    
+
     foreach ($record_array as $record)
     {
       if ($i > -1 && $record != "")
       {
         if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode ($endtagname, $record);
         else $content_record = $record;
-                    
+
         $result_set[$i] = $starttagname.$content_record.$endtagname;
       }
 
@@ -379,24 +379,24 @@ function getxmlicontent ($xmldata, $starttagname)
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
-  
+
   // hold starttag in buffer
   $buffer = $starttagname;
 
   // define endtag
   if (@substr_count ($starttagname, " ") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  elseif (@substr_count ($starttagname, "*") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   // manipulate starttag if wild card character is used for attribute
   if (@substr_count ($starttagname, "*") >= 1) 
   {
     $starttagname = trim (substr ($starttagname, 0, strpos ($starttagname, "*")));
   }
-  
+
   // for case insensitive explode we need to replace the tags
   $xmldata = str_ireplace ($starttagname, strtolower ($starttagname), $xmldata);
   $xmldata = str_ireplace ($endtagname, strtolower ($endtagname), $xmldata);
@@ -408,14 +408,14 @@ function getxmlicontent ($xmldata, $starttagname)
   {
     // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
     $i = -1;
-    
+
     foreach ($record_array as $record)
     {
       if ($i > -1 && $record != "")
       {
         if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode (strtolower ($endtagname), $record); 
         else $content_record = $record;
-                    
+
         $result_set[$i] = $starttagname_.$content_record.$endtagname;
       }
 
@@ -457,28 +457,28 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   // manipulate starttag if wild card character is used for attribute
   if (@substr_count ($starttagname, "*") >= 1) 
   {
     $starttagname = trim (substr ($starttagname, 0, strpos ($starttagname, "*")));
     $wildcard = true;
   }
-  else $wildcard = false;    
+  else $wildcard = false;
 
   // if condition is set
   if ($startcondtag != "")
-  {   
+  { 
     $condvalue = trim ($condvalue);
-    
+
     // check if wild card characters are used in condvalue
     if ($condvalue != "" && $condvalue[0] == "*") 
     {
@@ -486,7 +486,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
       $condvalue = substr ($condvalue, 1);
     }
     else $wc_begin = false;
-    
+
     if ($condvalue != "" && $condvalue[strlen ($condvalue) - 1] == "*") 
     {
       $wc_end = true;
@@ -502,32 +502,32 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
       // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
       $i = -1;
       $j = 0;
-      
+
       foreach ($record_array as $record)
       {
         if ($i != -1 && $record != "")
         {
           if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode ($endtagname, $record);
           else $content_record = $record;
-          
+
           // get value of condtag
           $currentvalue_array = getcontent ($content_record, $startcondtag);
-          
+
           // find all XML-object including a child that fulfils the condition
           if ($currentvalue_array != false)
-          {           
-            foreach ($currentvalue_array as $currentvalue)           
-            {      
+          { 
+            foreach ($currentvalue_array as $currentvalue) 
+            {
               $currentvalue = trim ($currentvalue);
-                 
+ 
               if ($wc_begin == false && $wc_end == false && $currentvalue == $condvalue)
               {
                 // manipulate xml-string if wild card character is used for attribute
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                }               
-              
+                } 
+
                 $result_set[$j] = $content_record;
                 $j++;
                 break;
@@ -539,7 +539,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $content_record;
                 $j++;
                 break;
@@ -551,7 +551,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $content_record;
                 $j++;
                 break;
@@ -563,7 +563,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $content_record;
                 $j++;
                 break;
@@ -616,32 +616,32 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   // manipulate starttag if wild card character is used for attribute
   if (@substr_count ($starttagname, "*") >= 1) 
   {
     $starttagname = trim (substr ($starttagname, 0, strpos ($starttagname, "*")));
     $wildcard = true;
   }
-  else $wildcard = false;   
-  
+  else $wildcard = false; 
+
   // for case insensitive explode we need to replace the tags
   $xmldata = str_ireplace ($starttagname, strtolower ($starttagname), $xmldata);
   $xmldata = str_ireplace ($endtagname, strtolower ($endtagname), $xmldata);
 
   // if condition is set
   if ($startcondtag != "")
-  {   
+  { 
     $condvalue = trim (strtolower ($condvalue));
-    
+
     // check if wild card characters are used in condvalue
     if ($condvalue != "" && $condvalue[0] == "*") 
     {
@@ -649,7 +649,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
       $condvalue = substr ($condvalue, 1);
     }
     else $wc_begin = false;
-    
+
     if ($condvalue != "" && $condvalue[strlen ($condvalue) - 1] == "*") 
     {
       $wc_end = true;
@@ -665,32 +665,32 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
       // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
       $i = -1;
       $j = 0;
-      
+
       foreach ($record_array as $record)
       {
         if ($i != -1 && $record != "")
         {
           if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode (strtolower ($endtagname), $record);
           else $content_record = $record;
-          
+
           // get value of condtag
           $currentvalue_array = geticontent ($content_record, $startcondtag);
-          
+
           // find all XML-object including a child that fulfils the condition
           if ($currentvalue_array != false)
-          {           
-            foreach ($currentvalue_array as $currentvalue)           
-            {      
+          { 
+            foreach ($currentvalue_array as $currentvalue) 
+            {
               $currentvalue = trim (strtolower ($currentvalue));
-                 
+ 
               if ($wc_begin == false && $wc_end == false && $currentvalue == $condvalue)
               {
                 // manipulate xml-string if wild card character is used for attribute
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                }               
-              
+                } 
+
                 $result_set[$j] = $content_record;
                 $j++;
                 break;
@@ -702,7 +702,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $content_record;
                 $j++;
                 break;
@@ -714,7 +714,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $content_record;
                 $j++;
                 break;
@@ -726,7 +726,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $content_record;
                 $j++;
                 break;
@@ -761,9 +761,9 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 
 // description:
 // <tagname>
-//    .......  
+//    .......
 //    <condtag>condvalue</condtag>
-//    .......  
+//    .......
 // </tagname>
 //
 // Extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag value is equal with the target value $condvalue
@@ -777,31 +777,31 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
-  
+
   // hold starttag in buffer
-  $buffer = $starttagname;  
+  $buffer = $starttagname;
 
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";  
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   // manipulate starttag if wild card character is used for attribute
   if (@substr_count ($starttagname, "*") >= 1) 
   {
     $starttagname = trim (substr ($starttagname, 0, strpos ($starttagname, "*")));
     $wildcard = true;
   }
-  else $wildcard = false;     
+  else $wildcard = false; 
 
   // if condition is set
   if ($startcondtag != "")
   {
     $condvalue = trim ($condvalue);
-    
+
     // check if wild card characters are used in condvalue
     if ($condvalue != "" && $condvalue[0] == "*") 
     {
@@ -809,7 +809,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
       $condvalue = substr ($condvalue, 1);
     }
     else $wc_begin = false;
-    
+
     if ($condvalue != "" && $condvalue[strlen ($condvalue) - 1] == "*") 
     {
       $wc_end = true;
@@ -825,24 +825,24 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
       // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
       $i = -1;
       $j = 0;
-      
+
       foreach ($record_array as $record)
       {
         if ($i != -1 && $record != "")
         {
           if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode ($endtagname, $record);
           else $content_record = $record;
-          
+
           // get value of candtag
           $currentvalue_array = getcontent ($content_record, $startcondtag);
-          
+
           // find all XML-object including a child that fulfils the condition
           if ($currentvalue_array != false)
-          {           
-            foreach ($currentvalue_array as $currentvalue)           
+          { 
+            foreach ($currentvalue_array as $currentvalue) 
             {
               $currentvalue = trim ($currentvalue);
-              
+
               if ($wc_begin == false && $wc_end == false && $currentvalue == $condvalue)
               {
                 // manipulate xml-string if wild card character is used for attribute
@@ -850,11 +850,11 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
                 break;
-              }            
+              }
               elseif ($wc_begin == true && $wc_end == true && @substr_count ($currentvalue, $condvalue) >= 1)
               {
                 // manipulate xml-string if wild card character is used for attribute
@@ -862,7 +862,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
                 break;
@@ -874,7 +874,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
                 break;
@@ -885,7 +885,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                }               
+                } 
 
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
@@ -922,9 +922,9 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // CASE-Insensitive version (XML parser are always case-sensitive!)
 //
 // <tagname>
-//    .......  
+//    .......
 //    <condtag>condvalue</condtag>
-//    .......  
+//    .......
 // </tagname>
 //
 // Extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag value is equal with the target value $condvalue.
@@ -938,18 +938,18 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
-  
+
   // hold starttag in buffer
-  $buffer = $starttagname;  
+  $buffer = $starttagname;
 
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   // manipulate starttag if wild card character is used for attribute
   if (@substr_count ($starttagname, "*") >= 1) 
   {
@@ -957,16 +957,16 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     $wildcard = true;
   }
   else $wildcard = false;
-  
+
   // for case insensitive explode we need to replace the tags
   $xmldata = str_ireplace ($starttagname, strtolower ($starttagname), $xmldata);
-  $xmldata = str_ireplace ($endtagname, strtolower ($endtagname), $xmldata);  
+  $xmldata = str_ireplace ($endtagname, strtolower ($endtagname), $xmldata);
 
   // if condition is set
   if ($startcondtag != "")
   {
     $condvalue = trim (strtolower ($condvalue));
-    
+
     // check if wild card characters are used in condvalue
     if ($condvalue != "" && $condvalue[0] == "*") 
     {
@@ -974,7 +974,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
       $condvalue = substr ($condvalue, 1);
     }
     else $wc_begin = false;
-    
+
     if ($condvalue != "" && $condvalue[strlen ($condvalue) - 1] == "*") 
     {
       $wc_end = true;
@@ -990,24 +990,24 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
       // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
       $i = -1;
       $j = 0;
-      
+
       foreach ($record_array as $record)
       {
         if ($i != -1 && $record != "")
         {
           if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode (strtolower ($endtagname), $record);
           else $content_record = $record;
-          
+
           // get value of candtag
           $currentvalue_array = geticontent ($content_record, $startcondtag);
-          
+
           // find all XML-object including a child that fulfils the condition
           if ($currentvalue_array != false)
-          {           
-            foreach ($currentvalue_array as $currentvalue)           
+          { 
+            foreach ($currentvalue_array as $currentvalue) 
             {
               $currentvalue = trim (strtolower ($currentvalue));
-              
+
               if ($wc_begin == false && $wc_end == false && $currentvalue == $condvalue)
               {
                 // manipulate xml-string if wild card character is used for attribute
@@ -1015,11 +1015,11 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
                 break;
-              }            
+              }
               elseif ($wc_begin == true && $wc_end == true && @substr_count ($currentvalue, $condvalue) >= 1)
               {
                 // manipulate xml-string if wild card character is used for attribute
@@ -1027,7 +1027,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
                 break;
@@ -1039,7 +1039,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-                              
+        
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
                 break;
@@ -1050,7 +1050,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                }               
+                } 
 
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
@@ -1098,7 +1098,7 @@ function deletecontent ($xmldata, $starttagname, $startcondtag="", $condvalue=""
   {
     return false;
   }
-  
+
   // if condition is set
   if ($startcondtag != "")
   {
@@ -1109,14 +1109,14 @@ function deletecontent ($xmldata, $starttagname, $startcondtag="", $condvalue=""
   else 
   {
     // extract content between tags
-    $record_array = getxmlcontent ($xmldata, $starttagname);  
+    $record_array = getxmlcontent ($xmldata, $starttagname);
   }
 
   // delete childs 
   if ($record_array != false && sizeof ($record_array) > 0)
   {
     foreach ($record_array as $record)
-    {      
+    {
       // PHP will transform newlines in the correct way for each OS, so deleting childs
       // and their appending newline will require to take different cases into account
       $xmldata = str_replace ($record."\r\n", "", $xmldata);  // WIN32
@@ -1144,7 +1144,7 @@ function deletecontent ($xmldata, $starttagname, $startcondtag="", $condvalue=""
 //
 // Deletes the whole xml content including <tagname>.
 // Wild card character "*" can be used at begin and end of $condvalue.
-  
+
 function deleteicontent ($xmldata, $starttagname, $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
@@ -1163,14 +1163,14 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag="", $condvalue="
   else 
   {
     // extract content between tags
-    $record_array = getxmlicontent ($xmldata, $starttagname);  
+    $record_array = getxmlicontent ($xmldata, $starttagname);
   }
 
   // delete childs 
   if ($record_array != false && sizeof ($record_array) >= 1)
   {
     foreach ($record_array as $record)
-    {      
+    {
       // PHP will transform newlines in the correct way for each OS, so deleting childs
       // and their appending newline will require to take different cases into account
       $xmldata = str_replace ($record."\r\n", "", $xmldata);  // WIN32
@@ -1204,7 +1204,7 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag="", $condvalue="
 // $condvalue = value of the condition
 //
 // Wild card character "*" can be used at begin and end of $condvalue.
-  
+
 function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
@@ -1215,7 +1215,7 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
 
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
-  
+
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
   else $endtagname = "</".substr ($starttagname, 1);
@@ -1244,13 +1244,13 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
       // exclude the old content
       list ($xmlstringstart, $xmlstringrest) = explode ($starttagname, $record);
       list ($contentold, $xmlstringend) = explode ($endtagname, $xmlstringrest);
-      
+
       // check if $starttagname was found
       if ($xmlstringrest != "")
       {
         // build xml data including the new content $contentnew
         $record_new = $xmlstringstart.$starttagname.$contentnew.$endtagname.$xmlstringend;
-        
+
         // replace/update the old xml content with the new xml content in $xmldata
         $xmldata = str_replace ($record, $record_new, $xmldata);
       }
@@ -1290,7 +1290,7 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
 // $condvalue = value of the condition
 //
 // Wild card character "*" can be used at begin and end of $condvalue. 
-  
+
 function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag, $condvalue)
 {
   // if filedata contains no content
@@ -1298,7 +1298,7 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
@@ -1329,18 +1329,18 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
     {
       // for case insensitive explode we need to replace the tags
       $record = str_ireplace ($starttagname, strtolower ($starttagname), $record);
-      $record = str_ireplace ($endtagname, strtolower ($endtagname), $record);      
-        
+      $record = str_ireplace ($endtagname, strtolower ($endtagname), $record);
+
       // exclude the old content
       list ($xmlstringstart, $xmlstringrest) = explode (strtolower ($starttagname), $record);
       list ($contentold, $xmlstringend) = explode (strtolower ($endtagname), $xmlstringrest);
-      
+
       // check if $starttagname was found
       if ($xmlstringrest != "")
       {
         // build xml data including the new content $contentnew
         $record_new = $xmlstringstart.$starttagname.$contentnew.$endtagname.$xmlstringend;
-        
+
         // replace/update the old xml content with the new xml content in $xmldata
         $xmldata = str_replace ($record, $record_new, $xmldata);
       }
@@ -1380,7 +1380,7 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
 // $condvalue = value of the condition
 //
 // Wild card character "*" can be used at begin and end of $condvalue.
-  
+
 function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
@@ -1388,7 +1388,7 @@ function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $content
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($startparenttagname, "<") == 0 && @substr_count ($startparenttagname, ">") == 0) $startparenttagname = "<".trim ($startparenttagname).">";
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
@@ -1412,7 +1412,7 @@ function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $content
   if ($record_array != false && sizeof ($record_array) >= 1)
   {
     $i = 0;
-    
+
     foreach ($record_array as $record)
     {
       // check if $starttagname was found
@@ -1422,10 +1422,10 @@ function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $content
         // replace/update the old xml content with the new xml content in $xmldata
         $record_array[$i] = str_replace ($contentold, $starttagname.$contentnew.$endtagname, $record);
       }
-      
+
       $i++;
     }
-    
+
     // implode $records
     $xmldata = implode ($startparenttagname, $record_array);
 
@@ -1452,7 +1452,7 @@ function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
   if ($xmldata == "" || $xmlnode == "" || !is_string ($xmldata))
   {
     return false;
-  }  
+  }
   else
   {
     $xmldata = str_replace ($xmlnode, $xmlnodenew, $xmldata);
@@ -1532,22 +1532,22 @@ function insertcontent ($xmldata, $insertxmldata, $starttagname)
 // .....................
 //
 // Inserts $insertxmldata string at the end of all child between the parent $tagname.
-  
+
 function inserticontent ($xmldata, $insertxmldata, $starttagname)
-{  
+{
   // if variables contain no content
   if (!valid_tagname ($starttagname) || $xmldata == "" || $insertxmldata == "" || !is_string ($xmldata) || !is_string ($insertxmldata))
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   // for case insensitive explode we need to replace the tags
   $xmldata = str_ireplace ($starttagname, strtolower ($starttagname), $xmldata);
   $xmldata = str_ireplace ($endtagname, strtolower ($endtagname), $xmldata);
@@ -1594,7 +1594,7 @@ function inserticontent ($xmldata, $insertxmldata, $starttagname)
 // $startparenttagname (optional) = name of the parent xml tag where the xml subschema should be added (list)
 // $starttagname (optional) = name of the tag (child)
 // $contentnew (optional) = the content that will be inserted between the child tags
-  
+
 function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, $condvalue, $startparenttagname, $starttagname, $contentnew)
 {
   // if variables contain no content
@@ -1602,7 +1602,7 @@ function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, 
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($startparenttagname, "<") == 0 && @substr_count ($startparenttagname, ">") == 0) $startparenttagname = "<".trim ($startparenttagname).">";
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
@@ -1610,9 +1610,9 @@ function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, 
   // define endtag
   if (@substr_count ($starttagname, " ") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   if (@substr_count ($starttagname, " ") > 0) $endparenttagname = "</".substr ($startparenttagname, 1, strpos ($startparenttagname, " ")).">";
-  else $endparenttagname = "</".substr ($startparenttagname, 1);  
+  else $endparenttagname = "</".substr ($startparenttagname, 1);
 
   // insert the new content into the sub xml data
   if ($starttagname != "" && $contentnew != "")
@@ -1689,7 +1689,7 @@ function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, 
 // $startparenttagname (optional) = name of the parent xml tag where the xml subschema should be added (list)
 // $starttagname (optional) = name of the tag (child)
 // $contentnew (optional) = the content that will be inserted between the child tags
-  
+
 function addicontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, $condvalue, $startparenttagname, $starttagname, $contentnew)
 {
   // if variables contain no content
@@ -1697,7 +1697,7 @@ function addicontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag,
   {
     return false;
   }
-  
+
   // add < and > for tag name
   if (@substr_count ($startparenttagname, "<") == 0 && @substr_count ($startparenttagname, ">") == 0) $startparenttagname = "<".trim ($startparenttagname).">";
   if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
@@ -1705,9 +1705,9 @@ function addicontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag,
   // define endtag
   if (@substr_count ($starttagname, " ") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
   else $endtagname = "</".substr ($starttagname, 1);
-  
+
   if (@substr_count ($starttagname, " ") > 0) $endparenttagname = "</".substr ($startparenttagname, 1, strpos ($startparenttagname, " ")).">";
-  else $endparenttagname = "</".substr ($startparenttagname, 1);  
+  else $endparenttagname = "</".substr ($startparenttagname, 1);
 
   // insert the new content into the sub xml data
   if ($starttagname != "" && $contentnew != "")

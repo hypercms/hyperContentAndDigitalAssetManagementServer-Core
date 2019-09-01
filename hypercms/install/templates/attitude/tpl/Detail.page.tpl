@@ -6,12 +6,12 @@
 <extension>php</extension>
 <application>php</application>
 <content><![CDATA[[hyperCMS:textc id='NavigationHide' label='Hide in Navigation' value='yes' infotype='meta' onPublish='hidden']
-[hyperCMS:textu id='NavigationSortOrder' label='Navigation Sort Order' constraint='inRange0:1000' infotype='meta' onPublish='hidden' height='25']
+[hyperCMS:textu id='NavigationSortOrder' label='Navigation Sort Order' constraint='inRange0:1000' infotype='meta' onPublish='hidden' height='30']
 [hyperCMS:fileinclude file='%abs_comp%/%publication%/configuration.php']
 <!DOCTYPE html>
 <html>
   <head>
-    <title>[hyperCMS:textu id='Title' infotype='meta' height='25' label='Page Title' constraint='R']</title>
+    <title>[hyperCMS:textu id='Title' infotype='meta' height='30' label='Page Title' constraint='R']</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -42,7 +42,7 @@
         <div class="page-title-wrap">
           <div class="container clearfix">
             [hyperCMS:tplinclude file='Breadcrumb.inc.tpl']			   
-             <h3 class="page-title">[hyperCMS:textu id='Title' height='25' label='Page Title' constraint='R']</h3><!-- .page-title -->
+             <h3 class="page-title">[hyperCMS:textu id='Title' height='30' label='Page Title' constraint='R']</h3><!-- .page-title -->
           </div>
         </div>
       </header>
@@ -52,7 +52,7 @@
             <article>
               <header class="entry-header">
                 <h2 class="entry-title">
-                  [hyperCMS:textu id='EntryTitle' label='Entry Title' height='25']
+                  [hyperCMS:textu id='EntryTitle' label='Entry Title' height='30']
                 </h2><!-- .entry-title -->
               </header>
               [hyperCMS:scriptbegin 

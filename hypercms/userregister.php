@@ -93,7 +93,7 @@ if ($action == "user_register" && checktoken ($token, "sys") && !empty ($mgmt_co
       $reg_info = getescapedtext ($hcms_lang['please-wait-for-the-approval'][$lang]);
     }
     
-    $result = edituser ($site, $login, "*Leave*", "*Leave*", "*Leave*", "0", $realname, $language, $timezone, $theme, $email, $phone, $signature, $usergroup, $site, "sys");
+    $result = edituser ($site, $login, "*Leave*", "*Leave*", "*Leave*", "0", $realname, $language, $timezone, $theme, $email, $phone, $signature, $usergroup, $site, "", "", "sys");
     
     if (!empty ($mgmt_config[$site]['registration_notify'])) 
     {
@@ -187,22 +187,6 @@ function is_mobilebrowser()
     return true;
   }
   else return false;
-}
-
-function setwallpaper ()
-{
-  <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
-  document.body.style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
-  return true;
-  <?php } elseif (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-  if (hcms_html5file())
-  {
-    document.getElementById('videoScreen').src = "<?php echo $wallpaper; ?>";
-  }
-  return true;
-  <?php } else { ?>
-  return false;
-  <?php } ?>
 }
 
 function checkForm_chars (text, exclude_chars)
@@ -315,23 +299,48 @@ function checkForm ()
     userform.submit();
   }
 }
+
+function setwallpaper ()
+{
+  // set background image
+  <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
+  document.getElementById('startScreen').style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
+  return true;
+  <?php } elseif (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+  if (html5support())
+  {
+    document.getElementById('videoScreen').src = "<?php echo $wallpaper; ?>";
+  }
+  return true;
+  <?php } else { ?>
+  return false;
+  <?php } ?>
+}
+
+function blurbackground (blur)
+{
+  if (blur == true) document.getElementById('startScreen').classList.add('hcmsBlur');
+  else document.getElementById('startScreen').classList.remove('hcmsBlur');
+}
 </script>
 </head>
 
-<body class="hcmsStartScreen" onload="setwallpaper(); is_mobilebrowser();">
+<body onload="setwallpaper(); is_mobilebrowser();">
 
-<?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-<video playsinline autoplay muted loop poster="<?php echo getthemelocation($theme); ?>/img/backgrd_start.png" id="videoScreen">
-  <source src="<?php echo $wallpaper; ?>" type="video/mp4">
-</video>
-<?php } ?>
+<div id="startScreen" class="hcmsStartScreen">
+  <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+  <video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.png">
+    <source src="<?php echo $wallpaper; ?>" type="video/mp4">
+  </video>
+  <?php } ?>
+</div>
 
 <div class="hcmsStartBar">
   <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
   <div style="position:absolute; top:15px; right:15px; text-align:right;"></div>
 </div>
 
-<div class="hcmsLogonScreen" style="width:300px;">
+<div class="hcmsLogonScreen" style="width:300px; margin-left:-150px; margin-top:-240px;" onkeyup="blurbackground(true);" onmouseout="blurbackground(false);">
 
 <?php
 if ($show != "") echo "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"width:290px; padding:5px;\">".$show."</div>\n";
@@ -345,25 +354,25 @@ if ($show != "") echo "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"wi
     <input type="hidden" name="token" value="<?php echo $token_new; ?>">
     
     <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?> </div>
-    <div><input type="text" name="login" style="width:288px;" value="<?php echo $login; ?>" /></div>
+    <div><input type="text" name="login" style="width:300px;" value="<?php echo $login; ?>" /></div>
     
     <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['password'][$lang]); ?> </div>
-    <div><input type="password" name="password" style="width:288px;" value="<?php echo $password; ?>" /></div>
+    <div><input type="password" name="password" style="width:300px;" value="<?php echo $password; ?>" /></div>
 
     <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?> </div>
-    <div><input type="password" name="confirm_password" style="width:288px;" value="<?php echo $confirm_password; ?>" /></div>
+    <div><input type="password" name="confirm_password" style="width:300px;" value="<?php echo $confirm_password; ?>" /></div>
 
     <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?> </div>
-    <div><input type="text" name="realname" style="width:288px;" value="<?php echo $realname; ?>" /></div>
+    <div><input type="text" name="realname" style="width:300px;" value="<?php echo $realname; ?>" /></div>
 
     <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?> </div>
-    <div><input type="text" name="email" style="width:288px;" value="<?php echo $email; ?>" /></div>
+    <div><input type="text" name="email" style="width:300px;" value="<?php echo $email; ?>" /></div>
 
     <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['phone'][$lang]); ?> </div>
-    <div><input type="text" name="phone" style="width:288px;" value="<?php echo $phone; ?>" /></div>
+    <div><input type="text" name="phone" style="width:300px;" value="<?php echo $phone; ?>" /></div>
 
     <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['signature'][$lang]); ?> </div>
-    <div><textarea name="signature" wrap="VIRTUAL" style="width:288px; height:60px;"><?php echo $signature; ?></textarea></div>
+    <div><textarea name="signature" wrap="VIRTUAL" style="width:300px; height:60px;"><?php echo $signature; ?></textarea></div>
 
     <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?> </div>
     <div>

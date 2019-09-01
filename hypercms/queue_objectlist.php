@@ -28,7 +28,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // check permissions
 if (
      ($queueuser != "" && !checkrootpermission ('desktop')) || 
-     ($queueuser == "" && !checkrootpermission ('site'))
+     ($queueuser == "" && !checkrootpermission ('site') && !checkrootpermission ('user'))
    ) killsession ($user);
 
 // check session of user
@@ -120,7 +120,7 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
           if (!$is_mobile) $listview .= "
                   <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$site."\">&nbsp;&nbsp;".$site."</span></td>
                   <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$location_name."\">&nbsp;&nbsp;".$location_name."</span></td>
-                  <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                  <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
                   <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
                   <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>";
                   
@@ -140,7 +140,7 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
         $object_name = $file_info['name'];
         
         // open on double click
-        $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', 600, 800);\"";
+        $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', 600, 900);\"";
         
         // onclick for marking objects
         $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlQueueMenu();\"";
@@ -164,7 +164,7 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
           if (!$is_mobile) $listview .= "
                 <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
                 <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
-                <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
                 <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
                 <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>";
                 
@@ -193,6 +193,9 @@ else $objects_counted = 0;
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript">
+
+// select area
+var selectarea;
 
 // context menu
 contextenable = true;
@@ -235,6 +238,15 @@ function resizecols()
   $('.hcmsCol4').width(c4);
   $('.hcmsCol5').width(c5);
   $('.hcmsCol6').width(c6);
+}
+
+function initalize ()
+{
+  // resize columns
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+
+  // select area
+  selectarea = document.getElementById('selectarea');
 }
 </script>
 </head>
@@ -339,11 +351,8 @@ else
 ?>
 
 <!-- initalize -->
-<script>
-// resize columns
-$("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
-// select area
-var selectarea = document.getElementById('selectarea');
+<script type="text/javascript">
+initalize();
 </script>
 
 </body>

@@ -23,6 +23,7 @@ img
 
 input, select, textarea, button, .hcmsTextArea 
 {
+  box-sizing: border-box;
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 
   font-weight: normal;
@@ -33,7 +34,7 @@ input, select, textarea, button, .hcmsTextArea
   border: 1px solid #808080;
   background-color: #FFFFFF;
   margin: 1px 1px 1px 0px;
-  padding: 7px 4px;
+  padding: 6px 4px;
 }
 
 a 
@@ -390,7 +391,7 @@ hr
   font-family: inherit;
   font-size: 11px; 
   font-weight: normal; 
-  color: #FFFAEF; 
+  color: #fddab5; 
   text-decoration: none
 }
 

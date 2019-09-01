@@ -83,10 +83,10 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
   elseif (isset ($mgmt_config['template_clean_level']) && $cat != "meta") $cleanlevel = $mgmt_config['template_clean_level'];
   else $cleanlevel = 4;
 
-  // check code
+  // check template code
   $contentfield_check = scriptcode_clean_functions ($contentfield, $cleanlevel);
 
-   // save pers file
+   // if passed
   if ($contentfield_check['result'] == true)
   {    
     // save template file
@@ -102,6 +102,7 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
     }
     else $add_onload = "";
   }
+  // failed
   else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['template-could-not-be-saved'][$lang], $charset, $lang)."</span><br />\n".getescapedtext ($hcms_lang['there-are-forbidden-functions-in-the-code'][$lang], $charset, $lang).": <span style=\"color:red;\">".$contentfield_check['found']."</span>";
 }
 // load template file
@@ -109,14 +110,19 @@ else
 {
   $templatedata = loadfile ($mgmt_config['abs_path_template'].$site."/", $template);
   
+  $extension = "";
+  $application = "";
+  $contentfield = "";
+
   // extract information
-  $bufferarray = getcontent ($templatedata, "<extension>"); 
-  $extension = $bufferarray[0];
-  $bufferarray = getcontent ($templatedata, "<application>"); 
-  $application = $bufferarray[0];  
-  $bufferarray = getcontent ($templatedata, "<content>"); 
-  $contentfield = $bufferarray[0];
-  
+  $temp_array = getcontent ($templatedata, "<extension>");
+  if (!empty ($temp_array[0])) $extension = $temp_array[0];
+
+  $temp_array = getcontent ($templatedata, "<application>");
+  if (!empty ($temp_array[0])) $application = $temp_array[0];
+
+  $temp_array = getcontent ($templatedata, "<content>");
+  if (!empty ($temp_array[0])) $contentfield = $temp_array[0];
   
   // get charset before transformation of < and >
   $result_charset = getcharset ($site, $contentfield);  
@@ -175,27 +181,27 @@ function openmediaType()
 function checkForm_chars (text, exclude_chars)
 {
   exclude_chars = exclude_chars.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");  
-	var expr = new RegExp ("[^a-zA-Z0-9" + exclude_chars + "]", "g");
-	var separator = ', ';
-	var found = text.match(expr); 
-	
+  var expr = new RegExp ("[^a-zA-Z0-9" + exclude_chars + "]", "g");
+  var separator = ', ';
+  var found = text.match(expr); 
+  
   if (found)
   {
-		var addText = '';
+    var addText = '';
     
-		for(var i = 0; i < found.length; i++)
+    for(var i = 0; i < found.length; i++)
     {
-			addText += found[i]+separator;
-		}
+      addText += found[i]+separator;
+    }
     
-		addText = addText.substr(0, addText.length-separator.length);
-		alert(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang); ?>\n ") + addText);
-		return false;
-	}
+    addText = addText.substr(0, addText.length-separator.length);
+    alert(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang); ?>\n ") + addText);
+    return false;
+  }
   else
   {
-		return true;
-	}
+    return true;
+  }
 }
 
 function checkForm (expression)
@@ -212,17 +218,17 @@ function insertAtCaret (aTag, eTag)
   
   input.focus();
   
-  /* Internet Explorer */
+  // Internet Explorer
   if (typeof document.selection != 'undefined')
   {
-    /* insert code */
+    // insert code
     var range = document.selection.createRange();
     var insText = range.text;
     
-    //range.text = aTag + insText + eTag;
+    // range.text = aTag + insText + eTag;
     range.text = aTag + eTag;
     
-    /* set cursor position */
+    // set cursor position
     range = document.selection.createRange();
     
     if (insText.length == 0)
@@ -231,24 +237,24 @@ function insertAtCaret (aTag, eTag)
     }
     else
     {
-      //range.moveStart('character', aTag.length + insText.length + eTag.length);  
+      // range.moveStart('character', aTag.length + insText.length + eTag.length);  
       range.moveStart('character', aTag.length + eTag.length);     
     }
     
     range.select();
   }
-  /* new Gecko based browsers */
+  // new Gecko based browsers
   else if(typeof input.selectionStart != 'undefined')
   {
-    /* insert code */
+    // insert code
     var start = input.selectionStart;
     var end = input.selectionEnd;
     var insText = input.value.substring(start, end);
     
-    //input.value = input.value.substr(0, start) + aTag + insText + eTag + input.value.substr(end);
+    // input.value = input.value.substr(0, start) + aTag + insText + eTag + input.value.substr(end);
     input.value = input.value.substr(0, start) + aTag + eTag + input.value.substr(end);
     
-    /* set cursor position */
+    // set cursor position
     var pos;
     
     if (insText.length == 0)
@@ -263,10 +269,10 @@ function insertAtCaret (aTag, eTag)
     input.selectionStart = pos;
     input.selectionEnd = pos;
   }
-  /* other Browsers */
+  // other Browsers
   else
   {
-    /* get insert position */
+    // get insert position
     var pos;
     var re = new RegExp('^[0-9]{0,3}$');
     
@@ -280,7 +286,7 @@ function insertAtCaret (aTag, eTag)
       pos = input.value.length;
     }
     
-    /* insert code */
+    // insert code
     var insText = prompt("Please input the text to be formatted:");
     input.value = input.value.substr(0, pos) + aTag + insText + eTag + input.value.substr(pos);
   }

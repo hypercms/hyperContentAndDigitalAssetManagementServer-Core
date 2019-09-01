@@ -96,6 +96,23 @@ if ($action != "" && checktoken ($token, $user))
       if ($result['result'] == true) $login = "";
     }
   }
+  // reset password of selected user
+  elseif ($action == "resetpassword" && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
+  {
+    $show = sendresetpassword ($login, false);
+  }
+  // delete session file of user
+  elseif ($action == "killsession" && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
+  {
+    $result = killsession ($login, false, true);
+
+    if ($result == true)
+    {
+      $add_onload = "parent.frames['mainFrame'].location.reload();";
+      $show = getescapedtext ($login." ".$hcms_lang['logged-out'][$lang]);
+    }
+    else $show = getescapedtext ($login." ".$hcms_lang['session-cannot-be-closed'][$lang]);
+  }
   // registration settings
   elseif ($action == "registration" && valid_publicationname ($site) && checkglobalpermission ($site, 'user'))
   {
@@ -202,7 +219,7 @@ function checkForm()
     return false;
   }
   
-  if (!checkForm_chars (userpassword.value, ".-_#+*[]%$§!?@"))
+  if (!checkForm_chars (userpassword.value, ".-_#+*[]%$ï¿½!?@"))
   {
     userpassword.focus();
     return false;
@@ -215,7 +232,7 @@ function checkForm()
     return false;
   } 
   
-  if (!checkForm_chars (userconfirm_password.value, "-_#+*[]%$§!?@"))
+  if (!checkForm_chars (userconfirm_password.value, "-_#+*[]%$ï¿½!?@"))
   {
     userconfirm_password.focus();
     return false;
@@ -225,7 +242,21 @@ function checkForm()
   return true;
 }
 
-function submitTo(url, action, target, features, width, height)
+function resetPassword ()
+{
+  var form = document.forms['actionform'];
+  form.elements['action'].value = "resetpassword";
+  form.submit();
+}
+
+function killSession ()
+{
+  var form = document.forms['actionform'];
+  form.elements['action'].value = "killsession";
+  form.submit();
+}
+
+function submitTo (url, action, target, features, width, height)
 {
   if (features == undefined)
   {
@@ -316,8 +347,7 @@ function goToURL()
     // DELETE BUTTON
     if (($login != "" || $multiobject != "") && ((!valid_publicationname ($site)  && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'userdelete'))))
     {
-      echo 
-      "<img ".
+      echo "<img ".
         "class=\"hcmsButton hcmsButtonSizeSquare\" ".
         "onClick=\"if (warning_delete()==true) ".
         "submitTo('control_user_menu.php', 'delete', 'controlFrame'); \" ".
@@ -333,9 +363,12 @@ function goToURL()
     if ($login != "" && (!$multiobject || $multiobject_count <= 1) && ((!valid_publicationname ($site)  && checkrootpermission ('user')  && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'useredit'))))
     {
       echo "<img ".
-             "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-             "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'status=yes,scrollbars=no,resizable=yes', 520, 690);\" ".
-             "name=\"media_edit\" src=\"".getthemelocation()."img/button_user_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
+             "class=\"hcmsButton hcmsButtonSizeSquare\" ";
+
+             if (!empty ($mgmt_config['user_newwindow'])) echo "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 800);\" ";
+             else echo "onClick=\"parent.openpopup('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."');\" ";
+ 
+      echo "name=\"media_edit\" src=\"".getthemelocation()."img/button_user_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
     }    
     else
     {
@@ -345,12 +378,43 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
+    // RESET PASSWORD
+    if ((!$multiobject || $multiobject_count <= 1) && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
+    {
+      echo "<img ".
+             "class=\"hcmsButton hcmsButtonSizeSquare\" ".
+             "onClick=\"resetPassword();\" ".
+             "src=\"".getthemelocation()."img/workflow_permission.png\" alt=\"".getescapedtext ($hcms_lang['reset-password'][$lang])."\" title=\"".getescapedtext ($hcms_lang['reset-password'][$lang])."\" />\n";
+    }    
+    else
+    {
+      echo "<img src=\"".getthemelocation()."img/workflow_permission.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+    }
+    ?>
+    <?php
+    // KILL USER SESSION
+    // get online users
+    $user_online_array = getusersonline ();
+
+    if ((!$multiobject || $multiobject_count <= 1) && $login != "" && is_array ($user_online_array) && in_array ($login, $user_online_array) && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
+    {
+      echo "<img ".
+             "class=\"hcmsButton hcmsButtonSizeSquare\" ".
+             "onClick=\"killSession();\" ".
+             "src=\"".getthemelocation()."img/button_logout.png\" alt=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" title=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" />\n";
+    }    
+    else
+    {
+      echo "<img src=\"".getthemelocation()."img/button_logout.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+    }
+    ?>
+    <?php
     // USER FILES
     if ((!$multiobject || $multiobject_count <= 1) && $mgmt_config['db_connect_rdbms'] != "" && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-             "onClick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&login=".url_encode($login)."&action=user_files';\" name=\"media_userfiles\" ".
+             "onClick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&login=".url_encode($login)."&action=user_files';\" ".
              "src=\"".getthemelocation()."img/button_user_files.png\" alt=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" />\n";
     }    
     else
@@ -366,7 +430,7 @@ function goToURL()
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-             "onClick=\"hcms_showHideLayers('createuserLayer','','hide','registrationLayer','','show','hcms_messageLayer','','hide');\" name=\"media_userfiles\" ".
+             "onClick=\"hcms_showHideLayers('createuserLayer','','hide','registrationLayer','','show','hcms_messageLayer','','hide');\" ".
              "src=\"".getthemelocation()."img/button_sessionreg.png\" alt=\"".getescapedtext ($hcms_lang['registration-of-new-users'][$lang])."\" title=\"".getescapedtext ($hcms_lang['registration-of-new-users'][$lang])."\" />\n";
     }    
     else
@@ -377,7 +441,7 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    echo "<td><img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" /></a></td>\n";
+    echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />\n";
     ?> 
   </div>
   <div class="hcmsToolbarBlock">
@@ -463,11 +527,11 @@ function goToURL()
     <?php
     if (file_exists ("help/adminguide_".$hcms_lang_shortcut[$lang].".pdf"))
     {
-      echo "<img  onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";
+      echo "<img onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";
     }
     elseif (file_exists ("help/adminguide_en.pdf"))
     {
-      echo "<img  onClick=\"hcms_openWindow('help/adminguide_en.pdf','help','scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";
+      echo "<img onClick=\"hcms_openWindow('help/adminguide_en.pdf','help','scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";
     }
     ?>
   </div>
@@ -490,11 +554,11 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-new-user'][$lang]); ?></span><br/>
         <table class="hcmsTableNarrow">
           <tr>
-            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['user-name'][$lang])."&nbsp;</td>"; ?><td><input type="text" name="login" style="width:240px;" maxlength="60" value="<?php if ($action == "create") echo $login; ?>" tabindex="1" placeholder="<?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?>" /></td>
+            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['user-name'][$lang])."&nbsp;</td>"; ?><td><input type="text" name="login" style="width:232px;" maxlength="100" value="<?php if ($action == "create") echo $login; ?>" tabindex="1" placeholder="<?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?>" /></td>
           </tr>
           <tr>
-            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['password'][$lang])."&nbsp;</td>"; ?><td style="white-space:nowrap;"><input type="password" name="password" maxlength="20" style="width:113px;" placeholder="<?php echo getescapedtext ($hcms_lang['password'][$lang]); ?>" tabindex="2" />
-            <input type="password" name="confirm_password" maxlength="20" style="width:113px;" placeholder="<?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?>" tabindex="3" />
+            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['password'][$lang])."&nbsp;</td>"; ?><td style="white-space:nowrap;"><input type="password" name="password" maxlength="100" style="width:113px;" placeholder="<?php echo getescapedtext ($hcms_lang['password'][$lang]); ?>" tabindex="2" />
+            <input type="password" name="confirm_password" maxlength="100" style="width:113px;" placeholder="<?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?>" tabindex="3" />
             <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" tabindex="4" /></td>
           </tr>
         </table>
@@ -510,6 +574,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 <div id="registrationLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:86px; z-index:4; left:15px; top:4px; visibility:hidden;">
 <form name="registrationform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
+  <input type="hidden" name="group" value="<?php echo $group; ?>" />
   <input type="hidden" name="action" value="registration" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
@@ -523,7 +588,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
             <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang])."&nbsp;</td>"; ?><td style="white-space:nowrap;"><input name="registration_notify" value="<?php if (!empty ($mgmt_config[$site]['registration_notify'])) echo $mgmt_config[$site]['registration_notify']; ?>" style="width:230px;" tabindex="2" placeholder="<?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?>" /></td>
           </tr>
           <tr>
-            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang])."&nbsp;</td>"; ?><td style="white-space:nowrap;"><select name="registration_group" style="width:242px;" tabindex="3">
+            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang])."&nbsp;</td>"; ?><td style="white-space:nowrap;"><select name="registration_group" style="width:230px;" tabindex="3">
             <?php
             if ($is_mobile) echo "
             <option value=\"\" disabled>".getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang])."</option>";
@@ -553,6 +618,14 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   </table>
 </form>
 </div>
+
+<form name="actionform" action="" method="post">
+  <input type="hidden" name="site" value="<?php echo $site; ?>" />
+  <input type="hidden" name="group" value="<?php echo $group; ?>" />
+  <input type="hidden" name="login" value="<?php echo $login; ?>" />
+  <input type="hidden" name="action" value="" />
+  <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+</form>
 
 </body>
 </html>

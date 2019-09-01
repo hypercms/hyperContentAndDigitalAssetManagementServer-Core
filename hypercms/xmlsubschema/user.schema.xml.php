@@ -11,6 +11,8 @@
 <language></language>
 <timezone></timezone>
 <theme>standard</theme>
+<validdatefrom></validdatefrom>
+<validdateto></validdateto>
 <memberof>
 <publication></publication>
 <usergroup></usergroup>

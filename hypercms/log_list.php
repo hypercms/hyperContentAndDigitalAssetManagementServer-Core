@@ -29,7 +29,7 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // file name of event log
-if (valid_publicationname ($site)) $logfile = $site.".custom";
+if (valid_publicationname ($site)) $logfile = $site.".publication";
 else $logfile = "event";
 ?>
 <!DOCTYPE html>
@@ -43,6 +43,14 @@ else $logfile = "event";
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
+<style>
+.hcmsCell
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
 <script type="text/javascript">
 function submitToWindow (url, description, windowname, features, width, height)
 {
@@ -77,15 +85,13 @@ function resizecols()
   $('.hcmsCol4').width(c4);
   $('.hcmsCol5').width(c5);
 }
-</script>
-<style>
-.hcmsCell
+
+function initalize ()
 {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  // resize columns
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
 }
-</style>
+</script>
 </head>
 
 <body class="hcmsWorkplaceObjectlist" style="overflow:hidden;" onresize="resizecols();">
@@ -196,8 +202,8 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
 </form>
 
 <!-- initalize -->
-<script>
-$("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+<script type="text/javascript">
+initalize();
 </script>
 
 </body>

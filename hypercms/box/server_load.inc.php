@@ -59,10 +59,15 @@ if (isset ($siteaccess) && is_array ($siteaccess))
       if (!empty ($is_mobile)) $width = "92%";
       else $width = "670px";
       
-      echo "
+      $browserinfo = getbrowserinfo ();
+
+      // MS IE or Edge does not support video blur if a reload is used
+      if (!isset ($user_client['msie'])) echo "
       <script type=\"text/javascript\">
       setInterval (function() { window.location.reload(); }, 300000); 
-      </script>
+      </script>";
+
+      echo "
       <div id=\"stats_serverload\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
         <div class=\"hcmsHeadline\">Server load and memory usage</div>";
         

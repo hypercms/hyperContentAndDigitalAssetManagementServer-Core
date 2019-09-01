@@ -83,7 +83,7 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
       $object_name = $file_info['name'];
       
       // open on double click
-      if (!empty ($mgmt_config['message_newwindow'])) $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$message_time."', 'status=yes,scrollbars=no,resizable=yes', 540, 800);\"";
+      if (!empty ($mgmt_config['message_newwindow'])) $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$message_time."', 'status=yes,scrollbars=no,resizable=yes', 600, 900);\"";
       else $openObject = "onDblClick=\"parent.openpopup('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."');\"";
       
       // onclick for marking objects
@@ -132,7 +132,7 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
               </td>
               <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$email_title."</span></td>
               <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$recipients."</span></td>
-              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
               <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">sent</span></td>
               <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$message_user."</span></td>
             </tr>";
@@ -162,6 +162,9 @@ else $objects_counted = 0;
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript">
+
+// select area
+var selectarea;
 
 // context menu
 contextenable = true;
@@ -204,6 +207,18 @@ function resizecols()
   $('.hcmsCol4').width(c4);
   $('.hcmsCol5').width(c5);
   $('.hcmsCol6').width(c6);
+}
+
+function initalize ()
+{
+  // resize columns
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+
+  // select area
+  selectarea = document.getElementById('selectarea')
+
+  // load screen
+  if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';
 }
 </script>
 </head>
@@ -301,13 +316,8 @@ else
 ?>
 
 <!-- initalize -->
-<script>
-// resize columns
-$("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
-// select area
-var selectarea = document.getElementById('selectarea');
-// load screen
-if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';
+<script type="text/javascript">
+initalize();
 </script>
 
 </body>

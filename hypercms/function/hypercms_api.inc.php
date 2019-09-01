@@ -31,7 +31,7 @@ if (is_file ($mgmt_config['abs_path_data']."eventsystem/hypercms_eventsys.inc.ph
 }
 
 // include Relational DB Connectivity
-if ($mgmt_config['db_connect_rdbms'] != "" && is_file ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']))
+if (!empty ($mgmt_config['db_connect_rdbms']) && is_file ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']))
 {
   require_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
 }

@@ -24,17 +24,17 @@ class hcmsPDF extends TCPDF
   //        scale image dimensions proportionally to fit within the ($w, $h) box. $fitbox can be true or a 2 characters string indicating the image alignment inside the box. The first character indicate the horizontal alignment (L = left, C = center, R = right) the second character indicate the vertical algnment (T = top, M = middle, B = bottom),
   //        if true the image is resized to not exceed page dimensions (optional)
   // output: hcmsPDF/TCPDF object
-  
+
   // description:
   // Places an image in the document
-  
+
   public function placeImage ($tcpdf, $file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $palign='', $resize=false, $dpi=300, $border=0, $useBoundingBox=true, $fixoutvals=true, $fitbox=false, $fitonpage=false)
   {
     if (is_file ($file))
     {
       // get file extension
       $file_ext = strtolower (strrchr ($file, "."));
-      
+
       // place AI or EPS file
       if ($file_ext == ".ai" || $file_ext == ".eps")
       {
@@ -52,15 +52,15 @@ class hcmsPDF extends TCPDF
       }
     }
   }
-  
+
   // ----------------------------------------- drawCropbox ---------------------------------------------
   // function: drawCropbox()
   // input: internal hcmsPDF/TCPDF [object], slug [integer], cropmark [true,false] (optional), crop-mark [true,false] (optional), registration-mark [true,false] (optional), color-registration-bar [true,false] (optional)
   // output: hcmsPDF/TCPDF object
-  
+
   // description:
   // Enlarges the MediaBox by the slug of the document in all directions and draws cropmarks, registrations marks and color bars
-  
+
   public function drawCropbox ($tcpdf, $slug=6, $cropmark=true, $registrationmark=true, $registrationbar=true)
   {
     for ($i = 1; $i <= $tcpdf->getNumPages(); $i++)
@@ -74,7 +74,7 @@ class hcmsPDF extends TCPDF
       $barWidth = min(9 * $barHeight, ($width - $barHeight * 4)/ 2);
       $barHeight = max(1, $barWidth / 9);
       $registrationHeight  = $barHeight / 3;
-  
+
       $tcpdf->setPageFormat(
         array(
           $outerWidth,
@@ -85,7 +85,7 @@ class hcmsPDF extends TCPDF
           ),
         )
       );
-  
+
       // Crop marks
       if ($cropmark == true)
       {
@@ -98,7 +98,7 @@ class hcmsPDF extends TCPDF
           $type = 'A',
           $color = array(0, 0, 0)
         );
-    
+
         // Crop right top
         $tcpdf->cropMark(
           $x = $width,
@@ -108,7 +108,7 @@ class hcmsPDF extends TCPDF
           $type = 'B',
           $color = array(0, 0, 0)
         );
-    
+
         // Crop left bottom
         $tcpdf->cropMark(
           $x = 0,
@@ -118,7 +118,7 @@ class hcmsPDF extends TCPDF
           $type = 'C',
           $color = array(0, 0, 0)
         );
-    
+
         // Crop right bottom
         $tcpdf->cropMark(
           $x = $width,
@@ -142,7 +142,7 @@ class hcmsPDF extends TCPDF
           array(0, 0, 0),
           array(255, 255, 255)
         );
-    
+
         // Registration top
         $tcpdf->registrationMark(
           $x = $width / 2,
@@ -152,7 +152,7 @@ class hcmsPDF extends TCPDF
           array(0, 0, 0),
           array(255, 255, 255)
         );
-    
+
         // Registration right
         $tcpdf->registrationMark(
           $x = $width + $slug / 2,
@@ -162,7 +162,7 @@ class hcmsPDF extends TCPDF
           array(0, 0, 0),
           array(255, 255, 255)
         );
-    
+
         // Registration bottom
         $tcpdf->registrationMark(
           $x = $width / 2,
@@ -187,7 +187,7 @@ class hcmsPDF extends TCPDF
           TRUE,
           'A,W,R,G,B,C,M,Y,K'
         );
-    
+
         // Gray Registration Bar
         $tcpdf->colorRegistrationBar(
           $x = $barHeight,

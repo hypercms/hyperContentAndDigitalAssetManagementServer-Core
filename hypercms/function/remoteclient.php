@@ -32,16 +32,16 @@ function savelog ($abs_path, $filename, $filedata)
 function deletefiles ($location, $file)
 {
   if ($location != "" && $file != "")
-  {      
+  {
     // if selected file is a directory
     if (is_dir ($location.$file))
     {
       $scandir = scandir ($location.$file);
-      
+
       if ($scandir)
       {
         $result = true;
-        
+
         foreach ($scandir as $dirfile)
         {
           if ($dirfile != "." && $dirfile != "..")
@@ -49,15 +49,15 @@ function deletefiles ($location, $file)
             if (is_dir ($location.$file."/".$dirfile)) 
             {
               $result = deletefiles ($location.$file."/", $dirfile);
-            }   
+            } 
             else
             {
-              $result = @unlink ($location.$file."/".$dirfile);                      
-            }   
+              $result = @unlink ($location.$file."/".$dirfile);
+            } 
           }
         }
       }
-      
+
       // delete directory itself
       if ($result != false)
       {
@@ -90,19 +90,19 @@ function deletefiles ($location, $file)
 function hcms_crypt ($string, $start=0, $length=0)
 {
   global $mgmt_config;
-  
+
   if ($string != "")
   {
     // set default private key for hashing
     if (empty ($mgmt_config['crypt_key'])) $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
-  
+
     // encoding algorithm
     $string_encoded = hash_hmac ("crc32", $string, $mgmt_config['crypt_key']);
-    
+
     // extract substring
     if ($length != 0) $string_encoded = substr ($string_encoded, $start, $length);
     elseif ($start != 0) $string_encoded = substr ($string_encoded, $start);
-    
+
     // urlencode string
     $string_encoded = urlencode ($string_encoded);
 
@@ -120,19 +120,19 @@ function hcms_crypt ($string, $start=0, $length=0)
 function savefile ($abs_path, $filename, $filedata)
 {
   global $user, $mgmt_config;
-  
+
   if ($abs_path != "" && $filename != "")
-  {  
+  {
     $filehandle = @fopen ($abs_path.$filename, "wb");
-  
+
     if ($filehandle != false)
     {
       if ($filedata != false)
       {
         @fwrite ($filehandle, $filedata);
       }
-  
-      @fclose ($filehandle);  
+
+      @fclose ($filehandle);
       return true;
     }
     else return false;
@@ -153,20 +153,20 @@ function appendfile ($abs_path, $filename, $filedata)
   global $user, $mgmt_config;
 
   if ($abs_path != "" && $filename != "")
-  {      
+  {
     // if file exists
     if (is_file ($abs_path.$filename))
-    {    
+    {
       $filehandle = @fopen ($abs_path.$filename, "a");
-    
+
       if ($filehandle != false)
       {
         if ($filedata != false)
         {
           @fwrite ($filehandle, $filedata);
         }
-        
-        @fclose ($filehandle);        
+
+        @fclose ($filehandle);
         return true;
       }
       else return false;
@@ -251,13 +251,13 @@ function remoteclient ($action, $passcode, $root, $site, $location, $locationnew
   if ($passcode == hcms_crypt ($location.$page)) 
   {
     if ($action != "" && $root != "" && valid_publicationname ($site))
-    {  
+    {
       // load publication config file of publication system
-      if (valid_publicationname ($site) && is_file ($site.".ini")) $publ_config = parse_ini_file ($site.".ini");  
-        
+      if (valid_publicationname ($site) && is_file ($site.".ini")) $publ_config = parse_ini_file ($site.".ini");
+
       // correct root
-      $root = str_replace ("_path_", "_publ_", $root);    
-        
+      $root = str_replace ("_path_", "_publ_", $root);
+
       // actions
       if ($action == "save" && valid_locationname ($location) && valid_objectname ($page))
       {
@@ -272,13 +272,13 @@ function remoteclient ($action, $passcode, $root, $site, $location, $locationnew
       {
         if ($locationnew == "") $locationnew = $location;
         elseif ($pagenew == "") $pagenew = $page;
-        
+
         return copy ($publ_config[$root].$location.$page, $publ_config[$root].$locationnew.$pagenew);
-      }      
+      }
       elseif ($action == "rename" && valid_locationname ($location) && valid_locationname ($locationnew) && valid_objectname ($page) && valid_objectname ($pagenew))
       {
         if ($locationnew == "") $locationnew = $location;
-        
+
         return rename ($publ_config[$root].$location.$page, $publ_config[$root].$locationnew.$pagenew);
       }
       elseif ($action == "delete" && valid_locationname ($location) && valid_objectname ($page))
@@ -295,7 +295,7 @@ function remoteclient ($action, $passcode, $root, $site, $location, $locationnew
           return true;
         }
         else return false;
-      }         
+      } 
     }
     else return false;
   }

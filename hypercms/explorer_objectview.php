@@ -22,12 +22,18 @@ $view = getrequest ("view", "objectname");
 $screenwidth = getrequest ("width", "numeric", 800);
 $screenheight = getrequest ("height", "numeric", 600);
 
-// set default width and height
-if ($screenwidth < 1) $screenwidth = 800;
-$width = $screenwidth - 100;
+// set default width and height in order to create temp images of standard sizes
+if ($screenwidth > 2600) $width = 2560;
+elseif ($screenwidth > 1960) $width = 1920;
+elseif ($screenwidth > 840) $width = 800;
+elseif ($screenwidth > 680) $width = 640;
+else $width = ceil ($screenwidth - 40);
 
-if ($screenheight < 1) $screenheight = 600;
-$height = $screenheight - 100;
+if ($screenheight > 1500) $height = 1440;
+elseif ($screenheight > 1140) $height = 1080;
+elseif ($screenheight > 660) $height = 600;
+elseif ($screenheight > 540) $height = 480;
+else $height = ceil ($screenheight - 60);
 
 // location and object is set by assetbrowser
 if ($location == "" && !empty ($hcms_assetbrowser_location) && !empty ($hcms_assetbrowser_object))
@@ -178,6 +184,56 @@ function centercontainer ()
   if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display = 'none';
 }
 
+function previousObject (objectpath)
+{
+  if (objectpath != "")
+  {
+    var objectpath_array = parent.hcms_objectpath;
+    var key = objectpath_array.indexOf(objectpath);
+    var previous = objectpath_array[key-1];
+
+    if (typeof previous == "string" && previous.indexOf('/') > 0)
+    {
+      // load screen
+      if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
+
+      var location = hcms_getLocation (previous);
+      var object = hcms_getObject (previous);
+
+      window.location = "?location=" + encodeURIComponent(location) + "&page=" + encodeURIComponent(object) + "&view=<?php echo url_encode ($view); ?>&width=<?php echo url_encode ($screenwidth); ?>&height=<?php echo url_encode ($screenheight); ?>";
+    }
+    else
+    {
+      document.getElementById('previous').style.display = 'none';
+    }
+  }
+}
+
+function nextObject (objectpath)
+{
+  if (objectpath != "")
+  {
+    var objectpath_array = parent.hcms_objectpath;
+    var key = objectpath_array.indexOf(objectpath);
+    var next = objectpath_array[key+1];
+
+    if (typeof next == "string" && next.indexOf('/') > 0)
+    {
+      // load screen
+      if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
+
+      var location = hcms_getLocation (next);
+      var object = hcms_getObject (next);
+
+      window.location = "?location=" + encodeURIComponent(location) + "&page=" + encodeURIComponent(object) + "&view=<?php echo url_encode ($view); ?>&width=<?php echo url_encode ($screenwidth); ?>&height=<?php echo url_encode ($screenheight); ?>";
+    }
+    else
+    {
+      document.getElementById('next').style.display = 'none';
+    }
+  }
+}
+
 function closeselectors ()
 {
   var selector = document.getElementsByClassName('hcmsSelector');
@@ -226,10 +282,21 @@ if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt
 <?php } ?>
 </div>
 
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:none;"></div>
+
 <!-- object view -->
-<div id="container" style="position:fixed; top:0px; left:0px; margin:-1900px 0px 0px 0px;">
-<?php if (!empty ($objectview)) echo $objectview; ?>
+<div id="previous" style="display:inline-block; position:fixed; top:40px; left:0px; bottom:0px; width:25%; text-align:right; z-index:200; cursor:pointer;" onclick="previousObject('<?php echo $location_esc.$page; ?>');">
+  <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="position:absolute; top:50%; left:20px;" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" />
 </div>
 
+<div id="container" style="position:fixed; top:0px; left:0px; margin:-1900px 0px 0px 0px;">
+  <?php if (!empty ($objectview)) echo $objectview; ?>
+</div>
+
+<div id="next" style="display:inline-block; position:fixed; top:40px; right:0px; bottom:0px; width:25%; text-align:right; z-index:200; cursor:pointer;" onclick="nextObject('<?php echo $location_esc.$page; ?>');">
+  <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="position:absolute; top:50%; right:20px;" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
+</div>
+  
 </body>
 </html>

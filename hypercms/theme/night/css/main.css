@@ -1,3 +1,4 @@
+/* background color of navigation controls: #636363 */
 html, body
 {
   width: 100%;
@@ -23,6 +24,7 @@ img
 
 input, select, textarea, button, .hcmsTextArea 
 {
+  box-sizing: border-box;
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px;
   font-weight: normal;
@@ -33,7 +35,7 @@ input, select, textarea, button, .hcmsTextArea
   border: 1px solid #808080;
   background-color: #FFFFFF;
   margin: 1px 1px 1px 0px;
-  padding: 7px 4px;
+  padding: 6px 4px;
 }
 
 a 
@@ -102,38 +104,69 @@ hr
 
 .hcmsStartBar
 {
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 9999;
   width: 100%;
   height: 80px;
   margin: 0 0 120px 0;
   padding: 0;
-}
-
-.hcmsStartScreen
-{
-  background-color: #111111;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center center; 
-  background-color: #808080;
-  font-size: 14px;
-  text-align: left;
-  padding: 0;
-  margin: 0;
-}
-
-.hcmsLogonScreen
-{
-  width: 260px;
-  margin: auto;
-  padding: 20px; 
   font-size: 14px;
   text-align: left; 
 }
 
+.hcmsStartScreen
+{
+  box-sizing: border-box;
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: block;
+  height: 100%;
+  background-image: url('../img/backgrd_start.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center center; 
+  background-color: #111111;
+  padding: 0;
+  margin: 0;
+  transition: all 0.3s linear;
+}
+
+.hcmsBlur
+{
+  -webkit-filter: blur(15px);
+  -moz-filter: blur(15px);
+  -o-filter: blur(15px);
+  -ms-filter: blur(15px);
+  filter: blur(15px);
+  transition: all 0.5s linear;
+}
+
+.hcmsLogonScreen
+{
+  box-sizing: border-box;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -100px;
+  margin-left: -130px;
+  z-index: 9999;
+  width: 260px;
+  font-size: 14px;
+  text-align: left;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: auto;
+}
+
 .hcmsWorkplaceTop
 {
-  background-color: #464646;
+  background-color: #636363;
 }
 
 .hcmsLogoTop
@@ -238,7 +271,7 @@ hr
 
 .hcmsWorkplaceObjectlist
 {
-  background-color: #D8DADC;
+  background-color: #313131;
 }
 
 .hcmsWorkplaceWorkflow
@@ -626,29 +659,29 @@ hr
 
 .hcmsHeadline 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 12px; 
-  font-weight: bold; 
-  color: #FFFFFF; 
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: #FFFFFF;
   text-decoration: none;
   padding: 3px 0px;
 }
 
 .hcmsHeadlineTiny 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 12px; 
-  font-weight: normal; 
-  color: #FFFAEF; 
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  color: #bfbfbf;
   text-decoration: none;
 }
 
 .hcmsTextSmall 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 9px; 
-  font-weight: normal; 
-  color: #FFFFFF; 
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 9px;
+  font-weight: normal;
+  color: #FFFFFF;
   text-decoration: none;
 }
 

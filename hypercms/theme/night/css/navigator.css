@@ -1,3 +1,4 @@
+/* background color of navigation controls: #636363 */
 html, body
 {
   width: 100%;
@@ -23,6 +24,7 @@ img
 
 input, select, textarea, button, .hcmsTextArea 
 {
+  box-sizing: border-box;
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 
   font-weight: normal;
@@ -33,7 +35,7 @@ input, select, textarea, button, .hcmsTextArea
   border: 1px solid #808080;
   background-color: #FFFFFF;
   margin: 1px 1px 1px 0px;
-  padding: 7px 4px;
+  padding: 6px 4px;
 }
 
 a 
@@ -99,7 +101,7 @@ hr
 
 .hcmsWorkplaceObjectlist
 {
-  background-color: #292929;
+  background-color: #313131;
 }
 
 .hcmsWorkplaceObjectlistLinks
@@ -161,6 +163,7 @@ hr
 {
   z-index: 100;
   padding: 5px;
+  overflow: auto;
   filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;
   vertical-align: middle;
   -moz-border-radius: 5px;
@@ -372,29 +375,29 @@ hr
 
 .hcmsHeadline
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 12px; 
-  font-weight: bold; 
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
   color: #FFFFFF; 
-  text-decoration: none
+  text-decoration: none;
 }
 
 .hcmsHeadlineTiny 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 11px; 
-  font-weight: normal; 
-  color: #FFFAEF; 
-  text-decoration: none
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+  color: #bfbfbf;
+  text-decoration: none;
 }
 
 .hcmsTextSmall 
 {  
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 11px; 
-  font-weight: normal; 
-  color: #FFFFFF; 
-  text-decoration: none
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+  color: #FFFFFF;
+  text-decoration: none;
 }
 
 .hcmsObjectSelected

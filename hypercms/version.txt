@@ -3441,13 +3441,201 @@ Release 07/2019
 - Modifications in Multiedit (page_multiedit) in order to support the samecontent property and set the "same content"
 - Modifications in Multiedit (page_multiedit) in order to support the locked property and set the "locked" marker for each field
 - Modifications in Multiedit (page_multiedit) in order to to open each selected object by click on the thumbnail
-- Modifications in function getvideoinfo in Get API in order to remove .orig file extension for the thumnail file name
-. Minor changes in function registeruser in Security API
-- Implementation of the new home box permission in the home screen that is based on the personal settings permissio, see function checkrootpermission ('desktopsetting')
-- Implementation of the home button in the main/left navigation bar if an access link is used for access
+- Modifications in function getvideoinfo in Get API in order to remove .orig file extension for the thumbnail file name
+- Minor changes in function registeruser in Security API
 - Bug fix: Multiple component select box was not able to move components in template engine (removed defaultSelected in JS function moveSelected)
 - Bug fix: Multiedit (page_multiedit) did lock all fields instead of unlocking them for editing when checkbox "Only fields marked with * hold the same content and may be changed. If unchecked the text will be appended to the existing content." has been used
 - Bug fix: Function getvideoinfo in Get API did not verify the thumbnail or video file before executing filemtime
 - Bug fix: Function createmedia in Media API did use function getvideoinfo before verifying that the provided file is a video file
 - Bug fix: The task management permission of the logged in user has not been verified in the main/left navigation bar (only if an access link has been used for access)
 - Bug fix: search_objectlist was not able to display the objects due to the missing object hash (userlogin did not use the provided object hash and used function rdbms_getobject_hash on an object hash)
+
+Version 8.0.4
+Release 08/2019
+- Implementation of the new home box permission in the home screen that is based on the personal settings permission, see function checkrootpermission ('desktopsetting')
+- Implementation of the home button in the main/left navigation bar if an access link is used for access
+- Implementation of the home boxes configuration in the user administration (user_edit)
+- Modifications in control_user_menu in order to set new window size for user_edit
+- Modifications in user_objectlist in order to set new window size for user_edit
+- Modifications in JS function hcms_createContextmenuItem in contextmenu.js in order to set new window size for user_edit
+- Implementation of the new Public Portal access link that is based on the access of a user profile 
+- Implementation of the new function createportallink in Main API in order to create the new portal access link
+- Implementation of the new function setportalpermissions in Security API in order to rest permissions if a portal access link has been used for logon
+- Modifications in userlogin in order to support new access link parameter named "portal" and the function setportalpermissions
+- Modifications in user_edit in order to create and display the portal access link for users with user administration permissions
+- Modifications in index in order to support new access link parameter named "portal"
+- Implementation of the permissions reset for root and global permissions of a user if the portal access link has been used for logon
+- Implementation of valid dates (from-to) for user accounts
+- Implementation of the new function update_users_709 in Update API in order to add new XML nodes to the users directory
+- Implementation of the new XML nodes into the XML schemas of the system
+- Implementation of the user attributes for the valid dates in user_edit including the date picker
+- Modifications in function edituser in Main API in order to support the valid date from and to parameters and save them in the user node
+- Modifications in function createinstance and sendresetpassword in Main API in order to support the modified edituser function
+- Modifications in the installation routine in order to support the modified edituser function
+- Modifications in userregister in order to support the modified edituser function
+- Modifications in function userlogin in Security API in order to verify the users valid date
+- Implementation of the new function registerportal in Security API in order to save portal configurations in the session
+- Implementation of the new session variable hcms_portal in the include/session.inc.php
+- Modifications in OpenAPI in order to support the modified edituser function
+- Implementation of the new main config setting $mgmt_config['user_newwindow'] in order to open users in same or new window
+- Modifications in frameset main, frameset_user, control_user_menu, user_objectlist and JS function in contextmenu.js in order to support the new main config parameter $mgmt_config['user_newwindow'] and provide the user form as popup or new window
+- Modifications in function createuser in order to support the new main config parameter $mgmt_config['user_newwindow'] and provide the user form as popup or new window
+- Implementation of the new main config setting $mgmt_config['passwordhistory'] in order to define the number of passwords that can't be reused based on the password history of a user
+- Implementation of the new function update_users_546 in Update API that replaces the update to version 5.4.6 , 5.5.11 and 5.5.15  that used to be part of function createuser and edituser in Main API
+- Modifications in function createuser and edituser in Main API in order to remove the update for version 5.4.6 , 5.5.11 and 5.5.15
+- Modifications in function createuser and edituser in Main API in order to implement the password history
+- Modifications in function checkpassword in Security API in order to implement a new input parameter for the user name and the password history verification
+- Implementation of the new main config setting $mgmt_config['passwordexpires'] in order to define the number of days before the password of a user expires and must be reset
+- Implementation of the new main config setting $mgmt_config['user_log'] in order to write user specific log files
+- Modifications in function savelog in Main API in order to save the user specific log entries in a separate log file
+- Modifications in function update_users_804 in Update API in order to update/rename publication log files
+- Modifications in function edituser in Main API in order to verify publication name before setting the user groups membership
+- Implementation of the new password reset for users user_password in order to trigger the reset based on events
+- Modifications in function loadlog in Main API in order to skip empty log entries and remove new lines
+- Implementation of the new main config $mgmt_config['userexpires'] in order to set an expiration time for user
+- Modifications in function userlogin in Security API in order to lock user if no activity has been logged for a certain time
+- Modifications in userlogin in order to support the new output parameters of function userlogin
+- Modifications in function deletelog in Main API in order to remove log file instead of removing its content
+- Modifications in function deleteuser in Main API in order to remove the new user specific log files
+- Implementation of the new main config setting $mgmt_config['passwordblacklist'] in order to define a password blacklist
+- Modifications in function checkpassword in Security API in order to support the new password blacklist
+- Modifications in function killsession in Security API in order to log the logout event
+- Implementation of a password reset button into control_user_menu in order to reset the password and notify the user
+- Modifications in site_edit_form in order to display active label for all checkboxes
+- Modifications in site_edit_form in order to add new checkbox for Portal access links
+- Modifications in function editpublication in Main API in order to add new Portal access links publication setting
+- Implementation of the new design theme named "day" (neutral light design)
+- Implementation of the new main configuration setting $mgmt_config['userconcurrent'] in order to enable or disable concurrent users using the same account
+- Modifications in function writesession in Security API in order to support the new main config parameter $mgmt_config['userconcurrent']
+- Modifications in function createmedia in order to remove error logging in case no error has been reported from the application and the new file does not exist
+- Implementation of the new Portal Designer as part of the Template Management interface
+- Implementation of the new jscolor JS library for the color picker
+- Implementation of the new portal directory in the external repository for the installation
+- Implementation of the new portal XMl schema for the portal definitions
+- Modifications in function deletepublication in Main API in order to remove the portal media
+- Modifications in explorer in order to implement the new Portal templates as navigation node
+- Implementation of the new functions createportal, editportal, and deleteportal in Main API
+- Modifications in function showmedia in UI API in order to block the Youtube upload if a Portal access link is used 
+- Minor modifications in the source code comments of template_edit
+- Minor modifications in empty to set a max-height for the logo
+- Modifications in function getlocaltemplates in Get API in order to support portal templates
+- Modifications in order to calculate the space based on the logo image defined by the portal design
+- Modifications in function getthemelocation in Get API in order to support Portal themes
+- Modifications in function getwallpaper in Get API in order to support Portal themes
+- Modifications in home and userlogin in order to implement the new function getwallpaper
+- Modifications in function getmediafileversion in Get API in order to verify $scandir
+- Implementation of the new getthemes in Get API in order to return all design themes
+- Modifications in user_edit and site_edit_form in order implement the new function getthemes
+- Design modifications in userlogin
+- Modifications in the CSS main.css and navigator.css of all design themes in order to set box-sizing:border-box for all input elements
+- Design modifications in user_edit, explorer, and search_form in order to adjust the inputs width to the new CSS settings
+- Implementation of the new user status in user_objectlist in order to display if a user is active or logged out
+- Implementation of the new user logout action in control_user_menu in order to logout users in the users administration
+- Modifications in function killsession in Security API in order to support the new input parameter for killing all sessions of a user
+- Modifications in function userlogin and registeruser in Security API in order to implement the download formats defined by a portal template
+- Modifications in function getpdfinfo in Get API in order to verify if the file exist before executing function filemtime
+- Modifications in several functions in Link API in order to verify the publications linkengine setting
+- Modifications in function getuserinformation in Get API in order to get only a requested user and support the user name as input
+- Modifications in function createtemplate in Main API in order to test for special characters in the template name
+- Modifications in user_edit in order to collect all themes for a user with superadmin permissions based on the Publication access ($siteaccess)
+- Removed general access to Persoanlization in Mobile Edition
+- Implementation of the new session parameter hcms_favorites for stroing the favorites of portal users in their session
+- Modifications in explorer in order to implement the favorites navigation item for portal users
+- Modifications in function getfavorites in order to support the session based favorites of portal users
+- Modifications in functions createfavorite and deletefavorite in Main API in order to support the session based favorites of portal users
+- Modifications in control_content_menu, popop_action in order to check the root permission "desktopcheckedout" for locking and unlocking objects
+- Implementation of the new search bar as home box
+- Implementation of the new main configuration setting $mgmt_config['homebox_directory'] for individual home boxes
+- Renamed the main configuration setting $mgmt_config['welcome'] to $mgmt_config['homebox_welcome']
+- Modifications home box "news" in order to support the new main configuration $mgmt_config['homebox_welcome'] with support of the old deprecated name
+- Implementation of the newn pathtype=location for media tags in the template engine in order to provide the converted location path to the object
+- Implementation of the new function gethomeboxes in Get API in order to collect all available home boxes
+- Renamed function getboxes to getuserboxes in Get API
+- Renamed function setboxes to setuserboxes in Set API
+- Modifications in function getuserboxes in Get API in order to use the home boxes defined in the main configuration if no user defined home boxes are available
+- Implementation of the new function showhomeboxes in UI API in order to display selected home boxes
+- Modifications in home and user_edit in order to implement the new gethomeboxes, getuserboxes, and setsuerboxes functions
+- Implementation of the XML schema "template_homebox.xml.php"
+- Modifications in function gettemplates in Get API in order to support the new HomeBox standard template
+- Modifications in function loadtemplate in Main API in order to support the new HomeBox standard template
+- Modifications in search_objectlist in order to verify that the access array is valid
+- Integration of the logic of function registerportal into function userlogin in Security API
+- Modifications in function deletepublication in order to verify component and page root directory exists
+- Modifications in explorer in order to verify $user_array
+- Modifications in template engine in order to correct the text fields height and width for unformatted text due to the new CSS settings
+- Modifications in XML schema template_default.xml.php in order to correct heights of fields
+- Modifications in all example templates of the install directory in order to adjust the height of the text fields
+- Removed spaces in all empty lines of the source code of all APIs
+- Modifications in user_edit in order to change the verification of permissions
+- Modifications in page_info in order to display the access statistics button only for multimedia objects
+- Modifications in page_info in order to display the recipients button for pages
+- Modifications portal_edit and function editportal in Main API in order to remove uploaded files (logo and background images)
+- Renamed main configuration setting $mgmt_config['chat-support'] to $mgmt_config['chat_support']
+- Modifications in function getusersonline in Get API in order to support the new main configuration setting $mgmt_config['chat_support']
+- Implementation of the new main configuration setting $mgmt_config['userdelete'] in order to delete all users that exceeded their valid date
+- Implementation of the deletion of invalid users in the daily job based on the new main configuration setting $mgmt_config['userdelete']
+- Modifications in installation routine in order to support the new input parameters of function edituser
+- Modifications in function rdbms_searchcontent in DB Connect in order to verify and sanitize input parameters
+- Modifications in Plugins (plugin.conf.php, plugin.xml), explrer, log_export, log_list in order to support the new publication log file name
+- Modifications control_content_menu, control_user_menu, licensenotification_form, and media_edit_explorer in order to adjust field widths
+- Modifications in the CSS of all design themes in order to reduce the vertical input padding
+- Modifications in page_info in order to enable access statistics for folders
+- Modifications in function rdbms_insertdailystat in DB Connect in order to convert the container ID to an integer value
+- Modifications in function rdbms_insertdailystat in DB Connect in order to support the new input parameter that includes all sub-objects of a folder
+- Modifications in function rdbms_insertdailystat in DB Connect in order to collect all sub-objects of a folder and log the daily access statistics for each included object
+- Modifications in function rdbms_insertdailystat in DB Connect in order to support the container ID as an input array
+- Modifications in various functions in the Main and Media API in order to support the new input parameter of function rdbms_insertdailystat
+- Modifications in function rdbms_searchcontent in DB Connect in order to trim folder path after verification
+- Modifications in function rdbms_getmediastat in DB Connect in order to include folders in the statistics
+- Modifications in function createmultidownloadlink in Main API in order to provide container ID in the zipped file name for statistics
+- Modifications in function clonefolder in Media API in order to collect and return the container IDs and remove the writing of statistics by function rdbms_insertdailystat
+- Modifications in function zipfiles in Media API in order to save temporary file with all container IDs for statistics
+- Modifications in function downloadfile in order to support the temporary file with all container IDs for statistics
+- Modifications in function downloadfile in order to verify that a valid container Id has been provided before writing the statistics data
+- Modifications in main.css and implementation of the new CSS class hcmsBlur for all design themes
+- Implementation of a new blur effect in the logon and register screen if a key is pressed in the form
+- Modifications in home screen in order to support the modified CSS classes
+- Modifications in control_user_menu in order to support user name and password length of max. 100 digits
+- Modifications in user_edit in order to apply max. length restrictions on input fields
+- Modifications in SOAP service user_edit in OpenAPI of the Connector Module in order to support the new input parameters of function edituser
+- Modifications in function rdbms_getdeletedobjects in DB Connect in order to support the new input parameter to include sub items in the result
+- Modifications in function processobjects in Main API in order to log error if the marked object does not exist in the file system
+- Modifications in daily job in order to remove deleted objects from the database that could have not be deleted in the file system
+- Modifications in control_log_menu in order to use same title for the central and publication logs
+- Modifications in service savecontent due to minor changes in the logging data
+- Modifications in function manipulateobject in Main API due to minor changes in the logging data
+- Implementation of a new blur effect in the home screen if the home box selector is used
+- Modifications in function getthemelocation in Get API in order to force the design theme defined by the main configuration
+- Modifications in function getbrowserinfo in Get API in order to support MS IE 11 and Edge
+- Modifications in home, userlogin, and userregister in order to apply new video attributes
+- Modifications in home box server_load in order to disable reload if MS IE or Edge is used (in order to support the blur effect for videos)
+- Implementation of the new object browser in order to support the browsing of the large previews
+- Implementation of default dimensions in explorer_objectview in order to create temporary images of standard sizes
+- Modifications in JS function hcms_sortTable in main.js in order to save sorted objects
+- Modifications in explorer_objectview, frameset_content, and framset_objectlist in order to support image browsing
+- Implementation of the new JS functions hcms_getLocation and hcms_getObject in main.js
+- Implementation of the new JS function hcms_collectObjectpath in contextmenu.js in order to initialize the hcms_objectpath JS array
+- Modifications in explorer_objectlist, search_objectlist, log_list, queue_objectlist, and message_objectlist in order to implement the new local JS function initialize and collect all object paths (only for asset or page objects)
+- Modifications in export_form in order to support the new JS functions hcms_getLocation and hcms_getObject
+- Modifications in service/sendmail in order to automatically close sendmail form after 1 second
+- Implementation of the new template variables %url_tplmedia% and %abs_tplmedia%
+- Modifications in frameset_content and frameset_objectlist in order to remove iframe style restrictions for iOS and implement new styles for scrolling on mobile devices
+- Modifications in control_message_menu and message_objectlist in order to resize message window
+- Modifications in queue_objectlist and message_objectlist in order to sort all date formats
+- Modifications in function checkusersession in Security API in order to verify if session variable for the publication access exists
+- Modifications in various functions of the Main and Set API in order to verify if the DB Connect function exists
+- Design modifications in the installation routine
+- Update of all language files
+- Update of the Administrators Guide, Connector Guide, Template Guide and Programmers Guide
+- Implementation of bookmarks into all guides
+- Bug fix: user_sendlink did include a wrong div-endtag
+- Bug fix: control_user_menu did use obsolete td-tag and name for img-tags in toolbar
+- Bug fix: Function scriptcode_clean_functions in Security API did exclude template code that had wrong or no application input parameter
+- Bug fix: The folder/file download without options in control_objectlist_menu did not work if the select area has been used (page variable was not present but has been verified)
+- Bug fix: main.js and contextmenu.js did not provide the fix for iframes for JS alert and confirm
+- Bug fix: Initialization of the theme and homebox variables has been missing in control_user_menu, user_edit, and user_objectlist
+- Bug fix: JS function hcms_bubbleSort in main.js did not remove spaces or commas in numbers
+- Bug fix: control_queue_menu did not verify all permissions of users and killed user session if a queue entry has been deleted
+- Bug fix: Function processobjects in Main API did use deprecated name "intention" instead of "action" for the mail service
+- Bug fix: Service sendmail did not use the provided user name from mail file and always tried to access the user name from the user session
+- Bug fix: search_objectlist did net exclude "add to favorites" from the context menu of the recycle bin

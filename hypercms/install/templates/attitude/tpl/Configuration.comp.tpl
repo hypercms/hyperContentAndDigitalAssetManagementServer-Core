@@ -7,26 +7,26 @@
 <application>php</application>
 <content><![CDATA[[hyperCMS:objectview name='formedit']
 
-[hyperCMS:textu id='title' height='20' label='Your Name' default='Your Name' onPublish='hidden']
-[hyperCMS:textu id='slogan' height='20' label='Your Slogan' default='Your Slogan'  onPublish='hidden']
-[hyperCMS:mediafile id='logo' mediatype='image' label='Your Logo'  onPublish='hidden']
+[hyperCMS:textu id='title' height='30' label='Your Name' default='Your Name' onPublish='hidden']
+[hyperCMS:textu id='slogan' height='30' label='Your Slogan' default='Your Slogan'  onPublish='hidden']
+[hyperCMS:mediafile id='logo' mediatype='image' label='Your Logo' onPublish='hidden']
 
-[hyperCMS:textu id='email' height='20' label='Your E-Mail' onPublish='hidden' constraint='isEmail']
+[hyperCMS:textu id='email' height='30' label='Your E-Mail' onPublish='hidden' constraint='isEmail']
 
-[hyperCMS:textu id='companyname' height='20' label='Footer Name' default='Your Name' onPublish='hidden']
-[hyperCMS:linkhref id='companylink' height='20' label='Footer Link' onPublish='hidden']
+[hyperCMS:textu id='companyname' height='30' label='Footer Name' default='Your Name' onPublish='hidden']
+[hyperCMS:linkhref id='companylink' height='30' label='Footer Link' onPublish='hidden']
 
-[hyperCMS:textu id='facebook' label='Facebook' height='20'  onPublish='hidden']
-[hyperCMS:textu id='twitter' label='Twitter' height='20' onPublish='hidden']
-[hyperCMS:textu id='googleplus' label='Google+' height='20' onPublish='hidden']
-[hyperCMS:textu id='pinterest' label='Pinterest' height='20' onPublish='hidden']
-[hyperCMS:textu id='linked' label='Linked' height='20' onPublish='hidden']
-[hyperCMS:textu id='tumblr' label='Tumblr' height='20' onPublish='hidden']
-[hyperCMS:textu id='vimeo' label='Vimeo' height='20' onPublish='hidden']
-[hyperCMS:textu id='myspace' label='MySpace' height='20' onPublish='hidden']
-[hyperCMS:textu id='flickr' label='Flickr' height='20' onPublish='hidden']
-[hyperCMS:textu id='youtube' label='YouTube' height='20' onPublish='hidden']
-[hyperCMS:textu id='rss' label='RSS' height='20' onPublish='hidden']
+[hyperCMS:textu id='facebook' label='Facebook' height='30'  onPublish='hidden']
+[hyperCMS:textu id='twitter' label='Twitter' height='30' onPublish='hidden']
+[hyperCMS:textu id='googleplus' label='Google+' height='30' onPublish='hidden']
+[hyperCMS:textu id='pinterest' label='Pinterest' height='30' onPublish='hidden']
+[hyperCMS:textu id='linked' label='Linked' height='30' onPublish='hidden']
+[hyperCMS:textu id='tumblr' label='Tumblr' height='30' onPublish='hidden']
+[hyperCMS:textu id='vimeo' label='Vimeo' height='30' onPublish='hidden']
+[hyperCMS:textu id='myspace' label='MySpace' height='30' onPublish='hidden']
+[hyperCMS:textu id='flickr' label='Flickr' height='30' onPublish='hidden']
+[hyperCMS:textu id='youtube' label='YouTube' height='30' onPublish='hidden']
+[hyperCMS:textu id='rss' label='RSS' height='30' onPublish='hidden']
 
 <?php 
 $config = array();

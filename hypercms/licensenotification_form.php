@@ -188,19 +188,19 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['text-id-expiration-date-to-monitor'][$lang]); ?> </td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;"><input type="text" name="text_id" value="" style="width:350px;" /></td>
+      <td style="white-space:nowrap;"><input type="text" name="text_id" value="" style="width:360px;" /></td>
     </tr> 
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['date-format-eg'][$lang]); ?> </td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;"><input type="text" name="format" value="%Y-%m-%d" style="width:350px;" /></td>
+      <td style="white-space:nowrap;"><input type="text" name="format" value="%Y-%m-%d" style="width:360px;" /></td>
     </tr> 
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?> </td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;"><input type="text" name="users" value="" style="width:350px;" /></td>
+      <td style="white-space:nowrap;"><input type="text" name="users" value="" style="width:360px;" /></td>
     </tr>    
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['select-period'][$lang]); ?> </td>

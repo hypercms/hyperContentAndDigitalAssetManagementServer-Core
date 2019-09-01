@@ -328,7 +328,7 @@ if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload
     }
   }  
   // check-in / unlock objects
-  elseif ($action == "page_unlock" && $setlocalpermission['root'] == 1)
+  elseif ($action == "page_unlock" && checkrootpermission ("desktopcheckedout") && $setlocalpermission['root'] == 1)
   {
     if ($multiobject != "")
     {

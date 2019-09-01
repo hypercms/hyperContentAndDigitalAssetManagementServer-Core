@@ -21,7 +21,7 @@
 function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";", $enclosure='"', $charset="utf-8")
 {
   global $mgmt_config, $eventsystem;
-  
+
   // define delimiters and enclosures
   $delimiters_csv = array (",", ";", "\t", "|");
   $enclosures_csv = array ('"', "'");
@@ -30,10 +30,10 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
   if ($file != "" && is_file ($file))
   {
     $cat = getcategory ($site, $location);
-  
+
     // convert to input character set
     $data = file_get_contents ($file);
-    
+
     if ($data != "")
     {
       // detect
@@ -46,7 +46,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
         if ($data != "") $save = file_put_contents ($file, $data);
       }
     }
-  
+
     $row = 1;
     $header = false;
     $id_filename = "";
@@ -60,7 +60,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
       if ($delimiter == "" || $enclosure == "")
       {
         $filedata = @fread ($handle, filesize ($file));
-        
+
         if ($filedata != "")
         {
           // find delimiter
@@ -68,37 +68,37 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
           {
             $count = array();
             reset ($delimiters_csv);
-            
+
             foreach ($delimiters_csv as $key)
             {
               $count[$key] = substr_count ($filedata, $key);
             }
-            
+
             if (max ($count) > 0)
             {
               // use highest count for delimiter
               $temp = array_keys ($count, max ($count));
-              
+
               if (!empty ($temp[0])) $delimiter = $temp[0];
             }
           }
-          
+
           // find enclosure
           if ($enclosure == "")
           {
             $count = array();
             reset ($enclosures_csv);
-            
+
             foreach ($enclosures_csv as $key)
             {
               $count[$key] = substr_count ($filedata, $key);
             }
-            
+
             if (max ($count) > 0)
             {
               // use highest count for delimiter
               $temp = array_keys ($count, max ($count));
-              
+
               if (!empty ($temp[0])) $enclosure = $temp[0];
             }
           }
@@ -106,17 +106,17 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
       }
 
       rewind ($handle);
-    
+
       if ($delimiter != "")
       {
         while (($data = fgetcsv ($handle, 0, $delimiter, $enclosure)) !== false)
         {
           // get number of colums
           $cols = count ($data);
-          
+
           // reset header switch
           if (is_array ($data) && $cols < 2) $header = false;
-  
+
           // verify if row holds columns
           if (is_array ($data) && $cols > 1)
           {
@@ -143,19 +143,19 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                 {
                   // replace special characters and spaces in IDs
                   if (function_exists ("iconv")) $temp = iconv ('UTF-8', 'ISO-8859-1//TRANSLIT//IGNORE', $data[$c]);
-                  
+
                   // reset on conversion error
                   if (empty ($temp)) $temp = $data[$c];
-                  
+
                   // replace spaces in IDs
                   $temp = str_replace (array(" - ", " "), array("-", "_"), $temp);
-                  
+
                   // remove special characters in IDs
                   $temp = preg_replace ("/[^a-zA-Z0-9_\\-]/", "", $temp);
-                
+
                   // assign content ID
                   $id_content[$c] = $temp;
-                  
+
                   // assign article
                   if (strpos ($data[$c], ":") > 0) $art[$id_content[$c]] = "yes";
                   else $art[$id_content[$c]] = "no";
@@ -171,33 +171,33 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
               $contentfile = "";
               $contendata = "";
               $loaded = false;
-              
+
               for ($c = 0; $c < $cols; $c++)
               {
                 // load container by its ID
                 if (!empty ($id_container) && $c == $id_container && $data[$c] != "" && (is_numeric ($data[$c]) || strpos ($data[$c], ".xml") > 0))
                 {
                   $contentfile = $data[$c];
-                  $contendata = loadcontainer ($contentfile, "work", $user);                
+                  $contendata = loadcontainer ($contentfile, "work", $user);
                   if (!empty ($contendata)) $loaded = true;
                 }
-                
+
                 // get and load container from object
                 if ($c == $id_filename && $data[$c] != "" && $loaded == false)
                 {
                   if (is_file (deconvertpath ($location.$data[$id_filename], "file", true)))
                   {
                     $location = deconvertpath ($location, "file", true);
-                    
+
                     if (specialchr ($data[$id_filename], ".-_~") == true) $object = specialchr_encode ($data[$id_filename], "no");
                     else $object = $data[$id_filename];
-                    
+
                     $object_info = getobjectinfo ($site, $location, $object, $user);
                     $contentfile = $object_info['content'];
                     $contentdata = loadcontainer ($contentfile, "work", $user);
                   }
                 }
-  
+
                 // get text nodes content and text type
                 if ($c != $id_filename && $c != $id_containerid)
                 {
@@ -208,7 +208,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                     {
                       // unformatted text
                       $type[$id_content[$c]] = "u";
-                      
+
                       // formatted text
                       if (strpos ("_".$data[$c], "<") > 0 && strpos ("_".$data[$c], ">") > 0)
                       {
@@ -225,21 +225,21 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                         // try to detect keywords
                         $count = array();
                         reset ($delimiters_keywords);
-                        
+  
                         foreach ($delimiters_keywords as $key)
                         {
                           $count[$key] = substr_count ($data[$c], $key);
                         }
-                        
+  
                         if (max ($count) > 0)
                         {
                           // use highest count for delimiter
                           $temp = array_keys ($count, max ($count));
-                          
+    
                           if (!empty ($temp[0]))
                           {
                             $seperator = $temp[0];
-                          
+    
                             // verify if text holds keywords based on ratio 12:1 and convert to comma
                             if (mb_strlen ($data[$c]) < ((substr_count ($data[$c], $seperator) + 1) * 12))
                             {
@@ -250,28 +250,28 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                         }
                       }
                     }
-                    
+
                     // conversions based on text type
                     if ($type[$id_content[$c]] == "k")
                     {
                       // try to detect keywords
                       $count = array();
                       reset ($delimiters_keywords);
-                      
+
                       foreach ($delimiters_keywords as $key)
                       {
                         $count[$key] = substr_count ($data[$c], $key);
                       }
-                      
+
                       if (max ($count) > 0)
                       {
                         // use highest count for delimiter
                         $temp = array_keys ($count, max ($count));
-                        
+  
                         if (!empty ($temp[0]))
                         {
                           $seperator = $temp[0];
-                        
+  
                           // verify if text holds keywords based on ratio 12:1 and convert to comma
                           if (mb_strlen ($data[$c]) < ((substr_count ($data[$c], $seperator) + 1) * 12))
                           {
@@ -290,7 +290,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
               if ($contentdata != "" && $contentfile != "" && sizeof ($text) > 0 && $type != "" && $art != "" && $user != "")
               {
                 $contentdata_new = settext ($site, $contentdata, $contentfile, $text, $type, $art, $user, $user, $charset);
-     
+ 
                 // on error
                 if ($contentdata_new == false)
                 {
@@ -304,26 +304,26 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                   if ($eventsystem['onsaveobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
                   {
                     $contentdataevent = onsaveobject_pre ($site, $cat, $location, $object, $contentfile, $contentdata_new, $user);
-                  
+
                     // check if event returns a string, if so, the event returns the container and not true or false 
                     if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdata_new = $contentdataevent;
                   }
-                
+
                   // insert new date into content file
                   $contentdata_new = setcontent ($contentdata_new, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
-                  
+
                   // set encoding
                   $charset_old = getcharset ("", $contentdata_new); 
-                  
+
                   if (empty ($charset_old['charset']) || strtolower ($charset_old['charset']) != strtolower ($charset))
                   {
                     // write XML declaration parameter for text encoding
                     if ($charset != "") $contentdatanew = setxmlparameter ($contentdata_new, "encoding", $charset);
                   }
-                  
+
                   // save working xml content container file
                   $savefile = savecontainer ($contentfile, "work", $contentdata_new, $user);
-                  
+
                   if ($savefile == false)
                   {
                     $errcode = "10199";
@@ -337,15 +337,15 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                 }
               }
             }
-            
+
             $row++;
           }
         }
       }
-      
-      fclose ($handle);      
+
+      fclose ($handle);
       savelog (@$error);
-      
+
       if ($row > 1 && !empty ($savefile)) return true;
       else return false;
     }
@@ -368,7 +368,7 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
 
   // load languages
   $languages = getlanguageoptions ();
-  
+
   // load CSV source of taxonomy of publication (if available)
   if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv"))
   {
@@ -383,7 +383,7 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
   {
     $csv = false;
   }
-  
+
   // deployed taxonomy of the publication (if available)
   if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
   {
@@ -410,14 +410,14 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
     {
       // collect rows from existing taxonomy
       $result = array();
-      
+
       reset ($taxonomy);
 
       foreach ($taxonomy as $row => $col_array)
-      {   
+      { 
         // paging
         if ($row > ($start + $perpage - 1)) break;
-        
+
         if ($row >= $start)
         {
           $result[$row]  = $col_array;
@@ -430,13 +430,13 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
   {
     // load PHP file
     include ($deployed);
-    
+
     // prepare taxonomy
     if (!empty ($taxonomy) && is_array ($taxonomy))
     {
       // collect rows from existing taxonomy
       $result = array();
-      
+
       reset ($taxonomy);
       $i = 1;
       $langcode = getfirstkey ($taxonomy);
@@ -445,7 +445,7 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
       {
         // paging
         if ($i > ($start + $perpage - 1)) break;
-        
+
         if ($i >= $start)
         {
           $level = substr_count ($levelpath, "/") - 1;
@@ -454,7 +454,7 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
 
         $i++;
       }
-  
+
       reset ($taxonomy);
 
       foreach ($languages as $langcode => $langname)
@@ -463,12 +463,12 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
         if (!empty ($taxonomy[$langcode]) && is_array ($taxonomy[$langcode]))
         {
           $i = 1;
-          
+
           foreach ($taxonomy[$langcode] as $levelpath => $label)
           {
             // paging
             if ($i > ($start + $perpage - 1)) break;
-            
+
             if ($i >= $start)
             {
               $result[$i][$langcode] = $label;
@@ -507,7 +507,7 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
     if (is_array ($taxonomy_old))
     {
       $id = 1;
-      
+
       foreach ($taxonomy_old as $row => $old_array)
       {
         // untouched rows (outside of saveindex)
@@ -524,7 +524,7 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
             $taxonomy_new[$id] = $new_array;
             $id++;
           }
-          
+
           $updated = true;
         }
       }
@@ -540,9 +540,9 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
     {
       // keep language
       $keep = array();
-      
+
       reset ($taxonomy_new);
-      
+
       foreach ($taxonomy_new as $row => $temp_array)
       {
         foreach ($temp_array as $langcode => $label)
@@ -550,15 +550,15 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
           if (trim ($label) != "" && is_activelanguage ($site, $langcode)) $keep[$langcode] = true;
         }
       }
-      
+
       // set English as default if no language option has been defined for the publication
       if (sizeof ($keep) < 1) $keep['en'] = true;
-      
+
       // remove empty language columns
       if (sizeof ($keep) > 0)
       {
         reset ($taxonomy_new);
-        
+
         foreach ($taxonomy_new as $row => $temp_array)
         {
           foreach ($temp_array as $langcode => $label)
@@ -601,9 +601,9 @@ function createtaxonomy ($site_name="", $recreate=false)
 
   $file_array = array();
   $site_memory = array();
-  
+
   $scandir = scandir ($dir);
-  
+
   if ($scandir)
   {
     foreach ($scandir as $file)
@@ -612,7 +612,7 @@ function createtaxonomy ($site_name="", $recreate=false)
       if ($file != "." && $file != ".." && is_file ($dir.$file) && strpos ($file, ".taxonomy.csv") > 0)
       {
         list ($site, $rest) = explode (".", $file);
-        
+
         if (empty ($site_name) || $site == $site_name)
         {
           // if definition file is younger than generated PHP file
@@ -620,7 +620,7 @@ function createtaxonomy ($site_name="", $recreate=false)
           {
             $recreate = true;
           }
-          
+
           // define file
           $file_array[$site]= $dir.$file;
           $site_memory[] = $site;
@@ -645,7 +645,7 @@ function createtaxonomy ($site_name="", $recreate=false)
         {
           // taxonomy ID of each taxonomy element must be unique
           $id = 1;
-          
+
           // rows
           foreach ($data as $row => $temp_array)
           {
@@ -656,7 +656,7 @@ function createtaxonomy ($site_name="", $recreate=false)
               if ($lang == "level")
               {
                 $level = $label;
-                
+
                 // define parent ID based on level comparison
                 if ($level == 1)
                 {
@@ -673,7 +673,7 @@ function createtaxonomy ($site_name="", $recreate=false)
                   $diff = $level_prev - $level;
                   for ($i=1; $i<=$diff; $i++) $path = substr ($path, 0, strrpos ($path, "/"));
                 }
-                
+
                 // set previous memory
                 $level_prev = $level;
                 $id_prev = $id;
@@ -682,12 +682,12 @@ function createtaxonomy ($site_name="", $recreate=false)
               {
                 // clean text
                 $label = str_replace (array("\"", "(", ")", "[", "]", "{", "}"), array(""), $label);
-  
+
                 // create array element
                 $result[] = "\$taxonomy['".$lang."']['".$path."/".$id."/'] = \"".trim ($label)."\";";
               }
             }
-            
+
             // id of next row
             $id++;
           }
@@ -696,9 +696,9 @@ function createtaxonomy ($site_name="", $recreate=false)
           if (sizeof ($result) > 0)
           {
             $resultdata = "<?php\n\$taxonomy = array();\n".implode ("\n", $result)."\n?>";
-    
+
             $savefile = savefile ($dir, $site.".taxonomy.inc.php", $resultdata);
-            
+
             if (!empty ($recreate) && $savefile == true)
             {
               // remove and recreate the taxonomy for all objects of the publication
@@ -711,7 +711,7 @@ function createtaxonomy ($site_name="", $recreate=false)
               {
                 rdbms_setpublicationtaxonomy ($site, true);
               }
-            
+
               $errcode = "00209";
               $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|$errcode|Taxonomy of publication '".$site."' has been created";
             }
@@ -724,10 +724,10 @@ function createtaxonomy ($site_name="", $recreate=false)
         }
       }
     }
-    
+
     // save log
     savelog (@$error);
-    
+
     return true;
   }
   else return false;
@@ -747,7 +747,7 @@ function splitkeywords ($keywords, $charset="UTF-8")
   {
     $result_array = array();
     $keyword_array = explode (",", $keywords);
-        
+
     foreach ($keyword_array as $keyword)
     {
       // max. length of keyword must not exceed 100 and must not include tags
@@ -755,10 +755,10 @@ function splitkeywords ($keywords, $charset="UTF-8")
       {
         $tag_start = strpos ("_".$keyword, "<");
         $tag_end = strpos ("_".$keyword, ">");
-        
+
         if ($tag_start > 0 && $tag_end > 0 && $tag_start < $tag_end) $tag_included = true;
         else $tag_included = false;
-        
+
         if (!$tag_included)
         {
           $keyword = cleancontent ($keyword, $charset);
@@ -766,7 +766,7 @@ function splitkeywords ($keywords, $charset="UTF-8")
         }
       }
     }
-    
+
     if (is_array ($result_array) && sizeof ($result_array) > 0) return $result_array;
     else return false;
   }
@@ -784,12 +784,12 @@ function splitkeywords ($keywords, $charset="UTF-8")
 function copymetadata ($file_source, $file_dest)
 {
 	global $mgmt_config, $mgmt_mediametadata, $user;
-  
+
 	if ($file_source != "" && $file_dest != "" && is_array ($mgmt_mediametadata))
   {
     // get source file extension
     $file_source_ext = strtolower (strrchr ($file_source, "."));
-    
+
     // copy metadata from original file using EXIFTOOL
     foreach ($mgmt_mediametadata as $extensions => $executable)
     {
@@ -799,10 +799,10 @@ function copymetadata ($file_source, $file_dest)
         $site_source = getpublication ($file_source);
         $location_source = getlocation ($file_source);
         $media_source = getobject ($file_source);
-        
+
         // prepare source media file
         $temp_source = preparemediafile ($site_source, $location_source, $media_source, $user);
-        
+
         // if encrypted
         if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty ($temp_source['tempfile']))
         {
@@ -816,15 +816,15 @@ function copymetadata ($file_source, $file_dest)
 
         // verify source media file
         if (!is_file ($file_source)) return false;
-        
+
         // --------------- get destination publication, location and media file name ---------------
         $site_dest = getpublication ($file_dest);
         $location_dest = getlocation ($file_dest);
         $media_dest = getobject ($file_dest);
-        
+
         // prepare destination media file
         $temp_dest = preparemediafile ($site_dest, $location_dest, $media_dest, $user);
-        
+
         // if encrypted
         if (!empty ($temp_dest['result']) && !empty ($temp_dest['crypted']) && !empty ($temp_dest['templocation']) && !empty ($temp_dest['tempfile']))
         {
@@ -835,24 +835,24 @@ function copymetadata ($file_source, $file_dest)
         {
           $file_dest = $temp_dest['location'].$temp_dest['file'];
         }
-        
+
         // verify destination media file
         if (!is_file ($file_dest)) return false;
-        
+
         // copy meta data
-        $cmd = $executable." -overwrite_original -TagsFromFile \"".shellcmd_encode ($file_source)."\" \"-all:all>all:all\" \"".shellcmd_encode ($file_dest)."\"";    
+        $cmd = $executable." -overwrite_original -TagsFromFile \"".shellcmd_encode ($file_source)."\" \"-all:all>all:all\" \"".shellcmd_encode ($file_dest)."\"";
         @exec ($cmd, $buffer, $errorCode);
-        
+
         // delete temp files
         if ($temp_source['crypted']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
         if ($temp_dest['crypted']) deletefile ($temp_dest['templocation'], $temp_dest['tempfile'], 0);
-        
+
         // on error
         if ($errorCode)
         {
           $errcode = "20241";
           $error[] = $mgmt_config['today']."|hypercms_meta.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed in copy metadata to file: ".getobject($file_dest);
-          
+
           // save log
           savelog (@$error);
         }
@@ -877,12 +877,12 @@ function copymetadata ($file_source, $file_dest)
 function extractmetadata ($file)
 {
   global $user, $mgmt_config, $mgmt_mediametadata;
-  
+
 	if (is_file ($file) && is_array ($mgmt_mediametadata))
   {
     $result = array();
     $hide_properties = array ("version number", "file name", "directory", "file permissions", "app14 flags", "thumbnail", "xmp toolkit");
-    
+
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
 
@@ -895,7 +895,7 @@ function extractmetadata ($file)
         $site = getpublication ($file);
         $location = getlocation ($file);
         $media = getobject ($file);
-    
+
         // prepare media file
         $temp = preparemediafile ($site, $location, $media, $user);
 
@@ -909,14 +909,14 @@ function extractmetadata ($file)
         {
           $file = $temp['location'].$temp['file'];
         }
-        
+
         // get image information using EXIFTOOL
-        $cmd = $executable." -G \"".shellcmd_encode ($file)."\"";          
+        $cmd = $executable." -G \"".shellcmd_encode ($file)."\"";
         @exec ($cmd, $output, $errorCode);
-        
+
         // delete temp file
         if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
-            
+
         // on error
         if ($errorCode)
         {
@@ -934,7 +934,7 @@ function extractmetadata ($file)
               if (trim ($property) != "" && trim ($value) != "")
               {
                 $property = trim ($property);
-                
+
                 // extract group and property name
                 if (strpos ($property, "[") == 0 && strpos ($property, "] ") > 0)
                 {
@@ -943,9 +943,9 @@ function extractmetadata ($file)
                   $property = trim ($property);
                 }
                 else $group = "File";
-                
+
                 $hide = false;
-                
+
                 foreach ($hide_properties as $hide_property)
                 {
                   if (substr_count (strtolower($property), strtolower($hide_property)) > 0)
@@ -954,19 +954,19 @@ function extractmetadata ($file)
                     break;
                   }
                 }
-                
+
                 if ($hide == false && $group != "" && $property != "") $result[$group][$property] = trim ($value);
               }
             }
           }
-          
+
           if (sizeof ($result) > 0) return $result;
           else return false;
         }
         else return false;
       }
     }
-    
+
     return false;
   }
   else return false;
@@ -990,11 +990,11 @@ function xmlobject2array ($obj, $namespace="")
       $namespace = $obj->getDocNamespaces (true);
       $namespace[NULL] = NULL;
     }
-    
+
     $children = array();
     $attributes = array();
     $result = array();
-    
+
     // XML tag name and text-content
     $name = (string)$obj->getName(); 
     $text = trim ((string)$obj);
@@ -1006,7 +1006,7 @@ function xmlobject2array ($obj, $namespace="")
       /*
       // atributes
       $objAttributes = $obj->attributes ($ns, true);
-      
+
       foreach ($objAttributes as $attributeName => $attributeValue)
       {
         $attribName = trim ((string)$attributeName);
@@ -1015,14 +1015,14 @@ function xmlobject2array ($obj, $namespace="")
         $attributes[$attribName] = $attribVal;
       }
       */
-      
-      if (!empty ($ns)) $fullname = $ns.':'.$name;  
-     
+
+      if (!empty ($ns)) $fullname = $ns.':'.$name;
+ 
       // children
       $objChildren = $obj->children ($ns, true);
-      
+
       $result_sub = array();
-      
+
       if (sizeof ($objChildren) > 0)
       {
         foreach ($objChildren as $childname => $child)
@@ -1030,7 +1030,7 @@ function xmlobject2array ($obj, $namespace="")
           $childname = (string)$childname;
           if (!empty ($ns)) $fullchildname = $ns.':'.$childname;
           $childnamespace[$ns] = $nsUrl;
-          
+
           $children = xmlobject2array ($child);
           if (is_array ($children)) $result_sub[$childname] = $children;
         }
@@ -1039,10 +1039,10 @@ function xmlobject2array ($obj, $namespace="")
       {
         $result_sub[$name] = $text;
       }
-      
+
       if (sizeof ($result_sub) > 0) $result = array_merge ($result, $result_sub);
     }
-    
+
     if (sizeof ($result) > 0) return $result;
     else return false;
   }
@@ -1066,16 +1066,16 @@ function id3_getdata ($file)
     if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     // load getID3 library
     require_once ($mgmt_config['abs_path_cms']."library/getID3/getid3/getid3.php");
-    
+
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
-    
+
     // check file extension
     if (substr_count (strtolower ($hcms_ext['audio']).".", $file_info['ext'].".") == 0) return false;
-    
+
     set_time_limit (30);
     $file = realpath ($file);
-    
+
     // initialize getID3 engine
     $getID3 = new getID3;
     // analyze file
@@ -1089,9 +1089,9 @@ function id3_getdata ($file)
     // $file_info['audio']['bitrate']           ... audio bitrate
     // $file_info['playtime_string']            ... playtime in minutes:seconds, formatted string
     // $file_info['comments']['picture'][0]['data'] ... album art
-    
+
     $result = array();
-    
+
     if (is_array ($file_info))
     {
       // extract album art image
@@ -1118,11 +1118,11 @@ function id3_getdata ($file)
         if (!empty ($file_info['comments']['picture'][0]['datalength'])) $result['datalength'] = $file_info['comments']['picture'][0]['datalength'];
         else $result['datalength'] = "";
       }
-      
+
       // encoding
       if (!empty ($file_info['encoding'])) $result['encoding'] = $file_info['encoding'];
       else $result['encoding'] = "UTF-8";
-        
+
       // extract text based data from 'comments'
       if (!empty ($file_info['comments']) && is_array ($file_info['comments']))
       {
@@ -1154,7 +1154,7 @@ function id3_getdata ($file)
         if (!empty ($file_info['comments']['band'][0])) $result['band'] = $file_info['comments']['band'][0];
         else $result['band'] = "";
       }
-      
+
       // return result
       if (sizeof ($result) > 0) return $result;
       else return false;
@@ -1179,26 +1179,26 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
   if (is_file ($file) && is_array ($id3) && is_array ($hcms_ext) && is_file ($mgmt_config['abs_path_cms']."library/getID3/getid3/getid3.php"))
   {
     if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     $result = false;
-    
+
     // get container ID
     $container_id = getmediacontainerid ($file);
-    
+
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
-    
+
     // check file extension
     if (substr_count (strtolower ($hcms_ext['audio']).".", $file_info['ext'].".") == 0) return false;
-    
+
     // get publication, location and media file name
     $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
-    
+
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
-    
+
     // if encrypted
     if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
@@ -1209,7 +1209,7 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
     {
       $file = $temp['location'].$temp['file'];
     }
-    
+
     if (is_file ($file))
     {
       $encoding = "UTF-8";
@@ -1217,10 +1217,10 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
       // load getID3 library
       require_once ($mgmt_config['abs_path_cms']."library/getID3/getid3/getid3.php");
       require_once ($mgmt_config['abs_path_cms']."library/getID3/getid3/write.php");
-    
+
       set_time_limit (30);
       $file = realpath ($file);
-      
+
       // initialize getID3 engine
       $getID3 = new getID3;
       $getID3->setOption(array('encoding'=>$encoding));
@@ -1240,16 +1240,16 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
       // if false leaves any unspecified tag formats as-is.
       if ($keep_data == true || $keep_data == 1) $tagwriter->remove_other_tags = false;
       else $tagwriter->remove_other_tags = true;
-      
+
       $tagwriter->tag_encoding = $encoding;
-  
+
       $tagdata = array();
-      
+
       // populate ID3 data array
       foreach ($id3 as $tag => $value)
       {
         if (strpos ($tag, ":") > 0) list ($namespace, $tag) = explode (":", $tag);
-        
+
         if ($tag != "" && $namespace == "id3")
         {
           // correct tag for track number
@@ -1258,24 +1258,24 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
           $tagdata[$tag] = array(html_decode ($value, $encoding));
         }
       }
-      
+
       if (sizeof ($tagdata) > 0)
       {
         // set tags
         $tagwriter->tag_data = $tagdata;
-        
+
         // write tags into file
         if ($tagwriter->WriteTags())
         {
           $result = true;
-     
+ 
           // on warning
         	if (!empty ($tagwriter->warnings))
           {
             $errcode = "20280";
             $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|warning|$errcode|There were warnings when writing ID3 tags to file: ".getobject($file)."<br />".implode("<br />", $tagwriter->warnings);
         	}
-          
+
           // save media stats and move temp file
           if ($movetempfile)
           {
@@ -1286,10 +1286,10 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
               $filesize = round (@filesize ($file) / 1024, 0);
               rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
             }
-            
+
             // encrypt and save file if required
             if ($temp['result']) movetempfile ($location, $media, true);
-            
+
             // save to cloud storage
             if (function_exists ("savecloudobject")) savecloudobject ($site, $location, $media, $user);
           }
@@ -1301,7 +1301,7 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
           $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write ID3 tags to file: ".getobject($file);
         }
       }
-      
+
       // save log
       savelog (@$error);
     }
@@ -1322,7 +1322,7 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
 function id3_create ($site, $text)
 {
   global $mgmt_config;
-  
+
   if (valid_publicationname ($site) && is_array ($text) && !empty ($mgmt_config['abs_path_data']))
   {
     // try to load mapping configuration file of publication
@@ -1330,9 +1330,9 @@ function id3_create ($site, $text)
     {
       @include ($mgmt_config['abs_path_data']."config/".$site.".media.map.php");
     }
-    
+
     $result = array();
-    
+
     // look in mapping definition (name => id)
     if (isset ($mapping) && is_array ($mapping))
     {
@@ -1344,16 +1344,16 @@ function id3_create ($site, $text)
           $result[$tag] = $text[$id];
         }
       }
-      
+
       return $result;
     }
     else
     {
       $errcode = "10109";
       $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Media mapping of publication '".$site."' could not be loaded";
-      
+
       savelog (@$error);
-          
+
       return false;
     }
   }
@@ -1372,18 +1372,18 @@ function xmp_getdata ($file)
 	if (is_file ($file))
   {
     if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
-    
+
     // check file extension
     if (substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") == 0) return false;
-  
+
     // get publication, location and media file name
     $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
-    
+
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
 
@@ -1397,22 +1397,22 @@ function xmp_getdata ($file)
     {
       $file = $temp['location'].$temp['file'];
     }
-    
+
     // load file
     $content = @file_get_contents ($file);
-    
+
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
-    
+
     $result = array();
-    
+
     if ($content != "" && strpos ($content, "</x:xmpmeta>") > 0)
-    {    
+    {
       $xmp_data_start = strpos ($content, '<x:xmpmeta');
       $xmp_data_end = strpos ($content, '</x:xmpmeta>');
       $xmp_length = $xmp_data_end - $xmp_data_start;
       $xmp_data = substr ($content, $xmp_data_start, $xmp_length + 12);
-      
+
       if ($xmp_data != "")
       {
         $xmp = simplexml_load_string ($xmp_data);
@@ -1443,24 +1443,24 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
   if (is_file ($file) && is_array ($xmp) && is_array ($mgmt_mediametadata))
   {
     if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get container ID
     $container_id = getmediacontainerid ($file);
-    
+
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
-    
+
     // check file extension
     if (substr_count ($hcms_ext['image'].".", $file_info['ext'].".") == 0) return false;
-    
+
     // get publication, location and media file name
     $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
-    
+
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
-        
+
     // if encrypted
     if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
@@ -1471,7 +1471,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
     {
       $file = $temp['location'].$temp['file'];
     }
-    
+
     if (is_file ($file))
     {
       // define executable
@@ -1482,9 +1482,9 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
           // remove all XMP tags from file
           if ($keep_data == false || $keep_data == 0)
           {
-            $cmd = $executable." -overwrite_original -r -XMP-crss:all= \"".shellcmd_encode ($file)."\"";          
+            $cmd = $executable." -overwrite_original -r -XMP-crss:all= \"".shellcmd_encode ($file)."\"";
             @exec ($cmd, $buffer, $errorCode);
-            
+
             // on error
             if ($errorCode)
             {
@@ -1497,12 +1497,12 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
           foreach ($xmp as $tag => $value)
           {
             if (strpos ($tag, ":") > 0) list ($namespace, $tag) = explode (":", $tag);
-            
+
             if ($tag != "" && ($namespace == "dc" || $namespace == "photoshop"))
             {
               $cmd = $executable." -overwrite_original -xmp:".$tag."=\"".shellcmd_encode (html_decode ($value, "UTF-8"))."\" \"".shellcmd_encode ($file)."\"";
               @exec ($cmd, $buffer, $errorCode);
-    
+
               // on error
               if ($errorCode)
               {
@@ -1514,7 +1514,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
 
           // appending data to a file ensures that the previous write process is finished
           avoidfilecollision ($media);
-          
+
           // save media stats and move temp file on success
           if ($movetempfile && (empty ($errorCode) || $errorCode < 1))
           {
@@ -1525,17 +1525,17 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
               $filesize = round (@filesize ($file) / 1024, 0);
               rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
             }
-            
+
             // encrypt and save file if required
             if ($temp['result']) movetempfile ($location, $media, true);
-            
+
             // save to cloud storage
             if (function_exists ("savecloudobject")) savecloudobject ($site, $location, $media, $user);
           }
 
           // save log
           savelog (@$error);
-          
+
           return true;
         }
       }
@@ -1557,7 +1557,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
 function xmp_create ($site, $text)
 {
   global $mgmt_config;
-  
+
   if (valid_publicationname ($site) && is_array ($text) && !empty ($mgmt_config['abs_path_data']))
   {
     // try to load mapping configuration file of publication
@@ -1565,9 +1565,9 @@ function xmp_create ($site, $text)
     {
       @include ($mgmt_config['abs_path_data']."config/".$site.".media.map.php");
     }
-    
+
     $result = array();
-    
+
     // look in mapping definition (name => id)
     if (isset ($mapping) && is_array ($mapping))
     {
@@ -1579,16 +1579,16 @@ function xmp_create ($site, $text)
           $result[$tag] = $text[$id];
         }
       }
-      
+
       return $result;
     }
     else
     {
       $errcode = "10101";
       $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Media mapping of publication '".$site."' could not be loaded";
-      
+
       savelog (@$error);
-          
+
       return false;
     }
   }
@@ -1618,23 +1618,23 @@ function exif_getdata ($file)
 	if (is_file ($file))
   {
     if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     $result = array();
-    
+
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
-    
+
     // check file extension
     if (substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") == 0) return false;
-    
+
     // get publication, location and media file name
     $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
-    
+
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
-    
+
     // if encrypted
     if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
@@ -1645,14 +1645,14 @@ function exif_getdata ($file)
     {
       $file = $temp['location'].$temp['file'];
     }
-    
+
     // set encoding for EXIF to UTF-8
-    ini_set ('exif.encode_unicode', 'UTF-8');  
+    ini_set ('exif.encode_unicode', 'UTF-8');
     error_reporting (0);
-    
+
     // read exif data
 		$exif = exif_read_data ($file, 0, true);
-    
+
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
 		
@@ -1663,7 +1663,7 @@ function exif_getdata ($file)
 			$timeoriginal = substr ($exif["EXIF"]["DateTimeOriginal"], 10);
 			if (trim ($dateoriginal." ".$timeoriginal) != "") $result['Camera']['Date and time'] = $dateoriginal." ".$timeoriginal;
 		}
-    
+
     // geo location
     if (is_array ($exif['GPSLongitude']) && is_array ($exif['GPSLatitude']))
     {
@@ -1671,7 +1671,7 @@ function exif_getdata ($file)
       $egeoLat = $exif['GPSLatitude'];
       $egeoLongR = $exif['GPSLongitudeRef'];
       $egeoLatR = $exif['GPSLatitudeRef'];
-      
+
       $result['GPS']['longitude'] = geo2decimal ($egeoLong[0], $egeoLong[1], $egeoLong[2], $egeoLongR);
       $result['GPS']['latitude'] = geo2decimal ($egeoLat[0], $egeoLat[1], $egeoLat[2], $egeoLatR);
     }
@@ -1688,7 +1688,7 @@ function exif_getdata ($file)
 		if (isset ($exif["EXIF"]["ExposureTime"]))
     {
 			list ($num, $den) = explode ("/", $exif["EXIF"]["ExposureTime"]);
-      
+
 			if ($num > $den)
       {
 				$exposure = $num." s";
@@ -1698,7 +1698,7 @@ function exif_getdata ($file)
 				$den = round ($den/$num);
 				$exposure = "1/".$den." s";
 			}
-      
+
       if (trim ($exposure) != "") $result['Camera']['Exposure time'] = trim ($exposure);
 		}
 		
@@ -1756,7 +1756,7 @@ function exif_getdata ($file)
 					$whitebalance = "";
 					break;
 			}
-      
+
 			if (trim ($whitebalance) != "") $result['Camera']['White balance'] = $whitebalance;
 		}
 		
@@ -1834,7 +1834,7 @@ function exif_getdata ($file)
 					$flash = '';
 					break;
 			}
-        
+
 			if (trim ($flash) != "") $result['Camera']['Flash'] = trim ($flash);
 		}
 		
@@ -1845,7 +1845,7 @@ function exif_getdata ($file)
 			if (trim ($make) != "") $result['Camera']['Camera/Scanner make'] = trim ($make);
 			if (trim ($model) != "") $result['Camera']['Camera/Scanner model'] = trim ($model);
 		}
-    
+
 		if (isset ($exif["COMMENT"]))
     {
       if (is_array ($exif["COMMENT"]))
@@ -1856,7 +1856,7 @@ function exif_getdata ($file)
         }
       }
     }
-    
+
 		if (isset ($exif["COMPUTED"]))
     {
       if (is_array ($exif["COMPUTED"]))
@@ -1867,7 +1867,7 @@ function exif_getdata ($file)
         }
       }
     }
-    
+
     if (sizeof ($result) > 0) return $result;
     else return false;
 	}
@@ -1886,21 +1886,21 @@ function iptc_getdata ($file)
   if (is_file ($file))
   {
     if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
+
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
-    
+
     // check file extension
     if (substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") == 0) return false;
-  
+
     // get publication, location and media file name
     $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
-    
+
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
-    
+
     // if encrypted
     if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
@@ -1911,17 +1911,17 @@ function iptc_getdata ($file)
     {
       $file = $temp['location'].$temp['file'];
     }
-    
+
     $size = getimagesize ($file, $info);
-    
+
     if ($size) $iptc = iptcparse ($info['APP13']);
     else $iptc = false;
-    
+
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
-    
+
     $result = array();
-    
+
     if (is_array ($iptc))
     {
       if (trim ($iptc['2#003'][0]) != "") $result['Object type'] = trim ($iptc['2#003'][0]);
@@ -2093,7 +2093,7 @@ function iptc_getcharset ($tag)
   		//at this point just give up and refuse to parse iptc?
   		$c = false;
   }
-    
+
   return $c;
 }
 
@@ -2145,29 +2145,29 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
 
   // write meta data only for the following file extensions
   $allowed_ext = array (".jpg", ".jpeg", ".pjpeg");
-  
+
   if (is_file ($file) && is_array ($iptc))
   {
     // set default encoding to UTF-8
     $encoding = "UTF-8";
-    
+
     // get container ID
     $container_id = getmediacontainerid ($file);
 
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
-    
+
     // check file extension
     if (!in_array ($file_info['ext'], $allowed_ext)) return false;
-    
+
     // get publication, location and media file name
     $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
-    
+
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
-    
+
     // if encrypted
     if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
@@ -2178,20 +2178,20 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
     {
       $file = $temp['location'].$temp['file'];
     }
-    
+
     if (is_file ($file))
     {
       // get IPTC info stored in file
       $imagesize = getimagesize ($file, $info);
-      
+
       if (isset ($info['APP13']))
       {
         // parse binary IPTC block
         $iptc_old = iptcparse ($info['APP13']);
-        
+
         // get charset info contained in tag 1:90.
         if (isset ($iptc_old["1#090"][0])) $encoding = iptc_getcharset (trim ($iptc_old["1#090"][0]));
-        
+
         // compare old and new information to keep existing data
         if ($keep_data == true || $keep_data == 1)
         {
@@ -2216,14 +2216,14 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
       {
         // get file info
         $file_info = getfileinfo ("", $file, "comp");
-      
+
         // define executable
         foreach ($mgmt_mediametadata as $extensions => $executable)
         {
           if (substr_count ($extensions.".", $file_info['ext'].".") > 0)
           {
             // remove all IPTC tags from file
-            $cmd = $executable." -overwrite_original -r -IPTC:all= \"".shellcmd_encode ($file)."\"";          
+            $cmd = $executable." -overwrite_original -r -IPTC:all= \"".shellcmd_encode ($file)."\"";
             @exec ($cmd, $buffer, $errorCode);
 
             // on error
@@ -2238,17 +2238,17 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
 
       // convert the IPTC tags into binary code
       $data = "";
-      
+
       if (sizeof ($iptc) > 0)
       {
         foreach ($iptc as $tag => $value)
         {
           $record = substr ($tag, 0, 1);
-          $tag = substr ($tag, 2);  
+          $tag = substr ($tag, 2);
           $data .= iptc_maketag ($record, $tag, html_decode ($value, $encoding)); 
         }
       }
-  
+
       // embed the IPTC data (only JPEG files)
       $content = iptcembed ($data, $file);
 
@@ -2261,7 +2261,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
         {
           @flock ($fp, LOCK_EX);
           @fwrite ($fp, $content);
-          @flock ($fp, LOCK_UN);  
+          @flock ($fp, LOCK_UN);
           @fclose ($fp);
 
           // save media stats and move temp file
@@ -2274,14 +2274,14 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
               $filesize = round (@filesize ($file) / 1024, 0);
               rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
             }
-  
+
             // encrypt and save file if required
             if ($temp['result']) movetempfile ($location, $media, true);
-            
+
             // save to cloud storage
             if (function_exists ("savecloudobject")) savecloudobject ($site, $location, $media, $user);
           }
-          
+
           return true;
         }
         else return false;
@@ -2293,7 +2293,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
         $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|injection of IPTC failed for file: ".getobject($file);
       }
     }
-    
+
     return false;
   }
   else return false;
@@ -2311,7 +2311,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
 function iptc_create ($site, $text)
 {
   global $mgmt_config;
-  
+
   if (valid_publicationname ($site) && is_array ($text) && !empty ($mgmt_config['abs_path_data']))
   {
     // try to load mapping configuration file of publication
@@ -2319,9 +2319,9 @@ function iptc_create ($site, $text)
     {
       @include ($mgmt_config['abs_path_data']."config/".$site.".media.map.php");
     }
-    
+
     $iptc_info = array();
-    
+
     // list of most common IPTC tags (name => tag)
     $iptc_info['iptc:object_type'] = "2#003";
     $iptc_info['iptc:title'] = "2#005";
@@ -2355,16 +2355,16 @@ function iptc_create ($site, $text)
     $iptc_info['iptc:image_type'] = "2#130";
     $iptc_info['iptc:image_orientation'] = "2#131";
     $iptc_info['iptc:language'] = "2#135";
-    
+
     $result = array();
-    
+
     // look in mapping definition (name => id)
     if (isset ($mapping) && is_array ($mapping))
     {
       foreach ($mapping as $name => $id)
-      {  
+      {
         $name = strtolower ($name);
-        
+
         // set IPTC tag (tag => value)
         if ($id != "" && isset ($text[$id]) && !empty ($iptc_info[$name]))
         {
@@ -2372,14 +2372,14 @@ function iptc_create ($site, $text)
           if ($tag != "") $result[$tag] = $text[$id];
         }
       }
-      
+
       return $result;
     }
     else return false;
   }
   else return false;
 }
-   
+ 
 // ------------------------- createmapping -----------------------------
 // function: createmapping()
 // input: publication name [string], mapping definition [string]
@@ -2391,15 +2391,15 @@ function iptc_create ($site, $text)
 function createmapping ($site, $mapping)
 {
   global $mgmt_config;
-  
+
   if ($mapping != "")
   {
     $mapping_result = "";
     // unescape >
     $mapping = str_replace ("&gt;", ">", $mapping);
     // create array
-    $lines = explode ("\n", $mapping);   
-    
+    $lines = explode ("\n", $mapping); 
+
     if (is_array ($lines))
     {
       foreach ($lines as $line)
@@ -2407,35 +2407,35 @@ function createmapping ($site, $mapping)
         if ($line != "" && substr_count ($line, "=>") == 1 && substr_count ($line, "//") == 0)
         {
           list ($key, $value) = explode ("=>", $line);
-          
+
           if ($key != "" && $value != "")
           {
             if (substr_count ($key, "\"") > 0) $key_array = explode ("\"", $key);
             elseif (substr_count ($key, "'") > 0) $key_array = explode ("'", $key);
             else $key_array[1] = $key;
-            
+
             if (is_array ($key_array)) $map_tag = "\$mapping['".trim(addslashes(strip_tags ($key_array[1])))."']";
             else $map_tag = false;
-            
+
             if (substr_count ($value, "\"") > 0) $value_array = explode ("\"", $value);
             elseif (substr_count ($value, "'") > 0) $value_array = explode ("'", $value);
             else $value_array[1] = $value;
-            
+
             if (is_array ($value_array) && $value_array[1] != "") $map_id = "\"".trim(addslashes(strip_tags ($value_array[1])))."\";\n";
             else $map_id = false;
-            
+
             if ($map_tag != false && $map_id != false) $mapping_result .= $map_tag." = ".$map_id;
           }
         }
       }
     }
-    
+
     if ($mapping != "")
     {
       // remove all tags
       $mapping_data_info = strip_tags ($mapping);
       $mapping_data_save = "/*\n".$mapping_data_info."\n*/\n/* hcms_mapping */\n".trim ($mapping_result);
-    
+
       // save mapping file
       return savefile ($mgmt_config['abs_path_data']."config/", $site.".media.map.php", "<?php\n".$mapping_data_save."\n?>");
     }
@@ -2455,9 +2455,9 @@ function createmapping ($site, $mapping)
 function getmapping ($site)
 {
   global $mgmt_config;
-  
+
   $mapping_data = "";
-  
+
   if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
   {
     // load mapping file
@@ -2466,30 +2466,30 @@ function getmapping ($site)
     if ($mapping_data != "")
     {
       list ($mapping_data) = explode ("/* hcms_mapping */", $mapping_data);
-      
+
       // convert from older version to 5.5.8
       if (substr_count ($mapping_data, "\$mapping[") > 0)
       {
         $mapping_data = str_replace (array("\$mapping['", "']", "=", "\"", ";"), array("", "", "=>", "", ""), $mapping_data);
       }
-      
+
       // convert from older version to 7.0.4 (double to single quotes)
       if (substr_count ($mapping_data, '"') > 1)
       {
         $mapping_data = str_replace ('"', "'", $mapping_data);
       }
-      
+
       // remove comment tags
-      $mapping_data = str_replace (array("/*", "*/"), array("", ""), $mapping_data);  
-      
+      $mapping_data = str_replace (array("/*", "*/"), array("", ""), $mapping_data);
+
       // remove php tags
       $mapping_data = str_replace (array("<?php", "?>"), array("", ""), $mapping_data);
-      
+
       // trim
       return trim ($mapping_data);
     }
   }
-  
+
   // default mapping
   if ($mapping_data == "")
   {
@@ -2673,7 +2673,7 @@ google:keywords => 'textk:Keywords'";
 function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="", $containerdata="", $user, $savecontainer=true)
 {
   global $eventsystem, $mgmt_config, $hcms_ext;
-  
+
   if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
 
   // IPTC-tag and xml-tag name from multimedia file is mapped with text-id of the content container.
@@ -2685,7 +2685,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       $mapping_data = getmapping ($site);
       createmapping ($site, $mapping_data);
     }
-  
+
     // try to load mapping configuration file of publication
     if (is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
     {
@@ -2700,9 +2700,9 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
     {
       // deconvert path
       $location = deconvertpath ($location, "file");
-    
+
       $objectdata = loadfile ($location, $object);
-    
+
       if ($objectdata != "") $mediafile = getfilename ($objectdata, "media");
       else return false;
     }
@@ -2716,7 +2716,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       // get container information
       $container_id = getmediacontainerid ($mediafile);
       $container = getmediacontainername ($mediafile);
-      
+
       // media location
       $medialocation = getmedialocation ($site, $mediafile, "abs_path_media");
 
@@ -2730,7 +2730,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
 
       // load multimedia file
       $mediadata = decryptfile ($medialocation, $mediafile);
-      
+
       // load container if not provided
       if ($containerdata == "")
       {
@@ -2750,10 +2750,10 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       {
         // load text XML-schema
         $text_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "text.schema.xml.php"));
-        
+
         // prepare media file
         $temp = preparemediafile ($site, $medialocation, $mediafile, $user);
-        
+
         // if encrypted
         if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
         {
@@ -2766,20 +2766,20 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
           $medialocation = $temp['location'];
           $mediafile = $temp['file'];
         }
-        
+
         // ------------------- use Google Speech Service -------------------
         if (is_audio ($mediafile) || is_video ($mediafile))
         {
           if (function_exists ("GCspeech2text")) $google_data = GCspeech2text ($site, $medialocation.$mediafile);
           else $google_data = "";
-        
+
           if (!empty ($google_data) && is_array ($google_data))
           {
             // source charset
             $charset_source = "UTF-8";
-            
+
             $vtt_str = "";
-            
+
             // create VTT
             foreach ($google_data as $record)
             {
@@ -2787,9 +2787,9 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               if (!empty ($record['description']))
               {
                 if (empty ($langcode)) $langcode = $record['language'];
-              
+
                 $temp_str = $record['description'];
-                
+
                 // remove tags
                 $temp_str = strip_tags ($temp_str);
 
@@ -2803,22 +2803,22 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   // encode to UTF-8
                   if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
                 }
-                
+
                 $vtt_str .= sec2time ($record['starttime'])." --> ".sec2time ($record['endtime'])."\n";
                 $vtt_str .= $temp_str."\n\n";
               }
             }
-            
+
             if (!empty ($langcode) && !empty ($vtt_str))
             {
               $text_id = "VTT-".$langcode;
               $vtt_str = "WEBVTT\n\n".$vtt_str;
-            
+
               // textnodes search index in database
               $text_array[$text_id] = $vtt_str;
-                                              
+                        
               $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$vtt_str."]]>", "<text_id>", $text_id);
-        
+
               if ($containerdata_new == false)
               {
                 $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
@@ -2841,49 +2841,49 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         {
           if (function_exists ("GCanalyzeimage")) $google_data = GCanalyzeimage ($medialocation.$mediafile);
           else $google_data = "";
-        
+
           if (!empty ($google_data) && is_array ($google_data))
           {
             // source charset
             $charset_source = "UTF-8";
-            
+
             // inject meta data based on mapping
             reset ($mapping);
-            
+
             foreach ($mapping as $key => $text_id)
             {
               // only for tags
               if (strpos ("_".$key, "google:") > 0 && $text_id != "")
-              {          
+              {
                 // get tag name
-                list ($namespace, $key) = explode (":", $key);              
+                list ($namespace, $key) = explode (":", $key);
                 $key = trim ($key);
 
                 // get type and text ID
                 if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
                 elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
                 else $type = "textu";
-                
+
                 if (!empty ($type)) $type_array[$text_id] = $type;
-                
+
                 // get data
                 if (!empty ($google_data[$key])) $temp_str = $google_data[$key];
                 else $temp_str = "";
 
                 if ($temp_str != "")
-                {                
+                {
                   // clean keywords
                   if ($type == "textk")
                   {
                     $keywords = splitkeywords ($temp_str, $charset_dest);
-                    
+
                     if (is_array ($keywords)) $temp_str = implode (",", $keywords);
                     else $temp_str = "";
                   }
 
                   // remove tags
                   $temp_str = strip_tags ($temp_str);
-  
+
                   // convert string for container
                   if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
                   {
@@ -2894,19 +2894,19 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                     // encode to UTF-8
                     if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
                   }
-                  
+
                   // textnodes search index in database
                   $text_array[$text_id] = $temp_str;
-                                                  
+                            
                   $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
-            
+
                   if ($containerdata_new == false)
                   {
                     $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
                     $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
                     $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
                   }
-  
+
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
                   else
                   {
@@ -2929,18 +2929,18 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
           {
             // source charset
             $charset_source = "UTF-8";
-            
+
             // thumbnail file is always in repository
             $thumb_root = getmedialocation ($site, ".hcms.".$mediafile, "abs_path_media").$site."/";
             $file_info = getfileinfo ($site, $mediafile, "comp");
-            
+
             // get video dimensions
             avoidfilecollision ();
             $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
 
             if (empty ($config['width'])) $config['width'] = 360;
             if (empty ($config['height'])) $config['height'] = 240;
-            
+
             $faces_array = array();
             $google_data_collect = array();
 
@@ -2971,71 +2971,71 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 // collect data
                 if (!empty ($google_data_collect['description'])) $google_data_collect['description'] .= ", ".$temp_array['description'];
                 else $google_data_collect['description'] = $temp_array['description'];
-                
+
                 if (!empty ($google_data_collect['keywords'])) $google_data_collect['keywords'] .= ",".$temp_array['keywords'];
                 else $google_data_collect['keywords'] = $temp_array['keywords'];
               }
             }
-            
+
             // save JSON string to container
             if (sizeof ($faces_array) > 0)
             {
               $text_id = "Faces-JSON";
               $faces_json = "[".implode (", ", $faces_array)."]";
-              
+
               // textnodes search index in database
               $text_array[$text_id] = $faces_json;
-                                              
+                        
               $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
-        
+
               if ($containerdata_new == false)
               {
                 $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
                 $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
                 $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
               }
-  
+
               if ($containerdata_new != false) $containerdata = $containerdata_new;
               else return false;
             }
-  
+
             // inject meta data based on mapping
             reset ($mapping);
-            
+
             foreach ($mapping as $key => $text_id)
             {
               // only for tags
               if (strpos ("_".$key, "google:") > 0 && $text_id != "")
-              {          
+              {
                 // get tag name
-                list ($namespace, $key) = explode (":", $key);              
+                list ($namespace, $key) = explode (":", $key);
                 $key = trim ($key);
 
                 // get type and text ID
                 if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
                 elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
                 else $type = "textu";
-                
+
                 if (!empty ($type)) $type_array[$text_id] = $type;
-                
+
                 // get data
                 if (!empty ($google_data_collect[$key])) $temp_str = $google_data_collect[$key];
                 else $temp_str = "";
 
                 if ($temp_str != "")
-                {                
+                {
                   // clean keywords
                   if ($type == "textk")
                   {
                     $keywords = splitkeywords ($temp_str, $charset_dest);
-                    
+
                     if (is_array ($keywords)) $temp_str = implode (",", $keywords);
                     else $temp_str = "";
                   }
-                  
+
                   // remove tags
                   $temp_str = strip_tags ($temp_str);
-  
+
                   // convert string for container
                   if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
                   {
@@ -3046,19 +3046,19 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                     // encode to UTF-8
                     if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
                   }
-                  
+
                   // textnodes search index in database
                   $text_array[$text_id] = $temp_str;
-                                                  
+                            
                   $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
-            
+
                   if ($containerdata_new == false)
                   {
                     $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
                     $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
                     $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
                   }
-  
+
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
                   else
                   {
@@ -3070,7 +3070,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             }
           }
         }
-        
+
         // ------------------- extract metadata using EXIFTOOL -------------------
         // Can be used for all metadata formats supported by EXIFTOOL
         // New tags need to be defined in function getmapping
@@ -3081,56 +3081,56 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         {
           // source charset
           $charset_source = "UTF-8";
-          
+
           $exiftool_data = array_change_key_case ($exiftool_data, CASE_LOWER);
-        
+
           reset ($mapping);
-          
+
           foreach ($mapping as $key => $text_id)
           {
             // only for tags
             if (strpos ($key, ":") > 0 && $text_id != "")
-            {          
+            {
               // get tag name
-              list ($namespace, $key) = explode (":", $key);              
+              list ($namespace, $key) = explode (":", $key);
               $namespace = strtolower ($namespace);
               $key = trim ($key);
-              
+
               // verify if namespace exists in extracted metadata (compare small caps)
               if (!empty ($exiftool_data[$namespace]))
               {
                 // get array for name space
                 $temp_data = $exiftool_data[$namespace];
-                
+
                 // add space between words, e.g. ContentDistributor tag 
                 $temp_array = preg_split ('/(?=[A-Z])/', $key);
                 if (is_array ($temp_array) && sizeof ($temp_array) > 1) $key = trim (implode (" ", $temp_array));
-                
+
                 // get type and text ID
                 if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
                 elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
                 else $type = "textu";
-                
+
                 if (!empty ($type)) $type_array[$text_id] = $type;
-                
+
                 // get data
                 if (!empty ($temp_data[$key])) $temp_str = $temp_data[$key];
                 else $temp_str = "";
 
                 if ($temp_str != "")
-                {                
+                {
                   // clean keywords
                   if ($type == "textk")
                   {
                     $keywords = splitkeywords ($temp_str, $charset_dest);
-                    
+
                     if (is_array ($keywords)) $temp_str = implode (",", $keywords);
                     else $temp_str = "";
                   }
-                  
+
                   // remove tags
                   $temp_str = strip_tags ($temp_str);
-  
+
                   // convert string for container
                   if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
                   {
@@ -3141,19 +3141,19 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                     // encode to UTF-8
                     if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
                   }
-  
+
                   // textnodes search index in database
                   $text_array[$text_id] = $temp_str;
-                                                  
+                            
                   $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
-            
+
                   if ($containerdata_new == false)
                   {
                     $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
                     $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
                     $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
                   }
-  
+
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
                   else
                   {
@@ -3165,9 +3165,9 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             }
           }
         }
-        
+
         // ------------------- ID3 -------------------
-   
+ 
         // get ID3 data from file
         $id3_data = id3_getdata ($medialocation.$mediafile);
 
@@ -3177,39 +3177,39 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
           // get source charset
           if (!empty ($id3_data['encoding'])) $charset_source = $id3_data['encoding'];
           else $charset_source = "UTF-8"; 
-        
+
           reset ($mapping);
-          
+
           foreach ($mapping as $key => $text_id)
           {
             // only for ID3 tags (audio files)
             if (strpos ("_".$key, "id3:") > 0 && $text_id != "")
-            {          
+            {
               // get ID3 tag name
               if (strpos ($key, ":") > 0) list ($namespace, $key) = explode (":", $key);
-              
+
               // get type and text ID
               if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
               elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
               else $type = "textu";
-              
+
               if (!empty ($type)) $type_array[$text_id] = $type;
-              
+
               // get data
               if (!empty ($id3_data[$key])) $id3str = $id3_data[$key];
               else $id3str = "";
-          
+
               if ($id3str != "")
-              {                
+              {
                 // clean keywords
                 if ($type == "textk")
                 {
                   $keywords = splitkeywords ($id3str, $charset_dest);
-                  
+
                   if (is_array ($keywords)) $id3str = implode (",", $keywords);
                   else $id3str = "";
                 }
-                
+
                 // remove tags
                 $id3str = strip_tags ($id3str);
 
@@ -3226,9 +3226,9 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
 
                 // textnodes search index in database
                 $text_array[$text_id] = $id3str;
-                                                
+                          
                 $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$id3str."]]>", "<text_id>", $text_id);
-          
+
                 if ($containerdata_new == false)
                 {
                   $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
@@ -3252,16 +3252,16 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         // set encoding for EXIF to UTF-8
         ini_set ('exif.encode_unicode', 'UTF-8');
         error_reporting(0);
-        
+
         if (exif_imagetype ($medialocation.$mediafile))
         {
           // read EXIF data
           $exif_data = exif_read_data ($medialocation.$mediafile, 0, true);
-         
+ 
           if (is_array ($exif_data))
           {
             $exif_info = array();
-            
+
             foreach ($exif_data as $key => $section)
             {
               foreach ($section as $name => $value)
@@ -3269,57 +3269,57 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 $exif_info['iptc:'.$key.'.'.$name] = $value;
               }
             }
-          }            
-          
+          }
+
           // inject meta data based on mapping
           reset ($mapping);
-          
+
           foreach ($mapping as $key => $text_id)
           {
             // only for EXIF tags
             if (strpos ("_".$key, "exif:") > 0 && $text_id != "")
-            {           
+            { 
               if ($exif_info[$key] != "")
               {
                 // get type and text ID
                 if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
                 elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
                 else $type = "textu";
-                
+
                 // clean keywords
                 if ($type == "textk")
                 {
                   $keywords = splitkeywords ($exif_info[$key], $charset_dest);
-                  
+
                   if (is_array ($keywords)) $exif_info[$key] = implode (",", $keywords);
                   else $exif_info[$key] = "";
                 }
-                
-              
+
+
                 // remove tags
                 $exif_info[$key] = strip_tags ($exif_info[$key]);
-                
+
                 // we set encoding for EXIF to UTF-8
-                $charset_source = "UTF-8";              
-                
+                $charset_source = "UTF-8";
+
                 // convert string for container
                 if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
                 {
                   $exif_info[$key] = convertchars ($exif_info[$key], $charset_source, $charset_dest);
                 }
-                
+
                 // textnodes search index in database
                 $text_array[$text_id] = $exif_info[$key];
-                        
+  
                 $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
-          
+
                 if ($containerdata_new == false)
                 {
                   $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
                   $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
                   $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
                 }
-          
+
                 if ($containerdata_new != false) $containerdata = $containerdata_new;
                 else
                 {
@@ -3332,45 +3332,45 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         }
 
         // ------------------- XMP-based -------------------
-        
+
         // inject meta data based on mapping
         reset ($mapping);
-        
+
         foreach ($mapping as $key => $text_id)
         {
           // only for XMP (XML-based) tags (DC, Adobe ...)
           if (substr_count ($key, "iptc:") == 0 && substr_count ($key, "hcms:") == 0 && substr_count ($key, "exif:") == 0 && $key != "" && $text_id != "")
-          {          
+          {
             $dcstr = "";
-          
+
             // get type and text ID
             if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
             elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
             else $type = "textu";
-            
+
             if (!empty ($type)) $type_array[$text_id] = $type;
-            
+
             // extract XMP information
             $dc_nodes = getcontent ($mediadata, "<".$key.">");
-            
+
             if (!empty ($dc_nodes[0])) $dc = getcontent ($dc_nodes[0], "<rdf:li *>");
             else $dc = Null;
-            
+
             unset ($dc_nodes);
-            
+
             if (is_array ($dc) && sizeof ($dc) > 0)
             {
               // if Adobe Lightroom hierarchicalSubject should be indexed automatically
               if ($key == "lr:hierarchicalSubject" && strtolower ($text_id) == "automatic")
               {
                 $dc_hierarchs = array();
-                
+
                 foreach ($dc as $temp)
                 {
                   if (strpos ($temp, "|") > 0)
                   {
                     list ($temp_name, $temp_value) = explode ("|", $temp);
-                    
+
                     if (trim ($temp_name) != "" && trim ($temp_value) != "")
                     {
                       if (!empty ($dc_hierarchs[$temp_name])) $dc_hierarchs[$temp_name] .= ",".$temp_value;
@@ -3378,16 +3378,16 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                     }
                   }
                 }
-                
+
                 // save content as keywords using settext
                 if (is_array ($dc_hierarchs) && sizeof ($dc_hierarchs) > 0)
                 {
                   $containerdata_new = settext ($site, $containerdata, $container, $dc_hierarchs, "textk", "no", $user, $user, $charset_dest);
-                  
+
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
                   else return false;
                 }
-                
+
                 unset ($dc_hierarchs);
                 $dcstr = "";
               }
@@ -3406,10 +3406,10 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                     {
                       $tag_start = strpos ("_".$keyword, "<");
                       $tag_end = strpos ("_".$keyword, ">");
-                      
+
                       if ($tag_start > 0 && $tag_end > 0 && $tag_start < $tag_end) $tag_included = true;
                       else $tag_included = false;
-                      
+
                       if (!$tag_included) $dc_reduced[] = $keyword;
                     }
                   }
@@ -3420,15 +3420,15 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 else $dcstr = implode (", ", $dc);
               }
             }
-            
+
             if ($dcstr != "")
             {
               // remove tags
               $dcstr = strip_tags ($dcstr);
-              
+
               // XMP always uses UTF-8 so should any other XML-based format
-              $charset_source = "UTF-8";              
-              
+              $charset_source = "UTF-8";
+
               // convert string for container
               if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
               {
@@ -3439,19 +3439,19 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 // encode to UTF-8
                 if (!is_utf8 ($dcstr)) $dcstr = utf8_encode ($dcstr);
               }
-              
+
               // textnodes search index in database
               $text_array[$text_id] = $dcstr;
-                              
-              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
         
+              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
+
               if ($containerdata_new == false)
               {
                 $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
                 $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
                 $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
               }
-        
+
               if ($containerdata_new != false) $containerdata = $containerdata_new;
               else
               {
@@ -3463,7 +3463,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         }
 
         // ------------------- binary IPTC block -------------------
-        
+
         $size = getimagesize ($medialocation.$mediafile, $info);
 
         if (isset ($info['APP13']))
@@ -3474,7 +3474,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
           if (is_array ($iptc))
           {
             $iptc_info = array();
-            
+
             // list of most common IPTC tags
             // charset info contained in tag 1:90.
             if (isset ($iptc["1#090"][0])) $iptc_info['iptc:charset'] = trim ($iptc["1#090"][0]);
@@ -3537,47 +3537,47 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             else $iptc_info['iptc:image_orientation'] = "";
             if (isset ($iptc["2#135"][0])) $iptc_info['iptc:language'] = trim ($iptc["2#135"][0]);
             else $iptc_info['iptc:language'] = "";
-            
+
             if (!empty ($iptc_info['iptc:charset']))
             {
               $charset_source = iptc_getcharset ($iptc_info['iptc:charset']);
             }
-            else $charset_source = "";        
+            else $charset_source = "";
 
             // inject meta data based on mapping
             reset ($mapping);
-            
+
             foreach ($mapping as $key => $text_id)
             {
               // only for IPTC tags
               if (strpos ("_".$key, "iptc:") > 0 && $text_id != "")
-              {           
+              { 
                 if ($iptc_info[$key] != "")
                 {
                   // get type and text ID
                   if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
                   elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
                   else $type = "textu";
-                  
+
                   if (!empty ($type)) $type_array[$text_id] = $type;
-  
+
                   // importing data from some Mac applications, they may put chr(213) into strings to access a closing quote character.
                   // This prints as a captial O with a tilde above it in a web browser or on Windows. 
                   $iptc_info[$key] = str_replace (chr(213), "'",  $iptc_info[$key]);
-                  
+
                   // clean keywords
                   if ($type == "textk")
                   {
                     $keywords = splitkeywords ($iptc_info[$key], $charset_dest);
-                    
+
                     if (is_array ($keywords)) $iptc_info[$key] = implode (",", $keywords);
                     else $iptc_info[$key] = "";
                   }
-                  
+
                   // remove tags
                   $iptc_info[$key] = strip_tags ($iptc_info[$key]);
-                  
-                  // convert string since IPTC supports different charsets      
+
+                  // convert string since IPTC supports different charsets
                   if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
                   {
                     $iptc_info[$key] = convertchars ($iptc_info[$key], $charset_source, $charset_dest);
@@ -3585,21 +3585,21 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   elseif ($charset_source == false && $charset_dest == "UTF-8")
                   {
                     // encode to UTF-8
-                    if (!is_utf8 ($iptc_info[$key])) $iptc_info[$key] = utf8_encode ($iptc_info[$key]);              
+                    if (!is_utf8 ($iptc_info[$key])) $iptc_info[$key] = utf8_encode ($iptc_info[$key]);
                   }
-                  
+
                   // textnodes for search index in database
-                  $text_array[$text_id] = $iptc_info[$key];                  
+                  $text_array[$text_id] = $iptc_info[$key];
 
                   $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$iptc_info[$key]."]]>", "<text_id>", $text_id);
-            
+
                   if ($containerdata_new == false)
                   {
                     $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
                     $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$iptc_info[$key]."]]>", "<text_id>", $text_id);
                     $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
                   }
-            
+
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
                   else
                   {
@@ -3609,15 +3609,15 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 }
               }
             }
-          }     
+          } 
         }
 
         // ------------------- define and set image quality -------------------
         if (!empty ($mapping['hcms:quality']))
-        {      
+        {
           // get dpi from XMP tag
           $xres_array = getcontent ($mediadata, "<tiff:XResolution>");
-      
+
           if ($xres_array != false)
           {
             if (substr_count ($xres_array[0], "/") == 1)
@@ -3633,7 +3633,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             if (is_array ($exif_data))
             {
               reset ($exif_data);
-              
+
               foreach ($exif_data as $key => $section)
               {
                 if (is_array ($section))
@@ -3643,7 +3643,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                     if (strtolower($key) != "thumbnail" && strtolower($name) == "xresolution")
                     {
                       $xres = $val;
-        
+
                       if (substr_count ($xres, "/") == 1)
                       {
                         list ($x1, $x2) = explode ("/", $xres);
@@ -3655,32 +3655,32 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               }
             }
           }
-      
+
           if (!empty ($xres))
           {
             // get type and text ID
             $text_id = $mapping['hcms:quality'];
-            
+
             if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
             else $type = "textl";
-            
+
             if (!empty ($type)) $type_array[$text_id] = $type;
-          
+
             if ($xres >= 300) $quality = "Print";
             else $quality = "Web";
-      
+
             // textnodes for search index in database
             $text_array[$text_id] = $quality;
-            
+
             $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $text_id);
-      
+
             if ($containerdata_new == false)
             {
               $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
               $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $text_id);
               $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
             }
-      
+
             if ($containerdata_new != false) $containerdata = $containerdata_new;
             else
             {
@@ -3696,17 +3696,17 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         if ($containerdata != false)
         {
           // save content in database (Important!)
-          if ($mgmt_config['db_connect_rdbms'] != "" && is_array ($text_array))
+          if (!empty ($mgmt_config['db_connect_rdbms']) && is_array ($text_array))
           {
-            include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
+            if (!function_exists ("rdbms_setcontent")) include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
             rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);
           }
-          
+
           // save container
           if ($savecontainer == true)
           {
             $save = savecontainer ($container, "work", $containerdata, $user);
-            
+
             if ($save == false)
             {
               $errcode = "20581";
@@ -3720,7 +3720,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
 
   // save log
   savelog (@$error);
-  
+
   // return content container on success
   if (!empty ($containerdata)) return $containerdata;
   else return false;

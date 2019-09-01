@@ -20,14 +20,14 @@ function getserverload ($interval=0)
   $load = 0;
   $memory_usage = 0;
 
-  // for Windows  
+  // for Windows
   if (stristr (PHP_OS, 'win'))
   {
     if (class_exists ('COM'))
     {
       $wmi = new COM ("Winmgmts://");
       $server = $wmi->execquery ("SELECT LoadPercentage FROM Win32_Processor");
-     
+ 
       foreach ($server as $cpu)
       {
         $cpu_num++;
@@ -37,7 +37,7 @@ function getserverload ($interval=0)
     else
     {
       $process = @popen ('wmic cpu get NumberOfCores', 'rb');
-      
+
       if (false !== $process)
       {
         fgets ($process);
@@ -150,7 +150,7 @@ function getsession ($variable, $default="")
     elseif (array_key_exists ($variable, $_SESSION)) $result = $_SESSION[$variable];
     else $result = $default;
 
-    return $result;    
+    return $result;
   }
   else return $default;
 }
@@ -187,7 +187,7 @@ function getrequest ($variable, $force_type=false, $default="")
         if ($result == 1 || $result == "yes" || $result == "true" || $result == "1") $result = true;
         elseif($result == 0 || $result == "no" || $result == "false" || $result == "0") $result = false;
         else $result = $default;
-      }      
+      }
     }
 
     // return result
@@ -206,7 +206,7 @@ function getrequest ($variable, $force_type=false, $default="")
 // Returns the escaped value in order to prevent XSS from POST, GET or COOKIE variables. Returns a default value if not valid.
 
 function getrequest_esc ($variable, $force_type=false, $default="", $js_protection=false)
-{    
+{
   if ($variable != "")
   {
     $result = getrequest ($variable, $force_type, $default);
@@ -214,7 +214,7 @@ function getrequest_esc ($variable, $force_type=false, $default="", $js_protecti
 
     return $result;
   }
-  else return $default;  
+  else return $default;
 }
 
 // ----------------------------------------- getuserip ------------------------------------------
@@ -283,7 +283,7 @@ function getlanguageoptions ()
     {
       foreach ($langcode_array as $langcode)
       {
-        list ($code, $lang) = explode ("|", trim ($langcode));        
+        list ($code, $lang) = explode ("|", trim ($langcode));
         $result[$code] = $lang;
       }
 
@@ -333,7 +333,7 @@ function getcodepage ($lang="en")
   {
     // try to include language file
     if (is_file ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php")) require_once ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php");
-    
+
     if (!empty ($hcms_lang_codepage[$lang])) return $hcms_lang_codepage[$lang];
     else return "UTF-8";
   }
@@ -385,7 +385,7 @@ function getescapedtext ($text, $charset="", $lang="")
       if (!empty ($text_encoded)) return $text_encoded;
     }
   }
-  
+
   // escape special characters <, >, &, ", '
   return html_encode ($text);
 }
@@ -413,7 +413,7 @@ function getsearchhistory ($user="")
         if (substr_count ($record, "|") > 0)
         {
           list ($date, $searchuser, $keyword_add) = explode ("|", $record);
-    
+
           if ($searchuser == $user || $user == "") $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
         }
       }
@@ -559,7 +559,7 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
     if (strpos ("_".$expression, "%taxonomy%/") > 0)
     {
       $slice = explode ("/", $expression);
-      
+
       if (!empty ($slice[0])) $domain = $slice[0];
       if (!empty ($slice[1])) $site = $slice[1];
       if (!empty ($slice[2])) $lang = $slice[2];
@@ -579,7 +579,7 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
       // get synonyms if enabled
       if (!empty ($mgmt_config['search_synonym'])) $expression_array = getsynonym ($expression);
       else $expression_array = array ($expression);
-      
+
       // to lower case
       $expression_array = array_map ('strtolower', $expression_array);
     }
@@ -604,7 +604,7 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
     {
       include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
     }
-    
+
     // search for taxonomy keyword and its childs
     if (!empty ($taxonomy) && is_array ($taxonomy) && sizeof ($taxonomy) > 0)
     {
@@ -629,7 +629,7 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
               // get ID
               $path_temp = substr ($path, 0, -1);
               $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
-              
+
               if ($id_only == true) $result[$id] = $keyword;
               else $result[$tax_lang][$id] = $keyword;
             }
@@ -645,7 +645,7 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
                 // get ID
                 $path_temp = substr ($path, 0, -1);
                 $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
-                
+
                 if ($id_only == true) $result[$id] = $keyword;
                 else $result[$tax_lang][$id] = $keyword;
               }
@@ -700,7 +700,7 @@ function gethierarchy_defintion ($site, $selectname="")
     $record_array = file ($mgmt_config['abs_path_data']."config/".$site.".hierarchy.dat");
 
     if (is_array ($record_array) && sizeof ($record_array) > 0)
-    {      
+    {
       foreach ($record_array as $record)
       {
         $hierarchy_array = explode ("|", trim ($record));
@@ -727,7 +727,7 @@ function gethierarchy_defintion ($site, $selectname="")
                   if (substr_count ($labels, ";") > 0)
                   {
                     $labels_array = explode (";", $labels);
-                    
+
                     if (is_array ($labels_array) && sizeof ($labels_array) > 0)
                     {
                       foreach ($labels_array as $label_entry)
@@ -837,7 +837,7 @@ function gethierarchy_sublevel ($hierarchy_url)
               }
             }
           }
-        }     
+        } 
       }
       // last hierarchy element presents a text ID
       elseif ($last_text_id != "")
@@ -1033,7 +1033,7 @@ function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $pri
 
     // the replace array, this works as file => replacement, so 'index.php' => '', would make the index.php be listed as just /
     $replace = array('index.php' => '', 'index.htm' => '', 'index.html' => '', 'index.xhtml' => '', 'index.jsp' => '', 'default.asp' => '', 'default.aspx' => '');
-      
+
     // crawl dir
     $scandir = scandir ($dir);
     $result_array = array();
@@ -1044,7 +1044,7 @@ function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $pri
       {
         // check if this file needs to be ignored, if so, skip it
         if (in_array ($file, $ignore)) continue;
-        
+
         if (is_dir ($dir.$file))
         {
           $resultnew_array = collecturlnodes ($site, $dir.$file.'/', $url.$file.'/', $getpara, $permalink, $chfreq, $prio, $ignore_array, $filetypes_array, $show_freq, $show_prio);
@@ -1068,7 +1068,7 @@ function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $pri
             $dirlevel = substr_count ($url, "/");
             if ($dirlevel <= 4) $setprio = 1;
             else $setprio = round ((4 / $dirlevel), 2);
-            
+
             if ($setprio > 1) $setprio = 1;
           }
           else $setprio = 1;
@@ -1084,7 +1084,7 @@ function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $pri
 
             // load content container of object
             $xmldata = getobjectcontainer ($site, $dir, $file, "sys");
-    
+
             if ($xmldata != "")
             {
               reset ($permalink);
@@ -1096,7 +1096,7 @@ function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $pri
                 if ($textnode != false)
                 {
                   $textcontent = getcontent ($textnode[0], "<textcontent>");
-      
+
                   if (!empty ($textcontent[0]))
                   {
                     $navlink[$i] = substr ($url, 0, strpos ($url, "/", 8)).$textcontent[0];
@@ -1164,7 +1164,7 @@ function getgooglesitemap ($site, $dir, $url, $getpara=array(), $permalink=array
   global $mgmt_config, $publ_config;
 
   if (valid_publicationname ($site) && $dir != "" && is_dir ($dir) && $url != "")
-  {  
+  {
     // cget url nodes
     $result_array = collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $prio, $ignore, $filetypes, $show_freq, $show_prio);
 
@@ -1248,7 +1248,7 @@ function getlistelements ($list_sourcefile)
               $folder_array[] = specialchr_decode ($item);
             }
           }
-          
+
           if (is_array ($folder_array) && sizeof ($folder_array) > 0)
           {
             natcasesort ($folder_array);
@@ -1308,7 +1308,7 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
     {
   		// read file
   		$objectdata = loadfile ($location, $object);
-      
+
   		// get name of container
   		if ($objectdata != "")
       {
@@ -1405,7 +1405,7 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
         if (!is_array ($labels))
         {
   				$textnode = getcontent ($contentdata, "<text>");
-          
+
   				if ($textnode != false)
           {
   					if (strtolower ($seperator) != "array") $metadata = "";
@@ -1699,7 +1699,7 @@ function getmetadata_container ($container_id, $text_id_array)
         if (in_array ("createdate", $text_id_array))
         {
           $temp = getcontent ($contentdata, "<contentcreated>");
-        
+
           if (!empty ($temp[0])) $result['createdate'] = $temp[0];
           else $result['createdate'] = "";
         }
@@ -1717,7 +1717,7 @@ function getmetadata_container ($container_id, $text_id_array)
         if (in_array ("owner", $text_id_array))
         {
           $temp = getcontent ($contentdata, "<contentuser>");
-          
+
           if (!empty ($temp[0])) $result['user'] = $temp[0];
           else $result['user'] = "";
         }
@@ -1725,12 +1725,12 @@ function getmetadata_container ($container_id, $text_id_array)
         if (is_array ($text_id_array) && sizeof ($text_id_array) > 0)
         {
 				  $textnode = getcontent ($contentdata, "<text>");
-          
+
 					foreach ($textnode as $buffer)
           {
             // get info from container
 						$text_id = getcontent ($buffer, "<text_id>");
-            
+
             // only include requested text IDs
             if (in_array ("text:".$text_id[0], $text_id_array))
             {
@@ -1774,7 +1774,7 @@ function getobjectcontainer ($site, $location, $object, $user, $type="work")
 
   // if object includes special characters
   if (specialchr ($object, ".-_~") == true)
-  {      
+  {
     $object = specialchr_encode ($object, "no");
   }
 
@@ -1790,8 +1790,8 @@ function getobjectcontainer ($site, $location, $object, $user, $type="work")
       $object = ".folder";
     }
     else
-    {   
-      $object = correctfile ($location, $object, $user);   
+    { 
+      $object = correctfile ($location, $object, $user); 
     }
 
     // load object file
@@ -1809,7 +1809,7 @@ function getobjectcontainer ($site, $location, $object, $user, $type="work")
 
       if ($data != false && $data != "") return $data;
       else return false;
-    }    
+    }
   }
   else return false;
 }
@@ -1832,16 +1832,52 @@ function getcontainer ($containerid, $type)
 
 // ------------------------------------------ getwallpaper --------------------------------------------
 // function: getwallpaper()
-// input: version number [string] (optional)
+// input: design theme name [string] (optional), version number for the wallpaper service [string] (optional)
 // output: URL of wallpaper image / false
 // requires: config.inc.php
 
 // description:
 // Provides a wallpaper image or video used for the logon and home screen.
 
-function getwallpaper ($version="")
+function getwallpaper ($theme="", $version="")
 {
   global $mgmt_config;
+
+  // get theme from session
+  if (empty ($theme)) $theme = getsession ("hcms_themename");
+
+  // 1. wallpaper from design theme
+  if (valid_locationname ($theme))
+  {
+    // get theme location (portal themes, system themes)
+    if (strpos ($theme, "/") > 0 && is_dir ($mgmt_config['abs_path_rep']."portal/".$theme))
+    {
+      $root_abs = $mgmt_config['abs_path_rep']."portal/";
+      $root_url = $mgmt_config['url_path_rep']."portal/";
+    }
+    else
+    {
+      $root_abs = $mgmt_config['abs_path_cms']."theme/";
+      $root_url = $mgmt_config['url_path_cms']."theme/";
+    }
+
+    // get theme wallpaper
+    if (is_file ($root_abs.$theme."/img/wallpaper.jpg")) $wallpaper = cleandomain ($root_url.$theme."/img/wallpaper.jpg");
+    elseif (is_file ($root_abs.$theme."/img/wallpaper.png")) $wallpaper = cleandomain ($root_url.$theme."/img/wallpaper.png");
+  }
+  // get system wallpaper
+  elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
+
+  if (!empty ($wallpaper)) return $wallpaper;
+
+  // 2. wallpaper service
+  // get version
+  if (empty ($version) && is_file ($mgmt_config['abs_path_cms']."version.inc.php"))
+  {
+    // version info
+    include ($mgmt_config['abs_path_cms']."version.inc.php");
+    if (!empty ($mgmt_config['version'])) $version = $mgmt_config['version'];
+  }
 
   // get wallpaper name
   $wallpaper_name = @file_get_contents ("http://cloud.hypercms.net/wallpaper/?action=name&version=".urlencode($version));
@@ -1895,7 +1931,7 @@ function getcontainername ($container)
       $container_id = sprintf ("%07d", $container_id);
       $container = $container_id.".xml";
     }
-    
+
     if (strpos ($container, ".wrk") > 0)
     {
       // cut off version or user extension
@@ -1913,7 +1949,7 @@ function getcontainername ($container)
       // return result
       $result['result'] = true;
       $result['container'] = $containerwrk;
-      $result['user'] = "";    
+      $result['user'] = "";
       return $result;
     }
     // container exists and is locked by current user
@@ -1922,7 +1958,7 @@ function getcontainername ($container)
       // return result
       $result['result'] = true;
       $result['container'] = $containerwrk.".@".$_SESSION['hcms_user'];
-      $result['user'] = $_SESSION['hcms_user'];    
+      $result['user'] = $_SESSION['hcms_user'];
       return $result;
     }
     // container is locked or does not exist
@@ -1939,12 +1975,12 @@ function getcontainername ($container)
           { 
             $containerwrk = $entry;
             $user = substr ($entry, strpos ($entry, "wrk.@") + 5);
-            
+
             $result['result'] = true;
             $result['container'] = $containerwrk;
             $result['user'] = $user;
             return $result;
-          }   
+          } 
         }
       }
     }
@@ -1977,7 +2013,7 @@ function getlocationname ($site, $location, $cat, $source="path")
     // input is converted location
     if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1 && isset ($mgmt_config[$site]) && is_array ($mgmt_config[$site]))
     {
-      if ($site == "") $site = getpublication ($location);      
+      if ($site == "") $site = getpublication ($location);
       if ($cat == "") $cat = getcategory ($site, $location);
 
       $location_esc = $location;
@@ -1992,7 +2028,7 @@ function getlocationname ($site, $location, $cat, $source="path")
       $location_abs = $location;
     }
     else return false;
-    
+
     if (valid_publicationname ($site) && $location_esc != "" && $location_abs != "")
     {
       // get names from name file pointer
@@ -2015,11 +2051,12 @@ function getlocationname ($site, $location, $cat, $source="path")
           $location_name = $foldername."/".$location_name;
           // reset name
           $foldername = "";
-          // get parent location   
+          // get parent location 
           $location_folder = getlocation ($location_folder);
         }
+
         if ($cat == "page") $location_name = "/".$site."/".$location_name;
-        elseif ($cat == "comp") $location_name = "/".$location_name;    
+        elseif ($cat == "comp") $location_name = "/".$location_name;
       }
       // get names from decoding the file path
       else
@@ -2040,6 +2077,74 @@ function getlocationname ($site, $location, $cat, $source="path")
   else return false;
 }
 
+// --------------------------------------- getthemes -------------------------------------------
+// function: getthemes ()
+// input: publication name as string or array [string,array] (optional)
+// output: all design theme names as array / false
+
+// description:
+// Returns all design theme names as values and the techical names (path) as key of the result array.
+
+function getthemes ($site_array=array())
+{
+  global $mgmt_config;
+
+  $theme_array = array();
+
+  // system themes
+  $theme_dir = $mgmt_config['abs_path_cms']."theme/";
+  $scandir = scandir ($theme_dir);
+
+  if ($scandir)
+  {
+    foreach ($scandir as $entry)
+    {
+      if (strtolower($entry) != "mobile" && $entry != "." && $entry != ".." && is_dir ($theme_dir.$entry) && is_dir ($theme_dir.$entry."/img") && is_dir ($theme_dir.$entry."/css"))
+      { 
+        $theme_array[$entry] = ucfirst ($entry);
+      }
+    }
+  }
+
+  // portal design themes of the publication
+  if (!is_array ($site_array) && valid_publicationname ($site_array))
+  {
+    $site_array = array($site_array);
+  }
+
+  if (is_array ($site_array) && sizeof ($site_array) > 0)
+  {
+    foreach ($site_array as $site)
+    {
+      if (valid_publicationname ($site) && is_dir ($mgmt_config['abs_path_rep']."portal/".$site."/"))
+      {
+        $theme_dir = $mgmt_config['abs_path_rep']."portal/".$site."/";
+        $scandir = scandir ($theme_dir);
+
+        if ($scandir)
+        {
+          foreach ($scandir as $entry)
+          {
+            if ($entry != "." && $entry != ".." && is_dir ($theme_dir.$entry) && is_dir ($theme_dir.$entry."/img") && is_dir ($theme_dir.$entry."/css"))
+            {
+              $theme_array[$site."/".$entry] = $site."/".$entry;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // prepare output
+  if (sizeof ($theme_array) > 0)
+  {
+    natcasesort ($theme_array);
+    reset ($theme_array);
+    return $theme_array;
+  }
+  else return false;
+}
+
 // --------------------------------------- getthemelocation -------------------------------------------
 // function: getthemelocation ()
 // input: theme name [string] (optional)
@@ -2047,30 +2152,39 @@ function getlocationname ($site, $location, $cat, $source="path")
 
 // description:
 // Returns the absolute path (URL) of the theme (css and images).
+// If the main configuration setting $mgmt_config['theme'] defines a theme, this theme will be mandatory in case it exists.
 
 function getthemelocation ($theme="")
 {
   global $mgmt_config;
 
-  // input parameter
-  if (valid_objectname ($theme) && is_dir ($mgmt_config['abs_path_cms']."theme/".$theme))
+  // mandatory theme defined by main configuration
+  if (!empty ($mgmt_config['theme']) && valid_locationname ($mgmt_config['theme']))
   {
-    return cleandomain ($mgmt_config['url_path_cms']."theme/".$theme."/");
+    $theme = $mgmt_config['theme'];
   }
-  // theme path from session
-  elseif (!empty ($_SESSION['hcms_themepath']))
+  // get theme from session if no input is available
+  elseif (trim ($theme) == "" && !empty ($_SESSION['hcms_themename']) && valid_locationname ($_SESSION['hcms_themename']))
   {
-    return $_SESSION['hcms_themepath'];
+    $theme = $_SESSION['hcms_themename'];
   }
-  // theme name from session
-  elseif (!empty ($_SESSION['hcms_themename']) && is_dir ($mgmt_config['abs_path_cms']."theme/".$_SESSION['hcms_themename']))
+
+  // get theme location for portal themes or system themes
+  if (valid_locationname ($theme) && strpos ($theme, "/") > 0 && is_dir ($mgmt_config['abs_path_rep']."portal/".$theme."/css"))
   {
-    return cleandomain ($mgmt_config['url_path_cms']."theme/".$_SESSION['hcms_themename']."/");
-  }    
-  // from main config 
-  elseif (valid_objectname ($mgmt_config['theme']) && is_dir ($mgmt_config['abs_path_cms']."theme/".$mgmt_config['theme']))
+    $root_abs = $mgmt_config['abs_path_rep']."portal/";
+    $root_url = $mgmt_config['url_path_rep']."portal/";
+  }
+  else
   {
-    return cleandomain ($mgmt_config['url_path_cms']."theme/".$mgmt_config['theme']."/");
+    $root_abs = $mgmt_config['abs_path_cms']."theme/";
+    $root_url = $mgmt_config['url_path_cms']."theme/";
+  }
+
+  // theme defined by session or input parameter
+  if (valid_locationname ($theme) && is_dir ($root_abs.$theme."/css"))
+  {
+    return cleandomain ($root_url.$theme."/");
   }
   // default theme
   else
@@ -2102,17 +2216,17 @@ function getcategory ($site="", $location)
     elseif (@substr_count ($location, "%comp%") >= 1)
     {
       $cat = "comp";
-    }  
+    }
     elseif (@substr_count ($location, "://") == 0 && valid_publicationname ($site))
     {
       if (!empty ($mgmt_config['abs_path_comp']) && !empty ($mgmt_config[$site]['abs_path_page']) && strlen ($mgmt_config['abs_path_comp']) > strlen ($mgmt_config[$site]['abs_path_page']))
       {
         if (@substr_count ($location, $mgmt_config['abs_path_comp']) == 1) $cat = "comp";
         elseif (@substr_count ($location, $mgmt_config[$site]['abs_path_page']) == 1) $cat = "page";
-      }  
+      }
       else
       {
-        if (@substr_count ($location, $mgmt_config[$site]['abs_path_page']) == 1) $cat = "page";            
+        if (@substr_count ($location, $mgmt_config[$site]['abs_path_page']) == 1) $cat = "page";
         elseif (@substr_count ($location, $mgmt_config['abs_path_comp']) == 1) $cat = "comp";
       }
     }
@@ -2122,10 +2236,10 @@ function getcategory ($site="", $location)
       {
         if (@substr_count ($location, $mgmt_config['url_path_comp']) == 1) $cat = "comp";
         elseif (@substr_count ($location, $mgmt_config[$site]['url_path_page']) == 1) $cat = "page";
-      }  
+      }
       else
       {
-        if (@substr_count ($location, $mgmt_config[$site]['url_path_page']) == 1) $cat = "page";            
+        if (@substr_count ($location, $mgmt_config[$site]['url_path_page']) == 1) $cat = "page";
         elseif (@substr_count ($location, $mgmt_config['url_path_comp']) == 1) $cat = "comp";
       }
 
@@ -2141,10 +2255,10 @@ function getcategory ($site="", $location)
         {
           if (@substr_count ($location, $publ_config['url_publ_comp']) == 1) $cat = "comp";
           elseif (@substr_count ($location, $publ_config['url_publ_page']) == 1) $cat = "page";
-        }  
+        }
         else
         {
-          if (@substr_count ($location, $publ_config['url_publ_page']) == 1) $cat = "page";            
+          if (@substr_count ($location, $publ_config['url_publ_page']) == 1) $cat = "page";
           elseif (@substr_count ($location, $publ_config['url_publ_comp']) == 1) $cat = "comp";
         }
       } 
@@ -2152,7 +2266,7 @@ function getcategory ($site="", $location)
     else return false;
   }
   else return false;
-  
+
   if (!empty ($cat) && ($cat == "page" || $cat == "comp")) return $cat;
   else return false;
 }
@@ -2180,10 +2294,10 @@ function getpublication ($path)
     if ($root_var != false)
     {
       $pos1 = @strpos ($path, $root_var) + strlen ($root_var);
-      
+
       if ($pos1 != false) $pos2 = @strpos ($path, "/", $pos1);
       else $pos2 = false;
-      
+
       if ($pos1 != false && $pos2 != false) $site = @substr ($path, $pos1, $pos2-$pos1);
       else $site = false;
     }
@@ -2221,7 +2335,7 @@ function getlocation ($path)
     {
       // remove slash at the end of the objectpath string
       $location = substr ($path, 0, strlen ($path)-1);
-      $location = substr ($location, 0, strrpos ($location, "/")+1);          
+      $location = substr ($location, 0, strrpos ($location, "/")+1);
     }
 
     return $location;
@@ -2254,7 +2368,7 @@ function getobject ($path)
       {
         // remove slash at the end of the objectpath string
         $path = substr ($path, 0, strlen ($path) - 1);
-        $object = substr ($path, strrpos ($path, "/") + 1);          
+        $object = substr ($path, strrpos ($path, "/") + 1);
       }
 
       // if path holds parameters (URL)
@@ -2334,14 +2448,14 @@ function getmediacontainerid ($file)
 function getmediafileversion ($container)
 {
   global $mgmt_config, $user;
-  
+
   if (valid_objectname ($container))
   {
     // if container with media file version (media file name = container version name)
     if (strpos ("_".$container, "_hcm") > 0)
     {
       $container_id = getmediacontainerid ($container);
-      
+
       if (@preg_match ("/_hcm".$container_id."/i", $container))
       {
         return $mediafile = $container;
@@ -2359,7 +2473,7 @@ function getmediafileversion ($container)
     {
       // get container file extension
       if (strpos ($container, ".") > 0) $ext = substr ($container, strrpos ($container, "."));
-      
+
       // if container version (object files might not exist anymore)
       if (!empty ($ext) && strpos ("_".$ext, ".v_") > 0)
       {
@@ -2373,18 +2487,21 @@ function getmediafileversion ($container)
 
         $version_container = array();
 
-        foreach ($scandir as $entry)
+        if ($scandir)
         {
-          // only select versions when media file has been changed
-          if ($entry != "." && $entry != ".." && is_file ($version_dir.$entry) && preg_match ("/_hcm".$container_id."./i", $entry))
+          foreach ($scandir as $entry)
           {
-            // get file extension of container version
-            $version_ext = substr ($entry, strrpos ($entry, "."));
-            
-            // time stamp of version (YYYYMMDDHHMMSS)
-            $version_timestamp = str_replace (array(".v_", "-", "_"), array("", "", ""), $version_ext);
-            
-            $version_container[$version_timestamp] = $entry;
+            // only select versions when media file has been changed
+            if ($entry != "." && $entry != ".." && is_file ($version_dir.$entry) && preg_match ("/_hcm".$container_id."./i", $entry))
+            {
+              // get file extension of container version
+              $version_ext = substr ($entry, strrpos ($entry, "."));
+
+              // time stamp of version (YYYYMMDDHHMMSS)
+              $version_timestamp = str_replace (array(".v_", "-", "_"), array("", "", ""), $version_ext);
+
+              $version_container[$version_timestamp] = $entry;
+            }
           }
         }
 
@@ -2400,7 +2517,7 @@ function getmediafileversion ($container)
           foreach ($version_container as $version_timestamp => $version_mediafile)
           {
             if ($reference_timestamp >= $version_timestamp) break;
-            
+
             $mediafile = $version_mediafile;
           }
         }
@@ -2443,12 +2560,12 @@ function getobjectid ($objectlink)
             if (strpos ("_".$objectpath, "%page%") > 0 || strpos ("_".$objectpath, "%comp%") > 0)
             {
               $objectinfo = getobjectinfo (getpublication ($objectpath), getlocation ($objectpath), getobject ($objectpath));
-              
+
               // if object is a multimedia object
               if (!empty ($objectinfo['media']))
               {
                 $objectid = rdbms_getobject_id ($objectpath);
-                
+
                 // object ID exists
                 if ($objectid > 0) $objectlink_conv .= $objectid."|";
                 // no object ID -> use object path
@@ -2470,12 +2587,12 @@ function getobjectid ($objectlink)
       if (strpos ("_".$objectlink, "%page%") > 0 || strpos ("_".$objectlink, "%comp%") > 0)
       {
         $objectinfo = getobjectinfo (getpublication ($objectlink), getlocation ($objectlink), getobject ($objectlink));
-        
+
         // if object is a multimedia object
         if (!empty ($objectinfo['media']))
         {
           $objectid = rdbms_getobject_id ($objectlink);
-          
+
           // object ID exists
           if ($objectid > 0) $objectlink_conv = $objectid;
           // no object ID -> use object path
@@ -2572,7 +2689,7 @@ function getcontainerversions ($container)
     // get container ID
     if (strpos ($container, ".") > 0) $container_id = substr ($container, 0, strpos ($container, "."));
     else $container_id = $container;
-    
+
     // get container location
     $versiondir = getcontentlocation ($container_id, 'abs_path_content');
 
@@ -2591,12 +2708,12 @@ function getcontainerversions ($container)
           $time = substr ($file_v_ext, strpos ($file_v_ext, "_") + 1);
           $time = str_replace ("-", ":", $time);
           $date_v = $date." ".$time;
-          
+
           $result[$date_v] = $entry;
         }
       }
     }
-    
+
     if (sizeof ($result) > 0)
     {
       ksort ($result);
@@ -2609,13 +2726,13 @@ function getcontainerversions ($container)
 
 // ---------------------- getlocaltemplates -----------------------------
 // function: getlocaltemplates()
-// input: publication name [string], template category [page,comp,meta,inc] (optional)
+// input: publication name [string], template category [all,page,comp,meta,inc,portal] (optional)
 // output: array with all template names / false
 
 // description:
 // This function returns a list of all templates of a publication without inherited templates from other publications.
 
-function getlocaltemplates ($site, $cat="")
+function getlocaltemplates ($site, $cat="all")
 {
   global $mgmt_config;
 
@@ -2629,7 +2746,7 @@ function getlocaltemplates ($site, $cat="")
     {
       foreach ($scandir as $entry)
       {
-        if ($entry != "." && $entry != ".." && !is_dir ($entry) && substr_count ($entry, ".tpl.v_") == 0 && substr_count ($entry, ".bak") == 0)
+        if ($entry != "." && $entry != ".." && !is_dir ($entry) && substr_count ($entry, ".tpl.v_") < 1 && substr_count ($entry, ".bak") < 1)
         {
           if ($cat == "page" && strpos ($entry, ".page.tpl") > 0)
           {
@@ -2642,12 +2759,16 @@ function getlocaltemplates ($site, $cat="")
           elseif ($cat == "meta" && strpos ($entry, ".meta.tpl") > 0)
           {
             $template_files[] = $entry;
-          }                
+          }
           elseif ($cat == "inc" && strpos ($entry, ".inc.tpl") > 0)
           {
             $template_files[] = $entry;
           }
-          elseif ($cat == "")
+          elseif ($cat == "portal" && strpos ($entry, ".portal.tpl") > 0)
+          {
+            $template_files[] = $entry;
+          }
+          elseif ($cat == "all" || $cat == "")
           {
             $template_files[] = $entry;
           }
@@ -2676,6 +2797,7 @@ function getlocaltemplates ($site, $cat="")
 // description:
 // This function returns a list of all templates for pages or components.
 // Based on the inheritance settings of the publication the template will be loaded with highest priority from the own publication and if not available from a parent publication.
+// Portal templates are not supoported by the template inheritance due to the fact that the portal access link permission is connected to a specific publication.
 
 function gettemplates ($site, $cat="all")
 {
@@ -2700,6 +2822,19 @@ function gettemplates ($site, $cat="all")
 
     foreach ($site_array as $site_source)
     {
+      // home box component template
+      if (!empty ($mgmt_config['homeboxes_directory']) && $cat == "comp")
+      {
+        // remove trailing slashes
+        $mgmt_config['homeboxes_directory'] = trim ($mgmt_config['homeboxes_directory'], "/");
+
+        if (valid_locationname ($mgmt_config['homeboxes_directory']) && is_dir ($mgmt_config['abs_path_comp'].$site."/".$mgmt_config['homeboxes_directory']))
+        {
+          $template_array[] = "System-HomeBox.comp.tpl";
+        }
+      }
+
+      // standard templates
       $scandir = scandir ($mgmt_config['abs_path_template'].$site_source."/");
 
       if ($scandir)
@@ -2720,7 +2855,10 @@ function gettemplates ($site, $cat="all")
             {
               $template_array[] = $entry;
             }
-            elseif ($cat == "all") $template_array[] = $entry;   
+            elseif ($cat == "all" || $cat == "")
+            {
+              $template_array[] = $entry; 
+            }
           }
         }
       }
@@ -2739,7 +2877,7 @@ function gettemplates ($site, $cat="all")
   }
   else return false;
 }
-            
+
 // ---------------------- gettemplateversions -----------------------------
 // function: gettemplateversions()
 // input: publication name [string], template name [string]
@@ -2748,7 +2886,7 @@ function gettemplates ($site, $cat="all")
 function gettemplateversions ($site, $template)
 {
   global $mgmt_config;
-  
+
   if (valid_publicationname ($site) && valid_objectname ($template))
   {
     $result = array();
@@ -2776,7 +2914,7 @@ function gettemplateversions ($site, $template)
         }
       }
     }
-    
+
     if (sizeof ($result) > 0)
     {
       ksort ($result);
@@ -2806,14 +2944,14 @@ function gettemplateversions ($site, $template)
 function getfileinfo ($site, $file, $cat="comp")
 {
   global $mgmt_config;
-  
+
   if ($file != "" && (valid_publicationname ($site) || ($cat == "page" || $cat == "comp")))
   {
     include ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-  
+
     // if file has an extension or holds a path
     if (substr_count ($file, ".") > 0 || substr_count ($file, "/") > 0)
-    {            
+    {
       // get the file extension of the file
       $file_ext_orig = strrchr ($file, ".");
       $file_ext = strtolower ($file_ext_orig);
@@ -2831,7 +2969,7 @@ function getfileinfo ($site, $file, $cat="comp")
         }
         else $folder_name = $file;
 
-        if ($cat == "") $cat = getcategory ($site, $file);  
+        if ($cat == "") $cat = getcategory ($site, $file);
 
         // if deleted folder
         if (substr ($folder_name, -8) == ".recycle")
@@ -2875,7 +3013,7 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_name = "Message";
           // get file name without extensions
           $file_nameonly = "Message";
-          
+
           $file_published = false;
           $file_deleted = false;
         }
@@ -2887,7 +3025,7 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
           // get file extension of file name minus .recycle
           $file_ext = strtolower (strrchr ($file_name, "."));
-          
+
           $file_published = false;
           $file_deleted = true;
         }
@@ -2899,7 +3037,7 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
           // get file extension of file name minus .off
           $file_ext = strtolower (strrchr ($file_name, "."));
-          
+
           $file_published = false;
           $file_deleted = false;
         }
@@ -2909,7 +3047,7 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_name = $file; 
           // get file name without extension
           $file_nameonly = strrev (substr (strstr (strrev ($file), "."), 1));
-          
+
           $file_published = true;
           $file_deleted = false;
         }
@@ -2973,13 +3111,13 @@ function getfileinfo ($site, $file, $cat="comp")
         {
           $file_icon = "file_odp.png";
           $file_type = "OO Presentation";
-        }                      
+        }
         // text based documents in proprietary format or clear text 
         elseif (@substr_count (strtolower ($hcms_ext['bintxt']).".", $file_ext.".") > 0 || @substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_txt.png";
           $file_type = "Text";
-        }       
+        } 
         // image files 
         elseif (@substr_count (strtolower ($hcms_ext['image'].$hcms_ext['rawimage']).".", $file_ext.".") > 0)
         {
@@ -3004,7 +3142,7 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_icon = "file_qt.png";
           $file_type = "Quicktime Video";
         }
-        // Video files  
+        // Video files
         elseif (@substr_count (strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_mpg.png";
@@ -3039,12 +3177,12 @@ function getfileinfo ($site, $file, $cat="comp")
           {
             $file_icon = "template_media.png";
             $file_type = "Meta Data Template";
-          }        
+          }
           elseif (@substr_count ($file, ".inc.tpl"))
           {
             $file_icon = "template_comp.png";
             $file_type = "Template Component";
-          }          
+          }
 
           $file_type = "Template";
         }
@@ -3059,15 +3197,15 @@ function getfileinfo ($site, $file, $cat="comp")
           elseif ($cat == "comp")
           {
             $file_icon = "file_comp.png";
-            $file_type = "Component";      
+            $file_type = "Component";
           }
           else
           {
             $file_icon = "file_page.png";
-            $file_type = "Page";        
+            $file_type = "Page";
           }
-        }  
-        // all other files    
+        }
+        // all other files
         else
         {
           $file_icon = "file_binary.png";
@@ -3080,7 +3218,7 @@ function getfileinfo ($site, $file, $cat="comp")
     {
       // if file holds a path
       if (@substr_count ($file, "/") > 0) $file = getobject ($file);
-          
+
       $file_name = $file;
       $file_nameonly = $file;
       $file_icon = "file_binary.png";
@@ -3120,7 +3258,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
 
   // deconvert location
   $location = deconvertpath ($location, "file"); 
-    
+
   // if object includes special characters
   if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
 
@@ -3153,8 +3291,8 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
       $object = ".folder";
     }
     elseif (!is_file ($location.$object))
-    {   
-      $object = correctfile ($location, $object, $user);   
+    { 
+      $object = correctfile ($location, $object, $user); 
     }
 
     // get name
@@ -3188,7 +3326,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
       if (strpos ("_".$container_version, "_hcm") > 0)
       {
         $container_id = getmediacontainerid ($container_version);
-        
+
         if (@preg_match ("/_hcm".$result['container_id']."/i", $container_version))
         {
           $result['media'] = $container_version;
@@ -3211,7 +3349,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
         $mediafile = getmediafileversion ($container_version);
 
         if (!empty ($mediafile)) $result['media'] = $mediafile;
-      
+
         // get object name from container
         $container_data = loadcontainer ($container_version, "version", $user);
         $contentobjects_temp = getcontent ($container_data, "<contentobjects>");
@@ -3276,7 +3414,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
 function getfilesize ($file)
 {
   global $mgmt_config;
-  
+
   if (is_array ($mgmt_config) && valid_locationname ($file) && (substr_count ($file, "%page%") == 1 || substr_count ($file, "%comp%") == 1))
   {
     $cat = getcategory ("", $file);
@@ -3315,12 +3453,12 @@ function getfilesize ($file)
         $n = 0;
 
         // add slash if not present at the end
-        if (substr ($file, -1) != "/") $file = $file."/";           
+        if (substr ($file, -1) != "/") $file = $file."/"; 
 
         foreach ($scandir as $item)
         {
           if ($item == "." || $item == ".." || $item == ".folder") continue;
-          
+
           $n++;
           $data = getfilesize ($file.$item);
           $size += $data['filesize'];
@@ -3349,7 +3487,7 @@ function getfilesize ($file)
 function getmimetype ($file)
 {
   global $mgmt_config;
-  
+
   if (valid_objectname ($file))
   {
     include ($mgmt_config['abs_path_cms']."include/format_mime.inc.php");
@@ -3514,12 +3652,12 @@ function getpreviewwidth ($site, $filepath, $width_orig="")
 function getimagecolorkey ($image)
 {
   global $mgmt_config;
-  
+
   if ($image)
   {
     $width = imagesx ($image);
     $height = imagesy ($image);
-    
+
     $colors = array (
     "K"=>array(0,0,0), 			// Black
     "W"=>array(255,255,255),	// White
@@ -3554,10 +3692,10 @@ function getimagecolorkey ($image)
     "N"=>array(180,160,130),	// Pale Brown
     "N"=>array(170,140,110),	// Pale Brown
     );
-    
+
     $table = array();
     $depth = 50;
-    
+
     for ($y=0; $y<$depth; $y++)
     {
       for ($x=0; $x<$depth; $x++)
@@ -3569,34 +3707,34 @@ function getimagecolorkey ($image)
         // which color
         $bestdist = 99999;
         $bestkey = "";
-        
+
         reset ($colors);
-        
+
         foreach ($colors as $key=>$value)
         {
           $distance = sqrt (pow (abs ($red - $value[0]), 2) + pow (abs ($green - $value[1]), 2) + pow (abs ($blue - $value[2]), 2));
-          
+
           if ($distance < $bestdist)
           {
             $bestdist = $distance;
             $bestkey = $key;
           }
         }
-        
+
         // add this color to the color table
         if (array_key_exists ($bestkey, $table)) $table[$bestkey]++;
         else $table[$bestkey] = 1;
       }
     }
-    
+
     asort ($table);
     reset ($table);
     $colorkey = "";
     foreach ($table as $key=>$value) $colorkey .= $key;
-    
+
     // color key with the 5 mostyl used colors in the image
     $colorkey = substr (strrev ($colorkey), 0, 5);
-    
+
     return $colorkey;
   }
   else return false;
@@ -3613,13 +3751,13 @@ function getimagecolorkey ($image)
 function getimagecolors ($site, $file)
 {
   global $mgmt_config, $user;
-  
+
   if (valid_publicationname ($site) && valid_objectname ($file))
-  {  
+  {
     $media_root = getmedialocation ($site, $file, "abs_path_media").$site."/";
     $file_info = getfileinfo ($site, $file, "comp");
     $file = $file_info['file'];
-    
+
     // try thumbnail image first
     $thumbnail = $file_info['filename'].".thumb.jpg";
 
@@ -3646,7 +3784,7 @@ function getimagecolors ($site, $file)
         $media_root = $temp_source['location'];
         $file = $temp_source['file'];
       }
-      
+
       // verify local media file
       if (!is_file ($media_root.$file)) return false;
 
@@ -3654,7 +3792,7 @@ function getimagecolors ($site, $file)
       elseif ($file_info['ext'] == ".png") $image = imagecreatefrompng ($media_root.$file);
       elseif ($file_info['ext'] == ".gif") $image = imagecreatefromgif ($media_root.$file);
       else $image = false;
-      
+
       // delete temp file
       if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
     }
@@ -3667,7 +3805,7 @@ function getimagecolors ($site, $file)
       $totalgreen = 0;
       $totalblue = 0;
       $total = 0;
-      
+
       for ($y=0; $y<20; $y++)
       {
         for ($x=0; $x<20; $x++)
@@ -3676,7 +3814,7 @@ function getimagecolors ($site, $file)
           $red = ($rgb >> 16) & 0xFF;
           $green = ($rgb >> 8) & 0xFF;
           $blue = $rgb & 0xFF;
-    
+
           // calculate deltas (remove brightness factor)
           $cmax = max ($red, $green, $blue);
           $cmin = min ($red, $green, $blue);
@@ -3686,14 +3824,14 @@ function getimagecolors ($site, $file)
             $cmax = 10;
             $cmin = 0;
           } 
-          
+
           // ignore gray, white and black
           if (abs ($cmax - $cmin) >= 20) 
           {
             $red = floor ((($red - $cmin) /($cmax - $cmin)) * 255);
             $green = floor ((($green - $cmin) / ($cmax - $cmin)) * 255);
             $blue = floor ((($blue - $cmin) / ($cmax - $cmin)) * 255);
-    
+
             $total++;
             $totalred += $red;
             $totalgreen += $green;
@@ -3701,29 +3839,29 @@ function getimagecolors ($site, $file)
           }
         }
       }
-      
+
       if ($total == 0) $total = 1;
       $totalred = floor ($totalred / $total);
       $totalgreen = floor ($totalgreen / $total);
       $totalblue = floor ($totalblue / $total);
-      
+
       $colorkey = getimagecolorkey ($image);
-    
+
       // set 'portrait', 'landscape' or 'square' for the image type
       if ($width > $height) $imagetype = "landscape";
       elseif ($height > $width) $imagetype = "portrait";
       elseif ($height == $width) $imagetype = "square";
-      
+
       // destroy image resource
       if (is_resource ($image)) imagedestroy ($image);
-      
+
       $result = array();
       $result['red'] = $totalred;
       $result['green'] = $totalgreen;
       $result['blue'] = $totalblue;
       $result['colorkey'] = $colorkey;
       $result['imagetype'] = $imagetype;
-      
+
       return $result;
     }
     else return false;
@@ -3751,7 +3889,7 @@ function getmediasize ($filepath)
 
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
-    
+
     // if encrypted
     if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
     {
@@ -3796,14 +3934,14 @@ function getmediasize ($filepath)
       else
       {
         $header = loadfile_header (getlocation ($filepath), getobject ($filepath));
-      
+
         if (!empty ($header))
         {
           // get SVG tag
           $svg_tag = gethtmltag ($header, "svg");
-        
+
           if (!empty ($svg_tag)) $header = $svg_tag;
-        
+
           $result['width'] = getattribute ($header, "width", true);
           $result['height'] = getattribute ($header, "height", true);
         }
@@ -3967,8 +4105,8 @@ function getpdfinfo ($filepath, $box="MediaBox")
     $file_info = getfileinfo ($site, $media, "comp");
     if (!empty ($file_info['filename'])) $thumbnail = $file_info['filename'].".thumb.jpg";
 
-    if (!empty ($thumbnail)) $filetime = date ("Y-m-d H:i", filemtime ($media_root.$thumbnail));
-    elseif (!empty ($filepath)) $filetime = date ("Y-m-d H:i", filemtime ($filepath));
+    if (!empty ($thumbnail) && is_file ($media_root.$thumbnail)) $filetime = date ("Y-m-d H:i", filemtime ($media_root.$thumbnail));
+    elseif (!empty ($filepath) && is_file ($filepath)) $filetime = date ("Y-m-d H:i", filemtime ($filepath));
     else $filetime = false;
 
     // read dimensions from file stream
@@ -4032,7 +4170,7 @@ function getvideoinfo ($filepath)
     $height = "";
     $rotate = "0";
     $duration = "";
-    $duration_no_ms = "";  
+    $duration_no_ms = "";
     $video_bitrate = "";
     $imagetype = "";
     $video_codec = "";
@@ -4100,7 +4238,7 @@ function getvideoinfo ($filepath)
     {
       // check file extension
       if ($file_ext != "" && substr_count ($mediapreview_ext.".", $file_ext.".") > 0)
-      {  
+      {
         $return = 1;
         $metadata = array();
 
@@ -4148,7 +4286,7 @@ function getvideoinfo ($filepath)
           {
             // cut of milliseconds
             if (strpos ($matches[1], ".") > 6) $duration_no_ms = substr ($matches[1], 0, -3);
-            
+
             $duration = $matches[1];
     			}
 
@@ -4242,7 +4380,7 @@ function getvideoinfo ($filepath)
 
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
-    
+
     // return result 
     $result = array();
     $result['md5_hash'] = $md5_hash;
@@ -4275,7 +4413,7 @@ function getvideoinfo ($filepath)
 // input: %
 // output: client browser and version as array / false on error
 
-function getbrowserinfo () 
+function getbrowserinfo ()
 {
   if (!empty ($_SERVER['HTTP_USER_AGENT']))
   {
@@ -4283,13 +4421,25 @@ function getbrowserinfo ()
     $bname = 'unknown';
     $ub = "";
     $version = "";
-   
+ 
     // get the browser name
-    // works only for IE < 11
+    // works only for MS IE < 11
     if (preg_match ('/MSIE/i', $u_agent) && !preg_match ('/Opera/i', $u_agent))
     {
       $bname = 'msie';
       $ub = "MSIE";
+    }
+    // MS IE 11
+    elseif (preg_match ('/Trident/i', $u_agent))
+    {
+      $bname = 'msie';
+      $ub = "Trident";
+    }
+    // MS Edge
+    elseif (preg_match ('/Edge/i', $u_agent))
+    {
+      $bname = 'msie';
+      $ub = "Edge";
     }
     elseif (preg_match ('/Firefox/i', $u_agent))
     {
@@ -4313,23 +4463,23 @@ function getbrowserinfo ()
     }
     elseif (preg_match ('/Netscape/i', $u_agent))
     {
-      $bname = 'Netscape';
+      $bname = 'netscape';
       $ub = "Netscape";
     }
-   
+ 
     // get the version number
     $known = array ('Version', $ub, 'other');
-    
+
     $pattern = '#(?<browser>'.join('|', $known).')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
-    
+
     if (!preg_match_all ($pattern, $u_agent, $matches))
     {
       // we have no matching number just continue
     }
-   
+ 
     // see how many we have
     $i = count ($matches['browser']);
-    
+
     if ($i != 1)
     {
       // we will have two since we are not using 'other' argument yet
@@ -4338,7 +4488,7 @@ function getbrowserinfo ()
       {
         $version = $matches['version'][0];
       }
-      else
+      elseif (!empty ($matches['version'][1]))
       {
         $version = $matches['version'][1];
       }
@@ -4347,13 +4497,13 @@ function getbrowserinfo ()
     {
       $version = $matches['version'][0];
     }
-    
+
     if (substr_count ($version, ".") > 0) $version = intval (substr ($version, 0, strpos ($version, ".")));
-   
+ 
     // check if we have a number
     if ($version == null || $version == "") $version = "?";
-    
-    // result  
+
+    // result
     return array ($bname => $version);
   }
   else return false;
@@ -4371,7 +4521,7 @@ function getbrowserinfo ()
 function getcontentlocation ($container_id, $type="abs_path_content")
 {
   global $mgmt_config;
-  
+
   if (intval ($container_id) > 0 && ($type == "url_path_content" || $type == "abs_path_content") && is_array ($mgmt_config))
   {
     // correct container ID (add zeros)
@@ -4380,10 +4530,10 @@ function getcontentlocation ($container_id, $type="abs_path_content")
       $multiplier = 7 - strlen ($container_id);
       $container_id = str_repeat ("0", $multiplier).$container_id;
     }
-    
+
     // directory block size of 10.000
     $limitbase = 10000;
-    
+
     // max. 32000 subdirectories
     for ($i=0; $i<32000; $i++)
     {
@@ -4412,18 +4562,18 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 function getmedialocation ($site, $file, $type, $resolve_symlink=false)
 {
   global $mgmt_config, $publ_config;
-  
+
   if (valid_locationname ($file) && $type != "" && is_array ($mgmt_config))
   {
-    // include rule from external file (must return a value)   
+    // include rule from external file (must return a value) 
     if (is_file ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php"))
     {
       require ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php");
     }
-    
+
     // get file name
     $file = getobject ($file);
-  
+
     // management configuration
     if ($type == "url_path_media" || $type == "abs_path_media")
     {
@@ -4435,14 +4585,14 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
         {
           // get container id as integer
           $container_id = intval (getmediacontainerid ($file));
-          
+
           // get last digit of container id
           $no = substr ($container_id, -1);
-        
+
           if (function_exists ("getmedialocation_rule"))
           {
             $result = getmedialocation_rule ($site, $file, $type, $container_id);
-            
+
             if ($result != "")
             {
               // symbolic link
@@ -4450,7 +4600,7 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
               {
                 // get link target
                 $targetpath = readlink ($result.$site."/".$file);
-                
+
                 return $targetpath;
               } 
               // directory path
@@ -4460,9 +4610,9 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
               }
             }
           }
-          
+
           $hdarray_size = sizeof ($mgmt_config[$type]);
-          
+
           if ($hdarray_size == 1)
           {
             return $mgmt_config[$type][1];
@@ -4470,7 +4620,7 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
           elseif ($hdarray_size  > 1) 
           {
             $j = 1;
-            
+
             for ($i=1; $i<=10; $i++)
             {
               if (substr ($i, -1) == $no)
@@ -4482,7 +4632,7 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
                   {
                     // get link target
                     $targetpath = readlink ($mgmt_config[$type][$j].$site."/".$file);
-                    
+
                     return $targetpath;
                   }
                   // file
@@ -4492,7 +4642,7 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
                   }
                 }
               }
-              
+
               if ($j == $hdarray_size) $j = 1;
               else $j++;
             }
@@ -4507,7 +4657,7 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
             // get link target
             $targetpath = readlink ($mgmt_config[$type].$site."/".$file);
             $targetroot = $targetpath;
-            
+
             return $targetroot;
           }
           // file
@@ -4527,7 +4677,7 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
       {
         $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
       }
-      
+
       // publication media repository path is available
       if (is_array ($publ_config) && !empty ($publ_config[$type]))
       {
@@ -4551,27 +4701,27 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
 function getlockedfileinfo ($location, $file)
 {
   global $mgmt_config;
-  
+
   if (valid_locationname ($location) && valid_objectname ($file) && is_dir ($location))
   {
     // file is locked
     if (!is_file ($location.$file))
     {
       $scandir = scandir ($location);
-  
+
       if ($scandir)
       {
         $result = array();
-        
+
         foreach ($scandir as $entry)
         {
           if (preg_match ("/".preg_quote ($file.".@")."/", $entry))
           {
             $result['file'] = $entry;
             $result['user'] = substr ($entry, strrpos ($entry, ".@") + 2);
-            
+
             return $result;
-          }   
+          } 
         }
       }
       else return false;
@@ -4581,7 +4731,7 @@ function getlockedfileinfo ($location, $file)
     {
       $result['file'] = $file;
       $result['user'] = "";
-      
+
       return $result;
     }
   }
@@ -4597,47 +4747,47 @@ function getlockedfileinfo ($location, $file)
 // Returns an object info array of all locked objects of a specific user.
 
 function getlockedobjects ($user, $return_text_id=array())
-{      
+{
   global $mgmt_config;
-  
+
   if (valid_objectname ($user))
   {
     $dir = $mgmt_config['abs_path_data']."checkout/";
     $file = $user.".dat";
-    
+
     $save = false;
-    
+
     // get checked out objects of user
     $data = loadfile_fast ($dir, $file);
-    
+
     if ($data != "")
     {
       $checkedout_array = explode ("\n", $data);
-      
+
       if (is_array ($checkedout_array))
       {
         $object_array = array();
-        
+
         foreach ($checkedout_array as $checkedout_rec)
         {
           if (substr_count ($checkedout_rec, "|") > 0)
           {
-            // get container name            
+            // get container name
             list ($site, $cat, $container) = explode ("|", trim ($checkedout_rec));
-  
+
             // if no corresponding siteaccess for this user
             if (!checkpublicationpermission ($site))
             {
               // get container id
               $container_id = substr ($container, 0, strpos ($container, ".xml"));
-      
+
               // check-in content container
               $test = unlockfile ($user, getcontentlocation ($container_id, 'abs_path_content'), $container.".wrk");
-            
+
               // remove entry from list
               if ($test == true)
               {
-                $data = str_replace ($checkedout_rec."\n", "", $data);              
+                $data = str_replace ($checkedout_rec."\n", "", $data);
                 $save = true;
               }
             }
@@ -4646,21 +4796,21 @@ function getlockedobjects ($user, $return_text_id=array())
             {
               // find corresponding objects in link management database
               $result_array = getconnectedobject ($container);
-              
+
               if ($result_array != false)
-              {  
+              {
                 foreach ($result_array as $result)
                 {
                   $location = $result['convertedlocation'];
                   $page = $result['object'];
                   $page = correctfile ($location, $page, $user);
-                  
+
                   // check if file exists
                   if ($page !== false)
                   {
                     $object_hash = rdbms_getobject_hash (convertpath ($site, $location.$page, ""));
                     $object_info = rdbms_getobject_info ($object_hash, $return_text_id);
-                    
+
                     if (is_array ($object_info))
                     {
                       $object_array[$object_hash] = $object_info;
@@ -4675,13 +4825,13 @@ function getlockedobjects ($user, $return_text_id=array())
             }
           }
         }
-        
+
         // update checked out list if necessary
         if ($save)
         {
           savefile ($dir, $file, $data);
         }
-        
+
         if (sizeof ($object_array) > 0)
         {
           return $object_array;
@@ -4703,58 +4853,66 @@ function getlockedobjects ($user, $return_text_id=array())
 function getfavorites ($user, $output="path", $return_text_id=array())
 {
   global $mgmt_config;
-  
+
   if (valid_objectname ($user))
   {
-    $dir = $mgmt_config['abs_path_data']."checkout/";
-    $file = $user.".fav";
-    
-    if (is_file ($dir.$file))
+    // portal user session
+    if (valid_objectname ($user) && getsession ("hcms_portal"))
     {
-      $data = loadfile ($dir, $file);
-      
-      if ($data != false && trim ($data) != "")
-      {
-        $data = trim ($data, "|");
-        $object_id_array = explode ("|", $data);
+      $object_id_array = getsession ("hcms_favorites");
+    }
+    // standard user
+    else
+    {
+      $dir = $mgmt_config['abs_path_data']."checkout/";
+      $file = $user.".fav";
 
-        if (is_array ($object_id_array))
+      if (is_file ($dir.$file))
+      {
+        $data = loadfile ($dir, $file);
+
+        if ($data != false && trim ($data) != "")
         {
-          $object_id_array = array_unique ($object_id_array);
-          
-          if (strtolower ($output) == "id")
+          $data = trim ($data, "|");
+          $object_id_array = explode ("|", $data);
+        }
+      }
+    }
+
+    // prepare result
+    if (!empty ($object_id_array) && is_array ($object_id_array))
+    {
+      $object_id_array = array_unique ($object_id_array);
+
+      if (strtolower ($output) == "id")
+      {
+        sort ($object_id_array);
+        return $object_id_array;
+      }
+      else
+      {
+        $object_path_array = array();
+
+        foreach ($object_id_array as $object_id)
+        {
+          if ($object_id != "")
           {
-            sort ($object_id_array);
-            return $object_id_array;
-          }
-          else
-          {
-            $object_path_array = array();
-            
-            foreach ($object_id_array as $object_id)
+            $object_info = rdbms_getobject_info ($object_id, $return_text_id);
+
+            if (!empty ($object_info['objectpath'])) 
             {
-              if ($object_id != "")
-              {
-                $object_info = rdbms_getobject_info ($object_id, $return_text_id);
-               
-                if (!empty ($object_info['objectpath'])) 
-                {
-                  $hash = $object_info['hash'];
-                  $object_path_array[$hash] = $object_info;
-                }
-              }
+              $hash = $object_info['hash'];
+              $object_path_array[$hash] = $object_info;
             }
-            
-            if (sizeof ($object_path_array) > 0)
-            {
-              return $object_path_array;
-            }
-            else return false;
           }
+        }
+
+        if (sizeof ($object_path_array) > 0)
+        {
+          return $object_path_array;
         }
         else return false;
       }
-      else return false;
     }
     else return false;
   }
@@ -4763,38 +4921,146 @@ function getfavorites ($user, $output="path", $return_text_id=array())
 
 // ====================================== HOME BOXES =========================================
 
-// --------------------------------------- getboxes -------------------------------------------
-// function: getboxes ()
-// input: user name [string]
-// output: selected home box names of user as array / false
+// ------------------------------------------ gethomeboxes --------------------------------------------
+// function: gethomeboxes()
+// input: pupblication name [array] (optional)
+// output: All home boxes as array with technical name as key and readable name as value / false
+// requires: config.inc.php
 
-function getboxes ($user)
+function gethomeboxes ($site_array=array())
 {
   global $mgmt_config;
-  
+
+  $result = array();
+
+  // collect all system home boxes
+  $boxes_dir = $mgmt_config['abs_path_cms']."box/";
+
+  if (is_dir ($boxes_dir))
+  {
+    $scandir = scandir ($boxes_dir);
+
+    if ($scandir)
+    {
+      foreach ($scandir as $entry)
+      {
+        if ($entry != "." && $entry != ".." && $entry != ".folder" && is_file ($boxes_dir.$entry) && substr ($entry, -8) == ".inc.php")
+        {
+          $box = str_replace (".inc.php", "", $entry);
+          $name = ucfirst (str_replace ("_", " ", $box));
+
+          $result[$box] = $name;
+        }
+      }
+    }
+  }
+
+  // collect all individual home boxes of publications
+  if (!empty ($mgmt_config['homeboxes_directory']) && valid_locationname ($mgmt_config['homeboxes_directory']) && is_array ($site_array) && sizeof ($site_array) > 0)
+  {
+    // remove trailing slashes
+    $mgmt_config['homeboxes_directory'] = trim ($mgmt_config['homeboxes_directory'], "/");
+
+    foreach ($site_array as $site)
+    {
+      if (valid_publicationname ($site))
+      {
+        $boxes_dir = $mgmt_config['abs_path_comp'].$site."/".$mgmt_config['homeboxes_directory']."/";
+
+        if (is_dir ($boxes_dir))
+        {
+          $scandir = scandir ($boxes_dir);
+
+          if ($scandir)
+          {
+            foreach ($scandir as $entry)
+            {
+              if ($entry != "." && $entry != ".." && $entry != ".folder" && is_file ($boxes_dir.$entry) && substr ($entry, -4) == ".php")
+              {
+                $box = str_replace (".php", "", $site."/".$entry);
+                $name = str_replace ("_", " ", $box);
+
+                $result[$box] = $name;
+              }
+            }
+          }
+        }
+      } 
+    }
+  }
+
+  // return result
+  if (sizeof ($result) > 0)
+  {
+    ksort ($result);
+    reset ($result);
+    return $result;
+  }
+  else return false;
+}
+
+// --------------------------------------- getuserboxes -------------------------------------------
+// function: getuserboxes ()
+// input: user name [string]
+// output: selected home box of a user as array with technical name as key and readable name as value / false
+// requires: config.inc.php
+
+function getuserboxes ($user)
+{
+  global $mgmt_config;
+
+  $result = array();
+
   if (valid_objectname ($user))
   {
+    // home boxes defined by user
     $dir = $mgmt_config['abs_path_data']."checkout/";
     $file = $user.".home.dat";
-    
+
     if (is_file ($dir.$file))
     {
       $data = loadfile ($dir, $file);
-      
+
       if ($data != false && trim ($data) != "")
       {
         $data = trim ($data, "|");
         $name_array = explode ("|", $data);
-        
+
         if (is_array ($name_array) && sizeof ($name_array) > 0)
         {
-          return $name_array;
+          foreach ($name_array as $name)
+          {
+            // individual home boxes (publication/name)
+            if (strpos ($name, "/") > 0) $result[$name] = str_replace ("_", " ", $name);
+            // system home boxes (name)
+            else $result[$name] = ucfirst (str_replace ("_", " ", $name));
+          }
+
+          return $result;
         }
-        else return array();
+        else return false;
       }
-      else return array();
+      else return false;
     }
-    else return false;
+    // default home boxes defined in main config
+    elseif (!empty ($mgmt_config['homeboxes']))
+    {
+      $name_array = explode (";", trim ($mgmt_config['homeboxes'], ";"));
+
+      if (is_array ($name_array) && sizeof ($name_array) > 0)
+      {
+        foreach ($name_array as $name)
+        {
+          // individual home boxes (publication/name)
+          if (strpos ($name, "/") > 0) $result[$name] = str_replace ("_", " ", $name);
+          // system home boxes (name)
+          else $result[$name] = ucfirst (str_replace ("_", " ", $name));
+        }
+
+        return $result;
+      }
+      else return false;
+    }
   }
   else return false;
 }
@@ -4809,16 +5075,16 @@ function getboxes ($user)
 function getusersonline ($sites=array())
 {
   global $mgmt_config, $siteaccess;
-  
+
   $session_dir = $mgmt_config['abs_path_data']."session/";
-  
+
   if (is_dir ($session_dir) && $scandir = scandir ($session_dir))
   {
     // add slash if not present at the end
-    if (substr ($session_dir, -1) != "/") $session_dir = $session_dir."/";           
+    if (substr ($session_dir, -1) != "/") $session_dir = $session_dir."/"; 
 
     $result = array();
-    
+
     // collect online users
     foreach ($scandir as $user)
     {
@@ -4828,7 +5094,7 @@ function getusersonline ($sites=array())
         $now = time();
         $last_logon_time = filemtime ($session_dir.$user);
         $max = 8 * 60 * 60;
-        
+
         if ($now - $last_logon_time < $max)
         {
           // check publication access
@@ -4836,20 +5102,20 @@ function getusersonline ($sites=array())
           {
             $approved = false;
             $temp_data = loadfile_fast ($session_dir, $user);
-            
+
             if ($temp_data)
             {
               $temp_data = trim ($temp_data);
               $temp_array = explode ("\n", $temp_data);
-                
+
               if ($temp_array)
               {
                 $temp = end  ($temp_array);
-              
+
                 if ($temp != "")
                 {
                   list ($regsessionid, $regsessiontime, $regpasswd, $regchecksum, $site_access) = explode ("|", $temp);
-                  
+
                   if ($site_access)
                   {
                     foreach ($sites as $temp_site)
@@ -4863,40 +5129,40 @@ function getusersonline ($sites=array())
           }
           // no publication access filters
           else $approved = true;
-          
+
           if ($approved == true) $result[] = substr ($user, 0, -4);
         }
       }
     }
-    
+
     // chat support user
-    if (!empty ($mgmt_config['chat-support']))
+    if (!empty ($mgmt_config['chat_support']))
     {
-      if (!in_array ($mgmt_config['chat-support'], $result)) $result[] = $mgmt_config['chat-support'];
+      if (!in_array ($mgmt_config['chat_support'], $result)) $result[] = $mgmt_config['chat_support'];
     }
-    
+
     if (sizeof ($result) > 0)
     {
       $result = array_unique ($result);
       $result_filtered = array();
-      
-      // filter users based on their publication access
+
+      // filter users based on the publication access of the current user
       if (!empty ($siteaccess) && is_array ($siteaccess))
       {
         $users = getuserinformation ();
-        
+
         foreach ($result as $logon)
         {
           foreach ($siteaccess as $site)
           {
-            if (!empty ($users[$site][$logon])) $result_filtered[] = $logon;
+            if (!empty ($users[$site][$logon])) $result_filtered[$logon] = $logon;
           }
         }
-        
+
         // reset result
-        $result = array_unique ($result_filtered);
+        $result = $result_filtered;
       }
-      
+
       return $result;
     }
     else return false;
@@ -4947,7 +5213,7 @@ function getimagelib ()
       if (strtoupper ($value) == "GD") $result = "GD";
       else $result = "ImageMagick";
     }
-    
+
     if (!empty ($result)) return $result;
     else return false;
   }
@@ -4979,7 +5245,7 @@ function getfilename ($filedata, $tagname)
       $ctagbegin = "<!";
       $ctagend = ">";
     }
-      
+
     // find first positions of hyperCMS tag
     if (strpos (strtolower ($filedata), "hypercms:".strtolower ($tagname)." file=\"") > 0)
     {
@@ -4994,12 +5260,12 @@ function getfilename ($filedata, $tagname)
       $nameend = strpos ($filedata, "\"".$ctagend, $namestart);
     }
     else $namestart = 0;
-  
+
     if ($namestart > 0)
     {
       // get file name
       $filename = trim (substr ($filedata, $namestart, $nameend - $namestart));
-      
+
       return $filename;
     }
     else return false;
@@ -5024,26 +5290,26 @@ function gethypertag ($filedata, $tagname, $offset=0)
   {
     // add freespace at the beginning of filedata
     $filedata = " ".$filedata;
-    
+
     // define full hyperCMS tag name, if not done by request
     if (@substr_count (strtolower ($tagname), "hypercms:") == 0) $tagname = "[hyperCMS:".$tagname;
     elseif (@substr_count (strtolower ($tagname), "hypercms:") == 1 && @substr_count (strtolower ($tagname), "[hypercms:") == 0) $tagname = "[".$tagname;
-    
+
     // define offset if not set
     if ($offset == "") $offset = 0;
-  
+
     if (@substr_count (strtolower ($filedata), strtolower ($tagname)) >= 1)
     {
       $endpos = 1;
-    
+
       while ($endpos > 0 && $endpos != false)
       {
         // find start and end position of hyperCMS tag
         $startpos = strpos ($filedata, $tagname, $offset);
-         
+ 
         if ($startpos != false) $endpos = strpos ($filedata, "]", $startpos);
         else $endpos = false;
-  
+
         // get hyperCMS tag into array
         if ($startpos != false && $endpos != false && $endpos > $startpos)
         {
@@ -5054,10 +5320,10 @@ function gethypertag ($filedata, $tagname, $offset=0)
         // define new offset
         $offset = $endpos;
       }
-      
+
       // return hyperCMS tag array (the array key is the start position of the tag)
       if (is_array ($hypertag)) return $hypertag;
-      else return false;    
+      else return false;
     }
     else return false;
   }
@@ -5077,17 +5343,17 @@ function gethypertagname ($tagdata)
   if ($tagdata != "")
   {
     $namestart = strpos ($tagdata, "hyperCMS:") + strlen ("hyperCMS:");
-   
+ 
     if ($namestart != false) 
     {
       $nameend = strpos ($tagdata, " ");
       if ($nameend == false) $nameend = strpos ($tagdata, "]");
     }
     else $nameend = false;
-   
+ 
     if ($namestart != false && $nameend != false && ($nameend > $namestart)) 
     $hypertagname = substr ($tagdata, $namestart, $nameend - $namestart);
-   
+ 
     if ($hypertagname != false && $hypertagname != "") return $hypertagname;
     else return false;
   }
@@ -5112,23 +5378,23 @@ function gethtmltag ($filedata, $tag)
     $filedata_lower = strtolower ($filedata);
     $tag_lower = strtolower ($tag);
     $abslen = strlen ($filedata_lower);
-  
+
     if (@substr_count ($filedata_lower, $tag_lower) > 0)
     {
       // find positions of hyperCMS tag
       $cmstagstart = strpos ($filedata_lower, $tag_lower);
-      
+
       if ($cmstagstart > 0)
       {
         // find first position of HTML tag, direction: <-
         $pos = $cmstagstart + 1; // go one digit -> to include < in $tag
-    
+
         if ($pos > 0)
         {
           $found = 0; // position of the start html tag
           $intag = 0; // is there a nested script tag in the html tag
           $tags = 0; // we allow max. 2 nested script tags to appear before we break the routine
-           
+ 
           while ($pos > 0 && $tags < 3)
           {
             if (!empty ($filedata_lower[$pos]))
@@ -5150,27 +5416,27 @@ function gethtmltag ($filedata, $tag)
                 $intag--;
               }
             }
-      
+
             $pos--;
           }
-          
+
           if ($found > 0) $tagstart = $found;
           else $tagstart = $cmstagstart;
         }
         else $tagstart = $cmstagstart;
-        
+
         // define end positions of hyperCMS tag
-        $cmstagend = $cmstagstart + strlen ($tag_lower);  
-        
+        $cmstagend = $cmstagstart + strlen ($tag_lower);
+
         // find last positions of HTML tag, direction: ->
         $pos = $cmstagend - 1; // go one digit <- to include > in $tag
-    
+
         if ($pos > 0 && $pos < $abslen)
         {
           $found = 0; // position of the start html tag
           $intag = 0; // is there a nested script tag in the html tag
           $tags = 0; // we allow max. 2 nested script tags to appear before we break the routine
-          
+
           while ($pos <= $abslen && $tags < 3)
           {
             if (!empty ($filedata_lower[$pos]))
@@ -5192,20 +5458,20 @@ function gethtmltag ($filedata, $tag)
                 $intag--;
               }
             }
-  
+
             $pos++;
           }
-          
+
           if ($found > 0 && $found < $abslen) $tagend = $found;
-          else $tagend = $cmstagend;   
+          else $tagend = $cmstagend; 
         }
         else $tagend = $cmstagend;
-       
+ 
         if ($tagstart > 0 && $tagend < $abslen)
         {
           // get full HTML tag
-          $htmltag = substr ($filedata, $tagstart, $tagend + 1 - $tagstart);      
-    
+          $htmltag = substr ($filedata, $tagstart, $tagend + 1 - $tagstart);
+
           if (strlen ($htmltag) < strlen ($tag)) return $tag;
           else return $htmltag;
         }
@@ -5235,23 +5501,23 @@ function gethtmltags ($filedata, $tag)
     $filedata_lower = strtolower ($filedata);
     $tag_lower = strtolower ($tag);
     $abslen = strlen ($filedata_lower);
-  
+
     if (@substr_count ($filedata_lower, $tag_lower) > 0)
     {
       // find positions of hyperCMS tag
       $cmstagstart = strpos ($filedata_lower, $tag_lower);
-      
+
       if ($cmstagstart > 0)
       {
         // find first position of HTML tag, direction: <-
         $pos = $cmstagstart + 1; // go one digit -> to include < in $tag
-    
+
         if ($pos > 0)
         {
           $found = 0; // position of the start html tag
           $intag = 0; // is there a nested script tag in the html tag
           $tags = 0; // we allow max. 1 nested script tags to appear before we break the routine
-           
+ 
           while ($pos > 0 && $tags < 2)
           {
             // found HTML tag
@@ -5272,27 +5538,27 @@ function gethtmltags ($filedata, $tag)
               $intag--;
               break;
             }
-      
+
             $pos--;
           }
-          
+
           if ($found > 0) $tagstart = $found;
           else $tagstart = $cmstagstart;
         }
         else $tagstart = $cmstagstart;
-        
+
         // define end positions of hyperCMS tag
         $cmstagend = $cmstagstart + strlen ($tag_lower); 
-        
+
         // find last positions of HTML tag, direction: ->
         $pos = $cmstagend - 1; // go one digit <- to include > in $tag
-    
+
         if ($pos > 0 && $pos < $abslen)
         {
           $found = 0; // position of the start html tag
           $intag = 0; // is there a nested script tag in the html tag
           $tags = 0; // we allow max. 2 nested script tags to appear before we break the routine
-          
+
           while ($pos < $abslen && $tags < 2)
           {
             // found HTML tag
@@ -5313,28 +5579,28 @@ function gethtmltags ($filedata, $tag)
               $intag--;
               break;
             }
-  
+
             $pos++;
           }
-          
+
           if ($found > 0 && $found < $abslen) $tagend = $found;
           else $tagend = $cmstagend;
         }
-       
+ 
         if ($tagstart > 0 && $tagend < $abslen)
         {
           // get full HTML tag
-          $htmltag = substr ($filedata, $tagstart, $tagend + 1 - $tagstart);      
-    
+          $htmltag = substr ($filedata, $tagstart, $tagend + 1 - $tagstart);
+
           // extract html tag name
           $htmltagname = substr ($htmltag, $tagstart + 1, strpos ($htmltag, " ") - $tagstart - 1);
           $htmlendtag = "</".$htmltagname.">";
-          
+
           // search for end tag 
-          $tagend_new = strpos ($filedata, $htmlendtag, $tagend) + strlen ($htmlendtag);     
-          
-          if ($tagend_new > 0 && $tagend_new > $tagend) $htmltag = substr ($filedata, $tagstart, $tagend_new - $tagstart);   
-    
+          $tagend_new = strpos ($filedata, $htmlendtag, $tagend) + strlen ($htmlendtag); 
+
+          if ($tagend_new > 0 && $tagend_new > $tagend) $htmltag = substr ($filedata, $tagstart, $tagend_new - $tagstart); 
+
           if (strlen ($htmltag) < strlen ($tag)) return $tag;
           else return $htmltag;
         }
@@ -5365,11 +5631,11 @@ function getattribute ($string, $attribute, $secure=true)
       $string = substr ($string, strpos ($string, ".php?") + 5);
       $string = html_decode ($string);
       parse_str ($string, $result);
-      
+
       if (!empty ($result[$attribute]))
       {
         $value = $result[$attribute];
-        
+
         // secure value
         if ($secure)
         {
@@ -5391,7 +5657,7 @@ function getattribute ($string, $attribute, $secure=true)
       $freespace_array[0] = "   ";
       $freespace_array[1] = "  ";
       $freespace_array[2] = " ";
-      
+
       foreach ($freespace_array as $freespace)
       {
         if (@substr_count (strtolower ($string), strtolower ($attribute).$freespace."=") > 0)
@@ -5399,17 +5665,17 @@ function getattribute ($string, $attribute, $secure=true)
           $string = str_replace ($attribute.$freespace."=", $attribute."=", $string);
         }
       }
-    
+
       if (@substr_count (strtolower ($string), strtolower ($attribute)."=") > 0)
       {
         // get length of attribute name and add 1 for '='
         $attrlen = strlen ($attribute) + 1;
-    
+
         while (@substr_count (strtolower ($string), strtolower ($attribute)."=") > 0)
         {
           // check if found attribute is not part of the name of another attribute
           $attr_seperator = substr ($string, strpos (strtolower ($string), strtolower ($attribute)."=") - 1, 1);
-   
+ 
           if (strpos (strtolower ($string), strtolower ($attribute)."=") == 0 || $attr_seperator == "?" || $attr_seperator == "&" || $attr_seperator == " ")
           {
             // leave string as it is and exit loop
@@ -5422,7 +5688,7 @@ function getattribute ($string, $attribute, $secure=true)
             $string = substr (strstr ($string, $attribute."="), $attrlen);
           }
         }
-  
+
         if (!empty ($checkedstring))
         {
           // cut off first part of the string till attribute value begins
@@ -5472,15 +5738,15 @@ function getattribute ($string, $attribute, $secure=true)
               // get the length of the value
               $vallen = strpos ($checkedstring, "'");
             }
-            // or the value itself is the end of the string    
+            // or the value itself is the end of the string
             else
             {
               $vallen = strlen ($checkedstring);
             }
-        
+
             // get the value of attribute
             $value = trim (substr ($checkedstring, 0, $vallen));
-            
+
             // cut off double quotes from value
             if ((substr ($value, 0, 1) == "'" && substr ($value, strlen ($value)-1, 1) == "'") || (substr ($value, 0, 1) == "\"" && substr ($value, strlen ($value)-1, 1) == "\""))
             {
@@ -5495,7 +5761,7 @@ function getattribute ($string, $attribute, $secure=true)
             $value = strip_tags ($value);
             $value = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $value);
           }
-          
+
           return $value;
         }
         else return false;
@@ -5519,24 +5785,24 @@ function getoption ($string, $option)
   if ($string != "" && $option != "")
   {
     $option = trim ($option)." ";
-    
+
     if (strpos ("_".$string, $option) > 0)
     {
       // extract value of option
       $temp = substr ($string, strpos ($string, $option) + strlen ($option));
-      $value = substr ($temp, 0, strpos ($temp, " "));      
+      $value = substr ($temp, 0, strpos ($temp, " "));
       if ($value == "" || $value == false) $value = substr ($temp, 0);
-      
+
       // remove " and '
       $value = str_replace (array ("\"", "'"), array ("", ""), $value);
-      
+
       return $value;
     }
-    else return false;                  
+    else return false;
   }
   else return false;
 }
-                      
+
 // ------------------------------ getcharset ----------------------------------
 // function: getcharset()
 // input: publication name [string], data from template or content container [string]
@@ -5551,10 +5817,10 @@ function getcharset ($site, $data)
   global $mgmt_config;
 
   if ($data != "")
-  {  
+  {
     $charset = false;
     $contenttype = false;
-  
+
     // if HTML page and no pagecontentype can be defined by the editor
     if (strpos (strtolower ($data), "pagecontenttype") == 0)
     {
@@ -5563,22 +5829,22 @@ function getcharset ($site, $data)
       {
         // get tag defined by the value of attribute http-equiv="content-type"
         $contenttypetag = gethtmltag (strtolower ($data), "content-type");
-    
+
         if ($contenttypetag != false)
         {
           $start = strpos ($contenttypetag, "content=") + strlen ("content=");
-      
+
           if (substr_count (substr ($contenttypetag, $start), "\"") > 0) $quotes = "\"";
           elseif (substr_count (substr ($contenttypetag, $start), "'") > 0) $quotes = "'";
-          
+
           $end = strrpos ($contenttypetag, $quotes);
           $length = $end - $start;
           $contenttype = trim (substr ($contenttypetag, $start, $length));
           $contenttype = str_replace ($quotes, "", $contenttype);
-          
+
           if (strpos ($contenttype, "charset") > 0) $charset = getattribute ($contenttype, "charset");
-          else $charset = trim ($contenttype);            
-        }    
+          else $charset = trim ($contenttype);
+        }
       }
       // meta tag charset (HTML5)
       elseif (strpos (strtolower ($data), " charset=") > 0)
@@ -5609,11 +5875,11 @@ function getcharset ($site, $data)
         }
       }
       else $contenttype = false;
-      
+
       if ($contenttype != false && $contenttype != "")
       {
         $contenttype = trim ($contenttype);
-        
+
         if (strpos ($contenttype, "charset") > 0) $charset = getattribute ($contenttype, "charset");
         else $charset = trim ($contenttype);
       }
@@ -5622,17 +5888,17 @@ function getcharset ($site, $data)
         $charset = false;
         $contenttype = false;
       }
-    }    
-    
+    }
+
     // if XML page of from content container encoding
     if (empty ($contenttype) && @substr_count (strtolower ($data), " encoding=") > 0)
     {
       $xml_encoding = gethtmltag ($data, "?xml");
-      
+
       if ($xml_encoding != false) 
       {
         $charset = getattribute ($xml_encoding, "encoding");
-        
+
         if ($charset != "" && @substr_count (strtolower ($charset), "[hypercms:") == 0)
         {
           $contenttype = "text/html; charset=".$charset;
@@ -5647,19 +5913,19 @@ function getcharset ($site, $data)
       {
         $charset = false;
         $contenttype = false;
-      }      
+      }
     }
-    
+
     // if head information in container is set
     if (empty ($contenttype) && @substr_count (strtolower ($data), "<pagecontenttype>") > 0)
     {
       $contenttype_array = getcontent ($data, "<pagecontenttype>");
-      
+
       if ($contenttype_array != false)
       {
         $contenttype = $contenttype_array[0];
         $charset = getattribute ($contenttype, "charset");
-        
+
         if ($charset == false || $charset == "")
         {
           $charset = false;
@@ -5671,8 +5937,8 @@ function getcharset ($site, $data)
         $charset = false;
         $contenttype = false;
       }
-    }  
-    
+    }
+
     // if content-type is given
     if (empty ($contenttype) && @substr_count (strtolower ($data), "charset") > 0)
     {
@@ -5689,13 +5955,13 @@ function getcharset ($site, $data)
         $contenttype = false;
       }
     }
-    
+
     // use publication settings if no character set could be found in $data
     if ((empty ($contenttype) || empty ($charset) || strlen ($charset) > 20) && valid_publicationname ($site))
     {
       $contenttype = "text/html; charset=".$mgmt_config[$site]['default_codepage'];
       $charset = $mgmt_config[$site]['default_codepage'];
-    }  
+    }
 
     // return result
     if (!empty ($contenttype)) $result['contenttype'] = $contenttype;
@@ -5709,12 +5975,12 @@ function getcharset ($site, $data)
   {
     $result['contenttype'] = "text/html; charset=".$mgmt_config[$site]['default_codepage'];
     $result['charset'] = $mgmt_config[$site]['default_codepage'];
-    
+
     if (!empty ($result) && is_array ($result)) return $result;
-    else return false;    
+    else return false;
   }
   else return false;
-}  
+}
 
 // ------------------------------ getartid ----------------------------------
 // function: getartid()
@@ -5731,12 +5997,12 @@ function getartid ($id)
     if (@substr_count ($id, ":") == 1)
     {
       $artid = substr ($id, 0, strpos ($id, ":"));
-      
+
       // cut off the quote if there is any at the beginning
       if ($artid[0] == "'") $artid = substr ($artid, 1);
     }
     else $artid = false;
-  
+
     return $artid;
   }
   else return false;
@@ -5757,12 +6023,12 @@ function getelementid ($id)
     if (@substr_count ($id, ":") == 1)
     {
       $elementid = substr ($id, strpos ($id, ":") + 1);
-      
+
       // cut off the quote if there is any at the beginning
       if ($elementid != "" && $elementid[strlen($elementid) - 1] == "'") $elementid = substr ($elementid, 0, strlen($elementid) - 1);
     }
     else $elementid = false;
-  
+
     return $elementid;
   }
   else return false;
@@ -5777,8 +6043,8 @@ function getfirstkey ($array)
 {
   if (is_array ($array))
   {
-    reset ($array);        
-    
+    reset ($array);
+
     foreach ($array as $key => $value)
     {
       if ($key != "" && $value != "") return $key;
@@ -5825,14 +6091,14 @@ function getdirectoryfiles ($dir, $pattern="")
 
 // ---------------------------------------------- getuserinformation ----------------------------------------------
 // function: getuserinformation()
-// input: %
+// input: user name [string] (optional)
 // output: assoziative array with basic user information [publication->username->attribute] / false
 // requires: config.inc.php
 
 // description:
 // This function creates an assoziative array with user information, e.g. for a user select box.
 
-function getuserinformation ()
+function getuserinformation ($login="")
 {
   global $mgmt_config, $user;
 
@@ -5844,9 +6110,9 @@ function getuserinformation ()
   if ($userdata != "")
   {
     // get publications
-    $inherit_db = inherit_db_read ();  
+    $inherit_db = inherit_db_read ();
     $site_array = array();
-    
+
     if ($inherit_db != false && sizeof ($inherit_db) > 0)
     {
       foreach ($inherit_db as $inherit_db_record)
@@ -5858,8 +6124,9 @@ function getuserinformation ()
       }
     }
 
-    // get user node and extract required information    
-    $usernode = getcontent ($userdata, "<user>");
+    // get user node and extract required information
+    if ($login != "") $usernode = selectcontent ($userdata, "<user>", "<login>", $login);
+    else $usernode = getcontent ($userdata, "<user>");
 
     foreach ($usernode as $temp)
     {
@@ -5943,9 +6210,9 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
   {
     // get usergroup users
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-    $buffer_array = selectcontent ($userdata, "<user>", "<login>", "$user");  
+    $buffer_array = selectcontent ($userdata, "<user>", "<login>", "$user");
     $buffer_array = selectcontent ($buffer_array[0], "<memberof>", "<publication>", "$site");
-    $buffer_array = getcontent ($buffer_array[0], "<usergroup>");  
+    $buffer_array = getcontent ($buffer_array[0], "<usergroup>");
     $group_str = substr ($buffer_array[0], 1, strlen ($buffer_array[0])-2);
     $group_array = explode ("|", $group_str);
 
@@ -5955,17 +6222,17 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
     foreach ($item_array as $item)
     {
       $type_array = getcontent ($item, "<type>");
-      
+
       if ($type_array[0] == "user")
       {
         $buffer_array = getcontent ($item, "<user>");
-        
+
         if ($buffer_array[0] == $user) $useritem_array[] = $item;
       }
       elseif ($type_array[0] == "usergroup")
       {
         $buffer_array = getcontent ($item, "<group>");
-        
+
         if (in_array ($buffer_array[0], $group_array)) $useritem_array[] = $item;
       }
     }
@@ -5976,22 +6243,22 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
       // check if predecessors are available and if they passed their item
       foreach ($useritem_array as $useritem)
       {
-        $id_array = getcontent ($useritem, "<id>");        
+        $id_array = getcontent ($useritem, "<id>");
         $passed_array = getcontent ($useritem, "<passed>");
         $pre_array = getcontent ($useritem, "<pre>");
-  
+
         // if item has predecessors
         if ($pre_array != false)
         {
           foreach ($pre_array as $pre)
           {
-            $buffer_array = selectcontent ($workflow, "<item>", "<id>", $pre);   
-            
+            $buffer_array = selectcontent ($workflow, "<item>", "<id>", $pre); 
+
             // if a predecessor was found
             if ($buffer_array != false) 
             {
               $prepassed_array = getcontent ($buffer_array[0], "<passed>");
-    
+
               if ($prepassed_array != false)
               {
                 // check if the predecessor has passed the workflow (this is a must)
@@ -5999,7 +6266,7 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
                 {
                   $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $id_array[0]);
                   $sucpassed_array = getcontent ($buffer_array[0], "<passed>");
-                  
+
                   // if item has sucessors
                   if ($sucpassed_array != false) 
                   {
@@ -6014,19 +6281,19 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
                   else
                   {
                     if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-                    else $passeditem_array[] = $useritem;                
+                    else $passeditem_array[] = $useritem;
                   }
-                }     
-              }     
-            }  
-          }   
+                } 
+              } 
+            }
+          } 
         }
         // if item has no predecessors, this must be the user who owns start item
         else
         {
           $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $id_array[0]);
           $sucpassed_array = getcontent ($buffer_array[0], "<passed>");
-  
+
           // if item has sucessors
           if ($sucpassed_array != false) 
           {
@@ -6034,7 +6301,7 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
             if ($sucpassed_array[0] != 1) 
             {
               if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-              else $passeditem_array[] = $useritem;   
+              else $passeditem_array[] = $useritem; 
             }
             // sucessor passed his item
             else
@@ -6043,28 +6310,28 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
               foreach ($item_array as $item)
               {
                 $buffer_array = getcontent ($item, "<id>");
-                $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $buffer_array[0]);  
-                
+                $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $buffer_array[0]);
+
                 if ($buffer_array == false)
                 {
                   $buffer_array = getcontent ($item, "<passed>");
-                  
+
                   if ($buffer_array[0] == 1)
                   {
                     $passeditem_array[] = $useritem;
                     break;
                   }
                 } 
-              }         
+              } 
             }
           }
           // otherwise item is last instance in workflow branch
           else
           {
             if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-            else $passeditem_array[] = $useritem;           
+            else $passeditem_array[] = $useritem; 
           }
-        }        
+        }
       }
     }
     else return false;

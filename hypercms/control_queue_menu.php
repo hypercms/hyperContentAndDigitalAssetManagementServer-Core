@@ -36,7 +36,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if (($queueuser != "" && !checkrootpermission ('desktop')) || ($queueuser == "" && !checkrootpermission ('site'))) killsession ($user);
+if (($queueuser != "" && !checkrootpermission ('desktop')) || ($queueuser == "" && !checkrootpermission ('site') && !checkrootpermission ('user'))) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -60,11 +60,7 @@ $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 // delete entries from queue
-if ($action == "delete" && checktoken ($token, $user) && 
-     $queue_id != "" && 
-     (($queueuser != "" && checkrootpermission ('desktop')) || 
-     (checkrootpermission ('site') || checkrootpermission ('user')))
-   )
+if ($action == "delete" && checktoken ($token, $user) && $queue_id != "")
 {
   if ($multiobject != "" || $queue_id != "")
   {
@@ -238,8 +234,7 @@ function jumpTo (target)
       echo 
       "<img ".
         "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-        "onClick=\"if (warning_delete()==true) ".
-        "submitTo('control_queue_menu.php', 'delete', 'controlFrame'); \" ".
+        "onClick=\"if (warning_delete()==true) submitTo('control_queue_menu.php', 'delete', 'controlFrame'); \" ".
         "name=\"media_delete\" src=\"".getthemelocation()."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />\n";
     }    
     else

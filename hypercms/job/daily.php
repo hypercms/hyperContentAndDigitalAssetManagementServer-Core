@@ -60,6 +60,45 @@ if (sizeof ($config_files) > 0)
       // send license notification to users
       if (function_exists ("licensenotification")) licensenotification ();
 
+      // ------------------------------------------ DELETE INVALID USERS --------------------------------------------
+      
+      // delete invalid users
+      if (!empty ($mgmt_config['userdelete']))
+      {
+        // get todays date
+        $todaydate = strtotime (date ("Y-m-d", time()));
+
+        // load user file
+        $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+
+        if ($userdata != "")
+        {
+          // get user nodes
+          $usernode = getcontent ($userdata, "<user>");
+
+          foreach ($usernode as $temp)
+          {
+            if ($temp != "")
+            {
+              $validdatenode = getcontent ($temp, "<validdateto>");
+
+              if (!empty ($validdatenode[0]))
+              {
+                $validdate = strtotime ($validdatenode[0]);
+
+                if ($validdate < $todaydate) 
+                {
+                  $loginnode = getcontent ($temp, "<login>");
+
+                  // delete user
+                  if (!empty ($loginnode[0])) deleteuser ("*Null*", $loginnode[0], "sys");
+                }
+              }
+            }
+          }
+        }
+      }
+
       // ------------------------------------------------- EXPORT ---------------------------------------------------
       
       // export job
@@ -78,7 +117,8 @@ if (sizeof ($config_files) > 0)
         // get date based on the maximum days objects may reside in the recycle bin
         $date = date ("Y-m-d", time() - $mgmt_config['recycledays']*24*60*60);
         
-        $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000);
+        // remove all obecjts permanently that have been marked for deletetion before the defined date
+        $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, "", false, false);
         
         if (is_array ($objectpath_array) && sizeof ($objectpath_array) > 0)
         {
@@ -90,6 +130,20 @@ if (sizeof ($config_files) > 0)
               if (getobject ($objectpath['objectpath']) == ".folder") $objectpath = getlocation ($objectpath['objectpath']);
 
               if ($objectpath['objectpath'] != "") processobjects ("delete", getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), 0, "sys");
+            }
+          }
+        }
+
+        // remove objects from database in case they could not be deleted by function processobjects
+        $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, "", false, true);
+
+        if (is_array ($objectpath_array) && sizeof ($objectpath_array) > 0)
+        {
+          foreach ($objectpath_array as $objectpath)
+          {
+            if (!empty ($objectpath['objectpath']))
+            {
+              rdbms_deleteobject ($objectpath['objectpath'], "");
             }
           }
         }

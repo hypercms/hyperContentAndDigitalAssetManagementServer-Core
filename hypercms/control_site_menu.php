@@ -67,7 +67,7 @@ $token_new = createtoken ($user);
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
-function warning_delete()
+function warning_delete ()
 {
   var form = document.forms['site_delete'];
   
@@ -84,7 +84,7 @@ function warning_delete()
   }
 }
 
-function checkForm_chars(text, exclude_chars)
+function checkForm_chars (text, exclude_chars)
 {
   exclude_chars = exclude_chars.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
   
@@ -102,7 +102,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>\n " + addText);
+		alert ("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>\n " + addText);
 		return false;
 	}
   else
@@ -111,13 +111,13 @@ function checkForm_chars(text, exclude_chars)
 	}
 }
 
-function checkForm()
+function checkForm ()
 {
   var form = document.forms['site_create'];
   
   if(form.elements['site_name'].value.trim() == "")
   {
-    alert(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['site_name'].focus();
     return false;
   }

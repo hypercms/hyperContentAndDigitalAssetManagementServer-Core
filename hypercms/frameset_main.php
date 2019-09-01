@@ -137,6 +137,9 @@ $(document).ready(function()
   // set window width and height for contextmenu
   localStorage.setItem ('windowwidth', <?php echo windowwidth ("object"); ?>);
   localStorage.setItem ('windowheight', <?php echo windowheight ("object"); ?>);
+
+  // set user popup or new window for contextmenu
+  localStorage.setItem ('user_newwindow', <?php if (!empty ($mgmt_config['user_newwindow'])) echo "true"; else echo "false"; ?>);
   
   window.onresize = function()
   {
@@ -180,10 +183,13 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <img src="<?php echo getthemelocation(); ?>img/button_chat.png" class="hcmsButtonTiny  hcmsButtonSizeSquare" style="padding:2px;" onClick="hcms_openChat();" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
   <?php } ?>
   
+  <?php if (empty ($hcms_portal)) { ?>
   <img src="<?php echo getthemelocation(); ?>img/button_logout.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="top.location='userlogout.php';" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
+  <?php } ?>
 </div>
 
 <!-- user info -->
+<?php if (empty ($hcms_portal)) { ?>
 <img src="<?php echo getthemelocation(); ?>img/button_info.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="position:absolute; left:0; bottom:0; padding:2px; margin:32px 0px;" onclick="hcms_showInfo ('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
   
 <div id="userInfoLayer" class="hcmsMessage" style="position:absolute; bottom:10px; left:32px; display:none; z-index:999; padding:4px; width:200px; min-height:80px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
@@ -194,6 +200,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php $servertime->InstallClock(); ?></span>
 </div>
 <?php $servertime->InstallClockBody(); ?>
+<?php } ?>
 
 <?php
 }

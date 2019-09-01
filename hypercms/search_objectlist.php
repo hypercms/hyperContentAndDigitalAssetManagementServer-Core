@@ -343,14 +343,17 @@ elseif ($action == "base_search" || $search_dir != "")
           // split access-string into an array
           $path_array = link_db_getobject ($pathes);
           
-          foreach ($path_array as $path)
+          if (is_array ($path_array))
           {
-            // add slash if missing
-            if (substr ($path, -1) != "/") $path = $path."/";
+            foreach ($path_array as $path)
+            {
+              // add slash if missing
+              if (substr ($path, -1) != "/") $path = $path."/";
 
-            // check access permission
-            if (!empty ($localpermission[$site_name][$group_name]['page'])) $search_dir_esc[] = convertpath ($site_name, $path, "page");
-            else $exclude_dir_esc[] = convertpath ($site_name, $path, "page");
+              // check access permission
+              if (!empty ($localpermission[$site_name][$group_name]['page'])) $search_dir_esc[] = convertpath ($site_name, $path, "page");
+              else $exclude_dir_esc[] = convertpath ($site_name, $path, "page");
+            }
           }
         }
       }
@@ -363,14 +366,17 @@ elseif ($action == "base_search" || $search_dir != "")
           // split access-string into an array
           $path_array = link_db_getobject ($pathes);
           
-          foreach ($path_array as $path)
+          if (is_array ($path_array))
           {
-            // add slash if missing
-            if (substr ($path, -1) != "/") $path = $path."/";
+            foreach ($path_array as $path)
+            {
+              // add slash if missing
+              if (substr ($path, -1) != "/") $path = $path."/";
 
-            // check access permission
-            if (!empty ($localpermission[$site_name][$group_name]['component'])) $search_dir_esc[] = convertpath ($site_name, $path, "comp");
-            else $exclude_dir_esc[] = convertpath ($site_name, $path, "comp");
+              // check access permission
+              if (!empty ($localpermission[$site_name][$group_name]['component'])) $search_dir_esc[] = convertpath ($site_name, $path, "comp");
+              else $exclude_dir_esc[] = convertpath ($site_name, $path, "comp");
+            }
           }
         }
       }
@@ -1040,8 +1046,18 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
   vertical-align: bottom;
   padding: 2px;
 }
+
+.hcmsCell
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
 <script type="text/javascript">
+
+// select area
+var selectarea;
 
 // context menu
 contextenable = true;
@@ -1131,17 +1147,27 @@ function resizecols ()
   }
 }
 
+function initalize ()
+{
+  // set view
+  toggleview (explorerview);
+
+  // resize columns
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
+
+  // select area
+  selectarea = document.getElementById('selectarea');
+
+  // load screen
+  if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='none';
+
+  // collect objects and set objects array
+  hcms_collectObjectpath ();
+}
+
 // load control frame
 parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&from_page=<?php echo getescapedtext ($action); ?>';
 </script>
-<style>
-.hcmsCell
-{
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-</style>
 </head>
 
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" onresize="resizecols();">
@@ -1193,7 +1219,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
           <?php if ($action == "favorites" && linking_valid() == false) { ?>
           <a href="javascript:void(0);" id="href_fav_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_delete');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_new.png" id="img_fav_delete" class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete-favorite'][$lang]); ?></a><br />        
           <hr />
-          <?php } elseif (checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false) { ?>
+          <?php } elseif ($action != "recyclebin" && checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false) { ?>
           <a href="javascript:void(0);" id="href_fav_create" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_create');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_delete.png" id="img_fav_create" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['add-to-favorites'][$lang]); ?></a><br />
           <hr />        
           <?php } ?>
@@ -1364,15 +1390,8 @@ if ($galleryview != "")
 </div>
 
 <!-- initalize -->
-<script>
-// set view
-toggleview (explorerview);
-// resize columns
-$("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
-// select area
-var selectarea = document.getElementById('selectarea');
-// load screen
-if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='none';
+<script type="text/javascript">
+initalize();
 </script>
 
 </body>

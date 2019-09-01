@@ -71,7 +71,7 @@ $email_ondate = getrequest_esc ("email_ondate");
 $email_date = getrequest_esc ("email_date");
 
 // include values from mail file if no action has been requested
-if ($mailfile != "" && valid_objectname ($mailfile) && $action == "")
+if ($mailfile != "" && valid_objectname ($mailfile))
 {
   if (is_file ($mgmt_config['abs_path_data']."queue/".$mailfile.".php")) include ($mgmt_config['abs_path_data']."queue/".$mailfile.".php");
   elseif (is_file ($mgmt_config['abs_path_data']."message/".$mailfile.".php")) include ($mgmt_config['abs_path_data']."message/".$mailfile.".php");
@@ -115,7 +115,7 @@ if (empty ($mailfile) || $action != "sendmail")
   $ownergroup = accesspermission ($site, $location, $cat);
   $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
   if (empty ($mgmt_config[$site]['sendmail']) || $ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['sendlink'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location)) killsession ($user);
-  
+
   // check session of user
   checkusersession ($user);
 }
@@ -287,16 +287,23 @@ if (valid_objectname ($user))
 }
 
 // ---------------------------------- save to queue ----------------------------------
-if ($action == "savequeue" && checktoken ($token, $user) && valid_objectname ($user))
+if ($action == "savequeue" && valid_objectname ($user) && checktoken ($token, $user))
 {
   // create queue entry
   $queue = createqueueentry ("mail", "", $email_date, 0, $message_data, $user);
-      
-  if ($queue == false) $general_error[] = getescapedtext ($hcms_lang['the-publishing-queue-could-not-be-saved'][$lang]);
-  else $general_error[] = "<script language=\"JavaScript\" type=\"text/javascript\">window.close();</script>";
+
+  if ($queue == false)
+  {
+    $general_error[] = getescapedtext ($hcms_lang['the-publishing-queue-could-not-be-saved'][$lang]);
+  }
+  else
+  {
+    $general_error[] = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."
+    <script language=\"JavaScript\" type=\"text/javascript\">if (typeof parent.closeobjectview == 'function') setTimeout(function(){ parent.closeobjectview() }, 1000); else setTimeout(function(){ window.close() }, 1000);</script>";
+  }
 }
 // ---------------------------------- send mail ----------------------------------
-elseif ($action == "sendmail" && checktoken ($token, $user))
+elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token, $user))
 {
   if (valid_publicationname ($site) && valid_locationname ($location) && !empty ($mgmt_config['db_connect_rdbms']))
   {
@@ -311,7 +318,7 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
         // image format and config provided
         if (substr_count ($value, "|") > 0)
         {
-          list ($ext, $config) = explode ("|", $value);        
+          list ($ext, $config) = explode ("|", $value);
           $format_array['image'][$ext][$config] = 1;
         }
         // only image format
@@ -321,7 +328,7 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
         }
       }
     }
-    
+
     if (!empty ($format_doc) && is_array ($format_doc))
     {
       foreach ($format_doc as $ext)
@@ -330,7 +337,7 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
         $format_array['document'][$ext] = 1;
       }
     }
-    
+
     if (!empty ($format_vid) && is_array ($format_vid))
     {
       foreach ($format_vid as $ext)
@@ -339,18 +346,18 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
         $format_array['video'][$ext] = 1;
       }
     }
-    
+
     if (sizeof ($format_array) > 0) $formats = json_encode ($format_array);
     else $formats = "";
 
     // --------------------------- lifetime / period of validity ------------------------
-    
+
     if ($valid_active == "yes")
     {
       // transform to seconds
       if ($valid_days != "") $valid_days = intval ($valid_days) * 24 * 60 * 60;
       if ($valid_hours != "") $valid_hours = intval ($valid_hours) * 60 * 60;
-      
+
       // lifetime of token in seconds
       $lifetime = $valid_days + $valid_hours;
     }
@@ -363,27 +370,27 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
       if (!empty ($page) || is_array ($multiobject_array))
       {
         $login = "User".date ("YmdHis", time());
-        
+
         // add new user to login array
         $user_login_array[] = $login;
-        
+
         // generate password from upper case letter and session ID
         $password = $confirm_password = "P".substr (session_id(), 0, 9);
-           
+
         $result = createuser ($site, $login, $password, $confirm_password, $user);
-        
+
         if ($result['result'] == true)
         {
           // create names form e-mails
           $realnames = array();
-          
+
           $email_to = array_unique ($email_to);
-          
+
           foreach ($email_to as $temp)
           {
             $realnames[] = substr ($temp, 0, strpos ($temp, "@"));
           }
-          
+
           // publication membership
           $usersite = implode ("|", $memory_site);
           
@@ -391,7 +398,7 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
           $usergroup = $user_group;
           
           // assign publication access and group membership
-          $result = edituser ($site, $login, "", "", "", "", implode (", ", $realnames), $language, "", "", implode (", ", $email_to), "", "", $usergroup, $usersite, $user);
+          $result = edituser ($site, $login, "", "", "", "", implode (", ", $realnames), $language, "", "", implode (", ", $email_to), "", "", $usergroup, $usersite, "", "", $user);
         }
         else
         {
@@ -404,10 +411,10 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
     getallusers ($site);
     
     // ------------------------------ send mail to existing users or members of user group ---------------------------
-    
+
     $email_to_array = array();
-    
-    if ((!empty ($user_login_array) &&  is_array ($user_login_array) && sizeof ($user_login_array) > 0) || (!empty ($group_login) && is_string ($group_login)))
+
+    if ((!empty ($user_login_array) && is_array ($user_login_array) && sizeof ($user_login_array) > 0) || (!empty ($group_login) && is_string ($group_login)))
     {
       // get users of group
       if (!empty ($group_login))
@@ -431,11 +438,11 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
           }
         }
       }
-      
+
       // email and signature of sender
-      if (!empty ($_SESSION['hcms_user']))
+      if (!empty ($user))
       {
-        $mail_sender_array = selectcontent ($userdata, "<user>", "<login>", getsession ('hcms_user'));
+        $mail_sender_array = selectcontent ($userdata, "<user>", "<login>", $user);
         
         if (!empty ($mail_sender_array))
         {
@@ -466,35 +473,35 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
           
           if (!empty ($temp_array[0]))
           {
-            $mail_signature = $temp_array[0];           
+            $mail_signature = $temp_array[0];     
           }
           else $mail_signature = "";
         }
       }
-      
+
       // email of receivers 
       if (is_array ($user_login_array) && !empty ($userdata))
       {
         $user_login_array = array_unique ($user_login_array);
-        
+
         foreach ($user_login_array as $user_to)
         {
           // get user node and extract required information
           $mail_receiver_array = selectcontent ($userdata, "<user>", "<login>", $user_to);
-          
+
           if ($mail_receiver_array != false)
           {
             // real name
             $buffer_array = getcontent ($mail_receiver_array[0], "<realname>");
-            
+
             if (!empty ($buffer_array[0]))
             {
               $temp_realname_to = $buffer_array[0];
             }
-            
+
             // email
             $temp_array = getcontent ($mail_receiver_array[0], "<email>");
-            
+
             if (!empty ($temp_array[0]))
             {
               $temp_email_to = $email_to_array[] = $temp_array[0];
@@ -503,10 +510,10 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
             {
               $general_error[] = str_replace ("%user%", $temp_realname_to, $hcms_lang['e-mail-address-of-user-s-is-missing'][$lang]);
             }
-            
+
             // language
             $buffer_array = getcontent ($mail_receiver_array[0], "<language>");
-            
+
             if (!empty ($buffer_array[0]))
             {
               $temp_user_lang = $buffer_array[0];
@@ -518,7 +525,7 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
               $temp_user_lang = $lang;            
             }
           }
-          
+
           // send mail to receiver
           $mailer = new HyperMailer();
           $mailer->IsHTML(true);
@@ -539,7 +546,7 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
                   if ($folder != "") $multiobject_array[0] = $location_esc.$folder."/".$page;
                   else $multiobject_array[0] = $location_esc.$page;
                 }
-            
+
                 $mail_links = array();
 
                 // multi object
@@ -549,9 +556,9 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
                   if ($download_type == "link")
                   {
                     $link = createmultiaccesslink ($multiobject_array, $user_to, "al", $lifetime, $formats);
-                    
+
                     if (empty ($link)) $link = $hcms_lang['error-object-id-is-missing-for-'][$temp_user_lang].$hcms_lang['access-link'][$temp_user_lang];
-                    
+
                     // links to send
                     $mail_link .= $link."\n\n";
                     // for mail report
@@ -590,7 +597,7 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
                 {
                   $multiobject_array[0] = $location_esc.$page;
                 }
-                
+
                 // multi object
                 if (isset ($multiobject_array) && is_array ($multiobject_array))
                 {
@@ -616,23 +623,23 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
                           if ($mediafile != false)
                           {
                             $mediafile_conv = false;
-                            
+
                             // temp location
                             $location_conv = $mgmt_config['abs_path_temp'];
-                            
+
                             // convert file if format is not original (image)
                             if ($format_img[0] != "original" && is_image ($mediafile))
                             {
                               list ($format, $media_config) = explode ("|", $format_img[0]);
                               $mediafile_conv = convertmedia ($siteTemp, $mediadir.$siteTemp."/", $location_conv, $mediafile, $format, $media_config, true);
                             }
-                            
+
                             // convert file if format is not original (document)
                             if ($format_doc[0] != "original" && is_document ($mediafile))
                             {
                               $mediafile_conv = convertmedia ($siteTemp, $mediadir.$siteTemp."/", $location_conv, $mediafile, $format_doc[0], "", true);
                             }
-                            
+
                             // convert file if format is not original (video)
                             if ($format_vid[0] != "original" && is_video ($mediafile))
                             {
@@ -652,7 +659,7 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
 
                               // prepare media file
                               $temp_source = preparemediafile ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
-                              
+
                               // if encrypted
                               if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty ($temp_source['tempfile']))
                               {
@@ -665,7 +672,7 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
                               }
                               else $attachment = $mediadir.$siteTemp."/".$mediafile;
                             }
-                            
+
                             // define file name for attachment
                             $page_info = getfileinfo ($siteTemp, $pageTemp, $catTemp);
                             $attachment_ext = strtolower (strrchr ($attachment, "."));
@@ -684,22 +691,22 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
                 }
               }
             }
-            
+
             // mail body
             $mail_fullbody = $email_body."\n\n";
             
-            if ($mail_link != "")
+            if (!empty ($mail_link))
             {
               $mail_fullbody .= $hcms_lang['please-click-the-links-below-to-access-the-files'][$temp_user_lang].":\n\n".$mail_link."\n\n";
             }
-            
-            $mail_fullbody .= $mail_signature;
+
+            if (!empty ($mail_signature)) $mail_fullbody .= $mail_signature;
             $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
-            
+
             // mail header
             // if the mailserver config entry is empty, the email address of the user will be used for FROM
             $mail_header = "";
-            
+
             if (!empty ($email_from) && $mgmt_config[$site]['mailserver'] == "")
             {
               $mailer->From = $email_from;
@@ -715,15 +722,15 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
               $mailer->From = "automailer@hypercms.net";
               $mailer->FromName = "hyperCMS Automailer";
             }
-            
+
             // Reply-To
-            if ($email_from != "")
+            if (!empty ($email_from))
             {
               $mailer->AddReplyTo ($email_from);
             }
-            
+
             // CC
-            if ($email_cc != "" && !$ccsent)
+            if (!empty ($email_cc) && !$ccsent)
             {
               $ccsent = true;
               $mails = splitstring ($email_cc);
@@ -738,9 +745,9 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
                 }
               }
             }
-            
+
             // BCC
-            if ($email_bcc != "" && !$bccsent)
+            if (!empty ($email_bcc) && !$bccsent)
             {
               $bccsent = true;
               $mails = splitstring ($email_bcc);
@@ -755,11 +762,11 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
                 }
               }
             }
-            
+
             // subject and body
             $mailer->Subject = html_decode ($email_title, $hcms_lang_codepage[$lang]);
             $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang]);
-            
+
             // create email recipient array
             $temp_email_to_array = splitstring ($temp_email_to);
             
@@ -772,15 +779,15 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
                 $mailer->AddAddress ($temp);
               }
             }
-            
+
             // send mail
             if ($mailer->Send())
             {
               $mail_success[] = $temp_email_to;
-              
+
               // save message
               savemessage ($message_data, "mail", $user);
-              
+
               $errcode = "00101";
               $error[] = $mgmt_config['today']."|user_sendlink.php|information|$errcode|e-mail message was sent to ".$temp_email_to." by user ".$user;
             }
@@ -817,9 +824,9 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
           $catTemp = getcategory ($siteTemp, $locationTemp);
           $pageTemp = getobject ($multiobject_entry);
           $objectpath = convertpath ($siteTemp, $locationTemp.$pageTemp, $catTemp);
-          
+
           rdbms_createrecipient ($objectpath, $user, implode (",", $user_login_array), implode (",", $email_to_array));
-          
+
           // create new task for each user
           if (!empty ($task_create))
           {
@@ -839,11 +846,11 @@ elseif ($action == "sendmail" && checktoken ($token, $user))
         $locationTemp = $location.$folder."/";
       }
       else $locationTemp = $location;
-      
+
       $objectpath = convertpath ($site, $locationTemp.$page, $cat);
-             
-      rdbms_createrecipient ($objectpath, $user, implode (",", $user_login_array), implode (",", $email_to_array));
       
+      rdbms_createrecipient ($objectpath, $user, implode (",", $user_login_array), implode (",", $email_to_array));
+
       // create new task for each user
       if (!empty ($task_create))
       {
@@ -876,7 +883,7 @@ if ($page != "" || is_array ($multiobject_array))
       foreach ($multiobject_array as $multiobject_entry)
       {
         $filePath = deconvertpath ($multiobject_entry, "file");
-        
+
         // folder
         if (getobject ($multiobject_entry) == ".folder" || is_dir ($filePath))
         {
@@ -907,7 +914,7 @@ if ($page != "" || is_array ($multiobject_array))
     {
       $filedata = loadfile ($location, $page);
       $media = getfilename ($filedata, "media");
-      
+
       if (empty ($media))
       {
         $allow_attachment = false;

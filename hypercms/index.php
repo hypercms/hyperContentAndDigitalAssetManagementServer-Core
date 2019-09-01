@@ -32,6 +32,16 @@ if ($login != "")
   $forward = "userlogin.php?require=password&sentuser=".url_encode($login)."&sentinstance=".url_encode($instance);
 }
 
+// ------------------- portal access link parameters -------------------
+
+//   new hash parameter for mail-link (accesslink)
+$portal = getrequest ("portal", "url");
+
+if ($portal != "")
+{
+  $forward = "userlogin.php?portal=".url_encode($portal);
+}
+
 // ------------------- access link parameters -------------------
 
 //   new hash parameter for mail-link (accesslink)

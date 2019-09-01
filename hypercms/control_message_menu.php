@@ -197,7 +197,7 @@ function submitTo(url, action, target, features, width, height)
       echo "
       <img class=\"hcmsButton hcmsButtonSizeSquare\" ";
       
-      if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."', '', 'status=yes,scrollbars=no,resizable=yes', 540, 800);\" ";
+      if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."', '', 'status=yes,scrollbars=no,resizable=yes', 600, 900);\" ";
       else echo "onClick=\"parent.openpopup('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."');\" ";
       
       echo "name=\"media_edit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />";

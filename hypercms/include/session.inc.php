@@ -41,6 +41,9 @@ $viewportwidth = getsession ("hcms_temp_viewportwidth");
 $html5file = getsession ("hcms_html5file");
 // mail linking parameter (array)
 $hcms_linking = getsession ("hcms_linking");
+// portal (public access link)
+$hcms_portal = getsession ("hcms_portal");
+$hcms_favroites = getsession ("hcms_favorites");
 // asset browser
 $hcms_assetbrowser = getsession ("hcms_assetbrowser");
 $hcms_assetbrowser_location = getsession ("hcms_assetbrowser_location");

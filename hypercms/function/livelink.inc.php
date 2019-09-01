@@ -2,7 +2,7 @@
 function insertlink ($hcms_linkindex, $hcms_id)
 { 
   global $publ_config;
-  
+
   if (is_array ($hcms_linkindex) && sizeof ($hcms_linkindex) > 0)
   {
     reset ($hcms_linkindex);
@@ -73,7 +73,7 @@ function insertcomponent ($hcms_linkindex, $hcms_id)
     if (substr_count ($hcms_linkindex, "|") >= 1)
     {
       $hcms_compmulti_array = explode ("|", $hcms_linkindex);
-      
+
       if (is_array ($hcms_compmulti_array) && sizeof ($hcms_compmulti_array) > 0)
       {
         foreach ($hcms_compmulti_array as $hcms_component)

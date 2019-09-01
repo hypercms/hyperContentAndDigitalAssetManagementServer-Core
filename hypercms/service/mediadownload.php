@@ -187,7 +187,7 @@ elseif ($objectpath_esc != "")
 
     // zip all files
     $result_zip = zipfiles ($site, array ($location), $mgmt_config['abs_path_temp'], $zip_filename, $user_zip, "download");
-  
+
     // zip file download
     if ($result_zip == true)
     {
@@ -219,7 +219,7 @@ elseif ($objectpath_esc != "")
   {
   	$location = getlocation ($objectpath);
   	$object = getobject ($objectpath);
-      
+ 
     // get media file from object file
 		if (@is_file ($location.$object))
     {
@@ -332,7 +332,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
 
       // reset user if a user ID has been provided by the request
       if (!empty ($extuser)) $user = $extuser;
-  
+
       // stream file content
       downloadfile ($media_root.$media, $name, "download", $user);
     }

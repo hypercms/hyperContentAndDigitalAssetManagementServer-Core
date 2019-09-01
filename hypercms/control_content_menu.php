@@ -145,7 +145,7 @@ if ($action != "" && checktoken ($token, $user))
     $show = "";
   } 
   // lock object
-  elseif ($setlocalpermission['root'] == 1 && $action == "page_lock") 
+  elseif (checkrootpermission ("desktopcheckedout") && $setlocalpermission['root'] == 1 && $action == "page_lock") 
   {
     $result = lockobject ($site, $location, $page, $user);
 
@@ -870,7 +870,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <?php echo getescapedtext ($hcms_lang['template-auto-preview'][$lang]); ?> 
       </td>
       <td style="white-space:nowrap">
-        <select name="template" onChange="hcms_jumpMenu('parent.frames[\'objFrame\']',this,0)" style="width:190px;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>">
+        <select name="template" onChange="hcms_jumpMenu('parent.frames[\'objFrame\']',this,0)" style="width:180px;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>">
           <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select-template'][$lang]); ?></option>
           <?php
           $template_array = gettemplates ($site, $cat);

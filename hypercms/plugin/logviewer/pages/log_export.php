@@ -26,7 +26,7 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // file name of event log
-if (valid_publicationname ($site)) $logfile = $site.".custom.log";
+if (valid_publicationname ($site)) $logfile = $site.".publication.log";
 else $logfile = "";
 
 if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))

@@ -23,7 +23,7 @@ $login = getrequest_esc ("login", "objectname");
 $old_password = getrequest ("old_password");
 $password = getrequest ("password");
 $confirm_password = getrequest ("confirm_password");
-$superadmin = getrequest_esc ("superadmin");
+$superadmin = getrequest_esc ("superadmin", "numeric", 0);
 $realname = getrequest_esc ("realname");
 $language = getrequest_esc ("language");
 $timezone = getrequest ("timezone");
@@ -31,8 +31,11 @@ $theme = getrequest_esc ("theme", "objectname");
 $email = getrequest_esc ("email");
 $phone = getrequest_esc ("phone");
 $signature = getrequest_esc ("signature");
+$validdatefrom = getrequest_esc ("validdatefrom");
+$validdateto = getrequest_esc ("validdateto");
 $usergroup = getrequest_esc ("usergroup");
 $usersite = getrequest_esc ("usersite");
+$homeboxes = getrequest ("homeboxes");
 $token = getrequest ("token");
 
 // publication management config
@@ -42,9 +45,9 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 
 // check permissions
 if (
-     (!valid_publicationname ($site) && $login_cat == "home" && $login == $user && !checkrootpermission ('desktopsetting')) || 
-     (!valid_publicationname ($site) && $login_cat != "home" && (!checkrootpermission ('user') || !checkrootpermission ('useredit'))) || 
-     (valid_publicationname ($site) && $login_cat != "home" && (!checkglobalpermission ($site, 'user') || !checkglobalpermission ($site, 'useredit')))
+     ($login_cat == "home" && ($login != $user || !checkrootpermission ('desktopsetting'))) || 
+     (!valid_publicationname ($site) && (!checkrootpermission ('user') || !checkrootpermission ('useredit'))) || 
+     (valid_publicationname ($site) && (!checkglobalpermission ($site, 'user') || !checkglobalpermission ($site, 'useredit')))
    ) killsession ($user);
 
 // check session of user
@@ -58,63 +61,83 @@ $add_onload = "";
 // save user
 if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicationpermission ($site)) && checktoken ($token, $user))
 {
-  // check permissions
-  if (
-       ($login_cat == "home" && $login == $user && checkrootpermission ('desktopsetting')) || 
-       (!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || 
-       (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))
-     )
+  // set super admin (only in main user administration)
+  if (checkadminpermission () && $login != $user)
   {
-    // set super admin (only in main user administration)
-    if (!valid_publicationname ($site) && (checkadminpermission () || $user == "admin"))
-    {
-      if ($superadmin != "1") $superadmin = "0";
-    }
-    else $superadmin = "";
-    
-    // reload GUI
-    $add_onload = "";
-        
-    if ($login_cat == "home" && $login == $user)
-    {
-      // load new language if user changed it
-      if (!empty ($language) && $lang != $language)
-      {
-        $lang = $language;
-        
-        // language file
-        require_once ("language/".getlanguagefile ($lang));
-        $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
-      }
-      
-      // change theme in session if user changed it
-      if (!empty ($theme) && $hcms_themename != $theme)
-      {
-        setsession ('hcms_themename', $theme, true);
-        $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
-      }
-    }
-    
-    // set time zone
-    if (!empty ($timezone) && $timezone != getsession ("hcms_timezone"))
-    {
-      setsession ('hcms_timezone', $timezone);
-      $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
-    }
+    if ($superadmin != "1") $superadmin = "0";
+  }
+  else $superadmin = "*Leave*";
 
-    // edit user settings
-    $result = edituser ($site, $login, $old_password, $password, $confirm_password, $superadmin, $realname, $language, $timezone, $theme, $email, $phone, $signature, $usergroup, $usersite, $user);
+  // set design theme (only if no default theme has been defined in the main or publication config)
+  if ((!valid_publicationname ($site) && empty ($mgmt_config['theme']) && empty ($config_theme)) || (valid_publicationname ($site) && empty ($mgmt_config['theme']) && empty ($mgmt_config[$site]['theme'])))
+  {
+    if (!valid_locationname ($theme)) $theme = "*Leave*";
+  }
+  else $theme = "*Leave*";
 
-    $show = $result['message'];
+  // set valid dates (only if useredit permission)
+  if ($login_cat != "home" && (!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, "useredit")))
+  {
+    if (!is_date ($validdatefrom, "Y-m-d")) $validdatefrom = "*Leave*";
+    if (!is_date ($validdateto, "Y-m-d")) $validdateto = "*Leave*";
   }
   else
   {
-    $errcode = "30010";
-    $error[] = $mgmt_config['today']."|user_edit.inc.php|error|$errcode|unauthorized access of user ".$user;
-    
-    $add_onload = "";
-    $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang])."</span>\n";
+    $validdatefrom = "*Leave*";
+    $validdateto = "*Leave*";
   }
+
+  // set group membership
+  if ($login_cat != "home" && valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, "useredit"))
+  {
+    if (empty ($usergroup)) $usergroup = "*Leave*";
+  }
+  else $usergroup = "*Leave*";
+
+  // set publication membership
+  if ($login_cat != "home" && !valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit'))
+  {
+    if (empty ($usersite)) $usersite = "*Leave*";
+  }
+  else $usersite = "*Leave*";
+  
+  // reload GUI
+  $add_onload = "";
+      
+  if ($login_cat == "home" && $login == $user)
+  {
+    // load new language if user changed it
+    if (!empty ($language) && $lang != $language)
+    {
+      $lang = $language;
+      
+      // language file
+      require_once ("language/".getlanguagefile ($lang));
+      $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+    }
+    
+    // change theme in session if user changed it
+    if (!empty ($theme) && $hcms_themename != $theme)
+    {
+      setsession ('hcms_themename', $theme, true);
+      $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+    }
+  }
+  
+  // set time zone
+  if (!empty ($timezone) && $timezone != getsession ("hcms_timezone"))
+  {
+    setsession ('hcms_timezone', $timezone);
+    $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+  }
+
+  // edit user settings
+  $result = edituser ($site, $login, $old_password, $password, $confirm_password, $superadmin, $realname, $language, $timezone, $theme, $email, $phone, $signature, $usergroup, $usersite, $validdatefrom, $validdateto, $user);
+
+  // set home boxes of user
+  if (!empty ($homeboxes)) setuserboxes ($homeboxes, $login);
+
+  $show = $result['message'];
   
   // save log
   savelog (@$error);
@@ -132,35 +155,93 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script>
+
+<link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
+<script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
+<script type="text/javascript">
+var cal_obj = null;
+var cal_format = '%Y-%m-%d';
+var cal_field = null;
+
+// show calendar
+function show_cal (el, field_id, format)
+{
+  if (cal_obj) return;
+  
+  cal_field = field_id;
+  cal_format = format;
+  var datefield = document.getElementById(field_id);
+
+	cal_obj = new RichCalendar();
+	cal_obj.start_week_day = 1;
+	cal_obj.show_time = false;
+	cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
+	cal_obj.user_onchange_handler = cal_on_change;
+  cal_obj.user_onclose_handler = cal_on_close;
+	cal_obj.user_onautoclose_handler = cal_on_autoclose;
+	cal_obj.parse_date(datefield.value, cal_format);
+	cal_obj.show_at_element(datefield, "adj_left-bottom");
+}
+
+// user defined onchange handler
+function cal_on_change (cal, object_code)
+{
+	if (object_code == 'day')
+	{
+		document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
+		cal.hide();
+		cal_obj = null;
+	}
+}
+
+// user defined onclose handler (used in pop-up mode - when auto_close is true)
+function cal_on_close(cal)
+{
+	cal.hide();
+	cal_obj = null;
+}
+
+// user defined onautoclose handler
+function cal_on_autoclose(cal)
+{
+	cal_obj = null;
+}
+
 function selectAll ()
 {
   var assigned = "|";
   var form = document.forms['userform'];
   var select = form.elements['list2'];
 
-  if (select.options.length > 0)
+  if (select)
   {
-    for (var i=0; i<select.options.length; i++)
+    if (select.options.length > 0)
     {
-      assigned = assigned + select.options[i].value + "|" ;
+      for (var i=0; i<select.options.length; i++)
+      {
+        assigned = assigned + select.options[i].value + "|" ;
+      }
     }
-  }
-  else
-  {
-    assigned = "*Null*";
-  }
+    else
+    {
+      assigned = "*Null*";
+    }
 
-  if (form.elements['site'].value != "*Null*" && form.elements['site'].value != "*no_memberof*")
-  {
-    form.elements['usergroup'].value = assigned;
-  }
-  else if (form.elements['site'].value == "*Null*" || form.elements['site'].value == "*no_memberof*")  
-  {
-    form.elements['usersite'].value = assigned;  
-  }
+    if (form.elements['site'].value != "*Null*" && form.elements['site'].value != "*no_memberof*")
+    {
+      form.elements['usergroup'].value = assigned;
+    }
+    else if (form.elements['site'].value == "*Null*" || form.elements['site'].value == "*no_memberof*")  
+    {
+      form.elements['usersite'].value = assigned;  
+    }
 
-  return true;
+    return true;
+  }
+  else return true;
 }
 
 function checkForm_chars (text, exclude_chars)
@@ -184,10 +265,7 @@ function checkForm_chars (text, exclude_chars)
 		alert ("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-password'][$lang]); ?>\n " + addText);
 		return false;
 	}
-  else
-  {
-		return true;
-	}
+  else return true;
 }
 
 function checkForm ()
@@ -223,7 +301,7 @@ function checkForm ()
       return false;
     }
   }
-  
+
   if (userform.elements['email'].value == "" || (userform.elements['email'].value != "" && (userform.elements['email'].value.indexOf('@') == -1 || userform.elements['email'].value.indexOf('.') == -1)))
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-valid-e-mail-adress'][$lang]); ?>"));
@@ -231,7 +309,9 @@ function checkForm ()
     return false;
   }
   
-  if (eval (userform.elements['list2'])) selectall = selectAll (userform.elements['list2']);
+  if (userform.elements['list2']) selectall = selectAll (userform.elements['list2']);
+
+  setHomeBoxes();
   
   if (selectall == true)
   {
@@ -240,7 +320,7 @@ function checkForm ()
   }
 }
 
-function move(fbox, tbox)
+function move (fbox, tbox)
 {
   var arrFbox = new Array();
   var arrTbox = new Array();
@@ -293,6 +373,113 @@ function move(fbox, tbox)
     tbox[c] = no;
   }
 }
+
+function insertOption (newtext, newvalue)
+{
+  var form = document.forms['userform'];
+  var selectbox = form.elements['box_array'];
+  newentry = new Option (newtext, newvalue, false, true);
+  var i;
+  
+  if (selectbox.length > 0)
+  {  
+    var position = -1;
+
+    for (i=0; i<selectbox.length; i++)
+    {
+      if (selectbox.options[i].selected) position = i;
+      // duplicate entry
+      if (selectbox.options[i].value == newvalue) return false;
+    }
+    
+    if (position != -1)
+    {
+      selectbox.options[selectbox.length] = new Option();
+    
+      for (i=selectbox.length-1; i>position; i--)
+      {
+        selectbox.options[i].text = selectbox.options[i-1].text;
+        selectbox.options[i].value = selectbox.options[i-1].value;
+      }
+      
+      selectbox.options[position+1] = newentry;
+    }
+    else selectbox.options[selectbox.length] = newentry;
+  }
+  else selectbox.options[selectbox.length] = newentry;
+}
+
+function moveSelected (select, down)
+{
+  if (select.selectedIndex != -1)
+  {
+    if (down)
+    {
+      if (select.selectedIndex != select.options.length - 1)
+        var i = select.selectedIndex + 1;
+      else
+        return;
+    }
+    else
+    {
+      if (select.selectedIndex != 0)
+        var i = select.selectedIndex - 1;
+      else
+        return;
+    }
+
+    var swapOption = new Object();
+
+    swapOption.text = select.options[select.selectedIndex].text;
+    swapOption.value = select.options[select.selectedIndex].value;
+    swapOption.selected = select.options[select.selectedIndex].selected;
+
+    for (var property in swapOption) select.options[select.selectedIndex][property] = select.options[i][property];
+    for (var property in swapOption) select.options[i][property] = swapOption[property];
+  }
+}
+
+function deleteSelected (select)
+{
+  if (select.length > 0)
+  {
+    for(var i=0; i<select.length; i++)
+    {
+      if (select.options[i].selected == true) select.remove(i);
+    }
+  }
+}
+
+function selectAllOptions (select)
+{
+  for (var i=0; i<select.options.length; i++)
+  {
+    select.options[i].selected = true;
+  }
+}
+
+function setHomeBoxes ()
+{
+  var form = document.forms['userform'];
+
+  if (form.elements['box_array'])
+  {
+    var select = form.elements['box_array'];
+    var homeboxes = "|";
+
+    if (select.options.length > 0)
+    {
+      for(var i=0; i<select.options.length; i++)
+      {
+        homeboxes = homeboxes + select.options[i].value + "|";
+      }
+    }
+
+    form.elements['homeboxes'].value = homeboxes;
+    return true;
+  }
+  else return false;
+}
 </script>
 </head>
 
@@ -319,46 +506,53 @@ if ($login != "" && $login != false)
 
   $userrecord = selectcontent ($userdata, "<user>", "<login>", "$login");
 
-  $superadminarray = getcontent ($userrecord[0], "<admin>");
-  $superadmin = $superadminarray[0];
+  if (!empty ($userrecord[0]))
+  {
+    $superadminarray = getcontent ($userrecord[0], "<admin>");
+    $superadmin = $superadminarray[0];
 
-  $phonearray = getcontent ($userrecord[0], "<phone>");
-  $phone = $phonearray[0];
-  
-  $emailarray = getcontent ($userrecord[0], "<email>");
-  $email = $emailarray[0];
-  
-  $realnamearray = getcontent ($userrecord[0], "<realname>");
-  $realname = $realnamearray[0];
-  
-  $hashcodearray = getcontent ($userrecord[0], "<hashcode>");
-  $hashcode = $hashcodearray[0];
-  
-  $languagearray = getcontent ($userrecord[0], "<language>");
-  $userlanguage = $languagearray[0];
-  
-  $timezonearray = getcontent ($userrecord[0], "<timezone>");
-  $usertimezone = $timezonearray[0];
-  
-  $themearray = getcontent ($userrecord[0], "<theme>");
-  $usertheme = $themearray[0];
-  
-  $signaturearray = getcontent ($userrecord[0], "<signature>");
-  $signature = $signaturearray[0];
-  
-  if (valid_publicationname ($site)) 
-  {
-    $memberofarray = selectcontent ($userrecord[0], "<memberof>", "<publication>", "$site");
+    $phonearray = getcontent ($userrecord[0], "<phone>");
+    $phone = $phonearray[0];
     
-    $usergrouparray = getcontent ($memberofarray[0], "<usergroup>");
+    $emailarray = getcontent ($userrecord[0], "<email>");
+    $email = $emailarray[0];
     
-    if ($usergrouparray != false) $usergroup = $usergrouparray[0]; 
-    else $usergroup = "";
-  }
-  elseif (!valid_publicationname ($site))
-  {
+    $realnamearray = getcontent ($userrecord[0], "<realname>");
+    $realname = $realnamearray[0];
+    
+    $hashcodearray = getcontent ($userrecord[0], "<hashcode>");
+    $hashcode = $hashcodearray[0];
+    
+    $languagearray = getcontent ($userrecord[0], "<language>");
+    $userlanguage = $languagearray[0];
+    
+    $timezonearray = getcontent ($userrecord[0], "<timezone>");
+    $usertimezone = $timezonearray[0];
+    
+    $themearray = getcontent ($userrecord[0], "<theme>");
+    $usertheme = $themearray[0];
+
+    $validdatefromarray = getcontent ($userrecord[0], "<validdatefrom>");
+    $uservaliddatefrom = $validdatefromarray[0];
+
+    $validdatetoarray = getcontent ($userrecord[0], "<validdateto>");
+    $uservaliddateto = $validdatetoarray[0];
+    
+    $signaturearray = getcontent ($userrecord[0], "<signature>");
+    $signature = $signaturearray[0];
+    
+    if (valid_publicationname ($site)) 
+    {
+      $memberofarray = selectcontent ($userrecord[0], "<memberof>", "<publication>", "$site");
+      
+      $usergrouparray = getcontent ($memberofarray[0], "<usergroup>");
+      
+      if ($usergrouparray != false) $usergroup = $usergrouparray[0]; 
+      else $usergroup = "";
+    }
+
     $usersitearray = getcontent ($userrecord[0], "<publication>");
-    
+      
     if ($usersitearray != false) $usersite = "|".implode ("|", $usersitearray)."|";    
     else $usersite = "";
   }
@@ -370,71 +564,72 @@ if ($login != "" && $login != false)
 
 <div class="hcmsWorkplaceFrame">
 <form name="userform" action="" method="post">
-  <input type="hidden" name="action" value="user_save">
-  <input type="hidden" name="site" value="<?php echo $site; ?>">
-  <?php if ($login_cat == "home") echo "<input type=\"hidden\" name=\"login_cat\" value=\"".$login_cat."\">\n"; ?>
-  <input type="hidden" name="group" value="<?php echo $usergroup; ?>">
-  <input type="hidden" name="login" value="<?php echo $login; ?>">
+  <input type="hidden" name="action" value="user_save" />
+  <input type="hidden" name="site" value="<?php echo $site; ?>" />
+  <?php if ($login_cat == "home") echo "<input type=\"hidden\" name=\"login_cat\" value=\"".$login_cat."\" />\n"; ?>
+  <input type="hidden" name="group" value="<?php echo $usergroup; ?>" />
+  <input type="hidden" name="login" value="<?php echo $login; ?>" />
+  <input type="hidden" name="homeboxes" value="" />
   <?php 
-  if (valid_publicationname ($site) && $login_cat == "") echo "<input type=\"hidden\" name=\"usergroup\" value=\"".$usergroup."\">\n";
-  elseif ($login_cat == "") echo "<input type=\"hidden\" name=\"usersite\" value=\"".$usersite."\">\n";
+  if (valid_publicationname ($site) && $login_cat == "") echo "<input type=\"hidden\" name=\"usergroup\" value=\"".$usergroup."\" />\n";
+  elseif ($login_cat == "") echo "<input type=\"hidden\" name=\"usersite\" value=\"".$usersite."\" />\n";
   ?>
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+  <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
   <table class="hcmsTableStandard">
     <?php if ($login_cat == "home" || $login == $user) { ?>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['old-password'][$lang]); ?> </td>
-      <td style="text-align:right;">
-        <input type="password" name="old_password" style="width:200px;" />
+      <td>
+        <input type="password" name="old_password" style="width:210px;" />
       </td>
     </tr>
     <?php } ?> 
     <tr>
-      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['change-password'][$lang]); ?> </td>
-      <td style="text-align:right; width:200px;">
-        <input type="password" name="password" style="width:200px;" />
+      <td style="width:250px; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['change-password'][$lang]); ?> </td>
+      <td style="width:250px;">
+        <input type="password" name="password" style="width:210px;" maxlength="100" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?> </td>
-      <td style="text-align:right;">
-        <input type="password" name="confirm_password" style="width:200px;" />
+      <td>
+        <input type="password" name="confirm_password" style="width:210px;" maxlength="100" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['hash-for-openapi'][$lang]); ?> </td>
-      <td style="text-align:right;">
-        <input type="text" style="width:200px;" value="<?php echo $hashcode; ?>" readonly="readonly" />
+      <td>
+        <input type="text" style="width:210px;" value="<?php echo $hashcode; ?>" readonly="readonly" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?> </td>
-      <td style="text-align:right;">
-        <input type="text" name="realname" style="width:200px;" value="<?php echo $realname; ?>" />
+      <td>
+        <input type="text" name="realname" style="width:210px;" value="<?php echo $realname; ?>" maxlength="200" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?> </td>
-      <td style="text-align:right;">
-        <input type="text" name="email" style="width:200px;" value="<?php echo $email; ?>" />
+      <td>
+        <input type="text" name="email" style="width:210px;" value="<?php echo $email; ?>" maxlength="200" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['phone'][$lang]); ?> </td>
-      <td style="text-align:right;">
-        <input type="text" name="phone" style="width:200px;" value="<?php echo $phone; ?>" />
+      <td>
+        <input type="text" name="phone" style="width:210px;" value="<?php echo $phone; ?>" maxlength="20" />
       </td>
     </tr>
     <tr>
-      <td valign="top" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['signature'][$lang]); ?> </td>
-      <td style="text-align:right; vertical-align:top;">
-        <textarea name="signature" wrap="VIRTUAL" style="width:200px; height:50px;"><?php echo $signature; ?></textarea>
+      <td valign="top" style="vertical-align:top; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['signature'][$lang]); ?> </td>
+      <td style="vertical-align:top;">
+        <textarea name="signature" wrap="VIRTUAL" style="width:210px; height:100px;"><?php echo $signature; ?></textarea>
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?> </td>
-      <td style="text-align:right;">
+      <td>
         <select name="language" style="width:210px;">
         <?php
         if (!empty ($mgmt_lang_shortcut) && is_array ($mgmt_lang_shortcut))
@@ -464,7 +659,7 @@ if ($login != "" && $login != false)
     </tr>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['timezone'][$lang]); ?> </td>
-      <td style="text-align:right;">
+      <td>
         <select name="timezone" style="width:210px;">
           <option value=""><?php echo getescapedtext ($hcms_lang['standard'][$lang]); ?></option>
         <?php
@@ -487,66 +682,76 @@ if ($login != "" && $login != false)
         ?>
         </select>
       </td>
-    </tr> 
+    </tr>
+
     <?php
-    // check if publication defines a theme
-    foreach ($siteaccess as $entry) if (!empty ($mgmt_config[$entry]['theme'])) { $config_theme = $mgmt_config[$entry]['theme']; break; }
-    
+    // check if any publication defines a theme
+    foreach ($siteaccess as $entry)
+    {
+      if (!empty ($mgmt_config[$entry]['theme']))
+      {
+        $config_theme = $mgmt_config[$entry]['theme'];
+        break;
+      }
+    }
+
     if ((!valid_publicationname ($site) && empty ($mgmt_config['theme']) && empty ($config_theme)) || (valid_publicationname ($site) && empty ($mgmt_config['theme']) && empty ($mgmt_config[$site]['theme']))) {
     ?>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?> </td>
-      <td style="text-align:right;">
+      <td>
         <select name="theme" style="width:210px;">
         <?php
-        $theme_dir = $mgmt_config['abs_path_cms']."theme/";
-        $dir_handler = opendir ($theme_dir);
-        
-        if ($dir_handler != false)
+        // get themes of user
+        if ($superadmin == "1") $theme_array = getthemes ($siteaccess);
+        elseif (!empty ($usersitearray)) $theme_array = getthemes ($usersitearray);
+        else $theme_array = false;
+
+        if (is_array ($theme_array) && sizeof ($theme_array) > 0)
         {
-          $theme_array = array();
-          
-          while ($theme_opt = @readdir ($dir_handler))
+          foreach ($theme_array as $theme_key => $theme_value)
           {
-            if (strtolower($theme_opt) != "mobile" && $theme_opt != "." && $theme_opt != ".." && is_dir ($theme_dir.$theme_opt) && is_dir ($theme_dir.$theme_opt."/img") && is_dir ($theme_dir.$theme_opt."/css"))
-            {
-              if ($usertheme == $theme_opt) $selected = "selected=\"selected\"";
-              else $selected = "";
-              
-              $theme_array[] = $theme_opt;
-            }
-          }
-          
-          if (sizeof ($theme_array) > 0)
-          {
-            natcasesort ($theme_array);
-            reset ($theme_array);
-            
-            foreach ($theme_array as $theme)
-            {
-              if ($usertheme == $theme) $selected = "selected=\"selected\"";
-              else $selected = "";
-              
-              echo "
-              <option value=\"".$theme."\" ".$selected.">".ucfirst ($theme)."</option>";
-            }
+            echo "
+            <option value=\"".$theme_key."\" ".($usertheme == $theme_key ? "selected=\"selected\"" : "").">".$theme_value."</option>";
           }
         }
         ?>
         </select>
       </td>
     </tr>
-    <?php } ?>  
+    <?php } ?>
+
+    <?php if ($login_cat != "home" && (!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, "useredit"))) { ?>
+    <!-- valid dates -->
+    <tr>
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['period-of-validity'][$lang]); ?> </td>
+      <td>
+        <table class="hcmsTableStandard">
+          <tr>
+            <td><?php echo getescapedtext ($hcms_lang['start'][$lang]); ?> </td>
+            <td stlye="white-space:nowrap;"><input type="text" name="validdatefrom" id="validdatefrom" readonly="readonly" style="width:134px;" value="<?php echo showdate ($uservaliddatefrom, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'validdatefrom', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /></td>
+          </tr>
+          <tr>
+            <td><?php echo getescapedtext ($hcms_lang['end'][$lang]); ?> </td>
+            <td stlye="white-space:nowrap;"><input type="text" name="validdateto" id="validdateto" readonly="readonly" style="width:134px;" value="<?php echo showdate ($uservaliddateto, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'validdateto', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /></td>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <?php } ?>
+
     <?php
-    if (valid_publicationname ($site) && $login_cat != "home")
+    // user group membership
+    if ($login_cat != "home" && valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, "useredit"))
     {    
       echo "
     <tr>
       <td colspan=\"2\">
-        <table class=\"hcmsTableNarrow\">
+        <table class=\"hcmsTableNarrow\" style=\"margin-top:10px;\">
           <tr>
             <td>
-              ".getescapedtext ($hcms_lang['groups'][$lang])."<br />
+            <span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['groups'][$lang])."</span><br />
               <select multiple name=\"list1\" style=\"width:210px; height:100px;\" size=\"10\">";
 
               $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
@@ -603,19 +808,20 @@ if ($login != "" && $login != false)
               echo "</select>
             </td>
           </tr>
-        </table>      
+        </table>
       </td>
     </tr>";
     }
-    elseif (!valid_publicationname ($site) && $login_cat != "home")
+    // publication membership
+    elseif ($login_cat != "home" && !valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit'))
     {    
       echo "
     <tr>
-      <td colspan=2>
-        <table class=\"hcmsTableNarrow\">
+      <td colspan=\"2\">
+        <table class=\"hcmsTableNarrow\" style=\"margin-top:10px;\">
           <tr>
             <td>
-              ".getescapedtext ($hcms_lang['publications'][$lang])."<br />
+              <span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['publications'][$lang])."</span><br />
               <select multiple name=\"list1\" style=\"width:210px; height:100px;\" size=\"10\">";
 
               $inherit_db = inherit_db_read ($user);
@@ -657,7 +863,7 @@ if ($login != "" && $login != false)
               echo "
               </select>
             </td>
-            <td style=\"text-align:center; vertical-align:middle;\">
+            <td style=\"width:50px; text-align:center; vertical-align:middle;\">
               <br />
               <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list2'], this.form.elements['list1'])\" value=\"&lt;&lt;\" />
               <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list1'], this.form.elements['list2'])\" value=\"&gt;&gt;\" />
@@ -670,7 +876,7 @@ if ($login != "" && $login != false)
               {
                 natcasesort ($list2_array);
                 reset ($list2_array);
-                
+
                 foreach ($list2_array as $list2) echo $list2;
               }
 
@@ -678,27 +884,85 @@ if ($login != "" && $login != false)
               </select>
             </td>
           </tr>
-        </table>      
+        </table>   
       </td>
     </tr>";
     }    
     ?>
-    <?php if (!valid_publicationname ($site) && checkadminpermission ()) { ?>
+
+    <?php if ($login_cat != "home" && (!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, "useredit"))) { ?>
+    <!-- Home boxes -->
     <tr>
-      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['administration'][$lang]); ?> </td>
-      <td>
-        <input type="checkbox" name="superadmin" value="1" <?php if ($superadmin == "1") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['super-administrator'][$lang]); ?>
+      <td colspan="2">
+        <table class="hcmsTableNarrow" style="margin-top:10px;">
+          <tr>
+            <td style="width:260px; vertical-align:top; text-align:left;">
+              <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['home'][$lang]." ".$hcms_lang['objects'][$lang]); ?></span>
+              <?php
+              // get home boxes for selection
+              if ($login_cat == "home" && $login == $user) $homebox_array = gethomeboxes ($siteaccess);
+              elseif (!empty ($usersitearray)) $homebox_array = gethomeboxes ($usersitearray);
+              else $homebox_array = false;
+
+              if (is_array ($homebox_array) && sizeof ($homebox_array) > 0)
+              {
+                foreach ($homebox_array as $homebox_key => $homebox_name)
+                {
+                  echo "
+                  <div onclick=\"insertOption('".$homebox_name."', '".$homebox_key."');\" style=\"display:block; cursor:pointer;\" title=\"".$homebox_name."\"><img src=\"".getthemelocation()."img/log_info.png\" class=\"hcmsIconList\" />&nbsp;".showshorttext($homebox_name, 30)."&nbsp;</div>";
+                }
+              }
+              ?>
+            </td>
+            <td style="vertical-align:top; text-align:left;">
+              <span style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
+              <select id="box_array" name="box_array" style="width:210px; height:240px;" size="14">
+                <?php
+                // get home boxes of user
+                $userbox_array = getuserboxes ($login);
+
+                if (is_array ($userbox_array) && sizeof ($userbox_array) > 0)
+                {
+                  foreach ($userbox_array as $userbox_key => $userbox_name)
+                  {
+                    echo "
+                    <option value=\"".$userbox_key."\">".showshorttext($userbox_name, 40)."</option>";
+                  }
+                }
+                ?>
+              </select>
+            </td>
+            <td style="width:32px; text-align:left; vertical-align:middle;">
+              <img onClick="moveSelected(document.forms['userform'].elements['box_array'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                     
+              <img onClick="deleteSelected(document.forms['userform'].elements['box_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
+              <img onClick="moveSelected(document.forms['userform'].elements['box_array'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
-    <?php } ?>    
+    <?php } ?>
+
+    <?php if ($login_cat != "home" && !valid_publicationname ($site) && checkadminpermission () && $login != $user) { ?>
+    <!-- Super admin -->
     <tr>
-      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> </td>
-      <td>
+      <td style="white-space:nowrap; padding-top:10px;"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['administration'][$lang]); ?></span> </td>
+      <td style="padding:10px 0px 0px 8px;">
+        <label><input type="checkbox" name="superadmin" value="1" <?php if ($superadmin == "1") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['super-administrator'][$lang]); ?></label>
+      </td>
+    </tr>
+    <?php } ?>
+
+    <!-- Save -->
+    <tr>
+      <td style="white-space:nowrap; padding-top:10px;"><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> </td>
+      <td style="padding-top:10px;">
         <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="checkForm();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
       </td>
     </tr>
   </table>
 </form>
+
 </div>
 
 </body>

@@ -63,7 +63,7 @@ function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $k
   $result['crypted'] = false;
   $result['location'] = $location;
   $result['file'] = $file;
-  
+
   // return result
   return $result;
 }

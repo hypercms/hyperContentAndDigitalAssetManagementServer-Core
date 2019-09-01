@@ -20,7 +20,7 @@
 function ftp_userlogon ($server, $user, $passwd, $ssl=false)
 {
   global $mgmt_config;
-  
+
   if ($server != "" && $user != "" && $passwd != "")
   {
     $conn_id = false;
@@ -42,14 +42,14 @@ function ftp_userlogon ($server, $user, $passwd, $ssl=false)
       if (!$login_result)
       {
         $error[] = date('Y-m-d H:i')."|hypercms_connect.inc.php|information|20102|FTP: logon to ".$server." for FTP user ".$user." failed";
-        
+
         // close connection
         ftp_close ($conn_id);
-        
+
         $conn_id = false;
       }
     }
-    
+
     // save log
     savelog (@$error);
 
@@ -69,7 +69,7 @@ function ftp_userlogon ($server, $user, $passwd, $ssl=false)
 function ftp_userlogout ($conn_id)
 {
   global $mgmt_config;
-  
+
   if ($conn_id != "")
   {
     // close the FTP Connection
@@ -89,11 +89,11 @@ function ftp_userlogout ($conn_id)
 function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 {
   global $mgmt_config;
-  
+
   if ($conn_id != "" && $local_file != "" && $remote_file != "" && ($passive == true || $passive == false))
   {
     $download = false;
-    
+
     // set mode
     ftp_pasv ($conn_id, $passive);
 
@@ -102,10 +102,10 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 
     // verify download
     if (!$download) $error[] = date('Y-m-d H:i')."|hypercms_connect.inc.php|error|20201|FTP: download of ".$remote_file." to ".$local_file." has failed";
-  
+
     // save log
     savelog (@$error);
-    
+
     return $download;
   }
   else return false;
@@ -122,11 +122,11 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 {
   global $mgmt_config;
-  
+
   if ($conn_id != "" && $local_file != "" && $remote_file != "" && ($passive == true || $passive == false))
   {
     $upload = false;
-    
+
     // set mode
     ftp_pasv ($conn_id, $passive);
 
@@ -139,10 +139,10 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
       if (!$upload) $error[] = date('Y-m-d H:i')."|hypercms_connect.inc.php|error|20103|FTP: upload of ".$local_file." to ".$remote_file." has failed";
     }
     else $error[] = date('Y-m-d H:i')."|hypercms_connect.inc.php|error|20105|FTP: local file ".$local_file." does not exist";
-    
+
     // save log
     savelog (@$error);
-    
+
     return $upload;
   }
   else return false;
@@ -159,11 +159,11 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 function ftp_deletefile ($conn_id, $remote_file, $passive=true)
 {
   global $mgmt_config;
-  
+
   if ($conn_id != "" && $remote_file != "" && ($passive == true || $passive == false))
   {
     $delete = false;
-    
+
     // set mode
     ftp_pasv ($conn_id, $passive);
 
@@ -172,10 +172,10 @@ function ftp_deletefile ($conn_id, $remote_file, $passive=true)
 
     // verify upload
     if (!$delete) $error[] = date('Y-m-d H:i')."|hypercms_connect.inc.php|error|20103|FTP: delete of ".$remote_file." has failed";
-  
+
     // save log
     savelog (@$error);
-    
+
     return $delete;
   }
   else return false;
@@ -192,37 +192,37 @@ function ftp_deletefile ($conn_id, $remote_file, $passive=true)
 function ftp_filelist ($conn_id, $path=".", $passive=true)
 {
   global $mgmt_config;
-  
+
   if ($conn_id != "")
   {
     ftp_pasv ($conn_id, true);
-    
+
     if (is_array ($children = @ftp_rawlist ($conn_id, $path)))
     {
       $folders = array();
       $files = array();
       $items = array();
-      
+
       foreach ($children as $child)
       {
         $chunks = preg_split ("/\s+/", $child);
-        
+
         list ($item['rights'], $item['number'], $item['user'], $item['group'], $item['size'], $item['month'], $item['day'], $item['time']) = $chunks;
-        
+
         // file or directory
         $item['type'] = $chunks[0]{0} === 'd' ? 'directory' : 'file';
-        
+
         array_splice ($chunks, 0, 8);
-        
+
         $name = implode (" ", $chunks);
-        
+
         if ($item['type'] == "directory") $folders[$name] = $item;
         else $files[$name] = $item;
       }
-      
+
       ksort ($folders, SORT_NATURAL);
       ksort ($files, SORT_NATURAL);
-      
+
       $items = array_merge ($folders, $files);
 
       return $items;
@@ -240,7 +240,7 @@ function ftp_filelist ($conn_id, $path=".", $passive=true)
 function createsharelink_facebook ($site, $url)
 {
   global $mgmt_config;
-  
+
   if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && $url != "")
   {
     return "https://www.facebook.com/sharer/sharer.php?u=".url_encode($url);
@@ -256,7 +256,7 @@ function createsharelink_facebook ($site, $url)
 function createsharelink_twitter ($site, $url, $text)
 {
   global $mgmt_config;
-  
+
   if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && $url != "" && $text != "")
   {
     return "https://twitter.com/intent/tweet?text=".url_encode($text)."&source=hypercms&related=hypercms&url=".url_encode($url);
@@ -272,7 +272,7 @@ function createsharelink_twitter ($site, $url, $text)
 function createsharelink_googleplus ($site, $url)
 {
   global $mgmt_config;
-  
+
   if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && $url != "")
   {
     return "https://plus.google.com/share?url=".url_encode($url);
@@ -288,7 +288,7 @@ function createsharelink_googleplus ($site, $url)
 function createsharelink_linkedin ($site, $url, $title, $summary, $source)
 {
   global $mgmt_config;
-  
+
   if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && $url != "" && $title != "")
   {
     return "https://www.linkedin.com/shareArticle?mini=true&url=".url_encode($url)."&title=".url_encode($title)."&summary=".url_encode($summary)."&source=".url_encode($source);
@@ -304,7 +304,7 @@ function createsharelink_linkedin ($site, $url, $title, $summary, $source)
 function createsharelink_pinterest ($site, $image_url, $title, $description)
 {
   global $mgmt_config;
-  
+
   if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && $image_url != "" && $title != "")
   {
     return "https://pinterest.com/pin/create/button/?url=".url_encode($image_url)."&media=".url_encode($title)."&description=".url_encode($description);

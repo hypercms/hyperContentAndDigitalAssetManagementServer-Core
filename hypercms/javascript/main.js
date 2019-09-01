@@ -857,7 +857,7 @@ function hcms_ElementbyIdStyle (id, ElementClass)
 
 // ------------------------------- html entities ----------------------------------
 
-// decodes the html entities in the str (e.x.: &auml; => ä but for the corresponding charset
+// decodes the html entities in the str (e.x.: &auml; => ï¿½ but for the corresponding charset
 // uses an html element to decode
 function hcms_entity_decode(str)
 {
@@ -867,7 +867,7 @@ function hcms_entity_decode(str)
   return ta.value;
 }
 
-// encodes the html entities in the str (e.x.: ä => &auml; but for the corresponding charset
+// encodes the html entities in the str (e.x.: ï¿½ => &auml; but for the corresponding charset
 // uses an html element to encode
 function hcms_entity_encode(str)
 {
@@ -1358,3 +1358,6 @@ function hcms_stringifyVTTrecords ()
   }
   else return false;
 }
+
+// for alert in iframe
+window.alert = top.alert;

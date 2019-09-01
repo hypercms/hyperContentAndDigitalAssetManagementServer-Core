@@ -16,11 +16,11 @@ require ("function/hypercms_api.inc.php");
 
 
 // delete session file of user
-$test = killsession ($user, true);
+$result = killsession ($user, true);
 
 if (empty ($lang)) $lang = "en";
 
-if ($test == true) 
+if ($result == true) 
 { 
   $answer = getescapedtext ($hcms_lang['logged-out'][$lang]);
 }
@@ -40,7 +40,7 @@ else
 <script src="javascript/main.js" type="text/javascript"></script>
 </head>
 
-<body class="hcmsStartScreen" onload="<?php if ($test == true) echo "top.location.href='userlogin.php';"; ?>">
+<body class="hcmsStartScreen" onload="<?php if ($result == true) echo "top.location.href='userlogin.php';"; ?>">
 
 <div class="hcmsStartBar" style="width:100%;">
   <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>

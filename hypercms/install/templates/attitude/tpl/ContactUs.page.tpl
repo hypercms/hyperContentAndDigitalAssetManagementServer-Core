@@ -7,12 +7,12 @@
 <application>php</application>
 <content><![CDATA[<?php if ("%view%" == "publish") session_start(); ?>
 [hyperCMS:textc id='NavigationHide' label='Hide in Navigation' value='yes' infotype='meta' onPublish='hidden']
-[hyperCMS:textu id='NavigationSortOrder' label='Navigation Sort Order' constraint='inRange0:1000' infotype='meta' onPublish='hidden' height='25']
+[hyperCMS:textu id='NavigationSortOrder' label='Navigation Sort Order' constraint='inRange0:1000' infotype='meta' onPublish='hidden' height='30']
 [hyperCMS:fileinclude file='%abs_comp%/%publication%/configuration.php']
 <!DOCTYPE html>
 <html>
   <head>
-    <title>[hyperCMS:textu id='Title' infotype='meta' height='25' label='Page Title' constraint='R']</title>
+    <title>[hyperCMS:textu id='Title' infotype='meta' height='30' label='Page Title' constraint='R']</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -43,7 +43,7 @@
         <div class="page-title-wrap">
           <div class="container clearfix">
             [hyperCMS:tplinclude file='Breadcrumb.inc.tpl']			   
-             <h3 class="page-title">[hyperCMS:textu id='Title' height='25' label='Page Title' constraint='R']</h3><!-- .page-title -->
+             <h3 class="page-title">[hyperCMS:textu id='Title' height='30' label='Page Title' constraint='R']</h3><!-- .page-title -->
           </div>
         </div>
       </header>
@@ -52,7 +52,7 @@
           <div id="primary" class="no-margin-left">
             <div id="content">
               <div class="entry_content clearfix">
-                <h4>[hyperCMS:textu id='EntryTitle' label='Entry Title' height='25']</h4>
+                <h4>[hyperCMS:textu id='EntryTitle' label='Entry Title' height='30']</h4>
                 <?php
                 function getrequestvalue ($variable, $default="")
                 {
@@ -145,7 +145,7 @@
           </div>
           <div id="secondary">
             <aside class="widget widget_text" id="text-2">
-              <h3 class="widget-title">[hyperCMS:textu id='ContactTitle' label='Contact Title' height='25']</h3>			
+              <h3 class="widget-title">[hyperCMS:textu id='ContactTitle' label='Contact Title' height='30']</h3>			
               <div class="textwidget">
                  [hyperCMS:textf id='ContactInfo' label='Contact Information']
               </div>

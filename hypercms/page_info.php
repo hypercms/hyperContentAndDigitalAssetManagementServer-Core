@@ -253,7 +253,7 @@ if ($pagestore != false)
     if (!empty ($is_link)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['multimedia-file'][$lang]." - ".$hcms_lang['export'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".(!empty ($symlink) ? $symlink : getescapedtext ($hcms_lang['error'][$lang]))."</td></tr>\n";
     
     // show connected objects button
-    if ($cat == "comp" && $mgmt_config[$site]['linkengine'] == true)
+    if ($cat == "comp" && !empty ($mgmt_config[$site]['linkengine']))
     {
       echo "<tr><td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['show-where-used'][$lang])." </td><td><img name=\"Button1\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_inclusions.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button1','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
@@ -264,8 +264,8 @@ if ($pagestore != false)
       echo "<tr><td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['container-usage'][$lang])." </td><td><img name=\"Button2\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button2','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
-    // show statistics button
-    if ($cat == "comp" && $mgmt_config['db_connect_rdbms'] != "" && !empty ($container_id))
+    // show access statistics button
+    if ((!empty ($media) || $page == ".folder") && !empty ($mgmt_config['db_connect_rdbms']) && !empty ($container_id))
     {
       echo "<tr><td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['access-statistics'][$lang])." </td><td><img name=\"Button3\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_stats.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button3','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
@@ -290,7 +290,7 @@ if ($pagestore != false)
     }
     
     // show recipients button
-    if ($cat == "comp" && !empty ($mgmt_config['db_connect_rdbms']))
+    if (!empty ($mgmt_config['db_connect_rdbms']))
     {
       echo "<tr><td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['recipients'][$lang])." </td><td><img name=\"Button5\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_recipients.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button5','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }

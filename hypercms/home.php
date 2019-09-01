@@ -22,6 +22,7 @@ require ("version.inc.php");
 // input parameters
 $action = getrequest ("action");
 $homeboxes = getrequest ("homeboxes");
+$token = getrequest ("token");
 
 // ------------------------------ permission section --------------------------------
 
@@ -30,10 +31,10 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
-// set boxes for user
-if ($action == "save")
+// set home boxes for user
+if ($action == "save" && checktoken ($token, $user))
 {
-  setboxes ($homeboxes, $user);
+  setuserboxes ($homeboxes, $user);
 }
 
 // wallpaper
@@ -41,11 +42,17 @@ $wallpaper = "";
 
 if ($hcms_themename != "mobile")
 {
-  if (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg");
-  elseif (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.png")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.png");
-  elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
-  else $wallpaper = getwallpaper ($mgmt_config['version']);
+  $wallpaper = getwallpaper ();
 }
+
+// get home boxes for selection
+$homebox_array = gethomeboxes ($siteaccess);
+
+// get home boxes of user
+$userbox_array = getuserboxes ($user);
+
+// create secure token
+$token_new = createtoken ($user);
 ?>
 <!DOCTYPE html>
 <html>
@@ -91,6 +98,10 @@ video#videoScreen
 </style>
 
 <script type="text/javascript">
+
+// default height for logo spacer
+var spacerheight = 32;
+
 // callback for hcms_geolocation
 function hcms_geoposition (position)
 {
@@ -197,28 +208,45 @@ function selectAllOptions (select)
 function submitHomeBoxes ()
 {
   var form = document.forms['box_form'];
-  var select = form.elements['box_array'];
-  var homeboxes = "";
 
-  if (select.options.length > 0)
+  if (form.elements['box_array'])
   {
-    for(var i=0; i<select.options.length; i++)
-    {
-      homeboxes = homeboxes + select.options[i].value + "|";
-    }
-  }
+    var select = form.elements['box_array'];
+    var homeboxes = "|";
 
-  form.elements['homeboxes'].value = homeboxes;
-  form.submit();
+    if (select.options.length > 0)
+    {
+      for(var i=0; i<select.options.length; i++)
+      {
+        homeboxes = homeboxes + select.options[i].value + "|";
+      }
+    }
+
+    form.elements['homeboxes'].value = homeboxes;
+    form.submit();
+  }
+  else return false;
+}
+
+function html5support()
+{
+  if (hcms_html5file()) return 1;
+  else return 0;
 }
 
 function setwallpaper ()
 {
+  // set logo spacer height
+  var img = document.getElementById('logoimage');
+  var spacerheight = img.clientHeight;
+  if (spacerheight > 0) document.getElementById('homespacer').style.height = spacerheight + 10 + "px";
+
+  // set background image
   <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
-  document.body.style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
+  document.getElementById('startScreen').style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
   return true;
   <?php } elseif (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-  if (hcms_html5file())
+  if (html5support())
   {
     document.getElementById('videoScreen').src = "<?php echo $wallpaper; ?>";
   }
@@ -227,128 +255,99 @@ function setwallpaper ()
   return false;
   <?php } ?>
 }
+
+function blurbackground (blur)
+{
+  if (blur == true) document.getElementById('startScreen').classList.add('hcmsBlur');
+  else document.getElementById('startScreen').classList.remove('hcmsBlur');
+}
 </script>
 </head>
 
-<body class="hcmsStartScreen" onload="<?php if (empty ($_SESSION['hcms_temp_latitude']) || empty ($_SESSION['hcms_temp_longitude'])) echo "hcms_geolocation(); "; ?>setwallpaper();">
+<body onload="<?php if (empty ($_SESSION['hcms_temp_latitude']) || empty ($_SESSION['hcms_temp_longitude'])) echo "hcms_geolocation(); "; ?>setwallpaper();">
 
-<?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-<video playsinline autoplay muted loop poster="<?php echo getthemelocation(); ?>/img/backgrd_start.png" id="videoScreen">
-  <source src="<?php echo $wallpaper; ?>" type="video/mp4">
-</video>
-<?php } ?>
+<!-- logo -->
+<div id="logo" style="position:fixed; top:10px; left:10px; z-index:200;">
+  <img id="logoimage" src="<?php echo getthemelocation(); ?>img/logo_server.png" style="max-width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>; max-height:100px;" />
+</div>
 
-<div style="width:100%; height:100%; overflow:auto;">
-
-  <!-- logo -->
-  <div id="logo" style="position:fixed; top:10px; left:10px;">
-    <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>" />
-  </div>
-  
 <?php if (checkrootpermission ('desktop') && checkrootpermission ('desktopsetting')) { ?>
-  <!-- plus/minus button -->
-  <?php if (!$is_mobile) { ?>
-  <div id="plusminus" style="position:fixed; top:12px; right:28px; z-index:200;">
-    <img id="button_plusminus" onClick="hcms_switchInfo('menubox');" class="hcmsButton" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
-  </div>
-  <?php } ?>
-
-  <!-- add / remove boxes menu -->
-  <div id="menubox" class="hcmsHomeBox" style="position:fixed; top:36px; right:25px; z-index:200; display:none;">
-    <form id="box_form" name="box_form" action="" method="post">
-      <input type="hidden" name="action" value="save" />
-      <input type="hidden" name="homeboxes" value="" />
-      
-      <table class="hcmsTableStandard">
-        <tr>
-          <td style="vertical-align:top; text-align:left;">
-            <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?></span>
-            <?php
-            // display all home boxes for selection          
-            $boxes_dir = $mgmt_config['abs_path_cms']."box/";
-            
-            if ($handle = opendir ($boxes_dir))
+<!-- plus/minus button -->
+<?php if (!$is_mobile) { ?>
+<div id="plusminus" style="position:fixed; top:12px; right:28px; z-index:200;">
+  <img id="button_plusminus" onClick="hcms_switchInfo('menubox');" class="hcmsButton" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
+</div>
+<?php } ?>
+<!-- add / remove boxes menu -->
+<div id="menubox" class="hcmsHomeBox" style="position:fixed; top:36px; right:25px; z-index:200; display:none;" onmouseover="blurbackground(true);" onmouseout="blurbackground(false);">
+  <form id="box_form" name="box_form" action="" method="post">
+    <input type="hidden" name="action" value="save" />
+    <input type="hidden" name="homeboxes" value="" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+    
+    <table class="hcmsTableStandard">
+      <tr>
+        <td style="vertical-align:top; text-align:left;">
+          <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?></span>
+          <?php
+          // all available home boxes for selection
+          if (is_array ($homebox_array) && sizeof ($homebox_array) > 0)
+          {
+            foreach ($homebox_array as $homebox_key => $homebox_name)
             {
-              $select_array = array();
-
-              while (false !== ($entry = readdir ($handle)))
+              echo "
+              <div onclick=\"insertOption('".$homebox_name."', '".$homebox_key."');\" style=\"display:block; cursor:pointer;\" title=\"".$homebox_name."\"><img src=\"".getthemelocation()."img/log_info.png\" class=\"hcmsIconList\" />&nbsp;".showshorttext($homebox_name, 30)."&nbsp;</div>";
+            }
+          }
+          ?>
+        </td>
+        <td style="vertical-align:top; text-align:left;">
+          <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
+          <select id="box_array" name="box_array" style="width:250px; height:240px;" size="14">
+            <?php
+            // user home boxes
+            if (is_array ($userbox_array) && sizeof ($userbox_array) > 0)
+            {
+              foreach ($userbox_array as $userbox_key => $userbox_name)
               {
-                if (is_file ($boxes_dir.$entry) && substr ($entry, -8) == ".inc.php")
-                {
-                  $box = str_replace (".inc.php", "", $entry);
-                  $name = ucfirst (str_replace ("_", " ", $box));
-                  
-                  $select_array[$box] = "
-                <div onclick=\"insertOption('".$name."', '".$box."');\" style=\"display:block; cursor:pointer;\" title=\"".$name."\"><img src=\"".getthemelocation()."img/log_info.png\" class=\"hcmsIconList\" />&nbsp;".showshorttext($name, 30)."&nbsp;</div>";
-                }
+                echo "
+                <option value=\"".$userbox_key."\">".showshorttext($userbox_name, 40)."</option>";
               }
-
-              if (sizeof ($select_array) > 0)
-              {
-                ksort ($select_array);
-                reset ($select_array);
-                foreach ($select_array as $select) echo $select;
-              }
-
-              closedir ($handle);
             }
             ?>
+          </select>
+        </td>
+        <td style="text-align:left; vertical-align:middle;">
+          <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                     
+          <img onClick="deleteSelected(document.forms['box_form'].elements['box_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
+          <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
+          <img onclick="submitHomeBoxes();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
           </td>
-          <td style="vertical-align:top; text-align:left;">
-            <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
-            <select id="box_array" name="box_array" size="14" style="width:250px;">
-              <?php
-              // get boxes of user
-              $box_array = getboxes ($user);
-              
-              // set default boxes
-              if (!is_array ($box_array) && !empty ($mgmt_config['homeboxes']))
-              {
-                $box_array = explode (";", trim ($mgmt_config['homeboxes'], ";"));
-              }
-                        
-              if (is_array ($box_array) && sizeof ($box_array) > 0)
-              {
-                foreach ($box_array as $box)
-                {
-                  if ($box != "")
-                  {
-                    $name = ucfirst (str_replace ("_", " ", $box));
-                    echo "<option value=\"".$box."\">".showshorttext($name, 40)."</option>\n";
-                  }
-                }
-              }
-              ?>
-            </select>
-          </td>
-          <td style="text-align:left; vertical-align:middle;">
-            <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                     
-            <img onClick="deleteSelected(document.forms['box_form'].elements['box_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
-            <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
-            <img onclick="submitHomeBoxes();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-           </td>
-        </tr>
-      </table>
-    </form>
-  </div>
+      </tr>
+    </table>
+  </form>
+</div>
 <?php } ?>
 
-  <div class="hcmsHomeSpacer"></div>
+<div id="startScreen" class="hcmsStartScreen" style="overflow:auto;">
 
-  <!-- show boxes -->
-  <?php 
-  if (!empty ($box_array) && is_array ($box_array))
-  { 
-    // remove duplicates
-    $box_array = array_unique ($box_array);
-  
-    // show boxes
-    foreach ($box_array as $box)
+  <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+  <video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation(); ?>/img/backgrd_start.png">
+    <source src="<?php echo $wallpaper; ?>" type="video/mp4">
+  </video>
+  <?php } ?>
+
+  <div class="hcmsHomeSpacer" id="homespacer"></div>
+
+  <!-- home boxes -->
+  <?php
+  if (is_array ($userbox_array))
+  {
+    $homeboxes_path = showhomeboxes ($userbox_array, $user, $lang);
+
+    if (is_array ($homeboxes_path))
     {
-      if ($box != "" && valid_objectname ($box) && is_file ($mgmt_config['abs_path_cms']."box/".$box.".inc.php"))
-      {
-        include ($mgmt_config['abs_path_cms']."box/".$box.".inc.php");
-      }
+      foreach ($homeboxes_path as $temp) include ($temp);
     }
   }
   ?>

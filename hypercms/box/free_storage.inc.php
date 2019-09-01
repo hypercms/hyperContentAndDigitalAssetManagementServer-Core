@@ -1,7 +1,7 @@
 <?php
 // ---------------------- STORAGE ---------------------
 
-if ($is_mobile) $width = "92%";
+if (!empty ($is_mobile)) $width = "92%";
 else $width = "320px";
 
 if (function_exists ("disk_total_space") && function_exists ("disk_free_space"))
