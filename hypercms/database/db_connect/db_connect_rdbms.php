@@ -50,25 +50,31 @@ class hcms_db
   // $string String to be escaped
   // Returns Escaped String
   
-  public function escape_string ($string)
+  public function rdbms_escape_string ($string)
   {
     if ($this->_isMySqli())
     {
       if (is_array ($string))
       {
-        foreach ($string as &$value) $value = $this->_db->escape_string($string);
+        foreach ($string as &$value) $value = $this->_db->rdbms_escape_string($string);
         return $string;
       }
-      else  return $this->_db->escape_string($string);
+      else
+      {
+        return $this->_db->real_escape_string($string);
+      }
     }
     elseif ($this->_isODBC())
     {
       if (is_array ($string))
       {
-        foreach ($string as &$value) $value = odbc_escape_string ($this->_db, $string);
+        foreach ($string as &$value) $value = rdbms_escape_string ($this->_db, $string);
         return $string;
       }
-      else return odbc_escape_string ($this->_db, $string);
+      else
+      {
+        return odbc_escape_string ($this->_db, $string);
+      }
     }
     else
     {
@@ -80,14 +86,14 @@ class hcms_db
   // $sql Statement to be sent to the server
   // $errCode Code for the Error which is inserted into the log
   // $date Date of the Query
-  // $num Number where the result shall be stored. Needed for getRowCount and getResultRow
+  // $num Number where the result shall be stored. Needed for getRowCount and rdbms_getresultrow
   // Returns true on success, false on failure
   
-  public function query ($sql, $errCode, $date, $num=1)
+  public function rdbms_query ($sql, $errCode, $date, $num=1)
   {
     global $mgmt_config;
     
-    if (!is_string ($sql) || $sql == "")
+    if (!is_string ($sql) || trim ($sql) == "")
     {
       $this->_typeError ();
     }
@@ -147,14 +153,14 @@ class hcms_db
   }
   
   // Returns the Errors that happened
-  public function getError ()
+  public function rdbms_geterror ()
   {
     return $this->_error;
   }
   
   // Returns the number of rows from the result stored under $num
   // $num the number defined in the $query call
-  public function getNumRows ($num=1)
+  public function rdbms_getnumrows ($num=1)
   {
     if ($this->_result[$num] == false)
     {
@@ -176,8 +182,7 @@ class hcms_db
   }
   
   // Returns the last inserted key (ID)
-  
-  public function getInsertId ()
+  public function rdbms_getinsertid ()
   {
     global $mgmt_config;
     
@@ -196,7 +201,7 @@ class hcms_db
   }
   
   // Closes the database connection and frees all results
-  public function close()
+  public function rdbms_close()
   {
     if($this->_isMySqli ())
     {
@@ -226,7 +231,7 @@ class hcms_db
   // $num the number defined in the $query call
   // $rowNumber optionally a rownumber
   // Returns the resultArray or NULL
-  public function getResultRow ($num=1, $rowNumber=NULL)
+  public function rdbms_getresultrow ($num=1, $rowNumber=NULL)
   {
     if (empty ($this->_result[$num]) || !is_object ($this->_result[$num]))
     {
@@ -279,14 +284,14 @@ class hcms_db
 
 // ------------------------------------------------ ODBC escape string ------------------------------------------------
 
-// function: odbc_escape_string()
+// function: odbc_rdbms_escape_string()
 // input: DB connection [resource], value [string]
 // output: escaped value as string
 
 // description:
-// Alternative to mysql_real_escape_string (PHP odbc_prepare would be optimal)
+// Alternative to mysql_real_rdbms_escape_string (PHP odbc_prepare would be optimal)
 
-function odbc_escape_string ($connection, $value)
+function odbc_rdbms_escape_string ($connection, $value)
 {
   if ($value != "")
   {
@@ -343,11 +348,11 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
         
     $container_id = intval($container_id);
-    $object = $db->escape_string($object);
-    $template = $db->escape_string($template);
-    if ($media != "") $media = $db->escape_string($media);
-    if ($container != "") $container = $db->escape_string($container);
-    if ($user != "") $user = $db->escape_string($user);
+    $object = $db->rdbms_escape_string($object);
+    $template = $db->rdbms_escape_string($template);
+    if ($media != "") $media = $db->rdbms_escape_string($media);
+    if ($container != "") $container = $db->rdbms_escape_string($container);
+    if ($user != "") $user = $db->rdbms_escape_string($user);
         
     $date = date ("Y-m-d H:i:s", time());
     $hash = createuniquetoken ();
@@ -385,7 +390,7 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
     }
     
     $errcode = "50001";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // insert filetype in table media
     $file_ext = strrchr ($object, ".");
@@ -414,11 +419,11 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
     }
     
     $errcode = "50002";
-    $db->query ($sql, $errcode, $mgmt_config['today']);      
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);      
 
     // save log
-    savelog ($db->getError ());          
-    $db->close();
+    savelog ($db->rdbms_geterror ());          
+    $db->rdbms_close();
    
     return true;
   }
@@ -444,23 +449,23 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
     
     $container_id_source = intval($container_id_source);  
     $container_id_dest = intval($container_id_dest);
-    $user = $db->escape_string($user);
+    $user = $db->rdbms_escape_string($user);
 
     // copy textnodes
     $sql = 'SELECT * FROM textnodes WHERE id="'.$container_id_source.'"';
                
     $errcode = "50101";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'textnodes');
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'textnodes');
 
     if ($done)
     {
-      while ($row = $db->getResultRow ('textnodes'))
+      while ($row = $db->rdbms_getresultrow ('textnodes'))
       {
         $sql = 'INSERT INTO textnodes (id, text_id, textcontent, object_id, type, user) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.$db->escape_string($row['text_id']).'", "'.$db->escape_string($row['textcontent']).'", "'.intval($row['object_id']).'", "'.$db->escape_string($row['type']).'", "'.$user.'")';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.$db->rdbms_escape_string($row['text_id']).'", "'.$db->rdbms_escape_string($row['textcontent']).'", "'.intval($row['object_id']).'", "'.$db->rdbms_escape_string($row['type']).'", "'.$user.'")';
         
         $errcode = "50102";
-        $db->query ($sql, $errcode, $mgmt_config['today']);
+        $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
       }
     }
     
@@ -468,17 +473,17 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
     $sql = 'SELECT * FROM media WHERE id="'.$container_id_source.'"';
                
     $errcode = "50103";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'media');
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'media');
 
     if ($done)
     {
-      if ($row = $db->getResultRow ('media'))
+      if ($row = $db->rdbms_getresultrow ('media'))
       {
         $sql = 'INSERT INTO media (id, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.intval($row['filesize']).'", "'.$db->escape_string($row['filetype']).'", "'.intval($row['width']).'", "'.intval($row['height']).'", "'.intval($row['red']).'", "'.intval($row['green']).'", "'.intval($row['blue']).'", "'.$db->escape_string($row['colorkey']).'", "'.$db->escape_string($row['imagetype']).'", "'.$db->escape_string($row['md5_hash']).'")';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.intval($row['filesize']).'", "'.$db->rdbms_escape_string($row['filetype']).'", "'.intval($row['width']).'", "'.intval($row['height']).'", "'.intval($row['red']).'", "'.intval($row['green']).'", "'.intval($row['blue']).'", "'.$db->rdbms_escape_string($row['colorkey']).'", "'.$db->rdbms_escape_string($row['imagetype']).'", "'.$db->rdbms_escape_string($row['md5_hash']).'")';
         
         $errcode = "50104";
-        $db->query ($sql, $errcode, $mgmt_config['today']);
+        $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
       }
     }
     
@@ -486,17 +491,17 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
     $sql = 'SELECT * FROM keywords_container WHERE id="'.$container_id_source.'"';
                
     $errcode = "50105";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'keywords');
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'keywords');
 
     if ($done)
     {
-      while ($row = $db->getResultRow ('keywords'))
+      while ($row = $db->rdbms_getresultrow ('keywords'))
       {
         $sql = 'INSERT INTO keywords_container (id, keyword_id) ';
         $sql .= 'VALUES ('.$container_id_dest.', "'.intval($row['keyword_id']).'")';
         
         $errcode = "50106";
-        $db->query ($sql, $errcode, $mgmt_config['today']);
+        $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
       }
     }
     
@@ -504,23 +509,23 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
     $sql = 'SELECT * FROM taxonomy WHERE id="'.$container_id_source.'"';
                
     $errcode = "50107";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'taxonomy');
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'taxonomy');
 
     if ($done)
     {
-      while ($row = $db->getResultRow ('taxonomy'))
+      while ($row = $db->rdbms_getresultrow ('taxonomy'))
       {
         $sql = 'INSERT INTO taxonomy (id, text_id, taxonomy_id, lang) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.$db->escape_string($row['text_id']).'", "'.intval($row['taxonomy_id']).'", "'.$db->escape_string($row['lang']).'")';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.$db->rdbms_escape_string($row['text_id']).'", "'.intval($row['taxonomy_id']).'", "'.$db->rdbms_escape_string($row['lang']).'")';
         
         $errcode = "50108";
-        $db->query ($sql, $errcode, $mgmt_config['today']);
+        $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
       }
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
 
     return true;
   }
@@ -530,13 +535,14 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
 // ----------------------------------------------- set content -------------------------------------------------
 
 // function: rdbms_setcontent()
-// input: publication name [string], container ID [integer], content as array in form of array[text-ID]=text-content [array] (optional), type as array in form of array[text-ID]=type [array] (optional), user name [string] (optional)
+// input: publication name [string], container ID [integer], content as array in form of array[text-ID]=text-content [array] (optional), type as array in form of array[text-ID]=type [array] (optional), 
+//        user name [string] (optional), save modified date [true,false] (optional), save published date [null,true,false] (optional)
 // output: true / false
 
 // description:
 // Saves the content in database.
 
-function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="", $user="")
+function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="", $user="", $modifieddate=true, $publishdate=false)
 {
   global $mgmt_config;
 
@@ -545,14 +551,16 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     $container_id = intval ($container_id);
-    if ($user != "") $user = $db->escape_string($user);
+    if ($user != "") $user = $db->rdbms_escape_string($user);
     
     $date = date ("Y-m-d H:i:s", time());
     
     // update container
     $sql_attr = array();
-    $sql_attr[0] = 'date="'.$date.'"';
-    if ($user != "") $sql_attr[1] = 'user="'.$user.'"';
+    if ($modifieddate == true) $sql_attr[0] = 'date="'.$date.'"';
+    if ($publishdate == true) $sql_attr[1] = 'publishdate="'.$date.'"';
+    elseif (strtolower ($publishdate) == "null") $sql_attr[1] = 'publishdate=""';
+    if ($user != "") $sql_attr[2] = 'user="'.$user.'"';
     
     if (is_array ($sql_attr) && sizeof ($sql_attr) > 0)
     {
@@ -561,7 +569,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
       $sql .= 'WHERE id="'.$container_id.'"';
       
       $errcode = "50003";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 1);
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 1);
     }
 
     // update text nodes
@@ -578,21 +586,21 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
         
         if ($text_id != "") 
         {
-          $text_id = $db->escape_string($text_id);
+          $text_id = $db->rdbms_escape_string($text_id);
 
           $sql = 'SELECT id, textcontent, object_id FROM textnodes WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
                
           $errcode = "50004";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], $i);
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i);
 
           if ($done)
           {
-            $row = $db->getResultRow ($i);
+            $row = $db->rdbms_getresultrow ($i);
             
             // define type
             if (!empty ($type_array[$text_id]))
             {
-              $type = $db->escape_string($type_array[$text_id]);
+              $type = $db->rdbms_escape_string($type_array[$text_id]);
               
               // add text prefix only if a text type has been provided
               if ($type == "u" || $type == "f" || $type == "l" || $type == "c" || $type == "d" || $type == "k") $type = "text".$type;
@@ -615,7 +623,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
                   $sql = 'DELETE FROM textnodes WHERE id="'.$container_id.'" AND text_id LIKE "'.$text_id.':%"';
                        
                   $errcode = "50007";
-                  $done = $db->query ($sql, $errcode, $mgmt_config['today'], $i);
+                  $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i);
                 }
               
                 // extract object ID
@@ -634,10 +642,10 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
               if ($text != "")
               {
                 $text = cleancontent ($text, convert_dbcharset ($mgmt_config['dbcharset']));
-                $text = $db->escape_string($text);
+                $text = $db->rdbms_escape_string($text);
               }
               
-              $num_rows = $db->getNumRows ($i);          
+              $num_rows = $db->rdbms_getnumrows ($i);          
             
               if ($num_rows > 0)
               {
@@ -647,7 +655,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
                 $sql .= 'WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
   
                 $errcode = "50005";
-                $db->query ($sql, $errcode, $mgmt_config['today'], ++$i);
+                $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], ++$i);
               }
               elseif ($num_rows == 0)
               {
@@ -656,7 +664,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
                 $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", "'.$text.'", "'.$object_id.'"'.($type != "" ? ', "'.$type.'"' : '').', "'.$user.'")';
   
                 $errcode = "50006";
-                $db->query ($sql, $errcode, $mgmt_config['today'], ++$i);
+                $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], ++$i);
               }
             }
           }
@@ -674,8 +682,8 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
     
     return true;
   }
@@ -709,11 +717,11 @@ function rdbms_setkeywords ($site, $container_id)
     $sql = 'SELECT textcontent FROM textnodes WHERE id="'.$container_id.'" AND type="textk"';
     
     $errcode = "50300";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select1');
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select1');
     
     if ($done)
     {
-      while ($row = $db->getResultRow ('select1'))
+      while ($row = $db->rdbms_getresultrow ('select1'))
       {
         // extract keywords
         if (trim ($row['textcontent']) != "")
@@ -737,12 +745,12 @@ function rdbms_setkeywords ($site, $container_id)
         $sql = 'SELECT keyword_id FROM keywords WHERE keyword="'.$keyword.'"';
              
         $errcode = "50301";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select2');
+        $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select2');
 
         // keyword exists  
-        if ($done && $db->getNumRows ('select2') > 0)
+        if ($done && $db->rdbms_getnumrows ('select2') > 0)
         {
-          $row = $db->getResultRow ('select2');
+          $row = $db->rdbms_getresultrow ('select2');
           
           $memory[] = $keyword_id = $row['keyword_id'];
 
@@ -750,37 +758,37 @@ function rdbms_setkeywords ($site, $container_id)
           $sql = 'SELECT id FROM keywords_container WHERE keyword_id='.$keyword_id.' AND id='.$container_id;
         
           $errcode = "50302";
-          $db->query ($sql, $errcode, $mgmt_config['today'], 'select2');
+          $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select2');
         
           // container ID does not exist
-          if ($db->getNumRows ('select2') < 1)
+          if ($db->rdbms_getnumrows ('select2') < 1)
           {
             // insert new taxonomy entries    
             $sql = 'INSERT INTO keywords_container (id, keyword_id) VALUES ('.$container_id.', '.$keyword_id.')';
 
             $errcode = "50303";
-            $db->query ($sql, $errcode, $mgmt_config['today'], 'insert1');
+            $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert1');
           }
         }
         // keyword does not exist
         else
         {
-          $keyword = $db->escape_string($keyword);
+          $keyword = $db->rdbms_escape_string($keyword);
           
           // insert new keyword  
           $sql = 'INSERT INTO keywords (keyword) VALUES ("'.$keyword.'");';
           
           $errcode = "50304";
-          $db->query ($sql, $errcode, $mgmt_config['today'], 'insert2');
+          $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert2');
 
           // get last keyword ID
-          $memory[] = $keyword_id = $db->getInsertId();
+          $memory[] = $keyword_id = $db->rdbms_getinsertid();
           
           // insert new keyword container relationship    
           $sql = 'INSERT INTO keywords_container (id, keyword_id) VALUES ('.$container_id.', '.$keyword_id.')';
 
           $errcode = "50305";
-          $db->query ($sql, $errcode, $mgmt_config['today'], 'insert3');
+          $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert3');
         }
       }
     }
@@ -797,11 +805,11 @@ function rdbms_setkeywords ($site, $container_id)
     }
 
     $errcode = "50307";
-    $db->query ($sql, $errcode, $mgmt_config['today'], 'delete');
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete');
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
   
     return true;
   }
@@ -829,26 +837,26 @@ function rdbms_setpublicationkeywords ($site, $recreate=false)
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // clean input
-    $site_escaped = $db->escape_string ($site);
+    $site_escaped = $db->rdbms_escape_string ($site);
 
     // select container IDs with keywords
     $sql = "SELECT DISTINCT textnodes.id FROM textnodes INNER JOIN object ON textnodes.id=object.id WHERE textnodes.textcontent!='' AND textnodes.type='textk'";
     $sql .= " AND (object.objectpath LIKE _utf8'*page*/".$site_escaped."/%' COLLATE utf8_bin OR object.objectpath LIKE _utf8'*comp*/".$site_escaped."/%' COLLATE utf8_bin)";
 
     $errcode = "50033";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
   
     if ($done)  
     {
-      while ($row = $db->getResultRow ())
+      while ($row = $db->rdbms_getresultrow ())
       {
         rdbms_setkeywords ($site, $row['id']);
       }
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();    
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();    
       
     return true;
   }
@@ -891,7 +899,7 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
         $sql = 'DELETE FROM taxonomy WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
              
         $errcode = "50201";
-        $db->query ($sql, $errcode, $mgmt_config['today'], 'delete');
+        $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete');
               
         foreach ($tx_lang_array as $lang=>$tx_keyword_array)
         {
@@ -899,16 +907,16 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
           {
             if ($text_id != "" && intval ($taxonomy_id) >= 0 && $lang != "")
             {
-              $text_id = $db->escape_string($text_id);
+              $text_id = $db->rdbms_escape_string($text_id);
               $taxonomy_id = intval ($taxonomy_id);
-              $lang = $db->escape_string($lang);
+              $lang = $db->rdbms_escape_string($lang);
 
               // insert new taxonomy entries    
               $sql = 'INSERT INTO taxonomy (id, text_id, taxonomy_id, lang) ';      
               $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", "'.$taxonomy_id.'", "'.$lang.'")';  
 
               $errcode = "50202";
-              $db->query ($sql, $errcode, $mgmt_config['today'], 'insert');
+              $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert');
             }
           }
         }
@@ -916,8 +924,8 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
       
 
       // save log
-      savelog ($db->getError ());    
-      $db->close();
+      savelog ($db->rdbms_geterror ());    
+      $db->rdbms_close();
     
       return true;
     }
@@ -978,7 +986,7 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
         // remove all taxonomy entries from publication
         if ($recreate == true) rdbms_deletepublicationtaxonomy ($site, true);
 
-        $site = $db->escape_string ($site);
+        $site = $db->rdbms_escape_string ($site);
         
         // select containers of publication
         if ($recreate == true)
@@ -991,7 +999,7 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
         }
         
         $errcode = "50353";
-        $containers = $db->query($sql, $errcode, $mgmt_config['today'], 'containers');
+        $containers = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'containers');
         
         if ($containers)
         {
@@ -1006,7 +1014,7 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
             include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
           }
       
-          while ($row = $db->getResultRow ('containers'))
+          while ($row = $db->rdbms_getresultrow ('containers'))
           {
             // set taxonomy for container
             if (!empty ($row['id'])) settaxonomy ($site, $row['id'], "", $taxonomy);
@@ -1015,8 +1023,8 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
       }
       
       // save log
-      savelog ($db->getError ());    
-      $db->close();
+      savelog ($db->rdbms_geterror ());    
+      $db->rdbms_close();
     }
         
     return true;
@@ -1045,18 +1053,18 @@ function rdbms_settemplate ($object, $template)
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
-    $object = $db->escape_string ($object);
-    $template = $db->escape_string ($template);
+    $object = $db->rdbms_escape_string ($object);
+    $template = $db->rdbms_escape_string ($template);
 
     // update object
     $sql = 'UPDATE object SET template="'.$template.'" WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin'; 
     
     $errcode = "50007";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
         
     return true;
   }
@@ -1081,17 +1089,17 @@ function rdbms_setmedianame ($id, $media)
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     $id = intval ($id);
-    $media = $db->escape_string ($media);
+    $media = $db->rdbms_escape_string ($media);
 
     // update object
     $sql = 'UPDATE object SET media="'.$media.'" WHERE id='.$id; 
     
     $errcode = "50308";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
         
     return true;
   }
@@ -1116,25 +1124,25 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
     
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    if ($filesize != "") $filesize = $db->escape_string ($filesize);
-    if ($width != "") $width = $db->escape_string ($width);
-    if ($height != "") $height = $db->escape_string ($height);
-    if ($red != "") $red = $db->escape_string ($red);
-    if ($green != "") $green = $db->escape_string ($green);
-    if ($blue != "") $blue = $db->escape_string ($blue);
-    if ($colorkey != "") $colorkey = $db->escape_string ($colorkey);
-    if ($imagetype != "") $imagetype = $db->escape_string ($imagetype);
-    if ($md5_hash != "") $md5_hash = $db->escape_string ($md5_hash);
+    if ($filesize != "") $filesize = $db->rdbms_escape_string ($filesize);
+    if ($width != "") $width = $db->rdbms_escape_string ($width);
+    if ($height != "") $height = $db->rdbms_escape_string ($height);
+    if ($red != "") $red = $db->rdbms_escape_string ($red);
+    if ($green != "") $green = $db->rdbms_escape_string ($green);
+    if ($blue != "") $blue = $db->rdbms_escape_string ($blue);
+    if ($colorkey != "") $colorkey = $db->rdbms_escape_string ($colorkey);
+    if ($imagetype != "") $imagetype = $db->rdbms_escape_string ($imagetype);
+    if ($md5_hash != "") $md5_hash = $db->rdbms_escape_string ($md5_hash);
         
     // check for existing record
     $sql = 'SELECT id FROM media WHERE id='.intval($id); 
     
     $errcode = "50008";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
 
     if ($done)
     {
-      $num_rows = $db->getNumRows('select');
+      $num_rows = $db->rdbms_getnumrows('select');
 
       // insert media attributes
       if ($num_rows == 0)
@@ -1167,12 +1175,12 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
       }
 
       $errcode = "50009";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'update');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update');
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
         
     return true;
   }
@@ -1200,20 +1208,20 @@ function rdbms_getmedia ($container_id, $extended=false)
     $container_id = intval ($container_id);  
     
     // get media info
-    if ($extended == true) $sql = 'SELECT med.*, cnt.createdate, cnt.date, cnt.latitude, cnt.longitude, cnt.user FROM media AS med RIGHT JOIN container AS cnt ON med.id=cnt.id WHERE cnt.id='.$container_id;   
+    if ($extended == true) $sql = 'SELECT med.*, cnt.createdate, cnt.date, cnt.publishdate, cnt.latitude, cnt.longitude, cnt.user FROM media AS med RIGHT JOIN container AS cnt ON med.id=cnt.id WHERE cnt.id='.$container_id;   
     else $sql = 'SELECT * FROM media WHERE id='.$container_id;   
 
     $errcode = "50067";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
-    if ($done && $row = $db->getResultRow ())
+    if ($done && $row = $db->rdbms_getresultrow ())
     {
       $media = $row;   
     }
 
     // save log
-    savelog ($db->getError());    
-    $db->close();
+    savelog ($db->rdbms_geterror());    
+    $db->rdbms_close();
          
     if (!empty ($media) && is_array ($media)) return $media;
     else return false;
@@ -1239,20 +1247,20 @@ function rdbms_getduplicate_file ($site, $md5_hash)
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     // clean input
-    $md5_hash = $db->escape_string ($md5_hash);
-    $site = $db->escape_string ($site);
+    $md5_hash = $db->rdbms_escape_string ($md5_hash);
+    $site = $db->rdbms_escape_string ($site);
     
     // get media info
     $sql = 'SELECT * FROM media INNER JOIN object ON object.id=media.id WHERE md5_hash="'.$md5_hash.'" AND objectpath LIKE "*comp*/'.$site.'/%"';
 
     $errcode = "50067";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'main');
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'main');
     
     $media = array();
     
     if ($done)
     {
-      while ($row = $db->getResultRow ('main'))
+      while ($row = $db->rdbms_getresultrow ('main'))
       {
         if (!empty ($row['objectpath']))
         {
@@ -1263,8 +1271,8 @@ function rdbms_getduplicate_file ($site, $md5_hash)
     }
     
     // save log
-    savelog ($db->getError());    
-    $db->close();      
+    savelog ($db->rdbms_geterror());    
+    $db->rdbms_close();      
          
     if (is_array ($media) && !empty($media)) return $media;
     else return false;
@@ -1297,8 +1305,8 @@ function rdbms_renameobject ($object_old, $object_new)
     $object_old = str_replace ("|", "", $object_old);
     $object_new = str_replace ("|", "", $object_new); 
     
-    $object_old = $db->escape_string ($object_old);
-    $object_new = $db->escape_string ($object_new);
+    $object_old = $db->rdbms_escape_string ($object_old);
+    $object_new = $db->rdbms_escape_string ($object_new);
        
     // replace %
     $object_old = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object_old);
@@ -1309,13 +1317,13 @@ function rdbms_renameobject ($object_old, $object_new)
     $sql .= 'WHERE objectpath LIKE _utf8"'.$object_old.'%" COLLATE utf8_bin';
     
     $errcode = "50010";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
 
     $i = 1;
     
     if ($done)
     {
-      while ($row = $db->getResultRow ('select'))
+      while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['object_id']))
         {
@@ -1330,7 +1338,7 @@ function rdbms_renameobject ($object_old, $object_new)
           $sql = 'UPDATE object SET objectpath="'.$object.'" WHERE object_id="'.$object_id.'"';
           
           $errcode = "50011";
-          $db->query ($sql, $errcode, $mgmt_config['today'], $i++);        
+          $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);        
           
           // update media file-type
           if ($filetype != "")
@@ -1338,15 +1346,15 @@ function rdbms_renameobject ($object_old, $object_new)
             $sql = 'UPDATE media SET filetype="'.$filetype.'" WHERE id="'.$container_id.'"';
     
             $errcode = "50012";
-            $db->query ($sql, $errcode, $mgmt_config['today'], $i++);
+            $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);
           }
         }
       }
     }
     
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
          
     return true;
   }
@@ -1376,7 +1384,7 @@ function rdbms_deleteobject ($object="", $object_id="")
     if ($object != "")
     {
       $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
-      $object = $db->escape_string ($object);
+      $object = $db->rdbms_escape_string ($object);
     }
     
     // query
@@ -1386,11 +1394,11 @@ function rdbms_deleteobject ($object="", $object_id="")
     elseif ($object_id > 0) $sql .= 'WHERE object_id="'.intval ($object_id).'"';
        
     $errcode = "50012";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select1');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select1');
     
     if ($done)
     {
-      $row = $db->getResultRow('select1');
+      $row = $db->rdbms_getresultrow('select1');
     
       if ($row)
       {
@@ -1400,12 +1408,12 @@ function rdbms_deleteobject ($object="", $object_id="")
         $sql .= 'WHERE id='.$container_id.'';
 
         $errcode = "50013";
-        $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select2');
+        $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select2');
         
         if ($done)
         {
-          $row_id = $db->getResultRow ('select2');
-          $num_rows = $db->getNumRows ('select2');
+          $row_id = $db->rdbms_getresultrow ('select2');
+          $num_rows = $db->rdbms_getnumrows ('select2');
         }
         
         // delete all entries for this id since no connected objects exists
@@ -1415,61 +1423,61 @@ function rdbms_deleteobject ($object="", $object_id="")
           $sql = 'DELETE FROM object WHERE id="'.$container_id.'"';
 
           $errcode = "50014";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete1');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete1');
 
           // delete container
           $sql = 'DELETE FROM container WHERE id="'.$container_id.'"';   
 
           $errcode = "50014";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete2');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete2');
 
           // delete textnodes  
           $sql = 'DELETE FROM textnodes WHERE id="'.$container_id.'"';
 
           $errcode = "50015";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete3');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete3');
 
           // delete taxonomy  
           $sql = 'DELETE FROM taxonomy WHERE id="'.$container_id.'"';
 
           $errcode = "50024";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete3');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete3');
           
           // delete keywords
           $sql = 'DELETE FROM keywords_container WHERE id="'.$container_id.'"';
 
           $errcode = "50025";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete4');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete4');
           
           // delete media attributes  
           $sql = 'DELETE FROM media WHERE id="'.$container_id.'"';
 
           $errcode = "50016";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete5');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete5');
 
           // delete dailytstat 
           $sql = 'DELETE FROM dailystat WHERE id="'.$container_id.'"';
 
           $errcode = "50017";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete6');        
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete6');        
 
           // delete queue
           $sql = 'DELETE FROM queue WHERE object_id="'.$row_id['object_id'].'"';
 
           $errcode = "50018";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete7');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete7');
           
           // delete accesslink
           $sql = 'DELETE FROM accesslink WHERE object_id="'.$row_id['object_id'].'"';
 
           $errcode = "50019";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete8');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete8');
           
           // delete task
           $sql = 'DELETE FROM task WHERE object_id="'.$row_id['object_id'].'"';
 
           $errcode = "50023";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete9');    
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete9');    
         }
         // delete only the object reference and queue entry
         elseif ($row_id && $num_rows > 1)
@@ -1477,32 +1485,32 @@ function rdbms_deleteobject ($object="", $object_id="")
           $sql = 'DELETE FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
 
           $errcode = "50020";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete10');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete10');
         }
 
         // delete queue
         $sql = 'DELETE FROM queue WHERE object_id="'.$row_id['object_id'].'"';   
 
         $errcode = "50021";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete11');
+        $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete11');
         
         // delete notification
         $sql = 'DELETE FROM notify WHERE object_id="'.$row_id['object_id'].'"';   
 
         $errcode = "50022";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete12');
+        $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete12');
         
         // delete/update textnodes
         $sql = 'UPDATE textnodes SET object_id="" WHERE object_id="'.$row_id['object_id'].'"';   
 
         $errcode = "50023";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'update1');
+        $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update1');
       }
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
          
     return true;
   }
@@ -1527,23 +1535,23 @@ function rdbms_deletecontent ($site, $container_id, $text_id)
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     $container_id = intval ($container_id);
-    $text_id = $db->escape_string ($text_id);
+    $text_id = $db->rdbms_escape_string ($text_id);
     
     // delete textnodes
     $sql = 'DELETE FROM textnodes WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
        
     $errcode = "50021";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
     // delete taxonomy
     $sql = 'DELETE FROM taxonomy WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
        
     $errcode = "50028";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
         
     return true;
   }
@@ -1568,17 +1576,17 @@ function rdbms_deletepublicationkeywords ($site)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $site = $db->escape_string ($site);
+    $site = $db->rdbms_escape_string ($site);
     
     // select containers of publication
     $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin';
        
     $errcode = "50053";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
     
     if ($done)
     {
-      while ($row = $db->getResultRow ('select'))
+      while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['id']))
         {
@@ -1586,14 +1594,14 @@ function rdbms_deletepublicationkeywords ($site)
           $sql = 'DELETE FROM keywords_container WHERE id="'.$row['id'].'"';
              
           $errcode = "50054";
-          $db->query ($sql, $errcode, $mgmt_config['today']);
+          $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
         }
       }
     }
     
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
         
     return true;
   }
@@ -1624,17 +1632,17 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $site = $db->escape_string ($site);
+    $site = $db->rdbms_escape_string ($site);
     
     // select containers of publication
     $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin';
 
     $errcode = "50053";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
     
     if ($done)
     {
-      while ($row = $db->getResultRow ('select'))
+      while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['id']))
         {
@@ -1642,14 +1650,14 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
           $sql = 'DELETE FROM taxonomy WHERE id="'.$row['id'].'"';
   
           $errcode = "50054";
-          $db->query ($sql, $errcode, $mgmt_config['today']);
+          $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
         }
       }
     }
     
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
         
     return true;
   }
@@ -1757,19 +1765,19 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    if (is_array ($object_type)) foreach ($object_type as &$value) $value = $db->escape_string ($value);
-    if ($date_from != "") $date_from = $db->escape_string ($date_from);
-    if ($date_to != "") $date_to = $db->escape_string ($date_to);
-    if ($template != "") $template = $db->escape_string ($template);
+    if (is_array ($object_type)) foreach ($object_type as &$value) $value = $db->rdbms_escape_string ($value);
+    if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
+    if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
+    if ($template != "") $template = $db->rdbms_escape_string ($template);
     if ($maxhits != "")
     {
       if (strpos ($maxhits, ",") > 0)
       {
         list ($starthits, $endhits) = explode (",", $maxhits);
-        $starthits = $db->escape_string (trim ($starthits));
-        $endhits = $db->escape_string (trim ($endhits));
+        $starthits = $db->rdbms_escape_string (trim ($starthits));
+        $endhits = $db->rdbms_escape_string (trim ($endhits));
       }
-      else $maxhits = $db->escape_string ($maxhits);
+      else $maxhits = $db->rdbms_escape_string ($maxhits);
     }
     
     // AND/OR operator for the search in texnodes 
@@ -1798,7 +1806,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         if ($path != "")
         {
           //escape characters depending on dbtype
-          $path = $db->escape_string ($path);
+          $path = $db->rdbms_escape_string ($path);
           // replace %
           $path = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $path);
           // where clause for folderpath
@@ -1833,7 +1841,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           else
           {
             //escape characters depending on dbtype
-            $path = $db->escape_string ($path);
+            $path = $db->rdbms_escape_string ($path);
             // replace %
             $path = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $path);
             // where clause for excludepath
@@ -1906,8 +1914,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           // remove double quotes
           $temp_expression = str_replace ("\"", "", $temp_expression);
           
-          $temp_expression = $db->escape_string ($temp_expression);
-          if (!empty ($temp_expression_2)) $temp_expression_2 = $db->escape_string ($temp_expression_2);
+          $temp_expression = $db->rdbms_escape_string ($temp_expression);
+          if (!empty ($temp_expression_2)) $temp_expression_2 = $db->rdbms_escape_string ($temp_expression_2);
           
           // operator
           if ($temp_operator != "none" && $sql_where['filename'] != "") $sql_where['filename'] .= $temp_operator;
@@ -2115,8 +2123,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                     $synonym_expression = str_replace ("\"", "", $synonym_expression);
                   }
                   
-                  $synonym_expression = $db->escape_string ($synonym_expression);
-                  if (!empty ($synonym_expression_2)) $synonym_expression_2 = $db->escape_string ($synonym_expression_2);
+                  $synonym_expression = $db->rdbms_escape_string ($synonym_expression);
+                  if (!empty ($synonym_expression_2)) $synonym_expression_2 = $db->rdbms_escape_string ($synonym_expression_2);
 
                   // use OR for synonyms
                   if ($r > 0) $sql_expr_advanced[$i] .= ' OR ';
@@ -2218,8 +2226,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                         $synonym_expression = str_replace ("\"", "", $synonym_expression);
                       }
     
-                      $synonym_expression = $db->escape_string ($synonym_expression);
-                      if (!empty ($synonym_expression_2)) $synonym_expression_2 = $db->escape_string ($synonym_expression_2);
+                      $synonym_expression = $db->rdbms_escape_string ($synonym_expression);
+                      if (!empty ($synonym_expression_2)) $synonym_expression_2 = $db->rdbms_escape_string ($synonym_expression_2);
 
                       // operator
                       if ($temp_operator != "none" && $sql_where_textnodes != "") $sql_where_textnodes .= $temp_operator;
@@ -2508,6 +2516,13 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         if (empty ($sql_table['container'])) $sql_table['container'] = "";
         if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
       }
+
+      if (in_array ("publishdate", $return_text_id))
+      {
+        $sql_attr[] = "cnt.publishdate";
+        if (empty ($sql_table['container'])) $sql_table['container'] = "";
+        if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
+      }
       
       if (in_array ("user", $return_text_id) || in_array ("owner", $return_text_id))
       {
@@ -2561,13 +2576,13 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     elseif (isset ($maxhits) && intval($maxhits) > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
 
     $errcode = "50082";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
     $objectpath = array();
 
     if ($done)
     {      
-      while ($row = $db->getResultRow ())
+      while ($row = $db->rdbms_getresultrow ())
       {
         if (!empty ($row['hash']) && !empty ($row['objectpath']))
         {
@@ -2578,6 +2593,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           $objectpath[$hash]['media'] =  $row['media'];
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
+          if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
           if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
           if (!empty ($row['width'])) $objectpath[$hash]['width'] = $row['width'];
@@ -2596,17 +2612,17 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' AND '.implode (' AND ', $sql_where);
       
       $errcode = "50081";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-      if ($done && ($row = $db->getResultRow ()))
+      if ($done && ($row = $db->rdbms_getresultrow ()))
       {         
         if ($row['cnt'] != "") $objectpath['count'] = $row['cnt']; 
       }
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
     
     if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0)
     {
@@ -2634,11 +2650,11 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $folderpath = $db->escape_string ($folderpath);
-    if (is_array ($object_type)) foreach ($object_type as &$value) $value = $db->escape_string ($value);
-    if ($date_from != "") $date_from = $db->escape_string ($date_from);
-    if ($date_to != "") $date_to = $db->escape_string ($date_to);
-    if ($user != "") $user = $db->escape_string ($user);
+    $folderpath = $db->rdbms_escape_string ($folderpath);
+    if (is_array ($object_type)) foreach ($object_type as &$value) $value = $db->rdbms_escape_string ($value);
+    if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
+    if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
+    if ($user != "") $user = $db->rdbms_escape_string ($user);
         
     // replace %
     $folderpath = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $folderpath);
@@ -2717,18 +2733,18 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       $expression = str_replace ("*", "%", $expression);
       $expression = str_replace ("?", "_", $expression);
 
-      $expression = $db->escape_string ($expression);
+      $expression = $db->rdbms_escape_string ($expression);
 
       $sql_where['textnodes'] = 'tn1.textcontent LIKE _utf8"%'.$expression.'%" COLLATE utf8_bin';
     }    
     
-    $sql = 'SELECT obj.objectpath, obj.hash, cnt.id, cnt.container, obj.media, cnt.createdate, cnt.date, cnt.user, tn1.text_id, tn1.textcontent FROM object AS obj INNER JOIN container AS cnt ON cnt.id=obj.id INNER JOIN textnodes AS tn1 ON tn1.id=cnt.id';
+    $sql = 'SELECT obj.objectpath, obj.hash, cnt.id, cnt.container, obj.media, cnt.createdate, cnt.date, cnt.publishdate, cnt.user, tn1.text_id, tn1.textcontent FROM object AS obj INNER JOIN container AS cnt ON cnt.id=obj.id INNER JOIN textnodes AS tn1 ON tn1.id=cnt.id';
     if (is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (" ", $sql_table);
     $sql .= ' WHERE obj.deleteuser="" AND';    
     if (is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' '.implode (" AND ", $sql_where);
 
     $errcode = "50063";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], "select");
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "select");
     
     $container_id_prev = "";
     $containerdata = "";
@@ -2740,19 +2756,19 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       $search_expression = str_replace ("?", "", $search_expression);
       
       $search_expression_esc = html_encode ($search_expression, convert_dbcharset ($mgmt_config['dbcharset']));
-      $search_expression = $db->escape_string ($search_expression);
+      $search_expression = $db->rdbms_escape_string ($search_expression);
       
       // transform replace expression
       $replace_expression_esc = html_encode ($replace_expression, convert_dbcharset ($mgmt_config['dbcharset']));
-      $replace_expression = $db->escape_string ($replace_expression);
+      $replace_expression = $db->rdbms_escape_string ($replace_expression);
         
-      $num_rows = $db->getNumRows ("select");
+      $num_rows = $db->rdbms_getnumrows ("select");
  
       if ($num_rows > 0)
       {
         for ($i = 0; $i < $num_rows; $i++)
         {
-          $row = $db->getResultRow ("select", $i);
+          $row = $db->rdbms_getresultrow ("select", $i);
         
           $hash = $row['hash'];
           
@@ -2761,6 +2777,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
           $objectpath[$hash]['media'] =  $row['media'];
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
+          if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
           if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
           
           $container_file = $row['container'];
@@ -2799,7 +2816,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
                   
                   foreach ($sql_array as $sql)
                   {
-                    $db->query ($sql, $errcode, $mgmt_config['today'], "update");
+                    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "update");
                   }
                 }
                 
@@ -2871,13 +2888,13 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       
       foreach ($sql_array as $sql)
       {
-        $db->query ($sql, $errcode, $mgmt_config['today'], "update");
+        $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "update");
       }
     }
     
     // save log
-    savelog ($db->getError ());    
-    $db->close(); 
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close(); 
     
     if (isset ($objectpath) && is_array ($objectpath))
     {
@@ -2905,8 +2922,8 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    if ($site != "" && $site != "*Null*") $site = $db->escape_string ($site);
-    $user = $db->escape_string ($user);
+    if ($site != "" && $site != "*Null*") $site = $db->rdbms_escape_string ($site);
+    $user = $db->rdbms_escape_string ($user);
     $maxhits = intval ($maxhits);
     
     $sql_add_attr = "";
@@ -2924,6 +2941,11 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
       if (in_array ("createdate", $return_text_id))
       {
         $sql_attr[] = "cnt.createdate";
+      }
+
+      if (in_array ("publishdate", $return_text_id))
+      {
+        $sql_attr[] = "cnt.publishdate";
       }
       
       if (in_array ("user", $return_text_id) || in_array ("owner", $return_text_id))
@@ -2968,13 +2990,13 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
     if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
 
     $errcode = "50025";
-    $done = $db->query($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
     
     $objectpath = array();
     
     if ($done)
     {
-      while ($row = $db->getResultRow ())
+      while ($row = $db->rdbms_getresultrow ())
       {
         if (!empty ($row['hash']) && !empty ($row['objectpath']))
         {
@@ -2985,6 +3007,7 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
           $objectpath[$hash]['media'] =  $row['media'];
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
+          if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
           if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
           if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
@@ -3000,17 +3023,17 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
       if ($site != "" && $site != "*Null*") $sql .= ' WHERE (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
       
       $errcode = "50021";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-      if ($done && ($row = $db->getResultRow ()))
+      if ($done && ($row = $db->rdbms_getresultrow ()))
       {         
         if ($row['cnt'] != "") $objectpath['count'] = $row['cnt']; 
       }
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
       
     if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
     else return false;
@@ -3035,24 +3058,24 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    if ($site != "" && $site != "*Null*") $site = $db->escape_string ($site);
+    if ($site != "" && $site != "*Null*") $site = $db->rdbms_escape_string ($site);
     
     if ($from_user != "")
     {
       // cut off additional information in brackets after the user name
       if (strpos ($from_user, "(") > 0) $from_user = trim (substr ($from_user, 0, strpos ($from_user, "(")));
-      $from_user = $db->escape_string ($from_user);
+      $from_user = $db->rdbms_escape_string ($from_user);
     }
     
     if ($to_user_email != "")
     {
       // cut off additional information in brackets after the user name
       if (strpos ($to_user_email, "(") > 0) $to_user_email = trim (substr ($to_user_email, 0, strpos ($to_user_email, "(")));
-      $to_user_email = $db->escape_string ($to_user_email);
+      $to_user_email = $db->rdbms_escape_string ($to_user_email);
     }
     
-    if ($date_from != "") $date_from = $db->escape_string ($date_from);
-    if ($date_to != "") $date_to = $db->escape_string ($date_to);
+    if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
+    if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
     $maxhits = intval ($maxhits);
     
     $sql_add_attr = "";
@@ -3072,6 +3095,13 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
       if (in_array ("createdate", $return_text_id))
       {
         $sql_attr[] = "cnt.createdate";
+        if (empty ($sql_table['container'])) $sql_table['container'] = "";
+        if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
+      }
+
+      if (in_array ("publishdate", $return_text_id))
+      {
+        $sql_attr[] = "cnt.publishdate";
         if (empty ($sql_table['container'])) $sql_table['container'] = "";
         if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
       }
@@ -3125,13 +3155,13 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
     if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
 
     $errcode = "50026";
-    $done = $db->query($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
     
     $objectpath = array();
     
     if ($done)
     {
-      while ($row = $db->getResultRow ())
+      while ($row = $db->rdbms_getresultrow ())
       {
         if (!empty ($row['hash']) && !empty ($row['objectpath']))
         {
@@ -3142,6 +3172,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
           $objectpath[$hash]['media'] =  $row['media'];
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
+          if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
           if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
           if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
@@ -3157,17 +3188,17 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
       if ($site != "" && $site != "*Null*") $sql .= ' WHERE (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
       
       $errcode = "50027";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-      if ($done && ($row = $db->getResultRow ()))
+      if ($done && ($row = $db->rdbms_getresultrow ()))
       {         
         if ($row['cnt'] != "") $objectpath['count'] = $row['cnt']; 
       }
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
       
     if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
     else return false;
@@ -3197,9 +3228,9 @@ function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user=""
     if ($type == "u" || $type == "f" || $type == "l" || $type == "c" || $type == "d" || $type == "k") $type = "text".$type;
     
     $container_id = intval ($container_id);
-    if ($text_id != "") $text_id = $db->escape_string($text_id);
-    if ($type != "") $type = $db->escape_string($type);
-    if ($user != "") $user = $db->escape_string($user);
+    if ($text_id != "") $text_id = $db->rdbms_escape_string($text_id);
+    if ($type != "") $type = $db->rdbms_escape_string($type);
+    if ($user != "") $user = $db->rdbms_escape_string($user);
 
     $sql = 'SELECT text_id, textcontent FROM textnodes WHERE id="'.$container_id.'"';
     if ($text_id != "") $sql .= ' AND text_id="'.$text_id.'"';
@@ -3207,11 +3238,11 @@ function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user=""
     if ($user != "") $sql .= ' AND user="'.$user.'"';
                
     $errcode = "50199";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     if ($done)
     {
-      while ($row = $db->getResultRow ())
+      while ($row = $db->rdbms_getresultrow ())
       {
         if (!empty ($row['text_id']))
         {
@@ -3221,8 +3252,8 @@ function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user=""
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
     
     if (is_array ($result) && sizeof ($result) > 0) return $result;
     else return false;
@@ -3255,7 +3286,7 @@ function rdbms_getkeywords ($sites="")
     
     foreach ($sites as $site)
     {
-      $site = $db->escape_string ($site);
+      $site = $db->rdbms_escape_string ($site);
       
       if ($i < 1) $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
       else $sql .= ' OR (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
@@ -3265,18 +3296,18 @@ function rdbms_getkeywords ($sites="")
   }
   else if ($sites != "" && $sites != "*Null*")
   {
-    $site = $db->escape_string ($sites);
+    $site = $db->rdbms_escape_string ($sites);
     $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
   }
   
   $sql .= ' GROUP BY keywords.keyword_id ORDER BY keywords.keyword';
 
   $errcode = "50541";
-  $done = $db->query($sql, $errcode, $mgmt_config['today']);
+  $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
   
   if ($done)
   {
-    while ($row = $db->getResultRow ())
+    while ($row = $db->rdbms_getresultrow ())
     {
       if (!empty ($row['keyword_id']) && is_keyword ($row['keyword']) && $row['count'] > 0)
       {
@@ -3289,8 +3320,8 @@ function rdbms_getkeywords ($sites="")
   }
 
   // save log
-  savelog ($db->getError ());    
-  $db->close();
+  savelog ($db->rdbms_geterror ());    
+  $db->rdbms_close();
     
   if (is_array ($result) && sizeof ($result) > 0) return $result;
   else return false;
@@ -3322,7 +3353,7 @@ function rdbms_getemptykeywords ($sites="")
     
     foreach ($sites as $site)
     {
-      $site = $db->escape_string ($site);
+      $site = $db->rdbms_escape_string ($site);
       
       if ($i < 1) $sql_objectpath .= ' (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
       else $sql_objectpath .= ' OR (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
@@ -3334,26 +3365,26 @@ function rdbms_getemptykeywords ($sites="")
   }
   else if ($sites != "" && $sites != "*Null*")
   {
-    $site = $db->escape_string ($sites);
+    $site = $db->rdbms_escape_string ($sites);
     $sql .= ' (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
   }
   
   $sql .= ' AND textnodes.type="textk" AND textnodes.textcontent=""';
   
   $errcode = "50542";
-  $done = $db->query($sql, $errcode, $mgmt_config['today']);
+  $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
   
   if ($done)
   {
-    if ($row = $db->getResultRow ())
+    if ($row = $db->rdbms_getresultrow ())
     {
       if ($row['count']) $result = $row['count'];
     }
   }
 
   // save log
-  savelog ($db->getError ());    
-  $db->close();
+  savelog ($db->rdbms_geterror ());    
+  $db->rdbms_close();
     
   if (!empty ($result)) return $result;
   else return 0;
@@ -3379,8 +3410,8 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
     
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $site = $db->escape_string ($site);
-    $get_text_id = $db->escape_string ($get_text_id);
+    $site = $db->rdbms_escape_string ($site);
+    $get_text_id = $db->rdbms_escape_string ($get_text_id);
     
     // extract type from text ID
     if (strpos ($get_text_id, ":") > 0)
@@ -3411,8 +3442,8 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
         $value = html_decode ($value, convert_dbcharset ($mgmt_config['dbcharset']));
         $value_esc = html_encode ($value, convert_dbcharset ($mgmt_config['dbcharset']));
 
-        $text_id = $db->escape_string ($text_id);
-        $value = $db->escape_string ($value);
+        $text_id = $db->rdbms_escape_string ($text_id);
+        $value = $db->rdbms_escape_string ($value);
 
         // search for exact expression except for keyword
         if ($type != "textk")
@@ -3437,11 +3468,11 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
     if (is_array ($sql_textnodes) && sizeof ($sql_textnodes) > 0) $sql .= ' AND '.implode (" AND ", $sql_textnodes);
     
     $errcode = "50542";
-    $done = $db->query($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
 
     if ($done)
     {
-      while ($row = $db->getResultRow ())
+      while ($row = $db->rdbms_getresultrow ())
       {
         // split keywords
         if ($row['type'] == "textk")
@@ -3455,8 +3486,8 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
       
     if (is_array ($result) && sizeof ($result) > 0)
     {
@@ -3498,7 +3529,7 @@ function rdbms_getobject_id ($object)
       
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $object = $db->escape_string ($object);
+    $object = $db->rdbms_escape_string ($object);
     
     // object path
     if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0)
@@ -3514,17 +3545,17 @@ function rdbms_getobject_id ($object)
     }
     
     $errcode = "50027";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
-    if ($done && $row = $db->getResultRow ())
+    if ($done && $row = $db->rdbms_getresultrow ())
     {
       if ($row['deleteuser'] == "") $object_id = $row['object_id'];
       else $object_id = "hcms:deleted";
     }
     
     // save log
-    savelog ($db->getError ());
-    $db->close();
+    savelog ($db->rdbms_geterror ());
+    $db->rdbms_close();
       
     if (!empty ($object_id))
     {
@@ -3584,7 +3615,7 @@ function rdbms_getobject_hash ($object="", $container_id="")
       }
       
       $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
-      $object = $db->escape_string ($object);          
+      $object = $db->rdbms_escape_string ($object);          
 
       $sql = 'SELECT hash, deleteuser FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin LIMIT 1';
     }
@@ -3602,17 +3633,17 @@ function rdbms_getobject_hash ($object="", $container_id="")
     if (!empty ($sql))
     {
       $errcode = "50029";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
       
-      if ($done && $row = $db->getResultRow ())
+      if ($done && $row = $db->rdbms_getresultrow ())
       {
         if ($row['deleteuser'] == "") $hash = $row['hash'];
         else $hash = "hcms:deleted";
       }
 
       // save log
-      savelog ($db->getError ());    
-      $db->close();
+      savelog ($db->rdbms_geterror ());    
+      $db->rdbms_close();
         
       if (!empty ($hash))
       {
@@ -3660,7 +3691,7 @@ function rdbms_getobject ($object_identifier)
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     // clean input
-    $object_identifier = $db->escape_string ($object_identifier);
+    $object_identifier = $db->rdbms_escape_string ($object_identifier);
     
     // try table object if public download is allowed
     if ($mgmt_config['publicdownload'] == true)
@@ -3669,9 +3700,9 @@ function rdbms_getobject ($object_identifier)
       else $sql = 'SELECT objectpath FROM object WHERE deleteuser="" AND hash="'.$object_identifier.'" LIMIT 1';
   
       $errcode = "50030";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
       
-      if ($done && $row = $db->getResultRow ())
+      if ($done && $row = $db->rdbms_getresultrow ())
       {
         if ($row['objectpath'] != "") $objectpath = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);  
       }
@@ -3683,11 +3714,11 @@ function rdbms_getobject ($object_identifier)
       $sql = 'SELECT obj.objectpath, al.deathtime, al.formats FROM accesslink AS al, object AS obj WHERE obj.deleteuser="" AND al.hash="'.$object_identifier.'" AND al.object_id=obj.object_id LIMIT 1';
       
       $errcode = "50031";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today'], "select2");
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "select2");
       
       if ($done)
       {
-        $row = $db->getResultRow ("select2");
+        $row = $db->rdbms_getresultrow ("select2");
         
         // if time of death for link is set
         if ($row['deathtime'] > 0)
@@ -3698,7 +3729,7 @@ function rdbms_getobject ($object_identifier)
             $sql = 'DELETE FROM accesslink WHERE hash="'.$object_identifier.'"';
              
             $errcode = "50039";
-            $db->query ($sql, $errcode, $mgmt_config['today'], "delete");
+            $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "delete");
           }
           elseif ($row['objectpath'] != "") $objectpath = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
         }
@@ -3707,8 +3738,8 @@ function rdbms_getobject ($object_identifier)
     }
     
     // save log
-    savelog ($db->getError ());    
-    $db->close();     
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();     
       
     if ($objectpath != "") return $objectpath;
     else return false;
@@ -3718,12 +3749,12 @@ function rdbms_getobject ($object_identifier)
 
 // -------------------------------------------- get object info by unique id or hash ----------------------------------------------- 
 
-// function: rdbms_getobject()
+// function: rdbms_getobject_info()
 // input: object identifier (object hash OR object ID OR access hash) [string], text IDs to be returned [array] (optional)
 // output: array with object info / false
 
 // description:
-// Returns the location path, hash, container ID, template, and media of an object as array.
+// Returns the location path, hash, container ID, template, and media information of an object as array.
 
 function rdbms_getobject_info ($object_identifier, $return_text_id=array())
 {
@@ -3739,7 +3770,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     // clean input
-    $object_identifier = $db->escape_string ($object_identifier);
+    $object_identifier = $db->rdbms_escape_string ($object_identifier);
     
     $sql_add_attr = "";
     $sql_attr = array();
@@ -3758,6 +3789,13 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
       if (in_array ("createdate", $return_text_id))
       {
         $sql_attr[] = "cnt.createdate";
+        if (empty ($sql_table['container'])) $sql_table['container'] = "";
+        if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
+      }
+
+      if (in_array ("publishdate", $return_text_id))
+      {
+        $sql_attr[] = "cnt.publishdate";
         if (empty ($sql_table['container'])) $sql_table['container'] = "";
         if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
       }
@@ -3816,9 +3854,9 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
       }
   
       $errcode = "50030";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
       
-      if ($done && $row = $db->getResultRow ())
+      if ($done && $row = $db->rdbms_getresultrow ())
       {
         if ($row['objectpath'] != "")
         {
@@ -3829,6 +3867,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
           $objectpath['media'] = $row['media'];
           if (!empty ($row['date'])) $objectpath['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath['createdate'] = $row['createdate'];
+          if (!empty ($row['publishdate'])) $objectpath['publishdate'] = $row['publishdate'];
           if (!empty ($row['user'])) $objectpath['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath['filesize'] = $row['filesize'];
           if (!empty ($row['text_id'])) $objectpath['text:'.$row['text_id']] = $row['textcontent'];
@@ -3844,11 +3883,11 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
       $sql .= 'WHERE obj.deleteuser="" AND al.hash="'.$object_identifier.'" LIMIT 1';
       
       $errcode = "50031";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today'], "select2");
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "select2");
       
       if ($done)
       {
-        $row = $db->getResultRow ("select2");
+        $row = $db->rdbms_getresultrow ("select2");
         
         // if time of death for link is set
         if ($row['deathtime'] > 0)
@@ -3859,7 +3898,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
             $sql = 'DELETE FROM accesslink WHERE hash="'.$object_identifier.'"';
              
             $errcode = "50039";
-            $db->query ($sql, $errcode, $mgmt_config['today'], "delete");
+            $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "delete");
           }
           elseif ($row['objectpath'] != "") 
           {
@@ -3870,6 +3909,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
             $objectpath['media'] = $row['media'];
             if (!empty ($row['date'])) $objectpath['date'] = $row['date'];
             if (!empty ($row['createdate'])) $objectpath['createdate'] = $row['createdate'];
+            if (!empty ($row['publishdate'])) $objectpath['publishdate'] = $row['publishdate'];
             if (!empty ($row['user'])) $objectpath['user'] = $row['user'];
             if (!empty ($row['filesize'])) $objectpath['filesize'] = $row['filesize'];
             if (!empty ($row['text_id'])) $objectpath['text:'.$row['text_id']] = $row['textcontent'];
@@ -3884,16 +3924,17 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
           $objectpath['media'] = $row['media'];
           if (!empty ($row['date'])) $objectpath['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath['createdate'] = $row['createdate'];
+          if (!empty ($row['publishdate'])) $objectpath['publishdate'] = $row['publishdate'];
           if (!empty ($row['user'])) $objectpath['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath['filesize'] = $row['filesize'];
           if (!empty ($row['text_id'])) $objectpath['text:'.$row['text_id']] = $row['textcontent'];
         }  
       }
     }
-    
+
     // save log
-    savelog ($db->getError ());    
-    $db->close();     
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();     
       
     if ($objectpath != "") return $objectpath;
     else return false;
@@ -3920,7 +3961,7 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
     
     // clean input
     if ($container_id != "") $container_id = intval ($container_id);
-    if ($template != "") $template = $db->escape_string ($template);
+    if ($template != "") $template = $db->rdbms_escape_string ($template);
 
     $sql_add_attr = "";
     $sql_attr = array();
@@ -3939,6 +3980,13 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
       if (in_array ("createdate", $return_text_id))
       {
         $sql_attr[] = "cnt.createdate";
+        if (empty ($sql_table['container'])) $sql_table['container'] = "";
+        if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
+      }
+
+      if (in_array ("publishdate", $return_text_id))
+      {
+        $sql_attr[] = "cnt.publishdate";
         if (empty ($sql_table['container'])) $sql_table['container'] = "";
         if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
       }
@@ -3987,13 +4035,13 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
     if ($template != "") $sql .= 'AND obj.template="'.$template.'" ';
     
     $errcode = "50040";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
     $objectpath = array();
     
     if ($done)  
     {
-      while ($row = $db->getResultRow ())
+      while ($row = $db->rdbms_getresultrow ())
       {
         if (!empty ($row['hash']) && !empty ($row['objectpath']))
         {
@@ -4004,6 +4052,7 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
           $objectpath[$hash]['media'] = $row['media'];
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
+          if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
           if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
           if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
@@ -4012,8 +4061,8 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();    
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();    
       
     if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
     else return false;
@@ -4036,7 +4085,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
 
   $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
   
-  if ($user != "") $user = $db->escape_string ($user);
+  if ($user != "") $user = $db->rdbms_escape_string ($user);
   if ($date != "") $date = date ("Y-m-d", strtotime ($date));
   
   $sql_add_attr = "";
@@ -4056,6 +4105,13 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
     if (in_array ("createdate", $return_text_id))
     {
       $sql_attr[] = "cnt.createdate";
+      if (empty ($sql_table['container'])) $sql_table['container'] = "";
+      if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
+    }
+
+    if (in_array ("publishdate", $return_text_id))
+    {
+      $sql_attr[] = "cnt.publishdate";
       if (empty ($sql_table['container'])) $sql_table['container'] = "";
       if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
     }
@@ -4109,13 +4165,13 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
   if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
 
   $errcode = "50325";
-  $done = $db->query($sql, $errcode, $mgmt_config['today']);
+  $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
   
   $objectpath = array();
   
   if ($done)
   {
-    while ($row = $db->getResultRow ())
+    while ($row = $db->rdbms_getresultrow ())
     {
       if (!empty ($row['hash']) && !empty ($row['objectpath']))
       {
@@ -4126,6 +4182,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
         $objectpath[$hash]['media'] =  $row['media'];
         if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
         if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
+        if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
         if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
         if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
         if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
@@ -4147,17 +4204,17 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
     if ($date != "") $sql .= 'AND deletedate<"'.$date.'" ';
     
     $errcode = "50327";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-    if ($done && ($row = $db->getResultRow ()))
+    if ($done && ($row = $db->rdbms_getresultrow ()))
     {         
       if ($row['cnt'] != "") $objectpath['count'] = $row['cnt']; 
     }
   }
 
   // save log
-  savelog ($db->getError ());    
-  $db->close();
+  savelog ($db->rdbms_geterror ());    
+  $db->rdbms_close();
     
   if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
   else return false;
@@ -4180,7 +4237,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $user = $db->escape_string ($user);
+    $user = $db->rdbms_escape_string ($user);
     
     // get current date
     $date = date ("Y-m-d", time());
@@ -4217,7 +4274,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
           
           // clean input
           $object_folder = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
-          $object_folder = $db->escape_string ($object_folder);
+          $object_folder = $db->rdbms_escape_string ($object_folder);
 
           // mark as deleted
           if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
@@ -4267,7 +4324,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
           if (!empty ($sql))
           {
             $errcode = "50071";
-            $done = $db->query($sql, $errcode, $mgmt_config['today']);
+            $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
 
             // for all subitems of the selected folder
             if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
@@ -4282,7 +4339,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             if (!empty ($sql))
             {
               $errcode = "50072";
-              $done = $db->query($sql, $errcode, $mgmt_config['today']);
+              $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
             }
           }
         }
@@ -4291,7 +4348,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
         {
           // clean input
           $object_file = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
-          $object_file = $db->escape_string ($object_file);
+          $object_file = $db->rdbms_escape_string ($object_file);
  
           // correct file name
           $object_corr = getlocation ($object_abs).correctfile (getlocation ($object_abs), getobject ($object_abs), $user);
@@ -4341,7 +4398,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
           if (!empty ($sql))
           {
             $errcode = "50073";
-            $done = $db->query($sql, $errcode, $mgmt_config['today']);
+            $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
           }
         }
       }
@@ -4353,9 +4410,9 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
     }
 
     // save log
-    savelog ($db->getError ());
+    savelog ($db->rdbms_geterror ());
     savelog (@$error);
-    $db->close();
+    $db->rdbms_close();
       
     return true;
   }
@@ -4379,11 +4436,11 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
   { 
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $hash = $db->escape_string ($hash);
-    $type = $db->escape_string ($type);
-    if ($user != "") $user = $db->escape_string ($user);
-    if ($lifetime != "") $lifetime = $db->escape_string ($lifetime);
-    if ($formats != "") $formats = $db->escape_string ($formats);
+    $hash = $db->rdbms_escape_string ($hash);
+    $type = $db->rdbms_escape_string ($type);
+    if ($user != "") $user = $db->rdbms_escape_string ($user);
+    if ($lifetime != "") $lifetime = $db->rdbms_escape_string ($lifetime);
+    if ($formats != "") $formats = $db->rdbms_escape_string ($formats);
     
     // date
     $date = date ("Y-m-d H:i", time());
@@ -4431,11 +4488,11 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
       $sql .= 'VALUES ("'.$hash.'", "'.$date.'", "'.implode ("|", $object_id_array).'", "'.$type.'", "'.$user.'", '.intval ($deathtime).', "'.$formats.'")';
            
       $errcode = "50007";
-      $db->query ($sql, $errcode, $mgmt_config['today']);
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
   
       // save log
-      savelog ($db->getError ());    
-      $db->close();
+      savelog ($db->rdbms_geterror ());    
+      $db->rdbms_close();
           
       return true;
     }
@@ -4463,16 +4520,16 @@ function rdbms_getaccessinfo ($hash)
     
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $hash = $db->escape_string ($hash);
+    $hash = $db->rdbms_escape_string ($hash);
   
     $sql = 'SELECT date, object_id, type, user, deathtime, formats FROM accesslink WHERE hash="'.$hash.'"';
 
     $errcode = "50071";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], "select");
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "select");
 
     if ($done)
     {
-      $row = $db->getResultRow ("select");
+      $row = $db->rdbms_getresultrow ("select");
       
       $result['date'] = $row['date'];
       $result['object_id'] = $row['object_id'];
@@ -4491,7 +4548,7 @@ function rdbms_getaccessinfo ($hash)
           $sql = 'DELETE FROM accesslink WHERE hash="'.$hash.'"';
            
           $errcode = "50072";
-          $db->query ($sql, $errcode, $mgmt_config['today'], "delete");
+          $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "delete");
           
           $result = false;
         }
@@ -4499,8 +4556,8 @@ function rdbms_getaccessinfo ($hash)
     }
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
     
     if (is_array ($result) && sizeof ($result) > 0) return $result;
     else return false;
@@ -4530,10 +4587,10 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
 
     $date = date ("Y-m-d H:i:s", time());
     
-    $object = $db->escape_string ($object);
-    $from_user = $db->escape_string ($from_user);
-    $to_user = $db->escape_string ($to_user);
-    $email = $db->escape_string ($email);
+    $object = $db->rdbms_escape_string ($object);
+    $from_user = $db->rdbms_escape_string ($from_user);
+    $to_user = $db->rdbms_escape_string ($to_user);
+    $email = $db->rdbms_escape_string ($email);
     
     $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);    
     
@@ -4542,25 +4599,25 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
     else $sql = 'SELECT object_id FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
 
     $errcode = "50049";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
     
     if ($done)
     {
       $i = 1;
       
-      while ($object_id = $db->getResultRow ('select'))
+      while ($object_id = $db->rdbms_getresultrow ('select'))
       {
         $sql = 'INSERT INTO recipient (object_id, date, from_user, to_user, email) ';    
         $sql .= 'VALUES ("'.intval ($object_id['object_id']).'", "'.$date.'", "'.$from_user.'", "'.$to_user.'", "'.$email.'")';
         
         $errcode = "50050";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today'], $i++);
+        $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);
       }
     }
 
     // save log
-    savelog ($db->getError());    
-    $db->close();   
+    savelog ($db->rdbms_geterror());    
+    $db->rdbms_close();   
          
     return true;
   }
@@ -4589,20 +4646,20 @@ function rdbms_getrecipients ($object)
     
     // clean input
     $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object); 
-    $object = $db->escape_string ($object);   
+    $object = $db->rdbms_escape_string ($object);   
     
     // get recipients
     $sql = 'SELECT rec.recipient_id, rec.object_id, rec.date, rec.from_user, rec.to_user, rec.email FROM recipient AS rec, object AS obj WHERE obj.object_id=rec.object_id AND obj.objectpath=_utf8"'.$object.'" COLLATE utf8_bin';   
 
     $errcode = "50041";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
     
     if ($done)
     {
       $i = 0;
       $recipient = array();
       
-      while ($row = $db->getResultRow ('select'))
+      while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['recipient_id']))
         {
@@ -4619,8 +4676,8 @@ function rdbms_getrecipients ($object)
     }
 
     // save log
-    savelog ($db->getError());    
-    $db->close();      
+    savelog ($db->rdbms_geterror());    
+    $db->rdbms_close();      
          
     if (!empty ($recipient) && sizeof ($recipient) > 0) return $recipient;
     else return false;
@@ -4646,16 +4703,16 @@ function rdbms_deleterecipient ($recipient_id)
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     // clean input
-    $recipient_id = $db->escape_string ($recipient_id);
+    $recipient_id = $db->rdbms_escape_string ($recipient_id);
         
     $sql = 'DELETE FROM recipient WHERE recipient_id='.$recipient_id;
      
     $errcode = "50032";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
     // save log
-    savelog ($db->getError ());    
-    $db->close();      
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();      
          
     return true;
   }
@@ -4689,23 +4746,23 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only=false,
       $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
       // clean input
-      $action = $db->escape_string ($action);
-      $object = $db->escape_string ($object);
+      $action = $db->rdbms_escape_string ($action);
+      $object = $db->rdbms_escape_string ($object);
       $date = date ("Y-m-d H:i", strtotime ($date));
       if (!empty ($published_only)) $published_only = 1;
       else $published_only = 0;
-      $user = $db->escape_string ($user);
+      $user = $db->rdbms_escape_string ($user);
       
       $sql = 'INSERT INTO queue (object_id, action, date, published_only, user) ';    
       $sql .= 'VALUES ('.intval ($object_id).', "'.$action.'", "'.$date.'", '.intval ($published_only).', "'.$user.'")';
       
       $errcode = "50033";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today']); 
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']); 
         
       // save log
-      savelog ($db->getError());
+      savelog ($db->rdbms_geterror());
     
-      $db->close();
+      $db->rdbms_close();
       
       return $done;
     }
@@ -4737,11 +4794,11 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
     elseif ($object != "") return false;  
     
     // clean input
-    if (!empty ($action)) $action = $db->escape_string ($action);
-    if (!empty ($site)) $site = $db->escape_string ($site);
+    if (!empty ($action)) $action = $db->rdbms_escape_string ($action);
+    if (!empty ($site)) $site = $db->rdbms_escape_string ($site);
     if (!empty ($date)) $date = date ("Y-m-d H:i", strtotime ($date));
-    if (!empty ($user)) $user = $db->escape_string ($user);
-    if (!empty ($object_id)) $object_id = $db->escape_string ($object_id);
+    if (!empty ($user)) $user = $db->rdbms_escape_string ($user);
+    if (!empty ($object_id)) $object_id = $db->rdbms_escape_string ($object_id);
 
     // get recipients
     $sql = 'SELECT que.queue_id, que.action, que.date, que.published_only, que.user, que.object_id, obj.objectpath FROM queue AS que LEFT JOIN object AS obj ON obj.object_id=que.object_id WHERE 1=1';
@@ -4753,7 +4810,7 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
     $sql .= ' ORDER BY que.date';
 
     $errcode = "50034";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
 
     $queue = array();
           
@@ -4762,7 +4819,7 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
       $i = 0;
       
       // insert recipients
-      while ($row = $db->getResultRow ('select'))
+      while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['queue_id']))
         {
@@ -4780,9 +4837,9 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
     }
   
     // save log
-    savelog ($db->getError());
+    savelog ($db->rdbms_geterror());
     
-    $db->close();
+    $db->rdbms_close();
     
     if (is_array ($queue) && sizeof ($queue) > 0) return $queue;
     else return false;
@@ -4814,11 +4871,11 @@ function rdbms_deletequeueentry ($queue_id)
     $sql = 'SELECT action, object_id, user FROM queue WHERE queue_id='.$queue_id;
     
     $errcode = "50035";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
     
     if ($done)
     {
-      $row = $db->getResultRow ("select");
+      $row = $db->rdbms_getresultrow ("select");
       
       // remove queue file
       if ($row['action'] == "mail") 
@@ -4832,12 +4889,12 @@ function rdbms_deletequeueentry ($queue_id)
     $sql = 'DELETE FROM queue WHERE queue_id='.$queue_id;
      
     $errcode = "50036";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->getError ());
+    savelog ($db->rdbms_geterror ());
 
-    $db->close();
+    $db->rdbms_close();
          
     return true;
   }
@@ -4865,7 +4922,7 @@ function rdbms_createnotification ($object, $events, $user)
       $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
       
       // clean input
-      $user = $db->escape_string ($user);
+      $user = $db->rdbms_escape_string ($user);
       if (array_key_exists ("oncreate", $events) && $events['oncreate'] == 1) $oncreate = 1;
       else $oncreate = 0;
       if (array_key_exists ("onedit", $events) && $events['onedit'] == 1) $onedit = 1;
@@ -4878,11 +4935,11 @@ function rdbms_createnotification ($object, $events, $user)
       $sql = 'SELECT count(*) AS count FROM notify WHERE object_id="'.$object_id.'" AND user="'.$user.'"';
       
       $errcode = "50193";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
       
       if ($done)
       {
-        $result = $db->getResultRow ('select', 0);
+        $result = $db->rdbms_getresultrow ('select', 0);
         $count = $result['count'];
   
         if ($count == 0)
@@ -4896,13 +4953,13 @@ function rdbms_createnotification ($object, $events, $user)
         }
         
         $errcode = "50093";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'insert'); 
+        $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert'); 
       }
       
       // save log
-      savelog ($db->getError());
+      savelog ($db->rdbms_geterror());
     
-      $db->close();
+      $db->rdbms_close();
       
       return $done;
     }
@@ -4940,18 +4997,18 @@ function rdbms_getnotification ($event="", $object="", $user="")
 
       // clean input
       $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
-      $object = $db->escape_string ($object);
+      $object = $db->rdbms_escape_string ($object);
 
       // get connected objects
       $sql = 'SELECT DISTINCT object_id, id FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
       
       $errcode = "50097";
-      $done = $db->query($sql, $errcode, $mgmt_config['today'], 'connected');
+      $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'connected');
       
       if ($done)
       {
         // get object ID and container ID of object
-        if ($row = $db->getResultRow ('connected'))
+        if ($row = $db->rdbms_getresultrow ('connected'))
         {
           $object_id = $row['object_id'];
           $container_id = $row['id'];
@@ -4963,11 +5020,11 @@ function rdbms_getnotification ($event="", $object="", $user="")
           $sql = 'SELECT DISTINCT object_id FROM object WHERE id="'.$container_id.'" AND object_id!="'.$object_id.'"';
       
           $errcode = "50298";
-          $done = $db->query($sql, $errcode, $mgmt_config['today'], 'connected');
+          $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'connected');
           
           if ($done)
           {
-            while ($row = $db->getResultRow ('connected'))
+            while ($row = $db->rdbms_getresultrow ('connected'))
             {
               if (!empty ($row['object_id'])) $object_id_array[] = $row['object_id'];
             }
@@ -4981,11 +5038,11 @@ function rdbms_getnotification ($event="", $object="", $user="")
         $sql = 'SELECT object.object_id FROM textnodes INNER JOIN object ON object.id=textnodes.id WHERE textnodes.object_id="'.$object_id.'"';
         
         $errcode = "50299";
-        $done = $db->query($sql, $errcode, $mgmt_config['today'], 'linked');
+        $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'linked');
         
         if ($done)
         {
-          while ($row = $db->getResultRow ('linked'))
+          while ($row = $db->rdbms_getresultrow ('linked'))
           {
             if (!empty ($row['object_id'])) $object_id_array[] = $row['object_id'];
           }
@@ -4993,7 +5050,7 @@ function rdbms_getnotification ($event="", $object="", $user="")
       }
     }
     
-    if ($user != "") $user = $db->escape_string ($user);
+    if ($user != "") $user = $db->rdbms_escape_string ($user);
         
     // get recipients
     $sql = 'SELECT nfy.notify_id, nfy.object_id, obj.objectpath, nfy.user, nfy.oncreate, nfy.onedit, nfy.onmove, nfy.ondelete FROM notify AS nfy, object AS obj WHERE obj.object_id=nfy.object_id';
@@ -5004,13 +5061,13 @@ function rdbms_getnotification ($event="", $object="", $user="")
     $sql .= ' ORDER BY obj.objectpath';
 
     $errcode = "50094";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
 
     if ($done)
     {  
       $i = 0;
       // insert recipients
-      while ($row = $db->getResultRow ('select'))
+      while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['notify_id'])) 
         {
@@ -5029,8 +5086,8 @@ function rdbms_getnotification ($event="", $object="", $user="")
     }
 
     // save log
-    savelog ($db->getError());    
-    $db->close();
+    savelog ($db->rdbms_geterror());    
+    $db->rdbms_close();
     
     if (is_array (@$queue)) return $queue;
     else return false;
@@ -5057,20 +5114,20 @@ function rdbms_deletenotification ($notify_id, $object="", $user="")
     }
     
     // clean input
-    if (!empty($notify_id)) $notify_id = $db->escape_string ($notify_id);
-    elseif (!empty($object_id)) $object_id = $db->escape_string ($object_id);
-    elseif (!empty($user)) $user = $db->escape_string ($user);
+    if (!empty($notify_id)) $notify_id = $db->rdbms_escape_string ($notify_id);
+    elseif (!empty($object_id)) $object_id = $db->rdbms_escape_string ($object_id);
+    elseif (!empty($user)) $user = $db->rdbms_escape_string ($user);
         
     if (!empty($notify_id)) $sql = 'DELETE FROM notify WHERE notify_id="'.$notify_id.'"';
     elseif (!empty($object_id)) $sql = 'DELETE FROM notify WHERE object_id="'.$object_id.'"';
     elseif (!empty($user)) $sql = 'DELETE FROM notify WHERE user="'.$user.'"';
      
     $errcode = "50092";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
     // save log
-    savelog ($db->getError ());    
-    $db->close();      
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();      
          
     return true;
   }
@@ -5087,24 +5144,24 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
-    $folderpath = $db->escape_string ($folderpath);
-    $text_id = $db->escape_string ($text_id);
-    $date_begin = $db->escape_string ($date_begin);
-    $date_end = $db->escape_string ($date_end);
-    $format = $db->escape_string ($format);
+    $folderpath = $db->rdbms_escape_string ($folderpath);
+    $text_id = $db->rdbms_escape_string ($text_id);
+    $date_begin = $db->rdbms_escape_string ($date_begin);
+    $date_end = $db->rdbms_escape_string ($date_end);
+    $format = $db->rdbms_escape_string ($format);
     
     $folderpath = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $folderpath);
    
     $sql = 'SELECT DISTINCT obj.objectpath as path, tnd.textcontent as cnt FROM object AS obj, textnodes AS tnd ';
     $sql .= 'WHERE obj.id=tnd.id AND obj.objectpath LIKE _utf8"'.$folderpath.'%" COLLATE utf8_bin AND tnd.text_id=_utf8"'.$text_id.'" COLLATE utf8_bin  AND "'.$date_begin.'" <= STR_TO_DATE(tnd.textcontent, "'.$format.'") AND "'.$date_end.'" >= STR_TO_DATE(tnd.textcontent, "'.$format.'")';    
     $errcode = "50036";
-    $done = $db->query($sql, $errcode, $mgmt_config['today']);
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
 
     if ($done)
     {
       $i = 0;
       
-      while ($row = $db->getResultRow ())
+      while ($row = $db->rdbms_getresultrow ())
       {
         if (!empty ($row['path'])) 
         {
@@ -5127,8 +5184,8 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
     }
 
     // save log
-    savelog ($db->getError());
-    $db->close();
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
     
     if (!empty ($result) && is_array ($result)) return $result;
     else return false;
@@ -5155,8 +5212,8 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
     // clean input    
-    $activity = $db->escape_string ($activity);
-    if ($user != "") $user = $db->escape_string ($user);
+    $activity = $db->rdbms_escape_string ($activity);
+    if ($user != "") $user = $db->rdbms_escape_string ($user);
 
     // get current date
     $date = date ("Y-m-d", time());
@@ -5180,11 +5237,11 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
       $sql = 'SELECT objectpath FROM object WHERE id='.$container_id;
 
       $errcode = "50039";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'objectpath');
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'objectpath');
 
       if ($done)
       {
-        $result = $db->getResultRow ('objectpath', 0);
+        $result = $db->rdbms_getresultrow ('objectpath', 0);
         $objectpath = $result['objectpath'];
 
         if (strpos ($objectpath, ".folder") > 0)
@@ -5193,12 +5250,12 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
           $sql = 'SELECT id FROM object WHERE objectpath LIKE "'.getlocation ($objectpath).'%" AND deleteuser=""';
 
           $errcode = "50040";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'ids');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'ids');
 
           if ($done)
           {
             // stats array
-            while ($row = $db->getResultRow ('ids'))
+            while ($row = $db->rdbms_getresultrow ('ids'))
             {
               if (!empty ($row['id']))
               {
@@ -5223,11 +5280,11 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
           $sql = 'SELECT count(*) AS count FROM dailystat WHERE date="'.$date.'" AND user="'.$user.'" AND activity="'.$activity.'" AND id='.$container_id;
           
           $errcode = "50037";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
           
           if ($done)
           {
-            $result = $db->getResultRow ('select', 0);
+            $result = $db->rdbms_getresultrow ('select', 0);
             $count = $result['count'];
 
             if ($count == 0)
@@ -5242,15 +5299,15 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
             }
 
             $errcode = "50038";
-            $db->query ($sql, $errcode, $mgmt_config['today'], 'insertupdate');
+            $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insertupdate');
           }
         }
       }
     }
 
     // save log
-    savelog ($db->getError());
-    $db->close();    
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();    
 
     return true;
   }
@@ -5267,12 +5324,12 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
   
   // clean input
-  if ($date_from != "") $date_from = $db->escape_string ($date_from);
-  if ($date_to != "") $date_to = $db->escape_string ($date_to);
-  if ($activity != "") $activity = $db->escape_string ($activity);
-  if ($container_id != "") $container_id = $db->escape_string (intval($container_id));
-  if ($objectpath != "") $objectpath = $db->escape_string ($objectpath);
-  if ($user != "") $user = $db->escape_string ($user);
+  if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
+  if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
+  if ($activity != "") $activity = $db->rdbms_escape_string ($activity);
+  if ($container_id != "") $container_id = $db->rdbms_escape_string (intval($container_id));
+  if ($objectpath != "") $objectpath = $db->rdbms_escape_string ($objectpath);
+  if ($user != "") $user = $db->rdbms_escape_string ($user);
   
   // get object info
   if ($objectpath != "")
@@ -5339,14 +5396,14 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) AS count'.$sqlfilesize.', dailystat.user FROM dailystat '.$sqltable.' WHERE dailystat.id!="" '.$sqlwhere.' '.$sqlgroup;
 
   $errcode = "50039";
-  $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+  $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
   if ($done)
   {
     $i = 0;
     
     // stats array
-    while ($row = $db->getResultRow ())
+    while ($row = $db->rdbms_getresultrow ())
     {
       if (!empty ($row['id']))
       {
@@ -5364,8 +5421,8 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   }     
 
   // save log
-  savelog ($db->getError ());
-  $db->close();
+  savelog ($db->rdbms_geterror ());
+  $db->rdbms_close();
        
   if (!empty ($dailystat) && is_array ($dailystat)) return $dailystat;
   else return false;
@@ -5386,7 +5443,7 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
     // container id
     if ($container_id != "")
     {
-      $container_id = $db->escape_string ($container_id);
+      $container_id = $db->rdbms_escape_string ($container_id);
       
       $sqladd = ' WHERE media.id='.$container_id;
       
@@ -5405,7 +5462,7 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
       $cat = getcategory ($site, $objectpath);
       $object_info = getfileinfo ($site, $objectpath, $cat);
       
-      $objectpath = $db->escape_string ($objectpath);
+      $objectpath = $db->rdbms_escape_string ($objectpath);
       $objectpath = str_replace ('%', '*', $objectpath);
       
       if (getobject ($objectpath) == ".folder") $objectpath = getlocation ($objectpath);
@@ -5422,11 +5479,11 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
     $sql = 'SELECT '.$sqlfilesize.' FROM media '.$sqladd;
     
     $errcode = "50543";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'selectfilesize');
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'selectfilesize');
     
     if ($done)
     {
-      $row = $db->getResultRow ('selectfilesize');
+      $row = $db->rdbms_getresultrow ('selectfilesize');
       $result['filesize'] = $row['filesize'];
       $result['count'] = 1;
     }
@@ -5437,18 +5494,18 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
       $sql = 'SELECT count(objectpath) AS count FROM object WHERE objectpath LIKE "'.$objectpath.'%" AND object.objectpath NOT LIKE "%.recycle" AND object.objectpath NOT LIKE "%.recycle%"'; 
 
       $errcode = "50042";
-      $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'selectcount');
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'selectcount');
       
       if ($done)
       {
-        $row = $db->getResultRow ('selectcount');
+        $row = $db->rdbms_getresultrow ('selectcount');
         $result['count'] = $row['count'];
       }
     }
 
     // save log
-    savelog ($db->getError ());
-    $db->close();
+    savelog ($db->rdbms_geterror ());
+    $db->rdbms_close();
          
     if (isset ($result) && is_array ($result)) return $result;
     else return false;
@@ -5478,16 +5535,16 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $
     else $object_id = 0;
     if ($project_id != "") $project_id = intval ($project_id);
     else $project_id = 0;
-    if ($from_user != "") $from_user = $db->escape_string ($from_user);
-    if ($to_user != "") $to_user = $db->escape_string ($to_user);
+    if ($from_user != "") $from_user = $db->rdbms_escape_string ($from_user);
+    if ($to_user != "") $to_user = $db->rdbms_escape_string ($to_user);
     if ($startdate != "") $startdate = date ("Y-m-d", strtotime ($startdate));
     if ($finishdate != "") $finishdate = date ("Y-m-d", strtotime ($finishdate));
-    if ($category != "") $category = $db->escape_string ($category);
+    if ($category != "") $category = $db->rdbms_escape_string ($category);
     else $category = "user";
-    $taskname = $db->escape_string ($taskname);
-    if ($description != "") $description = $db->escape_string ($description);
-    if ($priority != "") $priority = $db->escape_string (strtolower ($priority));
-    if ($planned != "") $planned = $db->escape_string (correctnumber ($planned));
+    $taskname = $db->rdbms_escape_string ($taskname);
+    if ($description != "") $description = $db->rdbms_escape_string ($description);
+    if ($priority != "") $priority = $db->rdbms_escape_string (strtolower ($priority));
+    if ($planned != "") $planned = $db->rdbms_escape_string (correctnumber ($planned));
 
     // set user if not defined
     if ($from_user == "")
@@ -5501,11 +5558,11 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $
     $sql = 'INSERT INTO task (object_id,project_id,task,from_user,to_user,startdate,finishdate,category,description,priority,planned,status) VALUES ('.$object_id.','.$project_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'","'.$planned.'",0)';
 
     $errcode = "50048";
-    $db->query ($sql, $errcode, $mgmt_config['today'], 'insert');
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert');
 
     // save log
-    savelog ($db->getError());
-    $db->close();
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
 
     return true;
   } 
@@ -5527,12 +5584,12 @@ function rdbms_settask ($task_id, $object_id="", $project_id="", $to_user="", $s
     
     if ($object_id != "") $sql_update[] = 'object_id="'.intval($object_id).'"';
     if ($project_id != "") $sql_update[] = 'project_id="'.intval($project_id).'"';
-    if ($to_user != "") $sql_update[] = 'to_user="'.$db->escape_string ($to_user).'"';
-    if ($startdate != "") $sql_update[] = 'startdate="'.$db->escape_string ($startdate).'"';
-    if ($finishdate != "") $sql_update[] = 'finishdate="'.$db->escape_string ($finishdate).'"';
-    if ($taskname != "") $sql_update[] = 'task="'.$db->escape_string ($taskname).'"';
-    if ($description != "") $sql_update[] = 'description="'.$db->escape_string ($description).'"';
-    if ($priority != "") $sql_update[] = 'priority="'.$db->escape_string (strtolower ($priority)).'"';
+    if ($to_user != "") $sql_update[] = 'to_user="'.$db->rdbms_escape_string ($to_user).'"';
+    if ($startdate != "") $sql_update[] = 'startdate="'.$db->rdbms_escape_string ($startdate).'"';
+    if ($finishdate != "") $sql_update[] = 'finishdate="'.$db->rdbms_escape_string ($finishdate).'"';
+    if ($taskname != "") $sql_update[] = 'task="'.$db->rdbms_escape_string ($taskname).'"';
+    if ($description != "") $sql_update[] = 'description="'.$db->rdbms_escape_string ($description).'"';
+    if ($priority != "") $sql_update[] = 'priority="'.$db->rdbms_escape_string (strtolower ($priority)).'"';
     if ($status != "") $sql_update[] = 'status="'.intval ($status).'"';
     if ($planned != "") $sql_update[] = 'planned="'.correctnumber($planned).'"';
     if ($actual != "") $sql_update[] = 'actual="'.correctnumber($actual).'"';
@@ -5543,11 +5600,11 @@ function rdbms_settask ($task_id, $object_id="", $project_id="", $to_user="", $s
     $sql .= ' WHERE task_id='.intval($task_id);
 
     $errcode = "50058";
-    $db->query ($sql, $errcode, $mgmt_config['today'], 'update');
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update');
 
     // save log
-    savelog ($db->getError());
-    $db->close();
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
 
     return true;
   } 
@@ -5575,11 +5632,11 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
     if ($task_id > 0) $task_id = intval ($task_id);
     if ($object_id > 0) $object_id = intval ($object_id);
     if ($project_id > 0) $project_id = intval ($project_id);
-    if ($from_user != "") $from_user = $db->escape_string ($from_user);
-    if ($to_user != "") $to_user = $db->escape_string ($to_user);
+    if ($from_user != "") $from_user = $db->rdbms_escape_string ($from_user);
+    if ($to_user != "") $to_user = $db->rdbms_escape_string ($to_user);
     if ($startdate != "") $startdate = date ("Y-m-d", strtotime ($startdate));
     if ($finishdate != "") $finishdate = date ("Y-m-d", strtotime ($finishdate));
-    if ($order_by != "") $order_by = $db->escape_string ($order_by);
+    if ($order_by != "") $order_by = $db->rdbms_escape_string ($order_by);
         
     // get recipients
     $sql = 'SELECT task_id, object_id, project_id, task, from_user, to_user, startdate, finishdate, category, description, priority, status, planned, actual FROM task';
@@ -5601,7 +5658,7 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
     if ($order_by != "") $sql .= ' ORDER BY '.$order_by;
 
     $errcode = "50094";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
 
     if ($done)
     {
@@ -5609,7 +5666,7 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
       $i = 0;
       
       // insert recipients
-      while ($row = $db->getResultRow ('select'))
+      while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['task_id']))
         {
@@ -5635,8 +5692,8 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
     }
 
     // save log
-    savelog ($db->getError());    
-    $db->close();
+    savelog ($db->rdbms_geterror());    
+    $db->rdbms_close();
     
     if (!empty ($result) && is_array (@$result)) return $result;
     else return false;
@@ -5664,18 +5721,18 @@ function rdbms_deletetask ($task_id="", $object_id="", $to_user="")
     // clean input
     if (!empty ($task_id)) $task_id = intval ($task_id);
     elseif (!empty ($object_id)) $object_id = intval ($object_id);
-    elseif (!empty ($to_user)) $to_user = $db->escape_string ($to_user);
+    elseif (!empty ($to_user)) $to_user = $db->rdbms_escape_string ($to_user);
         
     if (!empty ($task_id)) $sql = 'DELETE FROM task WHERE task_id="'.$task_id.'"';
     elseif (!empty ($object_id)) $sql = 'DELETE FROM task WHERE object_id="'.$object_id.'"';
     elseif (!empty ($to_user)) $sql = 'DELETE FROM task WHERE to_user="'.$to_user.'"';
      
     $errcode = "50098";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
     // save log
-    savelog ($db->getError ());    
-    $db->close();      
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();      
          
     return true;
   }
@@ -5704,9 +5761,9 @@ function rdbms_createproject ($subproject_id, $object_id=0, $user="", $projectna
     else $subproject_id = 0;
     if ($object_id != "") $object_id = intval ($object_id);
     else $object_id = 0;
-    if ($user != "") $user = $db->escape_string ($user);
-    $projectname = $db->escape_string ($projectname);
-    if ($description != "") $description = $db->escape_string ($description);
+    if ($user != "") $user = $db->rdbms_escape_string ($user);
+    $projectname = $db->rdbms_escape_string ($projectname);
+    if ($description != "") $description = $db->rdbms_escape_string ($description);
 
     // set user if not defined
     if ($user == "")
@@ -5717,14 +5774,14 @@ function rdbms_createproject ($subproject_id, $object_id=0, $user="", $projectna
     }
 
     // insert
-    $sql = 'INSERT INTO project (subproject_id,object_id,createdate,project,user,description) VALUES ('.$subproject_id.','.$object_id.',"'.date ("Y-m-d H:i:s", time()).'","'.$projectname.'","'.$user.'","'.$description.'")';
+    $sql = 'INSERT INTO project (subproject_id, object_id, createdate, project ,user, description) VALUES ('.$subproject_id.', '.$object_id.', "'.date ("Y-m-d H:i:s", time()).'", "'.$projectname.'", "'.$user.'", "'.$description.'")';
 
     $errcode = "50068";
-    $db->query ($sql, $errcode, $mgmt_config['today'], 'insert');
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert');
 
     // save log
-    savelog ($db->getError());
-    $db->close();
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
 
     return true;
   } 
@@ -5752,9 +5809,9 @@ function rdbms_setproject ($project_id, $subproject_id=0, $object_id="", $user="
     
     if ($subproject_id != "") $sql_update[] = 'subproject_id="'.intval($subproject_id).'"';
     if ($object_id != "") $sql_update[] = 'object_id="'.intval ($object_id).'"';
-    if ($user != "") $sql_update[] = 'user="'.$db->escape_string ($user).'"';
-    if ($projectname != "") $sql_update[] = 'project="'.$db->escape_string ($projectname).'"';
-    if ($description != "") $sql_update[] = 'description="'.$db->escape_string ($description).'"';
+    if ($user != "") $sql_update[] = 'user="'.$db->rdbms_escape_string ($user).'"';
+    if ($projectname != "") $sql_update[] = 'project="'.$db->rdbms_escape_string ($projectname).'"';
+    if ($description != "") $sql_update[] = 'description="'.$db->rdbms_escape_string ($description).'"';
 
     // insert
     $sql = 'UPDATE project SET ';
@@ -5762,11 +5819,11 @@ function rdbms_setproject ($project_id, $subproject_id=0, $object_id="", $user="
     $sql .= ' WHERE project_id='.intval($project_id);
     
     $errcode = "50069";
-    $db->query ($sql, $errcode, $mgmt_config['today'], 'update');
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update');
 
     // save log
-    savelog ($db->getError());
-    $db->close();
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
 
     return true;
   } 
@@ -5793,8 +5850,8 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
     if ($project_id != "") $project_id = intval ($project_id);
     if (is_int ($subproject_id)) $subproject_id = intval ($subproject_id);
     if ($object_id != "") $object_id = intval ($object_id);
-    if ($user != "") $user = $db->escape_string ($user);
-    if ($order_by != "") $order_by = $db->escape_string ($order_by);
+    if ($user != "") $user = $db->rdbms_escape_string ($user);
+    if ($order_by != "") $order_by = $db->rdbms_escape_string ($order_by);
         
     // get recipients
     $sql = 'SELECT project_id, subproject_id, object_id, project, user, description FROM project WHERE 1=1';
@@ -5808,7 +5865,7 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
     if ($order_by != "") $sql .= ' ORDER BY '.$order_by;
 
     $errcode = "50064";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
 
     if ($done)
     {
@@ -5816,7 +5873,7 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
       $i = 0;
       
       // insert recipients
-      while ($row = $db->getResultRow ('select'))
+      while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['project_id']))
         {
@@ -5836,8 +5893,8 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
     }
 
     // save log
-    savelog ($db->getError());    
-    $db->close();
+    savelog ($db->rdbms_geterror());    
+    $db->rdbms_close();
     
     if (!empty ($result) && is_array ($result)) return $result;
     else return false;
@@ -5864,18 +5921,18 @@ function rdbms_deleteproject ($project_id="", $object_id="", $user="")
     // clean input
     if (!empty ($project_id)) $project_id = intval ($project_id);
     elseif (!empty ($object_id)) $object_id = intval ($object_id);
-    elseif (!empty ($user)) $user = $db->escape_string ($user);
+    elseif (!empty ($user)) $user = $db->rdbms_escape_string ($user);
         
     if (!empty ($project_id)) $sql = 'DELETE FROM project WHERE project_id="'.$project_id.'"';
     elseif (!empty ($object_id)) $sql = 'DELETE FROM project WHERE object_id="'.$object_id.'"';
     elseif (!empty ($to_user)) $sql = 'DELETE FROM project WHERE user="'.$user.'"';
      
     $errcode = "50070";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->getError ());    
-    $db->close();      
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();      
          
     return true;
   }
@@ -5892,18 +5949,18 @@ function rdbms_gettableinfo ($table)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $table = $db->escape_string ($table);
+    $table = $db->rdbms_escape_string ($table);
     $sql = 'SHOW COLUMNS FROM `'.$table.'`';
     
     $errcode = "50099";
-    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
 
     if ($done)
     { 
       $info = array();
       $i = 0;
       
-      while ($row = $db->getResultRow ('select'))
+      while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['Field']))
         {
@@ -5919,8 +5976,8 @@ function rdbms_gettableinfo ($table)
     } 
 
     // save log
-    savelog ($db->getError());    
-    $db->close();
+    savelog ($db->rdbms_geterror());    
+    $db->rdbms_close();
     
     if (!empty ($info) && is_array (@$info)) return $info;
     else return false;
@@ -5947,14 +6004,14 @@ function rdbms_externalquery ($sql, $concat_by="")
       $sql = str_replace (array("%comp%/", "%page%/"), array("*comp*/", "*page*/"), $sql);
   
       $errcode = "50101";
-      $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+      $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
   
       if ($done)
       {
         $result = array();
         $i = 0;
         
-        while ($row = $db->getResultRow ('select'))
+        while ($row = $db->rdbms_getresultrow ('select'))
         {
           // transform objectpath
           if (!empty ($row['objectpath'])) $row['objectpath'] = str_replace (array("*comp*/","*page*/"), array("%comp%/","%page%/"), $row['objectpath']);
@@ -5982,8 +6039,8 @@ function rdbms_externalquery ($sql, $concat_by="")
       }
   
       // save log
-      savelog ($db->getError());    
-      $db->close();
+      savelog ($db->rdbms_geterror());    
+      $db->rdbms_close();
       
       if (!empty ($result) && is_array (@$result)) return $result;
       else return false;

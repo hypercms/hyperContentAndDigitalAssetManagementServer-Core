@@ -1092,7 +1092,7 @@ function frameReload (objectpath, timeout)
       parent.document.getElementById('objFrame').src='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
     }
 
-    setTimeout('parent.closeobjectview()', timeout);
+    setTimeout('parent.closePopup()', timeout);
   }
 }
 

@@ -42,7 +42,7 @@ if (isset ($siteaccess) && is_array ($siteaccess))
         
         echo "
         <div id=\"stats_".$item_object."\" onclick=\"hcms_openWindow('frameset_content.php?site=".url_encode($item_site)."&ctrlreload=yes&cat=".url_encode($item_cat)."&location=".url_encode($item_location)."&page=".url_encode($item_object)."', '".$item_object."', 'location=no,status=yes,scrollbars=no,resizable=yes,titlebar=no', ".windowwidth ("object").", ".windowheight ("object").");\" class=\"hcmsHomeBox\" style=\"cursor:pointer; overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
-          <div class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['access-statistics-for'][$lang])." ".showshorttext($item_fileinfo['name'], 40)."</div>";
+          <div class=\"hcmsHeadline\" style=\"margin:6px;\">".getescapedtext ($hcms_lang['access-statistics-for'][$lang])." ".showshorttext($item_fileinfo['name'], 40)."</div>";
 
         $time = time();
         $date_from = date ("Y-m-01", $time);

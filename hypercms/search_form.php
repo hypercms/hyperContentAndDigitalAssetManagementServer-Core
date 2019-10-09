@@ -486,7 +486,7 @@ $(document).ready(function()
       </table>  
     </form>
   </div>
-  
+
   <div id="searchtab_advanced" style="position:absolute; width:520px; height:580px; z-index:1; left:8px; top:22px; visibility:hidden;"> 
     <form name="searchform_advanced" method="post" action="search_objectlist.php">
       <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
@@ -545,20 +545,20 @@ $(document).ready(function()
               }
             }
           }
-  
+
           if (is_array ($template_array) && sizeof ($template_array) >= 1)
           {
             // remove double entries (double entries due to parent publications won't be listed)
             $template_array = array_unique ($template_array);
             sort ($template_array);
             reset ($template_array);
-            
+
             foreach ($template_array as $value)
             {
               if (strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"))." (".getescapedtext ($hcms_lang['page'][$lang]).")";
               elseif (strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"))." (".getescapedtext ($hcms_lang['component'][$lang]).")";
               elseif (strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"))." (".getescapedtext ($hcms_lang['meta-data'][$lang]).")";
-              
+
               echo "<option value=\"".$value."\""; if ($value == $template) echo " selected=\"selected\""; echo ">".$tpl_name."</option>\n";
             }
           }
@@ -654,7 +654,7 @@ $(document).ready(function()
       </table>
     </form>
   </div>
-  
+
   <?php if ($setlocalpermission['create'] == 1) { ?>
   <div id="searchtab_replace" style="position:absolute; width:520px; height:580px; z-index:1; left:8px; top:22px; visibility:hidden;"> 
     <form name="searchform_replace" method="post" action="search_objectlist.php">
@@ -731,7 +731,7 @@ $(document).ready(function()
     </form>  
   </div>
   <?php } ?>
-  
+
   <?php if ($cat == "comp") { ?>
   <div id="searchtab_images" style="position:absolute; width:520px; height:580px; z-index:1; left:8px; top:22px; visibility:hidden;"> 
     <form name="searchform_images" method="post" action="search_objectlist.php">

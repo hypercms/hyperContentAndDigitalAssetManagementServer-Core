@@ -222,8 +222,7 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
       // open on double click
       if (checkrootpermission ('user') && checkrootpermission ('useredit') || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
       {
-        if (!empty ($mgmt_config['user_newwindow'])) $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 800);\"";
-        else $openUser = "onDblClick=\"parent.openpopup('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."');\"";
+        $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 800);\"";
       }
       else $openUser = "";
       

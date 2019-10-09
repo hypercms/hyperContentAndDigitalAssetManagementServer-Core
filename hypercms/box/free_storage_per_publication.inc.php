@@ -63,7 +63,7 @@ if (is_array ($siteaccess))
     
       echo "
   <div id=\"free_storage_per_publication\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
-    <div class=\"hcmsHeadline\" style=\"margin:2px;\">Publication Storage Space</div>
+    <div class=\"hcmsHeadline\" style=\"margin:6px;\">Publication Storage Space</div>
     <hr />
     <div style=\"text-align:right; padding:20px;\">";
     

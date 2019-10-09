@@ -232,7 +232,7 @@ function showdate ($date, $sourceformat="Y-m-d H:i", $targetformat="Y-m-d H:i", 
       $datenew = convertdate ($date, ini_get ('date.timezone'), $sourceformat, $_SESSION['hcms_timezone'], $targetformat);
     }
     // convert date format
-    elseif ($sourceformat != $targetformat)
+    elseif ($targetformat != "")
     {
       $datenew = date ($targetformat, strtotime ($date));
     }
@@ -450,14 +450,14 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
     $close_id = uniqid();
 
     return "
-  <div id=\"".$id."\" class=\"hcmsMessage\" style=\"".$style." width:".$width."; height:".$height."; z-index:9999; padding:0; margin:5px; visibility:visible;\">
+  <div id=\"".$id."\" class=\"hcmsMessage\" style=\"".$style." width:".$width."; height:".$height."; z-index:9999; padding:0; margin:5px;\">
     <table style=\"width:100%; height:100%; padding:0; border:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
         <td style=\"text-align:left; vertical-align:top; padding:3px; margin:0;\">
           <div id=\"message_text\">".$show."</div>
         </td>
         <td style=\"width:36px; text-align:right; vertical-align:top; padding:3px; margin:0;\">
-          <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"hcms_showHideLayers('".$id."','','hide');\" />
+          <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"hcms_switchInfo('".$id."');\" />
         </td>
       <tr>
     </table>
@@ -523,7 +523,7 @@ function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
           ".$show."
         </td>
         <td style=\"width:36px; text-align:right; vertical-align:top; padding:0; margin:0;\">
-          <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"localStorage.setItem('".$id."','no'); hcms_showHideLayers('".$id."','','hide');\" />
+          <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"localStorage.setItem('".$id."','no'); hcms_switchInfo('".$id."');\" />
         </td>
       <tr>
     </table>
@@ -648,7 +648,10 @@ function showobject ($site, $location, $page, $cat="", $name="")
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && is_file ($location.$page))
   {
-    $filetime = "";
+    $owner = "";
+    $date_created = "";
+    $date_modified = "";
+    $date_published = "";
     $filecount = 0;
     $filesize = 0;
 
@@ -657,20 +660,61 @@ function showobject ($site, $location, $page, $cat="", $name="")
 
     $location_esc = convertpath ($site, $location.$page, $cat);
 
-    // get file info
-    $file_info = getfileinfo ($site, $location.$page, $cat);
+    // get object info
+    $object_info = getobjectinfo ($site, $location, $page, "sys");
 
-    // define object name
-    if ($name == "") $name = $object_info['name'];
+    if (!empty ($object_info['container_id']))
+    {
+      $container_id = $object_info['container_id'];
 
+      // define object name
+      if ($name == "") $name = $object_info['name'];
+    }
+
+    if (intval ($container_id) > 0)
+    {
+      // get dates and owner
+      $container_info = getmetadata_container ($container_id, array("date", "createdate", "publishdate", "user"));
+      
+      if (!empty ($container_info['user']))
+      {
+        $owner = $container_info['user'];
+        $date_created = $container_info['createdate'];
+        $date_modified = $container_info['date'];
+        $date_published = $container_info['publishdate'];
+      }
+      // use content container
+      else
+      {
+        // locked by user
+        $usedby_array = getcontainername ($container_id.".xml");
+
+        if (!empty ($usedby_array['user'])) $usedby = $usedby_array['user'];
+        else $usedby = "";
+
+        // load container
+        if (!empty ($usedby) && $usedby != $user)
+        {
+          $contentdata = loadcontainer ($container_id.".xml.wrk.@".$usedby, "version", $usedby);
+        }
+        else $contentdata = loadcontainer ($container_id, "work", "sys");
+
+        $temp = getcontent ($contentdata, "<contentuser>");
+        if (!empty ($temp[0])) $owner = $temp[0];
+        $temp = getcontent ($contentdata, "<contentcreated>");
+        if (!empty ($temp[0])) $date_created = $temp[0];
+        $temp = getcontent ($contentdata, "<contentdate>");
+        if (!empty ($temp[0])) $date_modified = $temp[0];
+        $temp = getcontent ($contentdata, "<contentpublished>");
+        if (!empty ($temp[0])) $date_published = $temp[0];
+      }
+    }
+
+    // get file size
     // if folder
     if ($page == ".folder")
     {
-      // get file time
-      $filetime = date ("Y-m-d H:i", @filemtime ($location.$page));
-
-      // get file size
-      if ($mgmt_config['db_connect_rdbms'] != "")
+      if (!empty ($mgmt_config['db_connect_rdbms']))
       { 
         $filesize_array = rdbms_getfilesize ("", $location_esc);
 
@@ -684,9 +728,6 @@ function showobject ($site, $location, $page, $cat="", $name="")
     // if page or component
     else
     {
-      // get file time
-      $filetime = date ("Y-m-d H:i", @filemtime ($location.$page));
-      // get file size
       $filesize = round (@filesize ($location.$page) / 1024, 0);
     }
 
@@ -700,27 +741,56 @@ function showobject ($site, $location, $page, $cat="", $name="")
 
     $filesize = number_format ($filesize, 0, ".", " ")." ".$unit;
 
+    // output information
+    $col_width = "min-width:120px; ";
+
     $mediaview = "
-    <table class=\"hcmsTableStandard\">
+    <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
-        <td colspan=\"2\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" alt=\"".$file_info['name']."\" title=\"".$file_info['name']."\" /></td>
+        <td style=\"text-align:left;\"><img src=\"".getthemelocation()."img/".$object_info['icon']."\" alt=\"".$object_info['name']."\" title=\"".$object_info['name']."\" /></td>
       </tr>
       <tr>
-        <td style=\"text-align:center;\" colspan=\"2\" class=\"hcmsHeadlineTiny\">".$name."<br /><hr /></td>
+        <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".$name."</td>
       </tr>
       <tr>
-        <td>".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang)." </td><td class=\"hcmsHeadlineTiny\">".showdate ($filetime, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+        <td><hr/></td>
+      </tr>
+    </table>
+    <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">";
+
+    if (!empty ($owner)) $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left;\">".getescapedtext ($hcms_lang['owner'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\">".$owner."</td>
+      </tr>";
+
+    if (!empty ($date_created)) $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left;\">".getescapedtext ($hcms_lang['date-created'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\">".showdate ($date_created, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+      </tr>";
+
+    if (!empty ($date_modified)) $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left;\">".getescapedtext ($hcms_lang['date-modified'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\">".showdate ($date_modified, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+      </tr>";
+
+    if (!empty ($date_published)) $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left;\">".getescapedtext ($hcms_lang['published'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\">".showdate ($date_published, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
       </tr>";
 
     if (!empty ($filesize) && $filesize > 0) $mediaview .= "
       <tr>
-        <td style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang)." </td>
+        <td style=\"".$col_width."text-align:left; vertical-align:top;\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">".$filesize."</td>
       </tr>";
 
     if (!empty ($filecount) && $filecount > 1) $mediaview .= "
       <tr>
-        <td style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['number-of-files'][$lang], $hcms_charset, $lang)." </td>
+        <td style=\"".$col_width."text-align:left; vertical-align:top;\">".getescapedtext ($hcms_lang['number-of-files'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">".$filecount."</td>
       </tr>";
 
@@ -744,11 +814,12 @@ function showobject ($site, $location, $page, $cat="", $name="")
 function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $height="", $class="hcmsImageItem")
 {
   // $mgmt_imageoptions is used for image rendering (in case the format requires the rename of the object file extension)	 
-  global $site, $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docpreview, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_charset, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang,
+  global $site, $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docpreview, $mgmt_docoptions, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_charset, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang,
          $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $downloadformats, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions, $is_mobile, $is_iphone;
 
   // Path to PDF.JS
   $pdfjs_path = $mgmt_config['url_path_cms']."javascript/pdfpreview/web/viewer.html?file=";
+
   // Path to Google Docs (disabled since veersion 7.0.6)
   // $gdocs_path = "https://docs.google.com/viewer?url=";
 
@@ -758,7 +829,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   $swf_ext = ".swf.dcr";
 
   // define document type extensions that are convertable into pdf or which the document viewer (google doc viewer) can display
-  $doc_ext = ".pages.pdf.doc.docx.ppt.pptx.xls.xlsx.odt.ods.odp";
+  // use main config setting $mgmt_docconvert since version 8.0.5
+  $temp_docconvert = array();
+
+  if (is_array ($mgmt_docconvert)) $doc_keys = array_keys ($mgmt_docconvert);
+
+  $doc_keys = array_unique ($doc_keys);
+
+  if (is_array ($doc_keys) && sizeof ($doc_keys) > 0) $doc_ext = ".pages.pdf".implode ("", $doc_keys).".";
+  else $doc_ext = ".pages.pdf.doc.docx.ppt.pptx.xls.xlsx.odt.ods.odp.rtf.txt.";
 
   // initalize
   $media_root = "";
@@ -767,6 +846,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   $width_orig = "";
   $height_orig = "";
   $mediaview = "";
+  $owner = "";
+  $date_created = "";
+  $date_modified = "";
+  $date_published = "";
   $style = "";
 
   // set html media tag ID if not set
@@ -868,17 +951,35 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
         else $contentdata = loadcontainer ($container_id, "work", $user);
 
-        // extract information from container
-        $owner = getcontent ($contentdata, "<contentuser>");
-        $date_published = getcontent ($contentdata, "<contentpublished>");
+        // get dates and owner
+        $container_info = getmetadata_container ($container_id, array("date", "createdate", "publishdate", "user"));
+        
+        if (!empty ($container_info['user']))
+        {
+          $owner = $container_info['user'];
+          $date_created = $container_info['createdate'];
+          $date_modified = $container_info['date'];
+          $date_published = $container_info['publishdate'];
+        }
+        // use content container
+        else
+        {
+          $temp = getcontent ($contentdata, "<contentuser>");
+          if (!empty ($temp[0])) $owner = $temp[0];
+          $temp = getcontent ($contentdata, "<contentcreated>");
+          if (!empty ($temp[0])) $date_created = $temp[0];
+          $temp = getcontent ($contentdata, "<contentdate>");
+          if (!empty ($temp[0])) $date_modified = $temp[0];
+          $temp = getcontent ($contentdata, "<contentpublished>");
+          if (!empty ($temp[0])) $date_published = $temp[0];
+        }
       }
 
       // get media file information from database
-      if ($mgmt_config['db_connect_rdbms'] != "" && !$is_version)
+      if (!$is_version)
       {
         $media_info = rdbms_getmedia ($container_id, true);
 
-        $mediafiletime = date ("Y-m-d H:i", strtotime ($media_info['date']));
         $mediafilesize = $media_info['filesize'];
         $width_orig = $media_info['width'];
         $height_orig = $media_info['height'];
@@ -992,14 +1093,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if (is_file ($thumb_root.$mediafile_thumb))
         {
           $mediaview .= "
-        <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
+        <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
           <tr>
             <td style=\"text-align:left;\"><img src=\"".createviewlink ($site, $mediafile_thumb)."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style." /></td>
           </tr>";
 
-          if ($viewtype != "media_only") $mediaview .= "
+          $mediaview .= "
           <tr>
-            <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
+            <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
           </tr>"; 
         }
         // if no thumbnail/preview exists
@@ -1011,16 +1112,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             <td style=\"text-align:left;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" ".$style." /></td>
           </tr>";
 
-          if ($viewtype != "media_only") $mediaview .= "
+          $mediaview .= "
           <tr>
-            <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
+            <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
           </tr>";
         }
 
         // define html code for download of older file version
         $mediaview .= "
           <tr>
-            <td style=\"text-align:center;\">
+            <td style=\"text-align:left; padding-top:10px;\">
               <button class=\"hcmsButtonGreen\" onclick=\"location.href='".createviewlink ($site, $mediafile_orig, $medianame, false, "download")."';\">".getescapedtext ($hcms_lang['download-file'][$lang], $hcms_charset, $lang)."</button>
             </td>
           </tr>";
@@ -1029,7 +1130,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       </table>";
       }
       // ---------------------------------------- if document (only document formats that can be converted to PDF)  --------------------------------------
-      elseif ($file_info['orig_ext'] != "" && substr_count ($doc_ext, $file_info['orig_ext'].".") > 0 && !empty ($mgmt_config['docviewer']))
+      elseif (!empty ($file_info['orig_ext']) && substr_count ($doc_ext, $file_info['orig_ext'].".") > 0 && !empty ($mgmt_config['docviewer']))
       {
         $mediaview_doc = "";
         $mediaratio = 0;
@@ -1127,7 +1228,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if (substr_count (".pdf", $file_info['orig_ext']) == 1) 
           {
             // using PDF.JS with orig. file via iframe
-            $doc_link = cleandomain (createviewlink ($site, $mediafile_orig, $medianame, true));
+            $doc_link = cleandomain (createviewlink ($site, $mediafile_orig, $medianame, true))."&saveName=".$medianame.".pdf";
             $mediaview_doc = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
           }
           else
@@ -1165,14 +1266,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             else $thumb_pdf_exists = false;
 
             // thumb pdf exsists
-            if ($thumb_pdf_exists != false)
+            if (!empty ($thumb_pdf_exists))
             {
               // using pdfjs with thumbnail file via iframe
-              $doc_link = cleandomain (createviewlink ($site, $mediafile_thumb, $medianame_thumb, true));
+              $doc_link = cleandomain (createviewlink ($site, $mediafile_thumb, $medianame_thumb, true))."&saveName=".$medianame.".pdf";
               $mediaview_doc = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
             }
             // thumb pdf does not exist but can be created
-            elseif ($thumb_pdf_exists == false && is_supported ($mgmt_docpreview, $file_info['orig_ext']) && (empty ($mgmt_maxsizepreview[$file_info['orig_ext']]) || ($mediafilesize/1024) <= $mgmt_maxsizepreview[$file_info['orig_ext']]))
+            elseif (empty ($thumb_pdf_exists) && is_supported ($mgmt_docpreview, $file_info['orig_ext']) && (empty ($mgmt_maxsizepreview[$file_info['orig_ext']]) || ($mediafilesize/1024) <= $mgmt_maxsizepreview[$file_info['orig_ext']]))
             {
               // try to remove outdated pdf thumbnail file
               if (is_file ($thumb_root.$mediafile_thumb))
@@ -1203,31 +1304,48 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $doc_link = createviewlink ($site, $mediafile, $medianame_thumb)."&type=pdf&ts=".time();
 
               // show standard file icon
-              if (!empty ($file_info['icon'])) $mediaview_doc .= "<div style=\"width:".$width."px; text-align:center;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /><br/><img src=\"".getthemelocation()."img/loading.gif\" /></div>\n";
+              if (!empty ($file_info['icon'])) $mediaview_doc .= "
+              <div style=\"width:100%; text-align:left;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /><br/><img src=\"".getthemelocation()."img/loading.gif\" /></div>";
 
               // use AJAX service to start conversion of media file to pdf format for preview
               $mediaview_doc .= "
             <script type=\"text/javascript\">
               hcms_ajaxService('".$doc_link."');
-
-              setTimeout(function() {
-                location.reload();
-              }, 5000);
+              setTimeout(function() { location.reload(); }, 5000);
             </script>\n ";
             }
             // using Google Docs if UNOCONV was not able to convert into pdf and no standard file-icon exists
             elseif (!empty ($gdocs_path))
             {
               $doc_link = createviewlink ($site, $mediafile_orig, $medianame, true);
-              $mediaview_doc .= "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
+
+              $mediaview_doc .= "
+              <iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." id=\"".$id."\" style=\"border:0;\"></iframe><br />\n";
+            }
+            // show standard file icon
+            else
+            {
+              // show standard file icon
+              if (!empty ($file_info['icon'])) $mediaview_doc .= "
+              <div style=\"width:100%; text-align:left;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></div>";
             }
           }
         }
+        // using Google Docs
         elseif (!empty ($gdocs_path))
         {
           // no compatible browser - using Google Docs
           $doc_link = createviewlink ($site, $mediafile_orig, $medianame, true);
-          $mediaview_doc .= "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
+
+          $mediaview_doc .= "
+          <iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." id=\"".$id."\" style=\"border:0;\"></iframe><br />";
+        }
+        // show standard file icon
+        else
+        {
+          // show standard file icon
+          if (!empty ($file_info['icon'])) $mediaview_doc .= "
+          <div style=\"width:100%; text-align:left;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></div>";
         }
 
         // document annotations
@@ -1235,12 +1353,6 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           // check for document annotation image (1st page)
           $annotation_page = $file_info['filename'].".annotation-0.jpg";
-          $mediafile_thumb = $file_info['filename'].".thumb.pdf";
-
-          // if original file is a pdf
-          if (substr_count (".pdf", $file_info['orig_ext']) == 1) $mediafile_pdf = $mediafile_orig;
-          // document thumb file is a pdf
-          elseif (is_file ($thumb_root.$mediafile_thumb) || is_cloudobject ($thumb_root.$mediafile_thumb)) $mediafile_pdf = $mediafile_thumb;
 
           // create pages if the first page does not exist or is older than the original media file
           if (
@@ -1438,17 +1550,38 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           }
         }
 
-        // add doc viewer
-        $mediaview .= $mediaview_doc;
+        // display name
+        if ($mediaview_doc != "")
+        {
+          $mediaview_doc .= "
+          <div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /></div>";
+        }
 
-        if ($viewtype != "media_only" && $mediaview != "") $mediaview .= "<div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></div>";
+        // image rendering (only if image conversion software and permissions are given)
+        if ($viewtype == "preview" && !empty ($mediafile_pdf) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1 && $mediaview_doc != "") 
+        {
+          // add image rendering button
+          $mediaview_doc .= "
+          <div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:left;\">
+            <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('documentviewerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
+          </div>";
+        }
+        // add doc viewer
+        $mediaview .= "<table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
+      <tr>
+        <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".$mediaview_doc."</td>
+      </tr>
+      <tr>
+        <td><hr/></td>
+      </tr>
+    </table>";
       }
       // ----------------------------------- if image (including encapsulated post script and svg files that are treated as multi-page files by function createmedia) ------------------------------------- 
-      elseif ($file_info['ext'] != "" && is_image ($file_info['ext']))
+      elseif (!empty ($file_info['ext']) && is_image ($file_info['ext']))
       {
         // media size
         $style = "";
-
+        
         if ($viewtype != "template")
         {
           $thumbfile = $file_info['filename'].".thumb.jpg";
@@ -1571,6 +1704,21 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               }
               // we use the existing file
               else $mediafile = $newname;
+
+              if (!empty ($viewfolder.$mediafile)) 
+              {
+                // get image size
+                if (is_file ($viewfolder.$mediafile))
+                {
+                  $temp_size = @getimagesize ($viewfolder.$mediafile);
+
+                  if (!empty ($temp_size[0]) && !empty ($temp_size[1]))
+                  {
+                    $width = $temp_size[0];
+                    $height = $temp_size[1];
+                  }
+                }
+              }
             }
             // stretch view of thumbnail image
             elseif (!empty ($mediaratio) && ($width > 0 && $thumb_size[0] * 1.8 < $width) && ($height > 0 && $thumb_size[1] * 1.8 < $height))
@@ -1592,7 +1740,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $mediafile = $thumbfile;
             }
 
-            if ($width > 0 && $height > 0) $style = "style=\"width:".intval($width)."px; height:".intval($height)."px;\"";
+            if ($width > 0 && $height > 0) $style = "width:".intval($width)."px; height:".intval($height)."px;";
 
             // set width and height of media file as file-parameter
             $mediaview .= "
@@ -1603,7 +1751,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $file_info['ext'] = strtolower (strrchr ($mediafile, "."));
 
             $mediaview .= "
-          <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
+          <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
             <tr>
               <td style=\"text-align:left;\">";
 
@@ -1624,12 +1772,22 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 $height_annotation = $height;
               }
 
-              $annotation_image = createviewlink ($site, $annotation_file, $annotation_file, true);
+              $preview_image = createviewlink ($site, $annotation_file, $annotation_file, true);
 
+              $width_diff = 500 - intval($width_annotation);
+              if ($width_diff <= 0) $width_diff = 0;
+
+              if (!$is_mobile) $mediaview .= "
+              <div id=\"view360\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; margin-left:-2px; width:".intval($width_annotation + $width_diff + 4)."px; height:".intval($height_annotation + 42)."px;\">
+                <div style=\"position:absolute; right:4px; top:4px; z-index:9011;\">
+                  <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchInfo ('view360');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
+                </div>
+                <iframe src=\"".$mgmt_config['url_path_cms']."media_360view.php?type=image&link=".url_encode($preview_image)."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
+              </div>";
               $mediaview .= "
-              <div id=\"annotationFrame\" style=\"margin-top:40px; width:".intval($width_annotation)."px; height:".intval($height_annotation + 8)."px;\">
+              <div id=\"annotationFrame\" style=\"margin-top:40px; width:".intval($width_annotation + $width_diff)."px; height:".intval($height_annotation + 8)."px;\">
                 <div style=\"position:relative; left:0; top:0; width:0; height:0;\">
-                  <img src=\"".$annotation_image."\" id=\"".$id."\" style=\"position:absolute; left:0; top:0; z-index:-10; visibility:hidden;\" />
+                  <img src=\"".$preview_image."\" id=\"".$id."\" style=\"position:absolute; left:0; top:0; z-index:-10; visibility:hidden;\" />
                 </div>
                 <div id=\"annotation\" style=\"position:relative;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, 'annotation');\" onmousedown=\"$('.hcmsFace').hide(); $('.hcmsFaceName').hide();\" onmouseup=\"$('.hcmsFace').show(); $('.hcmsFaceName').show();\"" : "")." class=\"".$class."\"></div>
               </div>";
@@ -1637,31 +1795,40 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             // image with makers only (no annotations) 
             else
             {
+              $preview_image = createviewlink ($site, $mediafile, $medianame, true);
+
+              if (!$is_mobile) $mediaview .= "
+              <div id=\"view360\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; ".$style."\">
+                <div style=\"position:absolute; right:4px; top:4px; z-index:9011;\">
+                  <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchInfo ('view360');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
+                </div>
+                <iframe src=\"".$mgmt_config['url_path_cms']."media_360view.php?type=image&link=".url_encode($preview_image)."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowfullscreen ></iframe>
+              </div>";
               $mediaview .= "
-              <div id=\"annotation\" style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, '".$id."');\"" : "")."><img src=\"".createviewlink ($site, $mediafile, $medianame, true)."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></div>";
+              <div id=\"annotation\" style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, '".$id."');\"" : "")."><img src=\"".$preview_image."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" style=\"".$style."\" /></div>";
             }
 
             $mediaview .= "
               </td>
             </tr>";
 
-            if ($viewtype != "media_only") $mediaview .= "
+            $mediaview .= "
             <tr>
-              <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
+              <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td>
             </tr>"; 
           }
           // if no thumbnail/preview exists
           else
           {
             $mediaview .= "
-          <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
+          <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
             <tr>
               <td style=\"text-align:left;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" /></td>
             </tr>";
 
-            if ($viewtype != "media_only") $mediaview .= "
+            $mediaview .= "
             <tr>
-              <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
+              <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td>
             </tr>";
           }
         }
@@ -1669,14 +1836,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         elseif (is_file ($media_root.$mediafile))
         {
           $mediaview .= "
-        <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
+        <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
           <tr>
-            <td style=\"text-align:left;\"><img src=\"".$mgmt_config['url_path_tplmedia'].$site."/".$mediafile."\" id=\"".$id."\" alt=\"".$mediafile."\" title=\"".$mediafile."\" class=\"".$class."\" ".$style."/></td>
+            <td style=\"text-align:left;\"><img src=\"".$mgmt_config['url_path_tplmedia'].$site."/".$mediafile."\" id=\"".$id."\" alt=\"".$mediafile."\" title=\"".$mediafile."\" class=\"".$class."\" style=\"".$style."\" /></td>
           </tr>";
 
-          if ($viewtype != "media_only") $mediaview .= "
+          $mediaview .= "
           <tr>
-            <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($mediafile, 40, false)."<br /><hr /></td>
+            <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($mediafile, 40, false)."</td>
           </tr>";
         }
 
@@ -1686,19 +1853,40 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // add image rendering button
           $mediaview .= "
           <tr>
-            <td style=\"text-align:center;\"><button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('imagerendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button></td>
+            <td style=\"text-align:left; padding-top:10px;\">
+              <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType === 'function') setSaveType('imagerendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>";
+          if (!$is_mobile) $mediaview .= "
+              <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof hideFaceOnImage === 'function') hideFaceOnImage(); hcms_switchInfo ('view360');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> ".getescapedtext ("360 ".$hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>";
+          $mediaview .= "
+              <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType === 'function') setSaveType('imageviewerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
+            </td>
           </tr>";
         }
-        // options button
+        // options button for image editing
         elseif ($viewtype == "preview_download")
         {
           $mediaview .= "
           <tr>
-            <td style=\"text-align:center;\"><button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button></td>
+            <td style=\"text-align:left; padding-top:10px;\">
+              <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>
+            </td>
+          </tr>";
+        }
+        // 360 view button
+        elseif ($viewtype == "media_only" && !empty ($preview_image) && !$is_mobile)
+        {
+          $mediaview .= "
+          <tr>
+            <td style=\"text-align:left; padding-top:10px;\">
+              <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof hideFaceOnImage === 'function') hideFaceOnImage(); hcms_switchInfo ('view360');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> ".getescapedtext ("360 ".$hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>
+            </td>
           </tr>";
         }
 
         $mediaview .= "
+        <tr>
+          <td><hr/></td>
+        </tr>
       </table>";
 
         // embed annotation script
@@ -1821,7 +2009,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 				color: 'red',
 				bootstrap: false,
         unselectTool: true,
-				images: ['".$annotation_image."']
+				images: ['".$preview_image."']
       });
 
       // set images for buttons
@@ -1839,7 +2027,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
       }
       // -------------------------------------- if flash --------------------------------------- 
-      elseif ($file_info['ext'] != "" && substr_count ($swf_ext.".", $file_info['ext'].".") > 0)
+      elseif (!empty ($file_info['ext']) && substr_count ($swf_ext.".", $file_info['ext'].".") > 0)
       {
         // new size may exceed the original image size
         $newsize = mediasize2frame ($width_orig, $height_orig, $width, $height, true);
@@ -1861,10 +2049,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if ($height > 0) $style .= " height=\"".$height."\"";
 
         $mediaview .= "
-      <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
+      <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
         <tr>
           <td style=\"text-align:left;\">
-            <object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\"".$style.">
+            <object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" ".$style.">
               <param name=\"movie\" value=\"".createviewlink ($site, $mediafile_orig, $medianame)."\" />
               <param name=\"quality\" value=\"high\" />
               <embed src=\"".createviewlink ($site, $mediafile_orig, $medianame, true)."\" id=\"".$id."\" quality=\"high\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\" ".$style." />
@@ -1872,14 +2060,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         </td>
         </tr>";
 
-        if ($viewtype != "media_only") $mediaview .= "
+        $mediaview .= "
         <tr>
-          <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
+          <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
         </tr>
       </table>";
       }
       // --------------------------------------- if audio ----------------------------------------- 
-      elseif ($file_info['ext'] != "" && is_audio ($file_info['ext']))
+      elseif (!empty ($file_info['ext']) && is_audio ($file_info['ext']))
       {
         // media player config file is given
         if (strpos ($mediafile_orig, ".config.") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
@@ -1945,16 +2133,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $playercode = showaudioplayer ($site, $config['mediafiles'], $mediawidth, $mediaheight, "", $id, false, false, true, true);
 
         $mediaview .= "
-        <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
+        <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
           <tr>
             <td style=\"text-align:left;\">
             <!-- audio player begin -->
-            <div id=\"videoplayer_container\" style=\"display:inline-block; text-align:center;\">
+            <div id=\"videoplayer_container\" style=\"display:inline-block; text-align:left;\">
               ".$playercode."
               <div id=\"mediaplayer_segmentbar\" style=\"display:none; width:100%; height:22px; background-color:#808080; text-align:left; margin-bottom:8px;\"></div>";
 
-              if ($viewtype != "media_only") $mediaview .= "
-              <div style=\"display:block; margin:3px;\">".showshorttext($medianame, 40, false)."<br /><hr /></div>";
+              $mediaview .= "
+              <div style=\"display:block; margin:3px;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</div>";
 
         // audio rendering and embedding (requires the JS function 'setSaveType' provided by the template engine)
         if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
@@ -1963,29 +2151,34 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if ($viewtype == "preview")
           {
             $mediaview .= "
+              <div style=\"padding-top:10px;\">
                 <input type=\"hidden\" id=\"VTT\" name=\"\" value=\"\" />
-                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
+                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>
+                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
+              </div>";
           }
           // cut, embed, options button
           elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))
           {
             $mediaview .= "
-                <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint()\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['audio-montage'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
+              <div style=\"padding-top:10px;\">
+                <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint()\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['audio-montage'][$lang], $hcms_charset, $lang)."</button>
+                <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>
+                <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
+              </div>";
           }
         }
 
         $mediaview .= "
             </div>
             <!-- audio player end -->
+            <hr />
           </td>
         </tr>
       </table>";
       }
       // ---------------------------- if video ---------------------------- 
-      elseif ($file_info['ext'] != "" && is_video ($file_info['ext']))
+      elseif (!empty ($file_info['ext']) && is_video ($file_info['ext']))
       {
         $config = array();
 
@@ -2001,7 +2194,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
 
           // set default width for preview of original video file if no width has been provided
-          if (!is_numeric ($width) || $width == 0) $width = 320;
+          if (!is_numeric ($width) || $width <= 0) $width = 854;
         }
         // new since version 5.5.7 (config of videoplayer)
         elseif (is_file ($thumb_root.$file_info['filename'].".config.video") || is_cloudobject ($thumb_root.$file_info['filename'].".config.video"))
@@ -2062,10 +2255,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // use default values
-        if (empty ($mediawidth) || $mediawidth < 300 || empty ($mediaheight) || $mediaheight < 60)
+        if (empty ($mediawidth) || $mediawidth < 320 || empty ($mediaheight) || $mediaheight < 60)
         {
-          $mediawidth = 320;
-          $mediaheight = 240;
+          $mediawidth = 854;
+          $mediaheight = 480;
           $mediaratio = $mediawidth / $mediaheight;
         }
 
@@ -2086,14 +2279,52 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // generate player code
         $playercode = showvideoplayer ($site, @$config['mediafiles'], $mediawidth, $mediaheight, "", $id, "", false, true, false, false, true, false, true);
 
-        $mediaview .= "
-        <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
-          <tr>
-            <td style=\"text-align:left;\">
-            <!-- video player begin -->
-            <div id=\"videoplayer_container\" style=\"display:inline-block; text-align:center;\">";
+        // create view link
+        $preview_video = "";
 
-         if ((!empty ($mgmt_config['facedetection']) && $viewtype == "preview")) $mediaview .= "
+        if (is_array ($config['mediafiles']))
+        {
+          foreach ($config['mediafiles'] as $temp)
+          {
+            if (strpos ($temp, "video/mp4") > 0 || substr ($temp, -4) == ".mp4") 
+            {
+              if (strpos ($temp, ";") > 0) list ($video_file, $rest) = explode (";", $temp);
+              else $video_file = $temp;
+              break;
+            }
+          }
+        }
+
+        if (!empty ($video_file)) $preview_video = createviewlink ($site, $video_file, $video_file, true);
+
+        // style for 360 view
+        $width_diff = 500 - intval($mediawidth);
+        if ($width_diff <= 0) $width_diff = 0;
+
+        if (!empty ($mgmt_config['facedetection']) && $viewtype == "preview") $style = "width:".intval($mediawidth + $width_diff + 4)."px; height:".intval($mediaheight + 72)."px;";
+        else $style = "width:".intval($mediawidth)."px; height:".intval($mediaheight)."px;";
+
+        // link for 360 view
+        $link360 = $mgmt_config['url_path_cms']."media_360view.php?type=video&link=".url_encode($preview_video);
+
+        $mediaview .= "
+        <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
+          <tr>
+            <td style=\"text-align:left;\">";
+
+        if ((!empty ($video_file)) && !$is_mobile) $mediaview .= "
+            <div id=\"view360\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; margin-left:-2px; ".$style."\">
+              <div style=\"position:absolute; right:4px; top:4px; z-index:9011;\">
+                <img name=\"hcms_mediaClose\" onClick=\"hcms_switchInfo ('view360'); document.getElementById('view360player').src='';\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
+              </div>
+              <iframe id=\"view360player\" src=\"\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
+          </div>";
+
+        $mediaview .= "
+            <!-- video player begin -->
+            <div id=\"videoplayer_container\" style=\"display:inline-block; text-align:left;\">";
+
+         if ((!empty ($mgmt_config['facedetection']) && !empty ($mgmt_config['annotation']) && is_dir ($mgmt_config['abs_path_cms']."workflow/") && $viewtype == "preview")) $mediaview .= "
               <div id=\"annotationToolbar\" style=\"width:auto; height:36px; margin:4px 0px;\">
                 <script type=\"text/javascript\">
                 var annotationmode = false;
@@ -2128,8 +2359,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "
               <div style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"if (annotationmode) createFaceOnVideo (event);\"" : "").">".$playercode."</div>
               <div id=\"mediaplayer_segmentbar\" style=\"display:none; width:100%; height:22px; background-color:#808080; text-align:left; margin-bottom:8px;\"></div>";
-              if ($viewtype != "media_only") $mediaview .= "
-              <div style=\"display:block; margin:3px;\">".showshorttext($medianame, 40, false)."<br /><hr /></div>";
+        
+        $mediaview .= "
+              <div style=\"display:block; margin:3px;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</div>";
 
         // video rendering and embedding (requires the JS function 'setSaveType' provided by the template engine)
         if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
@@ -2138,27 +2370,43 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if ($viewtype == "preview")
           {
             $mediaview .= "
+              <div style=\"padding-top:10px;\">
                 <input type=\"hidden\" id=\"VTT\" name=\"\" value=\"\" />
-                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"hcms_openVTTeditor('vtt_container');\"><img src=\"".getthemelocation()."img/button_textl.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['video-text-track'][$lang], $hcms_charset, $lang)."</button>&nbsp;";
+                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"hcms_openVTTeditor('vtt_container');\"><img src=\"".getthemelocation()."img/button_textl.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['video-text-track'][$lang], $hcms_charset, $lang)."</button>";
             if (!empty ($mgmt_config['facedetection'])) $mediaview .= "
-                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"detectFaceOnVideo();\"><img src=\"".getthemelocation()."img/pers_registration.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['detect-faces'][$lang], $hcms_charset, $lang)."</button>&nbsp;";
+                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"detectFaceOnVideo();\"><img src=\"".getthemelocation()."img/pers_registration.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['detect-faces'][$lang], $hcms_charset, $lang)."</button>";
             $mediaview .= "
-                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
+                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>";
+            if (!$is_mobile) $mediaview .= "
+                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (document.getElementById('view360player').src!='".$link360."') document.getElementById('view360player').src='".$link360."'; else document.getElementById('view360player').src=''; hcms_switchInfo ('view360');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> ".getescapedtext ("360 ".$hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>";
+            $mediaview .= "
+                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
+              </div>";
           }
           // cut, options, embed button
           elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))
           {
             $mediaview .= "
-                <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint()\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['video-montage'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>";
+              <div style=\"padding-top:10px;\">
+                <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint()\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['video-montage'][$lang], $hcms_charset, $lang)."</button>
+                <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>
+                <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
+              </div>";
+          }
+          // 360 view button
+          elseif ($viewtype == "media_only" && !empty ($video_file) && !$is_mobile)
+          {
+            $mediaview .= "
+              <div style=\"padding-top:10px;\">
+                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof hideFaceOnVideo === 'function') hideFaceOnVideo(); if (document.getElementById('view360player').src!='".$link360."') document.getElementById('view360player').src='".$link360."'; else document.getElementById('view360player').src=''; hcms_switchInfo ('view360');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> ".getescapedtext ("360 ".$hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>
+              </div>";
           }
         }
 
         $mediaview .= "
             </div>
-            <!-- video player end -->";
+            <!-- video player end -->
+            <hr />";
 
         // VTT editor
         if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
@@ -2171,7 +2419,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             if ($langcode_array != false)
             {
               $lang_select = "
-                 <select id=\"vtt_language\" name=\"vtt_language\" style=\"width:318px;\" onchange=\"hcms_changeVTTlanguage()\">
+                 <select id=\"vtt_language\" name=\"vtt_language\" style=\"width:298px;\" onchange=\"hcms_changeVTTlanguage()\">
                    <option value=\"\">".getescapedtext ($hcms_lang['language'][$lang], $hcms_charset, $lang)."</option>";
 
               foreach ($langcode_array as $code => $language)
@@ -2188,7 +2436,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           </td>
         </tr>
         <tr>
-          <td align=\"middle\">
+          <td style=\"text-align:left;\">
 
             <div id=\"vtt_container\" style=\"display:none; width:592px;\">
               <!-- VTT editor -->
@@ -2196,19 +2444,19 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <b>".getescapedtext ($hcms_lang['video-text-track'][$lang], $hcms_charset, $lang)."</b><br />
                 <div style=\"float:left; margin:2px 2px 0px 0px;\">".$lang_select."</div>
                 <input type=\"hidden\" id=\"vtt_langcode\" name=\"vtt_langcode\" value=\"\" />
-                <input type=\"text\" id=\"vtt_start\" name=\"start\" value=\"\" placeholder=\"".getescapedtext ($hcms_lang['start'][$lang], $hcms_charset, $lang)."\" maxlength=\"12\" style=\"float:left; margin:2px 2px 0px 0px; width:80px;\" readonly=\"readonly\" />
+                <input type=\"text\" id=\"vtt_start\" name=\"start\" value=\"\" placeholder=\"".getescapedtext ($hcms_lang['start'][$lang], $hcms_charset, $lang)."\" maxlength=\"12\" style=\"float:left; margin:2px 2px 0px 0px; width:100px;\" readonly=\"readonly\" />
                 <img src=\"".getthemelocation()."img/button_time.png\" onclick=\"setPlayerTime('vtt_start');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"float:left;\" alt=\"".getescapedtext ($hcms_lang['set'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set'][$lang], $hcms_charset, $lang)."\" />
-                <input type=\"text\" id=\"vtt_stop\" name=\"stop\" value=\"\" placeholder=\"".getescapedtext ($hcms_lang['end'][$lang], $hcms_charset, $lang)."\" maxlength=\"12\" style=\"float:left; margin:2px 2px 0px 4px; width:80px;\" readonly=\"readonly\" />
+                <input type=\"text\" id=\"vtt_stop\" name=\"stop\" value=\"\" placeholder=\"".getescapedtext ($hcms_lang['end'][$lang], $hcms_charset, $lang)."\" maxlength=\"12\" style=\"float:left; margin:2px 2px 0px 4px; width:100px;\" readonly=\"readonly\" />
                 <img src=\"".getthemelocation()."img/button_time.png\" onclick=\"setPlayerTime('vtt_stop');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"float:left;\" alt=\"".getescapedtext ($hcms_lang['set'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set'][$lang], $hcms_charset, $lang)."\" />
-                <input type=\"text\" id=\"vtt_text\" name=\"text\" value=\"\" placeholder=\"".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."\" maxlength=\"400\" style=\"float:left; margin:2px 2px 0px 0px; width:530px;\" />
+                <input type=\"text\" id=\"vtt_text\" name=\"text\" value=\"\" placeholder=\"".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."\" maxlength=\"400\" style=\"float:left; margin:2px 2px 0px 0px; width:540px;\" />
                 <img src=\"".getthemelocation()."img/button_save.png\" onclick=\"createVTTrecord()\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"float:left;\" alt=\"".getescapedtext ($hcms_lang['save'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['save'][$lang], $hcms_charset, $lang)."\" />
                 <div style=\"clear:both;\"></div>
               </div>
               <div id=\"vtt_records_container\" class=\"hcmsInfoBox\" style=\"margin-top:10px; width:100%; height:200px; overflow:auto;\">
                 <div id=\"vtt_header\">
-                  <div style=\"float:left; margin:2px 2px 0px 0px; width:64px;\"><b>".getescapedtext ($hcms_lang['start'][$lang], $hcms_charset, $lang)."</b></div>
-                  <div style=\"float:left; margin:2px 2px 0px 0px; width:64px;\"><b>".getescapedtext ($hcms_lang['end'][$lang], $hcms_charset, $lang)."</b></div>
-                  <div style=\"float:left; margin:2px 2px 0px 0px; width:400px;\"><b>".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."</b></div>
+                  <div style=\"float:left; margin:2px 2px 0px 0px; width:98px;\"><b>".getescapedtext ($hcms_lang['start'][$lang], $hcms_charset, $lang)."</b></div>
+                  <div style=\"float:left; margin:2px 2px 0px 0px; width:98px;\"><b>".getescapedtext ($hcms_lang['end'][$lang], $hcms_charset, $lang)."</b></div>
+                  <div style=\"float:left; margin:2px 2px 0px 0px; width:340px;\"><b>".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."</b></div>
                   <div style=\"clear:both;\"></div>
                 </div>
                 <div id=\"vtt_records\">
@@ -2285,7 +2533,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       </table>";
       }
       // ---------------------------------- if plain/clear text ---------------------------------- 
-      elseif ($file_info['ext'] != "" && substr_count (strtolower ($hcms_ext['cleartxt'].$hcms_ext['cms']).".", $file_info['ext'].".") > 0)
+      elseif (!empty ($file_info['ext']) && substr_count (strtolower ($hcms_ext['cleartxt'].$hcms_ext['cms']).".", $file_info['ext'].".") > 0)
       {
         // prepare media file
         $temp = preparemediafile ($site, $media_root, $mediafile, $user);
@@ -2347,7 +2595,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if ($viewtype == "template") $mediaview .= "
         <table class=\"hcmsTableNarrow\" style=\"width:100%; border:1px solid #000000; margin:2px;\">";
           else $mediaview .= "
-        <table>";
+        </table>";
 
           // save button
           if ($viewtype == "template") $mediaview .= "
@@ -2364,9 +2612,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             <td style=\"text-align:left;\"><textarea name=\"content\" id=\"".$id."\" ".$style." ".$disabled.">".$content."</textarea></td>
           </tr>";
 
-          if ($viewtype != "media_only") $mediaview .= "
+          $mediaview .= "
           <tr>
-            <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td>
+            <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td>
+          </tr>
+          <tr>
+            <td><hr/></td>
           </tr>
         </table>";
 
@@ -2377,7 +2628,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     }
 
     // ----------------------------- show standard file icon ------------------------------- 
-    if ($mediaview == "")
+    if (empty ($mediaview))
     {
       // use thumbnail if it is valid (larger than 10 bytes)
       if (is_file ($thumb_root.$file_info['filename'].".thumb.jpg") || is_cloudobject ($thumb_root.$file_info['filename'].".thumb.jpg"))
@@ -2388,26 +2639,32 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $file_info['ext'] = strtolower (strrchr ($mediafile, "."));
 
         $mediaview .= "
-      <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
+      <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
         <tr>
           <td style=\"text-align:left;\"><img src=\"".createviewlink ($site, $mediafile, $medianame, true)."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" /></td>
         </tr>
         <tr>
-          <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
+          <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td>
+        </tr>
+        <tr>
+          <td><hr/></td>
         </tr>"; 
       }
       // if no thumbnail/preview exists
       else
       {
         $mediaview .= "
-      <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
+      <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
         <tr>
           <td style=\"text-align:left;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" /></td>
         </tr>";
 
-        if ($viewtype != "media_only") $mediaview .= "
+        $mediaview .= "
         <tr>
-          <td style=\"text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></td>
+          <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td>
+        </tr>
+        <tr>
+          <td><hr/></td>
         </tr>";
       }
 
@@ -2415,10 +2672,89 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       </table>";
     }
 
-    // --------------------- properties of video and audio files (original and thumbnail files) --------------------------
     if ($viewtype != "media_only")
     {
-      if (is_array ($mgmt_mediapreview) && $file_info['ext'] != "" && substr_count (strtolower ($hcms_ext['video'].$hcms_ext['audio']).".", $file_info['ext'].".") > 0)
+      // ------------------------------- width and height of other media files ------------------------------------
+      // format file size
+      if ($mediafilesize > 1000)
+      {
+        $mediafilesize = $mediafilesize / 1024;
+        $unit = "MB";
+      }
+      else $unit = "KB";
+
+      $mediafilesize = number_format ($mediafilesize, 0, ".", " ")." ".$unit;
+
+      // output information
+      $col_width = "min-width:120px; ";
+
+      $mediaview .= "
+    <table style=\"border-collapse:separate; border-spacing:2px;\">";
+
+      if (!empty ($owner)) $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['owner'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$owner."</td>
+      </tr>";
+
+      if (!empty ($date_created)) $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['date-created'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($date_created, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+      </tr>";
+
+      if (!empty ($date_modified)) $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['date-modified'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($date_modified, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+      </tr>";
+
+      if (!empty ($date_published)) $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['published'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($date_published, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+      </tr>";
+
+      if (!empty ($date_delete)) $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['will-be-removed'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($date_delete, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+      </tr>";
+
+      // not for audio and video files
+      if (!is_audio ($mediafile) && !is_video ($mediafile)) $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$mediafilesize."</td>
+      </tr>\n";
+
+      // only for images
+      if (is_image ($mediafile) && !empty ($width_orig) && !empty ($height_orig))
+      {
+        // size in pixel of media file
+        $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." </td>
+        <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$width_orig."x".$height_orig." px</td>
+      </tr>\n";
+
+        // size in cm
+        $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (72 dpi) </td>
+        <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 72 * 2.54), 1)."x".round(($height_orig / 72 * 2.54), 1)." cm, ".round(($width_orig / 72), 1)."x".round(($height_orig / 72), 1)." inch</td>
+      </tr>\n";
+
+        // size in inch
+        $mediaview .= "
+      <tr>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (300 dpi) </td>
+        <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 300 * 2.54), 1)."x".round(($height_orig / 300 * 2.54), 1)." cm, ".round(($width_orig / 300), 1)."x".round(($height_orig / 300), 1)." inch</td>
+      </tr>\n";
+      }
+
+      // --------------------- properties of video and audio files (original and thumbnail files) --------------------------
+      if (is_array ($mgmt_mediapreview) && !empty ($file_info['ext']) && substr_count (strtolower ($hcms_ext['video'].$hcms_ext['audio']).".", $file_info['ext'].".") > 0)
       {
         $dimensions = array();
         $rotations = array();
@@ -2496,7 +2832,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {		
               $youtube_uploads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openpopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
+                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openPopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
               </td>';
             }
           }
@@ -2599,7 +2935,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                     {	
                       $youtube_uploads[$media_extension] = '
                       <td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                        <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openpopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
+                        <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openPopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
                       </td>';
                     }
                   }
@@ -2610,27 +2946,27 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // generate output	
-        if (is_array ($videos)) $mediaview .= '<table style="border-collapse:separate; border-spacing:2px;"><tr><th>&nbsp;</th>'.implode("", $videos).'</tr>';		
+        if (is_array ($videos) && !$is_version && ($viewtype == "preview" || $viewtype == "preview_download")) $mediaview .= '<tr><th>&nbsp;</th>'.implode("", $videos).'</tr>';		
         // Filesize
-        if (is_array ($filesizes)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $filesizes).'</tr>';
+        if (is_array ($filesizes)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $filesizes).'</tr>';
         // Dimension
-        if ($is_video && is_array ($dimensions)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['width-x-height'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $dimensions).'</tr>';
+        if ($is_video && is_array ($dimensions)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['width-x-height'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $dimensions).'</tr>';
         // Rotations
-        if (is_array ($rotations)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['rotate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $rotations).'</tr>';		
+        if (is_array ($rotations)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['rotate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $rotations).'</tr>';		
         // Durations
-        if (is_array ($durations)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['duration-hhmmss'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $durations).'</tr>';		
+        if (is_array ($durations)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext (substr ($hcms_lang['duration-hhmmss'][$lang], 0, strpos ($hcms_lang['duration-hhmmss'][$lang], "(")), $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $durations).'</tr>';		
         // Video codec
-        if ($is_video && !empty ($video_codecs) && is_array ($video_codecs)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['video-codec'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $video_codecs).'</tr>';
+        if ($is_video && !empty ($video_codecs) && is_array ($video_codecs)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['video-codec'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $video_codecs).'</tr>';
         // Audio codec
-        if (!empty ($audio_codecs) && is_array ($audio_codecs)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-codec'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_codecs).'</tr>';
+        if (!empty ($audio_codecs) && is_array ($audio_codecs)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-codec'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_codecs).'</tr>';
         // Bitrate
-        if ($is_video && is_array ($bitrates)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['video-bitrate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $bitrates).'</tr>';
+        if ($is_video && is_array ($bitrates)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['video-bitrate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $bitrates).'</tr>';
         // Audio bitrate
-        if (is_array ($audio_bitrates)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-bitrate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_bitrates).'</tr>';
+        if (is_array ($audio_bitrates)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-bitrate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_bitrates).'</tr>';
         // Audio frequenzy
-        if (is_array ($audio_frequenzies)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-frequenzy'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_frequenzies).'</tr>';
+        if (is_array ($audio_frequenzies)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-frequenzy'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_frequenzies).'</tr>';
         // Audio frequenzy
-        if (is_array ($audio_channels)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-channels'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_channels).'</tr>';
+        if (is_array ($audio_channels)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-channels'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_channels).'</tr>';
         // Download
         if (is_array ($downloads) && sizeof ($downloads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $downloads).'</tr>';
         // Youtube
@@ -2638,84 +2974,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           if (is_array ($youtube_uploads) && sizeof ($youtube_uploads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $youtube_uploads).'</tr>';
         }
-        if (is_array ($videos)) $mediaview .= '</table>';
       }
-      // width and height of other media files
-      else
-      {
-        // format file size
-        if ($mediafilesize > 1000)
-        {
-          $mediafilesize = $mediafilesize / 1024;
-          $unit = "MB";
-        }
-        else $unit = "KB";
 
-        $mediafilesize = number_format ($mediafilesize, 0, ".", " ")." ".$unit;
-
-        // output information
-        $col_width = "width:120px; ";
-
-        $mediaview .= "
-      <table>";
-
-        if (!empty ($owner[0])) $mediaview .= "
-        <tr>
-          <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['owner'][$lang], $hcms_charset, $lang)." </td>
-          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$owner[0]."</td>
-        </tr>";
-
-        $mediaview .= "
-        <tr>
-          <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang)." </td>
-          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($mediafiletime, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
-        </tr>";
-
-        if (!empty ($date_published[0])) $mediaview .= "
-        <tr>
-          <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['published'][$lang], $hcms_charset, $lang)." </td>
-          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($date_published[0], "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
-        </tr>";
-
-        if (!empty ($date_delete)) $mediaview .= "
-        <tr>
-          <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['will-be-removed'][$lang], $hcms_charset, $lang)." </td>
-          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".showdate ($date_delete, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
-        </tr>";
-
-        $mediaview .= "
-        <tr>
-          <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang)." </td>
-          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$mediafilesize."</td>
-        </tr>\n";
-
-        if (!empty ($width_orig) && !empty ($height_orig))
-        {
-          // size in pixel of media file
-          $mediaview .= "
-        <tr>
-          <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." </td>
-          <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$width_orig."x".$height_orig." px</td>
-        </tr>\n";
-
-          // size in cm
-          $mediaview .= "
-        <tr>
-          <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (72 dpi) </td>
-          <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 72 * 2.54), 1)."x".round(($height_orig / 72 * 2.54), 1)." cm, ".round(($width_orig / 72), 1)."x".round(($height_orig / 72), 1)." inch</td>
-        </tr>\n";
-
-          // size in inch
-          $mediaview .= "
-        <tr>
-          <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (300 dpi) </td>
-          <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 300 * 2.54), 1)."x".round(($height_orig / 300 * 2.54), 1)." cm, ".round(($width_orig / 300), 1)."x".round(($height_orig / 300), 1)." inch</td>
-        </tr>\n";
-        }
-
-        $mediaview .= "
-      </table>";
-      }
+      $mediaview .= "
+    </table>";
     }
 
     return $mediaview;
@@ -3302,7 +3564,6 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
     return "
       <textarea id=\"".$hypertagname."_".str_replace (":", "_", $id)."\" name=\"".$hypertagname."[".$id."]\" ".$classname.">".$contentbot."</textarea>
       <script type=\"text/javascript\">
-      <!--
         CKEDITOR.replace( '".$hypertagname."_".$id."',
         {
           baseHref:					               		'".$publ_config['url_publ_page']."',
@@ -3319,7 +3580,6 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
           toolbar:	              						'".$toolbar."',
           cmsLink:	              						'".$mgmt_config['url_path_cms']."'
         });
-      //-->
       </script>";
   }
   else return false;
@@ -4107,12 +4367,19 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // description:
 // Generates a html segment for the video player code
 
-function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_url="", $id="", $title="", $autoplay=true, $fullscreen=true, $loop=false, $muted=false, $controls=true, $iframe=false, $force_reload=false)
+function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_url="", $id="", $title="", $autoplay=true, $fullscreen=true, $loop=false, $muted=false, $controls=true, $iframe=false, $force_reload=false)
 {
   global $mgmt_config;
 
-  if ($width == "") $width = 320;
-  if ($height == "") $height = 240;
+  // default size
+  if ($width < 0) $width = 854;
+  if ($height < 0) $height = 480;
+  
+  // link to flash player (fallback player)
+  $flashplayer = $mgmt_config['url_path_cms']."javascript/video/jarisplayer.swf";
+
+  // if no ID has been provided
+  if (empty ($id)) $id = "media_".uniqid(); 
 
   if (valid_publicationname ($site) && is_array ($video_array) && $width != "" && $height != "")
   {
@@ -4171,7 +4438,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       }
 
       // define VTT file name
-      if ($media != "")
+      if (!empty ($media))
       {
         $container_id = getmediacontainerid ($media);
 
@@ -4217,12 +4484,39 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       }
     }
 
-    $flashplayer = $mgmt_config['url_path_cms']."javascript/video/jarisplayer.swf";
+    // video thumbnails
+    $thumb_bar = "";
+    $thumb_items = array();
+
+    if (!empty ($container_id) && intval ($container_id) > 0 && is_dir ($media_dir.$site."/".$container_id))
+    {
+      $scandir = scandir ($media_dir.$site."/".$container_id);
+
+      if (is_array ($scandir) && sizeof ($scandir) > 0)
+      {
+        sort ($scandir);
+        $sec = -10;
+
+        foreach ($scandir as $temp)
+        {
+          if ($temp != "." && $temp != ".." && substr ($temp, 0, 9) == "thumbnail" && is_file ($media_dir.$site."/".$container_id."/".$temp))
+          {
+            if ($sec >= 0) $thumb_items[] = "    ".$sec.": { src: '".createviewlink ($site, $container_id."/".$temp)."', width: '120px' }";
+            $sec = $sec + 5;
+          }
+        }
+
+        if (sizeof ($thumb_items) > 0) $thumb_bar .= "<script>
+  // initialize video.js
+  var video = videojs('".$id."');
+  
+  video.thumbnails({\n".implode (",\n", $thumb_items)."});
+</script>\n";
+      }
+    }
 
     // if no logo is defined set default logo
     if (empty ($logo_url)) $logo_url = getthemelocation()."img/logo_player.jpg";
-
-    if (empty ($id)) $id = "media_".uniqid(); 
 
     // PROJEKKTOR Player
     if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")
@@ -4292,7 +4586,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
         }
       }
 
-      $return .= "  </video>\n";
+      $return .= "  </video>\n".$thumb_bar;
     }
 
     return $return;
@@ -4334,10 +4628,12 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
   else
   {
     $return = "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
+  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/videojs.thumbnails.css\" rel=\"stylesheet\">
   <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/video.js\"></script>
   <script>
     videojs.options.flash.swf = \"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.swf\";
-  </script>\n";
+  </script>
+  <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/videojs.thumbnails.js\"></script>\n";
     if ($fullscreen == false) $return .= "  <style> .vjs-fullscreen-control { display: none; } .vjs-default-skin .vjs-volume-control { margin-right: 20px; } </style>";
   }
 
@@ -4346,7 +4642,8 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
 
 // ------------------------- showaudioplayer -----------------------------
 // function: showaudioplayer()
-// input: publication name [string], audio files [array], ID of the tag [string] (optional),
+// input: publication name [string], audio files [array], ID of the tag [string] (optional), width of the video in pixel [integer], height of the video in pixel [integer],
+//        link to the logo which is displayed before you click on play (If the value is null the default logo will be used) [string], ID of the video (will be generated when empty) [string],
 //        autoplay (optional) [true,false], play loop (optional) [true,false], player controls (optional) [true,false]
 // output: code of the HTML5 player / false
 
@@ -4357,8 +4654,8 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
 {
   global $mgmt_config;
 
-  if ($width == "") $width = 320;
-  if ($height == "") $height = 320;
+  if ($width < 0) $width = 320;
+  if ($height < 0) $height = 320;
 
   if (valid_publicationname ($site) && is_array ($audioArray) && $width != "" && $height != "")
   {
@@ -5438,7 +5735,9 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
         $mediafile = $objectinfo['media'];
         $mediainfo = getfileinfo ($site, $mediafile, "comp");
         $thumbnail = $mediainfo['filename'].".thumb.jpg";
-        $mediadir = getmedialocation ($site, $objectinfo['media'], "abs_path_media").$site."/";
+
+        // thumbnail file is always in repository
+        $mediadir = getmedialocation ($site, ".hcms.".$mediafile, "abs_path_media").$site."/";
 
         // thumbnails preview
         if (is_file ($mediadir.$thumbnail))
@@ -5467,7 +5766,7 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
           if ($imgwidth < $thumbsize && $imgheight < $thumbsize) $style_size = "";
           else $style_size = $ratio;
 
-          $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";;
+          $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
         }
         // no thumbnail available
         else
@@ -5485,6 +5784,93 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
     }
 
     return $galleryview;
+  }
+  else return false;
+}
+
+// ------------------------- showthumbnail -----------------------------
+// function: showthumbnail()
+// input: publication name [string], media file name [string], display name [string] (optional), thumbnail size in pixels [integer] (optional), base64 encoding [true,false] (optional), CSS style for image [string] (optional)
+//        design theme name for icons [string] (optional)
+// output: thumbnail view / false
+
+// description:
+// Presents the thumbnail of a single media file that is optionally base64 encoded an can embedded in HTML pages or e-mails.
+
+function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=false, $style="", $theme="standard")
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site) && $mediafile != "" && $thumbsize > 0)
+  {
+    // thumbnail file is always in repository
+    $mediadir = getmedialocation ($site, ".hcms.".$mediafile, "abs_path_media").$site."/";
+
+    // get thumbnail file name
+    $mediainfo = getfileinfo ($site, $mediafile, "comp");
+    $thumbnail = $mediainfo['filename'].".thumb.jpg";
+
+    // thumbnails preview
+    if (is_file ($mediadir.$thumbnail))
+    {
+      $imgsize = getimagesize ($mediadir.$thumbnail);
+
+      // calculate image ratio to define CSS for image container div-tag
+      if (is_array ($imgsize))
+      {
+        $imgwidth = $imgsize[0];
+        $imgheight = $imgsize[1];
+        $imgratio = $imgwidth / $imgheight; 
+
+        // image width >= height
+        if ($imgratio >= 1) $ratio = "width:".$thumbsize."px;";
+        // image width < height
+        else $ratio = "height:".$thumbsize."px;";
+      }
+      // default value
+      else
+      {
+        $ratio = "width:".$thumbsize."px;";
+      }
+
+      // if thumbnail is smaller than defined thumbnail size
+      if ($imgwidth < $thumbsize && $imgheight < $thumbsize) $style_size = "";
+      else $style_size = $ratio;
+
+      // base64 encode
+      if ($base64 == true)
+      {
+        $image = "data:image/jpeg;base64,".base64_encode( file_get_contents ($mediadir.$thumbnail));
+      }
+      // view link
+      else
+      {
+        $image = createviewlink ($site, $thumbnail, $name);
+      }
+
+      $view = "<img src=\"".$image."\" style=\"".$style_size." ".$style."\" alt=\"".$name."\" title=\"".$name."\" />";
+    }
+    // no thumbnail available
+    else
+    {
+      $mediadir = $mgmt_config['abs_path_cms']."theme/".$theme."/img/";
+      $mediaurl = $mgmt_config['url_path_cms']."theme/".$theme."/img/";
+
+      // base64 encode
+      if ($base64 == true)
+      {
+        $image = "data:image/png;base64,".base64_encode (file_get_contents ($mediadir.$mediainfo['icon']));
+      }
+      // view link
+      else
+      {
+        $image = $mediaurl.$mediainfo['icon'];
+      }
+
+      $view = "<img src=\"".$image."\" style=\"width:".$thumbsize."px; ".$style."\" alt=\"".$name."\" title=\"".$name."\" />";
+    }
+
+    return $view;
   }
   else return false;
 }

@@ -137,10 +137,9 @@ $mgmt_config['abs_path_media'] = $mgmt_config['abs_path_rep']."media_cnt/";
 // $mgmt_config['gs_analyze_video'] = true;
 // Enable Google Cloud Speech-to-Text
 // $mgmt_config['gs_speech2text'] = true;
-// Define default language code to be used for speech-to-text in general or per publication
+// Define default language code to be used for speech-to-text
 // See all the supported lanuage codes here: https://cloud.google.com/speech-to-text/docs/languages
 // $mgmt_config['gs_speech2text_langcode'] = "en-US";
-// $mgmt_config['publication']['gs_speech2text_langcode'] = "en-US";
 // Provide region code for the storage, see also: https://cloud.google.com/compute/docs/zones
 // $mgmt_config['gs_region'] = "";
 // Provide the name of your Google Cloud Storage bucket (mandatory for cloud storage)
@@ -193,6 +192,9 @@ $mgmt_config['explorerview'] = "medium";
 // How many items (folders and objects) should be displayed in the explorer object list initally
 $mgmt_config['explorer_list_maxitems'] = 500;
 
+// Open objects in new window (true) or same window (false)
+$mgmt_config['object_newwindow'] = false;
+
 // Open messages in new window (true) or same window (false)
 $mgmt_config['message_newwindow'] = false;
 
@@ -206,7 +208,7 @@ $mgmt_config['window_object_height'] = 1000;
 // Preview and annotation width for documents, images, and videos in pixel or use "original" for original image width
 $mgmt_config['preview_document_width'] = 695;
 $mgmt_config['preview_image_width'] = 1024;
-$mgmt_config['preview_video_width'] = 576;
+$mgmt_config['preview_video_width'] = 854;
 
 // Should metadata on mouse over be displayed in the explorer object list if the sidebar is not displayed
 $mgmt_config['explorer_list_metadata'] = false;
@@ -227,7 +229,7 @@ $mgmt_config['chat_support'] = "";
 $mgmt_config['annotation'] = false;
 
 // Define if face detection for images and videos should be enabled (true) or disabled (false)
-$mgmt_config['facedetection'] = true;
+$mgmt_config['facedetection'] = false;
 
 // Define standard mail link type ("access" = access-link; "download" = download-link)
 $mgmt_config['maillink'] = "download";
@@ -494,8 +496,8 @@ $mgmt_lang_shortcut_default = "en";
 // Please note: MS PWS cannot handle multiple HTTP-requests at the same time! since version 3.0 PWS will not be supplied anymore
 $mgmt_config['os_cms'] = "%os_cms%";
 
-// Define date format for error logging and get local date today (jjjj-mm-dd)
-$mgmt_config['today'] = date ("Y-m-d H:i", time());
+// Define date format for error logging
+$mgmt_config['today'] = date ("Y-m-d H:i:s", time());
 
 // Define the unit for the duration (float value) of tasks, use "d" for days, "h" for hours
 $mgmt_config['taskunit'] = "h";
@@ -740,9 +742,10 @@ $mgmt_docoptions['.ods'] = "-f ods";
 $mgmt_docoptions['.odp'] = "-f odp";
 $mgmt_docoptions['.png'] = "-f png";
 $mgmt_docoptions['.jpg'] = "-f jpg";
+$mgmt_docoptions['.rtf'] = "-f pdf";
+$mgmt_docoptions['.txt'] = "-f txt";
 
 // Define the mapping of the source and target formats for documents:
-$mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
 $mgmt_docconvert['.doc'] = array('.png', '.pdf', '.odt');
 $mgmt_docconvert['.docx'] = array('.png', '.pdf', '.odt');
 $mgmt_docconvert['.xls'] = array('.png', '.pdf', '.csv', '.ods');
@@ -752,6 +755,8 @@ $mgmt_docconvert['.pptx'] = array('.png', '.pdf', '.odp');
 $mgmt_docconvert['.odt'] = array('.png', '.pdf', '.doc');
 $mgmt_docconvert['.ods'] = array('.png', '.pdf', '.csv', '.xls');
 $mgmt_docconvert['.odp'] = array('.png', '.pdf', '.ppt');
+$mgmt_docconvert['.rtf'] = array('.png', '.pdf', '.doc', '.odt');
+$mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
 
 // Define Image Preview using the GD Library or ImageMagick
 
@@ -825,7 +830,7 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -q 95 -f jpg';
 $mgmt_mediapreview['.3g2.3gp.4xm.a64.aac.ac3.act.adf.adts.adx.aea.aiff.alaw.alsa.amr.anm.apc.ape.apr.asf.asf_stream.ass.au.audio.avi.avm2.avs.bethsoftvid.bfi.bin.bink.bit.bmv.c93.caf.cavsvideo.cdg.cdxl.crc.daud.dfa.dirac.dnxhd.dsicin.dts.dv.dv1394.dvd.dxa.dwd.ea.ea_cdata.eac3.f32be.f32le.f4v.f64be.f64le.fbdev.ffm.ffmetadata.film_cpk.filmstrip.flac.flic.flv.framecrc.framemd5.g722.g723_1.g729.gsm.gxf.h261.h263.h264.hls.ico.idcin.idf.iff.ilbc.image2.image2pipe.ingenient.ipmovie.ipod.ismv.iss.iv8.ivf.jack.jacosub.jv.la.latm.lavfi.libcdio.libdc1394.lmlm4.loas.lxf.m4a.m4b.m4p.m4r.m4v.matroska.md5.mgsts.microdvd.mid.mj2.mjpeg.mkv.mlp.mm.mmf.mov.mp2.mp3.mp4.mp4v.mpc.mpc8.mpeg.mpg.mpeg1video.mpeg2video.mpegts.mpegtsraw.mpegvideo.mpjpeg.msnwctcp.mts.mtv.mulaw.mvi.mxf.mxf_d10.mxg.nc.nsv.null.nut.nuv.oga.ogg.ogm.ogv.oma.oss.ots.pac.paf.pmp.psp.psxstr.pva.qcp.r3d.ra.rawvideo.rcv.realtext.rka.rl2.rm.roq.rpl.rso.rtp.rtsp.s16be.s16le.s24be.s24le.s32be.s32le.s8.sami.sap.sbg.sdl.sdp.segment.shn.siff.smjpeg.smk.smush.sol.sox.spdif.subviewer.svcd.swa.swf.thp.tiertexseq.tmv.truehd.tta.tty.txd.u16be.u16le.u24be.u24le.u32be.u32le.u8.vc1.vc1test.vcd.vmd.vob.voc.vox.vqf.w64.wav.wc3movie.webm.webvtt.wma.wmv.wsaud.wsvqa.wtv.wv.x11grab.xa.xbin.xmv.xwma.yop.yuv4mpegpipe'] = "%ffmpeg%";
 
 // If a video or audio file is uploaded hyperCMS will try to generate a thumbnail video/audio file for preview
-$mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 640x480 -f mp4 -c:a libfdk_aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
+$mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 854x480 -f mp4 -c:a libfdk_aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
 $mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k";
 
 // Auto rotate video if a rotation has been detected (true) or leave video in it's original state (false)
@@ -853,7 +858,7 @@ $mgmt_mediametadata['.flv'] = "%yamdi%";
 
 // Use EXIFTOOL to inject metadata into the generated image file (ImageMagick discards metadata)
 // The path to the executable is usually /usr/bin/exiftool
-$mgmt_mediametadata['.3fr.3g2.3gp2.3gp.3gpp.acr.afm.acfm.amfm.ai.ait.aiff.aif.aifc.ape.arw.asf.avi.bmp.dib.btf.tiff.tif.chm.cos.cr2.crw.ciff.cs1.dcm.dc3.dic.dicm.dcp.dcr.dfont.divx.djvu.djv.dng.doc.dot.docx.docm.dotx.dotm.dylib.dv.dvb.eip.eps.epsf.ps.erf.exe.dll.exif.exr.f4a.f4b.f4p.f4v.fff.fff.fla.flac.flv.fpf.fpx.gif.gz.gzip.hdp.wdp.hdr.html.htm.xhtml.icc.icm.idml.iiq.ind.indd.indt.inx.itc.j2c.jpc.jp2.jpf.j2k.jpm.jpx.jpg.jpeg.k25.kdc.key.kth.la.lnk.m2ts.mts.m2t.ts.m4a.m4b.m4p.m4v.mef.mie.miff.mif.mka.mkv.mks.modd.mos.mov.qt.mp3.mp4.mpc.mpeg.mpg.m2v.mpo.mqv.mrw.mxf.nef.nmbtemplate.nrw.numbers.odb.odc.odf.odg,.odi.odp.ods.odt.ofr.ogg.ogv.orf.otf.pac.pages.pcd.pdf.pef.pfa.pfb.pfm.pgf.pict.pct.pjpeg.plist.pmp.png.jng.mng.ppm.pbm.pgm.ppt.pps.pot.potx.potm.ppsx.ppsm.pptx.pptm.psd.psb.psp.pspimage.qtif.qti.qif.ra.raf.ram.rpm.rar.raw.raw.riff.rif.rm.rv.rmvb.rsrc.rtf.rw2.rwl.rwz.so.sr2.srf.srw.svg.swf.thm.thmx.tiff.tif.ttf.ttc.vob.vrd.vsd.wav.webm.webp.wma.wmv.wv.x3f.xcf.xls.xlt.xlsx.xlsm.xlsb.xltx.xltm.xmp.zip'] = "%exiftool%";
+$mgmt_mediametadata['.3fr.3g2.3gp2.3gp.3gpp.acr.afm.acfm.amfm.ai.ait.aiff.aif.aifc.ape.arw.asf.avi.bmp.dib.btf.tiff.tif.chm.cos.cr2.crw.ciff.cs1.dcm.dc3.dic.dicm.dcp.dcr.dfont.divx.djvu.djv.dng.doc.dot.docx.docm.dotx.dotm.dylib.dv.dvb.eip.eps.epsf.ps.erf.exe.dll.exif.exr.f4a.f4b.f4p.f4v.fff.fff.fla.flac.flv.fpf.fpx.gif.gz.gzip.hdp.wdp.hdr.html.htm.xhtml.icc.icm.idml.iiq.ind.indd.indt.inx.itc.j2c.jpc.jp2.jpf.j2k.jpm.jpx.jpg.jpeg.k25.kdc.key.kth.la.lnk.m2ts.mts.m2t.ts.m4a.m4b.m4p.m4v.mef.mie.miff.mif.mka.mkv.mks.modd.mos.mov.qt.mp3.mp4.mpc.mpeg.mpg.m2v.mpo.mqv.mrw.mxf.nef.nmbtemplate.nrw.numbers.odb.odc.odf.odg,.odi.odp.ods.odt.ofr.ogg.ogv.orf.otf.pac.pages.pcd.pdf.pef.pfa.pfb.pfm.pgf.pict.pct.pjpeg.plist.pmp.png.jng.mng.ppm.pbm.pgm.ppt.pps.pot.potx.potm.ppsx.ppsm.pptx.pptm.psd.psb.psp.pspimage.qtif.qti.qif.ra.raf.ram.rpm.rar.raw.raw.riff.rif.rm.rv.rmvb.rtf.rsrc.rw2.rwl.rwz.so.sr2.srf.srw.svg.swf.thm.thmx.tiff.tif.ttf.ttc.vob.vrd.vsd.wav.webm.webp.wma.wmv.wv.x3f.xcf.xls.xlt.xlsx.xlsm.xlsb.xltx.xltm.xmp.zip'] = "%exiftool%";
 
 // Define max. file size in MB for thumbnail/video generation for certain file extensions
 $mgmt_maxsizepreview['.pdf'] = 500;

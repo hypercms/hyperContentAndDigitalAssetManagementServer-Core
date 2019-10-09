@@ -13,7 +13,7 @@ if (checkrootpermission ('desktoptaskmgmt'))
   <div id=\"task\" onclick=\"document.location.href='task/task_list.php';\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left; cursor:pointer;\">";
 
     echo "
-    <div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['my-recent-tasks'][$lang])."</div>
+    <div class=\"hcmsHeadline\" style=\"margin:6px;\">".getescapedtext ($hcms_lang['my-recent-tasks'][$lang])."</div>
     <table class=\"hcmsTableStandard\" style=\"table-layout:auto; border-collapse:separate; border-spacing:2px; width:100%;\">";
 
     foreach ($task_array as $task_record)

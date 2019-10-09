@@ -352,16 +352,18 @@ function specialchr_decode ($expression)
 
 function convertdate ($date, $timezone1, $dateformat1="Y-m-d H:i:s", $timezone2, $dateformat2="Y-m-d H:i:s")
 {
-  // try to correct date 
-  if (!is_date ($date, $dateformat1)) $date = date ($dateformat1, strtotime ($date));
-
+  // recreate date 
+  $date = date ($dateformat1, strtotime ($date));
+  
   // verify input
-  if ($date != "" && is_date ($date, $dateformat1) && in_array ($timezone1, timezone_identifiers_list()) && in_array ($timezone2, timezone_identifiers_list()))
+  if (!empty ($date) && is_date ($date, $dateformat1) && in_array ($timezone1, timezone_identifiers_list()) && in_array ($timezone2, timezone_identifiers_list()))
   {
     // create DateTime object
     $result = DateTime::createFromFormat ($dateformat1, $date, new DateTimeZone ($timezone1));
+
     // convert timezone
     $result -> setTimeZone (new DateTimeZone ($timezone2));
+    
     // convert dateformat
     return $result -> format ($dateformat2);
   }
@@ -689,9 +691,10 @@ function is_date ($date, $format="Y-m-d")
 {
   if ($date != "" && $format != "")
   {
-    $date_check = DateTime::createFromFormat ($format, $date);
+    $date = strtotime ($date);
+    if (!empty ($date)) $date = date ($format, $date);
 
-    if ($date_check && $date_check->format($format) == $date) return true;
+    if (!empty ($date)) return true;
     else return false;
   }
   else return false;
@@ -1207,7 +1210,7 @@ function in_array_substr ($search, $array)
 // output: new filename/false
 
 // description:
-// Create an valid file name without special characters that does not exceed the maximum file name length
+// Creates a valid file name without special characters that does not exceed the maximum file name length
 
 function createfilename ($filename)
 {
@@ -1245,8 +1248,11 @@ function createfilename ($filename)
       if (substr ($filename_new, -2, 1) == "~") $filename_new = substr ($filename_new, 0, -2);
       if (substr ($filename_new, -1, 1) == "~") $filename_new = substr ($filename_new, 0, -1);
 
-      // escaped character must be even for multibyte characters
-      if (substr_count ($filename_new, "~") % 2 != 0) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
+      // escaped character must be even for multibyte characters (does not work if single and multibyte characters are mixed) and has been removed in version 8.0.5
+      // if (substr_count ($filename_new, "~") % 2 != 0) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
+
+      // verify string and cut off last escaped character in order to correct the string
+      if (strpos ("_".$filename, specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
 
       $filename_new = $filename_new.$file_ext;
 
@@ -1806,8 +1812,15 @@ function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type
   global $user, $mgmt_config;
 
   // if mediafile is provided as path, extract the media file name
-  if ($mediafile != "" && substr_count ($mediafile, "/") > 0) $mediafile = getobject ($mediafile);
+  if (substr_count ($mediafile, "/") > 0)
+  {
+    // extract possible publication name or container ID 
+    if (substr_count ($mediafile, "/") == 1) $temp_site = substr ($mediafile, 0, strpos ($mediafile, "/"));
+    else $temp_site = getobject (getlocation ($mediafile));
 
+    if (intval ($temp_site) < 1) $mediafile = getobject ($mediafile);
+  }
+  
   if (isset ($mgmt_config) && valid_publicationname ($site) && valid_objectname ($mediafile))
   {
     $add = "";
@@ -1910,14 +1923,14 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
 
 // ---------------------- createobjectaccesslink -----------------------------
 // function: createobjectaccesslink()
-// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID [string] (optional)
+// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID or repository media file [string] (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
 function createobjectaccesslink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  if (isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
+  if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
   {
     $object_hash = false;
 
@@ -1966,6 +1979,8 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
     // if container id
     elseif ($container_id != "")
     {
+      // if media file with container ID
+      if (strpos ($container_id, "_hcm") > 0) $container_id = getmediacontainerid ($container_id);
       $object_hash = rdbms_getobject_hash ("", $container_id);
     }
 
@@ -1994,17 +2009,18 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
 
 // ---------------------- createwrapperlink -----------------------------
 // function: createwrapperlink()
-// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID [string] (optional)
+// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID or repository media file [string] (optional), 
+//        media file extension or type based on main config settings [string] (optional), media configuration based on main config settings [string] (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
 // description:
 // In order to track and include external user IDs in the daily statistics you need to manually add the 'user' parameter to the link in the form of: &user=[user-ID]
 
-function createwrapperlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
+function createwrapperlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="", $type="", $mediaconfig="")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  if (isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
+  if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
   {
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -2051,6 +2067,8 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     // if container id
     elseif ($container_id != "")
     {
+      // if media file with container ID
+      if (strpos ($container_id, "_hcm") > 0) $container_id = getmediacontainerid ($container_id);
       $object_hash = rdbms_getobject_hash ("", $container_id);
     }
 
@@ -2062,6 +2080,12 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     // object wrapper link
     elseif ($object_hash != false)
     {
+      // add media type and configuration without verification of the values (see main config for conversion settings)
+      if ($type != "" || $mediaconfig != "")
+      {
+        $object_hash = "hcms.".hcms_encrypt ($object_hash.":".$type.":".$mediaconfig);
+      }
+
       // deprecated since version 5.5.8: return $mgmt_config['url_path_cms']."explorer_download.php?hcms_objref=".$object_id."&hcms_objcode=".hcms_crypt ($object_id, 3, 12);
       // deprecated since version 5.6.1: 
       // if ($mgmt_config['secure_links'] == true) return $mgmt_config['url_path_cms']."?hcms_id_token=".hcms_encrypt ($object_id.":".$timetoken);
@@ -2083,17 +2107,18 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
 
 // ---------------------- createdownloadlink -----------------------------
 // function: createdownloadlink()
-// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID [string] (optional)
+// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID or repository media file [string] (optional),
+//        media file extension or type based on main config settings [string] (optional), media configuration based on main config settings [string] (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
 // description:
 // In order to track and include external user IDs in the daily statistics you need to manually add the 'user' parameter to the link in the form of: &user=[user-ID]
 
-function createdownloadlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
+function createdownloadlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="", $type="", $mediaconfig="")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  if (isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
+  if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
   {
     $object_hash = false;
 
@@ -2142,6 +2167,8 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     // if container id
     elseif ($container_id != "")
     {
+      // if media file with container ID
+      if (strpos ($container_id, "_hcm") > 0) $container_id = getmediacontainerid ($container_id);
       $object_hash = rdbms_getobject_hash ("", $container_id);
     }
 
@@ -2153,6 +2180,12 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     // object download link
     elseif ($object_hash != false)
     {
+      // add media type and configuration without verification of the values (see main config for conversion settings)
+      if ($type != "" || $mediaconfig != "")
+      {
+        $object_hash = "hcms.".hcms_encrypt ($object_hash.":".$type.":".$mediaconfig);
+      }
+
       // object link
       // deprecated since version 5.5.8
       // return $mgmt_config['url_path_cms']."explorer_download.php?hcms_objref=".$object_id."&hcms_objcode=".hcms_crypt ($object_id, 3, 12);
@@ -4023,7 +4056,13 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
           // remote client
           remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
         }
-      } 
+      }
+
+      // get container ID
+      $container_id = getmediacontainerid ($mediafile);
+
+      // video thumbnail images
+      if (intval ($container_id) > 0 && is_dir ($medialocation.$site."/".$container_id)) deletefile ($medialocation.$site."/", $container_id, true);
     }
 
     // delete original media player config
@@ -5483,6 +5522,7 @@ function createinstance ($instance_name, $settings, $user="sys")
     {
       // connect to MySQL
       $mysqli = new mysqli ($settings['db_host'], $settings['db_username'], $settings['db_password']);
+      
       if ($mysqli->connect_errno) $show = "<span class=hcmsHeadline>DB error (".$mysqli->connect_errno."): ".$mysqli->connect_error."</span><br />\n";
 
       if ($show == "")
@@ -5885,8 +5925,8 @@ function createpublication ($site_name, $user="sys")
   // IMPORTANT: siteaccess must be empty, otherwise valid_publicationname will return false
   $siteaccess = "";
 
-  // check if sent data is available
-  if (!is_array ($mgmt_config) || !valid_publicationname ($site_name) || strlen ($site_name) > 100 || in_array ($site_name, $forbidden) || !valid_objectname ($user))
+  // check if sent data is valid
+  if (!is_array ($mgmt_config) || !valid_publicationname ($site_name) || strlen ($site_name) > 100 || in_array ($site_name, $forbidden) || !preg_match ('/[a-zA-Z]/', $site_name) || !valid_objectname ($user))
   {
     $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['the-input-is-not-valid'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
@@ -6301,6 +6341,12 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists ('webdav', $setting) && $setting['webdav'] == true) $webdav_new = "true";
     else $webdav_new = "false";
 
+    if (array_key_exists ('webdav_dl', $setting) && $setting['webdav_dl'] == true) $webdav_dl_new = "true";
+    else $webdav_dl_new = "false";
+
+    if (array_key_exists ('webdav_al', $setting) && $setting['webdav_al'] == true) $webdav_al_new = "true";
+    else $webdav_al_new = "false";
+
     if (array_key_exists ('http_incl', $setting) && $setting['http_incl'] == true) $http_incl_new = "true";
     else $http_incl_new = "false";
 
@@ -6322,14 +6368,23 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists ('taxonomy', $setting) && $setting['taxonomy'] == true) $taxonomy_new = "true";
     else $taxonomy_new = "false";
 
-    if (array_key_exists ('upload_userinput', $setting) && $setting['upload_userinput'] == true) $upload_userinput = "true";
-    else $upload_userinput = "false";
+    if (array_key_exists ('upload_userinput', $setting) && $setting['upload_userinput'] == true) $upload_userinput_new = "true";
+    else $upload_userinput_new = "false";
 
-    if (array_key_exists ('upload_pages', $setting) && $setting['upload_pages'] == true) $upload_pages = "true";
-    else $upload_pages = "false";
+    if (array_key_exists ('upload_pages', $setting) && $setting['upload_pages'] == true) $upload_pages_new = "true";
+    else $upload_pages_new = "false";
 
-    if (array_key_exists ('crypt_content', $setting) && $setting['crypt_content'] == true) $crypt_content = "true";
-    else $crypt_content = "false";
+    if (array_key_exists ('crypt_content', $setting) && $setting['crypt_content'] == true) $crypt_content_new = "true";
+    else $crypt_content_new = "false";
+
+    if (array_key_exists ('gs_analyze_image', $setting) && $setting['gs_analyze_image'] == true) $gs_analyze_image_new = "true";
+    else $gs_analyze_image_new = "false";
+
+    if (array_key_exists ('gs_analyze_video', $setting) && $setting['gs_analyze_video'] == true) $gs_analyze_video_new = "true";
+    else $gs_analyze_video_new = "false";
+
+    if (array_key_exists ('gs_speech2text', $setting) && $setting['gs_speech2text'] == true) $gs_speech2text_new = "true";
+    else $gs_speech2text_new = "false";
 
     // create htaccess and web.config files for DAM usage
     if ($dam_new == "true")
@@ -6379,12 +6434,12 @@ function editpublication ($site_name, $setting, $user="sys")
     else $default_codepage_new = $setting['default_codepage'];
 
     // watermark for images
-    if (!array_key_exists ('watermark_image', $setting) || $setting['watermark_image'] == "") $watermark_image = "";
-    else $watermark_image = $setting['watermark_image'];
+    if (!array_key_exists ('watermark_image', $setting) || $setting['watermark_image'] == "") $watermark_image_new = "";
+    else $watermark_image_new = $setting['watermark_image'];
 
     // watermark for videos
-    if (!array_key_exists ('watermark_video', $setting) || $setting['watermark_video'] == "") $watermark_video = "";
-    else $watermark_video = $setting['watermark_video'];
+    if (!array_key_exists ('watermark_video', $setting) || $setting['watermark_video'] == "") $watermark_video_new = "";
+    else $watermark_video_new = $setting['watermark_video'];
  
     // correct path for excluded folders
     if (array_key_exists ('url_path_page', $setting)) $url_path_page_new = correctpath ($setting['url_path_page'], "/");
@@ -6456,6 +6511,19 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists('eventlog_notify', $setting)) $eventlognotify_new = $setting['eventlog_notify'];
     else $eventlognotify_new = "";
 
+     // set and save Google Cloud API Key file (JSON string)
+     if (array_key_exists('gs_access_json', $setting)) $gs_access_json_new = $setting['gs_access_json'];
+     else $gs_access_json_new = "";
+
+     savefile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json", $gs_access_json_new);
+
+     if (trim ($gs_access_json_new) != "") $gs_access_json_file_new = $mgmt_config['abs_path_data']."config/".$site_name.".google_cloud_key.json";
+     else $gs_access_json_file_new = "";
+
+     // set Google Speech-to-Text language code
+     if (array_key_exists('gs_speech2text_langcode', $setting)) $gs_speech2text_langcode_new = $setting['gs_speech2text_langcode'];
+     else $gs_speech2text_langcode_new = "";
+
     // config file of management system
     $site_mgmt_config = "<?php
 // ---------------------------------- content management server ----------------------------------------
@@ -6488,6 +6556,10 @@ function editpublication ($site_name, $setting, $user="sys")
 // Activate multimedia component access through hyperCMS native WebDAV server.
 // true = WebDAV active, false = WebDAV inactive
 \$mgmt_config['".$site_name."']['webdav'] = ".$webdav_new.";
+// Download links in virtual HTML files
+\$mgmt_config['".$site_name."']['webdav_dl'] = ".$webdav_dl_new.";
+// Access links in virtual HTML files
+\$mgmt_config['".$site_name."']['webdav_al'] = ".$webdav_al_new.";
 
 // Activate (true) or deactivate (false) the link mangement engine
 \$mgmt_config['".$site_name."']['linkengine'] = ".$linkengine_new.";
@@ -6523,11 +6595,11 @@ function editpublication ($site_name, $setting, $user="sys")
 
 // User must provide metadata for file uploads
 // Enable (true) or disable (false) user input for metadata right after file upload
-\$mgmt_config['".$site_name."']['upload_userinput'] = ".$upload_userinput.";
+\$mgmt_config['".$site_name."']['upload_userinput'] = ".$upload_userinput_new.";
 
 // Enable direct file uploads in page structure (if used as CMS)
 // Enable (true) or disable (false) file upload (files are not managed by the system!) 
-\$mgmt_config['".$site_name."']['upload_pages'] = ".$upload_pages.";
+\$mgmt_config['".$site_name."']['upload_pages'] = ".$upload_pages_new.";
 
 // Storage limit for all multimedia files (assets) in MB
 \$mgmt_config['".$site_name."']['storage_limit'] = ".$storage_limit_new.";
@@ -6543,11 +6615,11 @@ function editpublication ($site_name, $setting, $user="sys")
   $site_mgmt_config .= "
 // Encrypt content on server
 // Enable (false) or disable (true) encryption of content
-\$mgmt_config['".$site_name."']['crypt_content'] = ".$crypt_content.";
+\$mgmt_config['".$site_name."']['crypt_content'] = ".$crypt_content_new.";
 
 // Watermark options for images and videos
-\$mgmt_config['".$site_name."']['watermark_image'] = \"".$watermark_image."\";
-\$mgmt_config['".$site_name."']['watermark_video'] = \"".$watermark_video."\";
+\$mgmt_config['".$site_name."']['watermark_image'] = \"".$watermark_image_new."\";
+\$mgmt_config['".$site_name."']['watermark_video'] = \"".$watermark_video_new."\";
 
 ";
 
@@ -6603,6 +6675,17 @@ function editpublication ($site_name, $setting, $user="sys")
 
 // Set user notification if an error or warning has been logged
 \$mgmt_config['".$site_name."']['eventlog_notify'] = \"".$eventlognotify_new."\";
+
+// Google Cloud API Key file
+\$mgmt_config['".$site_name."']['gs_access_json'] = \"".$gs_access_json_file_new."\";
+// Google Vision
+\$mgmt_config['".$site_name."']['gs_analyze_image'] = ".$gs_analyze_image_new.";
+// Google Video Intelligence
+\$mgmt_config['".$site_name."']['gs_analyze_video'] = ".$gs_analyze_video_new.";
+// Google Speech-to-Text
+\$mgmt_config['".$site_name."']['gs_speech2text'] = ".$gs_speech2text_new.";
+// Google Speech-to-Text language code
+\$mgmt_config['".$site_name."']['gs_speech2text_langcode'] = \"".$gs_speech2text_langcode_new."\";
 ";
 
   // publication management config
@@ -8281,7 +8364,7 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|new user '".$login."' has been created by user '".$user."' (".getuserip().")";
 
             if (!empty ($mgmt_config['user_newwindow'])) $add_onload = "window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes,width=520,height=680'); parent.frames['mainFrame'].location.reload(); ";
-            else $add_onload = "parent.openpopup('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."'); ";
+            else $add_onload = "parent.openPopup('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."'); ";
 
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-user-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-user'][$lang]."<br />\n";
             $error_switch = "no";
@@ -11123,14 +11206,17 @@ function createobject ($site, $location, $page, $template, $user)
             // write XML declaration parameter for text encoding
             if ($charset != "") $page_box_xml = setxmlparameter ($page_box_xml, "encoding", $charset);
 
+            // date 
+            $date = date ("Y-m-d H:i:s", time());
+
             // write <hyperCMS> content in xml structure
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentcontainer>", $contentfile, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentxmlschema>", "object/".$cat, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentorigin>", $contentorigin, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentobjects>", $contentorigin."|", "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentuser>", $user, "", "");
-            if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentcreated>", $mgmt_config['today'], "", "");
-            if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+            if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentcreated>", $date, "", "");
+            if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentdate>", $date, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentstatus>", "active", "", "");
 
             // ------------------------ set workflow --------------------------------
@@ -13425,11 +13511,18 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             }
           }
 
+          // date 
+          $date = date ("Y-m-d H:i:s", time());
+
+          // update database
+          $container_id = substr ($contentfile_self, 0, strpos ($contentfile_self, ".xml")); 
+          rdbms_setcontent ($site, $container_id, "", "", $user, true, false);
+
           // insert user into content file
           $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentuser>", $user, "", "");
 
           // insert new date into content file
-          $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+          $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentdate>", $date, "", "");
 
           // save content container
           if ($bufferdata != "" && $bufferdata != false)
@@ -13979,6 +14072,9 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           // create new container folder
           @mkdir (getcontentlocation ($contentfile_new_id, 'abs_path_content'), $mgmt_config['fspermission']); 
 
+          // date 
+          $date = date ("Y-m-d H:i:s", time());
+
           // load container from file system
           $bufferdata = loadcontainer ($contentfile_self_wrk, "work", $user);
 
@@ -13989,7 +14085,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentuser>", $user, "", "");
 
           // insert new date into content container
-          if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", ""); 
+          if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentdate>", $date, "", ""); 
 
           // insert new object into content container
           if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", convertpath ($site, $location.$pagename_sec, $cat)."|", "", ""); 
@@ -15640,7 +15736,7 @@ function publishobject ($site, $location, $page, $user)
         }
       }
 
-      // ------------------------------ update and save container ------------------------------
+      // ------------------------------ update and save container and database ------------------------------
       if (!empty ($contentdata) && !empty ($container))
       {
         // create version of previous content file
@@ -15655,8 +15751,14 @@ function publishobject ($site, $location, $page, $user)
           }
         }
 
+        // update database
+        rdbms_setcontent ($site, $container_id, "", "", "", false, true);
+
+        // date 
+        $date = date ("Y-m-d H:i:s", time());
+
         // update information in content container
-        $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentpublished>", $mgmt_config['today'], "", "");
+        $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentpublished>", $date, "", "");
 
         // write content container
         if ($contentdata != false)
@@ -15974,6 +16076,9 @@ function unpublishobject ($site, $location, $page, $user)
                     $add_onload = "";
                     $show = $hcms_lang['an-error-occurred-in-building-the-view'][$lang]."<br/>Error file: ".$error_file;
                   }
+
+                  // update database
+                  rdbms_setcontent ($site, $container_id, "", "", "", false, "null");
 
                   // update information in content container
                   $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentpublished>", "", "", "");
@@ -18746,9 +18851,6 @@ function sendmessage ($from_user="", $to_user, $title, $message, $object_id="", 
 
     // set default user name
     if ($from_user == "") $from_user = "hyper Content & Digital Asset Management Server";
-
-    // get local date today (jjjj-mm-dd hh:mm)
-    $mgmt_config['today'] = date ("Y-m-d H:i", time());
 
     // try to get object_id from object path
     if ($object_id != "" && intval ($object_id) < 1)

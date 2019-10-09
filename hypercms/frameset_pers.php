@@ -35,7 +35,7 @@ checkusersession ($user, false);
 <body>
   <iframe name="controlFrame" scrolling="no" src="<?php echo "control_pers_menu.php?site=".$site."&cat=".$cat; ?>" frameBorder="0" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;">
-    <iframe name="mainFrame" scrolling="auto" src="<?php echo "empty.php?site=".$site; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+    <iframe name="mainFrame" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> src="<?php echo "empty.php?site=".$site; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
 </body>
 </html>

@@ -23,17 +23,21 @@ $screenwidth = getrequest ("width", "numeric", 800);
 $screenheight = getrequest ("height", "numeric", 600);
 
 // set default width and height in order to create temp images of standard sizes
-if ($screenwidth > 2600) $width = 2560;
-elseif ($screenwidth > 1960) $width = 1920;
-elseif ($screenwidth > 840) $width = 800;
-elseif ($screenwidth > 680) $width = 640;
-else $width = ceil ($screenwidth - 40);
+$setoff = 40;
 
-if ($screenheight > 1500) $height = 1440;
-elseif ($screenheight > 1140) $height = 1080;
-elseif ($screenheight > 660) $height = 600;
-elseif ($screenheight > 540) $height = 480;
-else $height = ceil ($screenheight - 60);
+if ($screenwidth > (2560 + $setoff)) $width = 2560;
+elseif ($screenwidth > (1920 + $setoff)) $width = 1920;
+elseif ($screenwidth > (800 + $setoff)) $width = 800;
+elseif ($screenwidth > (640 + $setoff)) $width = 640;
+else $width = ceil ($screenwidth - $setoff);
+
+$setoff = 60;
+
+if ($screenheight > (1440 + $setoff)) $height = 1440;
+elseif ($screenheight > (1080 + $setoff)) $height = 1080;
+elseif ($screenheight > (600 + $setoff)) $height = 600;
+elseif ($screenheight > (480 + $setoff)) $height = 480;
+else $height = ceil ($screenheight - $setoff);
 
 // location and object is set by assetbrowser
 if ($location == "" && !empty ($hcms_assetbrowser_location) && !empty ($hcms_assetbrowser_object))
@@ -50,10 +54,17 @@ $cat = getcategory ($site, $location);
 $location = deconvertpath ($location, "file");
 $location_esc = convertpath ($site, $location, $cat);
 
+// if folder
+if ($page == ".folder")
+{
+  $location = getlocation ($location);
+  $page = getobject ($location);
+}
+
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
-if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && is_file ($location.$page))
+if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
 {
   // ------------------------------ permission section --------------------------------
   
@@ -85,18 +96,27 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     $objectview = showmedia ($mediafile, $file_info['name'], "media_only", "objectcontainer", $width, $height);
   }
   // page live-view (no multimedia file)
-  elseif ($view == "liveview" && $cat == "page")
+  elseif ($view == "liveview" && $cat == "page" && $file_info['type'] != "Folder")
   {
     // load publication configuration
     if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
       
     $url_page = str_ireplace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$page;
-    $objectview = "<div id=\"objectcontainer\" style=\"width:".($screenwidth - 100)."px; height:".($screenheight - 100)."px; border:1px #000000 solid;\"><iframe id=\"objectiframe\" scrolling=\"auto\" src=\"".$url_page."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>";
+    
+    $objectview = "
+    <div id=\"objectcontainer\" style=\"width:".($screenwidth - 100)."px; height:".($screenheight - 160)."px; border:1px #000000 solid;\">
+      <iframe id=\"objectiframe\" scrolling=\"auto\" src=\"".$url_page."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>
+      <div style=\"padding:5px 0px 8px 0px; width:100%; text-align:left;\" class=\"hcmsHeadlineTiny\">".$object_info['name']."</div>
+    </div>";
   }
   // page or component preview (no multimedia file)
   else
   {
-    $objectview = "<div id=\"objectcontainer\" style=\"width:".($screenwidth - 100)."px; height:".($screenheight - 100)."px; border:1px #000000 solid;\"><iframe id=\"objectiframe\" scrolling=\"auto\" src=\"page_preview.php?location=".url_encode($location_esc)."&page=".url_encode($page)."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>";
+    $objectview = "
+    <div id=\"objectcontainer\" style=\"width:".($screenwidth - 100)."px; height:".($screenheight - 160)."px; border:1px #000000 solid;\">
+      <iframe id=\"objectiframe\" scrolling=\"auto\" src=\"page_preview.php?location=".url_encode($location_esc)."&page=".url_encode($page)."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>
+      <div style=\"padding:5px 0px 8px 0px; width:100%; text-align:left;\" class=\"hcmsHeadlineTiny\">".$object_info['name']."</div>
+    </div>";
   }
 }
 ?>
@@ -111,6 +131,18 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false); ?>
 <?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false); ?>
 <script type="text/javascript">
+function initalize ()
+{
+  if (parent.hcms_objectpath) var objectpath_array = parent.hcms_objectpath;
+  else var objectpath_array = hcms_objectpath;
+
+  if (objectpath_array.length > 0)
+  {
+    document.getElementById('previous').style.display = 'inline-block';
+    document.getElementById('next').style.display = 'inline-block';
+  }
+}
+
 function setscreensize (size)
 {
   if (size != "")
@@ -188,7 +220,11 @@ function previousObject (objectpath)
 {
   if (objectpath != "")
   {
-    var objectpath_array = parent.hcms_objectpath;
+    if (parent.hcms_objectpath) var objectpath_array = parent.hcms_objectpath;
+    else var objectpath_array = hcms_objectpath;
+
+    if (hcms_getObject (objectpath) == ".folder") objectpath = hcms_getLocation (objectpath);
+
     var key = objectpath_array.indexOf(objectpath);
     var previous = objectpath_array[key-1];
 
@@ -213,7 +249,11 @@ function nextObject (objectpath)
 {
   if (objectpath != "")
   {
-    var objectpath_array = parent.hcms_objectpath;
+    if (parent.hcms_objectpath) var objectpath_array = parent.hcms_objectpath;
+    else var objectpath_array = hcms_objectpath;
+
+    if (hcms_getObject (objectpath) == ".folder") objectpath = hcms_getLocation (objectpath);
+
     var key = objectpath_array.indexOf(objectpath);
     var next = objectpath_array[key+1];
 
@@ -244,57 +284,63 @@ function closeselectors ()
   }
 }
 </script>
+<style>
+hr
+{
+  display: none;
+}
+</style>
 </head>
 
-<body onload="centercontainer()">
+<body onload="centercontainer(); initalize();">
 
 <!-- toolbar -->
-<div id="toolbar" style="position:fixed; top:5px; left:5px; text-align:left;">
-<?php
-if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt_config['screensize']))
-{
-  $i = 0;
-  
-  foreach ($mgmt_config['screensize'] as $device => $name_array)
+<div id="toolbar" style="position:fixed; top:5px; left:5px; text-align:left; z-index:30;">
+  <?php
+  if (!empty ($file_info['ext']) && $file_info['type'] != "Folder" && empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt_config['screensize']))
   {
-    echo "
-  <div onmouseover=\"closeselectors();\" onclick=\"hcms_switchSelector('select_view_".$device."');\" class=\"hcmsButton hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/icon_".$device.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\" hcmsButtonSizeNarrow\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /></div>
-    <div id=\"select_view_".$device."\" class=\"hcmsSelector\" style=\"position:absolute; top:32px; left:".(54 * $i + 5)."px; visibility:hidden; z-index:999; max-height:200px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
-
-    foreach ($name_array as $name => $size)
+    $i = 0;
+    
+    foreach ($mgmt_config['screensize'] as $device => $name_array)
     {
       echo "
-    <div class=\"hcmsSelectorItem\" onclick=\"setscreensize('".$size."');\">".getescapedtext ($name." (".$size.")")."&nbsp;</div>";
+    <div onmouseover=\"closeselectors();\" onclick=\"hcms_switchSelector('select_view_".$device."');\" class=\"hcmsButton hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/icon_".$device.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\" hcmsButtonSizeNarrow\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /></div>
+      <div id=\"select_view_".$device."\" class=\"hcmsSelector\" style=\"position:absolute; top:32px; left:".(54 * $i + 5)."px; visibility:hidden; z-index:40; max-height:200px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
+
+      foreach ($name_array as $name => $size)
+      {
+        echo "
+      <div class=\"hcmsSelectorItem\" onclick=\"setscreensize('".$size."');\">".getescapedtext ($name." (".$size.")")."&nbsp;</div>";
+      }
+      
+      echo "
+    </div>";
+    
+      $i++;
     }
     
-    echo "
-  </div>";
-  
-    $i++;
+      echo "
+    <div onClick=\"closeselectors(); rotate();\" class=\"hcmsButton hcmsButtonSizeSquare\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsButtonSizeSquare\" id=\"pic_rotate\" name=\"pic_rotate\" alt=\"".getescapedtext($hcms_lang['rotate'][$lang])."\" title=\"".getescapedtext($hcms_lang['rotate'][$lang])."\" /></div>";
   }
-  
-    echo "
-  <div onClick=\"closeselectors(); rotate();\" class=\"hcmsButton hcmsButtonSizeSquare\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsButtonSizeSquare\" id=\"pic_rotate\" name=\"pic_rotate\" alt=\"".getescapedtext($hcms_lang['rotate'][$lang])."\" title=\"".getescapedtext($hcms_lang['rotate'][$lang])."\" /></div>";
-}
-?>
-<?php if ($cat == "page") { ?>
-  <div onClick="if (document.getElementById('objectiframe')) var url = document.getElementById('objectiframe').src; else var url=''; parent.openBrWindowLink(url, 'preview', 'scrollbars=yes,resizable=yes')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
-<?php } ?>
+  ?>
+  <?php if ($cat == "page" && !empty ($file_info['ext']) && $file_info['type'] != "Folder") { ?>
+    <div onClick="if (document.getElementById('objectiframe')) var url = document.getElementById('objectiframe').src; else var url=''; parent.openBrWindowLink(url, 'preview', 'scrollbars=yes,resizable=yes')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
+  <?php } ?>
 </div>
 
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:none;"></div>
 
 <!-- object view -->
-<div id="previous" style="display:inline-block; position:fixed; top:40px; left:0px; bottom:0px; width:25%; text-align:right; z-index:200; cursor:pointer;" onclick="previousObject('<?php echo $location_esc.$page; ?>');">
+<div id="previous" style="display:none; position:fixed; top:60px; left:0px; bottom:20px; width:25%; text-align:right; z-index:20; cursor:pointer;" onclick="previousObject('<?php echo $location_esc.$page; ?>');">
   <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="position:absolute; top:50%; left:20px;" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" />
 </div>
 
-<div id="container" style="position:fixed; top:0px; left:0px; margin:-1900px 0px 0px 0px;">
+<div id="container" style="position:fixed; top:0px; left:0px; margin:-1900px 0px 0px 0px; z-index:10;">
   <?php if (!empty ($objectview)) echo $objectview; ?>
 </div>
 
-<div id="next" style="display:inline-block; position:fixed; top:40px; right:0px; bottom:0px; width:25%; text-align:right; z-index:200; cursor:pointer;" onclick="nextObject('<?php echo $location_esc.$page; ?>');">
+<div id="next" style="display:none; position:fixed; top:60px; right:0px; bottom:20px; width:25%; text-align:right; z-index:20; cursor:pointer;" onclick="nextObject('<?php echo $location_esc.$page; ?>');">
   <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="position:absolute; top:50%; right:20px;" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
   

@@ -42,7 +42,12 @@ checkusersession ($user, false);
 
 var hcms_objectpath;
 
-function openobjectview (location, object, view)
+function openMainView (link)
+{
+  parent.openMainView (link);
+}
+
+function openObjectView (location, object, view)
 {
   var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
   var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
@@ -56,7 +61,7 @@ function openobjectview (location, object, view)
   hcms_showInfo('objectviewLayer',0);
 }
 
-function openpopup (link)
+function openPopup (link)
 {
   if (link != "")
   {
@@ -65,7 +70,7 @@ function openpopup (link)
   }
 }
 
-function closeobjectview ()
+function closePopup ()
 {
   document.getElementById('objectview').src = '';
   hcms_hideInfo('objectviewLayer');
@@ -89,11 +94,11 @@ function openBrWindowLink (url, winName, features)
 
 <!-- popup for preview/live-view and forms (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="objectviewLayer" style="display:none;">
-  <div style="position:fixed; right:4px; top:4px; z-index:9001;">
-    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closeobjectview();" />
+  <div style="position:fixed; right:2px; top:2px; z-index:8001;">
+    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
   </div>
-  <div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:9000;">
-   <iframe id="objectview" name="objectview" src="" frameBorder="0" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> style="width:100%; height:100%; margin:0; padding:0; border:0;" sandbox="allow-same-origin allow-scripts allow-forms" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+  <div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> position:fixed; margin:0; padding:0; left:0; top:36px; right:0; bottom:0; z-index:8000;">
+    <iframe id="objectview" name="objectview" src="" frameBorder="0" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> style="width:100%; height:100%; margin:0; padding:0; border:0;" sandbox="allow-same-origin allow-scripts allow-forms" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
   </div>
 </div>
 

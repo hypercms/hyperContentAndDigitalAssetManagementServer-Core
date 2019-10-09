@@ -174,6 +174,13 @@ if (defined ("SESSION") && constant ("SESSION") == "create" && is_file ($mgmt_co
   }
 }
 
+// reset main configuration values for the Mobile Edition (always open new object window, disable face detection)
+if (!empty ($is_mobile))
+{
+  $mgmt_config['object_newwindow'] = true;
+  $mgmt_config['facedetection'] = false;
+}
+
 // include language file for API functions
 if (empty ($lang)) $lang = "en";
 

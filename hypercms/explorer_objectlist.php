@@ -231,6 +231,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         $file_size = "";
         $file_created = "";
         $file_modified = "";
+        $file_published = "";
         $file_owner = "";
         $usedby = "";
     
@@ -260,6 +261,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
             {  
               if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
               if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+              if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
               if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
             }
           }
@@ -278,7 +280,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         }
         
         // fallback for date modified
-        if (empty ($file_size))
+        if (empty ($file_modified))
         {
           // get file time
           $file_modified = date ("Y-m-d H:i", @filemtime ($location.$folder));
@@ -334,9 +336,13 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
                 {
                   $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
                 }
-                elseif ($key == 'modifieddate')
+                elseif ($key == 'modifieddate' || $key == 'date')
                 {
                   $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_modified))."</span>".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang]);
+                }
+                elseif ($key == 'publishdate')
+                {
+                  $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_published))."</span>".showdate ($file_published, "Y-m-d H:i", $hcms_lang_date[$lang]);
                 }
                 elseif ($key == 'filesize')
                 {
@@ -347,7 +353,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
                 {
                   $title = getescapedtext ($hcms_lang['folder'][$lang]);
                 }
-                elseif ($key == 'owner')
+                elseif ($key == 'owner' || $key == 'user')
                 {
                   $title = $file_owner;
                 }
@@ -424,6 +430,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       $file_size = "";
       $file_created = "";
       $file_modified = "";
+      $file_published = "";
       $file_owner = "";
       $usedby = "";
     
@@ -468,6 +475,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             { 
               if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, ".", " ");
               if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+              if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
               if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
               if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
             }
@@ -485,8 +493,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             if (empty ($file_size) && is_file ($mediadir.$site."/".$mediafile))
             {
               $file_size = round (@filesize ($mediadir.$site."/".$mediafile) / 1024);
-              $file_size = number_format ($file_size, 0, ".", " ");
-              
+              $file_size = number_format ($file_size, 0, ".", " ");              
               $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$site."/".$mediafile));               
             }
 
@@ -592,9 +599,13 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
                 {
                   $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
                 }
-                elseif ($key == 'modifieddate')
+                elseif ($key == 'modifieddate' || $key == 'date')
                 {
                   $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_modified))."</span>".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang]);
+                }
+                elseif ($key == 'publishdate')
+                {
+                  $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_published))."</span>".showdate ($file_published, "Y-m-d H:i", $hcms_lang_date[$lang]);
                 }
                 elseif ($key == 'filesize')
                 {
@@ -605,7 +616,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
                 {
                   $title = $file_type;
                 }
-                elseif ($key == 'owner')
+                elseif ($key == 'owner' || $key == 'user')
                 {
                   $title = $file_owner;
                 }
@@ -722,7 +733,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
           {            
             $linking_buttons .= "
-            <button class=\"hcmsButtonDownload\" onClick=\"openobjectview('".url_encode($location_esc)."', '".url_encode($object)."', 'preview');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
+            <button class=\"hcmsButtonDownload\" onClick=\"openObjectView('".url_encode($location_esc)."', '".url_encode($object)."', 'preview');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
             <a href=\"".createviewlink ($site, $mediafile, $object_name, false, "download")."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
           }
         }
@@ -825,7 +836,10 @@ contextymove = true;
 
 // explorer view option
 var explorerview = "<?php echo $temp_explorerview; ?>";
-var sidebar = <?php if ($temp_sidebar) echo "true"; else echo "false"; ?>;
+
+// verify sidebar
+if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.display != 'none') var sidebar = true;
+else var sidebar = false;
 
 // define global variable for popup window name used in contextmenu.js
 var session_id = '<?php echo session_id(); ?>';
@@ -900,15 +914,18 @@ function setcolumns ()
 {
   if (document.forms['contextmenu_column'])
   {
+    // local load screen
+    if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='inline';
+
     document.forms['contextmenu_column'].submit();
   }
 }
 
-function openobjectview (location, object, view)
+function openObjectView (location, object, view)
 {
   if (location != "" && object != "" && parent.document.getElementById('objectview'))
   {
-    parent.openobjectview(location, object, view);
+    parent.openObjectView(location, object, view);
   }
   else return false;
 }
@@ -924,7 +941,7 @@ function initalize ()
   // select area
   selectarea = document.getElementById('selectarea');
 
-  // load screen
+  // parent load screen
   if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='none';
 
   // collect objects and set objects array
@@ -1076,6 +1093,7 @@ function initalize ()
         <td>
           <label><input onclick="setcolumns()" type="checkbox" name="column[createdate]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['createdate'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?></label><br />
           <label><input onclick="setcolumns()" type="checkbox" name="column[modifieddate]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['modifieddate'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['date-modified'][$lang]); ?></label><br />
+          <label><input onclick="setcolumns()" type="checkbox" name="column[publishdate]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['publishdate'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['published'][$lang]); ?></label><br />
           <label><input onclick="setcolumns()" type="checkbox" name="column[filesize]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['filesize'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?></label><br />
           <label><input onclick="setcolumns()" type="checkbox" name="column[type]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['type'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['type'][$lang]); ?></label><br />
           <label><input onclick="setcolumns()" type="checkbox" name="column[owner]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['owner'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['owner'][$lang]); ?></label><br />
@@ -1126,6 +1144,10 @@ function initalize ()
             elseif ($key == 'modifieddate')
             {
               $title = getescapedtext ($hcms_lang['date-modified'][$lang]);
+            }
+            elseif ($key == 'publishdate')
+            {
+              $title = getescapedtext ($hcms_lang['published'][$lang]);
             }
             elseif ($key == 'filesize')
             {

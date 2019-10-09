@@ -249,17 +249,35 @@ function jumpTo (target)
       ((empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || (empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1))
     )
     {
+      if (!empty ($mgmt_config['object_newwindow']))
+      {
+        $openlink = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
+      }
+      else
+      {
+        $openlink = "top.openMainView('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."');";
+      }
+
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-             "onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" ".
+             "onClick=\"".$openlink."\" ".
              "name=\"media_edit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />\n";
     }
     // mail
     elseif ($multiobject_count <= 1 && $page != "" && !empty ($mgmt_config['db_connect_rdbms']))
     {
+      if (!empty ($mgmt_config['object_newwindow']))
+      {
+        $openlink = "hcms_openWindow('user_sendlink.php?mailfile=".url_encode($page)."&token=".$token_new."', '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);";
+      }
+      else
+      {
+        $openlink = "parent.openPopup('user_sendlink.php?mailfile=".url_encode($page)."&token=".$token_new."');";
+      }
+
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-             "onClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($page)."&token=".$token_new."', '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);\" ".
+             "onClick=\"".$openlink."\" ".
              "name=\"media_edit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />\n";
     }  
     else

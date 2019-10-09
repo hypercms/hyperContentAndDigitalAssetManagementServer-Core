@@ -293,10 +293,16 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <?php if (is_dir ($mgmt_config['abs_path_cms']."webdav")) { ?>
     <tr> 
-      <td><?php echo getescapedtext ($hcms_lang['allow-access-through-webdav'][$lang]); ?> <br />
+      <td style="vertical-align:top;"><?php echo getescapedtext ($hcms_lang['allow-access-through-webdav'][$lang]); ?> <br />
       <td style="white-space:nowrap; vertical-align:top;">
-        <input type="checkbox" name="setting[webdav]" value="true" <?php if (@$mgmt_config[$site_name]['webdav'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
-        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label></label>
+        <label><input type="checkbox" name="setting[webdav]" value="true" onclick="hcms_switchInfo ('webdavLayer');" <?php if (!empty ($mgmt_config[$site_name]['webdav'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+        <div id="webdavLayer" style="<?php if (!empty ($mgmt_config[$site_name]['webdav'])) echo "display:inline;"; else echo "display:none;"; ?>">
+          <br/><label><input type="checkbox" name="setting[webdav_dl]" value="true" <?php if (!empty ($mgmt_config[$site_name]['webdav_dl'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+          <?php echo getescapedtext ($hcms_lang['download-link'][$lang]); ?></label>
+          <br/><label><input type="checkbox" name="setting[webdav_al]" value="true" <?php if (!empty ($mgmt_config[$site_name]['webdav_al'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+          <?php echo getescapedtext ($hcms_lang['access-link'][$lang]); ?></label>
+        </div>
       </td>
     </tr>
     <?php } ?>

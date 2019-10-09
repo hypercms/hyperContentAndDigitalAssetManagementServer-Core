@@ -48,12 +48,10 @@ $search_execute = getrequest ("search_execute");
 $cat = "";
 
 // set default value
-if (empty ($maxhits) && !empty ($mgmt_config['search_max_results']))
-{
-  $maxhits = $mgmt_config['search_max_results'];
-  if ($maxhits > 1000) $maxhits = 1000;
-}
-else $maxhits = 300;
+if (empty ($maxhits) && !empty ($mgmt_config['search_max_results'])) $maxhits = $mgmt_config['search_max_results'];
+
+if ($maxhits > 1000) $maxhits = 1000;
+elseif ($maxhits < 1) $maxhits = 300;
 
 // extract publication and template name
 if (substr_count ($template, "/") == 1) list ($site, $template) = explode ("/", $template);
@@ -432,6 +430,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
       $file_height = "";
       $file_created = "";
       $file_modified = "";
+      $file_published = "";
       $file_owner = "";
       $usedby = "";
       $metadata = "";
@@ -444,11 +443,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
         if (!empty ($object_item['media'])) $mediafile = $object_item['media'];
         if (!empty ($object_item['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($object_item['createdate']));
         if (!empty ($object_item['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($object_item['date']));
+        if (!empty ($object_item['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($object_item['publishdate']));
         if (!empty ($object_item['user'])) $file_owner = $object_item['user'];
         if (!empty ($object_item['filesize'])) $file_size = number_format ($object_item['filesize'], 0, ".", " ");
         if (!empty ($object_item['width'])) $file_width = $object_item['width'];
         if (!empty ($object_item['height'])) $file_height = $object_item['height'];
-        
+
         foreach ($object_item as $text_id=>$content)
         {
           if (substr ($text_id, 0, 5) == "text:") $container_info[$text_id] = $content;
@@ -513,10 +513,11 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 {  
                   if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
                   if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+                  if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
                   if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
                 }
               }
-              
+
               // link for copy & paste of download links (not if an access link is used)
               if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
               {
@@ -560,7 +561,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             {
               $file_info['icon'] = "folder_lock.png";
             }
-            
+
             // metadata
             $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
   
@@ -577,11 +578,11 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             {
               $listview .= "
                             <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; \">".$item_location."</div></td>";
-                   
+ 
               if (is_array ($objectlistcols_reduced))
               {
                 $i = 2;
-                
+
                 foreach ($objectlistcols_reduced as $key => $active)
                 {
                   if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:115px;";
@@ -595,9 +596,13 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     {
                       $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
                     }
-                    elseif ($key == 'modifieddate')
+                    elseif ($key == 'modifieddate' || $key == 'date')
                     {
                       $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_modified))."</span>".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang]);
+                    }
+                    elseif ($key == 'publishdate')
+                    {
+                      $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_published))."</span>".showdate ($file_published, "Y-m-d H:i", $hcms_lang_date[$lang]);
                     }
                     elseif ($key == 'filesize')
                     {
@@ -608,7 +613,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     {
                       $title = getescapedtext ($hcms_lang['folder'][$lang]);
                     }
-                    elseif ($key == 'owner')
+                    elseif ($key == 'owner' || $key == 'user')
                     {
                       $title = $file_owner;
                     }
@@ -711,6 +716,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, ".", " ");
                   if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
                   if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+                  if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
                   if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
                 }
               }
@@ -830,9 +836,13 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     {
                       $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
                     }
-                    elseif ($key == 'modifieddate')
+                    elseif ($key == 'modifieddate' || $key == 'date')
                     {
                       $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_modified))."</span>".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang]);
+                    }
+                    elseif ($key == 'publishdate')
+                    {
+                      $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_published))."</span>".showdate ($file_published, "Y-m-d H:i", $hcms_lang_date[$lang]);
                     }
                     elseif ($key == 'filesize')
                     {
@@ -843,7 +853,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     {
                       $title = $file_type;
                     }
-                    elseif ($key == 'owner')
+                    elseif ($key == 'owner' || $key == 'user')
                     {
                       $title = $file_owner;
                     }
@@ -852,7 +862,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                       if (!empty ($container_info[$key])) $title = $container_info[$key];
                       else $title = "";
                     }
-                    
+
                     $listview .= "
                             <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"padding-left:3px; ".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
                   
@@ -966,7 +976,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
               {            
                 $linking_buttons .= "
-                <button class=\"hcmsButtonDownload\" onClick=\"openobjectview('".url_encode($location_esc)."', '".url_encode($object)."', 'preview');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
+                <button class=\"hcmsButtonDownload\" onClick=\"openObjectView('".url_encode($location_esc)."', '".url_encode($object)."', 'preview');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
                 <a href=\"".createviewlink ($item_site, $mediafile, $object_name, false, "download")."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
               }
             }
@@ -1067,7 +1077,10 @@ contextymove = true;
 
 // explorer view option
 var explorerview = "<?php echo getescapedtext ($temp_explorerview); ?>";
-var sidebar = <?php if ($temp_sidebar) echo "true"; else echo "false"; ?>;
+
+// verify sidebar
+if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.display != 'none') var sidebar = true;
+else var sidebar = false;
 
 // define global variable for popup window name used in contextmenu.js
 var session_id = '<?php echo session_id(); ?>';
@@ -1110,11 +1123,11 @@ function toggleview (viewoption)
   return true;
 }
 
-function openobjectview (location, object, view)
+function openObjectView (location, object, view)
 {
   if (location != "" && object != "" && parent.document.getElementById('objectview'))
   {
-    parent.openobjectview(location, object, view);
+    parent.openObjectView(location, object, view);
   }
   else return false;
 }
@@ -1178,12 +1191,14 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 <!-- select area --> 
 <div id="selectarea" class="hcmsSelectArea"></div>
 
-<!-- live view --> 
-<div id="objectviewLayer" class="hcmsWorkplaceObjectlist" style="display:none; overflow:hidden; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">
-  <div style="position:fixed; right:5px; top:5px; z-index:9;">
-    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsIconList" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closeobjectview();" />
+<!-- popup for preview/live-view and forms (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
+<div id="objectviewLayer" style="display:none;">
+  <div style="position:fixed; right:4px; top:4px; z-index:8001;">
+    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
   </div>
-  <iframe id="objectview" src="" scrolling="no" frameBorder="0" <?php if (!$is_iphone) echo 'style="width:100%; height:100%; border:0; margin:0; padding:0;"'; ?>></iframe>
+  <div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:8000;">
+   <iframe id="objectview" name="objectview" src="" frameBorder="0" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> style="width:100%; height:100%; margin:0; padding:0; border:0;" sandbox="allow-same-origin allow-scripts allow-forms" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+  </div>
 </div>
 
 <!-- contextual help --> 
@@ -1314,6 +1329,10 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
             elseif ($key == 'modifieddate')
             {
               $title = getescapedtext ($hcms_lang['date-modified'][$lang]);
+            }
+            elseif ($key == 'publishdate')
+            {
+              $title = getescapedtext ($hcms_lang['published'][$lang]);
             }
             elseif ($key == 'filesize')
             {

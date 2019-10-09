@@ -49,6 +49,15 @@ if ($user != "") checkusersession ($user, false);
 
 $media_approved = false;
 
+// new media configuration parameter since version 8.0.5
+// get object hash, media type and config from encrypted cfg value
+if (!empty ($wl) && substr ($wl, 0, 5) == "hcms.") 
+{
+  $cfg = substr ($wl, 5);
+  $cfg = hcms_decrypt ($cfg);
+  if ($cfg != "" && strpos ($cfg, ":") > 0) list ($wl, $type, $media_config) = explode (":", $cfg);
+}
+
 // ------------------------------- define objectpath --------------------------------
 // get object ID
 // if wrapper link hash is provided (since version 5.6.2)
@@ -178,7 +187,7 @@ if (substr_count ($media, "/") == 1) $site = substr ($media, 0, strpos ($media, 
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
 // read multimedia file (publication/file) and submit data
-if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || !$mgmt_config[$site]['dam'])) || $media_approved))
+if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || !$mgmt_config[$site]['dam'])) || $media_approved))
 {
   // check IP and public access
   if ($user == "" && (!allowuserip ($site) || !mediapublicaccess ($media)))

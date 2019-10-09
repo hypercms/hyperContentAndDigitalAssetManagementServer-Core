@@ -543,6 +543,9 @@ function submitlogin()
       localStorage.setItem('username', username);
       localStorage.setItem('password', password);
     }
+
+    // local load screen
+    if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='inline';
   
     if (username.trim() != "" && password.trim() != "") return true;
     else return false;
@@ -568,6 +571,9 @@ function resetpassword()
     
     if (username.trim() != "")
     {
+      // local load screen
+      if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='inline';
+
       document.forms['login'].submit();
     }
     else return false;
@@ -626,6 +632,9 @@ function blurbackground (blur)
 </head>
 
 <body onload="focusform(); is_mobilebrowser(); is_iOS(); html5support(); setwallpaper();">
+
+  <!-- load screen --> 
+  <div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
 
   <div id="startScreen" class="hcmsStartScreen">
     <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>

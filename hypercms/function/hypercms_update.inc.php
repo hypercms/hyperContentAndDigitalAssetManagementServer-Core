@@ -140,10 +140,10 @@ function update_tasks_v584 ()
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
   // check if table exists
-  $sql = "SHOW TABLES LIKE 'task'";
+  $sql = "SHOW TABLES LIKE 'task'"; 
   $errcode = "50011";
-  $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'show');
-  $tableexists = $db->getNumRows ('show') > 0;
+  $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'show');
+  $tableexists = $db->rdbms_getnumrows ('show') > 0;
 
   if (!$tableexists)
   {
@@ -166,11 +166,11 @@ function update_tasks_v584 ()
   KEY `task` (`to_user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
-    $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'create');
 
     // save log
-    savelog ($db->getError ());
-    $db->close();
+    savelog ($db->rdbms_geterror ());
+    $db->rdbms_close();
 
     // move data from XML to RDBMS
     if (function_exists ("createtask") && is_dir ($mgmt_config['abs_path_data']."task/") && $scandir = scandir ($mgmt_config['abs_path_data']."task/"))
@@ -250,11 +250,11 @@ function update_database_v586 ()
   $sql = "SHOW COLUMNS FROM textnodes LIKE 'user'";
 
   $errcode = "50004";
-  $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'show');
+  $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'show');
 
   if ($done)
   {
-    $num_rows = $db->getNumRows ('show');
+    $num_rows = $db->rdbms_getnumrows ('show');
 
     // column does not exist
     if ($num_rows < 1)
@@ -263,70 +263,70 @@ function update_database_v586 ()
       $sql = "ALTER TABLE textnodes ADD object_id INT(11) AFTER textcontent;";
 
       $errcode = "50006";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       $sql = "ALTER TABLE textnodes ADD user CHAR(60) AFTER object_id;";
 
       $errcode = "50006";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       $sql = "ALTER TABLE textnodes ADD INDEX `textnodes_object_id` (`object_id`)";
 
       $errcode = "500021";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table accesslink
       $sql = "ALTER TABLE accesslink MODIFY user VARCHAR(600);";
 
       $errcode = "50007";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table recipient
       $sql = "ALTER TABLE recipient CHANGE sender from_user CHAR(60);";
 
       $errcode = "50007";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       $sql = "ALTER TABLE recipient CHANGE user to_user VARCHAR(600);";
 
       $errcode = "50008";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table container
       $sql = "ALTER TABLE container MODIFY user CHAR(60);";
 
       $errcode = "50009";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table queue
       $sql = "ALTER TABLE queue MODIFY user CHAR(60);";
 
       $errcode = "50010";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table dailystat
       $sql = "ALTER TABLE dailystat MODIFY user CHAR(60);";
 
       $errcode = "50011";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table notify
       $sql = "ALTER TABLE notify MODIFY user CHAR(60);";
 
       $errcode = "50012";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // add users to new field
       $sql = "UPDATE textnodes INNER JOIN container ON textnodes.id = container.id SET textnodes.user = container.user;";
 
       $errcode = "50013";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // drop unused linkreference table
       $sql = "DROP TABLE IF EXISTS `linkreference`;";
 
       $errcode = "50014";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'drop');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'drop');
 
       // create report data directory
       if (!is_dir ($mgmt_config['abs_path_data']."report"))
@@ -343,9 +343,9 @@ function update_database_v586 ()
   }
 
   // save log
-  savelog ($db->getError ());
+  savelog ($db->rdbms_geterror ());
   savelog (@$error);
-  $db->close();
+  $db->rdbms_close();
 
   return true;
 }
@@ -369,11 +369,11 @@ function update_database_v601 ()
   $sql = "SHOW COLUMNS FROM task LIKE 'planned'";
 
   $errcode = "50060";
-  $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'show');
+  $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'show');
 
   if ($done)
   {
-    $num_rows = $db->getNumRows ('show');
+    $num_rows = $db->rdbms_getnumrows ('show');
 
     // column does not exist
     if ($num_rows < 1)
@@ -382,12 +382,12 @@ function update_database_v601 ()
       $sql = "ALTER TABLE task CHANGE duration actual float(6,2);";
 
       $errcode = "50061";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       $sql = "ALTER TABLE task ADD planned float(6,2) AFTER status;";
 
       $errcode = "50062";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // create new table
       $sql = "CREATE TABLE `project` (
@@ -403,14 +403,14 @@ function update_database_v601 ()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
       $errcode = "50063";
-      $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'create');
     }
   }
 
   // save log
-  savelog ($db->getError ());
+  savelog ($db->rdbms_geterror ());
   savelog (@$error);
-  $db->close();
+  $db->rdbms_close();
 
   return true;
 }
@@ -433,8 +433,8 @@ function update_database_v614 ()
   // check if table exists
   $sql = "SHOW TABLES LIKE 'taxonomy'";
   $errcode = "50064";
-  $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'show');
-  $tableexists = $db->getNumRows ('show') > 0;
+  $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'show');
+  $tableexists = $db->rdbms_getnumrows ('show') > 0;
 
   if (!$tableexists)
   {
@@ -448,13 +448,13 @@ function update_database_v614 ()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
     $errcode = "50065";
-    $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'create');
   }
 
   // save log
-  savelog ($db->getError ());
+  savelog ($db->rdbms_geterror ());
   savelog (@$error);
-  $db->close();
+  $db->rdbms_close();
 
   return true;
 }
@@ -477,8 +477,8 @@ function update_database_v6113 ()
   // check if table exists
   $sql = "SHOW TABLES LIKE 'keywords'";
   $errcode = "50066";
-  $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'show');
-  $tableexists = $db->getNumRows ('show') > 0;
+  $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'show');
+  $tableexists = $db->rdbms_getnumrows ('show') > 0;
 
   if (!$tableexists)
   {
@@ -486,12 +486,12 @@ function update_database_v6113 ()
     $sql = "ALTER TABLE textnodes ADD type CHAR(6) AFTER object_id;";
 
     $errcode = "50067";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE textnodes ADD INDEX `textnodes_id_type` (`id`,`type`);";
 
     $errcode = "50068";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
  
     // create new table
     $sql = "CREATE TABLE `keywords` (
@@ -501,7 +501,7 @@ function update_database_v6113 ()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
     $errcode = "50069";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // create new table
     $sql = "CREATE TABLE `keywords_container` (
@@ -511,31 +511,31 @@ function update_database_v6113 ()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
     $errcode = "50070";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // update media textnodes
     $sql = "UPDATE textnodes SET type=\"media\" WHERE text_id LIKE \"media:%\"";
 
     $errcode = "50072";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // update link textnodes
     $sql = "UPDATE textnodes SET type=\"link\" WHERE text_id LIKE \"link:%\"";
 
     $errcode = "50073";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // update link textnodes
     $sql = "UPDATE textnodes SET type=\"head\" WHERE text_id LIKE \"head:%\"";
 
     $errcode = "50074";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // update link textnodes
     $sql = "UPDATE textnodes SET type=\"file\" WHERE text_id LIKE \"%.%\"";
 
     $errcode = "50075";
-    $db->query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // insert type in textnodes
     if (function_exists ("rdbms_setpublicationkeywords"))
@@ -594,7 +594,7 @@ function update_database_v6113 ()
                         $sql = "UPDATE textnodes INNER JOIN object ON textnodes.id=object.id SET textnodes.type=\"".$hypertagname."\" WHERE textnodes.text_id=\"".$text_id."\" AND object.template=\"".$template."\"";
   
                         $errcode = "50071";
-                        $db->query ($sql, $errcode, $mgmt_config['today']);
+                        $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
                       }
                     }
                   }
@@ -611,9 +611,9 @@ function update_database_v6113 ()
   }
 
   // save log
-  savelog ($db->getError ());
+  savelog ($db->rdbms_geterror ());
   savelog (@$error);
-  $db->close();
+  $db->rdbms_close();
 
   return true;
 }
@@ -636,22 +636,22 @@ function update_database_v6115 ()
   // select all content
   $sql = 'SELECT id, text_id, textcontent FROM textnodes WHERE textcontent!=""';
   $errcode = "50071";
-  $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
+  $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
 
   if ($result)
   {
-    while ($row = $db->getResultRow('select'))
+    while ($row = $db->rdbms_getresultrow('select'))
     {
       $cleaned = cleancontent ($row['textcontent'], "UTF-8");
 
-      $cleaned = $db->escape_string ($cleaned);
+      $cleaned = $db->rdbms_escape_string ($cleaned);
 
       // only update if content has changed and is not empty
       if (trim ($cleaned) != "" && $row['textcontent'] != $cleaned)
       {
         $sql = 'UPDATE textnodes SET textcontent="'.$cleaned.'" WHERE id="'.$row['id'].'" AND text_id="'.$row['text_id'].'"';
         $errcode = "50072";
-        $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'update');
+        $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update');
 
         // information
         $errcode = "00101";
@@ -661,9 +661,9 @@ function update_database_v6115 ()
   }
 
   // save log
-  savelog ($db->getError ());
+  savelog ($db->rdbms_geterror ());
   savelog (@$error);
-  $db->close();
+  $db->rdbms_close();
 
   return true;
 }
@@ -712,9 +712,9 @@ function update_container_v6118 ()
             // select date created
             $sql = 'SELECT createdate FROM container WHERE id='.intval($container_id);
             $errcode = "50072";
-            $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
+            $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
 
-            if ($result && $row = $db->getResultRow('select'))
+            if ($result && $row = $db->rdbms_getresultrow('select'))
             {
               $date_created = $row['createdate'];
             }
@@ -773,10 +773,10 @@ function update_container_v6118 ()
     }
 
     // save log
-    savelog ($db->getError ());
+    savelog ($db->rdbms_geterror ());
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.18|updated to version 6.1.18"), "update");
     savelog (@$error);
-    $db->close();
+    $db->rdbms_close();
 
     return true;
   }
@@ -805,23 +805,23 @@ function update_database_v6139 ()
     // create new index
     $sql = 'CREATE INDEX date ON recipient(object_id, date);';
     $errcode = "50081";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // create new index
     $sql = 'CREATE INDEX from_user ON recipient(object_id, from_user);';
     $errcode = "50082";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // create new index
     $sql = 'CREATE INDEX to_user ON recipient(object_id, to_user(200));';
     $errcode = "50083";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->getError ());
+    savelog ($db->rdbms_geterror ());
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.39|updated to version 6.1.39"), "update");
     savelog (@$error);
-    $db->close();
+    $db->rdbms_close();
 
     return true;
   }
@@ -850,17 +850,17 @@ function update_database_v625 ()
     // alter table
     $sql = "ALTER TABLE object ADD deleteuser CHAR(60) DEFAULT '' AFTER template;";
     $errcode = "50091";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD deletedate DATE AFTER deleteuser;";
     $errcode = "50092";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->getError ());
+    savelog ($db->rdbms_geterror ());
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.2.5|updated to version 6.2.5"), "update");
     savelog (@$error);
-    $db->close();
+    $db->rdbms_close();
 
     return true;
   }
@@ -891,12 +891,12 @@ function update_database_v705 ($dir, $db_alter)
       // alter table
       $sql = "ALTER TABLE object ADD media CHAR(255) DEFAULT '' AFTER template;";
       $errcode = "50075";
-      $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+      $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
       // save log
-      savelog ($db->getError ());
+      savelog ($db->rdbms_geterror ());
       savelog (@$error);
-      $db->close();
+      $db->rdbms_close();
 
       $db_alter = false;
     }
@@ -999,17 +999,17 @@ function update_database_v708 ()
     // alter table
     $sql = "ALTER TABLE textnodes ADD COLUMN textnodes_id INT NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (textnodes_id);";
     $errcode = "50085";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // alter table
     $sql = "ALTER TABLE taxonomy ADD COLUMN taxonomykey_id INT NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (taxonomykey_id);";
     $errcode = "50085";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->getError ());
+    savelog ($db->rdbms_geterror ());
     savelog (@$error);
-    $db->close();
+    $db->rdbms_close();
 
     // update log
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.8|updated to version 7.0.8"), "update");
@@ -1192,12 +1192,12 @@ function update_database_v800 ()
     // alter table
     $sql = "ALTER TABLE accesslink MODIFY object_id varchar(4000);";
     $errcode = "50095";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->getError ());
+    savelog ($db->rdbms_geterror ());
     savelog (@$error);
-    $db->close();
+    $db->rdbms_close();
 
     // update log
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|8.0.0|updated to version 8.0.0"), "update");
@@ -1287,6 +1287,86 @@ function update_users_804 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v805 ----------------------------------------------
+// function: update_database_v805()
+// input: %
+// output: true / false
+
+// description: 
+// Update of database to version 8.0.5
+
+function update_database_v805 ()
+{
+  global $mgmt_config;
+
+  $logdata = loadlog ("update", "string");
+
+  if (empty ($logdata) || strpos ($logdata, "|8.0.5|") < 1)
+  {
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table
+    $sql = "ALTER TABLE container ADD publishdate datetime AFTER date;";
+    $errcode = "50096";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    if (!empty ($mgmt_config['abs_path_data']))
+    { 
+      // content repository
+      $loc = $mgmt_config['abs_path_data']."content/";
+  
+      // 1 st level (content container blocks)
+      $blockdir = scandir ($loc);
+  
+      $i = 0;
+  
+      // browse all containers in the content repository
+      foreach ($blockdir as $block)
+      {
+        if (is_dir ($loc.$block) && $block != "." && $block != ".." && is_numeric ($block))
+        {
+          // 2nd level (specific content container folder)
+          $contdir = scandir ($loc.$block);
+  
+          foreach ($contdir as $container_id)
+          {
+            // read published container
+            if (intval ($container_id) > 0 && is_file ($loc.$block."/".$container_id."/".$container_id.".xml"))
+            {
+              // load container
+              $data = loadfile ($loc.$block."/".$container_id."/", $container_id.".xml");
+
+              $date_published = getcontent ($data, "<contentpublished>");
+              $contentstatus = getcontent ($data, "<contentstatus>");
+
+              // if date is available and container status is active
+              if (!empty ($date_published[0]) && !empty ($contentstatus[0]) && $contentstatus[0] == "active")
+              {
+                // set date
+                $sql = 'UPDATE container SET publishdate="'.$date_published[0].'" WHERE id='.intval($container_id);
+                $errcode = "50097";
+                $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update');
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|8.0.5|updated to version 8.0.5"), "update");
+
+    return true;
+  }
+  else return false;
+}   
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -1316,5 +1396,6 @@ function updates_all ()
   update_config_7010();
   update_database_v800 ();
   update_users_804 ();
+  update_database_v805 ();
 }
 ?>

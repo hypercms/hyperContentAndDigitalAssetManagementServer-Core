@@ -83,8 +83,7 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
       $object_name = $file_info['name'];
       
       // open on double click
-      if (!empty ($mgmt_config['message_newwindow'])) $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$message_time."', 'status=yes,scrollbars=no,resizable=yes', 600, 900);\"";
-      else $openObject = "onDblClick=\"parent.openpopup('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."');\"";
+      $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$message_time."', 'status=yes,scrollbars=no,resizable=yes', 600, 900);\"";
       
       // onclick for marking objects
       $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlMessageMenu();\"";

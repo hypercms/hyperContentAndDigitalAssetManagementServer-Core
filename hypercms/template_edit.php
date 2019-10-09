@@ -152,7 +152,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
 <meta charset="<?php echo $charset; ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
 function openHelp()
 {
   hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help', 'resizable=yes,scrollbars=yes', 750, 680);
@@ -795,7 +795,7 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
       </td>
     </tr>
     <tr>
-      <td style="text-align:center;">
+      <td style="text-align:left;">
         <textarea name="contentfield" style="width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;"><?php echo $contentfield; ?></textarea>
       </td>
     </tr>

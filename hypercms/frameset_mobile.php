@@ -78,6 +78,22 @@ function maxNavFrame ()
   return true;
 }
 
+function setwindows ()
+{
+  // set window width and height for contextmenu
+  localStorage.setItem ('windowwidth', <?php echo windowwidth ("object"); ?>);
+  localStorage.setItem ('windowheight', <?php echo windowheight ("object"); ?>);
+
+  // set object popup or new window for contextmenu
+  localStorage.setItem ('object_newwindow', <?php if (!empty ($mgmt_config['object_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+
+  // set message popup or new window for contextmenu
+  localStorage.setItem ('message_newwindow', <?php if (!empty ($mgmt_config['message_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+
+  // set user popup or new window for contextmenu
+  localStorage.setItem ('user_newwindow', <?php if (!empty ($mgmt_config['user_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+}
+
 $(document).ready(function()
 {
   $("#workplFrame").height($(window).height() - $("#topbar").height());
@@ -86,6 +102,7 @@ $(document).ready(function()
   if ($("#chatContainer")) $("#chatContainer").height($(window).height());
   if ($("#chatFrame")) $("#chatFrame").height($(window).height());
   setviewport();
+  setwindows();
   
   window.onresize = function()
   {

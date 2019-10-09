@@ -366,7 +366,7 @@ function goToURL()
              "class=\"hcmsButton hcmsButtonSizeSquare\" ";
 
              if (!empty ($mgmt_config['user_newwindow'])) echo "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 800);\" ";
-             else echo "onClick=\"parent.openpopup('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."');\" ";
+             else echo "onClick=\"parent.openPopup('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."');\" ";
  
       echo "name=\"media_edit\" src=\"".getthemelocation()."img/button_user_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
     }    

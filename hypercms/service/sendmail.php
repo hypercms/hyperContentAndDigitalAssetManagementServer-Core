@@ -299,7 +299,7 @@ if ($action == "savequeue" && valid_objectname ($user) && checktoken ($token, $u
   else
   {
     $general_error[] = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."
-    <script language=\"JavaScript\" type=\"text/javascript\">if (typeof parent.closeobjectview == 'function') setTimeout(function(){ parent.closeobjectview() }, 1000); else setTimeout(function(){ window.close() }, 1000);</script>";
+    <script language=\"JavaScript\" type=\"text/javascript\">if (typeof parent.closeoPopup == 'function') setTimeout(function(){ parent.closePopup() }, 1000); else setTimeout(function(){ window.close() }, 1000);</script>";
   }
 }
 // ---------------------------------- send mail ----------------------------------

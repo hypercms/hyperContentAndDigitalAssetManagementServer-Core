@@ -285,6 +285,31 @@ function hcms_translateTextField (textarea_id, sourcelang_id, targetlang_id)
 
 // --------------------------- standard functions ----------------------------
 
+function hcms_getImageSize (imgSrc)
+{
+  var newImg = new Image();
+
+  // triggers afte image has been loaded
+  newImg.onload = function() {
+    var height = newImg.height;
+    var width = newImg.width;
+    return 'width:'+width+'px; height:'+height+'px;';
+  }
+
+  // set image src
+  newImg.src = imgSrc;
+}
+
+function hcms_arrayUnique_helper (value, index, self)
+{ 
+  return self.indexOf(value) === index;
+}
+
+function hcms_arrayUnique (array)
+{ 
+  return array.filter(hcms_arrayUnique_helper);
+}
+
 function hcms_enterKeyPressed (event)
 {
   // Cross Browser
@@ -429,7 +454,41 @@ function hcms_getDocHeight ()
   else return false;
 }
 
-var windowcounter = 0;
+function hcms_getLocation (path)
+{
+  if (path != "") return path.substring (0, path.lastIndexOf('/')+1);
+  else return false;
+}
+
+function hcms_getObject (path)
+{
+  if (path != "") return path.substring (path.lastIndexOf('/')+1, path.length);
+  else return false;
+}
+
+var hcms_style = "";
+
+function hcms_minMaxLayer (id)
+{
+  var element = document.getElementById(id);
+
+  if (element)
+  {
+    // if max
+    if (element.style.width == '90%')
+    {
+      element.style.cssText = hcms_style + ' transition:width .5s;';
+    }
+    // if min
+    else
+    {
+      hcms_style = element.style.cssText;
+      element.style.cssText = 'position:fixed; z-index:9999; width:90%; height:90%; top:50%; left:50%; transform:translate(-50%, -50%); transition:width 1s;';
+    }
+  }
+}
+
+var hcms_windowcounter = 0;
 
 function hcms_openWindow (theURL, winName, features, width, height)
 {
@@ -444,9 +503,9 @@ function hcms_openWindow (theURL, winName, features, width, height)
   {
     if (localStorage.getItem('windowwidth') !== null && localStorage.getItem('windowwidth') == width && localStorage.getItem('windowheight') !== null && localStorage.getItem('windowheight') == height)
     {
-      windowcounter++;
-      var offsetX = 35 * windowcounter;
-      var offsetY = 25 * windowcounter;
+      hcms_windowcounter++;
+      var offsetX = 35 * hcms_windowcounter;
+      var offsetY = 25 * hcms_windowcounter;
       if (screen.width > width * 1.8) offsetX = offsetX + 280;
       popup.moveTo(offsetX, offsetY);
     }
@@ -857,7 +916,7 @@ function hcms_ElementbyIdStyle (id, ElementClass)
 
 // ------------------------------- html entities ----------------------------------
 
-// decodes the html entities in the str (e.x.: &auml; => � but for the corresponding charset
+// decodes the html entities in the str (e.x.: &auml; =>   but for the corresponding charset
 // uses an html element to decode
 function hcms_entity_decode(str)
 {
@@ -867,7 +926,7 @@ function hcms_entity_decode(str)
   return ta.value;
 }
 
-// encodes the html entities in the str (e.x.: � => &auml; but for the corresponding charset
+// encodes the html entities in the str (e.x.:   => &auml; but for the corresponding charset
 // uses an html element to encode
 function hcms_entity_encode(str)
 {
@@ -903,8 +962,8 @@ function hcms_addTableRow (id, position, values)
 // ------------------------------ sort table data --------------------------------
 
 // define global arrays for the 2 tables (detailed and thumbnail view)
-var hcms_detailview=new Array(); 
-var hcms_galleryview=new Array(); 
+var hcms_detailview = new Array(); 
+var hcms_galleryview = new Array(); 
 var is_gallery = false;
 
 function hcms_stripHTML (_str)
@@ -914,11 +973,11 @@ function hcms_stripHTML (_str)
   // remove all 3 types of line breaks
   _str = _str.replace(/(\r\n|\n|\r)/gm, "");
 
-  var _reg=/<.*?>/gi;
+  var _reg = /<.*?>/gi;
   
   while (_str.match(_reg) != null)
   {
-    _str=_str.replace(_reg, "");
+    _str = _str.replace(_reg, "");
   }
   
   // replace non-breaking-space
@@ -930,45 +989,50 @@ function hcms_stripHTML (_str)
 // sort table array hcms_detailview by column number _c
 function hcms_bubbleSort (c, _ud, _isNumber)
 {
-  for (var i=0; i<hcms_detailview.length; i++)
+  for (var i=0; i < hcms_detailview.length; i++)
   {
-    for (var j=i; j<hcms_detailview.length; j++)
+    for (var j=i; j < hcms_detailview.length; j++)
     {
-      var _left=hcms_stripHTML(hcms_detailview[i][c]);
-      var _right=hcms_stripHTML(hcms_detailview[j][c]);
+      var _left = hcms_stripHTML(hcms_detailview[i][c]);
+      var _right = hcms_stripHTML(hcms_detailview[j][c]);
 
-      var _sign=_ud?">":"<";
-      var _yes=false;
+      var _sign = _ud?">":"<";
+      var _yes = false;
       
       if (_isNumber)
       {
          _left = _left.replace(".", "");
          _right = _right.replace(".", "");
-         if(_ud && (parseInt(_left)-parseInt(_right)>0))_yes=true;
-         if(!_ud && (parseInt(_left)-parseInt(_right)<0))_yes=true;
+         _left = _left.replace(",", "");
+         _right = _right.replace(",", "");
+         _left = _left.replace(" ", "");
+         _right = _right.replace(" ", "");
+
+         if (_ud && (parseInt(_left)-parseInt(_right) > 0)) _yes = true;
+         if (!_ud && (parseInt(_left)-parseInt(_right) < 0)) _yes = true;
       }
       else
       {
-        if(_ud && _left.toLowerCase() > _right.toLowerCase())_yes=true;
-        if(!_ud && _left.toLowerCase() < _right.toLowerCase())_yes=true;
+        if (_ud && _left.toLowerCase() > _right.toLowerCase()) _yes = true;
+        if (!_ud && _left.toLowerCase() < _right.toLowerCase()) _yes = true;
       }
       
       if (_yes)
       {
         // swap rows for detailed view
-        for(var x=0; x<hcms_detailview[i].length; x++)
+        for (var x=0; x < hcms_detailview[i].length; x++)
         {
-          var _t=hcms_detailview[i][x];
-          hcms_detailview[i][x]=hcms_detailview[j][x];
-          hcms_detailview[j][x]=_t;
+          var _t = hcms_detailview[i][x];
+          hcms_detailview[i][x] = hcms_detailview[j][x];
+          hcms_detailview[j][x] = _t;
         }
         
         // swap rows for thumbnail view  
         if (is_gallery) 
         {
-          _t=hcms_galleryview[i];
-          hcms_galleryview[i]=hcms_galleryview[j];
-          hcms_galleryview[j]=_t;
+          _t = hcms_galleryview[i];
+          hcms_galleryview[i] = hcms_galleryview[j];
+          hcms_galleryview[j] = _t;
         }
       }
     }
@@ -978,6 +1042,7 @@ function hcms_bubbleSort (c, _ud, _isNumber)
 }
 
 var lastSort = null;
+var hcms_objectpath = new Array();
 
 function hcms_sortTable (_c, _isNumber)
 {
@@ -989,19 +1054,20 @@ function hcms_sortTable (_c, _isNumber)
   // detailed view table
   if (hcms_detailview.length <= 0)
   {
-    var _o=null;
-    var _i=0;
+    var _o = null;
+    var _i = 0;
     
-    while (_o=document.getElementById("g"+_i))
+    while (_o = document.getElementById("g"+_i))
     {
-      hcms_detailview[_i]=new Array();
-      var _j=0;
+      hcms_detailview[_i] = new Array();
+      var _j = 0;
       
-      while (_p=document.getElementById("h"+_i+"_"+_j))
+      while (_p = document.getElementById("h"+_i+"_"+_j))
       {
-        hcms_detailview[_i][_j]=_p.innerHTML;
+        hcms_detailview[_i][_j] = _p.innerHTML;
         _j++;
       }
+
       _i++;
     }
   }
@@ -1009,31 +1075,41 @@ function hcms_sortTable (_c, _isNumber)
   // thumbnail view table
   if (hcms_galleryview.length <= 0 && is_gallery)
   {
-    _o=null;
+    _o = null;
     _i = 0;
     
-    while (_o=document.getElementById("t"+_i))
+    while (_o = document.getElementById("t"+_i))
     {
-      hcms_galleryview[_i]=_o.innerHTML;
+      hcms_galleryview[_i] = _o.innerHTML;
       _i++;
     } 
   } 
   
   // sort both tables the same way
-  hcms_bubbleSort (_c, lastSort!=_c, _isNumber);
+  hcms_bubbleSort (_c, lastSort != _c, _isNumber);
   
   // refill tables with sorted arrays
   for (var b = 0; b < hcms_detailview.length; b++)
   {
     for (var c = 0; c < hcms_detailview[b].length; c++)
     {
-      document.getElementById("h"+b+"_"+c).innerHTML=hcms_detailview[b][c];
-      if (is_gallery) document.getElementById("t"+b).innerHTML=hcms_galleryview[b]; 
+      document.getElementById("h"+b+"_"+c).innerHTML = hcms_detailview[b][c];
+      if (is_gallery) document.getElementById("t"+b).innerHTML = hcms_galleryview[b];
+
+      // save object path for viewer
+      if (c == 0 && document.getElementById("h"+b+"_"+c).getElementsByTagName("input")) 
+      {
+        var input = document.getElementById("h"+b+"_"+c).getElementsByTagName("input");
+        if (input[0].getAttribute("value")) hcms_objectpath[b] = input[0].getAttribute("value");
+      }
     }
   }
+
+  // save object path array variable in parent frame
+  if (hcms_objectpath) parent.hcms_objectpath = hcms_objectpath;
   
-  if (lastSort!=_c) lastSort=_c;
-  else lastSort=null;
+  if (lastSort != _c) lastSort = _c;
+  else lastSort = null;
 }
 
 // ------------------------------ sort object --------------------------------
@@ -1222,9 +1298,9 @@ function hcms_createVTTrecords (records)
           
           div.id = timestamp;
       
-          div.innerHTML = '<input type="text" name="vtt_start" value="' + record.start + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:58px;" readonly="readonly" />\
-              <input type="text" name="vtt_stop" value="' + record.stop + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:58px;" readonly="readonly" />\
-              <input type="text" name="vtt_text" value="' + record.text + '" maxlength="400" style="float:left; margin:2px 2px 0px 0px; width:384px;" />\
+          div.innerHTML = '<input type="text" name="vtt_start" value="' + record.start + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:98px;" readonly="readonly" />\
+              <input type="text" name="vtt_stop" value="' + record.stop + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:98px;" readonly="readonly" />\
+              <input type="text" name="vtt_text" value="' + record.text + '" maxlength="400" style="float:left; margin:2px 2px 0px 0px; width:342px;" />\
               ' + vtt_buttons + '\
               <br />';
       

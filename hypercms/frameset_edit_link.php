@@ -78,10 +78,10 @@ function maxNavFrame ()
 
 <body>
   <div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;">
-    <iframe id="navFrame2" name="navFrame2" scrolling="auto" src="<?php echo "link_edit_explorer.php?site=".$site."&cat=".$cat; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+    <iframe id="navFrame2" name="navFrame2" scrolling="auto" src="<?php echo "link_edit_explorer.php?site=".$site."&cat=".$cat; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
   <div id="mainLayer" style="position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;">
-    <iframe id="mainFrame2" name="mainFrame2" scrolling="auto" src="<?php echo "link_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&contenttype=".$contenttype."&db_connect=".$db_connect."&tagname=".$tagname."&id=".$id."&label=".$label."&targetlist=".$targetlist."&linkhref_curr=".$linkhref_curr."&linkhref=".$linkhref."&linktarget=".$linktarget."&linktext=".$linktext; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+    <iframe id="mainFrame2" name="mainFrame2" scrolling="auto" src="<?php echo "link_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&contenttype=".$contenttype."&db_connect=".$db_connect."&tagname=".$tagname."&id=".$id."&label=".$label."&targetlist=".$targetlist."&linkhref_curr=".$linkhref_curr."&linkhref=".$linkhref."&linktarget=".$linktarget."&linktext=".$linktext; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
 </body>
 </html>

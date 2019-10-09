@@ -56,7 +56,15 @@ popupfocus ();
 echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" />&nbsp;".getescapedtext ($hcms_lang['system-events'][$lang]), $lang);
 ?>
 <div class="hcmsWorkplaceFrame">
-  <?php echo $description; ?>
+  <?php
+  // extract IP and replace by link
+  if (preg_match ('/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $description, $ip_match))
+  {
+    $description = str_replace ($ip_match[0], "<a href=\"page_info_ip.php?ip=".$ip_match[0]."\" target=_SELF>".$ip_match[0]."</a>", $description);
+  }
+  
+  echo $description;
+  ?>
 </div>
 
 </body>

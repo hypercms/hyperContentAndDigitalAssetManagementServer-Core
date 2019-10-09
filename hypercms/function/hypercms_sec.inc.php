@@ -727,6 +727,62 @@ function checklocalpermission ($site, $group, $name)
   else return false;
 }
 
+// --------------------------------------- checklanguage -----------------------------------------------
+// function: checklanguage()
+// input: language array with all valid values [array], language value of attribute in template tag [string}
+// output: true if language array holds the given language value / false if not found
+
+function checklanguage ($language_array, $language_value)
+{
+  if (is_array ($language_array) && $language_value != "")
+  {
+    if (in_array ($language_value, $language_array)) return true;
+    else return false;
+  }
+  else return true;
+}
+
+// --------------------------------------- checkgroupaccess -----------------------------------------------
+// function: checkgroupaccess()
+// input: group access from template group-tag attribute [string], user group membership names [array]
+// output: true if the current user group has access / false if not
+
+// description:
+// Verifies if a user has access to the tags content based on the group membership.
+
+function checkgroupaccess ($groupaccess, $usergroup_array)
+{
+  // no group access defined
+  if (trim ($groupaccess) == "" || !is_string ($groupaccess)) return true;
+  // no user groups defined
+  elseif (!is_array ($usergroup_array) || sizeof ($usergroup_array) < 1) return false;
+  // continue
+  else
+  {
+    $groupaccess_array = array ();
+
+    // replace ; with |
+    if (substr_count ($groupaccess, ";") > 0) $groupaccess = str_replace (";", "|", $groupaccess);
+
+    // split into array
+    if (substr_count ($groupaccess, "|") > 0) $groupaccess_array = explode ("|", $groupaccess);
+    else $groupaccess_array[] = $groupaccess;
+
+    if (is_array ($groupaccess_array) && sizeof ($groupaccess_array) > 0)
+    {
+      // verify group access
+      foreach ($usergroup_array as $usergroup)
+      {
+        if (in_array ($usergroup, $groupaccess_array)) return true;
+      }
+
+      return false;
+    }
+    else return true;
+  }
+}
+
+
 // =============================== USER LOGON/SESSION FUNCTIONS ================================
 
 // --------------------------------------- userlogin -------------------------------------------
@@ -795,6 +851,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   $filepasswd = Null;
   $superadmin = Null;
   $memberofnode = Null;
+  $usergroups = array();
 
   // eventsystem
   if ($eventsystem['onlogon_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
@@ -1169,6 +1226,9 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               // deseralize the permission string and define root, global and local permissions
               $permission_str[$site_name][$group_name_admin] = $permission_str_admin;
 
+              // set group names for each publication
+              $usergroups[$site_name] = array ($group_name_admin);
+
               if (isset ($permission_str[$site_name][$group_name_admin]))
               {
                 $result['rootpermission'] = rootpermission ($site_name, $site_admin, $permission_str);
@@ -1248,7 +1308,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                   if (strpos ("_".$group_string, "|") > 0) $group_array = explode ("|", trim ($group_string, "|"));
                   else $group_array = array($group_string);
 
-                  // if object linking is used assign group "default" if existing.
+                  // if object linking is used assign group "default" if it exists
                   // user must have at least one group assigned to have access to the system!
                   if (isset ($result['hcms_linking']) && is_array ($result['hcms_linking']) && sizeof ($result['hcms_linking']) > 0)
                   {
@@ -1259,6 +1319,9 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                       $group_array[] = "default";
                     }
                   }
+
+                  // set group names for each publication
+                  $usergroups[$site_name] = $group_array;
 
                   if (is_array ($group_array) && sizeof ($group_array) > 0)
                   {
@@ -1520,7 +1583,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       // read and set labels in templates for objectlist and metadata views
       $labels[$temp_site] = array();
 
-      // get all templates excluding tempate includes
+      // get all templates excluding template includes
       $template_array = gettemplates ($temp_site, "all");
 
       if (is_array ($template_array) && sizeof ($template_array) > 0)
@@ -1548,11 +1611,26 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                   {
                     $temp_id = getattribute ($tag, "id");
                     $temp_label = getattribute ($tag, "label");
+                    $temp_groups = getattribute ($tag, "groups");
 
-                    // define label name based on label of tag
-                    if ($temp_id != "" && trim ($temp_label) != "") $labels[$temp_site][$temp_cat]['text:'.$temp_id] = $temp_label;
-                    // or use text ID
-                    elseif ($temp_id != "") $labels[$temp_site][$temp_cat]['text:'.$temp_id] = ucfirst (str_replace ("_", " ", $temp_id));
+                    // user has access to the content
+                    if (empty ($temp_groups) || checkgroupaccess ($temp_groups, $usergroups[$temp_site]))
+                    {
+                      // define label name based on label of tag
+                      if ($temp_id != "" && trim ($temp_label) != "") $labels[$temp_site][$temp_cat]['text:'.$temp_id] = $temp_label;
+                      // or use text ID
+                      elseif ($temp_id != "") $labels[$temp_site][$temp_cat]['text:'.$temp_id] = ucfirst (str_replace ("_", " ", $temp_id));
+                    }
+                    // user has no access to the content
+                    else
+                    {
+                      // remove column
+                      if (!empty ($columns[$temp_site][$temp_cat]['text:'.$temp_id]))
+                      {
+                        unset ($columns[$temp_site][$temp_cat]['text:'.$temp_id]);
+                        $update_columns = true;
+                      }
+                    }
                   }
                 }
               }
@@ -1562,7 +1640,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       }
     }
 
-    // save objectlist defintion file with new default values
+    // save objectlist definition file with new default values
     if (is_array ($columns) && !empty ($update_columns))
     {
       savefile ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json", json_encode ($columns));

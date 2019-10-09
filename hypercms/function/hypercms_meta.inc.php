@@ -309,8 +309,11 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                     if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdata_new = $contentdataevent;
                   }
 
+                  // date 
+                  $date = date ("Y-m-d H:i:s", time());
+
                   // insert new date into content file
-                  $contentdata_new = setcontent ($contentdata_new, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+                  $contentdata_new = setcontent ($contentdata_new, "<hyperCMS>", "<contentdate>", $date, "", "");
 
                   // set encoding
                   $charset_old = getcharset ("", $contentdata_new); 
@@ -2839,7 +2842,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         // ------------------- use Google Vision Cloud Service -------------------
         if (is_image ($mediafile))
         {
-          if (function_exists ("GCanalyzeimage")) $google_data = GCanalyzeimage ($medialocation.$mediafile);
+          if (function_exists ("GCanalyzeimage")) $google_data = GCanalyzeimage ($site, $medialocation.$mediafile);
           else $google_data = "";
 
           if (!empty ($google_data) && is_array ($google_data))
@@ -2922,7 +2925,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         // ------------------- use Google Video Intelligence Cloud Service -------------------
         if (is_video ($mediafile))
         {
-          if (function_exists ("GCanalyzevideo")) $google_data = GCanalyzevideo ($medialocation.$mediafile);
+          if (function_exists ("GCanalyzevideo")) $google_data = GCanalyzevideo ($site, $medialocation.$mediafile);
           else $google_data = "";
 
           if (!empty ($google_data) && is_array ($google_data))

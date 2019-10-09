@@ -169,9 +169,9 @@ elseif ($preview == "yes")
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo $mgmt_config[$site]['default_codepage']; ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link href="<?php echo getthemelocation(); ?>css/main.css" rel="stylesheet" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
 function openHelp ()
 {
   help = window.open('<?php echo $mgmt_config['url_path_cms']."pers_help.php?site=".url_encode($site)."&cat=".url_encode($cat); ?>','help','resizable=yes,scrollbars=yes,width=640,height=400');
@@ -212,13 +212,15 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"
       </td>
     </tr>
     <tr>
-      <td colspan="2">
-        <textarea name="persdata" wrap="VIRTUAL" style="width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>><?php echo $persdata; ?></textarea>
+      <td colspan="2" style="text-align:left;">
+        <textarea id="hcmsContent" name="persdata" wrap="VIRTUAL" style="width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>><?php echo $persdata; ?></textarea>
+      </div>
       </td>
     </tr>
   </table>  
 </form>
 
 </div>
+
 </body>
 </html>

@@ -69,7 +69,7 @@ if (isset ($siteaccess) && is_array ($siteaccess))
 
       echo "
       <div id=\"stats_serverload\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
-        <div class=\"hcmsHeadline\">Server load and memory usage</div>";
+        <div class=\"hcmsHeadline\" style=\"margin:6px;\">Server load and memory usage</div>";
         
       if (is_array ($load_axis) || is_array ($mem_axis))
       {

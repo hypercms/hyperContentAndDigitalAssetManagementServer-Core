@@ -711,52 +711,6 @@ include_once ('".$abs_path_cms."function/hypercms_tplengine.inc.php');
   else return "";
 }
 
-// --------------------------------------- checklanguage -----------------------------------------------
-// function: checklanguage()
-// input: language array with all valid values, language value of attribute in hyperCMS tag
-// output: true if language array holds the given language value / false if not found
-
-function checklanguage ($language_array, $language_value)
-{
-  if (is_array ($language_array) && $language_value != "")
-  {
-    if (in_array ($language_value, $language_array)) return true;
-    else return false;
-  }
-  else return true;
-}
-
-// --------------------------------------- checkgroupaccess -----------------------------------------------
-// function: checkgroupaccess()
-// input: group access string from hyperCMS group-tag attribute, owner groups as array
-// output: true if current ownergroup has access or invalid input / false if not
-
-function checkgroupaccess ($groupaccess, $ownergroup)
-{
-  if ($groupaccess != "" && is_array ($ownergroup))
-  {
-    $accessgroup = array ();
-
-    // replace ; with |
-    if (substr_count ($groupaccess, ";") > 0) $groupaccess = str_replace (";", "|", $groupaccess);
-
-    if (substr_count ($groupaccess, "|") > 0) $accessgroup = explode ("|", $groupaccess);
-    else $accessgroup[] = $groupaccess;
-
-    if (is_array ($accessgroup) && sizeof ($accessgroup) > 0)
-    {
-      foreach ($ownergroup as $group)
-      {
-        if (in_array ($group, $accessgroup)) return true;
-      }
-
-      return false;
-    }
-    else return true;
-  }
-  else return true;
-}
-
 // --------------------------------------- transformlink -----------------------------------------------
 // function: transformlink()
 // input: view of object
@@ -5750,7 +5704,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
-    <p class=hcmsHeadline>".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
+    <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
   </body>
   </html>";
 
@@ -6871,7 +6825,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // ================================ javascript for control frame call ================================
         if ($ctrlreload == "yes")
         {
-          $bodytag_controlreload = "if (eval (parent.frames['controlFrame'])) parent.frames['controlFrame'].location.hypercms_href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
+          $bodytag_controlreload = "if (parent.frames['controlFrame']) parent.frames['controlFrame'].location.hypercms_href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
         }
         else $bodytag_controlreload = "";
 
@@ -7197,7 +7151,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             }
 
             // scriptcode
-            $scriptcode = "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
+            $scriptcode = "
+    <script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
     <script type=\"text/javascript\">
     ".@$bodytag_controlreload."
     ".@$bodytag_popup."
@@ -7317,7 +7272,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (tagname.indexOf('art') == 0) art = 'art';
       else art = '';
 
-      if (eval (item[id]))
+      if (item[id])
       {
         while (i < item[id].length)
         {
@@ -7330,7 +7285,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
       if (type != 'send')
       {
-        if (eval (item[id]))
+        if (item[id])
         {
           while (i < item[id].length)
           {
@@ -7491,7 +7446,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // ================================ javascript for control frame call ================================
         if ($ctrlreload == "yes")
         {
-          $bodytag_controlreload = "if (eval (parent.frames['controlFrame'])) parent.frames['controlFrame'].location.href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
+          $bodytag_controlreload = "if (parent.frames['controlFrame']) parent.frames['controlFrame'].location.href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
         }
         else $bodytag_controlreload = "";
 
@@ -7529,50 +7484,89 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <!-- hyperCMS -->
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
   <style>
-    .hcmsMapsControls {
-      margin-top: 10px;
-      border: 1px solid transparent;
-      border-radius: 2px;
-      box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      height: 30px;
-      outline: none;
-      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+  .hcmsMapsControls
+  {
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 30px;
+    outline: none;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  #pac-input
+  {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 280px;
+  }
+
+  #pac-input:focus
+  {
+    border-color: #4d90fe;
+  }
+
+  .pac-container
+  {
+    font-family: Roboto;
+  }
+
+  #type-selector
+  {
+    color: #fff;
+    background-color: #4d90fe;
+    padding: 5px 11px 0px 11px;
+  }
+
+  #type-selector label
+  {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 300;
+  }
+  
+  #target
+  {
+    width: 345px;
+  }
+
+  #preview
+  {
+    padding: 0px 20px 10px 0px;
+    min-width: 600px;
+    float: left;
+  }
+
+  #settings
+  {
+    padding :0px 20px 10px 0px;
+    scrolling: auto;
+    min-width: 620px;
+    float: left;
+  }
+
+  @media screen and (max-width: 1380px)
+  {
+    #preview
+    {
+      padding: 0;
+      width: 100%;
+
     }
 
-    #pac-input {
-      background-color: #fff;
-      font-family: Roboto;
-      font-size: 12px;
-      font-weight: 300;
-      margin-left: 12px;
-      padding: 0 11px 0 13px;
-      text-overflow: ellipsis;
-      width: 280px;
+    #settings
+    {
+      padding: 0;
+      width: 100%;
     }
-
-    #pac-input:focus {
-      border-color: #4d90fe;
-    }
-
-    .pac-container {
-      font-family: Roboto;
-    }
-
-    #type-selector {
-      color: #fff;
-      background-color: #4d90fe;
-      padding: 5px 11px 0px 11px;
-    }
-
-    #type-selector label {
-      font-family: Roboto;
-      font-size: 12px;
-      font-weight: 300;
-    }
-    #target {
-      width: 345px;
-    }
+  }
   </style>
 
   <script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
@@ -7608,9 +7602,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <!-- Face detetction -->
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/facedetection/jquery.facedetection.min.js\"></script>
 
-
-  <script type=\"text/javascript\">
-  ".$bodytag_controlreload."";
+  <script type=\"text/javascript\">";
 
   if ($buildview != "formlock") $viewstore .= "
   ".$bodytag_popup."
@@ -8546,29 +8538,31 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   var scale = 1;
 
   // click event memory to prevent other events from firing
-  var clickevent = '';
+  var clickevent = 'init';
+
+  // has detected been executed
+  var detectface = false;
 
   function deleteFace (id)
   {
-    document.getElementById('facename' + id).value = '';
-    document.getElementById('hcmsFace' + id).style.display = 'none';
-    document.getElementById('hcmsFaceName' + id).style.display = 'none';
+    // keeps the rest of the handlers from being executed
+    clickevent = 'deleteFace';
+    
+    $('#facename' + id).remove();
+    $('#hcmsFace' + id).remove();
+    $('#hcmsFaceName' + id).remove();
+
     collectFaces();
     initFaceOnVideo();
     detectFaceOnImage();
+
+    setTimeout(function() { clickevent = ''; }, 500);
   }
 
   function detectFaceOnImage ()
   {
     // if not an img tag
-    if ($('#hcms_mediaplayer_asset').is('img') == false) return false;
-
-    // remove existing face markers
-    if ($('#hcms_mediaplayer_asset').length)
-    {
-      $('.hcmsFace').css('visibility', 'hidden');
-      $('.hcmsFaceName').css('visibility', 'hidden');
-    }
+    if (document.getElementById('hcms_mediaplayer_asset').tagName != 'IMG') return false;
 
     // detect faces automatically
     if ((faces_json == '' || faces_json.length == 0) && $('#hcms_mediaplayer_asset').length)
@@ -8594,7 +8588,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             imageface_id.push(i);
             var offset = (216 - faces[i].width) / 2;
 
-            $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
+            $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
           }
         },
         error:function (code, message) {
@@ -8605,6 +8599,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // use existing face defintions
     else
     {
+      // remove existing face markers
+      if ($('#hcms_mediaplayer_asset').length)
+      {
+        $('.hcmsFace').remove();
+        $('.hcmsFaceName').remove();
+      }  
+
       if (typeof faces_json === 'string') var faces = JSON.parse (faces_json);
       else var faces = faces_json;
 
@@ -8635,10 +8636,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           imageface_id.push(i);
           var offset = (216 - faces[i].width) / 2;
 
-          $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height * scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'>\" + faces[i].name + \"</textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
+          $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height * scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'>\" + faces[i].name + \"</textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
         }
       }
     }
+
+    detectface = true;
   }
 
   function initFaceOnVideo (type)
@@ -8728,7 +8731,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               videoface_id.push(id);
               var offset = (216 - faces[i].width) / 2;
 
-              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height *scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'>\" + faces[i].name + \"</textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height *scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'>\" + faces[i].name + \"</textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
             }
           }
         }
@@ -8785,7 +8788,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             videoface_id.push(id);
             var offset = (216 - Math.round (faces[i].width)) / 2;
 
-            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (Math.round (faces[i].x) - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (Math.round (faces[i].x) - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
           }
         },
         error:function (code, message) {
@@ -8793,6 +8796,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }
       });
     }
+
+    detectface = true;
   }
 
   function jumpToFaceOnVideo (time)
@@ -8920,7 +8925,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           imageface_id.push(id);
           var offset = (216 - width) / 2;
 
-          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"x\\\":\" + Math.round(pos_x / scale) + \", \\\"y\\\":\" + Math.round(pos_y / scale) + \", \\\"width\\\":\" + Math.round(width / scale) + \", \\\"height\\\":\" + Math.round(height / scale) + \"' /><textarea type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"x\\\":\" + Math.round(pos_x / scale) + \", \\\"y\\\":\" + Math.round(pos_y / scale) + \", \\\"width\\\":\" + Math.round(width / scale) + \", \\\"height\\\":\" + Math.round(height / scale) + \"' /><textarea type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
         }
       }
     }
@@ -8993,7 +8998,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           videoface_id.push(id);
           var offset = (216 - width) / 2;
 
-          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:18px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onclick=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
         }
       }
     }
@@ -9089,13 +9094,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }
       }
 
-      if (faces.length > 0) faces_json = '[' + faces.join(', ') + ']';
+      if (faces.length > 0)
+      {
+        var unique = hcms_arrayUnique (faces);
+        faces_json = '[' + unique.join(', ') + ']';
+      }
       else faces_json = [];
 
       // save faces in hidden field
       $('#faces').val(faces_json);
     }
-    // remove face defintions
+    // remove face definitions
     else
     {
       faces_json = [];
@@ -9151,6 +9160,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   // onload event / document ready
   $viewstore .= "
+  ".$bodytag_controlreload."
+  
   $(document).ready(function() {
 
     // JQuery UI tooltip
@@ -9172,8 +9183,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // Execute code from template
     ".$js_tpl_code."
 
-    // Face detection
-    ".$add_facedetection."
+    // Face detection (after the image has been loaded)
+    $('#hcms_mediaplayer_asset').on('load', function(){ ".$add_facedetection." });
+
+    // fallback if detectface function has not been executed (due to issues with MS Edge)
+    if (detectface == false) ".$add_facedetection."
+
+    // clear clickevent
+    setTimeout(function() { clickevent = ''; }, 500);
   });
 
   // global object for VTT records
@@ -9233,8 +9250,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $viewstore .= "<img src=\"".getthemelocation()."img/button_print.png\" class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"window.print();\" alt=\"".getescapedtext ($hcms_lang['print'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['print'][$lang], $charset, $lang)."\" />\n";
 
         // autosave checkbox
-        if (intval ($mgmt_config['autosave']) > 0 && ($buildview == "formedit" || $buildview == "formmeta")) $viewstore .= "<label for=\"autosave\"><div class=\"hcmsButton hcmsButtonSizeHeight\" style=\"line-height:28px;\">&nbsp;<input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"yes\" checked=\"checked\" />&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."&nbsp;</div></label>\n";
-        else $viewstore .= "<div class=\"hcmsButtonOff hcmsButtonSizeHeight\" style=\"line-height:28px;\">&nbsp;<input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"\" disabled=\"disabled\" />&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."&nbsp;</div>\n";
+        if (intval ($mgmt_config['autosave']) > 0 && ($buildview == "formedit" || $buildview == "formmeta")) $viewstore .= "<label for=\"autosave\"><div class=\"hcmsButton hcmsButtonSizeHeight\" style=\"line-height:32px;\">&nbsp;<input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"yes\" checked=\"checked\" />&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."&nbsp;</div></label>\n";
+        else $viewstore .= "<div class=\"hcmsButtonOff hcmsButtonSizeHeight\" style=\"line-height:32px;\">&nbsp;<input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"\" disabled=\"disabled\" />&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."&nbsp;</div>\n";
 
         $viewstore .= "</td>\n";
 
@@ -9278,6 +9295,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           if (empty ($uploads[0]['count'])) $uploads[0]['count'] = 0;
 
           $viewstore .= "
+        <!-- preview -->
+        <div id=\"preview\">
+          <div style=\"clear:both;\"></div>
           <div class=\"hcmsFormRowLabel\">
             <b>".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."&nbsp;&nbsp;</b>
             <span class=\"hcmsTextSmall\" style=\"white-space:nowrap;\">
@@ -9288,8 +9308,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           </div>
           <div class=\"hcmsFormRowContent\">
             ".showmedia ($site."/".$mediafile, convertchars ($name_orig, $hcms_lang_codepage[$lang], $charset), $mediaview, "hcms_mediaplayer_asset", $mediawidth)."
-          </div>";
+          </div>
+        </div>";
         }
+
+        $viewstore .= "
+      <!-- form  -->
+      <div id=\"settings\">
+        <div style=\"clear:both;\"></div>";
 
         if (isset ($formitem) && is_array ($formitem))
         {
@@ -9304,6 +9330,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }
 
         $viewstore .= "
+      </div>
     </div>";
 
       $viewstore .= "
@@ -9420,10 +9447,11 @@ function unescapeview ($viewstore, $application="php")
 
 // --------------------------------- buildsearchform -------------------------------------------
 // function: buildsearchform()
-// input: publication name [string] (optional for report), template name [string] (optional), or report name [string] (optional), group access [array] (optional), CSS display value for label tag [string] (optional), CSS field width (optional)
+// input: publication name [string] (optional for report), template name [string] (optional), or report name [string] (optional), group access [array] (optional), 
+//        CSS display value for label tag [string] (optional), CSS field width (optional), allow empty values [true,false] (optional), display title [string] (optional)
 // output: form view / false on error
 
-function buildsearchform ($site="", $template="", $report="", $ownergroup="", $css_display="inline-block", $css_width_field="90%")
+function buildsearchform ($site="", $template="", $report="", $ownergroup="", $css_display="inline-block", $css_width_field="90%", $empty_values=true, $title="")
 {
   global $user, $siteaccess, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang;
 
@@ -9530,7 +9558,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
               {
                 $formitem[$key] = "
             <label for=\"text_".$id."\" style=\"display:".$css_display."; width:180px; font-weight:bold;\">".$label." </label>
-            <input id=\"text_".$id."\" name=\"search_textnode[".$id."]\" value=\"\" style=\"display:inline !important; width:".$css_width_field."; margin:2px 0px;\" /><br />";
+            <input id=\"text_".$id."\" name=\"search_textnode[".$id."]\" value=\"\" style=\"display:inline !important; width:".$css_width_field."; margin:2px 0px;\" ".(empty ($empty_values) ? "required=\"required\"" : "")." /><br />";
               }
             }
             // search field for text lists (options)
@@ -9558,7 +9586,8 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 
                 // template variable %publication%
                 if (@substr_count ($list, "%publication%") > 0 && !empty ($siteaccess) && is_array ($siteaccess) && sizeof ($siteaccess) > 0)
-                {
+                { 
+                  natcasesort ($siteaccess);
                   $list = str_replace ("%publication%", implode ("|", $siteaccess), $list);
                 }
 
@@ -9570,7 +9599,9 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 
                   $formitem[$key] = "
             <label for=\"textl_".$id."\" style=\"display:".$css_display."; width:180px; font-weight:bold;\">".$label." </label>
-            <select id=\"textl_".$id."\" name=\"search_textnode[".$id."]\" style=\"display:inline !important; width:".$css_width_field."; margin:2px 0px\">
+            <select id=\"textl_".$id."\" name=\"search_textnode[".$id."]\" style=\"display:inline !important; width:".$css_width_field."; margin:2px 0px\">";
+              
+                  if (!empty ($empty_values)) $formitem[$key] .= "
               <option value=\"\">&nbsp;</option>";
 
                   foreach ($list_array as $list_entry)
@@ -9615,7 +9646,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
               {
                 $formitem[$key] = "
             <label for=\"".$hypertagname."_".$id."\" style=\"display:".$css_display."; width:180px; font-weight:bold;\">".$label." </label>
-            <input type=\"text\" id=\"".$hypertagname."_".$id."\" name=\"search_textnode[".$id."]\" value=\"\" style=\"display:inline !important; margin:2px 0px\" /><img src=\"".getthemelocation()."img/button_datepicker.png\" onclick=\"show_cal(this, '".$hypertagname."_".$id."', '".$format."');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" /><br />";
+            <input type=\"text\" id=\"".$hypertagname."_".$id."\" name=\"search_textnode[".$id."]\" value=\"\" style=\"display:inline !important; margin:2px 0px\" ".(empty ($empty_values) ? "required=\"required\"" : "")." /><img src=\"".getthemelocation()."img/button_datepicker.png\" onclick=\"show_cal(this, '".$hypertagname."_".$id."', '".$format."');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" /><br />";
               }
             }
             // search field for media alternative text
@@ -9625,7 +9656,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
               {
                 $formitem["media:".$key] = "
             <label for=\"media_".$id."\" style=\"display:".$css_display."; width:180px; font-weight:bold;\">".$label." </label>
-            <input id=\"media_".$id."\" name=\"search_textnode[media:".$id."]\" value=\"\" style=\"display:inline !important; width:".$css_width_field."; margin:2px 0px\" /><br />";
+            <input id=\"media_".$id."\" name=\"search_textnode[media:".$id."]\" value=\"\" style=\"display:inline !important; width:".$css_width_field."; margin:2px 0px\" ".(empty ($empty_values) ? "required=\"required\"" : "")." /><br />";
               }
             }
             // search field for link text
@@ -9635,7 +9666,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
               {
                 $formitem["link:".$key] = "
             <label for=\"link_".$id."\" style=\"display:".$css_display."; width:180px; font-weight:bold;\">".$label." </label>
-            <input id=\"link_".$id."\" name=\"search_textnode[link:".$id."]\" value=\"\" style=\"display:inline !important; width:".$css_width_field."; margin:2px 0px\" /><br />";
+            <input id=\"link_".$id."\" name=\"search_textnode[link:".$id."]\" value=\"\" style=\"display:inline !important; width:".$css_width_field."; margin:2px 0px\" ".(empty ($empty_values) ? "required=\"required\"" : "")." /><br />";
               }
             }
           }
@@ -9703,8 +9734,13 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
   }
   </script>
 </head>
-<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" ".($template != "" ? "onload=\"parent.hcms_showPage('contentFrame', 'contentLayer');\"" : "").">
-".($report != "" ? "<form action=\"".$mgmt_config['url_path_cms']."report/\" methode=\"post\" style=\"padding:4px;\">\n <input type=\"hidden\" name=\"reportname\" value=\"".$report."\" />" : "")."
+<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" style=\"height:auto;\" ".($template != "" ? "onload=\"parent.hcms_showPage('contentFrame', 'contentLayer');\"" : "").">
+
+<!-- load screen --> 
+<div id=\"hcmsLoadScreen\" class=\"hcmsLoadScreen\"></div>
+
+".(trim ($title) != "" ? "<p class=\"hcmsHeadline\">".$title."</p>" : "")."
+".($report != "" ? "<form action=\"".$mgmt_config['url_path_cms']."report/\" methode=\"post\" style=\"padding:4px;\" onsubmit=\"if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='inline';\">\n <input type=\"hidden\" name=\"reportname\" value=\"".$report."\" />" : "")."
     ";
 
     if (isset ($formitem) && is_array ($formitem))

@@ -87,6 +87,7 @@ if ($hcms_user_token != "")
 // media conversion
 $type = getrequest ("type"); // format = file extension
 $mediacfg = getrequest ("mediacfg"); // media config to be used (see config.inc.php)
+$cfg = getrequest_esc ("cfg"); // new media configuration parameter since version 8.0.5
 $extuser = getrequest ("user"); // external user ID provided by request
 
 $add = "";

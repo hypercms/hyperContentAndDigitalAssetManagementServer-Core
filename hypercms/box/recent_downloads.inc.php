@@ -43,7 +43,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
   echo "
   <div id=\"recent_downloads\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
-    <div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['my-recent-downloads'][$lang])."</div>";
+    <div class=\"hcmsHeadline\" style=\"margin:6px;\">".getescapedtext ($hcms_lang['my-recent-downloads'][$lang])."</div>";
   
   reset ($object_array);
   $i = 0;

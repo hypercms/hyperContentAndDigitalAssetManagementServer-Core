@@ -76,7 +76,7 @@ $height = $screenheight - 80;
   height: <?php echo $height; ?>px;
 }
 </style>	
-<script>
+<script type="text/javascript>
 $(function()
 {
   $('#cropper').ZoomCrop(
@@ -90,7 +90,7 @@ $(function()
 <body>
 
 <div class="jquery-script-center">
-		<div id="cropper"></div>
+  <div id="cropper"></div>
 </div>
 
 </body>

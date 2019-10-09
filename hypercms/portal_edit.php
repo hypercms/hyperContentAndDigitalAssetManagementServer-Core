@@ -336,7 +336,7 @@ table.TableNarrow th, table.TableNarrow td
   ?>
 
   <!-- form  -->
-  <div id="settings" style="padding:10px 20px 10px 0px; float:left;">
+  <div id="settings" style="padding:0px 20px 10px 0px; float:left;">
     <form name="template_edit" action="" method="post" enctype="multipart/form-data">
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="hidden" name="template" value="<?php echo $template; ?>" />

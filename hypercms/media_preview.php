@@ -34,14 +34,12 @@ checkusersession ($user, false);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-</script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
-<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
+<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
   <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media-file-view'][$lang]); ?></p>
-  
   <form name="media">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="media_name" />
@@ -55,7 +53,7 @@ checkusersession ($user, false);
       </tr>
     </table>
   </form>
+</div>
 
-</div
 </body>
 </html>

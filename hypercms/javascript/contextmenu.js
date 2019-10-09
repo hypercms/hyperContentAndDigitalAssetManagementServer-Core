@@ -461,16 +461,25 @@ function hcms_createContextmenuItem (action)
   // lock
   hcms_lockContext ('true');
 
-  // set width and height for object window
+  // get width and height for object window
   if (localStorage.getItem('windowwidth') !== null || localStorage.getItem('windowwidth') > 0) var windowwidth = localStorage.getItem('windowwidth');
   else var windowwidth = 800;
+
   if (localStorage.getItem('windowheight') !== null || localStorage.getItem('windowheight') > 0) var windowheight = localStorage.getItem('windowheight');
   else var windowheight = 1000;
 
-  // set user new window
-  if (localStorage.getItem('user_newwindow') !== null && localStorage.getItem('user_newwindow') == true) var user_newwindow = true;
+  // get object new window
+  if (localStorage.getItem('object_newwindow') !== null && localStorage.getItem('object_newwindow') == "true") var object_newwindow = true;
+  else var object_newwindow = false;
+
+  // get message new window
+  if (localStorage.getItem('message_newwindow') !== null && localStorage.getItem('message_newwindow') == "true") var message_newwindow = true;
+  else var message_newwindow = false;
+
+  // get user new window
+  if (localStorage.getItem('user_newwindow') !== null && localStorage.getItem('user_newwindow') == "true") var user_newwindow = true;
   else var user_newwindow = false;
-  
+
   if (eval (document.forms['contextmenu_object']))
   {
     var contexttype = document.forms['contextmenu_object'].elements['contexttype'].value;
@@ -484,7 +493,7 @@ function hcms_createContextmenuItem (action)
     var folder = document.forms['contextmenu_object'].elements['folder'].value;
     var multiobject = document.forms['contextmenu_object'].elements['multiobject'].value;
     var token = document.forms['contextmenu_object'].elements['token'].value;
-    
+
     if (contexttype == "object" || contexttype == "media" || contexttype == "folder" || contexttype == "none")
     {	
       if (action == "preview" || action == "cmsview" || action == "chat")
@@ -501,15 +510,17 @@ function hcms_createContextmenuItem (action)
       
       if (action == "preview")
       {
-        openobjectview(location, page, 'preview');
+        openObjectView(location, page, 'preview');
       }
       else if (action == "cmsview" && multiobject.split("|").length > 2 && parent && parent.frames && parent.frames['controlFrame'] && parent.frames['controlFrame'].submitToWindow)
       {
-        parent.frames['controlFrame'].submitToWindow('page_multiedit.php', '', 'multiedit', 'status=yes,scrollbars=yes,resizable=yes', windowwidth, windowheight);
+        if (object_newwindow == true) parent.frames['controlFrame'].submitToWindow('page_multiedit.php', '', 'multiedit', 'status=yes,scrollbars=yes,resizable=yes', windowwidth, windowheight);
+        else parent.frames['controlFrame'].submitToMainFrame('page_multiedit.php', '');
       }
       else if (action == "cmsview")
       {
-        hcms_openWindow('frameset_content.php?ctrlreload=yes&' + URLparaView, '', 'status=yes,scrollbars=no,resizable=yes', windowwidth, windowheight);
+        if (object_newwindow == true) hcms_openWindow('frameset_content.php?ctrlreload=yes&' + URLparaView, '', 'status=yes,scrollbars=no,resizable=yes', windowwidth, windowheight);
+        else top.openMainView('frameset_content.php?ctrlreload=yes&' + URLparaView);
       }
       else if (action == "notify")
       {
@@ -610,7 +621,7 @@ function hcms_createContextmenuItem (action)
     if (action == "edit")
     {
       if (user_newwindow == true) hcms_openWindow('user_edit.php?site=' + site + '&group=' + group + '&login=' + login + '&token=' + token, 'edit', 'status=yes,scrollbars=yes,resizable=yes', 560, 800);
-      else parent.openpopup('user_edit.php?site=' + site + '&group=' + group + '&login=' + login + '&token=' + token);
+      else parent.openPopup('user_edit.php?site=' + site + '&group=' + group + '&login=' + login + '&token=' + token);
     }
     else if (action == "delete")
     {
@@ -641,8 +652,18 @@ function hcms_createContextmenuItem (action)
     
     if (action == "edit")
     {
-      if (site != "" && location != "") hcms_openWindow('frameset_content.php?site=' + site + '&ctrlreload=yes&cat=' + cat + '&location=' + location + '&page=' + page + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 800, 1000);
-      else if (page != "") hcms_openWindow('user_sendlink.php?mailfile=' + page + '&cat=' + cat + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);
+      // object
+      if (site != "" && location != "")
+      {
+        if (object_newwindow == true) hcms_openWindow('frameset_content.php?site=' + site + '&ctrlreload=yes&cat=' + cat + '&location=' + location + '&page=' + page + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 800, 1000);
+        else top.openMainView('frameset_content.php?site=' + site + '&ctrlreload=yes&cat=' + cat + '&location=' + location + '&page=' + page + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token);
+      }
+      // message
+      else if (page != "")
+      {
+        if (message_newwindow == true) hcms_openWindow('user_sendlink.php?mailfile=' + page + '&cat=' + cat + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);
+        else if (page != "") parent.openPopup('user_sendlink.php?mailfile=' + page + '&cat=' + cat + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token);
+      }
     }
     else if (action == "delete")
     {
@@ -667,7 +688,8 @@ function hcms_createContextmenuItem (action)
     
     if (action == "edit")
     {
-      hcms_openWindow('user_sendlink.php?mailfile=' + message_id + '&cat=comp&messageuser=' + messageuser + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);
+      if (message_newwindow == true) hcms_openWindow('user_sendlink.php?mailfile=' + message_id + '&cat=comp&messageuser=' + messageuser + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);
+      else parent.openPopup('user_sendlink.php?mailfile=' + message_id + '&cat=comp&messageuser=' + messageuser + '&token=' + token);
     }
     else if (action == "delete")
     {
@@ -1481,6 +1503,26 @@ function hcms_endSelectArea()
   else return false;
 }
 
+function hcms_collectObjectpath ()
+{
+  // table with td element id=h0_0 must exist
+  if (document.getElementById("h0_0"))
+  {
+    var td = null;
+    var i = 0;
+    
+    // collect object path from hidden input text field
+    while (td = document.getElementById("h"+i+"_0"))
+    {
+      var input = td.getElementsByTagName("input");
+      if (input[0].getAttribute("value")) hcms_objectpath[i] = input[0].getAttribute("value");
+      i++;
+    }
+  }
+
+  // save object path array variable in parent frame
+  if (hcms_objectpath) parent.hcms_objectpath = hcms_objectpath;
+}
 
 // initialize
 var activatelinks = false;

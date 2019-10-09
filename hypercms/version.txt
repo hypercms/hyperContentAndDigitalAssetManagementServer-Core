@@ -1,4 +1,4 @@
-Version History of the hyper Content & Digital Asset Management Server
+gVersion History of the hyper Content & Digital Asset Management Server
 
 General Notes:
 The final release is based on the Enterprise Edition.
@@ -3451,7 +3451,7 @@ Release 07/2019
 - Bug fix: search_objectlist was not able to display the objects due to the missing object hash (userlogin did not use the provided object hash and used function rdbms_getobject_hash on an object hash)
 
 Version 8.0.4
-Release 08/2019
+Release 09/2019
 - Implementation of the new home box permission in the home screen that is based on the personal settings permission, see function checkrootpermission ('desktopsetting')
 - Implementation of the home button in the main/left navigation bar if an access link is used for access
 - Implementation of the home boxes configuration in the user administration (user_edit)
@@ -3639,3 +3639,124 @@ Release 08/2019
 - Bug fix: Function processobjects in Main API did use deprecated name "intention" instead of "action" for the mail service
 - Bug fix: Service sendmail did not use the provided user name from mail file and always tried to access the user name from the user session
 - Bug fix: search_objectlist did net exclude "add to favorites" from the context menu of the recycle bin
+
+Version 8.0.5
+Release 10/2019
+- Moved function checklanguage and checkgroupaccess from template engine to Security API
+- Modifications in function checkgroupaccess in order to verify the group membership and return false in case there is none
+- Modifications in function userlogin in Security API in order to remove columns for the objectlist if user has no access to the content (defined in groups-attribute by the template tag)
+- Implementation of the function call checkgroupaccess in function userlogin in order to verify access to the content (for selecting columns in the context menu in explorer_objectlist)
+- Implementation of the image viewer snippet support in function showmedia of UI API and service/savecontent
+- Modifications in service/savecontent, image_viewerconfig, and media_playerconfig in order to provide the "Title" text content to the media viewer/player
+- Modifications in page_info in order to verify that DB Connect is set
+- Implementation of the new encrypted dl and wl parameter in service/mediawrapper and service/mediadownload that supports an encrypted combination of the object hash, media type and config value
+- Modifications in function createwrapperlink and createdownloadlink in Main API in order to support the media type and config value as input parameters and to create the new encrypted wl and dl parameter
+- Design modifications in media_playerconfig
+- Implementation of the new service/support in order to access event logs
+- Modifications in template engine in order to display preview and the form next to each other for large screen resolutions
+- Modifications in function showmedia in UI API in order to always display the object name (including the view type "media_only")
+- Modifications in control_content in order to relocate the minimize/maximize buttons
+- Modifications in explorer_objectview in order to define offset parameter and to display the object name
+- Implementation of the main configuration setting $mgmt_config['object_newwindow'] in order to enable and disable new windows for objects
+- Modifications in framset_main and frameset_mobile in order to support the new object window parameter
+- Implementation of JS function initialize in explorer_objectview in order to enable previous and next buttons if no object array is available
+- Modifications in JS function hcms_createContextmenuItem in contextmenu.js in order to open objects and messages in new or main window
+- Implementation of new JS function setwindows in frameset_main and frameset_mobile in order to set the new window parameters for object, message and user forms
+- Modifications in message_objectlist in order to open a new window on double klick
+- Renamed various local JS functions (this also required modifications of functions in contextmenu.js)
+- Modifications in template engine in order to execute facedetection after the image has been loaded
+- Modifications in control_objectlist, explorer_objectlist, and search_objectlist in order to verify the sidebar based on its current display style setting
+- Modifications in API loader in order to reset new object window setting of the main configuration for the Mobile Edition
+- Modifications in API loader in order to disable face recognition setting of the main configuration for the Mobile Edition
+- Modifications in function showmedia in order to provide the file name for the PDF viewer used for file download
+- Modifications in template engine in order to verify if the detectface JS function has been executed and call it again in case it hasn't
+- Implementation of the new JS function hcms_arrayUnique in main.js
+- Modifications in template engine in order to call JS function hcms_arrayUnique in JS function collectFaces (remove duplicates)
+- Modifications in JS function detectFaceOnImage in order to remove all face markers before creating them based on the JSON definition
+- Modifications in JS function deleteFace in order to remove all face markers instead of hiding them
+- Modifications in function createimages_video in Media API in order to support width and height input parameter for the size of the created images (does not save thumbnails in the cloud or by remote client)
+- Modifications in function createmedia in Media API in order to create thumbnails for each video of type "origthumb"
+- Modifications in function deletemediafiles in Main API in order to remove directory for video thumbnail images
+- Implementation of the thumbnail support for the VIDEO.JS video player in order to display thumbnails when hovering over the progress bar 
+- Modifications in function showvideoplayer and showvideoplayer_head in UI API in order to include the thumbnail support for VIDEO.JS
+- Modifications in function createviewlink in Main API in order to support the video thumbnails (container-id/thumbnail-file)
+- Modifications in function createpublication in Main API in order to verify that at least on letter is used in the publication name
+- Modifications in service/mediawrapper and service/mediadownload in order to support video thumbnails (changed mediafile name verification from valid_objectname to valid_locationname)
+- Modifications in control_site_menu in order to verify siteaccess variable and remove deprecated border attribute in image button
+- Modifications in annotate.js in order to relocate some of the toolbar buttons
+- Modifications in media_playerconfig in order to apply new styles on iframe
+- Added file extension "pspimage" to image formats in include/format_ext
+- Modifications in page_multiedit in order to set body height to auto
+- Modifications in user_objectlist in order to open new window on double click
+- Modifications in frameset_user in order to enable scrolling
+- Minor modifications in all framesets
+- Renamed various function in DB Connect in order to separate the functions of class hcms_db from the standard PHP functions
+- Modifications in all functions in Update API that used the hcms_db class of DB Connect
+- Removed save and close button and JS function from page_multiedit
+- Modifications in page_multiedit in order to display location on mouse over thumbnails
+- Modifications in function zipfiles in Media API in order to verify if total file size in comparison with the zip file size with no compression has changed -4/+4 percent 
+- Modifications in function zipfiles in Media API in order to recreate ZIP file if the file size is outside the tolerance of -4/+4 percent
+- Modifications in function zipfiles in Media API in order to remove the old version of the zip file (due to issues with merging using the zip command)
+- Implementation of the new attribute "publishdate" in database table "container" of createtables.sql
+- Implementation of the new function update_database_v805 in Update API in order to update database to version 8.0.5
+- Modifications in function rdbms_searchcontent, rdbms_replacecontent, rdbms_searchuser, rdbms_searchrecipient, rdbms_getobject_info, rdbms_getobjects, rdbms_getdeletedobjects, and rdbms_getmedia in DB Connect in order to support the new attribute "publishdate"
+- Modifications in explorer_objectlist and search_objectlist in order to support the new attribute "publishdate"
+- Modifications in page_info in order to support the create date and new publish date from the database
+- Modifications in function rdbms_setcontent in DB Connect in order to support the new input parameters for the "modifieddate" and "publishdate"
+- Modifications in function getmetadata_container in Get API in order to support the new attribute "publishdate"
+- Modifications in function is_date in Main API due to issues with date verification based on DateTime::createFromFormat
+- Modifications in function showdate in UI API in order to recreate date if the source and target format is the same
+- Modifications in function getmetadata_container in Get API in order to initialize default values for dates and user and to support "user" and "date" as text IDs
+- Modifications in function showmedia and showobject in UI API in order to use information from database instead of container and to display owner and dates for all media types
+- Modifications in explorer_view in order to use 100 percent of the width die display
+- Modifications in explorer_objectlist in order to display loading screen if the columns have been changed
+- Implementation of a loading screen in userlogin (update to version 8.0.5 can take several minutes)
+- Modifications in main.css of design themes to correct the z-index of CSS classes for the login screen
+- Modifications in function manipulateobject in order to call rdbms_setcontent
+- Modifications in function showmedia in UI API and explorer_objectview in order to align assets and their name on the left side
+- Modifications in JS function hcms_createVTTrecords in main.js and template engine in order to resize VTT fields
+- Implementation of RTF document support in main configuration and function showmedia in UI API in order to use the main config setting $mgmt_docconvert for the verification
+- Modifications in function convertdate in Main API in order to always recreate input date
+- Implementation of the new JS function hcms_getImageSize in main.js in order to get image size as CSS style
+- Modifications in function showmedia in UI API in order to get media size of the created temporary image
+- Implementation of the JS function hcms_exportChart in the Report Management module in order to support the export of chart images
+- Implementation of the JS function hcms_minMaxLayer in main.js in order to support minimizing and maximizing of layers
+- Modifications in home box all_reports in order to support the image export and the minimizing/maximizing of reports
+- Design modifications in all home boxes
+- Removed eleVR and valiant360 JS libraries (360 VR and image viewer)
+- Implementation of the new Panolens JS library as 360 viewer and for VR
+- Modifications in function showmedia in order to enable 360 views of images and videos
+- Implementation of media_360view as 360 degree and VR viewer for images and videos (no support for MS IE and Mobile Edition due to performance issues)
+- Modifications in media_playerconfig in order to support width and height settings for the videplayer code snippet and to create the code for the 360 video player (no support for MS IE and Mobile Edition due to performance issues)
+- Modifications in image_viewerconfig in order to support the code for the 360 image viewer (no support for MS IE and Mobile Edition due to performance issues)
+- Design modifications in version_template_compare
+- Implementation of the new function showmedia in order to change default vidoe sizes ro 854x480px
+- Modifications in main configuration file in order to change default vidoe sizes ro 854x480px
+- Modifications in control_content_menu and control_objectlist_menu in order to improve file download options
+- Implementation of new plus/minus buttons for dark nd light mode in all design themes
+- Modifications in template engine in order to sort the publication names of the search select box
+- Modifications in function showmessage and showinfobox in UI API in order to replace close button action JS function hcms_showhideInfo with hcms_switchInfo
+- Modifications in functions createobjectaccesslink, createwrapperlink, and createdownloadlink in Main API in order to support and extract the container ID from a media file
+- Modifications in function showgallery in UI API in order to always use the media location of thumbnails
+- Modifications in function getFileContents in Workplace Integration module in order to support embedded thumbnails in the HTML link files
+- Modifications in home box all_reports in order to use report title instead of the report file name for the select box
+- Modifications in function editpublication in Main API in order to support the Google Cloud API settings
+- Modifications in function buildsearchform in template engine in order to support the new input parameter for enabling and disabling empty values and title display
+- Modifications in function buildsearchform in template engine in order to implement a loading screen
+- Implementation of the geo location viewer in popup_log
+- Modifications in log_list in order to resize popup window for log entries
+- Bug fix: Function showmedia in UI API did not apply the CSS class "hcmsHeadlineTiny" to audio and video names
+- Bug fix: The height of the facename input fields has been to low in the template engine and has been corrected from 18px to 32px
+- Bug fix: control_objectlist_menu did not close the selector if multiple objects have been selected for editing
+- Bug fix: Firefox is not able to stare boolean values in local storage and therefore caused a misbehavior when comparing the values for the new window settings
+- Bug fix: Function showobject in UI API did use wrong variable name and was not able to access the object information
+- Bug fix: frameset_objectlist did provide the style property "overflow" 2 times for the same div-tag
+- Bug fix: explorer_objectview did not assign the style property "z-index" to the toolbar for the preview of pages
+- Bug fix: JS function deleteFace did not prevent the functions createFaceOnImage and createFaceOnvideo being executed on click of the face delete button (changed onclick to onmousedown event)
+- Bug fix: page_multiedit initalized the variables is_audio, is_image, and is_video as true instead of false and set the values false after the verification of the media type
+- Bug fix: explorer_objectlist did not use modified date from database for folders due to the verification of the file size instead of the modified date
+- Bug fix: Function createdocument in Media API did not correctky verify the requested format in $mgmt_docoptions
+- Bug fix: Function convertmedia in Media API did exclude images as target formats for document conversions
+- Bug fix: search_objectlist set the variable maxhits always to 300 if the verification of maxhits was successful
+- Bug fix: Function cretaemedia in Media API did not correct the width and heigth in all cases by verifing that the width and height is divisible by 2
+- Bug fix: Function createfilename in Main API had issues if single and multibyte characters have been mixed in a string. The function verifies the result and corrects it in this case.

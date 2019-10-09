@@ -586,18 +586,26 @@ if ($usedby == "" || $usedby == $user)
          	elseif ($savetype == "form_sc")
          	{
             $add_onload =  "document.location='".$mgmt_config['url_path_cms']."page_view.php?view=cmsview&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
-         	}
+          }
+         	elseif ($savetype == "documentviewerconfig_so")
+         	{
+            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."document_viewerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&title=".(!empty ($textu['Title']) ? url_encode($textu['Title']) : "")."&wf_token=".url_encode($wf_token)."';\n";
+         	} 
          	elseif ($savetype == "imagerendering_so")
          	{
             $add_onload =  "document.location='".$mgmt_config['url_path_cms']."image_rendering.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
-         	}
+          }
+         	elseif ($savetype == "imageviewerconfig_so")
+         	{
+            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."image_viewerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&title=".(!empty ($textu['Title']) ? url_encode($textu['Title']) : "")."&wf_token=".url_encode($wf_token)."';\n";
+         	} 
          	elseif ($savetype == "mediarendering_so")
          	{
             $add_onload =  "document.location='".$mgmt_config['url_path_cms']."media_rendering.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
-         	}
+          } 
          	elseif ($savetype == "mediaplayerconfig_so")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."media_playerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
+            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."media_playerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&title=".(!empty ($textu['Title']) ? url_encode($textu['Title']) : "")."&wf_token=".url_encode($wf_token)."';\n";
          	}                   
           else
          	{

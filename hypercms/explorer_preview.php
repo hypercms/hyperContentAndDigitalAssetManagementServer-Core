@@ -110,7 +110,10 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     
     foreach ($metadata_array as $key => $value)
     {
-      $rows .= "<tr><td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".$value."</td></tr>\n";
+      $rows .= "
+    <tr>
+      <td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".$value."</td>
+    </tr>";
     }
     
     if ($rows != "") $metadata = "<hr /><table class=\"hcmsTableStandard\">\n".$rows."</table>\n";
@@ -136,7 +139,14 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
       // gallery
       if (!empty ($components))
       {
-        $relatedview = "<hr /><table class=\"hcmsTableStandard\"><tr><td>".getescapedtext ($hcms_lang['related-assets'][$lang])."</td></tr></table><br/>\n".showgallery ($components_array, 92, true, $user);
+        $relatedview = "
+      <hr />
+      <table class=\"hcmsTableStandard\">
+        <tr>
+          <td>".getescapedtext ($hcms_lang['related-assets'][$lang])."</td>
+        </tr>
+      </table><br/>
+      ".showgallery ($components_array, 92, true, $user);
       }
     }
   }
@@ -158,7 +168,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 
 <!-- content -->
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
-  <div style="width:auto; display:table; margin:16px auto 0px auto;">
+  <div style="margin:16px auto 0px auto;">
   <?php
   if (!empty ($mediaview)) echo $mediaview;
   if (!empty ($metadata)) echo $metadata;

@@ -42,6 +42,10 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+$owner = "";
+$date_modified = "";
+$date_created = "";
+$date_published = "";
 $filedirectlink = "";
 $filewrapperlink = "";
 $filewrapperdownload = "";
@@ -94,18 +98,38 @@ if ($pagestore != false)
     else $usedby = "";
   
     // read associated content file
-    $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-    
+    $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
+
+    // load container
     if (!empty ($usedby) && $usedby != $user)
     {
       $contentdata = loadcontainer ($contentfile.".wrk.@".$usedby, "version", $usedby); 
     }
     else $contentdata = loadcontainer ($container_id, "work", $user); 
-  
-    $owner = getcontent ($contentdata, "<contentuser>");
-    $last_updated = getcontent ($contentdata, "<contentdate>");
-    $last_published = getcontent ($contentdata, "<contentpublished>");
-      
+
+    // get dates and owner
+    $container_info = getmetadata_container ($container_id, array("date", "createdate", "publishdate", "user"));
+    
+    if (is_array ($container_info))
+    {
+      $owner = $container_info['user'];
+      $date_created = $container_info['createdate'];
+      $date_modified = $container_info['date'];
+      $date_published = $container_info['publishdate'];
+    }
+    // use content container
+    else
+    {
+      $temp = getcontent ($contentdata, "<contentuser>");
+      if (!empty ($temp[0])) $owner = $temp[0];
+      $temp = getcontent ($contentdata, "<contentcreated>");
+      if (!empty ($temp[0])) $date_created = $temp[0];
+      $temp = getcontent ($contentdata, "<contentdate>");
+      if (!empty ($temp[0])) $date_modified = $temp[0];
+      $temp = getcontent ($contentdata, "<contentpublished>");
+      if (!empty ($temp[0])) $date_published = $temp[0];
+    }
+
     // ---------------------------- page info ---------------------------
     
     // get file information for
@@ -113,21 +137,21 @@ if ($pagestore != false)
     if (!empty ($media))
     {
       $mediadir = getmedialocation ($site, $media, "abs_path_media").$site."/";
-      
-      if ($mgmt_config['db_connect_rdbms'] != "")
+
+      if (!empty ($mgmt_config['db_connect_rdbms']))
       {
         $media_info = rdbms_getmedia ($container_id, true);
-        $last_updated[0] = date ("Y-m-d H:i", strtotime ($media_info['date']));
+        $date_modified = $media_info['date'];
         $fileMD5 = $media_info['md5_hash'];
         $filesize = $media_info['filesize'];
       }
       elseif (is_file ($mediadir.$media))
       {
-        $last_updated[0] = date ("Y-m-d H:i", filemtime ($mediadir.$media));
+        $date_modified = date ("Y-m-d H:i:s", filemtime ($mediadir.$media));
         $fileMD5 = md5_file ($mediadir.$media);
         $filesize = filesize ($mediadir.$media) / 1024;
       }
-      
+
       // symbolic link
       if (is_link ($mediadir.$media))
       {
@@ -140,7 +164,7 @@ if ($pagestore != false)
     {
       // multimedia and standard objects
       $filesize_array = getfilesize ($location_esc.$page);
-    
+
       if (is_array ($filesize_array))
       {
         $filesize = $filesize_array['filesize'];
@@ -152,13 +176,11 @@ if ($pagestore != false)
     {
       $filesize = filesize ($location.$page) / 1024;
     }
-    
-    if (!empty ($contentfile))
-    {                
-      echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['owner'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$owner[0]."</td></tr>\n";
-      echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['modified'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".showdate ($last_updated[0], "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>\n";
-      echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['published'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".showdate ($last_published[0], "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>\n"; 
-    }
+   
+    if (!empty ($owner)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['owner'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$owner."</td></tr>\n";
+    if (!empty ($date_created)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['date-created'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".showdate ($date_created, "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>\n";
+    if (!empty ($date_modified)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['date-modified'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".showdate ($date_modified, "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>\n";
+    if (!empty ($date_published)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['published'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".showdate ($date_published, "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>\n"; 
  
     // if object will be deleted automatically
     $queue = rdbms_getqueueentries ("delete", "", "", "", $location_esc.$page);
@@ -226,15 +248,15 @@ if ($pagestore != false)
     if (!empty ($mgmt_config['publicdownload']) && ($cat == "page" || $setlocalpermission['download'] == 1))
     {
       // wrapper link
-      if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperlink = createwrapperlink ($site, $location, $page, $cat);
+      if (!empty ($mgmt_config['db_connect_rdbms'])) $filewrapperlink = createwrapperlink ($site, $location, $page, $cat);
       elseif ($media != "") $filewrapperlink = createviewlink ($site, $media, $page);
       
       // download link  
-      if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
+      if (!empty ($mgmt_config['db_connect_rdbms']))$filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
       elseif ($media != "") $filewrapperdownload = createviewlink ($site, $media, $page, false, "download");
       
       // object access link
-      if ($mgmt_config['db_connect_rdbms'] != "" && !empty ($mgmt_config[$site]['accesslinkuser'])) $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
+      if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config[$site]['accesslinkuser'])) $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
     }
 
     // file links

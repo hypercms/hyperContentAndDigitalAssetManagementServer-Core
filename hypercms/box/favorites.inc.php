@@ -21,7 +21,7 @@ if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
 
     echo "
     <div id=\"favorites\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
-      <div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['favorites'][$lang])."</div>";
+      <div class=\"hcmsHeadline\" style=\"margin:6px;\">".getescapedtext ($hcms_lang['favorites'][$lang])."</div>";
     
     array_reverse ($object_array);
     reset ($object_array);

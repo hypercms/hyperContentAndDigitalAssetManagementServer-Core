@@ -694,8 +694,11 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
             // relational DB connectivity
             if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);
 
+            // date 
+            $date = date ("Y-m-d H:i:s", time());
+
             // set modified date in container
-            $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+            $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $date, "", "");
             if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
 
             // save container
@@ -712,8 +715,11 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           // relational DB connectivity
           if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, "", "", $user);
 
+          // date 
+          $date = date ("Y-m-d H:i:s", time());
+
           // set modified date in container
-          $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+          $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $date, "", "");
           if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
 
           // save container
@@ -1222,13 +1228,14 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 
 // ---------------------- createimages_video -----------------------------
 // function: createimages_video()
-// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], name for image files [string] (optional), frames per second to create from the video [number] (optional), image format [jpg,png,bmp] (optional), autorotate [true,false] (optional)
+// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], name for image files [string] (optional), frames per second to create from the video [number] (optional), image format [jpg,png,bmp] (optional), 
+//        autorotate [true,false] (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional)
 // output: true / false on error
 
 // description:
 // Creates and saves images of video screen size from a video to a directory. 
 
-function createimages_video ($site, $location_source, $location_dest, $file, $name="", $fs=1, $format="jpg", $autorotate=false)
+function createimages_video ($site, $location_source, $location_dest, $file, $name="", $fs=1, $format="jpg", $autorotate=false, $width="", $height="")
 {
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $user;
 
@@ -1310,13 +1317,22 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
           elseif ($videoinfo['rotate'] == "-90") $correct = "-vf \"transpose=2\"";
         }
 
+        // image size
+        $size = "";
+
+        if (intval ($width) > 0 && intval ($height) > 0)
+        {
+          $size = "-vf scale=".intval($width).":".intval($height);
+        }
+
         // check file extension
         if (!empty ($fileinfo['ext']) && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0 && !empty ($mgmt_mediapreview[$mediapreview_ext]))
         {
           // remove destination file if it exists
           deletefile ($location_dest, $newfile, 0);
 
-          $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($location_source.$file)."\" ".$correct."  -r ".shellcmd_encode ($fs)." \"".shellcmd_encode ($location_dest.$newfile)."-%05d.".$format."\"";
+          // -r option sets framerate per second
+          $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($location_source.$file)."\" ".$correct."  -r ".shellcmd_encode ($fs)." ".$size." \"".shellcmd_encode ($location_dest.$newfile)."-%05d.".$format."\"";
 
           // execute 
           exec ($cmd, $error_array, $errorCode);
@@ -1342,7 +1358,10 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
 
         return false;
       } 
-      else return true;
+      else
+      {
+        return true;
+      }
     }
     else return false;
   }
@@ -1372,6 +1391,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
     // get container ID
     $container_id = getmediacontainerid ($file);
+
+    // remove all video thumbnails
+    if ($type == "thumbnail" || $type == "origthumb")
+    {
+      if (is_dir ($location_dest.$container_id)) deletefile ($location_dest, $container_id, 1);
+    }
 
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
@@ -1626,7 +1651,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         }
       }
     }
-
+    
     if ($skip == false)
     {
       // ---------------------- if Document file ------------------------
@@ -1790,8 +1815,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
                   $imagewidth = intval ($imagewidth);
                   $imageheight = intval ($imageheight);
+
                   // ImageMagick resize parameter (resize will fit the image into the requested size, aspect ratio is preserved)
                   $imageresize = "-resize ".$imagewidth."x".$imageheight;
+
                   // Imagemagick geometry parameter for EPS
                   $imagegeometry = "-geometry ".$imagewidth."x".$imageheight; 
                 }
@@ -2086,7 +2113,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   else $background = "";
 
                   // ---------------------- CASE: document-based formats (if converted to PDF), encapsulated post script (EPS) and vector graphics ----------------------
-                  if (strpos ("_.pdf".$hcms_ext['vectorimage'], $file_ext) > 0)
+                  if (strpos ("_.pdf".$hcms_ext['vectorimage'].".", $file_ext.".") > 0)
                   {
                     // set size for thumbnails
                     if ($type == "thumbnail" && !empty ($imagewidth_orig) && !empty ($imageheight_orig))
@@ -2689,23 +2716,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         if ($videoinfo['ratio'] > 1)
                         {
                           $mediaheight = round((intval($mediawidth)/$videoinfo['ratio']), 0);
-    
-                          // must be divisible by 2
-                          if ($mediaheight % 2 != 0)
-                          {
-                            $mediaheight = $mediaheight - 1;
-                          }
                         }
                         // use mediaheight and calculate width
                         else
                         {
                           $mediawidth = round((intval($mediaheight) * $videoinfo['ratio']), 0);
-    
-                          // must be divisible by 2
-                          if ($mediawidth % 2 != 0)
-                          {
-                            $mediawidth = $mediawidth - 1;
-                          }
                         }
                       }
                     }
@@ -2736,6 +2751,18 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         $mediaheight = $videoinfo['height'];
                       }
                     }
+                  }
+
+                  // width must be divisible by 2
+                  if ($mediawidth % 2 != 0)
+                  {
+                    $mediawidth = $mediawidth - 1;
+                  }
+
+                  // height must be divisible by 2
+                  if ($mediaheight % 2 != 0)
+                  {
+                    $mediaheight = $mediaheight - 1;
                   }
 
                   $vfilter[] = "scale=".intval($mediawidth).":".intval($mediaheight);
@@ -3188,6 +3215,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   else $config_extension = ".config.".$format_set;
                 }
 
+                // new video info (only if it is not a thumbnail file of the original file)
+                if ($type != "origthumb")
+                {
+                  $videoinfo = getvideoinfo ($location_dest.$newfile);
+                }
+
                 // capture screen from video to use as thumbnail image
                 if (($type == "origthumb" || $type == "original") && is_video ($file_ext))
                 {
@@ -3195,6 +3228,32 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
                   // get media information from thumbnail
                   $imagecolor = getimagecolors ($site, $videothumbnail);
+
+                  // create preview images
+                  if ($type == "origthumb" && intval ($container_id) > 0)
+                  {
+                    // create directory for thumbnails
+                    if (!is_dir ($location_dest.$container_id)) mkdir ($location_dest.$container_id);
+
+                    // define thumbnail size
+                    if (!empty ($videoinfo['width']) && !empty ($videoinfo['height'])) 
+                    {
+                      $ratio = $videoinfo['width'] / $videoinfo['height'];
+
+                      if ($ratio > 1)
+                      {
+                        $thumb_width = 120;
+                        $thumb_height = intval ($thumb_width / $ratio);
+                      }
+                      else
+                      {
+                        $thumb_height = 120;
+                        $thumb_width = intval ($thumb_height * $ratio);
+                      }
+                    }
+
+                    createimages_video ($site, $location_dest, $location_dest.$container_id."/", $newfile, "thumbnail", 0.2, "jpg", (!empty ($noautorotate) ? true : false), $thumb_width, $thumb_height);
+                  }
                 }
                 else
                 {
@@ -3203,12 +3262,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $imagecolor['green'] = "";
                   $imagecolor['blue'] = "";
                   $imagecolor['colorkey'] = "";
-                }
-
-                // new video info (only if it is not a thumbnail file of the original file)
-                if ($type != "origthumb")
-                {
-                  $videoinfo = getvideoinfo ($location_dest.$newfile);
                 }
 
                 // set media width and height to empty string
@@ -3538,8 +3591,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
     }
 
     // convert-config is not supported when we are using createdocument
-    // createdocument only supports documents as target format
-    if (is_document ($mediafile) && !is_image ("dummy.".$format))
+    if (is_document ($mediafile))
     {
       $result_conv = createdocument ($site, $location_source, $location_dest, $mediafile, $format, $force_no_encrypt);
     }
@@ -4361,7 +4413,7 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
 // output: new file name / false on error
 
 // description:
-// Creates a new multimedia file of given format at source destination using UNOCONV and saves it as thumbnail file at the desitnation location
+// Creates a new multimedia file of given format at source destination using UNOCONV and saves it as a thumbnail file in the destination location
 
 function createdocument ($site, $location_source, $location_dest, $file, $format="", $force_no_encrypt=false)
 {
@@ -4451,7 +4503,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
       foreach ($mgmt_docpreview as $docpreview_ext => $docpreview)
       {
         // check file extension
-        if ($file_ext != "" && substr_count (strtolower ($docpreview_ext).".", $file_ext.".") > 0)
+        if (!empty ($file_ext) && substr_count (strtolower ($docpreview_ext).".", $file_ext.".") > 0 && !empty ($docpreview))
         {
           reset ($mgmt_docoptions);
 
@@ -4463,135 +4515,135 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
             {
               // document format (document file extension) definition
               $docformat = strtolower (getoption ($mgmt_docoptions[$docoptions_ext], "-f"));
-            }
 
-            if (empty ($docformat)) $docformat = "pdf"; 
+              // set default format
+              if (empty ($docformat)) $docformat = "pdf"; 
 
+              // create new file
+              $newfile = $file_name_orig.".thumb.".$docformat;
+
+              // if thumbnail file exists in destination (temp) folder
+              if (is_file ($location_dest.$newfile))
+              {
+                // delete existing destination file if it is older than the source file
+                if (filemtime ($location_dest.$newfile) < filemtime ($location_source.$file)) 
+                {
+                  unlink ($location_dest.$newfile);
+                }
+                // or we return the filename
+                else $converted = true;
+              }
+
+              // if thumbnail file exits in source folder 
+              if (is_file ($location_source.$newfile))
+              {
+                // if existing thumbnail file is newer than the source file
+                if (filemtime ($location_source.$newfile) >= filemtime ($location_source.$file) && $location_source != $location_dest) 
+                {
+                  // copy to destination directory
+                  $converted = copy ($location_source.$newfile, $location_dest.$newfile);
+                }
+                // or we return the filename
+                else $converted = true;
+              }
+
+              // if not already converted
+              if (empty ($converted))
+              {
+                // if image file is the target format UNOCONV fails and therefore libreoffice will be used
+                // exlude spreadsheets due to issues with libreoffice (will be created when opened using converion to PDF and PDF to image)
+                if (is_image (".".$format) && strpos ("_.ods.xls.xlsx", $file_ext) < 1)
+                {
+                  // export filters for libreoffice
+                  if ($file_ext == ".xlsx") $export_filter = ":\"MS Excel 2007 XML\"";
+                  elseif ($file_ext == ".xls") $export_filter = ":\"MS Excel 95\"";
+                  elseif ($file_ext == ".ods") $export_filter = ":\"OpenDocument Spreadsheet Flat XML\"";
+                  else $export_filter = "";
  
-            // create new file
-            $newfile = $file_name_orig.".thumb.".$docformat;
-
-            // if thumbnail file exists in destination (temp) folder
-            if (is_file ($location_dest.$newfile))
-            {
-              // delete existing destination file if it is older than the source file
-              if (filemtime ($location_dest.$newfile) < filemtime ($location_source.$file)) 
-              {
-                unlink ($location_dest.$newfile);
-              }
-              // or we return the filename
-              else $converted = true;
-            }
-
-            // if thumbnail file exits in source folder 
-            if (is_file ($location_source.$newfile))
-            {
-              // if existing thumbnail file is newer than the source file
-              if (filemtime ($location_source.$newfile) >= filemtime ($location_source.$file) && $location_source != $location_dest) 
-              {
-                // copy to destination directory
-                $converted = copy ($location_source.$newfile, $location_dest.$newfile);
-              }
-              // or we return the filename
-              else $converted = true;
-            }
-
-            // if not already converted
-            if (empty ($converted))
-            {
-              // if image file is the target format UNOCONV fails and therefore libreoffice will be used
-              // exlude spreadsheets due to issues with libreoffice (will be generated when opened using converion to PDF and PDF to image
-              if (is_image (".".$format) && strpos ("_.ods.xls.xlsx", $file_ext) < 1)
-              {
-                // export filters for libreoffice
-                if ($file_ext == ".xlsx") $export_filter = ":\"MS Excel 2007 XML\"";
-                elseif ($file_ext == ".xls") $export_filter = ":\"MS Excel 95\"";
-                elseif ($file_ext == ".ods") $export_filter = ":\"OpenDocument Spreadsheet Flat XML\"";
-                else $export_filter = "";
-
-                $cmd = getlocation ($mgmt_docpreview[$docpreview_ext])."libreoffice --headless --convert-to ".shellcmd_encode ($docformat).$export_filter." \"".shellcmd_encode ($location_source.$file)."\" --outdir \"".shellcmd_encode ($location_source)."\"";
-              }
-              // default UNOCONV character set is UTF-8
-              // convert only if $mgmt_docpreview mapping exists in $mgmt_docconvert 
-              elseif (!is_image (".".$format) && !empty ($mgmt_docpreview[$docpreview_ext]) && !empty ($mgmt_docconvert[$file_ext]) && is_array ($mgmt_docconvert[$file_ext]))
-              {
-                $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
-              }
-
-              // execute code
-              if (!empty ($cmd))
-              {
-                // set environment variables
-                if (!empty ($mgmt_config['os_cms']) && $mgmt_config['os_cms'] == "WIN")
-                {
-                  putenv ("HOME=C:\\WINDOWS\\TEMP");
+                  $cmd = getlocation ($mgmt_docpreview[$docpreview_ext])."libreoffice --headless --convert-to ".shellcmd_encode ($docformat).$export_filter." \"".shellcmd_encode ($location_source.$file)."\" --outdir \"".shellcmd_encode ($location_source)."\"";
                 }
-                else
+                // default UNOCONV character set is UTF-8
+                // convert only if $mgmt_docpreview mapping exists in $mgmt_docconvert 
+                elseif (!is_image (".".$format) && !empty ($mgmt_docpreview[$docpreview_ext]) && !empty ($mgmt_docconvert[$file_ext]) && is_array ($mgmt_docconvert[$file_ext]))
                 {
-                  putenv ("PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin");
-                  putenv ("HOME=/tmp");
+                  $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
                 }
 
-                @exec ($cmd." 2>&1", $error_array, $errorCode);
-
-                // error if conversion failed
-                if (!empty ($errorCode) || !is_file ($location_source.$file_name.".".$docformat))
+                // execute code
+                if (!empty ($cmd))
                 {
-                  $errcode = "20276";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of libreoffice/unoconv (".$cmd.") to '".$format."' failed in createdocument for file '".$location_source.$file."' with message (Error code:".$errorCode."): ".implode(", ", $error_array);
-
-                  // save log
-                  savelog (@$error);
-                } 
-                else
-                {
-                  // rename/move converted file to destination
-                  $result_rename = @rename ($location_source.$file_name.".".$docformat, $location_dest.$newfile);
-
-                  if ($result_rename == false)
+                  // set environment variables
+                  if (!empty ($mgmt_config['os_cms']) && $mgmt_config['os_cms'] == "WIN")
                   {
-                    $errcode = "20377";
-                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
+                    putenv ("HOME=C:\\WINDOWS\\TEMP");
+                  }
+                  else
+                  {
+                    putenv ("PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin");
+                    putenv ("HOME=/tmp");
+                  }
+
+                  @exec ($cmd." 2>&1", $error_array, $errorCode);
+
+                  // error if conversion failed
+                  if (!empty ($errorCode) || !is_file ($location_source.$file_name.".".$docformat))
+                  {
+                    $errcode = "20276";
+                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of libreoffice/unoconv (".$cmd.") to '".$format."' failed in createdocument for file '".$location_source.$file."' with message (Error code:".$errorCode."): ".implode(", ", $error_array);
 
                     // save log
                     savelog (@$error);
-                  }
-                  else 
+                  } 
+                  else
                   {
-                    $converted = true;
+                    // rename/move converted file to destination
+                    $result_rename = @rename ($location_source.$file_name.".".$docformat, $location_dest.$newfile);
 
-                    // copy metadata from original file using EXIFTOOL
-                    $result_copy = copymetadata ($location_source.$file, $location_dest.$newfile);
-
-                    // remote client
-                    remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-
-                    // encrypt and save data
-                    if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+                    if ($result_rename == false)
                     {
-                      $data = encryptfile ($location_dest, $newfile);
-                      if (!empty ($data)) savefile ($location_dest, $newfile, $data);
+                      $errcode = "20377";
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
+
+                      // save log
+                      savelog (@$error);
+                    }
+                    else 
+                    {
+                      $converted = true;
+
+                      // copy metadata from original file using EXIFTOOL
+                      $result_copy = copymetadata ($location_source.$file, $location_dest.$newfile);
+
+                      // remote client
+                      remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+
+                      // encrypt and save data
+                      if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+                      {
+                        $data = encryptfile ($location_dest, $newfile);
+                        if (!empty ($data)) savefile ($location_dest, $newfile, $data);
+                      }
+
+                      // save in cloud storage
+                      if (is_file ($location_dest.$newfile) && function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
                     }
 
-                    // save in cloud storage
-                    if (is_file ($location_dest.$newfile) && function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
-                  }
-
-                  // create thumbnail image for document from converted PDF or image file
-                  if (strpos ($file, "_hcm") > 0 && ($docformat == "pdf" || is_image ($newfile)))
-                  {
-                    $location_media = getmedialocation ($site, $file, "abs_path_media").$site."/";
-                    $thumbnail = $file_name_orig.".thumb.jpg";
-
-                    if (!is_file ($thumbnail) || filemtime ($location_source.$file) > filemtime ($location_media.$thumbnail))
+                    // create thumbnail image for document from converted PDF or image file
+                    if (strpos ($file, "_hcm") > 0 && ($docformat == "pdf" || is_image ($newfile)))
                     {
-                      $thumbnail_new = createmedia ($site, $location_dest, $location_media, $newfile, "jpg", "thumbnail", true);
+                      $location_media = getmedialocation ($site, $file, "abs_path_media").$site."/";
+                      $thumbnail = $file_name_orig.".thumb.jpg";
 
-                      // correct file name by removing double .thumb
-                      if (!empty ($thumbnail_new) && is_file ($location_media.$thumbnail_new))
+                      if (!is_file ($thumbnail) || filemtime ($location_source.$file) > filemtime ($location_media.$thumbnail))
                       {
-                        if (is_file ($location_media.$thumbnail)) deletefile ($location_media, $thumbnail, 0);
-                        rename ($location_media.$thumbnail_new, $location_media.$thumbnail);
+                        $thumbnail_new = createmedia ($site, $location_dest, $location_media, $newfile, "jpg", "thumbnail", true);
+
+                        // correct file name by removing double .thumb
+                        if (!empty ($thumbnail_new) && is_file ($location_media.$thumbnail_new))
+                        {
+                          if (is_file ($location_media.$thumbnail)) deletefile ($location_media, $thumbnail, 0);
+                          rename ($location_media.$thumbnail_new, $location_media.$thumbnail);
+                        }
                       }
                     }
                   }
@@ -4922,6 +4974,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
   global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
 
   if (empty ($lang)) $lang = "en";
+  $updates = array();
 
   if (!empty ($mgmt_compress['.zip']) && valid_publicationname ($site) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 0 && is_dir ($destination) && valid_locationname ($destination) && valid_objectname ($zipfilename) && valid_objectname ($user))
   {
@@ -4960,32 +5013,35 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
 
         // get ZIP file size in kB
         $zipfilesize = round ((filesize ($destination.$zipfilename.".zip") / 1024), 0);
- 
-        // compare file sizes with 10% (-5+5%) tolerance
-        if ($zipfilesize < ($filesize * 1.05) || $zipfilesize > ($filesize * 0.95))  return true;
+
+        // compare file sizes with 4% (-2%/+2%) tolerance
+        if ($zipfilesize > ($filesize * 1.02) || $zipfilesize < ($filesize * 0.98)) $updates[] = "true";
 
         // query for files that are new or have been updated after the ZIP file has been created
-        foreach ($multiobject_array as $multiobject)
+        if (sizeof ($updates) < 1)
         {
-          $multiobject = convertpath ($site, $multiobject, "comp");
-
-          // remove folder object
-          if (getobject ($multiobject) == ".folder") $multiobject = getlocation ($multiobject);
-
-          // if location path
-          if (substr ($multiobject, -1) == "/")
+          foreach ($multiobject_array as $multiobject)
           {
-            $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath LIKE \"".$multiobject."%\" AND object.objectpath NOT LIKE \"%.recycle%\" AND container.date>=\"".$zipfiledate."\"");
-          }
-          // if object path
-          else
-          {
-            $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath=\"".$multiobject."\" AND object.objectpath NOT LIKE \"%.recycle\" AND object.objectpath NOT LIKE \"%.recycle/%\" AND container.date>=\"".$zipfiledate."\"");
+            $multiobject = convertpath ($site, $multiobject, "comp");
+
+            // remove folder object
+            if (getobject ($multiobject) == ".folder") $multiobject = getlocation ($multiobject);
+
+            // if location path
+            if (substr ($multiobject, -1) == "/")
+            {
+              $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath LIKE \"".$multiobject."%\" AND object.objectpath NOT LIKE \"%.recycle%\" AND container.date>=\"".$zipfiledate."\"");
+            }
+            // if object path
+            else
+            {
+              $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath=\"".$multiobject."\" AND object.objectpath NOT LIKE \"%.recycle\" AND object.objectpath NOT LIKE \"%.recycle/%\" AND container.date>=\"".$zipfiledate."\"");
+            }
           }
         }
 
-        // if no new objects have been found
-        if (!is_array ($updates) || sizeof ($updates) < 1) return true;
+        // if no changes have been found
+        if (empty ($updates) || (is_array ($updates) && sizeof ($updates) < 1)) return true;
       }
     }
 
@@ -5130,8 +5186,11 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
       }
     }
 
-    // save info file is nothing to pack
+    // save info file if there is nothing to be packed
     if (is_emptyfolder ($tempFolder)) savefile ($tempFolder, $hcms_lang['no-results-available'][$lang], "");
+
+    // remove old zip file
+    if (is_file ($destination.$zipfilename.".zip")) deletefile ($destination, $zipfilename.".zip", false);
 
     // Windows
     if ($mgmt_config['os_cms'] == "WIN")

@@ -236,7 +236,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
             {
               foreach ($inherit_db as $inherit_db_record)
               {
-                if ($inherit_db_record['parent'] != "" && in_array ($inherit_db_record['parent'], $siteaccess))
+                if (!empty ($inherit_db_record['parent']) && !empty ($siteaccess) && is_array ($siteaccess) && in_array ($inherit_db_record['parent'], $siteaccess))
                 {
                   $inherit_db_record['parent'] = trim ($inherit_db_record['parent']);
                   if ($inherit_db_record['parent'] != $site) $item_option_delete[] = $inherit_db_record['parent'];
@@ -257,7 +257,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
             }
           ?>
           </select>
-          <img border=0 name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+          <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
       <td style="width:38px; text-align:right; vertical-align:top;">

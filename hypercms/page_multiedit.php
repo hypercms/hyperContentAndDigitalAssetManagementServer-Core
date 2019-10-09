@@ -170,9 +170,9 @@ $multiobject_array = explode ("|", $multiobject);
 $add_onload = "";
 $js_tpl_code = "";
 $mediafile = "";
-$is_image = true;
-$is_video = true;
-$is_audio = true;
+$is_image = false;
+$is_video = false;
+$is_audio = false;
 $mediapreview = "";
 $template = "";
 $templatedata = "";
@@ -235,6 +235,9 @@ foreach ($multiobject_array as $object)
   // object information
   $objectinfo_item = getobjectinfo ($site_item, $location_item, $file_item);
 
+  // location name
+  $locationname = getlocationname ($site_item, $location_item_esc, $cat_item);
+
   // define link to open object
   if ($setlocalpermission['root'] == 1)
   {
@@ -251,9 +254,9 @@ foreach ($multiobject_array as $object)
     $mediadir = getmedialocation ($site, $objectinfo_item['media'], "abs_path_media").$site."/";
     
     // check media
-    if (!is_image ($media_info['ext'])) $is_image = false;
-    if (!is_video ($media_info['ext'])) $is_video = false;
-    if (!is_audio ($media_info['ext'])) $is_audio = false;
+    if (is_image ($media_info['ext'])) $is_image = true;
+    if (is_video ($media_info['ext'])) $is_video = true;
+    if (is_audio ($media_info['ext'])) $is_audio = true;
     
     // prepare media file
     $temp = preparemediafile ($site, $mediadir, $thumbnail, $user);
@@ -270,7 +273,7 @@ foreach ($multiobject_array as $object)
       $mediadir = $temp['location'];
       $thumbnail = $temp['file'];
     }
-    
+
     // thumbnails preview
     if (is_file ($mediadir.$thumbnail))
     {
@@ -298,18 +301,18 @@ foreach ($multiobject_array as $object)
       if ($imgwidth < 100 && $imgheight < 100) $style_size = "";
       else $style_size = $ratio;
       
-      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo_item['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$objectinfo_item['name']."\" title=\"".$objectinfo_item['name']."\" /></div>";;
+      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo_item['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";;
     }
     // no thumbnail available
     else
     {                 
-      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:100px;\" alt=\"".$objectinfo_item['name']."\" title=\"".$objectinfo_item['name']."\" /></div>";
+      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:100px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
     }
   }
   // standard thumbnail for non-multimedia objects
   else
   {                 
-    $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:100px;\" alt=\"".$objectinfo_item['name']."\" title=\"".$objectinfo_item['name']."\" /></div>";
+    $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:100px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
   }
   
   // container
@@ -1133,12 +1136,6 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
       return true;
     }
     else return false;
-  }
-    
-  function saveClose()
-  {
-    var result = save(false);
-    if (result == true) window.close();
   }
     
   function validateForm() 
@@ -1968,7 +1965,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
   </script>
   </head>
   
-  <body class="hcmsWorkplaceGeneric">
+  <body class="hcmsWorkplaceGeneric" style="height:auto;">
   
     <!-- save layer --> 
     <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; display:none; z-index:100;">
@@ -1986,7 +1983,6 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
         <tr>
           <td class="hcmsHeadline" style="text-align:left; vertical-align:middle; padding:0px 1px 0px 2px">
             <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="save(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
-            <img name="Button_sc" src="<?php echo getthemelocation()?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="saveClose()" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" />
             <?php if ($is_image || $is_video) { ?>
             <div class="hcmsButtonMenu" onclick="toggleDivAndButton(this, '#renderOptions');"><?php echo getescapedtext ($hcms_lang['options'][$lang], $charset, $lang); ?></div>
             <?php } ?>

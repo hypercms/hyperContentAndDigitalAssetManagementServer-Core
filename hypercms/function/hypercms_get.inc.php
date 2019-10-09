@@ -1604,9 +1604,13 @@ function getmetadata_container ($container_id, $text_id_array)
 {
   global $mgmt_config, $labels;
 
-  if ($container_id > 0 && is_array ($text_id_array) && sizeof ($text_id_array) > 0)
+  if (intval ($container_id) > 0 && is_array ($text_id_array) && sizeof ($text_id_array) > 0)
   {
     $result = array();
+    $result['createdate'] = "";
+    $result['date'] = "";
+    $result['publishdate'] = "";
+    $result['user'] = "";
 
     // use database
     if (!empty ($mgmt_config['db_connect_rdbms']))
@@ -1622,14 +1626,21 @@ function getmetadata_container ($container_id, $text_id_array)
       }
 
       // date modified
-      if (in_array ("modifieddate", $text_id_array))
+      if (in_array ("modifieddate", $text_id_array) || in_array ("date", $text_id_array))
       {
         if ($select != "") $select .= ', ';
         $select .= 'container.date';
       }
 
+      // date modified
+      if (in_array ("publishdate", $text_id_array))
+      {
+        if ($select != "") $select .= ', ';
+        $select .= 'container.publishdate';
+      }
+
       // user/owner
-      if (in_array ("owner", $text_id_array))
+      if (in_array ("owner", $text_id_array) || in_array ("user", $text_id_array))
       {
         if ($select != "") $select .= ', ';
         $select .= 'container.user';
@@ -1644,7 +1655,8 @@ function getmetadata_container ($container_id, $text_id_array)
 
       if ($select != "")
       {
-        $objectdata = rdbms_externalquery ('SELECT media.width, media.height, '.$select.' FROM container LEFT JOIN media ON media.id=container.id WHERE container.id='.intval($container_id));
+        $sql = 'SELECT media.width, media.height, '.$select.' FROM container LEFT JOIN media ON media.id=container.id WHERE container.id='.intval($container_id);
+        $objectdata = rdbms_externalquery ($sql);
  
         // reduce array
         if (is_array ($objectdata) && sizeof ($objectdata) > 0) $result = $objectdata[0];
@@ -1688,7 +1700,7 @@ function getmetadata_container ($container_id, $text_id_array)
         }
       }
     }
-    // user content container
+    // use content container
     else
     {
       $contentdata = loadcontainer ($container_id, "work", "sys");
@@ -1701,7 +1713,6 @@ function getmetadata_container ($container_id, $text_id_array)
           $temp = getcontent ($contentdata, "<contentcreated>");
 
           if (!empty ($temp[0])) $result['createdate'] = $temp[0];
-          else $result['createdate'] = "";
         }
 
         // date modified
@@ -1710,7 +1721,14 @@ function getmetadata_container ($container_id, $text_id_array)
           $temp = getcontent ($contentdata, "<contentdate>");
 
           if (!empty ($temp[0])) $result['date'] = $temp[0];
-          else $result['date'] = "";
+        }
+
+        // date published
+        if (in_array ("publishdate", $text_id_array))
+        {
+          $temp = getcontent ($contentdata, "<contentpublished>");
+
+          if (!empty ($temp[0])) $result['publishdate'] = $temp[0];
         }
 
         // user/owner
@@ -1719,7 +1737,6 @@ function getmetadata_container ($container_id, $text_id_array)
           $temp = getcontent ($contentdata, "<contentuser>");
 
           if (!empty ($temp[0])) $result['user'] = $temp[0];
-          else $result['user'] = "";
         }
 
         if (is_array ($text_id_array) && sizeof ($text_id_array) > 0)
@@ -1993,7 +2010,7 @@ function getcontainername ($container)
 
 // function: getlocationname()
 // input: publication name [string], location path (as absolute path or converted path) [string], category [page,comp], source for name [path,name]
-// output: location with readable names instead of file names / false on error
+// output: location with readable names instead of directory and file names / false on error
 
 function getlocationname ($site, $location, $cat, $source="path")
 {
@@ -3206,10 +3223,16 @@ function getfileinfo ($site, $file, $cat="comp")
           }
         }
         // all other files
-        else
+        elseif ($file_ext != "")
         {
           $file_icon = "file_binary.png";
           $file_type = substr ($file_ext, 1);
+        }
+        // unknown
+        else
+        {
+          $file_icon = "file_binary.png";
+          $file_type = "unknown";
         }
       } 
     }

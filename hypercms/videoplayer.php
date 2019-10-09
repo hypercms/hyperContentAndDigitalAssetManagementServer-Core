@@ -120,7 +120,7 @@ if ($media_dir != "")
   {
     // create thumbnail video of original file
     $create_media = createmedia ($site, $media_dir.$site."/", $media_dir.$site."/", $file_info['file'], "flv", "origthumb");
-    
+
     if ($create_media) $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
   }
 }
@@ -156,7 +156,7 @@ if ($playercode != "")
   <head>
     <title>hyperCMS Videoplayer</title>
     <meta charset="UTF-8" />
-    <?php 
+    <?php
     if ($audio) echo showaudioplayer_head (false);
     else echo showvideoplayer_head (false);
     ?>

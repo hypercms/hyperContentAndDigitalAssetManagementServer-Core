@@ -156,11 +156,11 @@ if (is_array ($content_array))
   // compare old version to new version
   // extension
   $extension_diff = html_diff ($extension_array[0], $extension_array[1]);  
-  $result .= "<p><div class=\"hcmsHeadline\" style=\"margin:2px; padding:2px; width:160px; height:16px; float:left;\">".getescapedtext ($hcms_lang['file-extension'][$lang])."</div><div class=\"hcmsTextArea\" style=\"margin:2px; width:360px; height:16px; float:left;\">".$extension_diff."</div><br /></p>";
+  $result .= "<p><div class=\"hcmsHeadline\" style=\"display:inline-block; margin:2px; padding:2px; width:160px; height:16px;\">".getescapedtext ($hcms_lang['file-extension'][$lang])."</div><div class=\"hcmsTextArea\" style=\"display:inline-block; margin:2px; width:360px; height:32px;\">".$extension_diff."</div></p>";
   
   //application
   $application_diff = html_diff ($application_array[0], $application_array[1]);    
-  $result .= "<p><div class=\"hcmsHeadline\" style=\"margin:2px; padding:2px; width:160px; height:16px; float:left;\">".getescapedtext ($hcms_lang['application'][$lang])."</div><div class=\"hcmsTextArea\" style=\"margin:2px; width:360px; height:16px; float:left;\">".$application_diff."</div><br /></p>";
+  $result .= "<p><div class=\"hcmsHeadline\" style=\"display:inline-block; margin:2px; padding:2px; width:160px; height:16px;\">".getescapedtext ($hcms_lang['application'][$lang])."</div><div class=\"hcmsTextArea\" style=\"display:inline-block; margin:2px; width:360px; height:32px;\">".$application_diff."</div></p>";
   
   // content
   $content_array[0] = str_replace (array("<",">"), array("&lt;","&gt;"), $content_array[0]);
@@ -168,7 +168,7 @@ if (is_array ($content_array))
   
   $content_diff = html_diff ($content_array[0], $content_array[1]);
   $content_diff = str_replace ("\n", "<br />\n", $content_diff);  
-  $result .= "<p><div class=\"hcmsTextArea\" style=\"margin:2px; width:760px; min-height:16px;\">".$content_diff."</div></p>";
+  $result .= "<p><div class=\"hcmsTextArea\" style=\"display:table; overflow:scroll; margin:2px; width:98%; min-height:32px; white-space:normal;\">".$content_diff."</div></p>";
   
   // output results
   if ($result != "") echo $result;

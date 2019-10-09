@@ -351,7 +351,7 @@ $token_new = createtoken ($user);
     else return false;
   }
   
-  function openobjectview ()
+  function openPopup ()
   {
     var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
@@ -359,7 +359,7 @@ $token_new = createtoken ($user);
     hcms_showInfo('objectviewLayer',0);
   }
   
-  function closeobjectview ()
+  function closePopup ()
   {
     hcms_hideInfo('objectviewLayer');
   }
@@ -516,7 +516,7 @@ $token_new = createtoken ($user);
   <!-- preview (do not used nested fixed positioned div-layers due to MS IE and Edge issue) --> 
   <div id="objectviewLayer" style="display:none;">
     <div style="position:fixed; right:5px; top:45px; z-index:8001;">
-      <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closeobjectview();" />
+      <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
     </div>
     <div id="objectview" class="hcmsWorkplaceExplorer" style="overflow:auto; position:fixed; margin:0; padding:0; left:0; top:40px; right:0; bottom:0; z-index:8000;">
     <?php
@@ -537,7 +537,7 @@ $token_new = createtoken ($user);
   if (isset ($multiobject_array) && is_array ($multiobject_array)) $title = sizeof ($multiobject_array)." ".$hcms_lang['objects-selected'][$lang];
   else $title = $pagename;
               
-  echo showtopbar ($hcms_lang['message'][$lang].": <a href=\"#\" onclick=\"openobjectview()\">".$title."</a>", $lang);
+  echo showtopbar ($hcms_lang['message'][$lang].": <a href=\"#\" onclick=\"openPopup()\">".$title."</a>", $lang);
   ?>
   
   <!-- message -->
