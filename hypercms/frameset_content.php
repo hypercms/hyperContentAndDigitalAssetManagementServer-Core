@@ -99,7 +99,7 @@ function openimageview (link)
   {
     var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    
+
     document.getElementById('objectview').src = 'explorer_imageview.php?link=' + encodeURIComponent(link) + '&width=' + width + '&height=' + height;
     hcms_showInfo('objectviewLayer',0);
   }

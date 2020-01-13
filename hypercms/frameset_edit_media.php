@@ -32,7 +32,6 @@ $mediacat = url_encode (getrequest ("mediacat", "url"));
 $mediadir = url_encode (getrequest ("mediadir", "url"));
 $mediatype = url_encode (getrequest ("mediatype", "url")); 
 $mediafile = url_encode (getrequest ("mediafile", "url"));
-$mediaobject_curr = url_encode (getrequest ("mediaobject_curr", "url"));
 $mediaobject = url_encode (getrequest ("mediaobject", "url"));
 $mediaalttext = url_encode (getrequest ("mediaalttext", "url"));
 $mediaalign = url_encode (getrequest ("mediaalign", "url"));
@@ -99,7 +98,7 @@ function maxNavFrame ()
   }
   else
   {
-    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&db_connect=".$db_connect."&id=".$id."&label=".$label."&tagname=".$tagname."&mediaalttext=".$mediaalttext."&mediaalign=".$mediaalign."&mediawidth=".$mediawidth."&mediaheight=".$mediaheight."&scaling=".$scaling."&mediatype=".$mediatype."&contenttype=".$contenttype."&mediafile=".$mediafile."&mediaobject_curr=".$mediaobject_curr."&mediaobject=".$mediaobject."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&db_connect=".$db_connect."&id=".$id."&label=".$label."&tagname=".$tagname."&mediaalttext=".$mediaalttext."&mediaalign=".$mediaalign."&mediawidth=".$mediawidth."&mediaheight=".$mediaheight."&scaling=".$scaling."&mediatype=".$mediatype."&contenttype=".$contenttype."&mediafile=".$mediafile."&mediaobject=".$mediaobject."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
   }
   ?>
   <div id="mainLayer" style="position:fixed; top:220px; right:0; bottom:0; left:260px; margin:0; padding:0;">

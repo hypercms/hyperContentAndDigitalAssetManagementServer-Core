@@ -11,7 +11,7 @@
 
 // ------------------------- setsession -----------------------------
 // function: setsession()
-// input: temporary hyperCMS variable name  [string or array], value [string or array] (optional), write session data for load balancer [true,false] (optional) 
+// input: temporary hyperCMS variable name  [string or array], value [string or array] (optional), write session data for load balancer [boolean] (optional) 
 // output: true / false on error
 
 function setsession ($variable, $content="", $write=false)
@@ -51,7 +51,7 @@ function setsession ($variable, $content="", $write=false)
 
 // -------------------------------- settemplate --------------------------------
 // function: settemplate()
-// input: publication name [string], location [string], object [string], template name [string], recursive [true,false] (optional)
+// input: publication name [string], location [string], object [string], template name [string], recursive [boolean] (optional)
 // output: true/false
 
 // description:
@@ -338,7 +338,7 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle=array(), $arts
 // -------------------------------------------- settext -----------------------------------------------
 // function: settext()
 // input: publication name [string], container (XML) [string], container name [string], text with tag Id as key and text as value [array], text type [array or string] [u,f,l,c,d,k], article [array or string]  [yes,no] (optional), 
-//          text user [array or string] (optional), user name [string] (optional), character set of text content [string] (optional), add microtime to ID used for comments [true,false] (optional)
+//          text user [array or string] (optional), user name [string] (optional), character set of text content [string] (optional), add microtime to ID used for comments [boolean] (optional)
 // output: updated content container (XML), false on error
 
 // description:
@@ -709,7 +709,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
 
 // -------------------------------------------- setmedia -----------------------------------------------
 // function: setmedia()
-// input: publication name [string], container (XML) [string], container name [string], media files with tag ID as key and reference as value [array], currently used mediobjects [array], media objects [array], 
+// input: publication name [string], container (XML) [string], container name [string], media files with tag ID as key and reference as value [array] (optional), new media object references with tag ID as key and reference as value [array], 
 //          media alternative text [array] (optional), media alignment [array] (optional), media width [array] (optional), media height [array] (optional), article [array or string] [yes,no] (optional), 
 //          content user [array or string] (optional), user name [string] (optional), character set of text content [string] (optional)
 // output: updated content container (XML), false on error
@@ -717,7 +717,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
 // description:
 // Set media content in container and database. The content container will be returned and not saved. 
 
-function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $mediaobject_curr=array(), $mediaobject=array(), $mediaalttext=array(), $mediaalign=array(), $mediawidth=array(), $mediaheight=array(), $art="no", $mediauser="", $user="sys", $charset="")
+function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $mediaobject=array(), $mediaalttext=array(), $mediaalign=array(), $mediawidth=array(), $mediaheight=array(), $art="no", $mediauser="", $user="sys", $charset="")
 {
   global $mgmt_config;
 
@@ -753,7 +753,6 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
       { 
         // set values if not set
         if (!isset ($mediafile[$id])) $mediafile[$id] = "";
-        if (!isset ($mediaobject_curr[$id])) $mediaobject_curr[$id] = "";
         if (!isset ($mediaobject[$id])) $mediaobject[$id] = "";
         if (!isset ($mediaalttext[$id])) $mediaalttext[$id] = "";
         if (!isset ($mediaalign[$id])) $mediaalign[$id] = "";
@@ -793,10 +792,24 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
             // get publication from objectpath
             $site_media = getpublication ($mediaobject[$id]);
 
+            // define media file
             if ($mediafile_name != false) $mediafile[$id] = $site_media."/".$mediafile_name;
           }
         }
         else $mediaobject[$id] = "";
+
+        // convert path
+        $mediaobject[$id] = convertpath ($site, $mediaobject[$id], "comp");
+
+        // extract old object reference (for link management)
+        $mediaobject_curr[$id] = "";
+        $temp_array = selectcontent ($contentdata, "<media>", "<media_id>", $id);
+
+        if (!empty ($temp_array[0]))
+        {
+          $temp_array = getcontent ($temp_array[0], "<mediaobject>");
+          if (!empty ($temp_array[0])) $mediaobject_curr[$id] = $temp_array[0];
+        }
 
         // check if article
         if ($art[$id] == "no")
@@ -847,6 +860,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
         }
 
         // ------------------------- add link to link management file ---------------------------
+
         $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $mediaobject_curr[$id], $mediaobject[$id], "unique");
 
         $contentdata = $contentdatanew;
@@ -864,8 +878,8 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
       // unlock file
       link_db_close ($site, $user);
 
-      //define message to display
-      $message = "<span class=hcmsHeadline>".$text8[$lang]."</span><br />\n".$text9[$lang]."<br />\n";
+      $errcode = "20510";
+      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|$errcode|link management file is missing or you do not have write permissions for ".$site.".link.dat";
     }
 
     // return container
@@ -901,14 +915,14 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
 
 // -------------------------------------------- setpagelink -----------------------------------------------
 // function: setpagelink()
-// input: publication name [string], container (XML) [string], container name [string], current link with tag Id as key and link reference as value [array], new link [array], link target [array] (optional), link text [array] (optional), 
+// input: publication name [string], container (XML) [string], container name [string], new link with tag ID as key and link reference as value [array], link target [array] (optional), link text [array] (optional), 
 //          article [array or string] [yes,no] (optional), content user [array or string] (optional), user name [string] (optional), character set of text content [string] (optional)
 // output: updated content container (XML), false on error
 
 // description:
 // Set link content in container and database. The content container will be returned and not saved. 
 
-function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr=array(), $linkhref=array(), $linktarget=array(), $linktext=array(), $art="no", $linkuser=array(), $user="sys", $charset="")
+function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $linktarget=array(), $linktext=array(), $art="no", $linkuser=array(), $user="sys", $charset="")
 {
   global $mgmt_config;
 
@@ -943,15 +957,19 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr=array(),
       if ($id != "")
       {
         // set values if not set
-        if (!isset ($linkhref_curr[$id])) $linkhref_curr[$id] = "";
         if (!isset ($linkhref[$id])) $linkhref[$id] = "";
         if (!isset ($linktarget[$id])) $linktarget[$id] = "";
         if (!isset ($linktext[$id])) $linktext[$id] = "";
+
         // set array if input parameter is string
         if (!empty ($artbuffer)) $art[$id] = $artbuffer;
         if (!empty ($userbuffer)) $linkuser[$id] = $userbuffer;
 
         $linkhref[$id] = urldecode ($linkhref[$id]);
+
+        // convert path
+        $linkhref[$id] = convertpath ($site, $linkhref[$id], "page");
+
         // remove dangerous scipt code
         $linkhref[$id] = scriptcode_encode ($linkhref[$id]);
         // escape special characters (transform all special chararcters into their html/xml equivalents) 
@@ -972,7 +990,17 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr=array(),
           $linktext[$id] = str_replace ("&", "&amp;", $linktext[$id]);
           $linktext[$id] = str_replace ("<", "&lt;", $linktext[$id]);
           $linktext[$id] = str_replace (">", "&gt;", $linktext[$id]); 
-        } 
+        }
+
+        // extract old object reference (for link management)
+        $linkhref_curr[$id] = "";
+        $temp_array = selectcontent ($contentdata, "<link>", "<link_id>", $id);
+
+        if (!empty ($temp_array[0]))
+        {
+          $temp_array = getcontent ($temp_array[0], "<linkhref>");
+          if (!empty ($temp_array[0])) $linkhref_curr[$id] = $temp_array[0];
+        }
 
         // check if page link
         if ($art[$id] == "no")
@@ -1017,7 +1045,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr=array(),
         }
 
         // ------------------------- add link to link management file ---------------------------
-        if (empty ($linkhref_curr[$id])) $linkhref_curr[$id] = "";
+
         $link_db = link_db_update ($site, $link_db, "link", $contentfile, "page", $linkhref_curr[$id], $linkhref[$id], "unique"); 
 
         $contentdata = $contentdatanew;
@@ -1075,14 +1103,14 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr=array(),
 
 // -------------------------------------------- setcomplink -----------------------------------------------
 // function: setcomplink()
-// input: publication name [string], container (XML) [string], container name [string], currently used components with tag ID as key and component reference as value [array], new components [array], conditions [array] (optional), 
+// input: publication name [string], container (XML) [string], container name [string], new components with tag ID as key and component reference as value [array], conditions [array] (optional), 
 //          article [array or string] [yes,no] (optional), content user [array or string] (optional), user name [string] (optional)
 // output: updated content container (XML), false on error
 
 // description:
 // Set component link content in container and database. The content container will be returned and not saved. 
 
-function setcomplink ($site, $contentdata, $contentfile, $component_curr=array(), $component=array(), $condition=array(), $art="no", $compuser=array(), $user="sys")
+function setcomplink ($site, $contentdata, $contentfile, $component=array(), $condition=array(), $art="no", $compuser=array(), $user="sys")
 {
   global $mgmt_config;
 
@@ -1116,6 +1144,15 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr=array()
 
       if ($id != "")
       {
+        // correct extension if object is unpublished
+        if (strpos ($component[$id]."|", ".off|") > 0) $component[$id] = str_replace (".off|", "|", $component[$id]."|");
+
+        // remove | at the end
+        $component[$id] = trim ($component[$id], "|");
+
+        // convert path
+        $component[$id] = convertpath ($site, $component[$id], "comp");
+
         // convert object path to object ID if DAM
         $component_object_id[$id] = getobjectid ($component[$id]);
 
@@ -1123,12 +1160,26 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr=array()
         if ($mgmt_config[$site]['dam']) $component_conv[$id] = $component_object_id[$id];
         else $component_conv[$id] = $component[$id];
 
-        // correct extension if object is unpublished
-        if (strpos ($component_conv[$id], ".off|") > 0) $component_conv[$id] = str_replace (".off|", "|", $component_conv[$id]);
-
         // set array if input parameter is string
         if (!empty ($artbuffer)) $art[$id] = $artbuffer;
         if (!empty ($userbuffer)) $compuser[$id] = $userbuffer;
+
+        // extract old object reference (for link management)
+        $component_curr[$id] = "";
+        $temp_array = selectcontent ($contentdata, "<component>", "<component_id>", $id);
+
+        if (!empty ($temp_array[0]))
+        {
+          $temp_array = getcontent ($temp_array[0], "<componentfiles>");
+
+          if (!empty ($temp_array[0]))
+          {
+            $temp_array[0] = trim ($temp_array[0]);
+            // remove | at the end
+            $temp_array[0] = trim ($temp_array[0], "|");
+            $component_curr[$id] = $temp_array[0];
+          }
+        }
 
         // check if page component
         if ($art[$id] == "no")
@@ -1172,7 +1223,6 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr=array()
 
         // ------------------------- add link to link management file ---------------------------
 
-        if (empty ($component_curr[$id])) $component_curr[$id] = "";
         $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $component_curr[$id], $component[$id], "unique");
 
         if (!empty ($contentdatanew)) $contentdata = $contentdatanew;
@@ -1384,11 +1434,11 @@ function setrelation ($site, $location_1, $object_1, $id_1="Related", $location_
         if (!empty ($temp_array[0]))
         {
           $temp_array = getcontent ($temp_array[0], "<componentfiles>");
-          if (!empty ($temp_array[0])) $component_curr_1 = $temp_array[0];
+          if (!empty ($temp_array[0])) $component_curr_1 = trim ($temp_array[0], "|");
         }
 
         // set component link
-        $contentdatanew_1 = setcomplink ($site, $contentdata_1, $contentfile_1, array($id_1 => $component_curr_1), array($id_1 => $component_curr_1.$component_1), "", "no", $user, $user);
+        $contentdatanew_1 = setcomplink ($site, $contentdata_1, $contentfile_1, array($id_1 => $component_curr_1."|".$component_1), "", "no", $user, $user);
 
         // save working xml content container file
         if (!empty ($contentdatanew_1)) $save_1 = savecontainer ($container_id_1, "work", $contentdatanew_1, $user);
@@ -1421,11 +1471,11 @@ function setrelation ($site, $location_1, $object_1, $id_1="Related", $location_
         if (!empty ($temp_array[0]))
         {
           $temp_array = getcontent ($temp_array[0], "<componentfiles>");
-          if (!empty ($temp_array[0])) $component_curr_2 = $temp_array[0];
+          if (!empty ($temp_array[0])) $component_curr_2 = trim ($temp_array[0], "|");
         }
 
         // set component link
-        $contentdatanew_2 = setcomplink ($site, $contentdata_2, $contentfile_2, array($id_2 => $component_curr_2), array($id_2 => $component_curr_2.$component_2), "", "no", $user, $user);
+        $contentdatanew_2 = setcomplink ($site, $contentdata_2, $contentfile_2, array($id_2 => $component_curr_2."|".$component_2), "", "no", $user, $user);
 
         // save working xml content container file
         if (!empty ($contentdatanew_2)) $save_2 = savecontainer ($container_id_2, "work", $contentdatanew_2, $user);

@@ -69,6 +69,8 @@ elseif (strpos ($contenttype, "charset") > 0)
 }
 else $charset = $mgmt_config[$site]['default_codepage'];
 
+header ('Content-Type: text/html; charset='.$charset);
+
 // read content using db_connect
 if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect))
 {

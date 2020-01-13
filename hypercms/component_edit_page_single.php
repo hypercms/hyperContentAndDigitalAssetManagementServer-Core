@@ -24,7 +24,6 @@ $db_connect = getrequest_esc ("db_connect", "objectname");
 $id = getrequest_esc ("id", "objectname", "", true);
 $label = getrequest_esc ("label");
 $tagname = getrequest_esc ("tagname", "objectname");
-$component_curr = getrequest_esc ("component_curr", "locationname");
 $component = getrequest_esc ("component", "locationname");
 $condition = getrequest ("condition", "objectname");
 
@@ -63,15 +62,10 @@ $file_info = getfileinfo ($site, $location.$page, $cat);
 // create secure token
 $token = createtoken ($user);
 
-// get the first objectpath from the single component string
-$temp = link_db_getobject ($component_curr);
-$component_curr = $temp[0];
-
 $temp = link_db_getobject ($component);
 $component = $temp[0];
 
 // convert object ID to object path
-$component_curr = getobjectlink ($component_curr);
 $component = getobjectlink ($component);
 
 // get name
@@ -96,9 +90,8 @@ if ($label == "") $label = $id;
 <script type="text/javascript">
 function correctnames ()
 {
-  if (eval (document.forms['component'].elements['component'])) document.forms['component'].elements['component'].name = "<?php echo $art; ?>component[<?php echo $id; ?>]";
-  if (eval (document.forms['component'].elements['component_curr'])) document.forms['component'].elements['component_curr'].name = "<?php echo $art; ?>component_curr[<?php echo $id; ?>]";
-  if (eval (document.forms['component'].elements['condition'])) document.forms['component'].elements['condition'].name = "<?php echo $art; ?>condition[<?php echo $id; ?>]";
+  if (document.forms['component'].elements['component']) document.forms['component'].elements['component'].name = "<?php echo $art; ?>component[<?php echo $id; ?>]";
+  if (document.forms['component'].elements['condition']) document.forms['component'].elements['condition'].name = "<?php echo $art; ?>condition[<?php echo $id; ?>]";
   return true;
 }
 
@@ -177,7 +170,6 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   <input type="hidden" name="db_connect" value="<?php echo $db_connect; ?>" />
   <input type="hidden" name="id" value="<?php echo $id; ?>" />
   <input type="hidden" name="tagname" value="<?php echo $tagname; ?>" />
-  <input type="hidden" name="component_curr" value="<?php echo $component_curr; ?>" />
   <input type="hidden" name="component" value="<?php echo $component; ?>" />
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   

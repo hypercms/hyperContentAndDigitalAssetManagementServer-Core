@@ -65,6 +65,8 @@ elseif (strpos ($contenttype, "charset") > 0)
 }
 else $charset = $mgmt_config[$site]['default_codepage'];
 
+header ('Content-Type: text/html; charset='.$charset);
+
 // create secure token
 $token = createtoken ($user);
 

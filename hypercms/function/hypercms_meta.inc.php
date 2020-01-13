@@ -588,7 +588,7 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
 
 // --------------------------------------- createtaxonomy -------------------------------------------
 // function: createtaxonomy ()
-// input: publication name [string] (optional), recreate taxonomy file [true,false] (optional)
+// input: publication name [string] (optional), recreate taxonomy file [boolean] (optional)
 // output: true / false
 
 // description:
@@ -928,6 +928,7 @@ function extractmetadata ($file)
         }
         elseif (is_array ($output))
         {
+          // EXIFTOOL result array
           foreach ($output as $line)
           {
             if (strpos ($line, " : ") > 0)
@@ -1169,7 +1170,7 @@ function id3_getdata ($file)
 
 // ------------------------- id3_writefile -----------------------------
 // function: id3_writefile()
-// input: abs. path to audio file [string], ID3 tag [array], keep existing ID3 data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
+// input: abs. path to audio file [string], ID3 tag [array], keep existing ID3 data of file [boolean] (optional), move tempoarary file from unecrypted to encrypted [boolean] (optional)
 // output: true / false on error
 
 // description:
@@ -1341,6 +1342,9 @@ function id3_create ($site, $text)
     {
       foreach ($mapping as $tag => $id)
       {
+        // extract type prefix and text ID
+        if (strpos ($id, ":") > 0) list ($type, $id) = explode (":", $id); 
+
         // set ID3 tag (tag => value)
         if ($tag != "" && $id != "" && isset ($text[$id]) && substr ($tag, 0, 4) == "id3:")
         {
@@ -1433,7 +1437,7 @@ function xmp_getdata ($file)
 
 // ------------------------- xmp_writefile -----------------------------
 // function: xmp_writefile()
-// input: abs. path to image file [string], XMP tag [array], keep existing XMP data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
+// input: abs. path to image file [string], XMP tag [array], keep existing XMP data of file [boolean] (optional), move tempoarary file from unecrypted to encrypted [boolean] (optional)
 // output: true / false on error
 
 // description:
@@ -1576,6 +1580,9 @@ function xmp_create ($site, $text)
     {
       foreach ($mapping as $tag => $id)
       {
+        // extract type prefix and text ID
+        if (strpos ($id, ":") > 0) list ($type, $id) = explode (":", $id); 
+
         // set XMP tag (tag => value)
         if ($tag != "" && $id != "" && isset ($text[$id]) && (substr ($tag, 0, 3) == "dc:" || substr ($tag, 0, 10) == "photoshop:"))
         {
@@ -1600,13 +1607,38 @@ function xmp_create ($site, $text)
 
 // ------------------------- geo2decimal -----------------------------
 // function: geo2decimal()
-// input: geo location in degree [integer], minutes [integer], seconds [integer], hemisphere [N,O,S,W]
+// input: GPS location [degrees,minutes,seconds], hemisphere [N,O,S,W]
 // output: decimal result / false
 
-function geo2decimal ($deg, $min, $sec, $hemi) 
+function geo2decimal ($coordinate, $hemisphere)
 {
-  $d = $deg + ((($min/60) + ($sec/3600))/100);
-  return ($hemi == 'S' || $hemi == 'W') ? $d*=-1 : $d;
+  if (is_string ($coordinate))
+  {
+    $coordinate = array_map ("trim", explode (",", $coordinate));
+  }
+
+  for ($i = 0; $i < 3; $i++)
+  {
+    $part = explode ('/', $coordinate[$i]);
+
+    if (count ($part) == 1)
+    {
+      $coordinate[$i] = $part[0];
+    }
+    else if (count ($part) == 2)
+    {
+      $coordinate[$i] = floatval ($part[0]) / floatval ($part[1]);
+    }
+    else
+    {
+      $coordinate[$i] = 0;
+    }
+  }
+
+  list ($degrees, $minutes, $seconds) = $coordinate;
+  $sign = ($hemisphere == 'W' || $hemisphere == 'S') ? -1 : 1;
+
+  return $sign * ($degrees + $minutes/60 + $seconds/3600);
 }
 
 // ------------------------- exif_getdata -----------------------------
@@ -1667,16 +1699,24 @@ function exif_getdata ($file)
 			if (trim ($dateoriginal." ".$timeoriginal) != "") $result['Camera']['Date and time'] = $dateoriginal." ".$timeoriginal;
 		}
 
-    // geo location
-    if (is_array ($exif['GPSLongitude']) && is_array ($exif['GPSLatitude']))
+    // GPS / geo location
+    if (is_array ($exif['GPS']['GPSLongitude']) && is_array ($exif['GPS']['GPSLatitude']))
     {
-      $egeoLong = $exif['GPSLongitude'];
-      $egeoLat = $exif['GPSLatitude'];
-      $egeoLongR = $exif['GPSLongitudeRef'];
-      $egeoLatR = $exif['GPSLatitudeRef'];
+      $egeoLong = $exif['GPS']['GPSLongitude'];
+      $egeoLat = $exif['GPS']['GPSLatitude'];
+      $egeoLongR = $exif['GPS']['GPSLongitudeRef'];
+      $egeoLatR = $exif['GPS']['GPSLatitudeRef'];
 
-      $result['GPS']['longitude'] = geo2decimal ($egeoLong[0], $egeoLong[1], $egeoLong[2], $egeoLongR);
-      $result['GPS']['latitude'] = geo2decimal ($egeoLat[0], $egeoLat[1], $egeoLat[2], $egeoLatR);
+      // GPS coordinates in degress, minutes, seconds
+      $result['GPS']['GPSLatitude'] = $egeoLat[0].",".$egeoLat[1].",".$egeoLat[2];
+      $result['GPS']['GPSLongitude'] = $egeoLong[0].",".$egeoLong[1].",".$egeoLong[2];
+      $result['GPS']['GPSLatitudeRef'] = $egeoLatR;
+      $result['GPS']['GPSLongitudeRef'] = $egeoLongR;
+      $result['GPS']['GPSAltitudeRef'] = $exif['GPS']['GPSAltitudeRef'];
+      $result['GPS']['GPSAltitude'] = $exif['GPS']['GPSAltitude'];
+      $result['GPS']['latitude'] = geo2decimal ($egeoLat[0].",".$egeoLat[1].",".$egeoLat[2], $egeoLatR);
+      $result['GPS']['longitude'] = geo2decimal ($egeoLong[0].",".$egeoLong[1].",".$egeoLong[2], $egeoLongR);
+      $result['GPS']['coordinates'] = $result['GPS']['latitude'].",".$result['GPS']['longitude'];
     }
 
     // shutter
@@ -1726,7 +1766,7 @@ function exif_getdata ($file)
 			if (trim ($iso) != "") $result['Camera']['ISO'] = trim ($iso);
 		}
 
-    // 
+    // white balance
 		if (isset ($exif["EXIF"]["WhiteBalance"]))
     {
 			switch ($exif["EXIF"]["WhiteBalance"])
@@ -1762,7 +1802,8 @@ function exif_getdata ($file)
 
 			if (trim ($whitebalance) != "") $result['Camera']['White balance'] = $whitebalance;
 		}
-		
+    
+    // flash light
 		if (isset ($exif["EXIF"]["Flash"]))
     {
 			switch ($exif["EXIF"]["Flash"])
@@ -1839,7 +1880,16 @@ function exif_getdata ($file)
 			}
 
 			if (trim ($flash) != "") $result['Camera']['Flash'] = trim ($flash);
-		}
+    }
+    
+    // IDF0
+		if (isset ($exif["IFD0"]) && is_array ($exif["IFD0"]))
+    {
+      foreach ($exif["IFD0"] as $key => $value)
+      {
+        if (trim ($value) != "") $result['IFD0'][$key] = trim ($value);
+      }
+    }
 		
 		if (isset ($exif["IFD0"]["Make"]) && isset ($exif["IFD0"]["Model"]))
     {
@@ -1849,6 +1899,7 @@ function exif_getdata ($file)
 			if (trim ($model) != "") $result['Camera']['Camera/Scanner model'] = trim ($model);
 		}
 
+    // comment
 		if (isset ($exif["COMMENT"]))
     {
       if (is_array ($exif["COMMENT"]))
@@ -1860,14 +1911,12 @@ function exif_getdata ($file)
       }
     }
 
-		if (isset ($exif["COMPUTED"]))
+    // computed
+		if (isset ($exif["COMPUTED"]) && is_array ($exif["COMPUTED"]))
     {
-      if (is_array ($exif["COMPUTED"]))
+      foreach ($exif["COMPUTED"] as $key => $value)
       {
-        foreach ($exif["COMPUTED"] as $key => $value)
-        {
-          if (trim ($value) != "") $result['Computed'][$key] = trim ($value);
-        }
+        if (trim ($value) != "") $result['Computed'][$key] = trim ($value);
       }
     }
 
@@ -2136,7 +2185,7 @@ function iptc_maketag ($record=2, $tag, $value)
 
 // ------------------------- iptc_writefile -----------------------------
 // function: iptc_writefile()
-// input: abs. path to image file [string], IPTC tag [array], keep existing IPTC data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
+// input: abs. path to image file [string], IPTC tag [array], keep existing IPTC data of file [boolean] (optional), move tempoarary file from unecrypted to encrypted [boolean] (optional)
 // output: true / false on error
 
 // description:
@@ -2248,12 +2297,13 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
         {
           $record = substr ($tag, 0, 1);
           $tag = substr ($tag, 2);
+          $value = strip_tags ($value);
           $data .= iptc_maketag ($record, $tag, html_decode ($value, $encoding)); 
         }
-      }
 
-      // embed the IPTC data (only JPEG files)
-      $content = iptcembed ($data, $file);
+        // embed the IPTC data (only JPEG files)
+        $content = iptcembed ($data, $file);
+      }
 
       // write the new image data to the file
       if (!empty ($content))
@@ -2309,7 +2359,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
 // output: IPTC tag array / false on error
 
 // description:
-// Defines IPTC tag array based on the medai mapping of a publication
+// Defines IPTC tag array based on the media mapping of a publication
 
 function iptc_create ($site, $text)
 {
@@ -2320,7 +2370,7 @@ function iptc_create ($site, $text)
     // try to load mapping configuration file of publication
     if (is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
     {
-      @include ($mgmt_config['abs_path_data']."config/".$site.".media.map.php");
+      include ($mgmt_config['abs_path_data']."config/".$site.".media.map.php");
     }
 
     $iptc_info = array();
@@ -2367,6 +2417,9 @@ function iptc_create ($site, $text)
       foreach ($mapping as $name => $id)
       {
         $name = strtolower ($name);
+
+        // extract type prefix and text ID
+        if (strpos ($id, ":") > 0) list ($type, $id) = explode (":", $id); 
 
         // set IPTC tag (tag => value)
         if ($id != "" && isset ($text[$id]) && !empty ($iptc_info[$name]))
@@ -2417,14 +2470,14 @@ function createmapping ($site, $mapping)
             elseif (substr_count ($key, "'") > 0) $key_array = explode ("'", $key);
             else $key_array[1] = $key;
 
-            if (is_array ($key_array)) $map_tag = "\$mapping['".trim(addslashes(strip_tags ($key_array[1])))."']";
+            if (is_array ($key_array)) $map_tag = "\$mapping['".trim (addslashes (strip_tags ($key_array[1])))."']";
             else $map_tag = false;
 
             if (substr_count ($value, "\"") > 0) $value_array = explode ("\"", $value);
             elseif (substr_count ($value, "'") > 0) $value_array = explode ("'", $value);
             else $value_array[1] = $value;
 
-            if (is_array ($value_array) && $value_array[1] != "") $map_id = "\"".trim(addslashes(strip_tags ($value_array[1])))."\";\n";
+            if (is_array ($value_array) && $value_array[1] != "") $map_id = "\"".trim (addslashes (strip_tags ($value_array[1])))."\";\n";
             else $map_id = false;
 
             if ($map_tag != false && $map_id != false) $mapping_result .= $map_tag." = ".$map_id;
@@ -2492,6 +2545,82 @@ function getmapping ($site)
       return trim ($mapping_data);
     }
   }
+
+  // exif mapping based on EXIFTOOL output by function extractmetadata (as an example or alternative to the ones of function exif_getdata)
+  /*
+  // exif namespace tags
+exif:Image Description => 'textu:Description'
+exif:Make => ''
+exif:Camera Model Name => ''
+exif:Orientation => ''
+exif:X Resolution => ''
+exif:Y Resolution => ''
+exif:Resolution Unit => ''
+exif:Software => ''
+exif:Modify Date => ''
+exif:Exposure Time => ''
+exif:F Number => ''
+exif:Exposure Program => ''
+exif:ISO => ''
+exif:Exif Version => ''
+exif:Date/Time Original => ''
+exif:Create Date => ''
+exif:Components Configuration => ''
+exif:Compressed Bits Per Pixel => ''
+exif:Exposure Compensation => ''
+exif:Max Aperture Value => ''
+exif:Metering Mode => ''
+exif:Light Source => ''
+exif:Flash => ''
+exif:Focal Length => ''
+exif:Sub Sec Time => ''
+exif:Flashpix Version => ''
+exif:Color Space => ''
+exif:Exif Image Width => ''
+exif:Exif Image Height => ''
+exif:Sensing Method => ''
+exif:File Source => ''
+exif:Scene Type => ''
+exif:Custom Rendered => ''
+exif:Exposure Mode => ''
+exif:White Balance => ''
+exif:Digital Zoom Ratio => ''
+exif:Focal Length In 35mm Format => ''
+exif:Scene Capture Type => ''
+exif:Gain Control => ''
+exif:Contrast => ''
+exif:Saturation => ''
+exif:Sharpness => ''
+exif:Subject Distance Range => ''
+exif:GPS Version ID => ''
+exif:GPS Latitude Ref => ''
+exif:GPS Longitude Ref => ''
+exif:GPS Altitude Ref => ''
+exif:GPS Time Stamp => ''
+exif:GPS Processing Method => ''
+exif:GPS Date Stamp => ''
+exif:Compression => ''
+
+// Composite namespace tags
+composite:Aperture => ''
+composite:GPS Altitude => ''
+composite:GPS Date/Time => ''
+composite:GPS Latitude => ''
+composite:GPS Longitude => ''
+composite:GPS Position => ''
+composite:Image Size => ''
+composite:Megapixels => ''
+composite:Scale Factor To 35 mm Equivalent => ''
+composite:Shutter Speed => ''
+composite:Create Date => ''
+composite:Date/Time Original => ''
+composite:Modify Date => ''
+composite:Circle Of Confusion => ''
+composite:Field Of View => ''
+composite:Focal Length => ''
+composite:Hyperfocal Distance => ''
+composite:Light Value => ''
+*/
 
   // default mapping
   if ($mapping_data == "")
@@ -2579,6 +2708,7 @@ lr:hierarchicalSubject => 'automatic'
 // EXIF tags (JPG, TIFF, PNG, JP2, PGF, MIFF, HDP, PSP, XCF, TIFF-based RAW images, and even AVI and MOV video files)
 // EXIF-Sections:
 // FILE ...	FileName, FileSize, FileDateTime, SectionsFound
+// GPS ... GPS coordinates
 // COMPUTED ... html, Width, Height, IsColor, and more if available. Height and Width are computed the same way getimagesize() does so their values must not be part of any header returned. Also, html is a height/width text string to be used inside normal HTML.
 // ANY_TAG ...	Any information that has a Tag e.g. IFD0, EXIF, ...
 // IFD0 ... All tagged data of IFD0. In normal imagefiles this contains image size and so forth.
@@ -2593,6 +2723,9 @@ exif:FILE.FileSize => ''
 exif:FILE.FileType => ''
 exif:FILE.MimeType => ''
 exif:FILE.SectionsFound => ''
+exif:GPS.longitude => ''
+exif:GPS.latitude => ''
+exif:GPS.coordinates => ''
 exif:COMPUTED.html => ''
 exif:COMPUTED.Height => ''
 exif:COMPUTED.Width => ''
@@ -2603,7 +2736,8 @@ exif:COMPUTED.Thumbnail.MimeType => ''
 exif:IFD0.DateTime => ''
 exif:IFD0.Artist => ''
 exif:IFD0.Exif_IFD_Pointer => ''
-exif:IFD0.Title => ''
+exif:IFD0.Title => 'textu:Title'
+exif:IFD0.ImageDescription => 'textu:Description'
 exif:THUMBNAIL.Compression => ''
 exif:THUMBNAIL.XResolution => ''
 exif:THUMBNAIL.YResolution => ''
@@ -2666,7 +2800,7 @@ google:keywords => 'textk:Keywords'";
 // ------------------------- setmetadata -----------------------------
 // function: setmetadata()
 // input: publication name [string], location path [string] (optional), object name [string] (optional), media file name [string] (optional), mapping [array:metadata-tag-name => text-id] (optional), 
-//        container content as XML [string] (optional), user name [string], save content container [true,false] (optional)
+//        container content as XML [string] (optional), user name [string], save content container [boolean] (optional)
 // output: container content as XML string / false
 
 // description:
@@ -2676,7 +2810,7 @@ google:keywords => 'textk:Keywords'";
 function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="", $containerdata="", $user, $savecontainer=true)
 {
   global $eventsystem, $mgmt_config, $hcms_ext;
-
+  
   if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
 
   // IPTC-tag and xml-tag name from multimedia file is mapped with text-id of the content container.
@@ -3161,8 +3295,99 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   else
                   {
                     $errcode = "20604";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write KEYWORDS meta data to container with ID: ".$container_id;
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write meta data to container with ID: ".$container_id;
                   }
+                }
+              }
+            }
+          }
+        }
+
+        
+        // ------------------- EXIF -------------------
+
+        // set encoding for EXIF to UTF-8
+        ini_set ('exif.encode_unicode', 'UTF-8');
+        error_reporting(0);
+
+        if (exif_imagetype ($medialocation.$mediafile))
+        {
+          // read EXIF data
+          $exif_data = exif_getdata ($medialocation.$mediafile);
+
+          if (is_array ($exif_data))
+          {
+            $exif_info = array();
+
+            foreach ($exif_data as $key => $section)
+            {
+              foreach ($section as $name => $value)
+              {
+                $exif_info['exif:'.$key.'.'.$name] = $value;
+              }
+            }
+          }
+
+          // set GPS latitude and longitude in database
+          if (!empty ($mgmt_config['gps_save']) && !empty ($exif_info['exif:GPS.latitude']) && is_numeric ($exif_info['exif:GPS.latitude']) && !empty ($exif_info['exif:GPS.longitude']) && is_numeric ($exif_info['exif:GPS.longitude']))
+          {
+            $sql = "UPDATE container SET latitude=".floatval($exif_info['exif:GPS.latitude']).", longitude=".floatval($exif_info['exif:GPS.longitude'])." WHERE id=".intval($container_id);                
+            $result = rdbms_externalquery ($sql);
+          }
+
+          // inject meta data based on mapping
+          reset ($mapping);
+
+          foreach ($mapping as $key => $text_id)
+          {
+            // only for EXIF tags
+            if (strpos ("_".$key, "exif:") > 0 && $text_id != "")
+            { 
+              if ($exif_info[$key] != "")
+              {
+                // get type and text ID
+                if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+                elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
+                else $type = "textu";
+
+                // clean keywords
+                if ($type == "textk")
+                {
+                  $keywords = splitkeywords ($exif_info[$key], $charset_dest);
+
+                  if (is_array ($keywords)) $exif_info[$key] = implode (",", $keywords);
+                  else $exif_info[$key] = "";
+                }
+
+                // remove tags
+                $exif_info[$key] = strip_tags ($exif_info[$key]);
+
+                // we set encoding for EXIF to UTF-8
+                $charset_source = "UTF-8";
+
+                // convert string for container
+                if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+                {
+                  $exif_info[$key] = convertchars ($exif_info[$key], $charset_source, $charset_dest);
+                }
+
+                // textnodes search index in database
+                $text_array[$text_id] = $exif_info[$key];
+
+                $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
+
+                if ($containerdata_new == false)
+                {
+                  $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
+                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                }
+
+                if ($containerdata_new != false) $containerdata = $containerdata_new;
+                else
+                {
+                  $errcode = "20606";
+                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write EXIF meta data to container with ID: ".$container_id;
                 }
               }
             }
@@ -3244,90 +3469,6 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 {
                   $errcode = "20605";
                   $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write ID3 meta data to container with ID: ".$container_id;
-                }
-              }
-            }
-          }
-        }
-
-        // ------------------- EXIF -------------------
-
-        // set encoding for EXIF to UTF-8
-        ini_set ('exif.encode_unicode', 'UTF-8');
-        error_reporting(0);
-
-        if (exif_imagetype ($medialocation.$mediafile))
-        {
-          // read EXIF data
-          $exif_data = exif_read_data ($medialocation.$mediafile, 0, true);
- 
-          if (is_array ($exif_data))
-          {
-            $exif_info = array();
-
-            foreach ($exif_data as $key => $section)
-            {
-              foreach ($section as $name => $value)
-              {
-                $exif_info['iptc:'.$key.'.'.$name] = $value;
-              }
-            }
-          }
-
-          // inject meta data based on mapping
-          reset ($mapping);
-
-          foreach ($mapping as $key => $text_id)
-          {
-            // only for EXIF tags
-            if (strpos ("_".$key, "exif:") > 0 && $text_id != "")
-            { 
-              if ($exif_info[$key] != "")
-              {
-                // get type and text ID
-                if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
-                elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
-                else $type = "textu";
-
-                // clean keywords
-                if ($type == "textk")
-                {
-                  $keywords = splitkeywords ($exif_info[$key], $charset_dest);
-
-                  if (is_array ($keywords)) $exif_info[$key] = implode (",", $keywords);
-                  else $exif_info[$key] = "";
-                }
-
-
-                // remove tags
-                $exif_info[$key] = strip_tags ($exif_info[$key]);
-
-                // we set encoding for EXIF to UTF-8
-                $charset_source = "UTF-8";
-
-                // convert string for container
-                if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
-                {
-                  $exif_info[$key] = convertchars ($exif_info[$key], $charset_source, $charset_dest);
-                }
-
-                // textnodes search index in database
-                $text_array[$text_id] = $exif_info[$key];
-  
-                $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
-
-                if ($containerdata_new == false)
-                {
-                  $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
-                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
-                }
-
-                if ($containerdata_new != false) $containerdata = $containerdata_new;
-                else
-                {
-                  $errcode = "20606";
-                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write EXIF meta data to container with ID: ".$container_id;
                 }
               }
             }

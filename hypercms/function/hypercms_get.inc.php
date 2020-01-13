@@ -199,7 +199,7 @@ function getrequest ($variable, $force_type=false, $default="")
 // ------------------------- getrequest_esc -----------------------------
 // function: getrequest_esc()
 // input: request variable name [string], must be of certain type [numeric,array,publicationname,locationname,objectname] (optional), default value [string] (optional), 
-//        remove characters to avoid JS injection [true,false] (optional)
+//        remove characters to avoid JS injection [boolean] (optional)
 // output: request value
 
 // description:
@@ -541,7 +541,7 @@ function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
 // function: gettaxonomy_childs()
 // input: publication name [string] (optional), language code [string] (optional), 
 //        taxonomy ID or expression or taxonomy path in the form %taxonomy%/publication-name or 'default'/language-code/taxonomy-ID/taxonomy-child-levels [string], 
-//        taxonomy child levels [integer] (optional), only return taxonomy IDs without language and keyword information [true,false] (optional)
+//        taxonomy child levels [integer] (optional), only return taxonomy IDs without language and keyword information [boolean] (optional)
 // output: array holding all taxonomy IDs / false on error
 
 // description:
@@ -1008,7 +1008,7 @@ function getmetadescription ($text, $charset="UTF-8")
 // function: getgooglesitemap ()
 // input: publication name [string], directory path [string], URL to directory [string], GET parameters to use for new versions of the URL as array (optional), permanent links text-ID to use for location [array] (optional), 
 //        frequency of google scrawler [never,weekly,daily] (optional), priority [1 or less] (optional), 
-//        ignore file names [array] (optional), allowed file types [array] (optional), include frequenzy tag [true,false] (optional), include priority tag [true,false] (optional)
+//        ignore file names [array] (optional), allowed file types [array] (optional), include frequenzy tag [boolean] (optional), include priority tag [boolean] (optional)
 // output: xml sitemap / false on error
 
 // description:
@@ -1767,6 +1767,53 @@ function getmetadata_container ($container_id, $text_id_array)
   else return false;
 }
 
+// ---------------------------------------- getobjectlist ----------------------------------------
+// function: getobjectlist()
+// input: publication name [string] (optional), location [string] (optional), folder hash code [string] (optional), text IDs to be returned e.g. text:Title [array] (optional)
+// output: result array / false on error
+// requires: config.inc.php
+
+// description:
+// Get all objects of a location. This is a simplified wrapper for function rdbms_searchcontent.
+
+function getobjectlist ($site="", $location="", $folderhash="", $objectlistcols=array())
+{
+  global $mgmt_config;
+
+  // get location from hash code
+  if ($folderhash != "")
+  {
+    $folderpath = rdbms_getobject ($folderhash); 
+    $site = getpublication ($folderpath);
+    $location = getlocation ($folderpath);
+  }
+
+  // location provided
+  if (valid_publicationname ($site) && valid_locationname ($location))
+  {
+    $cat = getcategory ($site, $location);
+
+    // check access permissions
+    if (!empty ($mgmt_config['api_checkpermission']))
+    {
+      $ownergroup = accesspermission ($site, $location, $cat);
+      $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
+      if (empty ($setlocalpermission['root'])) return false;
+    }
+
+    $search_dir_esc = convertpath ($site, $location, $cat);
+  
+    // start search
+    if (!empty ($search_dir_esc))
+    {
+      return rdbms_searchcontent ($search_dir_esc, "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, $objectlistcols);
+    }
+    else return false;
+  }
+  else return false;
+}
+
  // ========================================= LOAD CONTENT ============================================
 
 // ---------------------------------------- getobjectcontainer ----------------------------------------
@@ -1776,7 +1823,7 @@ function getmetadata_container ($container_id, $text_id_array)
 // requires: config.inc.php
 
 // description:
-// Loads the content container of a given object (page, component, folder)
+// Loads the content container of a given object (page, component, folder).
 
 function getobjectcontainer ($site, $location, $object, $user, $type="work")
 {
@@ -2623,7 +2670,7 @@ function getobjectid ($objectlink)
     }
 
     // return converted result 
-    return $objectlink_conv;
+    return trim ($objectlink_conv, "|");
   }
   else return $objectlink;
 }
@@ -2685,7 +2732,7 @@ function getobjectlink ($objectid)
     }
 
     // return converted result 
-    return $objectid_conv;
+    return trim ($objectid_conv, "|");
   }
   else return $objectid;
 }
@@ -4444,7 +4491,7 @@ function getbrowserinfo ()
     $bname = 'unknown';
     $ub = "";
     $version = "";
- 
+
     // get the browser name
     // works only for MS IE < 11
     if (preg_match ('/MSIE/i', $u_agent) && !preg_match ('/Opera/i', $u_agent))
@@ -4574,7 +4621,7 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 
 // ---------------------- getmedialocation -----------------------------
 // function: getmedialocation()
-// input: publication name [string], multimedia file name (including hcm-ID) [string], type [url_path_media,abs_path_media,url_publ_media,abs_publ_media], resolve symbolik links [true,false] (optional)
+// input: publication name [string], multimedia file name (including hcm-ID) [string], type [url_path_media,abs_path_media,url_publ_media,abs_publ_media], resolve symbolik links [boolean] (optional)
 // output: location of the multimedia file / false on error
 
 // description:
@@ -5135,7 +5182,7 @@ function getusersonline ($sites=array())
               {
                 $temp = end  ($temp_array);
 
-                if ($temp != "")
+                if ($temp != "" && substr_count ($temp, "|") >= 4)
                 {
                   list ($regsessionid, $regsessiontime, $regpasswd, $regchecksum, $site_access) = explode ("|", $temp);
 
@@ -5638,7 +5685,7 @@ function gethtmltags ($filedata, $tag)
 
 // ------------------------- getattribute --------------------------------
 // function: getattribute()
-// input: string including attributes [string], attribute name [string], secure attribute value reg. XSS [true,false] (optional)
+// input: string including attributes [string], attribute name [string], secure attribute value reg. XSS [boolean] (optional)
 // output: attribute value/false on error
 
 // description:

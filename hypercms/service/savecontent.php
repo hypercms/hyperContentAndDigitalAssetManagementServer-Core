@@ -102,12 +102,10 @@ $width = getrequest_esc ("width", "numeric");
 $height = getrequest_esc ("height", "numeric");
 $constraint = getrequest_esc ("constraint");
 
-$linkhref_curr = getrequest ("inkhref_curr", "array");
 $linkhref = getrequest ("linkhref", "array");
 $linktarget = getrequest_esc ("linktarget", "array");
 $targetlist = getrequest_esc ("targetlist", "array");
 $linktext = getrequest ("linktext", "array");
-$artlinkhref_curr = getrequest ("artlinkhref_curr", "array");
 $artlinkhref = getrequest ("artlinkhref", "array");
 $artlinktarget = getrequest ("artlinktarget", "array");
 $artlinktext = getrequest ("artlinktext", "array");
@@ -135,7 +133,6 @@ $commentf = getrequest ("commentf", "array");
 
 $mediacat = getrequest ("mediacat", "array");
 $mediafile = getrequest ("mediafile", "array");
-$mediaobject_curr = getrequest ("mediaobject_curr", "array");
 $mediaobject = getrequest ("mediaobject", "array");
 $mediaalttext = getrequest ("mediaalttext", "array");
 $mediaalign = getrequest ("mediaalign", "array");
@@ -143,16 +140,13 @@ $mediawidth = getrequest ("mediawidth", "array");
 $mediaheight = getrequest ("mediaheight", "array");
 $mediatype = getrequest ("mediatype", "array");
 $artmediafile = getrequest ("artmediafile", "array");
-$artmediaobject_curr = getrequest ("artmediaobject_curr", "array");
 $artmediaobject = getrequest ("artmediaobject", "array");
 $artmediaalttext = getrequest ("artmediaalttext", "array");
 $artmediaalign = getrequest ("artmediaalign", "array");
 $artmediawidth = getrequest ("artmediawidth", "array");
 $artmediaheight = getrequest ("artmediaheight", "array");
 
-$component_curr = getrequest ("component_curr", "array");
 $component = getrequest ("component", "array");
-$artcomponent_curr = getrequest ("artcomponent_curr", "array");
 $artcomponent = getrequest ("artcomponent", "array");
 $components = getrequest ("components", "array");
 $artcomponents = getrequest ("artcomponents", "array");
@@ -382,7 +376,7 @@ if ($usedby == "" || $usedby == $user)
           // write IPTC data to media file
           $result_iptc = false;
           
-          if ($mgmt_config['iptc_save'])
+          if (!empty ($mgmt_config['iptc_save']))
           {
             $iptc = iptc_create ($site, $textmeta);
   
@@ -395,7 +389,7 @@ if ($usedby == "" || $usedby == $user)
           // write XMP data to media file
           $result_xmp = false;
           
-          if ($mgmt_config['xmp_save'])
+          if (!empty ($mgmt_config['xmp_save']))
           {
             $xmp = xmp_create ($site, $textmeta);
   
@@ -408,7 +402,7 @@ if ($usedby == "" || $usedby == $user)
           // write ID3 data to media file
           $result_id3 = false;
           
-          if ($mgmt_config['id3_save'])
+          if (!empty ($mgmt_config['id3_save']))
           { 
             $id3 = id3_create ($site, $textmeta);
   
@@ -418,14 +412,14 @@ if ($usedby == "" || $usedby == $user)
             }
           }
           
-          // touch thumbnail file of documents to update the timestamp /avoid recreation of annotation images)
+          // touch thumbnail file of documents to update the timestamp / avoid recreation of annotation images)
           if (is_document ($object_mediafile))
           {
             // get file name without extensions
             $object_thumbfile = strrev (substr (strstr (strrev ($object_mediafile), "."), 1)).".thump.pdf";
             
             // update timestamp
-            if (is_file ($object_thumbfile))touch ($object_thumbfile);
+            if (is_file ($object_thumbfile)) touch ($object_thumbfile);
           }
             
           // save media stats and move temp file on success
@@ -452,20 +446,20 @@ if ($usedby == "" || $usedby == $user)
       }
 
       // media content
-      if ($contentdatanew != false && isset ($mediafile) && is_array ($mediafile)) $contentdatanew = setmedia ($site, $contentdatanew, $contentfile, $mediafile, $mediaobject_curr, $mediaobject, $mediaalttext, $mediaalign, $mediawidth, $mediaheight, "no", $user, $user, $charset);
-      if ($contentdatanew != false && isset ($artmediafile) && is_array ($artmediafile)) $contentdatanew = setmedia ($site, $contentdatanew, $contentfile, $artmediafile, $artmediaobject_curr, $artmediaobject, $artmediaalttext, $artmediaalign, $artmediawidth, $artmediaheight, "yes", $user, $user, $charset);
+      if ($contentdatanew != false && isset ($mediafile) && is_array ($mediafile)) $contentdatanew = setmedia ($site, $contentdatanew, $contentfile, $mediafile, $mediaobject, $mediaalttext, $mediaalign, $mediawidth, $mediaheight, "no", $user, $user, $charset);
+      if ($contentdatanew != false && isset ($artmediafile) && is_array ($artmediafile)) $contentdatanew = setmedia ($site, $contentdatanew, $contentfile, $artmediafile, $artmediaobject, $artmediaalttext, $artmediaalign, $artmediawidth, $artmediaheight, "yes", $user, $user, $charset);
   
       // page link content
-      if ($contentdatanew != false && isset ($linkhref) && is_array ($linkhref)) $contentdatanew = setpagelink ($site, $contentdatanew, $contentfile, $linkhref_curr, $linkhref, $linktarget, $linktext, "no", $user, $user, $charset);
-      if ($contentdatanew != false && isset ($artlinkhref) && is_array ($artlinkhref)) $contentdatanew = setpagelink ($site, $contentdatanew, $contentfile, $artlinkhref_curr, $artlinkhref, $artlinktarget, $artlinktext, "yes", $user, $user, $charset);    
+      if ($contentdatanew != false && isset ($linkhref) && is_array ($linkhref)) $contentdatanew = setpagelink ($site, $contentdatanew, $contentfile, $linkhref, $linktarget, $linktext, "no", $user, $user, $charset);
+      if ($contentdatanew != false && isset ($artlinkhref) && is_array ($artlinkhref)) $contentdatanew = setpagelink ($site, $contentdatanew, $contentfile, $artlinkhref, $artlinktarget, $artlinktext, "yes", $user, $user, $charset);    
   
       // component content
-      if ($contentdatanew != false && isset ($component) && is_array ($component)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $component_curr, $component, $condition, "no", $user, $user);
-      if ($contentdatanew != false && isset ($artcomponent) && is_array ($artcomponent)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $artcomponent_curr, $artcomponent, $condition, "yes", $user, $user);    
-      if ($contentdatanew != false && isset ($components) && is_array ($components)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $component_curr, $components, $condition, "no", $user, $user);
-      if ($contentdatanew != false && isset ($artcomponents) && is_array ($artcomponents)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $artcomponent_curr, $artcomponents, $condition, "yes", $user, $user);    
-      if ($contentdatanew != false && isset ($componentm) && is_array ($componentm)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $component_curr, $componentm, $condition, "no", $user, $user);
-      if ($contentdatanew != false && isset ($artcomponentm) && is_array ($artcomponentm)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $artcomponent_curr, $artcomponentm, $condition, "yes", $user, $user);    
+      if ($contentdatanew != false && isset ($component) && is_array ($component)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $component, $condition, "no", $user, $user);
+      if ($contentdatanew != false && isset ($artcomponent) && is_array ($artcomponent)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $artcomponent, $condition, "yes", $user, $user);    
+      if ($contentdatanew != false && isset ($components) && is_array ($components)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $components, $condition, "no", $user, $user);
+      if ($contentdatanew != false && isset ($artcomponents) && is_array ($artcomponents)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $artcomponents, $condition, "yes", $user, $user);    
+      if ($contentdatanew != false && isset ($componentm) && is_array ($componentm)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $componentm, $condition, "no", $user, $user);
+      if ($contentdatanew != false && isset ($artcomponentm) && is_array ($artcomponentm)) $contentdatanew = setcomplink ($site, $contentdatanew, $contentfile, $artcomponentm, $condition, "yes", $user, $user);    
   
       // head content
       if (isset ($pagetitle)) $headcontent['pagetitle'] = $pagetitle;
@@ -542,9 +536,11 @@ if ($usedby == "" || $usedby == $user)
       else
       {
         // eventsystem
-        if ($eventsystem['onsaveobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+        if ($eventsystem['onsaveobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+        {
           $contentdataevent = onsaveobject_post ($site, $cat, $location, $page, $contentfile, $contentdatanew, $user);
-    
+        }
+        
         // check if event returns a string, if so, the event returns the container and not true or false 
         if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdatanew = $contentdataevent;
 
@@ -618,9 +614,9 @@ if ($usedby == "" || $usedby == $user)
       	}
       }
 
-      // ----------------------------------- write content into database --------------------------------------   
-      // db_connect will save content in database 
-      if (isset ($db_connect) && $db_connect != "") 
+      // ----------------------------------- DB Connectivity --------------------------------------   
+      // db_connect will save content in provided database connectivity 
+      if (!empty ($db_connect)) 
       {      
         // write data
         $test = db_write_container ($site, $contentfile, $contentdatanew, $user);    
@@ -653,10 +649,10 @@ if ($usedby == "" || $usedby == $user)
     // define meta tag
     $add_onload =  "";
 
-    //define message to display
+    // define message to display
     if ($auto)
     {
-    	//define message to display
+    	// define message to display
     	$message[] = $hcms_lang['content-container-is-missing'][$lang];
     	$message[] = $hcms_lang['the-content-of-this-object-is-missing'][$lang];
     	$message[] = $hcms_lang['to-create-a-new-content-container-please-delete-the-object-and-create-a-new-one'][$lang];
@@ -671,14 +667,14 @@ if ($usedby == "" || $usedby == $user)
     // define meta tag
     $add_onload = "";
 
-    //define message to display
+    // define message to display
     if ($auto) 
     {
   	  $message[] = $hcms_lang['content-container-is-missing'][$lang];
     }
     else
     {
-    	//define message to display
+    	// define message to display
     	$message = "<p class=hcmsHeadline>".$hcms_lang['content-container-is-missing'][$lang]."</p>\n";
     }
   }
@@ -688,14 +684,14 @@ else
   // define meta tag
   $add_onload = "";
 
-  //define message to display
+  // define message to display
   if ($auto) 
   {
 	  $message[] = $hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang];
   }
   else
   {
-  	//define message to display
+  	// define message to display
   	$message = "<p class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang]."</p>\n";
   }
 }

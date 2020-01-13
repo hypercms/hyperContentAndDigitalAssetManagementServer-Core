@@ -69,17 +69,16 @@ $user = "sys";
 $lang = "en";
 
 // hyperCMS API
-require ("../function/hypercms_api.inc.php");
+require ($mgmt_config['abs_path_cms']."function/hypercms_api.inc.php");
 // version info
-require ("../version.inc.php");
-
+require ($mgmt_config['abs_path_cms']."version.inc.php");
 
 // check for existing installation (using check.dat)
 if (is_file ($mgmt_config['abs_path_data']."check.dat"))
 {
-  $data = loadfile ($mgmt_config['abs_path_data'], "check.dat");
+  $check = loadfile ($mgmt_config['abs_path_data'], "check.dat");
 
-  if (!empty ($data))
+  if ($check != "")
   {
 ?>
 <!DOCTYPE html>
@@ -167,6 +166,10 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
       $result = copyrecursive ($mgmt_config['abs_path_cms']."install/repository/", $mgmt_config['abs_path_rep']);
       if ($result == false) $show .= "<li>Repository file structure could not be created!</li>\n";
     }
+
+    // create contentcount.dat file
+    if (!is_file ($mgmt_config['abs_path_data']."contentcount.dat")) $result = savefile ($mgmt_config['abs_path_data'], "contentcount.dat", "0");
+    if ($result == false) $show .= "<li>contentcount.dat file could not be created!</li>\n";
   }
 
   // create database
@@ -464,7 +467,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
           $contentdata = settext ($site, $result['container_content'], $result['container'], array('NavigationSortOrder'=>'2'), "u", "no", $user, $user, "UTF-8");
           
           // save working xml content container
-          if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+          if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content of folder 'AboutUs' could not be saved!</li>\n";
         }
         else $show .= "<li>About us folder could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
       }
@@ -478,7 +481,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
           $contentdata = settext ($site, $result['container_content'], $result['container'], array('NavigationSortOrder'=>'3'), "u", "no", $user, $user, "UTF-8");
           
           // save working xml content container
-          if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+          if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content of folder 'Products' could not be saved!</li>\n";
         }
         else $show .= "<li>Products folder could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
       }
@@ -492,7 +495,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
           $contentdata = settext ($site, $result['container_content'], $result['container'], array('NavigationSortOrder'=>'4'), "u", "no", $user, $user, "UTF-8");
           
           // save working xml content container
-          if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+          if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content of folder 'Contact' could not be saved!</li>\n";
         }
         else $show .= "<li>Contact folder could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
       }
@@ -505,7 +508,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
           $result = createmediaobject ($site, "%comp%/".$site."/Multimedia/", "Slider1.jpg", $mgmt_config['abs_path_rep']."media_tpl/".$site."/Slider1.jpg", $user);
           
           if (isset ($result['result']) && $result['result']) { $mediafile_1 = $site."/".$result['mediafile']; $mediaobject_1 = "%comp%/".$site."/Multimedia/".$result['object']; }
-          else $show .= "<li>Slider image file could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+          else $show .= "<li>'Slider1' image could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
         }
         
         if (!is_file (deconvertpath ("%comp%/".$site."/Multimedia/Slider2.jpg")))
@@ -513,7 +516,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
           $result = createmediaobject ($site, "%comp%/".$site."/Multimedia/", "Slider2.jpg", $mgmt_config['abs_path_rep']."media_tpl/".$site."/Slider2.jpg", $user);
           
           if (isset ($result['result']) && $result['result']) { $mediafile_2 = $site."/".$result['mediafile']; $mediaobject_2 = "%comp%/".$site."/Multimedia/".$result['object']; }
-          else $show .= "<li>Slider image file could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+          else $show .= "<li>'Slider2' image could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
         }
         
         if (!is_file (deconvertpath ("%comp%/".$site."/Multimedia/Slider3.jpg")))
@@ -521,7 +524,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
           $result = createmediaobject ($site, "%comp%/".$site."/Multimedia/", "Slider3.jpg", $mgmt_config['abs_path_rep']."media_tpl/".$site."/Slider3.jpg", $user);
           
           if (isset ($result['result']) && $result['result']) { $mediafile_3 = $site."/".$result['mediafile']; $mediaobject_3 = "%comp%/".$site."/Multimedia/".$result['object']; }
-          else $show .= "<li>Slider image file could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
+          else $show .= "<li>'Slider3' image could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
         }
       
         if (!is_file (deconvertpath ("%comp%/".$site."/configuration.php")))
@@ -533,7 +536,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
             $contentdata = settext ($site, $result['container_content'], $result['container'], array('title'=>'Your Name', 'slogan'=>'Your Slogan ...'), "u", "no", $user, $user, "UTF-8");
           
             // save working xml content container
-            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content of object 'configuration' could not be saved!</li>\n";
           }
           else $show .= "<li>Configuration component could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
           
@@ -548,10 +551,10 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
           if (isset ($result['result']) && $result['result'])
           {
             $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Home', 'NavigationSortOrder'=>'1'), "u", "no", $user, $user, "UTF-8");
-            $contentdata = setmedia ($site, $contentdata, $result['container'], array('slide_1'=>$mediafile_1, 'slide_2'=>$mediafile_2, 'slide_3'=>$mediafile_3, 'slide_4'=>$mediafile_2, 'slide_5'=>$mediafile_1), "", array('slide_1'=>$mediaobject_1, 'slide_2'=>$mediaobject_2, 'slide_3'=>$mediaobject_3, 'slide_4'=>$mediaobject_2, 'slide_5'=>$mediaobject_1), "", "", "", "", "no", $user, $user, "UTF-8");
-            
+            $contentdata = setmedia ($site, $contentdata, $result['container'], array('slide_1'=>$mediafile_1, 'slide_2'=>$mediafile_2, 'slide_3'=>$mediafile_3, 'slide_4'=>$mediafile_2, 'slide_5'=>$mediafile_1), array('slide_1'=>$mediaobject_1, 'slide_2'=>$mediaobject_2, 'slide_3'=>$mediaobject_3, 'slide_4'=>$mediaobject_2, 'slide_5'=>$mediaobject_1), "", "", "", "", "no", $user, $user, "UTF-8");
+
             // save working xml content container
-            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content of object 'index' could not be saved!</li>\n";
           }
           else $show .= "<li>Homepage could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
           
@@ -568,7 +571,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
             $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Search result', 'NavigationHide'=>'yes'), "u", "no", $user, $user, "UTF-8");
           
             // save working xml content container
-            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content of object 'search' could not be saved!</li>\n";
           }
           else $show .= "<li>Search page could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
           
@@ -585,7 +588,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
             $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'About us', 'NavigationSortOrder'=>'2'), "u", "no", $user, $user, "UTF-8");
             
             // save working xml content container
-            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content of object 'AboutUs/index' could not be saved!</li>\n";
           }
           else $show .= "<li>About us page could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
           
@@ -602,7 +605,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
             $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Products', 'NavigationSortOrder'=>'3'), "u", "no", $user, $user, "UTF-8");
           
             // save working xml content container
-            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content of object 'Products/index' could not be saved!</li>\n";
           }
           else $show .= "<li>Products page could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
           
@@ -619,7 +622,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
             $contentdata = settext ($site, $result['container_content'], $result['container'], array('Title'=>'Contact', 'NavigationSortOrder'=>'4'), "u", "no", $user, $user, "UTF-8");
           
             // save working xml content container
-            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content could not be saved!</li>\n";
+            if (!savecontainer ($result['container'], "work", $contentdata, $user)) $show .= "<li>Content of object 'Contact/index' could not be saved!</li>\n";
           }
           else $show .= "<li>Contact page could not be created:<br/>".strip_tags ($result['message'])."</li>\n";
           
@@ -640,10 +643,10 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
 $token_new = createtoken ($user);
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="../theme/standard/css/main.css">
 <script src="../javascript/main.js" type="text/javascript"></script>
@@ -707,7 +710,7 @@ $(document).ready(function(){
 </script>
 
 <!-- top bar -->
-<?php if (!empty ($mgmt_config['version'])) echo showtopbar ("Installation of ".$mgmt_config['version'], "en"); else echo "Version information is missing"; ?>
+<?php if (!empty ($mgmt_config['version'])) echo showtopbar ("Installation of ".$mgmt_config['version'], "en"); else echo showtopbar ("Version information is missing", "en"); ?>
 
 <!-- content area -->
 <div id="content" style="width:500px; margin:0 auto;">

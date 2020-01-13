@@ -80,7 +80,7 @@ $token_new = createtoken ($user);
 if ($label == "") $label = $artid;
 
 // set character set in header
-if (!empty ($charset)) ini_set ('default_charset', $charset);
+if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 ?>
 <!DOCTYPE html>
 <html>

@@ -95,6 +95,87 @@ if (strpos ($group_name, ".php") > 0)
   $group_name = getattribute ($group_name, "group_name");
 }
 
+// set default values for
+// desktop permissions
+$desktopglobal = 0;
+$desktopsetting = 0;
+$desktoptaskmgmt = 0;
+$desktopcheckedout = 0; 
+$desktoptimetravel = 0;
+$desktopfavorites = 0; // added in version 5.7.4
+$desktopprojectmgmt = 0; // added in version 6.0.1
+// site permissions
+$siteglobal = 0;
+$sitecreate = 0;
+$sitedelete = 0;
+$siteedit = 0;
+// user permissions
+$userglobal = 0;
+$usercreate = 0;
+$userdelete = 0;
+$useredit = 0;
+// group permissions
+$groupglobal = 0;
+$groupcreate = 0;
+$groupdelete = 0;
+$groupedit = 0;
+// personalization permissions
+$persglobal = 0;
+$perstrack = 0;
+$perstrackcreate = 0;
+$perstrackdelete = 0;
+$perstrackedit = 0;
+$persprof = 0;
+$persprofcreate = 0;
+$persprofdelete = 0;
+$persprofedit = 0;
+// workflow permissions
+$workflowglobal = 0;
+$workflowproc = 0;
+$workflowproccreate = 0;
+$workflowprocdelete = 0;
+$workflowprocedit = 0;
+$workflowprocfolder = 0;
+$workflowscript = 0;
+$workflowscriptcreate = 0;
+$workflowscriptdelete = 0;
+$workflowscriptedit = 0;      
+// template permissions
+$templateglobal = 0;
+$tpl = 0;
+$tplcreate = 0;
+$tpldelete = 0;
+$tpledit = 0;
+// template media permissions
+$tplmedia = 0;
+$tplmediacatcreate = 0;
+$tplmediacatdelete = 0;
+$tplmediacatrename = 0;
+$tplmediaupload = 0;
+$tplmediadelete = 0;
+// component permissions
+$componentglobal = 0;
+$compupload = 0;
+$compdownload = 0;
+$compsendlink = 0; 
+$compfoldercreate = 0;
+$compfolderdelete = 0;
+$compfolderrename = 0;
+$compcreate = 0;
+$compdelete = 0;
+$comprename = 0;
+$comppublish = 0;
+// content permissions
+$pageglobal = 0;
+$pagesendlink = 0;
+$pagefoldercreate = 0;
+$pagefolderdelete = 0;
+$pagefolderrename = 0;
+$pagecreate = 0;
+$pagedelete = 0;
+$pagerename = 0;
+$pagepublish = 0;
+
 if ($group_name != "" && $group_name != false)
 {
   $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
@@ -121,87 +202,6 @@ if ($group_name != "" && $group_name != false)
       $componentpermlist = getattribute ($permission_str, "component");
       $pagepermlist = getattribute ($permission_str, "page");
     }
-    
-    // set default values for
-    // desktop permissions
-    $desktopglobal = 0;
-    $desktopsetting = 0;
-    $desktoptaskmgmt = 0;
-    $desktopcheckedout = 0; 
-    $desktoptimetravel = 0;
-    $desktopfavorites = 0; // added in version 5.7.4
-    $desktopprojectmgmt = 0; // added in version 6.0.1
-    // site permissions
-    $siteglobal = 0;
-    $sitecreate = 0;
-    $sitedelete = 0;
-    $siteedit = 0;
-    // user permissions
-    $userglobal = 0;
-    $usercreate = 0;
-    $userdelete = 0;
-    $useredit = 0;
-    // group permissions
-    $groupglobal = 0;
-    $groupcreate = 0;
-    $groupdelete = 0;
-    $groupedit = 0;
-    // personalization permissions
-    $persglobal = 0;
-    $perstrack = 0;
-    $perstrackcreate = 0;
-    $perstrackdelete = 0;
-    $perstrackedit = 0;
-    $persprof = 0;
-    $persprofcreate = 0;
-    $persprofdelete = 0;
-    $persprofedit = 0;
-    // workflow permissions
-    $workflowglobal = 0;
-    $workflowproc = 0;
-    $workflowproccreate = 0;
-    $workflowprocdelete = 0;
-    $workflowprocedit = 0;
-    $workflowprocfolder = 0;
-    $workflowscript = 0;
-    $workflowscriptcreate = 0;
-    $workflowscriptdelete = 0;
-    $workflowscriptedit = 0;      
-    // template permissions
-    $templateglobal = 0;
-    $tpl = 0;
-    $tplcreate = 0;
-    $tpldelete = 0;
-    $tpledit = 0;
-    // template media permissions
-    $tplmedia = 0;
-    $tplmediacatcreate = 0;
-    $tplmediacatdelete = 0;
-    $tplmediacatrename = 0;
-    $tplmediaupload = 0;
-    $tplmediadelete = 0;
-    // component permissions
-    $componentglobal = 0;
-    $compupload = 0;
-    $compdownload = 0;
-    $compsendlink = 0; 
-    $compfoldercreate = 0;
-    $compfolderdelete = 0;
-    $compfolderrename = 0;
-    $compcreate = 0;
-    $compdelete = 0;
-    $comprename = 0;
-    $comppublish = 0;
-    // content permissions
-    $pageglobal = 0;
-    $pagesendlink = 0;
-    $pagefoldercreate = 0;
-    $pagefolderdelete = 0;
-    $pagefolderrename = 0;
-    $pagecreate = 0;
-    $pagedelete = 0;
-    $pagerename = 0;
-    $pagepublish = 0;
 
     // read and check permissions for 
     // desktop permissions

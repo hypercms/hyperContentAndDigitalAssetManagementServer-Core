@@ -31,7 +31,6 @@ $label = getrequest_esc ("label");
 $mediadir = getrequest_esc ("mediadir", "locationname");
 $mediafile = getrequest_esc ("mediafile", "objectname");
 $mediatype = getrequest_esc ("mediatype", "objectname", "", true); 
-$mediaobject_curr = getrequest_esc ("mediaobject_curr", "locationname");
 $mediaobject = getrequest_esc ("mediaobject", "locationname");
 $mediaalttext = getrequest_esc ("mediaalttext");
 $mediaalign = getrequest_esc ("mediaalign");
@@ -85,7 +84,7 @@ if (empty ($db_connect))
         if (!empty ($temp_array[0])) $mediafile = $temp_array[0];
         
         $temp_array = getcontent ($medianode[0], "<mediaobject>");
-        if (!empty ($temp_array[0])) $mediaobject_curr = $temp_array[0];
+        if (!empty ($temp_array[0])) $mediaobject = $temp_array[0];
         
         $temp_array = getcontent ($medianode[0], "<mediaalttext>");
         if (!empty ($temp_array[0])) $mediaalttext = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
@@ -125,12 +124,6 @@ elseif ($mediaobject != "")
 }
 
 // add %comp% if not provided
-if (strpos ("_".$mediaobject_curr, "%comp%/") == 0)
-{
-  if (is_file (deconvertpath ("%comp%".$mediaobject_curr, "file"))) $mediaobject_curr = "%comp%".$mediaobject_curr;
-  elseif (is_file (deconvertpath ("%comp%/".$mediaobject_curr, "file"))) $mediaobject_curr = "%comp%/".$mediaobject_curr;
-}
-// add %comp% if not provided
 if (strpos ("_".$mediaobject, "%comp%/") == 0)
 {
   if (is_file (deconvertpath ("%comp%".$mediaobject, "file"))) $mediaobject = "%comp%".$mediaobject;
@@ -163,7 +156,7 @@ $token = createtoken ($user);
 if ($label == "") $label = $id;
 
 // set character set in header
-if (!empty ($charset)) ini_set ('default_charset', $charset);
+if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 ?>
 <!DOCTYPE html>
 <html>
@@ -175,18 +168,17 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
 <script type="text/javascript">
 function correctnames ()
 {
-  if (eval (document.forms['media'].elements['mediafile'])) document.forms['media'].elements['mediafile'].name = "<?php echo $art; ?>mediafile[<?php echo $id; ?>]";
+  if (document.forms['media'].elements['mediafile']) document.forms['media'].elements['mediafile'].name = "<?php echo $art; ?>mediafile[<?php echo $id; ?>]";
   
-  if (eval (document.forms['media'].elements['mediaobject']))
+  if (document.forms['media'].elements['mediaobject'])
   {
-    document.forms['media'].elements['mediaobject_curr'].name = "<?php echo $art; ?>mediaobject_curr[<?php echo $id; ?>]";
     document.forms['media'].elements['mediaobject'].name = "<?php echo $art; ?>mediaobject[<?php echo $id; ?>]";
   }
   
-  if (eval (document.forms['media'].elements['mediaalttext'])) document.forms['media'].elements['mediaalttext'].name = "<?php echo $art; ?>mediaalttext[<?php echo $id; ?>]";
-  if (eval (document.forms['media'].elements['mediaalign'])) document.forms['media'].elements['mediaalign'].name = "<?php echo $art; ?>mediaalign[<?php echo $id; ?>]";
-  if (eval (document.forms['media'].elements['mediawidth'])) document.forms['media'].elements['mediawidth'].name = "<?php echo $art; ?>mediawidth[<?php echo $id; ?>]";
-  if (eval (document.forms['media'].elements['mediaheight'])) document.forms['media'].elements['mediaheight'].name = "<?php echo $art; ?>mediaheight[<?php echo $id; ?>]";
+  if (document.forms['media'].elements['mediaalttext']) document.forms['media'].elements['mediaalttext'].name = "<?php echo $art; ?>mediaalttext[<?php echo $id; ?>]";
+  if (document.forms['media'].elements['mediaalign']) document.forms['media'].elements['mediaalign'].name = "<?php echo $art; ?>mediaalign[<?php echo $id; ?>]";
+  if (document.forms['media'].elements['mediawidth']) document.forms['media'].elements['mediawidth'].name = "<?php echo $art; ?>mediawidth[<?php echo $id; ?>]";
+  if (document.forms['media'].elements['mediaheight']) document.forms['media'].elements['mediaheight'].name = "<?php echo $art; ?>mediaheight[<?php echo $id; ?>]";
   return true;
 }
 
@@ -376,7 +368,6 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   <input type="hidden" name="id" value="<?php echo $id; ?>" />  
   <input type="hidden" name="mediadir" value="<?php echo $mediadir; ?>" />
   <input type="hidden" name="mediatype" value="<?php echo $mediatype; ?>" />
-  <input type="hidden" name="mediaobject_curr" value="<?php echo $mediaobject_curr; ?>" />
   <input type="hidden" name="mediaobject" value="<?php echo $mediaobject; ?>" />
   <input type="hidden" name="token" value="<?php echo $token; ?>">
 

@@ -26,7 +26,7 @@ Optionally required for full Digital Asset Management (DAM) support on server-si
 
 On client-side:
 - hyperCMS is 100% browser based, no additional software is required
-- MS Edge, Internet Explorer, Firefox, Chrome, Safari, Opera (latest stable release recommended for full support) 
+- MS Edge, Firefox, Chrome, Safari, Opera (latest stable release recommended for full support) 
 
 
 Installation:

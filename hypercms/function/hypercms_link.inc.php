@@ -390,17 +390,17 @@ function link_db_save ($site, $link_db, $user)
 // ---------------------------------------- link_db_update --------------------------------------------
 // function: link_db_update()
 // input: publication name [string], link database [2 dim. array], attribute [object,link], content container [string] (optional), 
-//        link category [comp,page] (optional), current link [must be URL, abs. or rel. path] (optional), 
-//        new link [must be URL, abs. or rel. path] (optional), update option [all,unique]
-// output: link database [2 dim. array] or true / false on error
+//        link category [comp,page] (optional), current link must be an URL or absolute/relative path [string] (optional), 
+//        new link must be an URL or absolute/relative path [string] (optional), update option [all,unique]
+// output: link database [array] or true if link index database is not used / false on error
 // requires: hypercms_api.inc.php, config.inc.php
 
 // description:
 // This function inserts, updates and removes objects and their links from the link management database (add or update a link)
 // depending on which link is left empty:
-// link_curr = "": add new link (just one link matching given category!)
-// link_new = "": delete current link in use (just one linkm matching given category!)
-// link_curr & link_new are not empty: update current link with the new one
+// link_curr = "": add new link (just one link matching given category)
+// link_new = "": delete current link in use (just one link matching given category)
+// link_curr & link_new are not empty and not equal: update current link with the new one
 
 function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", $link_curr="", $link_new="", $option)
 {
@@ -421,15 +421,15 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
         $endchar_curr = substr ($link_curr, strlen ($link_curr)-1);
 
         // cut off last | in link list
-        if ($endchar_curr == "|") $link_curr = substr ($link_curr, 0, strlen ($link_curr)-1);
+        $link_curr = trim ($link_curr, "|");
 
         // add root directory constants
         // if the link variable stores more references sperated by |
-        if (@substr_count ($link_curr, "|") >= 1)
+        if (substr_count ($link_curr, "|") > 0)
         {
           $link_curr_array = explode ("|", $link_curr);
 
-          if (sizeof ($link_curr_array) >= 1)
+          if (sizeof ($link_curr_array) > 0)
           {
             $link_curr = "";
 
@@ -461,14 +461,14 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
         $endchar_new = substr ($link_new, strlen ($link_new)-1);
 
         // cut off last | in link list
-        if ($endchar_new == "|") $link_new = substr ($link_new, 0, strlen ($link_new)-1);
+        $link_new = trim ($link_new, "|");
 
         // if object link list
-        if (@substr_count ($link_new, "|") >= 1)
+        if (substr_count ($link_new, "|") > 0)
         {
           $link_new_array = explode ("|", $link_new);
 
-          if (sizeof ($link_new_array) >= 1)
+          if (sizeof ($link_new_array) > 0)
           {
             $link_new = "";
 
@@ -493,6 +493,9 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
           $link_new = convertpath ($site, $link_new, $cat);
         }
       }
+
+      // return link DB if links are the same
+      if ($link_new == $link_curr) return $link_db;
 
       // add link to link management database
       if (sizeof ($link_db) > 0)

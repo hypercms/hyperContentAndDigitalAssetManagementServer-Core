@@ -11,7 +11,7 @@
 
 // ----------------------------------------- ftp_userlogon -----------------------------------------
 // function: ftp_userlogon()
-// input: FTP servername or IP [string], user name [string], password [string], SSL [true,false] (optional)
+// input: FTP servername or IP [string], user name [string], password [string], SSL [boolean] (optional)
 // output: true / false on error
 
 // description:
@@ -80,7 +80,7 @@ function ftp_userlogout ($conn_id)
 
 // ----------------------------------------- ftp_getfile ---------------------------------------------
 // function: ftp_getfile()
-// input: FTP connection [resource], path to file on FTP server [string], passive mode [true,false] (optional)
+// input: FTP connection [resource], path to file on FTP server [string], passive mode [boolean] (optional)
 // output: true / false on error
 
 // description:
@@ -113,7 +113,7 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 
 // ----------------------------------------- ftp_putfile ---------------------------------------------
 // function: ftp_putfile()
-// input: FTP connection [resource], path to local file [string], path to file on FTP server [string], passive mode [true,false] (optional)
+// input: FTP connection [resource], path to local file [string], path to file on FTP server [string], passive mode [boolean] (optional)
 // output: true / false on error
 
 // description:
@@ -150,7 +150,7 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 
 // ----------------------------------------- ftp_deletefile ---------------------------------------------
 // function: ftp_deletefile()
-// input: FTP connection [resource], path to file on FTP server [string], passive mode [true,false] (optional)
+// input: FTP connection [resource], path to file on FTP server [string], passive mode [boolean] (optional)
 // output: true / false on error
 
 // description:
@@ -183,7 +183,7 @@ function ftp_deletefile ($conn_id, $remote_file, $passive=true)
 
 // ----------------------------------------- ftp_filelist ---------------------------------------------
 // function: ftp_filelist()
-// input: FTP connection [resource], path to remote directory [string] (optional), passive mode [true,false] (optional)
+// input: FTP connection [resource], path to remote directory [string] (optional), passive mode [boolean] (optional)
 // output: result array / false on error
 
 // description:

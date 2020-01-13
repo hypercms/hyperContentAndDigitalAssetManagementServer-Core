@@ -69,10 +69,15 @@ function switchDAM ()
   if (document.getElementById('dam').checked == true)
   {
     document.getElementById('url_path_page').disabled = true;
+    document.getElementById('url_path_page').classList.add("hcmsPriorityMedium");
     document.getElementById('abs_path_page').disabled = true;
+    document.getElementById('abs_path_page').classList.add("hcmsPriorityMedium");
     document.getElementById('url_publ_page').disabled = true;
+    document.getElementById('url_publ_page').classList.add("hcmsPriorityMedium");
     document.getElementById('abs_publ_page').disabled = true;
+    document.getElementById('abs_publ_page').classList.add("hcmsPriorityMedium");
     document.getElementById('abs_publ_app').disabled = true;
+    document.getElementById('abs_publ_app').classList.add("hcmsPriorityMedium");
     document.getElementById('linkengine').disabled = true;
     document.getElementById('crypt_content').disabled = false;
     document.getElementById('upload_pages').disabled = true;
@@ -83,10 +88,15 @@ function switchDAM ()
   else
   {
     document.getElementById('url_path_page').disabled = false;
+    document.getElementById('url_path_page').classList.remove("hcmsPriorityMedium");
     document.getElementById('abs_path_page').disabled = false;
+    document.getElementById('abs_path_page').classList.remove("hcmsPriorityMedium");
     document.getElementById('url_publ_page').disabled = false;
+    document.getElementById('url_publ_page').classList.remove("hcmsPriorityMedium");
     document.getElementById('abs_publ_page').disabled = false;
+    document.getElementById('abs_publ_page').classList.remove("hcmsPriorityMedium");
     document.getElementById('abs_publ_app').disabled = false;
+    document.getElementById('abs_publ_app').classList.remove("hcmsPriorityMedium");
     document.getElementById('linkengine').disabled = false;
     document.getElementById('crypt_content').disabled = true;
     document.getElementById('upload_pages').disabled = false;
@@ -282,12 +292,12 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="abs_path_page" name="setting[abs_path_page]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['abs_path_page']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr>
-      <td><?php echo getescapedtext ($hcms_lang['folders-to-exclude'][$lang]); ?> <br />
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['folders-to-exclude'][$lang]); ?> <br />
         (<?php echo getescapedtext ($hcms_lang['use-as-delimiter'][$lang]); ?>)</td>
       <td style="white-space:nowrap; vertical-align:top;"> <textarea name="setting[exclude_folders]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> rows="3"><?php echo $mgmt_config[$site_name]['exclude_folders']; ?></textarea></td>
     </tr>
     <tr>
-      <td><?php echo getescapedtext ($hcms_lang['allow-access-to-assets-only-for-certain-ip-addresses'][$lang]); ?> <br />
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['allow-access-to-assets-only-for-certain-ip-addresses'][$lang]); ?> <br />
         (<?php echo getescapedtext ($hcms_lang['use-as-delimiter'][$lang]); ?>)</td>
       <td style="white-space:nowrap; vertical-align:top;"> <textarea name="setting[allow_ip]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> rows="3"><?php echo $mgmt_config[$site_name]['allow_ip']; ?></textarea></td>
     </tr>
@@ -397,6 +407,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
+
     <?php if (is_dir ($mgmt_config['abs_path_cms']."connector")) {	?>
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['enable-direct-file-uploads-in-pages'][$lang]); ?> </td>
@@ -406,33 +417,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       </td>
     </tr>
     <?php } ?>
-    <tr> 
-      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['storage-limit-in-mb'][$lang]); ?> </td>
-      <td style="white-space:nowrap;"> <input type="text" name="setting[storage_limit]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['storage_limit']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
-    </tr>
-    <?php if (is_cloudstorage()) {	?>
-    <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="radio" id="storage_type2" name="setting[storage_type]" value="local" <?php if (@$mgmt_config[$site_name]['storage_type'] == "local" || empty ($mgmt_config[$site_name]['storage_type'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-local-media-storage'][$lang]); ?></td>
-    </tr>
-    <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="radio" id="storage_type3" name="setting[storage_type]" value="cloud" <?php if (@$mgmt_config[$site_name]['storage_type'] == "cloud") echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-cloud-media-storage'][$lang]); ?></td>
-    </tr>
-    <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['media-storage-type'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="radio" id="storage_type1" name="setting[storage_type]" value="both" <?php if (@$mgmt_config[$site_name]['storage_type'] == "both") echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-local-and-cloud-media-storage'][$lang]); ?></td>
-    </tr>
-    <?php } ?>
-    <?php if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php")) {	?>
-    <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['encrypt-content'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="crypt_content" name="setting[crypt_content]" value="true" <?php if (@$mgmt_config[$site_name]['crypt_content'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
-        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
-      </td>
-    </tr>
-    <?php } ?>
+
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['watermark-options-for-images'][$lang]); ?> </td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[watermark_image]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['watermark_image']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
@@ -541,7 +526,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <?php if (is_supported ($mgmt_parser, "test.png")) { ?>
     <tr> 
-      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['optical-character-recognition'][$lang]); ?> (OCR)</td>
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['optical-character-recognition'][$lang]); ?> (OCR)</td>
       <td style="white-space:nowrap;">
         <input type="hidden" name="setting[ocr]" value="">
         
@@ -599,6 +584,74 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <?php } ?>
     <?php } ?>
+
+    <tr> 
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['storage-limit-in-mb'][$lang]); ?> </td>
+      <td style="white-space:nowrap;"> <input type="text" name="setting[storage_limit]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['storage_limit']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+
+    <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/") && is_cloudstorage()) {	?>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"> </td>
+      <td style="white-space:nowrap; vertical-align:top;"> <input type="radio" id="storage_type2" name="setting[storage_type]" value="local" <?php if (@$mgmt_config[$site_name]['storage_type'] == "local" || empty ($mgmt_config[$site_name]['storage_type'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-local-media-storage'][$lang]); ?></td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"> </td>
+      <td style="white-space:nowrap; vertical-align:top;"> <input type="radio" id="storage_type3" name="setting[storage_type]" value="cloud" <?php if (@$mgmt_config[$site_name]['storage_type'] == "cloud") echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-cloud-media-storage'][$lang]); ?></td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['media-storage-type'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;"> <input type="radio" id="storage_type1" name="setting[storage_type]" value="both" <?php if (@$mgmt_config[$site_name]['storage_type'] == "both") echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-local-and-cloud-media-storage'][$lang]); ?></td>
+    </tr>
+    <?php } ?>
+
+    <?php if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php")) {	?>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['encrypt-content'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" id="crypt_content" name="setting[crypt_content]" value="true" <?php if (@$mgmt_config[$site_name]['crypt_content'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <?php } ?>
+
+    <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/")) { ?>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("Google Cloud API Key (JSON)"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+        <textarea name="setting[gs_access_json]" style="width:350px; height:80px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>><?php if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".google_cloud_key.json")) echo loadfile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json"); ?></textarea>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("Google Vision (".$hcms_lang['image'][$lang]).")"; ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" name="setting[gs_analyze_image]" value="true" <?php if (@$mgmt_config[$site_name]['gs_analyze_image'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("Google Video Intelligence (".$hcms_lang['video'][$lang]).")"; ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" name="setting[gs_analyze_video]" value="true" <?php if (@$mgmt_config[$site_name]['gs_analyze_video'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("Google Speech-to-Text (".$hcms_lang['audio'][$lang].", ".$hcms_lang['video'][$lang].")"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" name="setting[gs_speech2text]" value="true" <?php if (@$mgmt_config[$site_name]['gs_speech2text'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['language'][$lang]." (languageCode)"); ?><br/>
+        <a href="https://cloud.google.com/speech-to-text/docs/languages" class="hcmsTextSmall" target="_blank">https://cloud.google.com/speech-to-text/docs/languages</a></td>
+      <td style="white-space:nowrap; vertical-align:top;">
+        <input type="text" name="setting[gs_speech2text_langcode]" style="width:80px;" value="<?php echo @$mgmt_config[$site_name]['gs_speech2text_langcode']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      </td>
+    </tr>
+    <?php } ?>
+
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;" colspan="2">&nbsp;</td>
     </tr>      

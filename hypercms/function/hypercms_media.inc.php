@@ -232,7 +232,7 @@ function ocr_extractcontent ($site, $location, $file)
 
 // ---------------------------------------- indexcontent --------------------------------------------
 // function: indexcontent()
-// input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string], container name or ID [string] (optional), container XML-content [string] (optional), user name [string], return the content without saving it in the system [true,false] (optonal)
+// input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string], container name or ID [string] (optional), container XML-content [string] (optional), user name [string], return the content without saving it in the system [boolean] (optonal)
 // output: true / false
 
 // description:
@@ -1096,7 +1096,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
 
 // ---------------------- createthumbnail_video -----------------------------
 // function: createthumbnail_video()
-// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], frame of video in seconds or hh:mm:ss[.xxx], autorotate [true,false] (optional)
+// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], frame of video in seconds or hh:mm:ss[.xxx], autorotate [boolean] (optional)
 // output: new file name / false on error
 
 // description:
@@ -1229,7 +1229,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 // ---------------------- createimages_video -----------------------------
 // function: createimages_video()
 // input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], name for image files [string] (optional), frames per second to create from the video [number] (optional), image format [jpg,png,bmp] (optional), 
-//        autorotate [true,false] (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional)
+//        autorotate [boolean] (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional)
 // output: true / false on error
 
 // description:
@@ -1373,7 +1373,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
 // input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], 
 //        format (file extension w/o dot) [string] (optional), 
 //        type of image/video/audio file [thumbnail(for thumbnails of images),origthumb(thumbnail made from original video/audio),original(to overwrite original video/audio file),annotation(for annotation images),any other string present in $mgmt_imageoptions/$mgmt_mediaoptions,temp(for temporary files)] (optional),
-//        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
+//        force the file to be not encrypted even if the content of the publication must be encrypted [boolean] (optional)
 // output: new file name / false on error
 
 // description:
@@ -3369,7 +3369,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 // ---------------------- splitmedia -----------------------------
 // function: splitmedia()
 // input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], seconds of a segment [integer] (optional), target format (file extension w/o dot) of destination file [string] (optional), 
-//          force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
+//          force the file to be not encrypted even if the content of the publication must be encrypted [boolean] (optional)
 // output: array of new file names / false on error
 
 // description:
@@ -3537,7 +3537,7 @@ function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $f
 // ---------------------- convertmedia -----------------------------
 // function: convertmedia()
 // input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], target format (file extension w/o dot) of destination file [string], media configuration to be used [string] (optional),
-//        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
+//        force the file to be not encrypted even if the content of the publication must be encrypted [boolean] (optional)
 // output: new file name / false on error
 
 // description:
@@ -4409,7 +4409,7 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
 // ---------------------- createdocument -----------------------------
 // function: createdocument()
 // input: publication name [string], path to source location [string], path to destination location [string], file name [string], destination file format (extension w/o dot) [string],
-//        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
+//        force the file to be not encrypted even if the content of the publication must be encrypted [boolean] (optional)
 // output: new file name / false on error
 
 // description:
@@ -4913,7 +4913,7 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
 
 // ---------------------- zipfiles_helper -----------------------------
 // function: zipfiles_helper()
-// input: source directory [string], destination directory [string], name of ZIP-file [string], remouse all files from source [true,false] (optional)
+// input: source directory [string], destination directory [string], name of ZIP-file [string], remouse all files from source [boolean] (optional)
 // output: true/false
 
 // description:
@@ -4963,7 +4963,7 @@ function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
 // ---------------------- zipfiles -----------------------------
 // function: zipfiles()
 // input: publication name [string], array with path to source files [array], destination location (if this is null then the $location where the zip-file resists will be used) [string], 
-//          name of ZIP-file [string], user name [string], activity that need to be set for daily stats [download] (optional), flat hierarchy means no directories [true,false] (optional) 
+//          name of ZIP-file [string], user name [string], activity that need to be set for daily stats [download] (optional), flat hierarchy means no directories [boolean] (optional) 
 // output: true/false
 
 // description:
@@ -5323,7 +5323,7 @@ function sec2time ($input)
 
 // ---------------------- mediasize2frame -----------------------------
 // function: mediasize2frame()
-// input: media width [integer], media height [integer], frame width [integer] (optional), frame height [integer] (optional), keep maximum media size based on original dimensions of media without stretching [true,false] (optional)
+// input: media width [integer], media height [integer], frame width [integer] (optional), frame height [integer] (optional), keep maximum media size based on original dimensions of media without stretching [boolean] (optional)
 // output: width and height as array / false
 
 // description:

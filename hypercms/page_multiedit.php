@@ -614,7 +614,7 @@ elseif ($is_video || $is_audio)
 }
 
 // set character set in header
-if (!empty ($charset)) ini_set ('default_charset', $charset);
+if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 ?>
 <!DOCTYPE html>
 <html>

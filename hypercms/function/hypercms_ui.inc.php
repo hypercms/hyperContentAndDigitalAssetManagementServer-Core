@@ -86,7 +86,7 @@ function toggleview ($view)
 
 // --------------------------------------- togglesidebar -------------------------------------------
 // function: togglesidebar ()
-// input: view [true,false]
+// input: view [boolean]
 // output: true / false
 
 // description:
@@ -197,7 +197,7 @@ function objectfilter ($file)
 
 // --------------------------------------- showdate -------------------------------------------
 // function: showdate ()
-// input: date and time [string, date input format [string], date output format [string], correct time zone [true,false] (optional)
+// input: date and time [string, date input format [string], date output format [string], correct time zone [boolean] (optional)
 // output: date and time
 
 // description:
@@ -246,7 +246,7 @@ function showdate ($date, $sourceformat="Y-m-d H:i", $targetformat="Y-m-d H:i", 
 // --------------------------------------- showshorttext -------------------------------------------
 // function: showshorttext ()
 // input: text [string], max. length of text (minus length starting from the end) [integer] (optional),
-//        line break instead of cut [true,false] only if length is positive (optional), character set for encoding [string] (optional)
+//        line break instead of cut [boolean] only if length is positive (optional), character set for encoding [string] (optional)
 // output: shortened text if possible, or orignal text
 
 // description:
@@ -642,7 +642,7 @@ function showmetadata ($data, $lang="en", $class_headline="hcmsRowData2")
 
 function showobject ($site, $location, $page, $cat="", $name="")
 {
-  global $mgmt_config, $hcms_charset, $hcms_lang, $hcms_lang_date, $lang;
+  global $mgmt_config, $hcms_charset, $hcms_lang, $hcms_lang_date, $lang, $user;
 
   $location = deconvertpath ($location, "file");
 
@@ -1214,7 +1214,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if (
              (
                (isset ($user_client['firefox']) && $user_client['firefox'] >= 6) || 
-               (isset ($user_client['msie']) && $user_client['msie'] >= 9) || 
+               (isset ($user_client['msie'])) || 
                (isset ($user_client['chrome']) && $user_client['chrome'] >= 24) || 
                (isset ($user_client['unknown']))
              ) && 
@@ -2998,7 +2998,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
 function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="multi", $search_expression="", $search_format="", $mediatype="", $lang="en", $callback="", $scalingfactor="1", $view="list", $thumbsize=100)
 {
-  global $user, $mgmt_config, $siteaccess, $pageaccess, $compaccess, $rootpermission, $globalpermission, $localpermission, $hiddenfolder, $html5file, $temp_complocation, $hcms_charset, $hcms_lang;
+  global $mgmt_config, $siteaccess, $pageaccess, $compaccess, $rootpermission, $globalpermission, $localpermission, $hiddenfolder, $html5file, $temp_complocation, $hcms_charset, $hcms_lang, $user;
 
   if (valid_publicationname ($site) && (valid_locationname ($dir) || $dir == ""))
   {
@@ -3439,13 +3439,14 @@ $(document).ready(function()
               {
                 $mediafile = $objectinfo['media'];
                 $mediainfo = getfileinfo ($site, $mediafile, "comp");
-                $thumbnail = $mediainfo['filename'].".thumb.jpg";
+                $thumbnailfile = $mediainfo['filename'].".thumb.jpg";
+                $thumbnail = "";
                 $mediadir = getmedialocation ($site, $objectinfo['media'], "abs_path_media").$site."/";
 
-                // thumbnails preview
-                if (is_file ($mediadir.$thumbnail))
+                // use thumbnail preview
+                if (is_file ($mediadir.$thumbnailfile))
                 {
-                  $imgsize = getimagesize ($mediadir.$thumbnail);
+                  $imgsize = getimagesize ($mediadir.$thumbnailfile);
 
                   // calculate image ratio to define CSS for image container div-tag
                   if (is_array ($imgsize))
@@ -3473,9 +3474,19 @@ $(document).ready(function()
                   if ($comp_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
                   else $class_image = "class=\"lazyload hcmsImageItem\"";
 
-                  $thumbnail = "<img data-src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" ".$class_image." style=\"margin-top:10px; ".$style_size."\" /><br/>";
+                  $thumbnail = "<img data-src=\"".createviewlink ($site, $thumbnailfile, $objectinfo['name'])."\" ".$class_image." style=\"margin-top:10px; ".$style_size."\" /><br/>";
+                }
+                // use standard file icon as thumbnail
+                else
+                {
+                  // view option for un/published objects
+                  if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
+                  else $class_image = "";
+
+                  $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." style=\"margin-top:10px; width:".$thumbsize."px;\" /><br/>";
                 }
               }
+              // use standard file icon as thumbnail for list view
               else
               {
                 // listview - view option for un/published objects
@@ -4354,13 +4365,13 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // link to the logo which is displayed before you click on play (If the value is null the default logo will be used) [string],
 // ID of the video (will be generated when empty) [string],
 // title for this video [string],
-// autoplay video on load (true), default is false [true,false],
-// view the video in full screen [true,false],
-// play loop [true,false] (optional),
-// muted/no sound [true,false] (optional),
-// player controls [true,false] (optional),
-// use video in iframe [true,false] (optional),
-// reload video sources to prevent the browser cache to show the same video even if it has been changed [true,false] (optional)
+// autoplay video on load (true), default is false [boolean],
+// view the video in full screen [boolean],
+// play loop [boolean] (optional),
+// muted/no sound [boolean] (optional),
+// player controls [boolean] (optional),
+// use video in iframe [boolean] (optional),
+// reload video sources to prevent the browser cache to show the same video even if it has been changed [boolean] (optional)
 
 // output: HTML code of the video player / false on error
 
@@ -4596,7 +4607,7 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
 
 // ------------------------- showvideoplayer_head -----------------------------
 // function: showvideoplayer_head()
-// input: secure hyperreferences by adding 'hypercms_' [true,false] (optional), is it possible to view the video in fullScreen [true,false] (optional)
+// input: secure hyperreferences by adding 'hypercms_' [boolean] (optional), is it possible to view the video in fullScreen [boolean] (optional)
 // output: head for video player / false on error
 
 function showvideoplayer_head ($secureHref=true, $fullscreen=true)
@@ -4644,7 +4655,7 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
 // function: showaudioplayer()
 // input: publication name [string], audio files [array], ID of the tag [string] (optional), width of the video in pixel [integer], height of the video in pixel [integer],
 //        link to the logo which is displayed before you click on play (If the value is null the default logo will be used) [string], ID of the video (will be generated when empty) [string],
-//        autoplay (optional) [true,false], play loop (optional) [true,false], player controls (optional) [true,false]
+//        autoplay (optional) [boolean], play loop (optional) [boolean], player controls (optional) [boolean]
 // output: code of the HTML5 player / false
 
 // description:
@@ -4781,7 +4792,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
 
 // ------------------------- showaudioplayer_head -----------------------------
 // function: showaudioplayer_head()
-// input: secure hyperreferences by adding 'hypercms_' [true,false] (optional)
+// input: secure hyperreferences by adding 'hypercms_' [boolean] (optional)
 // output: head for audio player
 
 function showaudioplayer_head ($secureHref=true)
@@ -4869,13 +4880,14 @@ function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFuncti
 
 // ------------------------- showAPIdocs -----------------------------
 // function: showAPIdocs()
-// input: path to API file [string], return result as HTML or array [html,array] (optional)
+// input: path to API file [string], return result as HTML or array [html,array] (optional), use horizontal rule as separator in HTML output [boolean] (optional)
+//        display description [boolean] (optional), display input parameters [boolean] (optional), display global variables [boolean] (optional), display output [boolean] (optional)
 // output: HTML output of documentation / false on error
 
 // description:
 // Generates the documentation of an API file
 
-function showAPIdocs ($file, $return="html")
+function showAPIdocs ($file, $return="html", $html_hr=true, $html_description=true, $html_input=true, $html_globals=true, $html_output=true)
 {
   if (is_file ($file))
   {
@@ -5000,9 +5012,17 @@ function showAPIdocs ($file, $return="html")
       {
         $result = "";
 
-        foreach ($function as $name=>$value)
+        foreach ($function as $name => $value)
         {
           $result .= "<h3>".$name."</h3><br/>\n";
+
+          if (!empty ($description[$name]) && !empty ($html_description))
+          {
+            $description[$name] = str_replace (",", ", ", $description[$name]);
+            $result .= "<b>Description</b><br/>\n";
+            $result .= nl2br (trim ($description[$name]))."<br/><br/>\n";
+          }
+          
           $result .= "<b>Syntax</b><br/>\n";
           $function[$name] = str_replace (",", ", ", $function[$name]);
           $result .= $function[$name]."<br/><br/>\n";
@@ -5010,9 +5030,9 @@ function showAPIdocs ($file, $return="html")
           $temp = trim (substr ($value, strpos ($value, "(") + 1), ")");
           $input_vars = explode (", ", trim ($temp));
 
-          if (is_array ($input_vars) && sizeof ($input_vars) > 0)
+          if (is_array ($input_vars) && sizeof ($input_vars) > 0 && !empty ($html_input))
           {
-            $result .= "<b>Input parameters</b><br/>\n";
+            $result .= "<b>Input parameters</b><br/>\n<ul>\n";
 
             if (!empty ($input[$name])) $var_text = explode (", ", $input[$name]);
 
@@ -5032,30 +5052,28 @@ function showAPIdocs ($file, $return="html")
                 }
                 else $text = "";
 
-                $result .= trim ($var).$text."<br/>\n";
+                $result .= "<li>".trim ($var).$text."</li>\n";
               }
             }
 
+            $result .= "</ul>\n<br/>\n";
+          }
+
+          if (!empty ($global[$name]) && !empty ($html_globals))
+          {
+            $result .= "<b>global input parameters</b><br/>\n";
+            $result .= "<ul><li>".str_replace (", ", "</li>\n<li/>", $global[$name])."</li></ul>\n";
             $result .= "<br/>\n";
           }
 
-          if (!empty ($global[$name]))
+          if (!empty ($html_output)) 
           {
-            $result .= "<b>global input parameters</b><br/>\n";
-            $result .= str_replace (", ", "<br/>\n", $global[$name]);
-            $result .= "<br/><br/>\n";
+            $result .= "<b>Output</b><br/>\n";
+            $result .= "<ul><li>".str_replace (", ", "</li>\n<li/>", $output[$name])."</li></ul>\n";
+            $result .= "<br/>\n";
           }
 
-          $result .= "<b>Output</b><br/>\n";
-          $result .= str_replace (", ", "<br/>\n", $output[$name]);
-          $result .= "<br/><br/>\n";
-
-          if (!empty ($description[$name]))
-          {
-            $description[$name] = str_replace (",", ", ", $description[$name]);
-            $result .= "<b>Description</b><br/>\n";
-            $result .= nl2br (trim ($description[$name]))."<br/><br/>\n";
-          }
+          if (!empty ($html_hr)) $result .= "<hr/>\n";
         }
       }
       // return as array
@@ -5078,7 +5096,7 @@ function showAPIdocs ($file, $return="html")
 
 // ------------------------- readnavigation -----------------------------
 // function: readnavigation()
-// input: publication name [string], location [string], object name [string], view name (see view parameters of function buildview) [string], user name [string]
+// input: publication name [string], location [string], object name [string], view name (see view parameters of function buildview) [string] (optional), user name [string] (optional)
 // output: navigation item array / false
 
 // description:
@@ -5210,7 +5228,7 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
 
 // ------------------------- createnavigation -----------------------------
 // function: createnavigation()
-// input: publication name [string], document root for navigation [string], URL root for navigation [string], view name (see view parameters of function buildview) [string], path to current object [string] (optional), recursive [true,false] (optional)
+// input: publication name [string], document root for navigation [string], URL root for navigation [string], view name (see view parameters of function buildview) [string], path to current object [string] (optional), recursive [boolean] (optional)
 // output: navigation array / false
 
 // description:
@@ -5414,7 +5432,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
 // $navi_config['hide_text_id'] = "NavigationHide";
 // $navi_config['sort_text_id'] = "NavigationSortOrder";
 // 
-// Use the first object of a folder for the main navigation item and display all following objects as sub navigation items [true,false]
+// Use the first object of a folder for the main navigation item and display all following objects as sub navigation items [boolean]
 // $navi_config['use_1st_folderitem'] = false;
 
 function shownavigation ($navigation, $level=1)
@@ -5462,7 +5480,7 @@ function shownavigation ($navigation, $level=1)
 
 // ------------------------- showselect -----------------------------
 // function: showselect()
-// input: values array (array-key = value, array-value = text) [array], use values of array as option value and text [true,false] (optional), selected value [string] (optional), attributes of select tags like name or id or events [string] (optional)
+// input: values array (array-key = value, array-value = text) [array], use values of array as option value and text [boolean] (optional), selected value [string] (optional), attributes of select tags like name or id or events [string] (optional)
 // output: HTML select box presentation / false
 
 function showselect ($value_array, $only_text=false, $selected_value="", $id="", $attributes="")
@@ -5672,7 +5690,7 @@ function showmapping ($site, $lang="en")
 
 // ------------------------- showgallery -----------------------------
 // function: showgallery()
-// input: multiobjects represented by their path or object ID [array], thumbnail size in pixels [integer] (optional), open object on click [true,false] (optional), user name [string] (optional)
+// input: multiobjects represented by their path or object ID [array], thumbnail size in pixels [integer] (optional), open object on click [boolean] (optional), user name [string] (optional)
 // output: gallery view / false
 
 // description:
@@ -5790,7 +5808,7 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
 
 // ------------------------- showthumbnail -----------------------------
 // function: showthumbnail()
-// input: publication name [string], media file name [string], display name [string] (optional), thumbnail size in pixels [integer] (optional), base64 encoding [true,false] (optional), CSS style for image [string] (optional)
+// input: publication name [string], media file name [string], display name [string] (optional), thumbnail size in pixels [integer] (optional), base64 encoding [boolean] (optional), CSS style for image [string] (optional)
 //        design theme name for icons [string] (optional)
 // output: thumbnail view / false
 
@@ -5871,6 +5889,148 @@ function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=fal
     }
 
     return $view;
+  }
+  else return false;
+}
+
+// ------------------------- showworkflowstatus -----------------------------
+// function: showworkflowstatus()
+// input: publication name [string], location path [string], object name [string]
+// output: workflow status view / false
+
+// description:
+// Displays the workflow status information table.
+
+function showworkflowstatus ($site, $location, $page)
+{
+  global $mgmt_config, $publ_config, $hcms_charset, $hcms_lang, $lang, $user;
+
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
+  {
+    // convert location
+    $cat = getcategory ($site, $location);
+    $location = deconvertpath ($location, "file");
+    $location_esc = convertpath ($site, $location, $cat);
+
+    // check and correct file
+    $page = correctfile ($location, $page, $user);
+      
+    // load page and read actual file info (to get associated template and content)
+    $pagestore = loadfile ($location, $page);
+
+    if ($pagestore != false)
+    {
+      // get template
+      $template = getfilename ($pagestore, "template");
+
+      // get container
+      $contentfile = getfilename ($pagestore, "content");
+    }
+
+    if (!empty ($template))
+    {
+      // read associated template file
+      $result = loadtemplate ($site, $template);
+      
+      $templatedata = $result['content'];
+      
+      // get workflow from template
+      $hypertag_array = gethypertag ($templatedata, "workflow", 0);
+      
+      // check if workflow is definded in template or workflow on folder must be applied
+      if ($hypertag_array == false || $hypertag_array == "")
+      {
+        if (file_exists ($mgmt_config['abs_path_data']."workflow_master/".$site.".".$cat.".folder.dat")) $wf_exists = true;
+        else $wf_exists = false;
+      }
+      else $wf_exists = true;  
+      
+      // collect workflow status information
+      if ($wf_exists == true && file_exists ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile))
+      {
+        // load workflow
+        $workflow_data = loadfile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile);
+        
+        // build workflow stages
+        $item_array = buildworkflow ($workflow_data);
+        
+        // count stages (1st dimension)
+        $stage_max = sizeof ($item_array); 
+        
+        // set start stage (stage 0 can only exist if passive items exist)
+        if (isset ($item_array[0]) && sizeof ($item_array[0]) >= 1) 
+        {
+          $stage_start = 1;
+          $stage_max = $stage_max - 1;
+        }
+        else 
+        {
+          $stage_start = 1;
+        }       
+        
+        echo "
+    <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['workflow-status'][$lang])."</p>
+    <table class=\"hcmsTableStandard\" style=\"width:90%;\">\n";
+        echo "
+      <tr>
+        <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['member-type'][$lang])."</td>
+        <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['member'][$lang])."</td>
+        <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['status'][$lang])."</td>
+        <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['date'][$lang])."</td>
+      </tr>"; 
+        
+        for ($stage=$stage_start; $stage<=$stage_max; $stage++)
+        {
+          if (is_array ($item_array[$stage]))
+          {
+            echo "
+      <tr class=\"hcmsRowHead2\">
+        <td colspan=\"4\">".getescapedtext ($hcms_lang['members-on-workflow-stage'][$lang])." ".$stage."</td>
+      </tr>"; 
+            
+            foreach ($item_array[$stage] as $item)
+            {
+              $type_array = getcontent ($item, "<type>"); // unique        
+             
+              if ($type_array[0] == "user")
+              {
+                $type = getescapedtext ($hcms_lang['user'][$lang]);
+                $member_array = getcontent ($item, "<user>"); // unique
+              }
+              elseif ($type_array[0] == "usergroup")
+              {
+                $type = getescapedtext ($hcms_lang['user-group'][$lang]);
+                $member_array = getcontent ($item, "<group>"); // unique
+              }
+              elseif ($type_array[0] == "script") 
+              {
+                $type = getescapedtext ($hcms_lang['robot-script'][$lang]);
+                $member_array[0] = "-";
+              }                      
+              
+              $passed_array = getcontent ($item, "<passed>"); // unique
+              
+              if ($passed_array[0] == 1) $passed = getescapedtext ($hcms_lang['accepted'][$lang]);
+              else $passed = getescapedtext ($hcms_lang['pendingrejected'][$lang]);
+              
+              $date_array = getcontent ($item, "<date>"); // unique  
+            
+              echo "
+        <tr class=\"hcmsRowData1\">
+          <td style=\"width:25%;\">".$type."</td>
+          <td style=\"width:25%;\">".$member_array[0]."</td>
+          <td style=\"width:25%;\">".$passed."</td>
+          <td>".$date_array[0]."</td>
+        </tr>"; 
+            }
+          }
+        }
+        
+        echo "
+      </table>";
+      }
+    }
+    else return false;
   }
   else return false;
 }

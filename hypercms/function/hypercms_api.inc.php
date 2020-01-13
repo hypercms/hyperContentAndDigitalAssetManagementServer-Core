@@ -119,12 +119,6 @@ elseif (is_file ($mgmt_config['abs_path_cms']."function/hypercms_encryption.inc.
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_encryption.inc.php");
 }
 
-// include Cloud Storage API (not included in Free Edition)
-if (is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php"))
-{
-  require_once ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php");
-}
-
 // include UI API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_ui.inc.php"))
 {
@@ -137,16 +131,28 @@ if (is_file ($mgmt_config['abs_path_cms']."report/hypercms_report.inc.php"))
   require_once ($mgmt_config['abs_path_cms']."report/hypercms_report.inc.php");
 }
 
+// include update API
+if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_update.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."function/hypercms_update.inc.php");
+}
+
+// include Cloud Storage API (not included in Free Edition)
+if (is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php");
+}
+
 // include Im/Export API (not included in Free Edition)
 if (is_file ($mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.inc.php");
 }
 
-// include update API
-if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_update.inc.php"))
+// include RESTful API (not included in Free Edition)
+if (is_file ($mgmt_config['abs_path_cms']."connector/rest/library/hypercms_rest.inc.php"))
 {
-  require_once ($mgmt_config['abs_path_cms']."function/hypercms_update.inc.php");
+  require_once ($mgmt_config['abs_path_cms']."connector/rest/library/hypercms_rest.inc.php");
 }
 
 // include developer AddOns

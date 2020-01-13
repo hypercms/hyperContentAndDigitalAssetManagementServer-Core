@@ -26,7 +26,6 @@ $db_connect = getrequest_esc ("db_connect", "objectname");
 $tagname = getrequest_esc ("tagname", "objectname");
 $id = getrequest_esc ("id", "objectname", "", true);
 $label = getrequest_esc ("label");   
-$linkhref_curr = getrequest_esc ("linkhref_curr");
 $linkhref = getrequest_esc ("linkhref");
 $linktext = getrequest_esc ("linktext");
 $linktarget = getrequest_esc ("linktarget");
@@ -75,7 +74,7 @@ if (empty ($db_connect))
 
   if (!empty ($contentdata))
   {
-    // get the whole media object information of the content container
+    // get the media object information of the content container
     if (!empty ($id))
     {
       $linknode = selectcontent ($contentdata, "<link>", "<link_id>", $id);
@@ -83,7 +82,7 @@ if (empty ($db_connect))
       if (!empty ($linknode[0]))
       {
         $temp_array = getcontent ($linknode[0], "<linkhref>");
-        if (!empty ($temp_array[0])) $linkhref_curr = $temp_array[0];
+        if (!empty ($temp_array[0])) $linkhref = $temp_array[0];
         
         $temp_array = getcontent ($linknode[0], "<linktarget>");
         if (!empty ($temp_array[0])) $linktarget = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
@@ -96,19 +95,13 @@ if (empty ($db_connect))
 }
 
 // remove &amp; from specific variables
-$variables = array ('linkhref', 'linktext', 'linkhref_curr');
+$variables = array ('linkhref', 'linktext');
 
 foreach ($variables as $variable)
 {
   $$variable = str_replace ("&amp;", "&", $$variable);
 }
 
-// add %page% if not provided
-if (strpos ("_".$linkhref_curr, "%page%/") == 0)
-{
-  if (is_file (deconvertpath ("%page%".$linkhref_curr, "file"))) $linkhref_curr = "%page%".$linkhref_curr;
-  elseif (is_file (deconvertpath ("%page%/".$linkhref_curr, "file"))) $linkhref_curr = "%page%/".$linkhref_curr;
-}
 // add %page% if not provided
 if (strpos ("_".$linkhref, "%page%/") == 0)
 {
@@ -145,7 +138,7 @@ $token = createtoken ($user);
 if ($label == "") $label = $id;
 
 // set character set in header
-if (!empty ($charset)) ini_set ('default_charset', $charset);
+if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 ?>
 <!DOCTYPE html>
 <html>
@@ -175,10 +168,9 @@ function replace (string,text,by)
 
 function correctnames ()
 {
-  if (eval (document.forms['link'].elements['linkhref'])) document.forms['link'].elements['linkhref'].name = "<?php echo $art; ?>linkhref[<?php echo $id; ?>]";
-  if (eval (document.forms['link'].elements['linkhref_curr'])) document.forms['link'].elements['linkhref_curr'].name = "<?php echo $art; ?>linkhref_curr[<?php echo $id; ?>]";
-  if (eval (document.forms['link'].elements['linktarget'])) document.forms['link'].elements['linktarget'].name = "<?php echo $art; ?>linktarget[<?php echo $id; ?>]";
-  if (eval (document.forms['link'].elements['linktext'])) document.forms['link'].elements['linktext'].name = "<?php echo $art; ?>linktext[<?php echo $id; ?>]";
+  if (document.forms['link'].elements['linkhref']) document.forms['link'].elements['linkhref'].name = "<?php echo $art; ?>linkhref[<?php echo $id; ?>]";
+  if (document.forms['link'].elements['linktarget']) document.forms['link'].elements['linktarget'].name = "<?php echo $art; ?>linktarget[<?php echo $id; ?>]";
+  if (document.forms['link'].elements['linktext']) document.forms['link'].elements['linktext'].name = "<?php echo $art; ?>linktext[<?php echo $id; ?>]";
   return true;
 }
 
@@ -347,7 +339,6 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   <input type="hidden" name="db_connect" value="<?php echo $db_connect; ?>">
   <input type="hidden" name="tagname" value="<?php echo $tagname; ?>">
   <input type="hidden" name="id" value="<?php echo $id; ?>">      
-  <input type="hidden" name="linkhref_curr" value="<?php echo $linkhref_curr; ?>">
   <input type="hidden" name="linkhref" value="<?php echo $linkhref; ?>">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   

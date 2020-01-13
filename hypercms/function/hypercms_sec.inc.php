@@ -11,7 +11,7 @@
 
 // ---------------------- rootpermission -----------------------------
 // function: rootpermission()
-// input: publication name [string], publication admin [true,false], permission string from group [string]
+// input: publication name [string], publication admin [boolean], permission string from group [string]
 // output: global permission array/false
 
 // description:
@@ -579,7 +579,7 @@ function setlocalpermission ($site, $group_array, $cat)
 
 // ------------------------- checkpublicationpermission -----------------------------
 // function: checkpublicationpermission()
-// input: publication name [string], strictly limited to siteaccess only without inheritance [true,false] (optional)
+// input: publication name [string], strictly limited to siteaccess only without inheritance [boolean] (optional)
 // output: "direct" for direct access via group permission / "inherited" for access through inheritance / false
 
 // description:
@@ -788,7 +788,7 @@ function checkgroupaccess ($groupaccess, $usergroup_array)
 // --------------------------------------- userlogin -------------------------------------------
 // function: userlogin()
 // input: user name [string] (optional if hash code is used for logon), password [string] (optional if hash code is used for logon), hash code of user [string] (optional), object reference for hcms linking (object ID) [string] (optional), 
-//        object code for hcms linking (crypted object ID) [string] (optional), ignore passwordcheck needed for WebDAV or access link [true,false] (optional), lock IP after 10 failed attempts to login [true,false] (optional), portal name in the form of publication.portal or publication/portal [string] (optional)
+//        object code for hcms linking (crypted object ID) [string] (optional), ignore passwordcheck needed for WebDAV or access link [boolean] (optional), lock IP after 10 failed attempts to login [boolean] (optional), portal name in the form of publication.portal or publication/portal [string] (optional)
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -893,7 +893,8 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   else
   {
     // old password hash before version 7.0.6 (deprecated)
-    $passwd_crypted = crypt ($passwd, substr ($passwd, 1, 2));
+    // deprecated salt might cause PHP Deprecated: Supplied salt is not valid for DES.
+    $passwd_crypted = @crypt ($passwd, substr ($passwd, 1, 2));
   }
 
   // include authentification connectivity (LDAP, AD, or others)
@@ -1453,11 +1454,28 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       // include disk key
       require ($mgmt_config['abs_path_cms']."include/diskkey.inc.php");
 
-      // load content counter
-      $containercounter = loadfile ($mgmt_config['abs_path_data'], "check.dat");
+      // load check.dat
+      $check = loadfile ($mgmt_config['abs_path_data'], "check.dat");
 
-      if ($containercounter == 0)
+      // initial load
+      if ($check == "")
       {
+        // save installation date
+        $checkresult = savefile ($mgmt_config['abs_path_data'], "check.dat", date ("Y-m-d", time()));
+
+        // log information
+        if ($checkresult == true)
+        {
+          $errcode = "00221";
+          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|hyperCMS started first time by publication: ".$site_name;
+        }
+        // on error
+        else
+        {
+          $errcode = "10221";
+          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|".$errcode."|check.dat could not be saved";
+        }
+
         $mailer = new HyperMailer();
         $mailer->AddAddress ("info@hypercms.net");
         $mailer->Subject = "hyperCMS Started First Time";
@@ -1465,15 +1483,8 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         $mailer->Send();
 
         mail ("info@hypercms.net", "hyperCMS Started First Time", "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nLicense key: ".$diskhash."\n");
-
-        savefile ($mgmt_config['abs_path_data'], "check.dat", date ("Y-m-d", time()));
-
-        // information
-        $errcode = "00221";
-        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|hyperCMS started first time by publication: ".$site_name; 
-
-        $checkresult = true; 
       }
+      // installation date has been set
       else
       {
         $checkresult = true;
@@ -1496,6 +1507,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|license limits exceeded";
       }
     }
+    // file is missing
     else
     {
       $mailer = new HyperMailer();
@@ -1772,7 +1784,7 @@ function setportalpermissions ($login_result)
 
 // ---------------------- registerinstance -----------------------------
 // function: registerinstance()
-// input: instance name [string], load main config of instance [true,false] (optional)
+// input: instance name [string], load main config of instance [boolean] (optional)
 // output: true/false
 // requires: hypercms_api.inc.php
 
@@ -2180,7 +2192,7 @@ function createsession ()
 
 // ---------------------- killsession -----------------------------
 // function: killsession()
-// input: user name for hyperCMS session [string] (optional), destroy php session [true,false] (optional), kill all sessions of the user [true,false] (optional)
+// input: user name for hyperCMS session [string] (optional), destroy php session [boolean] (optional), kill all sessions of the user [boolean] (optional)
 // output: true
 // requires: hypercms_api.inc.php
 
@@ -2560,7 +2572,7 @@ function checkuserrequests ($user="sys")
 
 // ------------------------- checkusersession -----------------------------
 // function: checkusersession()
-// input: user name [string] (optional), include CSRF detection [true,false]
+// input: user name [string] (optional), include CSRF detection [boolean]
 // output: true / html-output followed by termination
 // requires config.inc.php
 
@@ -2784,7 +2796,7 @@ function valid_publicationname ($variable)
 // ------------------------- html_encode -----------------------------
 // function: html_encode()
 // input: variable [string or array], conversion of all special characters based on given character set or to ASCII [string] (optional), 
-//        remove characters to avoid JS injection [true,false] (optional)
+//        remove characters to avoid JS injection [boolean] (optional)
 // output: html encoded value as array or string / false on error
 
 // description:

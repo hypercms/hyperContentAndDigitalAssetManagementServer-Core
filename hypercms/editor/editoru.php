@@ -69,6 +69,8 @@ elseif (strpos ($contenttype, "charset") > 0)
 }
 else $charset = $mgmt_config[$site]['default_codepage'];
 
+if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
+
 // define constraint
 if ($constraint != "") $add_constraint = "check = validateForm('".$tagname."_".$id."','','".$constraint."');\n";
 else $add_constraint = "check = true;\n";

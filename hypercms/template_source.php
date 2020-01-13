@@ -85,7 +85,7 @@ if (isset ($result_charset['charset']) && $result_charset['charset'] != "") $cha
 else $charset = $mgmt_config[$site]['default_codepage'];
 
 // set character set in header
-if (!empty ($charset)) ini_set ('default_charset', $charset);
+if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 ?>
 <!DOCTYPE html>
 <html>

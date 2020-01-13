@@ -869,7 +869,7 @@ function update_database_v625 ()
 
 // ------------------------------------------ update_database_v705 ----------------------------------------------
 // function: update_database_v705()
-// input: path to component directory [string], alter table [true,false]
+// input: path to component directory [string], alter table [boolean]
 // output: true / false
 
 // description: 

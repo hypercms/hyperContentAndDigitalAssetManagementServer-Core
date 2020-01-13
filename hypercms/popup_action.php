@@ -69,7 +69,7 @@ if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
   elseif (($action == "cut" || $action == "copy") && (($page != "" && $setlocalpermission['rename'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1))) $authorized = true;
   elseif ($action == "linkcopy" && (($page != "" && $setlocalpermission['rename'] == 1 && $setlocalpermission['create'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['foldercreate'] == 1))) $authorized = true;
   elseif (($action == "page_favorites_create" || $action == "page_favorites_delete") && $setlocalpermission['create'] == 1) $authorized = true;
-  elseif ($action == "page_unlock" && $setlocalpermission['create'] == 1) $authorized = true;
+  elseif ($action == "page_unlock" && ($page != "" && $setlocalpermission['create'] == 1) || ($folder != "" && $setlocalpermission['foldercreate'] == 1)) $authorized = true;
   elseif ($action == "paste" && ($setlocalpermission['rename'] == 1 || $setlocalpermission['folderrename'] == 1)) $authorized = true;
   elseif (($action == "publish" || $action == "unpublish") && $setlocalpermission['publish'] == 1) $authorized = true;
   elseif ($action == "unzip") $authorized = true;

@@ -141,7 +141,7 @@ else
       }
     }
   }
-  
+
   // reduce objectlistcols
   if (is_array ($objectlistcols) && sizeof ($objectlistcols) > 0)
   {
@@ -182,7 +182,7 @@ elseif (!empty ($search_execute))
   if (is_file ($mgmt_config['abs_path_data']."log/".$user.".search.log"))
   {
     $searchlog_array = file ($mgmt_config['abs_path_data']."log/".$user.".search.log");
-  
+
     if ($searchlog_array != false && sizeof ($searchlog_array) > 0)
     {
       foreach ($searchlog_array as $searchlog)
@@ -190,7 +190,7 @@ elseif (!empty ($search_execute))
         if (strpos ($searchlog, "|") > 0)
         {
           list ($search_id, $rest) = explode ("|", trim ($searchlog));
-          
+
           if ($search_id == $search_execute)
           {
             // update to version 8.0.2
@@ -200,7 +200,7 @@ elseif (!empty ($search_execute))
             }
 
             list ($uniqid, $date, $action, $site, $search_dir, $date_from, $date_to, $template, $search_textnode, $search_expression, $search_cat, $search_format, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $object_id, $container_id) = explode ("|", trim ($searchlog));
-            
+
             // JSON decode
             $search_textnode = json_decode ($search_textnode, true);
             $search_format = json_decode ($search_format, true);
@@ -323,10 +323,10 @@ elseif ($action == "base_search" || $search_dir != "")
     }
     else $search_filename = $search_expression;
   }
-  
+
   // search for certain object types/formats
   if (!is_array ($search_format)) $search_format = "";
-  
+
   // check permissions
   if ($action == "base_search" || ($cat == "comp" && checkglobalpermission ($site, 'component')) || ($cat == "page" && checkglobalpermission ($site, 'page')))
   {
@@ -355,7 +355,7 @@ elseif ($action == "base_search" || $search_dir != "")
           }
         }
       }
-      
+
       // component access of user
       foreach ($compaccess as $site_name => $value)
       {

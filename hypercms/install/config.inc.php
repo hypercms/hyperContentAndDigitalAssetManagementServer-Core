@@ -528,6 +528,10 @@ $mgmt_config['max_digits_filename'] = 236;
 // Which types of files (file extensions) are not allowed for upload, example ".asp.jsp.php.pl.sql"
 $mgmt_config['exclude_files'] = ".php.phtml.pl.jsp.asp.aspx.exe.sql.sh.bash";
 
+// Save GPS coordinates (latitude, longitude) provided by the original media file in the database (true) or not (false)
+// This will overwrite the geo location provided by the user
+$mgmt_config['gps_save'] = true;
+
 // Save Metadata to Files
 // Save IPTC tags to image files (true) or not (false)
 $mgmt_config['iptc_save'] = true;

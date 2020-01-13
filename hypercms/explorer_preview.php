@@ -82,6 +82,8 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   else $charset = $mgmt_config[$site]['default_codepage'];
   
   $hcms_charset = $charset;
+
+  if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
   
   // convert object name
   $name = convertchars ($file_info['name'], "UTF-8", $charset);

@@ -46,7 +46,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // check permissions
 if (
      ($login_cat == "home" && ($login != $user || !checkrootpermission ('desktopsetting'))) || 
-     (!valid_publicationname ($site) && (!checkrootpermission ('user') || !checkrootpermission ('useredit'))) || 
+     ($login_cat != "home" && !valid_publicationname ($site) && (!checkrootpermission ('user') || !checkrootpermission ('useredit'))) || 
      (valid_publicationname ($site) && (!checkglobalpermission ($site, 'user') || !checkglobalpermission ($site, 'useredit')))
    ) killsession ($user);
 

@@ -3736,13 +3736,34 @@ Release 10/2019
 - Implementation of new plus/minus buttons for dark nd light mode in all design themes
 - Modifications in template engine in order to sort the publication names of the search select box
 - Modifications in function showmessage and showinfobox in UI API in order to replace close button action JS function hcms_showhideInfo with hcms_switchInfo
+- Modifications in Report Management in order to seperate chart configuration values of column and area chart
+- Modifications in Report Management in order to verify the publication access of the user when executing a SQL query
+- Design modifications in Report Management
+- Implementation of download and access links as virtual html files in the Workplace Integration module (WebDAV)
 - Modifications in functions createobjectaccesslink, createwrapperlink, and createdownloadlink in Main API in order to support and extract the container ID from a media file
+- Modifications in function writeSessionDataToFile in Workplace Integration module in order to set time zone of the user
+- Modifications in class Sabre_hyperCMS_File and function getChildsForLocation, function get, function getFileContents, function httpGet in Workplace Integration module in order to support HTML access/download links (return HTML file instead of the files content)
+- Implementation of the new publication configuration settings in order to enable and disable WebDAV download and access links
+- Modifications in site_edit_form in order to support the new WebDAV download and access links
+- Modifications in function editpublication in Main API in order to support the new WebDAV download and access links
+- Implementation of the new function showthumbnail in UI API that provides an optionally base64 encoded thumbnail image
 - Modifications in function showgallery in UI API in order to always use the media location of thumbnails
 - Modifications in function getFileContents in Workplace Integration module in order to support embedded thumbnails in the HTML link files
 - Modifications in home box all_reports in order to use report title instead of the report file name for the select box
+- Modifications in Google Cloud Connector in order to support publication specific cloud connections
+- Modifications in function setmetadata in Meta API in order to support the new Google Cloud Connector functions
+- Modifications in MS Azure Cloud Connector in order to support publication specific cloud connections
+- Modifications in function setmetadata in Meta API in order to support the new MS Azure Cloud Connector functions
+- Modifications in Amazon AWS Cloud Connector in order to support publication specific cloud connections
+- Modifications in function setmetadata in Meta API in order to support the new Amazon AWS Cloud Connector functions
+- Modifications in site_edit form in order to manage the Google Cloud API settings including Google Vision, Google Video Intelligence, and Google Speech-to-Text
 - Modifications in function editpublication in Main API in order to support the Google Cloud API settings
 - Modifications in function buildsearchform in template engine in order to support the new input parameter for enabling and disabling empty values and title display
 - Modifications in function buildsearchform in template engine in order to implement a loading screen
+- Modifications in Report Management in order to disable empty filter values and display a title for the filters
+- Modifications in home box all_reports in order to implement OK button to call the selected report (removed call on selectbox change event)
+- Modifications in Report Management in order to add log events to function createreport, deletereport and editreport in the Report API
+- Modifications in Report Management in order to add log events to all chart functions in the Report API
 - Implementation of the geo location viewer in popup_log
 - Modifications in log_list in order to resize popup window for log entries
 - Bug fix: Function showmedia in UI API did not apply the CSS class "hcmsHeadlineTiny" to audio and video names
@@ -3760,3 +3781,72 @@ Release 10/2019
 - Bug fix: search_objectlist set the variable maxhits always to 300 if the verification of maxhits was successful
 - Bug fix: Function cretaemedia in Media API did not correct the width and heigth in all cases by verifing that the width and height is divisible by 2
 - Bug fix: Function createfilename in Main API had issues if single and multibyte characters have been mixed in a string. The function verifies the result and corrects it in this case.
+
+Version 8.0.6
+Release 11/2019
+- Modifications in German language file
+- Modifications in function userlogin in Security API in order to suppress PHP deprecated error and comment the use of a deprecated salt (used before version 7.0.6)
+- Modifications in function cleancontent in Main API in order to remove all multi-dots/commas/underscores, tab spaces, newlines, quotes, brackets, underscore, and semicolon from being removed from the string
+- Modifications in template engine in order to adjust width of geo location field beneath the map
+- Modifications in function getmapping in Meta API in order to modify EXIF tags and add GPS geo location tags (alternative EXIF mapping based on the output of function extractmetadata has been implemented as example comment)
+- Modifications in function setmetadata in Meta API in order to use function exif_getdata instead of native PHP function
+- Modifications in function setmetadata in Meta API in order to set latitude and longitude provided by EXIF data (overwrites users GPS coordinates)
+- Modifications in function exif_getdata in Meta API in order to supply all GPS coordinates (latitude, longitude, altitude)
+- Modifications in function rdbms_createobject in DB Connect in order to support latitude and longitude as optional input parameters
+- Re-Implementation of function geo2decimal in Meta API in order to support the GPS coordinates output of function exif_getdata 
+- Implementation of the new main configuration setting $mgmt_config['gps_save'] in order to save the GPS coordinates provided by the media file (overwrites users geo location)
+- Modifications in function createuser in Main API in order to require a minimum length of 4 digits for the user name
+- Modifications in service savecontent in order to verify the main configuration settings
+- Modifications in function setmedia in Set API in order to replace a deprecated text message by an error log entry
+- Modifications in function setmedia in Set API in order to remove the input parameter for current object reference and automatically extract the old object reference for the link management
+- Modifications in function setpagelink in Set API in order to remove the input parameter for current object reference and automatically extract the old object reference for the link management 
+- Modifications in function setcomplink in Set API in order to remove the input parameter for current object reference and automatically extract the old object reference for the link management
+- Modifications in service savecontent in order to remove the request paramaters for current used object references and modify the function calls to setmedia, setpagelink, and setcomplink
+- Modifications in function setmedia, setpagelink, and setcomplink in Set API in order to convert the provided object references (call of function convertpath)
+- Modifications in function function convertpath in order to verify the root path provided by the publication configuration
+- Modifications in function rdbms_getduplicate_file in DB Connect in order to exclude objects in the recycle bin
+- Modifications in template engine in order to remove the GET parameters for the currently used object references
+- Modifications in frameset_edit_link, link_edit_page, frameset_edit_media, media_edit_page, frameset_edit_component, component_edit_page_multi, and component_edit_page_single in order to remove the parameter for current object reference 
+- Modifications in Import/Export module in order to remove the extraction of the current object references from the container and modify the function calls to setmedia, setpagelink, and setcomplink
+- Modifications in function link_db_update in Link API in order to return the link index database if the old and new links are the same
+- Modifications in function getobjectid and function getobjectlink in Get API in order to remove the separator at the end of the string
+- Modifications in the template engine in order to support the new template variable %user% and to provide the system session for the rendering/execution of the template script code
+- Modifications in function rdbms_searchcontent in DB Connect in order to support the new input parameter for the sorting of the search result
+- Modifications in Import/Export module in order to verify the extracted XML nodes
+- Modifications in all content editors in order to set the character set in the HTTP header as well
+- Implementation of the new function convert_utf8 in Main API in order to convert strings and arrays to UTF-8 (UTF-8 is mandatory for json_encode)
+- Implementation of the new function savecontent in Main API (this function does not replace service savecontent and should only be used for programming)
+- Implementation of the new function is_folder in Main API in order to verify if a provided object is a folder
+- Modifications in popup_action in order to check the permissions of folders for action "unlock"
+- Modifications in function savecontent in OpenAPI library in order to use the new function savecontent and modify the WSDL template accordingly
+- Modifications in OpenAPI functions in order to serialize and unserialize instead of json_enode and json_decode
+- Modifications in Main API functions in order to support the new main configuration settings $mgmt_config['api_checkpermission'] and check the user permissions
+- Modifications in Task Management API functions in order to support the new main configuration settings $mgmt_config['api_checkpermission'] and check the user permissions
+- Modifications in Project Management API functions in order to support the new main configuration settings $mgmt_config['api_checkpermission'] and check the user permissions
+- Modifications in Workflow Management API functions in order to support the new main configuration settings $mgmt_config['api_checkpermission'] and check the user permissions
+- Implementation of the new function rewrite_restURI in Main API in order to rewrite the URL for the new REEStful API and its GET requests
+- Implementation of the new function getobjectlist in Get API as a simplified wrapper function for rdbms_searchcontent
+- Renamed the "openapi" connector directory to "soap" since the new OpenAPI will include a SOAP "soap" and RESTful API "rest"
+- Modifications in function createmultidownloadlink in Main API in order to support an array is multiobject input parameter and to accept multiobjects with only one object
+- Modifications in function showAPIdocs in order to use unordered lists for the HTML output of the input, global, and output parameters. Moved the description after the title.
+- Modifications in function showAPIdocs in UI API in order to support a new input parameter for horizontal rules and the display of the description, input parameters, global variables, and output in the HTML output
+- Modifications in function getusersonline in order to verify that the separator exists in the session record of the user
+- Modifications in API loader in order to include the RESTful API of the Connector module
+- Modifications in function uploadfile in Main API in order to fallback to rename if move_uploaded_file failed for the upload of a new thumbnail file
+- Modifications in function uploadfile in Main API in order to include new error log events
+- Modifications in group_edit_form in order to set default values before the extraction of the permissions from the group data
+- Modifications in function correctfile in Main API in order to convert the file name (function createfilename)
+- Modifications in function deletefolder in Main API in order to use function is_emptyfolder instead of scandir
+- Modifications in function showmedia in UI API in order to remove MS IE version verification due to issues with the PDF viewer (PDF.js)
+- Update of PDF.js JavaScript library from version 1.1.215 to version 2.2.228
+- Implementation of the new function showworkflowstatus in UI API in order to display the workflow status information
+- Design modifications in page_view
+- Modifications in installation routine in order to create the contentcount.dat file. Removed the contentcount.dat file from install directory.
+- Modifications in installation routine in order to to modify the setmedia call due to the removed input parameter of the function
+- Modifications in function userlogin in Security API in order to verify if the check.dat file has been saved successfully 
+- Modifications in function savecontainer in Main API in order to verify that the container content tag exists
+- Bug fix: Function rdbms_searchcontent in DB Connect did not escape % and _ in the search expressions as they are used as wildcard characters in the SQL query
+- Bug fix: user_edit did not verify the login category before the user administration permission check
+- Bug fix: Modifications in function iptc_create, xmp_create, and id3_create in Meta API in order to extract the text ID without the type prefix from the mapping data
+- Bug fix: Function showcompexplorer in UI API did provide thumbnail file name instead of thumbnail image if no individual thumbnail has been created
+- Bug fix: Function manipulateobject did not remove dot of the .off file extension for action "page_rename" and therefore caused the creation of the same object if it has not been published

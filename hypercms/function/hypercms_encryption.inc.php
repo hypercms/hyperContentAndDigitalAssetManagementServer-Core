@@ -52,8 +52,8 @@ function createtempfile ($location, $file, $key="")
 
 // ---------------------- movetempfile -----------------------------
 // function: movetempfile()
-// input: path to file [string], file name [string], delete temp file [true,false] (optional), 
-//        force encryption of file [true,false] (optional), key [string] (optional)
+// input: path to file [string], file name [string], delete temp file [boolean] (optional), 
+//        force encryption of file [boolean] (optional), key [string] (optional)
 // output: input as result array
 
 function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $key="")

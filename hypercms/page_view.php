@@ -155,9 +155,12 @@ if (@substr_count ($follow, "://") > 0 || @substr_count (strtolower ($follow), "
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
+  echo "<div class=\"hcmsWorkplaceFrame\">\n";
   echo "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['you-will-be-forwarded-to'][$lang])." </span>".$follow."<br \>\n";
   echo $add_code;
-  echo "</body>\n</html>";
+  echo "</div>\n";
+  echo "</body>\n";
+  echo "</html>";
   exit;
 }
 // if link refers to a managed object (internal page)
@@ -192,10 +195,13 @@ else
         echo "<script src=\"javascript/click.js\" type=\"text/javascript\">\n";
         echo "</script>\n";
         echo "</head>\n";
-        echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
+        echo "<body class=\"hcmsWorkplaceGeneric\">\n";
+        echo "<div class=\"hcmsWorkplaceFrame\">\n";
         echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-due-to-empty-template-'][$lang])."</p>\n";
         echo getescapedtext ($hcms_lang['the-template-holds-no-information'][$lang]).": '".$templatefile."'\n";
-        echo "</body>\n</html>";
+        echo "</div>\n";
+        echo "</body>\n";
+        echo "</html>";
         exit;
       }
       
@@ -213,8 +219,11 @@ else
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
         echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-due-to-empty-content-container'][$lang])."</p>\n";
+        echo "<div class=\"hcmsWorkplaceFrame\">\n";
         echo getescapedtext ($hcms_lang['the-content-container-holds-no-information'][$lang]).": '".$contentfile."'\n";
-        echo "</body>\n</html>";
+        echo "</div>\n";
+        echo "</body>\n";
+        echo "</html>";
         exit;
       }
     
@@ -230,7 +239,9 @@ else
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
         echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-of-the-object'][$lang])."</p>\n";
+        echo "<div class=\"hcmsWorkplaceFrame\">\n";
         echo getescapedtext ($hcms_lang['an-error-occured-while-creating-the-view'][$lang])."\n";
+        echo "</div>\n";
         echo "</body>\n";
         echo "</html>";
         exit;
@@ -242,9 +253,10 @@ else
         echo $viewstore;
       }
     }
-    // if object is not managed by hyperCMS
+    // if object is locked for user by workflow or is not managed by hyperCMS
     else
     {
+      // -------------------------------------- build view of live page ------------------------------------
       // define forward URL (decprecated for security reasons)
       if ($cat == "page")
       {
@@ -255,8 +267,7 @@ else
         $forwardurl = str_replace ($mgmt_config['abs_path_comp'], $mgmt_config['url_path_comp'], $location).$page;
       }
       else $forwardurl = "";
-           
-      // -------------------------------------- build view of live page ------------------------------------
+
       // if object is not managed by hyperCMS
       echo "<!DOCTYPE html>\n";
       echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
@@ -265,11 +276,14 @@ else
       echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
       echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n"; 
       echo "</head>\n";
-      echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-      echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms-or-you-dont-have-access-to-it'][$lang])."</p><br /><br />\n";
+      echo "<body class=\"hcmsWorkplaceGeneric\">\n";
+      echo "<div class=\"hcmsWorkplaceFrame\">\n";
+      echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms-or-you-dont-have-access-to-it'][$lang])."</p>\n";
+      echo showworkflowstatus ($site, $location, $page);
+      echo "</div>\n";
       echo "</body>\n";
       echo "</html>\n";
-      exit;    
+      exit;
     }
   }
   else
@@ -281,8 +295,10 @@ else
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
     echo "</head>\n";
-    echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
+    echo "<body class=\"hcmsWorkplaceGeneric\">\n";
+    echo "<div class=\"hcmsWorkplaceFrame\">\n";
     echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-object-does-not-exist'][$lang])."</p>\n";
+    echo "</div>\n";
     echo "</body>\n";
     echo "</html>";
     exit;

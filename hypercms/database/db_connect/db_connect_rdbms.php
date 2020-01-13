@@ -329,13 +329,13 @@ function convert_dbcharset ($charset)
 // ------------------------------------------------ create object -------------------------------------------------
 
 // function: rdbms_createobject()
-// input: container ID [integer], object path [string], template name [string], media name [string], content container name [string], user name [string]
+// input: container ID [integer], object path [string], template name [string], media name [string] (optional), content container name [string] (optional), user name [string] (optional), latitude [float] (optional), longitude [float] (optional)
 // output: true / false
 
 // description:
 // Creates a new object in the database.
 
-function rdbms_createobject ($container_id, $object, $template, $media="", $container="", $user="")
+function rdbms_createobject ($container_id, $object, $template, $media="", $container="", $user="", $latitude="", $longitude="")
 {
   global $mgmt_config;
 
@@ -395,12 +395,19 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
     // insert filetype in table media
     $file_ext = strrchr ($object, ".");
     $filetype = getfiletype ($file_ext);
+
+    // GPS coordinates
+    if ((empty ($latitude) || empty ($longitude)) && !empty ($_SESSION['hcms_temp_latitude']) && is_numeric ($_SESSION['hcms_temp_latitude']) && !empty ($_SESSION['hcms_temp_longitude']) && is_numeric ($_SESSION['hcms_temp_longitude']))
+    {
+      $latitude = $_SESSION['hcms_temp_latitude'];
+      $longitude = $_SESSION['hcms_temp_longitude'];
+    } 
         
     // insert values in table container
-    if (!empty ($container) && !empty ($user) && !empty ($_SESSION['hcms_temp_latitude']) && is_numeric ($_SESSION['hcms_temp_latitude']) && !empty ($_SESSION['hcms_temp_longitude']) && is_numeric ($_SESSION['hcms_temp_longitude']))
+    if (!empty ($container) && !empty ($user) && !empty ($latitude) && is_numeric ($latitude) && !empty ($longitude) && is_numeric ($longitude))
     {
       $sql = 'INSERT INTO container (id, container, createdate, date, latitude, longitude, user) ';
-      $sql .= 'VALUES ('.$container_id.', "'.$container.'", "'.$date.'", "'.$date.'", '.floatval($_SESSION['hcms_temp_latitude']).', '.floatval($_SESSION['hcms_temp_longitude']).', "'.$user.'")';
+      $sql .= 'VALUES ('.$container_id.', "'.$container.'", "'.$date.'", "'.$date.'", '.floatval($latitude).', '.floatval($longitude).', "'.$user.'")';
     }
     elseif (!empty ($container) && !empty ($user))
     {
@@ -536,7 +543,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
 
 // function: rdbms_setcontent()
 // input: publication name [string], container ID [integer], content as array in form of array[text-ID]=text-content [array] (optional), type as array in form of array[text-ID]=type [array] (optional), 
-//        user name [string] (optional), save modified date [true,false] (optional), save published date [null,true,false] (optional)
+//        user name [string] (optional), save modified date [boolean] (optional), save published date [null,true,false] (optional)
 // output: true / false
 
 // description:
@@ -819,7 +826,7 @@ function rdbms_setkeywords ($site, $container_id)
 // ----------------------------------------------- set keywords for a publication ------------------------------------------------- 
 
 // function: rdbms_setpublicationkeywords()
-// input: publication name [string], recreate [true,false] (optional)
+// input: publication name [string], recreate [boolean] (optional)
 // output: true / false
 
 // description:
@@ -937,7 +944,7 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
 // ----------------------------------------- set taxonomy for a publication --------------------------------------------
 
 // function: rdbms_setpublicationtaxonomy()
-// input: publication name [string] (optional), recreate [true,false] (optional)
+// input: publication name [string] (optional), recreate [boolean] (optional)
 // output: true / false
 
 // description:
@@ -1190,7 +1197,7 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
 // ------------------------------------------------ get media attributes -------------------------------------------------
 
 // function: rdbms_getmedia()
-// input: container ID [integer], extended media object information [true,false] (optional)
+// input: container ID [integer], extended media object information [boolean] (optional)
 // output: result array with media object details / false on error
 
 // description:
@@ -1236,7 +1243,7 @@ function rdbms_getmedia ($container_id, $extended=false)
 // output: object path array / false
 
 // description:
-// Returns the objects with the same file content as array.
+// Returns the objects with the same file content as array. Objects in the recylce bin are excluded.
 
 function rdbms_getduplicate_file ($site, $md5_hash)
 {
@@ -1251,7 +1258,7 @@ function rdbms_getduplicate_file ($site, $md5_hash)
     $site = $db->rdbms_escape_string ($site);
     
     // get media info
-    $sql = 'SELECT * FROM media INNER JOIN object ON object.id=media.id WHERE md5_hash="'.$md5_hash.'" AND objectpath LIKE "*comp*/'.$site.'/%"';
+    $sql = 'SELECT * FROM media INNER JOIN object ON object.id=media.id WHERE media.md5_hash="'.$md5_hash.'" AND object.objectpath LIKE "*comp*/'.$site.'/%" AND object.deleteuser=""';
 
     $errcode = "50067";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'main');
@@ -1611,7 +1618,7 @@ function rdbms_deletepublicationkeywords ($site)
 // ------------------------------------------ delete taxonomy of a publication --------------------------------------------
 
 // function: rdbms_deletepublicationtaxonomy()
-// input: publication name [string], force delete if taxomoy of publication is disabled [true,false] (optional)
+// input: publication name [string], force delete if taxomoy of publication is disabled [boolean] (optional)
 // output: true / false
 
 // description:
@@ -1670,13 +1677,14 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // input: location [string] (optional), exlude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
 //        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), 
 //        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image color [array] (optional), image-type [portrait,landscape,square] (optional), 
-//        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned, eg. text:Title [array] (optional), count search result entries [true,false] (optional), log search expression [true/false] (optional), taxonomy level to include [integer] (optional)
+//        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned e.g. text:Title [array] (optional), count search result entries [boolean] (optional), 
+//        log search expression [true/false] (optional), taxonomy level to include [integer] (optional), order by for sorting of the result [string] (optional)
 // output: result array with object paths of all found objects / false
 
 // description:
 // Searches one or more expressions in the content of objects which are not in the recycle bin.
 
-function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", $date_from="", $date_to="", $template="", $expression_array="", $expression_filename="", $filesize="", $imagewidth="", $imageheight="", $imagecolor="", $imagetype="", $geo_border_sw="", $geo_border_ne="", $maxhits=300, $return_text_id=array(), $count=false, $search_log=true, $taxonomy_level=2)
+function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", $date_from="", $date_to="", $template="", $expression_array="", $expression_filename="", $filesize="", $imagewidth="", $imageheight="", $imagecolor="", $imagetype="", $geo_border_sw="", $geo_border_ne="", $maxhits=300, $return_text_id=array(), $count=false, $search_log=true, $taxonomy_level=2, $order_by="")
 {
   // user will be provided as global for search expression logging
   global $mgmt_config, $lang, $user;
@@ -1883,6 +1891,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         {
           $temp_expression_2 = "";
           
+          $temp_expression = $db->rdbms_escape_string ($temp_expression);
+
           // escape
           $temp_expression = str_replace ("*", "-hcms_A-", $temp_expression);
           $temp_expression = str_replace ("?", "-hcms_Q-", $temp_expression);
@@ -1897,6 +1907,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           $temp_expression = str_replace ("-hcms_Q-", "?", $temp_expression);
            
           $temp_expression = trim ($temp_expression);
+          $temp_expression = str_replace ("%", '\%', $temp_expression);
+          $temp_expression = str_replace ("_", '\_', $temp_expression);
           $temp_expression = str_replace ("*", "%", $temp_expression);
           $temp_expression = str_replace ("?", "_", $temp_expression);
           if (substr_count ($temp_expression, "%") == 0) $temp_expression = "%".$temp_expression."%";
@@ -1913,10 +1925,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           
           // remove double quotes
           $temp_expression = str_replace ("\"", "", $temp_expression);
-          
-          $temp_expression = $db->rdbms_escape_string ($temp_expression);
-          if (!empty ($temp_expression_2)) $temp_expression_2 = $db->rdbms_escape_string ($temp_expression_2);
-          
+           
           // operator
           if ($temp_operator != "none" && $sql_where['filename'] != "") $sql_where['filename'] .= $temp_operator;
           
@@ -2107,12 +2116,14 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   
                   $synonym_expression = trim ($synonym_expression);
                   $synonym_expression = html_decode ($synonym_expression, convert_dbcharset ($mgmt_config['dbcharset']));
+                  $synonym_expression = $db->rdbms_escape_string ($synonym_expression);
 
+                  // if LIKE query
                   if (strtolower ($mgmt_config['search_query_match']) == "like")
                   {
                     // transform wild card characters for search
                     $synonym_expression = str_replace ("%", '\%', $synonym_expression);
-                    $synonym_expression = str_replace ("_", '\_', $synonym_expression);          
+                    $synonym_expression = str_replace ("_", '\_', $synonym_expression);
                     $synonym_expression = str_replace ("*", "%", $synonym_expression);
                     $synonym_expression = str_replace ("?", "_", $synonym_expression);
                     
@@ -2122,9 +2133,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                     // remove double quotes
                     $synonym_expression = str_replace ("\"", "", $synonym_expression);
                   }
-                  
-                  $synonym_expression = $db->rdbms_escape_string ($synonym_expression);
-                  if (!empty ($synonym_expression_2)) $synonym_expression_2 = $db->rdbms_escape_string ($synonym_expression_2);
 
                   // use OR for synonyms
                   if ($r > 0) $sql_expr_advanced[$i] .= ' OR ';
@@ -2210,7 +2218,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                     foreach ($synonym_array as $synonym_expression)
                     {
                       $synonym_expression = html_decode ($synonym_expression, convert_dbcharset ($mgmt_config['dbcharset']));
+                      $synonym_expression = $db->rdbms_escape_string ($synonym_expression);
 
+                      // if LIKE query
                       if (strtolower ($mgmt_config['search_query_match']) == "like")
                       {
                         // transform wild card characters for search
@@ -2225,9 +2235,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                         // remove double quotes
                         $synonym_expression = str_replace ("\"", "", $synonym_expression);
                       }
-    
-                      $synonym_expression = $db->rdbms_escape_string ($synonym_expression);
-                      if (!empty ($synonym_expression_2)) $synonym_expression_2 = $db->rdbms_escape_string ($synonym_expression_2);
 
                       // operator
                       if ($temp_operator != "none" && $sql_where_textnodes != "") $sql_where_textnodes .= $temp_operator;
@@ -2562,6 +2569,10 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       // add attributes to search query
       if (sizeof ($sql_attr) > 0) $sql_add_attr = ", ".implode (", ", $sql_attr);
     }
+
+    // order by
+    if (empty ($order_by)) $order_by = "obj.objectpath";
+    else $order_by = $db->rdbms_escape_string (trim ($order_by));
     
     // build SQL statement
     $sql = 'SELECT DISTINCT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr .' FROM object AS obj ';
@@ -2570,10 +2581,10 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
     // removed "order by" due to poor DB performance and moved to array sort
     // $sql .= ' ORDER BY SUBSTRING_INDEX(obj.objectpath,"/",-1)';
-    $sql .= 'ORDER BY obj.objectpath';
+    $sql .= 'ORDER BY '.$order_by;
 
-    if (isset ($starthits) && intval($starthits) >= 0 && isset ($endhits) && intval($endhits) > 0) $sql .= ' LIMIT '.intval($starthits).','.intval($endhits);
-    elseif (isset ($maxhits) && intval($maxhits) > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
+    if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $sql .= ' LIMIT '.intval ($starthits).','.intval ($endhits);
+    elseif (isset ($maxhits) && intval ($maxhits) > 0) $sql .= ' LIMIT 0,'.intval ($maxhits);
 
     $errcode = "50082";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -2726,14 +2737,13 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       $expression = $search_expression;
       
       $expression = html_decode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
+      $expression = $db->rdbms_escape_string ($expression);
 
       // transform wild card characters for search
       $expression = str_replace ("%", '\%', $expression);
       $expression = str_replace ("_", '\_', $expression);      
       $expression = str_replace ("*", "%", $expression);
       $expression = str_replace ("?", "_", $expression);
-
-      $expression = $db->rdbms_escape_string ($expression);
 
       $sql_where['textnodes'] = 'tn1.textcontent LIKE _utf8"%'.$expression.'%" COLLATE utf8_bin';
     }    
@@ -2908,7 +2918,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 // ----------------------------------------------- search user ------------------------------------------------- 
 
 // function: rdbms_searchuser()
-// input: publication name [string] (optional), user name [string], max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional)
+// input: publication name [string] (optional), user name [string], max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional)
 // output: objectpath array with hashcode as key and path as value / false
 
 // description:
@@ -3044,7 +3054,7 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
 // ----------------------------------------------- search recipient ------------------------------------------------- 
 
 // function: rdbms_searchrecipient()
-// input: publication name [string], sender user name [string], recpient user name or e-mail address [string], from date [date], to date [date], max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional)
+// input: publication name [string], sender user name [string], recpient user name or e-mail address [string], from date [date], to date [date], max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional)
 // output: objectpath array with hashcode as key and path as value / false
 
 // description:
@@ -3514,7 +3524,7 @@ function rdbms_getobject_id ($object)
 
   if ($object != "")
   {
-    // correct object name 
+    // correct object name
     // if unpublished object
     if (strtolower (strrchr ($object, ".")) == ".off")
     {
@@ -3599,9 +3609,7 @@ function rdbms_getobject_hash ($object="", $container_id="")
     // if object path
     if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0)
     {
-      // correct object name 
-      if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
-      
+      // correct object name
       // if unpublished object
       if (strtolower (strrchr ($object, ".")) == ".off")
       {
@@ -4073,7 +4081,7 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
 // ----------------------------------------------- get deleted objects ------------------------------------------------- 
 
 // function: rdbms_getdeletedobjects()
-// input: user name [string] (optional), older than date [date] (optional), max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [true,false] (optional), return sub items [true,false] (optional)
+// input: user name [string] (optional), older than date [date] (optional), max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional), return sub items [boolean] (optional)
 // output: objectpath array with hashcode as key and path as value / false
 
 // description:
@@ -4722,7 +4730,7 @@ function rdbms_deleterecipient ($recipient_id)
 // ----------------------------------------------- create queue entry -------------------------------------------------
 
 // function: rdbms_createqueueentry()
-// input: action [string], converted object path [string], execution date for the action [YYYY-MM-DD hh:mm], apply for published objects only [true,false], user name [string]
+// input: action [string], converted object path [string], execution date for the action [YYYY-MM-DD hh:mm], apply for published objects only [boolean], user name [string]
 // output: true / false on error
 
 // description:
@@ -5196,7 +5204,7 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
 // ----------------------------------------------- daily statistics -------------------------------------------------
 
 // function: rdbms_insertdailystat()
-// input: activity [string], container ID [integer,array], user name [string] (optional), include all sub objects in a folder if the container ID is not an array [true,false]
+// input: activity [string], container ID [integer,array], user name [string] (optional), include all sub objects in a folder if the container ID is not an array [boolean]
 // output: true / false on error
 
 // description:
