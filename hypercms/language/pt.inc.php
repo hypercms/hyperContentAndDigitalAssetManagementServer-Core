@@ -7,8 +7,9 @@ $hcms_lang_date['pt'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['pt'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['pt'] = "Share";
-$hcms_lang['social-media-sharing']['pt'] = "Social Media sharing";
+$hcms_lang['clipboard']['pt'] = "Prancheta";
+$hcms_lang['share']['pt'] = "Compartilhar";
+$hcms_lang['social-media-sharing']['pt'] = "Compartilhamento de mídia social";
 $hcms_lang['remember-me']['pt'] = "Lembre de mim";
 $hcms_lang['my-recent-tasks']['pt'] = "A minha recente tarefas";
 $hcms_lang['my-recent-objects']['pt'] = "A minha recente objetos";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['pt'] = "Os Objetos";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['pt'] = "Mantenha premida a tecla CTRL-chave: selecionar objetos, clique em";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['pt'] = "Mantenha pressionada a tecla SHIFT-chave: Selecione um grupo de objetos por 2 cliques";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['pt'] = "Pressione as teclas ALT-chave: Mudar para download e links para copiar e colar no e-mails";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['pt'] = "Arrastar e soltar: pressione a tecla CTRL para copiar e a tecla ALT para a cópia conectada";
 $hcms_lang['notify-me']['pt'] = "Notifique-me";
 $hcms_lang['send-to-chat']['pt'] = "Enviar para conversar";
 $hcms_lang['password-is-not-set']['pt'] = "A senha não é definido";

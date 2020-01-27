@@ -19,6 +19,7 @@ require ("function/hypercms_tplengine.inc.php");
 require ("version.inc.php");
 
 
+
 // input parameters
 $action = getrequest ("action");
 $homeboxes = getrequest ("homeboxes");
@@ -72,20 +73,20 @@ $token_new = createtoken ($user);
 <style>
 video#videoScreen
 { 
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    z-index: -100;
-    -ms-transform: translateX(-50%) translateY(-50%);
-    -moz-transform: translateX(-50%) translateY(-50%);
-    -webkit-transform: translateX(-50%) translateY(-50%);
-    transform: translateX(-50%) translateY(-50%);
-    background: url('<?php echo getthemelocation(); ?>/img/backgrd_start.png') no-repeat;
-    background-size: cover; 
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -100;
+  -ms-transform: translateX(-50%) translateY(-50%);
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+  background: url('<?php echo getthemelocation(); ?>/img/backgrd_start.png') no-repeat;
+  background-size: cover; 
 }
 
 @media screen and (max-device-width: 800px)
@@ -256,87 +257,112 @@ function setwallpaper ()
   <?php } ?>
 }
 
-function blurbackground (blur)
+function switchInfo (id)
 {
-  if (blur == true) document.getElementById('startScreen').classList.add('hcmsBlur');
-  else document.getElementById('startScreen').classList.remove('hcmsBlur');
+  var layer_top = document.getElementById(id);
+  var layer_back = document.getElementById('contentScreen');
+  
+  if (layer_top && layer_back)
+  {
+    if (layer_top.style.display == 'none')
+    {
+      // blur
+      layer_back.classList.add('hcmsBlur');
+      // show
+      layer_top.style.display = 'inline';
+      
+    }
+    else
+    {
+      // hide
+      layer_top.style.display = 'none';
+      // remove blur
+      layer_back.classList.remove('hcmsBlur');
+    }
+  }
 }
 </script>
 </head>
 
-<body onload="<?php if (empty ($_SESSION['hcms_temp_latitude']) || empty ($_SESSION['hcms_temp_longitude'])) echo "hcms_geolocation(); "; ?>setwallpaper();">
+<body onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>setwallpaper();">
+
+<!-- image background -->
+<div id="startScreen" class="hcmsStartScreen" style="position:fixed; z-index:-200;">
+</div>
+
+<?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+<!-- video background -->
+<video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation(); ?>/img/backgrd_start.png">
+  <source src="<?php echo $wallpaper; ?>" type="video/mp4">
+</video>
+<?php } ?>
 
 <!-- logo -->
-<div id="logo" style="position:fixed; top:10px; left:10px; z-index:200;">
+<div id="logo" style="position:fixed; top:10px; left:10px; z-index:0">
   <img id="logoimage" src="<?php echo getthemelocation(); ?>img/logo_server.png" style="max-width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>; max-height:100px;" />
 </div>
 
-<?php if (checkrootpermission ('desktop') && checkrootpermission ('desktopsetting')) { ?>
-<!-- plus/minus button -->
-<?php if (!$is_mobile) { ?>
-<div id="plusminus" style="position:fixed; top:12px; right:28px; z-index:200;">
-  <img id="button_plusminus" onClick="hcms_switchInfo('menubox');" class="hcmsButton" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
-</div>
-<?php } ?>
-<!-- add / remove boxes menu -->
-<div id="menubox" class="hcmsHomeBox" style="position:fixed; top:36px; right:25px; z-index:200; display:none;" onmouseover="blurbackground(true);" onmouseout="blurbackground(false);">
-  <form id="box_form" name="box_form" action="" method="post">
-    <input type="hidden" name="action" value="save" />
-    <input type="hidden" name="homeboxes" value="" />
-    <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
-    
-    <table class="hcmsTableStandard">
-      <tr>
-        <td style="vertical-align:top; text-align:left;">
-          <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?></span>
-          <?php
-          // all available home boxes for selection
-          if (is_array ($homebox_array) && sizeof ($homebox_array) > 0)
-          {
-            foreach ($homebox_array as $homebox_key => $homebox_name)
-            {
-              echo "
-              <div onclick=\"insertOption('".$homebox_name."', '".$homebox_key."');\" style=\"display:block; cursor:pointer;\" title=\"".$homebox_name."\"><img src=\"".getthemelocation()."img/log_info.png\" class=\"hcmsIconList\" />&nbsp;".showshorttext($homebox_name, 30)."&nbsp;</div>";
-            }
-          }
-          ?>
-        </td>
-        <td style="vertical-align:top; text-align:left;">
-          <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
-          <select id="box_array" name="box_array" style="width:250px; height:240px;" size="14">
+<?php if (!$is_mobile && checkrootpermission ('desktop') && checkrootpermission ('desktopsetting')) { ?>
+  <!-- plus/minus button -->
+  <div id="plusminus" style="position:fixed; top:12px; right:28px; z-index:200;">
+    <img id="button_plusminus" onClick="switchInfo('menubox');" class="hcmsButton" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
+  </div>
+
+  <!-- add / remove home boxes menu -->
+  <div id="menubox" class="hcmsHomeBox" style="position:fixed; top:36px; right:25px; z-index:200; display:none;">
+    <form id="box_form" name="box_form" action="" method="post">
+      <input type="hidden" name="action" value="save" />
+      <input type="hidden" name="homeboxes" value="" />
+      <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+      
+      <table class="hcmsTableStandard">
+        <tr>
+          <td style="vertical-align:top; text-align:left;">
+            <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?></span>
             <?php
-            // user home boxes
-            if (is_array ($userbox_array) && sizeof ($userbox_array) > 0)
+            // all available home boxes for selection
+            if (is_array ($homebox_array) && sizeof ($homebox_array) > 0)
             {
-              foreach ($userbox_array as $userbox_key => $userbox_name)
+              foreach ($homebox_array as $homebox_key => $homebox_name)
               {
                 echo "
-                <option value=\"".$userbox_key."\">".showshorttext($userbox_name, 40)."</option>";
+                <div onclick=\"insertOption('".$homebox_name."', '".$homebox_key."');\" style=\"display:block; cursor:pointer;\" title=\"".$homebox_name."\"><img src=\"".getthemelocation()."img/log_info.png\" class=\"hcmsIconList\" />&nbsp;".showshorttext($homebox_name, 30)."&nbsp;</div>";
               }
             }
             ?>
-          </select>
-        </td>
-        <td style="text-align:left; vertical-align:middle;">
-          <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                     
-          <img onClick="deleteSelected(document.forms['box_form'].elements['box_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
-          <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
-          <img onclick="submitHomeBoxes();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
           </td>
-      </tr>
-    </table>
-  </form>
-</div>
-<?php } ?>
-
-<div id="startScreen" class="hcmsStartScreen" style="overflow:auto;">
-
-  <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-  <video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation(); ?>/img/backgrd_start.png">
-    <source src="<?php echo $wallpaper; ?>" type="video/mp4">
-  </video>
+          <td style="vertical-align:top; text-align:left;">
+            <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
+            <select id="box_array" name="box_array" style="width:250px; min-height:280px;" size="18">
+              <?php
+              // user home boxes
+              if (is_array ($userbox_array) && sizeof ($userbox_array) > 0)
+              {
+                foreach ($userbox_array as $userbox_key => $userbox_name)
+                {
+                  echo "
+                  <option value=\"".$userbox_key."\">".showshorttext($userbox_name, 40)."</option>";
+                }
+              }
+              ?>
+            </select>
+          </td>
+          <td style="text-align:left; vertical-align:middle;">
+            <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                     
+            <img onClick="deleteSelected(document.forms['box_form'].elements['box_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
+            <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
+            <img onclick="submitHomeBoxes();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+            </td>
+        </tr>
+      </table>
+    </form>
+  </div>
   <?php } ?>
 
+<!-- content -->
+<div id="contentScreen" style="position:fixed; top:0; left:0; right:0; height:100%; overflow:auto; z-index:100; transition:all 0.5s linear;">
+
+  <!-- spacer -->
   <div class="hcmsHomeSpacer" id="homespacer"></div>
 
   <!-- home boxes -->
@@ -351,8 +377,8 @@ function blurbackground (blur)
     }
   }
   ?>
-
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

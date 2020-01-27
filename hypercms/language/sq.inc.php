@@ -7,8 +7,9 @@ $hcms_lang_date['sq'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['sq'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['sq'] = "Share";
-$hcms_lang['social-media-sharing']['sq'] = "Social Media sharing";
+$hcms_lang['clipboard']['sq'] = "Clipboard";
+$hcms_lang['share']['sq'] = "Pjesë";
+$hcms_lang['social-media-sharing']['sq'] = "Ndarja e mediave sociale";
 $hcms_lang['remember-me']['sq'] = "mua më kujtoni";
 $hcms_lang['my-recent-tasks']['sq'] = "Detyra ime të fundit";
 $hcms_lang['my-recent-objects']['sq'] = "Objektet sime të fundit";
@@ -342,9 +343,10 @@ $hcms_lang['view']['sq'] = "Shiko";
 $hcms_lang['views']['sq'] = "Views";
 $hcms_lang['more']['sq'] = "Më shumë";
 $hcms_lang['objects']['sq'] = "Objektet";
-$hcms_lang['hold-ctrl-key-select-objects-by-click']['sq'] = "Mbajë Ctrl-: Zgjidh objekte nga Shkarko";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['sq'] = "Mbajë zhvendosje-kyç: Zgjidh një grup objektesh me 2 klikimeve";
-$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['sq'] = "Press ALT-: Kaloni në shkarko-lidhjet me kopje & Pastë në e-mailet";
+$hcms_lang['hold-ctrl-key-select-objects-by-click']['sq'] = "Mbajë CTRL: Zgjidh objekte nga Shkarko";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['sq'] = "Mbajë SHIFT: Zgjidh një grup objektesh me 2 klikimeve";
+$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['sq'] = "Mbajë ALT: Kaloni në shkarko-lidhjet me kopje & Pastë në e-mailet";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['sq'] = "Drag and drop: Shtypni tastin CTRL për kopje dhe tastin ALT për polic të lidhur";
 $hcms_lang['notify-me']['sq'] = "Me njofto";
 $hcms_lang['send-to-chat']['sq'] = "Dergo në chat";
 $hcms_lang['password-is-not-set']['sq'] = "Fjalëkalimi nuk është përcaktuar";

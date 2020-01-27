@@ -720,5 +720,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 <?php } ?>
 
 </div>
+
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

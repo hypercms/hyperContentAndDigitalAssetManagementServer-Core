@@ -233,10 +233,10 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
       $listview .= "
             <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
               <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
-                <input id=\"login\" type=\"hidden\" value=\"".$object_array['login'][$key]."\">
                 <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">&nbsp; 
-                  <img src=\"".getthemelocation()."img/user.png\" class=\"hcmsIconList\" /> ".
-                  $object_array['login'][$key]."&nbsp;
+                  <a data-objectpath=\"".$object_array['login'][$key]."\" data-href=\"javascript:void(0);\">
+                    <img src=\"".getthemelocation()."img/user.png\" class=\"hcmsIconList\" /> ".$object_array['login'][$key]."&nbsp;
+                  </a>
                 </div>
               </td>
               <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['name'][$key]."</span></td>";
@@ -296,7 +296,7 @@ function buttonaction (action)
 {
   multiobject = document.forms['contextmenu_user'].elements['multiobject'].value;
   object = document.forms['contextmenu_user'].elements['login'].value;
-  
+
   if (action == "edit" && object != "") return true;
   else if (action == "delete" && object != "") return true;
   else return false;
@@ -335,6 +335,7 @@ function initalize ()
 <!-- select area --> 
 <div id="selectarea" class="hcmsSelectArea"></div>
 
+<!-- context menu -->
 <div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_user" method="post" action="" target="">
     <input type="hidden" name="contextmenustatus" value="" />
@@ -347,7 +348,7 @@ function initalize ()
     <input type="hidden" name="login" value="" />
     <input type="hidden" name="multiobject" value="" />
     <input type="hidden" name="token" value="" />
-    
+
     <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
       <tr>
         <td>
@@ -429,6 +430,7 @@ else
 <script type="text/javascript">
 initalize();
 </script>
-  
+
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

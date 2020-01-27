@@ -51,7 +51,7 @@ function closePopup ()
 </script>
 </head>
 
-<body style="width:100%; height:100%; margin:0; padding:0;">
+<body>
 
   <!-- popup for preview/live-view (do not used nested fixed positioned div-layers due to MS IE and Edge issue) --> 
   <div id="objectviewLayer" style="display:none;">

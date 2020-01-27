@@ -7,8 +7,9 @@ $hcms_lang_date['th'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['th'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['th'] = "Share";
-$hcms_lang['social-media-sharing']['th'] = "Social Media sharing";
+$hcms_lang['clipboard']['th'] = "คลิปบอร์ด";
+$hcms_lang['share']['th'] = "หุ้น";
+$hcms_lang['social-media-sharing']['th'] = "การแชร์โซเชียลมีเดีย";
 $hcms_lang['remember-me']['th'] = "จดจำฉัน";
 $hcms_lang['my-recent-tasks']['th'] = "งานของผมเมื่อไม่นานมานี้";
 $hcms_lang['my-recent-objects']['th'] = "วัตถุของผมเมื่อไม่นานมานี้";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['th'] = "ออบเจกต์";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['th'] = "กดค้างที่ Ctrl - คีย์ให้เลือกวัตถุโดยคลิก";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['th'] = "กดค้างที่ Shift - คีย์ให้เลือกกลุ่มของวัตถุโดย 2 เสียงคลิก";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['th'] = "กดปุ่ม Alt และปุ่มเปิดสวิตช์เพื่อดาวน์โหลด - L เพื่อคัดลอกและวางลงในอีเมล";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['th'] = "ลากและวาง: กดปุ่ม CTRL เพื่อคัดลอกและปุ่ม ALT สำหรับตำรวจที่เชื่อมต่อ";
 $hcms_lang['notify-me']['th'] = "แจ้งให้ฉัน";
 $hcms_lang['send-to-chat']['th'] = "ส่งการ Chat";
 $hcms_lang['password-is-not-set']['th'] = "รหัสผ่านไม่ได้ตั้งค่า";

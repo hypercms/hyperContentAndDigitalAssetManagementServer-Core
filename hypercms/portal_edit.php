@@ -239,12 +239,12 @@ function setwallpaper ()
 {
   // set background image
   <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
-  document.getElementById('homeScreen').style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
+  document.getElementById('homeScreen').style.backgroundImage = "url('<?php echo $wallpaper; ?>?ts=<?php echo time(); ?>')";
   return true;
   <?php } elseif (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
   if (html5support())
   {
-    document.getElementById('videoScreen').src = "<?php echo $wallpaper; ?>";
+    document.getElementById('videoScreen').src = "<?php echo $wallpaper; ?>?ts=<?php echo time(); ?>";
   }
   return true;
   <?php } else { ?>
@@ -598,5 +598,6 @@ table.TableNarrow th, table.TableNarrow td
 
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

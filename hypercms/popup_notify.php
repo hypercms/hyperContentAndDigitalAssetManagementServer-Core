@@ -243,5 +243,6 @@ if (is_array ($notify_array)) echo "&nbsp;".getescapedtext ($hcms_lang['remove-s
 ?>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

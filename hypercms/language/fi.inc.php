@@ -7,8 +7,9 @@ $hcms_lang_date['fi'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['fi'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['fi'] = "Share";
-$hcms_lang['social-media-sharing']['fi'] = "Social Media sharing";
+$hcms_lang['clipboard']['fi'] = "Leikepöydälle";
+$hcms_lang['share']['fi'] = "Jaa";
+$hcms_lang['social-media-sharing']['fi'] = "Sosiaalisen median jakaminen";
 $hcms_lang['remember-me']['fi'] = "Muista minut";
 $hcms_lang['my-recent-tasks']['fi'] = "Minun viimeisimmät tehtävät";
 $hcms_lang['my-recent-objects']['fi'] = "Viimeisimmät kohteet";
@@ -343,8 +344,9 @@ $hcms_lang['views']['fi'] = "Luettu";
 $hcms_lang['more']['fi'] = "Enemmän";
 $hcms_lang['objects']['fi'] = "Kohteet";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['fi'] = "Pidä CTRL-näppäin: Valitse kohteet valitsemalla";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['fi'] = "Pidä Shift-näppäintä: Valitse ryhmä kohteet 2 kertaa";
-$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['fi'] = "Paina Alt-näppäin: paina katkaisin lataa linkkejä kopioi ja liitä ne sähköpostit";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['fi'] = "Pidä SHIFT-näppäintä: Valitse ryhmä kohteet 2 kertaa";
+$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['fi'] = "Paina ALT-näppäin: paina katkaisin lataa linkkejä kopioi ja liitä ne sähköpostit";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['fi'] = "Vedä ja pudota: Paina CTRL-näppäintä kopioidaksesi ja ALT-näppäintä kytkettyä kopioita varten";
 $hcms_lang['notify-me']['fi'] = "Ilmoita";
 $hcms_lang['send-to-chat']['fi'] = "Lähetä jos haluat keskustella";
 $hcms_lang['password-is-not-set']['fi'] = "Salasanaa ei ole määritetty";

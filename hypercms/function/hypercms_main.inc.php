@@ -270,7 +270,7 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
 
 // description:
 // Tests if an expression includes special characters (true) or does not (false).
-// Allows you to accept characters through including it into $accept (e.g. #$...)
+// Allow characters through including them in $accept (e.g. #$...)
 
 function specialchr ($expression, $accept="")
 {
@@ -1340,8 +1340,8 @@ function correctfile ($abs_path, $filename, $user="")
     // add slash if not present at the end of the location string
     if (substr ($abs_path, -1) != "/") $abs_path = $abs_path."/";
 
-    // create valid file name
-    $filename = createfilename ($filename);
+    // create valid file name if container file is not locked by a user (this would mean the correct container file name has been provided)
+    if (strpos ($filename, ".@") < 1) $filename = createfilename ($filename);
 
     // deconvert path
     if (substr_count ($abs_path , "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
@@ -2339,8 +2339,7 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
 
   if (!empty ($multiobject) && is_array ($multiobject) && (($type == "al" && valid_objectname ($login)) || $type == "dl"))
   {
-    // check if object is folder or page/component
-    if (!is_array ($multiobject) && substr_count ($multiobject, "|") > 0)
+    if (!is_array ($multiobject))
     {
       // split multiobject into array
       $multiobject = link_db_getobject ($multiobject);
@@ -2402,9 +2401,10 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
 // description:
 // Generates a download link of a single media file, folder or multi objects.
 // Priority if multiple input parameters for media file, folder or multi objects are given:
-// 1st...multi objects
-// 2nd...media file
-// 3rd...folder
+// 1st...multi object (min. 2 objects or object is a folder)
+// 2nd...multiobject with only one object (must not be a folder)
+// 3rd...media file
+// 4th...folder
 
 function createmultidownloadlink ($site, $multiobject="", $media="", $location="", $name="", $user, $type="", $mediacfg="", $linktype="download", $flatzip=false)
 {
@@ -2416,21 +2416,17 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
     if (substr ($location, -1) != "/") $location = $location."/"; 
 
     // deconvert path
-    $location = deconvertpath ($location, "file"); 
+    $location = deconvertpath ($location, "file");
 
-    // multiobject is array
-    if (is_array ($multiobject))
-    {
-      $multiobject_array = $multiobject;
-    }
-    // split multiobject into array
-    elseif ($multiobject != "" && substr_count ($multiobject, "|") > 0)
-    {
-      $multiobject_array = link_db_getobject ($multiobject);
-    }
+    // get multiobject array
+    $multiobject_array = link_db_getobject ($multiobject);
 
-    // download zip-file for multiobjects
-    if (!empty ($multiobject_array) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 0)
+    // get first object reference
+    if (is_array ($multiobject_array)) $firstobject = reset ($multiobject_array);
+    else $firstobject = false;
+
+    // CASE 1: download zip-file for multiobjects (must include at least 2 objects) or a folder
+    if (!empty ($multiobject_array) && is_array ($multiobject_array) && (sizeof ($multiobject_array) > 1 || is_folder ($firstobject)))
     {
       // check permissions (only if a publication and location has been provided as path)
       if (!empty ($mgmt_config['api_checkpermission']))
@@ -2480,15 +2476,35 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
         $name = $media_info['name'];
       }
       else $name = "Download.zip";
+
+      // reset the additional parameters for conversion (not supported)
+      $type = "";
+      $mediacfg = "";
     }
-    // for a single file
+    // CASE 2:  treat a single multiobject like a media object
+    elseif (!empty ($multiobject_array) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 0)
+    {
+      // get first object reference
+      $object = reset ($multiobject_array);
+
+      // get object info
+      $objectinfo = getobjectinfo ($site, getlocation ($object), getobject ($object));
+
+      if (!empty ($objectinfo['media']))
+      {
+        $result_zip = true;
+        // multimedia file (publication/file)
+        $media = $site."/".$objectinfo['media'];
+      }
+    }
+    // CASE 3: for a single file
     elseif (trim ($media) != "")
     {
       $result_zip = true;
       // multimedia file (publication/file)
       $media = $site."/".$media;
     }
-    // download zip-file for single folder
+    // CASE 4: download zip-file for single folder
     elseif (is_dir ($location))
     {
       // check permissions (only if a publication and location has been provided)
@@ -2535,6 +2551,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
       $name = $media_info['name'];
     }
 
+    // additional parameters for conversion
     $add = "";
     if ($type) $add .= '&type='.url_encode($type);
     if ($mediacfg) $add .= '&mediacfg='.url_encode($mediacfg);
@@ -2738,7 +2755,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   $location = deconvertpath ($location, "file");
 
   // create valid file name
-  $page = createfilename ($page);
+  if (strpos ($page, ".@") > 1) $page = createfilename ($page);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($container_version) && strpos ($container_version, ".v_") > 0)
   {
@@ -2895,6 +2912,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
 
             // create preview (thumbnail for images, previews for video/audio files)
             createmedia ($site, $thumbdir, $thumbdir, $mediafile_current, "", "origthumb");
+            
             // reindex
             indexcontent ($site, $thumbdir, $mediafile_current, $container_id, "", $user);
           }
@@ -4680,14 +4698,20 @@ function loadcontainer ($container, $type="work", $user)
     // if container id
     if (!empty ($container_id) && is_numeric ($container_id))
     { 
-      if (strpos ($container, ".xml.wrk") > 0)
+      // load container using the provided file name
+      if ($type == "version")
       {
-        if ($type == "published") $container = $container_id.".xml";
+        $container = trim ($container);
+      }
+      // if working container name has been provided bu
+      elseif (strpos ($container, ".xml.wrk") > 0)
+      {
+        if ($type == "published") $container = trim ($container_id).".xml";
       }
       else
       {
-        if ($type == "published") $container = $container_id.".xml";
-        elseif ($type == "work") $container = $container_id.".xml.wrk";
+        if ($type == "published") $container = trim ($container_id).".xml";
+        elseif ($type == "work") $container = trim ($container_id).".xml.wrk";
       }
 
       // container location
@@ -4701,7 +4725,7 @@ function loadcontainer ($container, $type="work", $user)
       {
         $contentdata = loadfile ($location, $container_info['container']);
       }
-      // load unlocked container
+      // load unlocked container or provided container version
       elseif (is_file ($location.$container))
       {
         $contentdata = loadfile ($location, $container);
@@ -4712,7 +4736,7 @@ function loadcontainer ($container, $type="work", $user)
         $contentdata = loadfile ($location, $container.".@".$user);
       }
       // working container is not locked and is missing -> restore container
-      elseif (empty ($container_info['user']) && $type == "work" && is_file ($location.$container_id.".xml"))
+      elseif (empty ($container_info['user']) && $type == "work" && is_file ($location.$container_id.".xml") && !is_file ($location.$container_id.".xml.wrk"))
       {
         // try to restore working from live container
         $result_copy = copy ($location.$container_id.".xml", $location.$container_id.".xml.wrk");
@@ -4731,7 +4755,7 @@ function loadcontainer ($container, $type="work", $user)
         }
       }
       // live/published container is missing -> restore container
-      elseif ($type == "published" && is_file ($location.$container_id.".xml.wrk"))
+      elseif ($type == "published" && is_file ($location.$container_id.".xml.wrk") && !is_file ($location.$container_id.".xml"))
       {
         // try to restore live from working container
         $result_copy = copy ($location.$container_id.".xml.wrk", $location.$container_id.".xml");
@@ -10884,7 +10908,7 @@ function collectfolders ($site, $location, $folder)
   global $user, $mgmt_config, $hcms_lang, $lang;
  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder))
-  { 
+  {
     // set folder 
     $folder_array[] = $site."|".$location."|".$folder;
 
@@ -14413,6 +14437,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           rdbms_renameobject (convertpath ($site, $location_source.$page, $cat), convertpath ($site, $location.$page, $cat)); 
         }
 
+        // copy object file (foler must have been created by function copyfolders before)
         $test = copy ($location_source.$page, $location.$page);
 
         if ($test == true)
@@ -15309,18 +15334,21 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
     // save clipboard
     if (is_array ($clipboard) && sizeof ($clipboard) > 0)
     {
+      // remove duplicates
+      $clipboard = array_unique ($clipboard);
+
       // add entries to clipboard
       if ($clipboard_session == true) $_SESSION['hcms_temp_clipboard'] = $clipboard;
 
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
 
       $error_switch = "no";
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";
     }
 
     // eventsystem
@@ -15427,18 +15455,21 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
       // save clipboard
       if (is_array ($clipboard) && sizeof ($clipboard) > 0)
       {
+        // remove duplicates
+        $clipboard = array_unique ($clipboard);
+
         // add entries to clipboard
         if ($clipboard_session == true) $_SESSION['hcms_temp_clipboard'] = $clipboard;
 
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
 
         $error_switch = "no"; 
       }
       else
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";
       }
 
       // eventsystem
@@ -15515,7 +15546,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
-      if (empty ($setlocalpermission['root']) || (!is_folder ($location.$page) && (empty ($setlocalpermission['rename']) || empty ($setlocalpermission['create']))) || (is_folder ($location.$page) && (empty ($setlocalpermission['folderrename']) || empty ($setlocalpermission['foldercreate']))))
+      if (empty ($setlocalpermission['root']) || (!is_folder ($location.$page) && empty ($setlocalpermission['rename'])) || (is_folder ($location.$page) && empty ($setlocalpermission['folderrename'])))
       {
         $result = array();
         $result['result'] = false;
@@ -15548,18 +15579,21 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
       // save clipboard
       if (is_array ($clipboard) && sizeof ($clipboard) > 0)
       {
+        // remove duplicates
+        $clipboard = array_unique ($clipboard);
+
         // add entries to clipboard
         if ($clipboard_session == true) $_SESSION['hcms_temp_clipboard'] = $clipboard;
 
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
 
         $error_switch = "no"; 
       }
       else
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";
       }
 
       // eventsystem
@@ -15621,6 +15655,7 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
         return $result;
       }
     }
+
     // check location (only components of given publication are allowed)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
     {
@@ -17160,7 +17195,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
 
 // description:
 // This function is used to perform actions on multiple objects and is mainly used by popup_status.php.
-// This functions should only be used in connection with the GUI of the system.
+// This function should only be used in connection with the GUI of the system.
 
 function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user, $tempfile="", $maxitems=10)
 {
@@ -17198,7 +17233,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
     $action = "delete";
   }
 
-  // get object pathes from the session if is not set
+  // get object pathes from the session if it is not set
   if (!is_array ($objectpath_array) && (isset ($_SESSION['clipboard_multiobject']) && is_array ($_SESSION['clipboard_multiobject']))) $objectpath_array = $_SESSION['clipboard_multiobject'];
 
   if ((!isset ($rootpathdelete_array) || !is_array ($rootpathdelete_array)) && (isset ($_SESSION['clipboard_rootpathdelete']) && is_array ($_SESSION['clipboard_rootpathdelete']))) $rootpathdelete_array = $_SESSION['clipboard_rootpathdelete'];
@@ -17341,29 +17376,40 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
                           if (is_dir ($location.$object)) $location_dest = $location.$object."/";
                           else $location_dest = $location;
 
-                          $result = copyfolders ($site, $location_source, $location_dest, $object_source, $user);
-
-                          if ($result['result'] == false)
+                          // if the cutted folder will be pasted in the source location
+                          if ($method == "cut" && is_dir ($location_source.$object_source) && substr_count ($location_dest, $location_source.$object_source."/") > 0)
                           {
+                            $result['result'] = false;
+                            $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['it-is-not-possible-to-cut-and-paste-objects-in-the-same-destination'][$lang]."</span><br />\n";
                             return $result;
-                          } 
+                          }
+                          // on success
                           else
                           {
-                            $rootpathold_array[$j] = convertpath ($site_source, $result['rootlocationold'], $cat).$result['rootfolderold']."/";
-                            $rootpathnew_array[$j] = convertpath ($site_source, $result['rootlocationnew'], $cat).$result['rootfoldernew']."/";
-      
-                            if ($method == "cut")
+                            $result = copyfolders ($site, $location_source, $location_dest, $object_source, $user);
+
+                            if ($result['result'] == false)
                             {
-                              $rootpathdelete_array[$j] = $rootpathold_array[$j];
-                            }      
-                          } 
+                              return $result;
+                            }
+                            else
+                            {
+                              $rootpathold_array[$j] = convertpath ($site_source, $result['rootlocationold'], $cat).$result['rootfolderold']."/";
+                              $rootpathnew_array[$j] = convertpath ($site_source, $result['rootlocationnew'], $cat).$result['rootfoldernew']."/";
+
+                              if ($method == "cut")
+                              {
+                                $rootpathdelete_array[$j] = $rootpathold_array[$j];
+                              }
+                            }
+                          }
                         }
                         // if object_source is a file then define rootlocation and rootfolders from given objectpath and clipboard
                         // the destination location (new) must be the same for all collection entries
                         else
                         { 
                           $rootpathold_array[$j] = convertpath ($site_source, $location_source, $cat);
-    
+
                           if (is_dir ($location.$object)) $rootpathnew_array[$j] = convertpath ($site_source, $location.$object."/", $cat); // fixed for all collection entries
                           else $rootpathnew_array[$j] = convertpath ($site_source, $location, $cat); 
                         }
@@ -17532,7 +17578,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               else 
               {
                 $errcode = "20110";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|pasteobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|pasteobject failed for ".$location_source_esc.$object_source;
                 break;
               } 
             }
@@ -17555,7 +17601,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
         // define temp file name
         if ($tempfile == "") $tempfile = uniqid().".coll.dat";
 
-        // go on 
+        // continue
         if (strlen ($collection) > 0) 
         {
           savefile ($mgmt_config['abs_path_temp'], $tempfile, $collection);
@@ -17596,8 +17642,8 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
           if ($objectpath != "")
           {
             $site = getpublication ($objectpath); 
-            $folder = getobject ($objectpath); // could be a file or a folder
-            $location = getlocation ($objectpath);  // location without folder&nbsp;&nbsp;
+            $folder = getobject ($objectpath); // could be a object file or a folder
+            $location = getlocation ($objectpath);  // location without folder
             $location = deconvertpath ($location, "file");
 
             if (valid_publicationname ($site) && valid_locationname ($location) && $folder != "" && is_dir ($location.$folder))
@@ -17606,6 +17652,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               if (isset ($eventsystem['ondeletefolder_pre']) && $eventsystem['ondeletefolder_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
                 ondeletefolder_pre ($site, $cat, $location, $folder, $user);
     
+              // remove all in the root folder
               $test['result'] = deletefile ($location, $folder, true);
 
               // remote client
@@ -17634,6 +17681,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
  
             if (valid_locationname ($location) && $folder != "" && is_dir ($location.$folder))
             {
+              // remove all in the root folder
               $test['result'] = deletefile ($location, $folder, true);
 
               if ($test['result'] == true)
@@ -19105,6 +19153,9 @@ function createfavorite ($site="", $location="", $page="", $id="", $user)
       if (getsession ("hcms_portal"))
       {
         $_SESSION['hcms_favorites'][$object_id] = $object_id;
+
+        // write session data for load balacing
+        writesessiondata ();
 
         return true;
       }

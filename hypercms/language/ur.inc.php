@@ -7,8 +7,9 @@ $hcms_lang_date['ur'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ur'] = "rtl";
 
 // Text for hyperCMS
-$hcms_lang['share']['ur'] = "Share";
-$hcms_lang['social-media-sharing']['ur'] = "Social Media sharing";
+$hcms_lang['clipboard']['ur'] = "کلپ بورڈ";
+$hcms_lang['share']['ur'] = "بانٹیں";
+$hcms_lang['social-media-sharing']['ur'] = "سوشل میڈیا شیئرنگ";
 $hcms_lang['remember-me']['ur'] = "مجھے پہچانتے ہو";
 $hcms_lang['my-recent-tasks']['ur'] = "میری حالیہ والو";
 $hcms_lang['my-recent-objects']['ur'] = "میری حالیہ اسکرو";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['ur'] = "ایسا گھر جسکو ایسا";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['ur'] = "ctrl کرانے سے مستشنی اسکرو کی اہم: کلک کریں";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['ur'] = "ٹھیرو کرتی اور اہم: انتخاب سے ایسا گھر جسکو ایسا گروپ کے 2 اﮔر ۤپ ﮐﯽ‬ ‫ا‬";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['ur'] = "پریس کاپی رائٹ کے اہم معلومات: سوئچ کو کاپی کرنے سے رابطے &(; گلابہ میں";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['ur'] = "ڈریگ اینڈ ڈراپ: کاپی کیلئے سی ٹی آر ایل کی کلید اور متصل پولیس اہلکار کے لئے ALT کی کو دبائیں";
 $hcms_lang['notify-me']['ur'] = "مجھے خبردینا";
 $hcms_lang['send-to-chat']['ur'] = "بھیجنے سے بات چیت";
 $hcms_lang['password-is-not-set']['ur'] = "password قائم نہیں ہے";

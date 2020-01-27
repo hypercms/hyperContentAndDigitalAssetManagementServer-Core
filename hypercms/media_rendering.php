@@ -932,5 +932,6 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
   <?php echo $playercode; ?>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

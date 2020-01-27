@@ -7,8 +7,9 @@ $hcms_lang_date['ar'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ar'] = "rtl";
 
 // Text for hyperCMS
+$hcms_lang['clipboard']['ar'] = "الحافظة";
 $hcms_lang['share']['ar'] = "تقاسم";
-$hcms_lang['social-media-sharing']['ar'] = "Social Media sharing";
+$hcms_lang['social-media-sharing']['ar'] = "تقاسم وسائل الاعلام الاجتماعية";
 $hcms_lang['remember-me']['ar'] = "تذكرنى";
 $hcms_lang['my-recent-tasks']['ar'] = "المهام الاخيرة";
 $hcms_lang['my-recent-objects']['ar'] = "الأشياء الأخيرة";
@@ -344,6 +345,7 @@ $hcms_lang['objects']['ar'] = "أشياء";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['ar'] = "اضغط باستمرار مفتاح CTRL: تحديد الأشياء من فوق";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['ar'] = "اضغط باستمرار مفتاح Shift: حدد مجموعة من الأجسام يستقر من 2";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['ar'] = "اضغط مفتاح Alt ومفتاح: التبديل إلى تحميل الروابط على نسخ & لصق في رسائل البريد الإلكتروني";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['ar'] = "السحب والإفلات: اضغط على المفتاح CTRL للنسخ ومفتاح ALT للشرطي المتصل";
 $hcms_lang['notify-me']['ar'] = "إعلامي";
 $hcms_lang['send-to-chat']['ar'] = "إرسال الدردشة";
 $hcms_lang['password-is-not-set']['ar'] = "لم يتم تعيين كلمة مرور";

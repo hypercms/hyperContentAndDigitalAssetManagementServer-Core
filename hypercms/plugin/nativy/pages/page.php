@@ -493,13 +493,14 @@ function checkForm()
     <input type="text" name="vatnumber" id="vatnumber" value="<?php echo $vatnumber; ?>" maxlength="20" style="width:300px;" /><br/>
     <label for="phone">Phone</label><br/>
     <input type="text" name="phone" id="phone" value="<?php echo $phone; ?>" maxlength="20" style="width:300px;" /><br/>
-    <labe for="password">Password*</label><br/>
+    <label for="password">Password*</label><br/>
     <input type="text" name="password" id="password" value="<?php echo $password; ?>" maxlength="80" style="width:300px;" /><br/>    
     <label><input type="checkbox" name="terms" id="terms" value="1" />* I have read and agree to the <a href="https://www.nativy.com/information/terms#client" target="_blank">terms of use</a>.</label><br/><br/>
     <button type="button" class="hcmsButtonGreen" onclick="checkForm()">Save and continue</button>
   </form>
 </div>
 
+<?php include_once ($mgmt_config['abs_path_cms']."include/footer.inc.php"); ?>
 </body>
 </html>
 <?php

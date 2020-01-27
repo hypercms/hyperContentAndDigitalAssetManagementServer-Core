@@ -27,7 +27,7 @@ $setoff = 40;
 
 if ($screenwidth > (2560 + $setoff)) $width = 2560;
 elseif ($screenwidth > (1920 + $setoff)) $width = 1920;
-elseif ($screenwidth > (800 + $setoff)) $width = 800;
+elseif ($screenwidth > (1024 + $setoff)) $width = 1024;
 elseif ($screenwidth > (640 + $setoff)) $width = 640;
 else $width = ceil ($screenwidth - $setoff);
 
@@ -35,7 +35,7 @@ $setoff = 60;
 
 if ($screenheight > (1440 + $setoff)) $height = 1440;
 elseif ($screenheight > (1080 + $setoff)) $height = 1080;
-elseif ($screenheight > (600 + $setoff)) $height = 600;
+elseif ($screenheight > (768 + $setoff)) $height = 768;
 elseif ($screenheight > (480 + $setoff)) $height = 480;
 else $height = ceil ($screenheight - $setoff);
 
@@ -163,56 +163,81 @@ function setscreensize (size)
 
 function rotate ()
 {
-  // get width and height of container
-  var mediawidth = document.getElementById('objectcontainer').offsetWidth;
-  var mediaheight = document.getElementById('objectcontainer').offsetHeight;
-  var iframe = document.getElementById('objectcontainer');
-
-  if (iframe && mediawidth > 0 && mediaheight > 0)
+  if (document.getElementById('objectcontainer'))
   {
-    // switch
-    iframe.style.width = mediaheight + 'px';
-    iframe.style.height = mediawidth + 'px';
-    
-    centercontainer();
+    // get width and height of container
+    var mediawidth = document.getElementById('objectcontainer').offsetWidth;
+    var mediaheight = document.getElementById('objectcontainer').offsetHeight;
+    var iframe = document.getElementById('objectcontainer');
+
+    if (iframe && mediawidth > 0 && mediaheight > 0)
+    {
+      // switch
+      iframe.style.width = mediaheight + 'px';
+      iframe.style.height = mediawidth + 'px';
+      
+      centercontainer();
+    }
   }
-  else return false;
+  else
+  {
+    var iframe = document.getElementById('objectcontainer');
+
+    if (iframe)
+    {
+      iframe.style.width = '90%';
+      iframe.style.height = '90%';
+    }
+  }
 }
 
 function centercontainer ()
 {
-  // get width and height of container
-  var mediawidth = document.getElementById('objectcontainer').offsetWidth;
-  var mediaheight = document.getElementById('objectcontainer').offsetHeight;
-  
-  <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) { ?>
-  // correct size of audio player
-  if (mediawidth < 300 || mediaheight < 60)
+  if (document.getElementById('objectcontainer'))
   {
-    mediawidth = 320;
-    mediaheight = 320;
-  }
-  <?php } ?>
+    // get width and height of container
+    var mediawidth = document.getElementById('objectcontainer').offsetWidth;
+    var mediaheight = document.getElementById('objectcontainer').offsetHeight;
+    
+    <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) { ?>
+    // correct size of audio player
+    if (mediawidth < 300 || mediaheight < 60)
+    {
+      mediawidth = 320;
+      mediaheight = 320;
+    }
+    <?php } ?>
 
-  // screen width and height
-  var screenwidth = <?php if ($screenwidth > 0) echo $screenwidth; else echo 800; ?>;
-  var screenheight = <?php if ($screenheight > 0) echo $screenheight; else echo 600; ?>;
-  
-  // calculate margins
-  var marginleft = Math.floor((screenwidth - mediawidth) / 2);
-  var margintop = Math.floor((screenheight - mediaheight) / 2);
-  
-  // set margins
-  if (marginleft > 0) document.getElementById('container').style.marginLeft = marginleft+"px";
-  else document.getElementById('container').style.marginLeft = "10px";
-  
-  if (margintop > 0) document.getElementById('container').style.marginTop = margintop+"px";
-  else document.getElementById('container').style.marginTop = "30px";
-  
-  document.getElementById('container').style.marginRight = "0px";
-  document.getElementById('container').style.marginBottom = "0px";
-  
-  // load screen
+    // screen width and height
+    var screenwidth = <?php if ($screenwidth > 0) echo $screenwidth; else echo 800; ?>;
+    var screenheight = <?php if ($screenheight > 0) echo $screenheight; else echo 600; ?>;
+    
+    // calculate margins
+    var marginleft = Math.floor((screenwidth - mediawidth) / 2);
+    var margintop = Math.floor((screenheight - mediaheight) / 2);
+    
+    // set margins
+    if (marginleft > 0) document.getElementById('container').style.marginLeft = marginleft+"px";
+    else document.getElementById('container').style.marginLeft = "10px";
+    
+    if (margintop > 0) document.getElementById('container').style.marginTop = margintop+"px";
+    else document.getElementById('container').style.marginTop = "30px";
+    
+    document.getElementById('container').style.marginRight = "0px";
+    document.getElementById('container').style.marginBottom = "0px";
+  }
+  else
+  {
+    var iframe = document.getElementById('objectcontainer');
+
+    if (iframe)
+    {
+      iframe.style.width = '90%';
+      iframe.style.height = '90%';
+    }
+  }
+
+  // hide load screen
   if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display = 'none';
 }
 
@@ -332,17 +357,18 @@ hr
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:none;"></div>
 
 <!-- object view -->
-<div id="previous" style="display:none; position:fixed; top:60px; left:0px; bottom:20px; width:25%; text-align:right; z-index:20; cursor:pointer;" onclick="previousObject('<?php echo $location_esc.$page; ?>');">
-  <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="position:absolute; top:50%; left:20px;" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" />
+<div id="previous" style="display:none; position:fixed; top:50%; left:0px; width:64px; height:64px; text-align:right; z-index:20; cursor:pointer;" onclick="previousObject('<?php echo $location_esc.$page; ?>');">
+  <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="margin:16px;" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" />
 </div>
 
-<div id="container" style="position:fixed; top:0px; left:0px; margin:-1900px 0px 0px 0px; z-index:10;">
+<div id="container" style="position:fixed; top:0px; left:0px; width:90%; height:90%; margin:-1900px 0px 0px 0px; z-index:10;">
   <?php if (!empty ($objectview)) echo $objectview; ?>
 </div>
 
-<div id="next" style="display:none; position:fixed; top:60px; right:0px; bottom:20px; width:25%; text-align:right; z-index:20; cursor:pointer;" onclick="nextObject('<?php echo $location_esc.$page; ?>');">
-  <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="position:absolute; top:50%; right:20px;" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
+<div id="next" style="display:none; position:fixed; top:50%; right:0px; width:64px; height:64px; text-align:right; z-index:20; cursor:pointer;" onclick="nextObject('<?php echo $location_esc.$page; ?>');">
+  <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="margin:16px;" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
-  
+
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

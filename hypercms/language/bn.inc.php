@@ -7,8 +7,9 @@ $hcms_lang_date['bn'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['bn'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['bn'] = "Share";
-$hcms_lang['social-media-sharing']['bn'] = "Social Media sharing";
+$hcms_lang['clipboard']['bn'] = "ক্লিপবোর্ড";
+$hcms_lang['share']['bn'] = "ভাগ";
+$hcms_lang['social-media-sharing']['bn'] = "সোশ্যাল মিডিয়া শেয়ারিং";
 $hcms_lang['remember-me']['bn'] = "আমাকে মনে কর";
 $hcms_lang['my-recent-tasks']['bn'] = "সাম্প্রতিক বছরগুলোতে কাজ আমার";
 $hcms_lang['my-recent-objects']['bn'] = "আমার সাম্প্রতিক বছরগুলোতে বিরোধীতা";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['bn'] = "সামগ্রীর";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['bn'] = "অনুষ্ঠানের মূল: Ctrl-সিলেক্ট করে সামগ্রীর ক্লিক করুন";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['bn'] = "অনুষ্ঠানের মূল: শিফটের-সিলেক্ট করে একটি বিরোধীতা 2 কোনো ব্যবহারকারী";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['bn'] = "সংবাদ alt-চাবিকাঠি পারেলই সফটওয়্যার ডাউনলোড লিঙ্ক পরিণত করতে কপি ও বাটা ই-মেইল";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['bn'] = "টেনে আনুন এবং ড্রপ করুন: অনুলিপির জন্য সিটিআরএল কী এবং সংযুক্ত কপির জন্য ALT কী টিপুন";
 $hcms_lang['notify-me']['bn'] = "আমার অপ্রয়োজনীয় মনে";
 $hcms_lang['send-to-chat']['bn'] = "চ্যাট করতে";
 $hcms_lang['password-is-not-set']['bn'] = "পাসওয়ার্ড হচ্ছে না";

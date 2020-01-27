@@ -23,5 +23,5 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-$_SESSION['hcms_temp_viewportwidth'] = $viewportwidth;
+setsession ('hcms_temp_viewportwidth', $viewportwidth, true);
 ?>

@@ -1188,6 +1188,37 @@ function getgooglesitemap ($site, $dir, $url, $getpara=array(), $permalink=array
   else return false;
 }
 
+// --------------------------------------- getgoogleanalytics -------------------------------------------
+// function: getgoogleanalytics ()
+// input: google analytics key publication name [string]
+// output: JS code as string / false on error
+
+// description:
+// Generates a google analytics code segement for embedding.
+
+function getgoogleanalytics ($google_analytics_key)
+{
+  global $mgmt_config;
+
+  if (is_string ($google_analytics_key) && trim ($google_analytics_key) != "" && specialchr ($google_analytics_key, "-") == false)
+  {
+    return "
+  <!-- Google Analytics -->
+  <script type=\"text/javascript\">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', '".$google_analytics_key."', 'auto');
+  ga('send','pageview');
+  
+  </script>
+  <!-- End Google Analytics -->";
+  }
+  else return false;
+}
+
 // ---------------------- getlistelements -----------------------------
 // function: getlistelements()
 // input: content attribute value of list or keyword tag, seperator of list elements [string] (optional)
@@ -1528,7 +1559,7 @@ function getmetadata_multiobjects ($multiobject_array, $user)
           $objectinfo = getobjectinfo ($site, $location, $object);
 
           // for pages and components
-          if ($objectinfo['media'] == "") $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id WHERE object.id='.intval($objectinfo['container_id']));
+          if (!empty ($objectinfo['media'])) $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id WHERE object.id='.intval($objectinfo['container_id']));
           // for media assets
           else $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id LEFT JOIN media ON object.id=media.id WHERE object.id='.intval($objectinfo['container_id']));
 
@@ -4031,7 +4062,7 @@ function getmediasize ($filepath)
 // --------------------------------------- getimageinfo -------------------------------------------
 // function: getimageinfo()
 // input: path to media file [string]
-// output: Array with image information like md5 hash, width, height, colors / false on error
+// output: Array with image information like md5 hash, file type, file size, width, height, colors / false on error
 
 function getimageinfo ($filepath)
 {
@@ -4087,8 +4118,8 @@ function getimageinfo ($filepath)
     $file_info = getfileinfo ($site, $media, "comp");
     if (!empty ($file_info['filename'])) $thumbnail = $file_info['filename'].".thumb.jpg";
 
-    if (!empty ($thumbnail)) $filetime = date ("Y-m-d H:i", filemtime ($media_root.$thumbnail));
-    elseif (!empty ($filepath)) $filetime = date ("Y-m-d H:i", filemtime ($filepath));
+    if (!empty ($thumbnail) && is_file ($media_root.$thumbnail)) $filetime = date ("Y-m-d H:i", filemtime ($media_root.$thumbnail));
+    elseif (!empty ($filepath) && is_file ($filepath)) $filetime = date ("Y-m-d H:i", filemtime ($filepath));
     else $filetime = false;
 
     // image size
@@ -4117,7 +4148,7 @@ function getimageinfo ($filepath)
 // ---------------------- getpdfinfo -----------------------------
 // function: getpdfinfo()
 // input: path to PDF file [string], box attribute [BleedBox,CropBox,MediaBox] (optional)
-// output: result array with width and height / false on error
+// output: result array with MD5 hash, file type, file size, last modfied date and time, width, height / false on error
 
 // description:
 // Extracts width and height in pixel of a PDF file based on the MediaBox in the files content or ImageMagick as fallback
@@ -4983,6 +5014,73 @@ function getfavorites ($user, $output="path", $return_text_id=array())
         }
         else return false;
       }
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// --------------------------------------- getclipboard -------------------------------------------
+// function: getclipboard ()
+// input: output format [path,id] (optional), text IDs to be returned if output=path [array] (optional)
+// output: object info or object id array of the users clipboard objects / false
+
+function getclipboard ($output="path", $return_text_id=array())
+{
+  global $mgmt_config;
+
+  if (getsession ("hcms_temp_clipboard"))
+  {
+    // initalize
+    $object_id_array = array();
+    $object_path_array = array();
+
+    // get clipboard objects
+    $clipboard_array = getsession ("hcms_temp_clipboard");
+
+    // prepare result
+    if (!empty ($clipboard_array) && is_array ($clipboard_array))
+    {
+      foreach ($clipboard_array as $temp)
+      {
+        if (trim ($temp) != "")
+        {
+          list ($method, $site, $cat, $location_esc, $page, $pagename, $filetype) = explode ("|", $temp);
+
+          if (valid_publicationname ($site) && valid_locationname ($location_esc) && valid_objectname ($page))
+          {
+            // function cutobject, copyobject, and copylinkedobject provide converted path with tailing slash
+            $object_path = $location_esc.$page;
+
+            if (strtolower ($output) == "id")
+            {
+              $object_id_array[] = rdbms_getobject_id ($object_path);
+            }
+            else
+            {
+              $object_info = rdbms_getobject_info ($object_path, $return_text_id);
+
+              if (!empty ($object_info['objectpath'])) 
+              {
+                $hash = $object_info['hash'];
+                $object_path_array[$hash] = $object_info;
+              }
+            }
+          }
+        }
+      }
+      
+      // return result
+      if (strtolower ($output) == "id" && sizeof ($object_id_array) > 0)
+      {
+        sort ($object_id_array);
+        return $object_id_array;
+      }
+      elseif (sizeof ($object_path_array) > 0)
+      {
+        return $object_path_array;
+      }
+      else return false;
     }
     else return false;
   }

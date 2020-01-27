@@ -53,7 +53,7 @@ function applyconstraints ()
   <form name="valid" onsubmit="return applyconstraints();">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     
-    <table border="0" cellspacing="2">
+    <table class="hcmsTableStandard">
       <tr> 
         <td colspan="3" style="white-space:nowrap; vertical-align:top;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['assigned-media-types'][$lang]); ?></td>
       </tr>
@@ -83,5 +83,6 @@ function applyconstraints ()
   </form>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

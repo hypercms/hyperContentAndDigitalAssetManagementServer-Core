@@ -1,7 +1,67 @@
-var nn4= (document.layers);
-var nn6= (document.getElementById && !document.all);
-var ie4= (document.all && !document.getElementById);
-var ie5= (document.all && document.getElementById);
+// ------------------------ browser information ----------------------------
+
+function hcms_getBrowserName()
+{
+  var name = "unknown";
+  var isOpera = false;
+  var isFirefox = false;
+  var isSafari = false;
+  var isIE = false;
+  var isEdge = false;
+  var isChrome = false;
+  var isBlink = false;
+
+  // Opera 8.0+
+  if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
+  {
+    name = "opera";
+    isOpera = true;
+  }
+
+  // Firefox 1.0+
+  if (typeof InstallTrigger !== 'undefined')
+  {
+    name = "firefox";
+    isFirefox = true;
+  }
+
+  // Safari 3.0+ "[object HTMLElementConstructor]" 
+  if (/constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification))
+  {
+    name = "safari";
+    isSafari = true;
+  }
+
+  // Internet Explorer 6-11
+  if (/*@cc_on!@*/false || !!document.documentMode)
+  {
+    name = "ie";
+    isIE = true;
+  }
+
+  // Edge 20+
+  if (!isIE && !!window.StyleMedia)
+  {
+    name = "edge";
+    isEdge = true;
+  }
+
+  // Chrome 1+
+  if (!!window.chrome && !!window.chrome.webstore)
+  {
+    name = "chrome";
+    isChrome = true;
+  }
+
+  // Blink engine detection
+  if ((isChrome || isOpera) && !!window.CSS)
+  {
+    name = "blink";
+    isBlink =true;
+  }
+
+  return name;
+}
 
 // ------------------------ get URL paramater ----------------------------
 
@@ -89,7 +149,7 @@ function hcms_convertGet2Post (link)
   return false;
 }
 
-// ---------------------- standard AJAX request --------------------------
+// ----------------------------- standard AJAX request --------------------------------
 
 function hcms_ajaxService (url)
 {
@@ -118,7 +178,7 @@ function hcms_ajaxService (url)
   xmlhttp.send();
 }
 
-// ----------------- loading content from iframe to div ---------------------
+// ------------------------- loading content from iframe to div ---------------------------
 
 function hcms_loadPage (id, url)
 {
@@ -137,7 +197,7 @@ function hcms_showPage (id_frame, id_layer)
   }
 }
 
-// -------------------------- share link functions ---------------------------
+// -------------------------------- share link functions ---------------------------------
 
 function hcms_sharelinkFacebook (url)
 {
@@ -189,7 +249,7 @@ function hcms_sharelinkPinterest (image_url, description)
   else return false;
 }
 
-// ------------------------ translate text function -------------------------
+// ---------------------------------------- translate text function ---------------------------------------
 
 function hcms_translateText (sourceText, sourceLang, targetLang)
 {
@@ -283,7 +343,7 @@ function hcms_translateTextField (textarea_id, sourcelang_id, targetlang_id)
   return false;
 }
 
-// --------------------------- standard functions ----------------------------
+// ---------------------------------------- standard functions ---------------------------------------
 
 function hcms_getImageSize (imgSrc)
 {
@@ -497,7 +557,7 @@ function hcms_openWindow (theURL, winName, features, width, height)
   if (features == '') features = "location=0,menubar=0";
 
   var popup = window.open(theURL, winName, features + ',width=' + width + ',height=' + height);
-  
+
   // use different window positioning if width and height matches the size for object windows
   if (typeof popup.moveTo !== 'undefined')
   {
@@ -515,7 +575,7 @@ function hcms_openWindow (theURL, winName, features, width, height)
       popup.moveTo(screen.width/2 - width/2, screen.height/2 - height/2);
     }
   }
-  
+
   popup.focus();
 }
 
@@ -525,51 +585,44 @@ function hcms_openChat ()
   if (document.getElementById('chatLayer'))
   {
     var chatsidebar = document.getElementById('chatLayer');
-            
-    if (chatsidebar.style.display == "none") chatsidebar.style.display = "block";
-    else chatsidebar.style.display = "none";
   }
   else if (parent.document.getElementById('chatLayer'))
   {
     var chatsidebar = parent.document.getElementById('chatLayer');
-            
-    if (chatsidebar.style.display == "none") chatsidebar.style.display = "block";
-    else chatsidebar.style.display = "none";
   }
-  // mobile browser (only open chat)
-  else if (document.getElementById('chat'))
+  else var chatsidebar = false;
+
+  if (chatsidebar)
   {
-    $("#chat").panel("open");
-  }
-  else if (parent.document.getElementById('chat'))
-  {
-    parent.$("#chat").panel("open");
+    chatsidebar.style.transition = "1s";
+    if (chatsidebar.style.right == "0px") chatsidebar.style.right = "-320px";
+    else chatsidebar.style.right = "0px";
   }
 }
 
 function hcms_findObj (n, d) 
 {
   var p,i,x;  
-  
+
   if (!d) d=document; 
-  
+
   if ((p=n.indexOf("?"))>0&&parent.frames.length) 
   {
     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);
   }
-  
+
   if (!(x=d[n])&&d.all) x=d.all[n]; 
   for (i=0; !x&&i<d.forms.length; i++) x=d.forms[i][n];
   for (i=0; !x&&d.layers&&i<d.layers.length; i++) x=hcms_findObj(n,d.layers[i].document);
   if (!x && d.getElementById) x=d.getElementById(n);
-  
+
   return x;
 }
 
 function hcms_swapImgRestore ()
 {
   var i,x,a=document.sr;
-  
+
   for (i=0; a&&i<a.length&&(x=a[i])&&x.oSrc; i++) x.src=x.oSrc;
 }
 
@@ -581,7 +634,7 @@ function hcms_preloadImages ()
   {
     if (!d.p) d.p=new Array();
     var i,j=d.p.length,a=hcms_preloadImages.arguments;
-    
+
     for (i=0; i<a.length; i++)
     {
       if (a[i].indexOf("#")!=0)
@@ -596,9 +649,9 @@ function hcms_preloadImages ()
 function hcms_swapImage ()
 {
   var i,j=0,x,a=hcms_swapImage.arguments;
-  
+
   document.sr=new Array;
-  
+
   for(i=0;i<(a.length-2);i+=3)
   {
     if ((x=hcms_findObj(a[i]))!=null)
@@ -619,34 +672,34 @@ function hcms_scanStyles (obj, prop)
     ccProp = ccProp.substring(0, dash) + ccProp.substring(dash+1,dash+2).toUpperCase() + ccProp.substring(dash+2);
     dash = ccProp.indexOf("-");
   }
-  
+
   inlineStyle = eval("obj.style." + ccProp);
   if (inlineStyle) return inlineStyle;
-  
+
   var ss = document.styleSheets;
-  
+
   for (var x = 0; x < ss.length; x++)
   {
     var rules = ss[x].cssRules;
-    
+
     for (var y = 0; y < rules.length; y++)
     {
       var z = rules[y].style;
-    
+
       if (z[prop] && (rules[y].selectorText == '*[ID"' + obj.id + '"]' || rules[y].selectorText == '#' + obj.id))
       {
         return z[prop];
       }
     }
   }
-  
+
   return "";
 }
 
 function hcms_getProp (obj, prop)
 {
   if (!obj) return ("");
-  
+
   if (prop == "L") return obj.offsetLeft;
   else if (prop == "T") return obj.offsetTop;
   else if (prop == "W") return obj.offsetWidth;
@@ -677,54 +730,211 @@ function hcms_getProp (obj, prop)
   }
 }
 
+// ---------------------------------------- select box ---------------------------------------
+
+function hcms_moveFromToSelect (fbox, tbox, sort)
+{
+  sort = (typeof sort !== 'undefined') ? sort : true;
+  var arrFbox = new Array();
+  var arrTbox = new Array();
+  var arrLookup = new Array();
+  var i;
+
+  if (tbox.options)
+  {
+    for (i = 0; i < tbox.options.length; i++)
+    {
+      arrLookup[tbox.options[i].text] = tbox.options[i].value;
+      arrTbox[i] = tbox.options[i].text;
+    }
+  }
+
+  var fLength = 0;
+  var tLength = arrTbox.length;
+
+  if (fbox.options)
+  {
+    for (i = 0; i < fbox.options.length; i++)
+    {
+      arrLookup[fbox.options[i].text] = fbox.options[i].value;
+
+      if (fbox.options[i].selected && fbox.options[i].value != "")
+      {
+        arrTbox[tLength] = fbox.options[i].text;
+        tLength++;
+      }
+      else
+      {
+        arrFbox[fLength] = fbox.options[i].text;
+        fLength++;
+      }
+    }
+  }
+
+  if (sort == true)
+  {
+    arrFbox.sort();
+    arrTbox.sort();
+  }
+
+  fbox.length = 0;
+  tbox.length = 0;
+  var c;
+
+  for (c = 0; c < arrFbox.length; c++)
+  {
+    var no = new Option();
+    no.value = arrLookup[arrFbox[c]];
+    no.text = arrFbox[c];
+    fbox[c] = no;
+  }
+
+  for (c = 0; c < arrTbox.length; c++)
+  {
+    var no = new Option();
+    no.value = arrLookup[arrTbox[c]];
+    no.text = arrTbox[c];
+    tbox[c] = no;
+  }
+
+  if (sort == false && tbox.length > 0) tbox.options[tbox.options.length - 1].selected = true;
+}
+
+function hcms_insertOption (select, newtext, newvalue, allowduplicates)
+{
+  allowduplicates = (typeof allowduplicates !== 'undefined') ? allowduplicates : true;
+  newentry = new Option (newtext, newvalue, false, true);
+  var i;
+  
+  if (select.length > 0)
+  {  
+    var position = -1;
+
+    for (i=0; i<select.length; i++)
+    {
+      if (select.options[i].selected) position = i;
+      if (allowduplicates == false && select.options[i].value == newvalue) return false;
+    }
+    
+    if (position != -1)
+    {
+      select.options[select.length] = new Option();
+    
+      for (i=select.length-1; i>position; i--)
+      {
+        select.options[i].text = select.options[i-1].text;
+        select.options[i].value = select.options[i-1].value;
+      }
+      
+      select.options[position+1] = newentry;
+    }
+    else select.options[select.length] = newentry;
+  }
+  else select.options[select.length] = newentry;
+}
+
+function hcms_moveSelected (select, down)
+{
+  if (select.selectedIndex != -1)
+  {
+    if (down)
+    {
+      if (select.selectedIndex != select.options.length - 1)
+        var i = select.selectedIndex + 1;
+      else
+        return;
+    }
+    else
+    {
+      if (select.selectedIndex != 0)
+        var i = select.selectedIndex - 1;
+      else
+        return;
+    }
+
+    var swapOption = new Object();
+
+    swapOption.text = select.options[select.selectedIndex].text;
+    swapOption.value = select.options[select.selectedIndex].value;
+    swapOption.selected = select.options[select.selectedIndex].selected;
+
+    for (var property in swapOption) select.options[select.selectedIndex][property] = select.options[i][property];
+    for (var property in swapOption) select.options[i][property] = swapOption[property];
+  }
+}
+
+function hcms_deleteSelected (select)
+{
+  if (select.length > 0)
+  {
+    for (var i=0; i<select.length; i++)
+    {
+      if (select.options[i].selected == true) select.remove(i);
+    }
+  }
+}
+
+function hcms_selectAllOptions (select)
+{
+  if (select.length > 0)
+  {
+    for (var i=0; i<select.options.length; i++)
+    {
+      select.options[i].selected = true;
+    }
+  }
+}
+
+// ----------------------------------------  drag layer ---------------------------------------
+
 // Activates dragging of moveelem when elem is dragged. Also disables any default behaviour on elem.
-function hcms_drag (elem, moveelem)
+function hcms_dragLayers (elem, moveelem)
 {
   // Setting up needed variables
   document.hcms_move = {};
   elem.hcms_move = {}
   elem.hcms_move.elem = moveelem;
-  
+
   // On mouse down we start dragging
   elem.onmousedown = function(e) {
-  
+
     // Cross Browser
     var event = e || window.event;
-  
+
     // Prevent default action
     event.preventDefault();
-    
+
     // Setting the current moved element to the one for this element
     document.hcms_move.elem = this.hcms_move.elem;
-    
+
     // Calculate the starting position of the move element
     var startx = parseInt(this.hcms_move.elem.style.left, 10);
     var starty = parseInt(this.hcms_move.elem.style.top, 10);
-    
+
     if (isNaN(startx)) startx = 0;
     if (isNaN(starty)) starty = 0;
 
     // Calculcate the difference from current cursor to the moving element
     document.hcms_move.diffx = event.clientX - startx;
     document.hcms_move.diffy = event.clientY - starty;
-    
+  
     // Do the magic on mousemove on the document (We need document here or else the user might be able to move out of the element before the element has moved
     document.onmousemove = function(e) {
-    
+
       // Cross Browser
       var event = e || window.event;
-      
+
       // Moving the element to the correct position
       document.hcms_move.elem.style.left = (event.clientX - document.hcms_move.diffx)+'px';
       document.hcms_move.elem.style.top = (event.clientY - document.hcms_move.diffy)+'px';
     }
-    
+
     // Clear everything when mouse is released
     this.onmouseup = function(e) {
-      
+
       // Cross Browser
       var event = e || window.event;
-      
+
       document.onmousemove = function() {}
       document.hcms_move.diffx = 0;
       document.hcms_move.diffy = 0;
@@ -736,22 +946,23 @@ function hcms_drag (elem, moveelem)
 function hcms_showHideLayers () 
 {
   // uses visibilty
-  var i,p,v,obj;
-  var args=hcms_showHideLayers.arguments;
-  
+  var i, p, v, o, obj;
+  var args = hcms_showHideLayers.arguments;
+
   for (i=0; i<(args.length-2); i+=3)
   {
-    if ((obj=hcms_findObj(args[i]))!=null)
+    if ((obj = hcms_findObj(args[i])) != null)
     {
-      v=args[i+2];
-      
+      v = args[i+2];
+
       if (obj.style)
       {
-        obj=obj.style;
-        v=(v=='show')?'visible':(v=='hide')?'hidden':v;
+        obj.style.transition = 'all 0.3s linear';
+        o = (v == 'show') ? '1' : (v == 'hide') ? '0' : '0';
+        obj.style.opacity = o;
+        v = (v == 'show') ? 'visible' : (v == 'hide') ? 'hidden' : v;
+        obj.style.visibility = v;
       }
-      
-      obj.visibility=v;
     }
   }
 }
@@ -772,17 +983,15 @@ function hcms_showInfo (id, sec)
 {
   // default value
   sec = typeof sec !== 'undefined' ? sec : 0;
-  
+
   // uses display
   var info = document.getElementById(id);
-  
+
   if (info)
   {
-    info.style.display = "inline";
-    
     // enable all form elements
     var nodes = info.getElementsByTagName('*');
-    
+
     for (var i = 0; i < nodes.length; i++)
     {
       if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
@@ -790,7 +999,10 @@ function hcms_showInfo (id, sec)
         nodes[i].disabled = false;
       }
     }
-    
+
+    // do not apply effect on load screen
+    info.style.display = 'inline';
+
     // hide element
     if (sec > 0)
     {
@@ -807,14 +1019,15 @@ function hcms_hideInfo (id)
 {
   // uses display
   var info = document.getElementById(id);
-  
+
   if (info)
   {
-    info.style.display = "none";
-    
+    // hide
+    info.style.display = 'none';
+
     // disable all form elements
     var nodes = info.getElementsByTagName('*');
-    
+
     for (var i = 0; i < nodes.length; i++)
     {
       if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
@@ -822,7 +1035,7 @@ function hcms_hideInfo (id)
         nodes[i].disabled = true;
       }
     }
-
+  
     return true;
   }
   else return false;
@@ -837,11 +1050,9 @@ function hcms_switchInfo (id)
   {
     if (info.style.display == 'none')
     {
-      info.style.display = 'inline';
-      
       // enable all form elements
       var nodes = info.getElementsByTagName('*');
-      
+
       for (var i = 0; i < nodes.length; i++)
       {
         if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
@@ -849,14 +1060,18 @@ function hcms_switchInfo (id)
           nodes[i].disabled = false;
         }
       }
+
+      // show
+      info.style.display = 'inline';
     }
     else
     {
+      // hide
       info.style.display = 'none';
-      
+
       // disable all form elements
       var nodes = info.getElementsByTagName('*');
-      
+
       for (var i = 0; i < nodes.length; i++)
       {
         if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
@@ -875,11 +1090,21 @@ function hcms_switchSelector (id)
 {
   // uses visibilty
   var selector = document.getElementById(id);
-  
+
   if (selector)
   {
-    if (selector.style.visibility == 'hidden') selector.style.visibility = 'visible';
-    else selector.style.visibility = 'hidden';
+    selector.style.transition = '0.3s';
+
+    if (selector.style.visibility == 'hidden') 
+    {
+      selector.style.opacity = '1';
+      selector.style.visibility = 'visible';
+    }
+    else
+    {
+      selector.style.opacity = '0';
+      selector.style.visibility = 'hidden';
+    }
 
     return true;
   }
@@ -893,6 +1118,9 @@ function hcms_hideSelector (id)
 
   if (selector)
   {
+    selector.style.transition = '0.3s';
+    selector.style.opacity = '0';
+
     if (selector.style.visibility == 'visible') selector.style.visibility = 'hidden';
 
     return true;
@@ -910,7 +1138,7 @@ function hcms_ElementStyle (Element, ElementClass)
 function hcms_ElementbyIdStyle (id, ElementClass)
 {
   var Element = document.getElementById(id);
-  
+
   if (Element && Element.className != ElementClass) Element.className = ElementClass;
 }
 
@@ -944,13 +1172,13 @@ function hcms_addTableRow (id, position, values)
   {
     var table = document.getElementById(id).getElementsByTagName('tbody')[0];
     var tr = table.insertRow(position);
-    
+
     // create td then text, append
     for (var i = 0; i < values[i].length; i++)
     {
       // Insert a cell in the row
       var td  = newRow.insertCell(i);
-      
+
       // Append a text node to the cell
       var content  = document.createTextNode(values[i]);
       td.appendChild(content);
@@ -974,15 +1202,15 @@ function hcms_stripHTML (_str)
   _str = _str.replace(/(\r\n|\n|\r)/gm, "");
 
   var _reg = /<.*?>/gi;
-  
+
   while (_str.match(_reg) != null)
   {
     _str = _str.replace(_reg, "");
   }
-  
+
   // replace non-breaking-space
   _str = _str.replace("&nbps;", "");
-  
+
   return _str;
 }
 
@@ -995,28 +1223,29 @@ function hcms_bubbleSort (c, _ud, _isNumber)
     {
       var _left = hcms_stripHTML(hcms_detailview[i][c]);
       var _right = hcms_stripHTML(hcms_detailview[j][c]);
-
-      var _sign = _ud?">":"<";
+      var _sign = _ud ? ">" : "<";
       var _yes = false;
-      
+
       if (_isNumber)
       {
-         _left = _left.replace(".", "");
-         _right = _right.replace(".", "");
-         _left = _left.replace(",", "");
-         _right = _right.replace(",", "");
-         _left = _left.replace(" ", "");
-         _right = _right.replace(" ", "");
+        _left = _left.replace(".", "");
+        _right = _right.replace(".", "");
+        _left = _left.replace(",", "");
+        _right = _right.replace(",", "");
+        _left = _left.replace(" ", "");
+        _right = _right.replace(" ", "");
+        _left = parseInt(_left) || 0;
+        _right = parseInt(_right) || 0;
 
-         if (_ud && (parseInt(_left)-parseInt(_right) > 0)) _yes = true;
-         if (!_ud && (parseInt(_left)-parseInt(_right) < 0)) _yes = true;
+         if (_ud && (_left-_right > 0)) _yes = true;
+         if (!_ud && (_left-_right < 0)) _yes = true;
       }
       else
       {
         if (_ud && _left.toLowerCase() > _right.toLowerCase()) _yes = true;
         if (!_ud && _left.toLowerCase() < _right.toLowerCase()) _yes = true;
       }
-      
+
       if (_yes)
       {
         // swap rows for detailed view
@@ -1026,7 +1255,7 @@ function hcms_bubbleSort (c, _ud, _isNumber)
           hcms_detailview[i][x] = hcms_detailview[j][x];
           hcms_detailview[j][x] = _t;
         }
-        
+
         // swap rows for thumbnail view  
         if (is_gallery) 
         {
@@ -1048,20 +1277,20 @@ function hcms_sortTable (_c, _isNumber)
 {
   if (typeof hcms_unselectAll == 'function') hcms_unselectAll();
   if (typeof hcms_resetContext == 'function') hcms_resetContext();
-      
+
   is_gallery = eval (document.getElementById("t0"));  
-  
+
   // detailed view table
   if (hcms_detailview.length <= 0)
   {
     var _o = null;
     var _i = 0;
-    
+
     while (_o = document.getElementById("g"+_i))
     {
       hcms_detailview[_i] = new Array();
       var _j = 0;
-      
+
       while (_p = document.getElementById("h"+_i+"_"+_j))
       {
         hcms_detailview[_i][_j] = _p.innerHTML;
@@ -1084,10 +1313,10 @@ function hcms_sortTable (_c, _isNumber)
       _i++;
     } 
   } 
-  
+
   // sort both tables the same way
   hcms_bubbleSort (_c, lastSort != _c, _isNumber);
-  
+
   // refill tables with sorted arrays
   for (var b = 0; b < hcms_detailview.length; b++)
   {
@@ -1097,17 +1326,17 @@ function hcms_sortTable (_c, _isNumber)
       if (is_gallery) document.getElementById("t"+b).innerHTML = hcms_galleryview[b];
 
       // save object path for viewer
-      if (c == 0 && document.getElementById("h"+b+"_"+c).getElementsByTagName("input")) 
+      if (c == 0 && document.getElementById("h"+b+"_"+c).getElementsByTagName("A")) 
       {
-        var input = document.getElementById("h"+b+"_"+c).getElementsByTagName("input");
-        if (input[0].getAttribute("value")) hcms_objectpath[b] = input[0].getAttribute("value");
+        var link = document.getElementById("h"+b+"_"+c).getElementsByTagName("A");
+        if (link[0].getAttribute("data-objectpath")) hcms_objectpath[b] = link[0].getAttribute("data-objectpath");
       }
     }
   }
 
   // save object path array variable in parent frame
   if (hcms_objectpath) parent.hcms_objectpath = hcms_objectpath;
-  
+
   if (lastSort != _c) lastSort = _c;
   else lastSort = null;
 }
@@ -1121,7 +1350,7 @@ function hcms_sortObjectKey (object)
     if (typeof object === 'string') var object = JSON.parse (object);
     var sorted = {},
     key, a = [];
-  
+
     for (key in object)
     {
       if (object.hasOwnProperty(key))
@@ -1129,14 +1358,14 @@ function hcms_sortObjectKey (object)
         a.push(key);
       }
     }
-  
+
     a.sort();
-  
+
     for (key = 0; key < a.length; key++)
     {
       sorted[a[key]] = object[a[key]];
     }
-    
+
     return sorted;
   }
   else return false;
@@ -1180,13 +1409,13 @@ function hcms_markVTTlanguages ()
   if (typeof vtt_object === 'object' && document.getElementById('vtt_language') !== null)
   {
     var selectbox = document.getElementById('vtt_language');
-    
+
     // reset options
     for (var i = 0; i < selectbox.options.length; i++)
     {
       selectbox.options[i].setAttribute('class', '');
     }
-    
+
     for (var langcode in vtt_object)
     {
       if (vtt_object.hasOwnProperty(langcode))
@@ -1211,10 +1440,10 @@ function hcms_openVTTeditor (id)
   if (id != "" && document.getElementById(id) !== null)
   {
     var vtt_editor = document.getElementById(id);
-  
+
     if (vtt_editor.style.display == 'none') vtt_editor.style.display = 'block';
     else vtt_editor.style.display = 'none';
-    
+
     hcms_markVTTlanguages();
     return true;
   }
@@ -1226,10 +1455,10 @@ function hcms_changeVTTlanguage ()
   // language define by select
   var e = document.getElementById('vtt_language');
   var vtt_langcode_new = e.options[e.selectedIndex].value;
-  
+
   // current language of VTT editor
   var vtt_langcode = document.getElementById('vtt_langcode').value;
-  
+
   // save language using autosave
   if (vtt_langcode_new != "" && vtt_langcode != "" && vtt_langcode_new != vtt_langcode)
   {
@@ -1237,7 +1466,7 @@ function hcms_changeVTTlanguage ()
     if (document.getElementById('autosave') !== null && document.getElementById('autosave').checked == false)
     {
       var autosave_active = document.getElementById('autosave');
-      
+
       autosave_active.checked = true;
       autoSave();
       autosave_active.checked = false;
@@ -1252,10 +1481,10 @@ function hcms_changeVTTlanguage ()
   {
     // reset language code of editor
     document.getElementById('vtt_langcode').value = vtt_langcode_new;
-    
+
     // mark languages
     hcms_markVTTlanguages();
-    
+
     // tracks for language exists
     if (vtt_object.hasOwnProperty(vtt_langcode_new)) 
     {
@@ -1271,7 +1500,7 @@ function hcms_changeVTTlanguage ()
       // remove all records from editor if language records exist
       hcms_removeVTTrecords();
     }
-    
+
     return true;
   }
   else return false;
@@ -1286,18 +1515,17 @@ function hcms_createVTTrecords (records)
       if (records.hasOwnProperty(time))
       {
         var record = records[time];
-
         var timestamp = time;
         timestamp = timestamp.replace(":", "");
         timestamp = timestamp.replace(":", "");
         timestamp = timestamp.replace(".", "");
-          
+
         if (document.getElementById(timestamp) === null)
         {
           var div = document.createElement('div');
-          
+
           div.id = timestamp;
-      
+
           div.innerHTML = '<input type="text" name="vtt_start" value="' + record.start + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:98px;" readonly="readonly" />\
               <input type="text" name="vtt_stop" value="' + record.stop + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:98px;" readonly="readonly" />\
               <input type="text" name="vtt_text" value="' + record.text + '" maxlength="400" style="float:left; margin:2px 2px 0px 0px; width:342px;" />\
@@ -1308,10 +1536,10 @@ function hcms_createVTTrecords (records)
         }
       }
     }
-    
+
     // sort VTT records
     hcms_sortVTTrecords();
-    
+
     return true;
   }
   else return false;
@@ -1343,7 +1571,7 @@ function hcms_sortVTTrecords ()
   if (document.getElementById('vtt_records') !== null)
   {
     var main = document.getElementById('vtt_records');
-  
+
     [].map.call(main.children, Object).sort( function (a, b) {
       return +a.id.match( /\d+/ ) - +b.id.match( /\d+/ );
     }).forEach (function (elem) {
@@ -1388,16 +1616,16 @@ function hcms_stringifyVTTrecords ()
     if (vtt_start !== null && vtt_start.length > 0)
     {
       var i;
-      
+
       for (i = 0; i < vtt_start.length; i++)
       {
         var start = vtt_start[i].value;
         var stop = vtt_stop[i].value;
         var text = vtt_text[i].value;
-        
+
         // create VVT record as string
         vtt_string += start + " --> " + stop + "\n" + text + "\n\n";
-        
+
         // create VTT record as object
         vtt_records[start] =  { start:start, stop:stop, text:text };
       }

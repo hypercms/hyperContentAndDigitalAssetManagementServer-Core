@@ -7,8 +7,9 @@ $hcms_lang_date['sv'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['sv'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['sv'] = "Share";
-$hcms_lang['social-media-sharing']['sv'] = "Social Media sharing";
+$hcms_lang['clipboard']['sv'] = "Urklipp";
+$hcms_lang['share']['sv'] = "Dela med sig";
+$hcms_lang['social-media-sharing']['sv'] = "Dela sociala medier";
 $hcms_lang['remember-me']['sv'] = "Kom ihåg mig";
 $hcms_lang['my-recent-tasks']['sv'] = "Min senaste uppgifter";
 $hcms_lang['my-recent-objects']['sv'] = "Min senaste objekt";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['sv'] = "Objekt";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['sv'] = "Håll ned CTRL-tangenten: Välj objekt genom att klicka på";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['sv'] = "Håll ner Skift-tangenten: Välj en grupp av objekt med 2 klick";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['sv'] = "Tryck på ALT-tangenten: Växla till download-länkar för att kopiera och klistra in i e-post";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['sv'] = "Dra och släpp: Tryck på CTRL-tangenten för kopiering och ALT-tangenten för ansluten polis";
 $hcms_lang['notify-me']['sv'] = "Meddela mig";
 $hcms_lang['send-to-chat']['sv'] = "Skicka till chatt";
 $hcms_lang['password-is-not-set']['sv'] = "Lösenord är inte inställd";

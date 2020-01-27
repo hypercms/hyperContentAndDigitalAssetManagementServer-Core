@@ -697,7 +697,11 @@ function link_db_getobject ($multiobject)
 {
   global $mgmt_config;
 
-  if (!is_array ($multiobject) && $multiobject != "")
+  if (is_array ($multiobject))
+  {
+    return $multiobject;
+  }
+  elseif (is_string ($multiobject) && $multiobject != "")
   {
     // cut off whitespaces at the begin and end of the string
     $multiobject = trim ($multiobject);
@@ -983,7 +987,7 @@ function getconnectedobject ($container, $type="work")
           $result[$counter]['location']= $location;
           $result[$counter]['object']= $page;
           $result[$counter]['category']= $cat; 
- 
+
           $counter++;
         }
       }

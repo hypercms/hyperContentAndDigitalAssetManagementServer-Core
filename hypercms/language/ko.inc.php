@@ -7,8 +7,9 @@ $hcms_lang_date['ko'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ko'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['ko'] = "Share";
-$hcms_lang['social-media-sharing']['ko'] = "Social Media sharing";
+$hcms_lang['clipboard']['ko'] = "클립 보드";
+$hcms_lang['share']['ko'] = "몫";
+$hcms_lang['social-media-sharing']['ko'] = "소셜 미디어 공유";
 $hcms_lang['remember-me']['ko'] = "날 기억해";
 $hcms_lang['my-recent-tasks']['ko'] = "나의 최근 작업";
 $hcms_lang['my-recent-objects']['ko'] = "내 최근 오브젝트";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['ko'] = "오브젝트";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['ko'] = "Ctrl- 키를 누른 채: 선택 클릭하여 개체";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['ko'] = "Shift 키: 오브젝트의 그룹을 선택 클릭 2";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['ko'] = "Alt- 키: 스위치 링크 복사 및 붙여넣기 e메일로에 다운로드";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['ko'] = "끌어서 놓기 : 복사하려면 Ctrl 키를 누르고 연결된 복사본은 ALT 키를 누릅니다.";
 $hcms_lang['notify-me']['ko'] = "착신 알림";
 $hcms_lang['send-to-chat']['ko'] = "채팅에 보내";
 $hcms_lang['password-is-not-set']['ko'] = "암호가 설정되지 않았";

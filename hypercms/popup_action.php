@@ -22,8 +22,8 @@ $location = getrequest ("location", "locationname");
 $folder = getrequest ("folder", "objectname");
 $page = getrequest ("page", "objectname");
 $wf_token = getrequest ("wf_token");
-$token = getrequest ("token");
 $from_page = getrequest ("from_page");
+$token = getrequest ("token");
 
 // get publication and category
 $site = getpublication ($location);
@@ -47,8 +47,10 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// initalize
 $show = "";
 $add_onload = "";
+$result = array();
 
 // correct location for access permission
 if ($folder != "")
@@ -66,8 +68,7 @@ $authorized = false;
 if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
 {
   if (($action == "delete" || $action == "deletemark" || $action == "restore") && (($page != "" && $setlocalpermission['delete'] == 1) || ($folder != "" && $setlocalpermission['folderdelete'] == 1))) $authorized = true;
-  elseif (($action == "cut" || $action == "copy") && (($page != "" && $setlocalpermission['rename'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1))) $authorized = true;
-  elseif ($action == "linkcopy" && (($page != "" && $setlocalpermission['rename'] == 1 && $setlocalpermission['create'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['foldercreate'] == 1))) $authorized = true;
+  elseif (($action == "cut" || $action == "copy" || $action == "linkcopy") && (($page != "" && $setlocalpermission['rename'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1))) $authorized = true;
   elseif (($action == "page_favorites_create" || $action == "page_favorites_delete") && $setlocalpermission['create'] == 1) $authorized = true;
   elseif ($action == "page_unlock" && ($page != "" && $setlocalpermission['create'] == 1) || ($folder != "" && $setlocalpermission['foldercreate'] == 1)) $authorized = true;
   elseif ($action == "paste" && ($setlocalpermission['rename'] == 1 || $setlocalpermission['folderrename'] == 1)) $authorized = true;
@@ -79,14 +80,14 @@ if ($authorized == true)
 {
   // empty clipboard
   setsession ('hcms_temp_clipboard', "");
-      
+
   // perform actions
   // priority for processing due to all variables (multiobject, folder, page) 
   // will be posted from the context menu:
   // 1. multiobject
   // 2. folder
   // 3. object
-  
+
   // unzip
   if ($action == "unzip")
   {
@@ -102,7 +103,7 @@ if ($authorized == true)
     {
       $multiobject_array = link_db_getobject ($multiobject);
       $result['result'] = true;
-      
+
       // delete objects
       foreach ($multiobject_array as $objectpath)
       {
@@ -111,7 +112,7 @@ if ($authorized == true)
           $site = getpublication ($objectpath);
           $location = getlocation ($objectpath);
           $page = getobject ($objectpath);
-          
+
           if ($page != "")
           {
             // delete object
@@ -120,7 +121,7 @@ if ($authorized == true)
             elseif ($action == "deletemark") $result = deletemarkobject ($site, $location, $page, $user);
             // unmark object as deleted
             elseif ($action == "restore" || $action == "deleteunmark") $result = deleteunmarkobject ($site, $location, $page, $user);
-        
+
             $add_onload = $result['add_onload'];
             $show = $result['message'];
           }
@@ -135,64 +136,19 @@ if ($authorized == true)
       elseif ($action == "deletemark") $result = deletemarkobject ($site, $location, $page, $user);
       // unmark object as deleted
       elseif ($action == "restore" || $action == "deleteunmark") $result = deleteunmarkobject ($site, $location, $page, $user);
-  
+
       $add_onload = $result['add_onload'];
       $show = $result['message'];       
     }    
   }
-  // cut
-  elseif ($action == "cut") 
+  // cut, copy, linkcopy
+  elseif ($action == "cut" || $action == "copy" || $action == "linkcopy") 
   {
     if ($multiobject != "")
     {
       $multiobject_array = link_db_getobject ($multiobject);
       $result['result'] = true;
-      $i = 1;
-      
-      foreach ($multiobject_array as $objectpath)
-      {
-        if ($objectpath != "" && $result['result'] == true)
-        {
-          $site = getpublication ($objectpath);
-          $location = getlocation ($objectpath);
-          $page = getobject ($objectpath);
-          
-          if ($site != "" && $location != "" && $page != "")
-          {
-            $result = cutobject ($site, $location, $page, $user, true);
-        
-            $add_onload = $result['add_onload'];
-            $show = $result['message'];  
-          }
-        }
-        
-        $i++;
-      }
-    }
-    elseif ($folder != "")
-    {
-      $result = cutobject ($site, $location, $folder, $user);
-      
-      $add_onload = $result['add_onload'];
-      $show = $result['message'];    
-    }     
-    elseif ($page != "")
-    {
-      $result = cutobject ($site, $location, $page, $user);
-      
-      $add_onload = $result['add_onload'];
-      $show = $result['message'];   
-    } 
-  }
-  // copy
-  elseif ($action == "copy") 
-  {
-    if ($multiobject != "")
-    {
-      $multiobject_array = link_db_getobject ($multiobject);
-      $result['result'] = true;
-      $i = 1;
-      
+
       foreach ($multiobject_array as $objectpath)
       {
         if ($objectpath != "" && $result['result'] == true)
@@ -201,75 +157,35 @@ if ($authorized == true)
           $location = getlocation ($objectpath);
           $page = getobject ($objectpath);
 
-          if ($page != "")
-          { 
-            $result = copyobject ($site, $location, $page, $user, true);
-            
-            $add_onload = $result['add_onload'];
-            $show = $result['message'];     
-          }
-        }
-        
-        $i++;
-      }
-    }  
-    elseif ($folder != "")
-    {
-      $result = copyobject ($site, $location, $folder, $user);
-      
-      $add_onload = $result['add_onload'];
-      $show = $result['message'];  
-    }
-    elseif ($page != "")
-    {
-      $result = copyobject ($site, $location, $page, $user);
-      
-      $add_onload = $result['add_onload'];
-      $show = $result['message'];         
-    }    
-  }
-  // linked copy
-  elseif ($action == "linkcopy") 
-  {
-    if ($multiobject != "")
-    {
-      $multiobject_array = link_db_getobject ($multiobject);
-      $result['result'] = true;
-      $i = 1;
-      
-      foreach ($multiobject_array as $objectpath)
-      {
-        if ($objectpath != "" && $result['result'] == true)
-        {
-          $site = getpublication ($objectpath);
-          $location = getlocation ($objectpath);
-          $page = getobject ($objectpath);
-          
-          if ($page != "")
+          if ($site != "" && $location != "" && $page != "")
           {
-            $result = copyconnectedobject ($site, $location, $page, $user, true);
-        
-            $add_onload = $result['add_onload'];
-            $show = $result['message'];    
+            if ($action == "cut") $result = cutobject ($site, $location, $page, $user, true);
+            elseif ($action == "copy") $result = copyobject ($site, $location, $page, $user, true);
+            elseif ($action == "linkcopy") $result = copyconnectedobject ($site, $location, $page, $user, true);
+
+            if (!empty ($result['add_onload'])) $add_onload = $result['add_onload'];
+            if (!empty ($result['message'])) $show = $result['message'];   
           }
         }
-        
-        $i++;
       }
     }
     elseif ($folder != "")
     {
-      $result = copyconnectedobject ($site, $location, $folder, $user);
-      
-      $add_onload = $result['add_onload'];
-      $show = $result['message'];  
-    }    
+      if ($action == "cut") $result = cutobject ($site, $location, $folder, $user);
+      elseif ($action == "copy") $result = copyobject ($site, $location, $folder, $user);
+      elseif ($action == "linkcopy") $result = copyconnectedobject ($site, $location, $folder, $user);
+
+      if (!empty ($result['add_onload'])) $add_onload = $result['add_onload'];
+      if (!empty ($result['message'])) $show = $result['message'];    
+    }     
     elseif ($page != "")
     {
-      $result = copyconnectedobject ($site, $location, $page, $user);
-      
-      $add_onload = $result['add_onload'];
-      $show = $result['message'];      
+      if ($action == "cut") $result = cutobject ($site, $location, $page, $user);
+      elseif ($action == "copy") copyobject ($site, $location, $page, $user);
+      elseif ($action == "linkcopy") $result = copyconnectedobject ($site, $location, $page, $user);
+
+      if (!empty ($result['add_onload'])) $add_onload = $result['add_onload'];
+      if (!empty ($result['message'])) $show = $result['message'];   
     }
   }
   // delete objects from favorites
@@ -282,7 +198,7 @@ if ($authorized == true)
       if (is_array ($multiobject_array))
       {
         $result['result'] = true;
-        
+
         foreach ($multiobject_array as $multiobject_item)
         {
           if ($multiobject_item != "" && $result['result'] == true)
@@ -308,7 +224,7 @@ if ($authorized == true)
       if ($action == "page_favorites_create") $result['result'] = createfavorite ($site, $location, $page, "", $user);
       elseif ($action == "page_favorites_delete") $result['result'] = deletefavorite ($site, $location, $page, "", $user);
     }
-  
+
     // check result
     if ($result['result'] == false) 
     {
@@ -333,11 +249,11 @@ if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload
     if ($multiobject != "")
     {
       $multiobject_array = link_db_getobject ($multiobject);
-      
+
       if (is_array ($multiobject_array))
       {
         $result['result'] = true;
-        
+
         foreach ($multiobject_array as $multiobject_item)
         {
           if ($multiobject_item != "" && $result['result'] == true)
@@ -360,7 +276,7 @@ if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload
     {
       $result = unlockobject ($site, $location, $page, $user);
     }
-  
+
     // check result
     if ($result['result'] == false) 
     {
@@ -489,7 +405,7 @@ echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsBu
 <?php
 echo $add_onload;
 
-if ($result['result'] == true)
+if (!empty ($result['result']))
 {
   echo "
 function popupclose ()

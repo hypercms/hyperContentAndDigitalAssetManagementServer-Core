@@ -82,6 +82,7 @@ function adjust_height ()
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;">
     <iframe id="mainFrame" name="mainFrame" scrolling="auto" src="<?php echo plugin_generatelink ($plugin, $page, false, $add_parameters); ?>" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>
 <?php

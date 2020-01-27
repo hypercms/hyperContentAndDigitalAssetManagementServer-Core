@@ -7,8 +7,9 @@ $hcms_lang_date['ru'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ru'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['ru'] = "Share";
-$hcms_lang['social-media-sharing']['ru'] = "Social Media sharing";
+$hcms_lang['clipboard']['ru'] = "буфер обмена";
+$hcms_lang['share']['ru'] = "Поделиться";
+$hcms_lang['social-media-sharing']['ru'] = "Обмен в социальных сетях";
 $hcms_lang['remember-me']['ru'] = "Запомни меня";
 $hcms_lang['my-recent-tasks']['ru'] = "Мои последние задачи";
 $hcms_lang['my-recent-objects']['ru'] = "Мои последние объекты";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['ru'] = "Объекты";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['ru'] = "Удерживая Ctrl-Key: Выберите объекты, нажав на кнопку";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['ru'] = "Удерживайте SHIFT-Key: Выберите группу объектов, 2 кликов";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['ru'] = "Нажмите сочетание клавиш ALT-Key: Переключить на скачивание-ссылки, чтобы скопировать и вставить в сообщения электронной почты";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['ru'] = "Перетаскивание: нажмите клавишу CTRL для копирования и клавишу ALT для подключенной копии";
 $hcms_lang['notify-me']['ru'] = "Уведомлять меня";
 $hcms_lang['send-to-chat']['ru'] = "Отправить чат";
 $hcms_lang['password-is-not-set']['ru'] = "Пароль не задан";

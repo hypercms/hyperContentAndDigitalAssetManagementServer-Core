@@ -320,156 +320,18 @@ function checkForm ()
   }
 }
 
-function move (fbox, tbox)
-{
-  var arrFbox = new Array();
-  var arrTbox = new Array();
-  var arrLookup = new Array();
-  var i;
-
-  for (i = 0; i < tbox.options.length; i++)
-  {
-    arrLookup[tbox.options[i].text] = tbox.options[i].value;
-    arrTbox[i] = tbox.options[i].text;
-  }
-
-  var fLength = 0;
-  var tLength = arrTbox.length;
-
-  for (i = 0; i < fbox.options.length; i++)
-  {
-    arrLookup[fbox.options[i].text] = fbox.options[i].value;
-    if (fbox.options[i].selected && fbox.options[i].value != "")
-    {
-      arrTbox[tLength] = fbox.options[i].text;
-      tLength++;
-    }
-    else
-    {
-      arrFbox[fLength] = fbox.options[i].text;
-      fLength++;
-    }
-  }
-
-  arrFbox.sort();
-  arrTbox.sort();  
-  fbox.length = 0;
-  tbox.length = 0;
-  var c;
-
-  for(c = 0; c < arrFbox.length; c++)
-  {
-    var no = new Option();
-    no.value = arrLookup[arrFbox[c]];
-    no.text = arrFbox[c];
-    fbox[c] = no;
-  }
-
-  for(c = 0; c < arrTbox.length; c++)
-  {
-    var no = new Option();
-    no.value = arrLookup[arrTbox[c]];
-    no.text = arrTbox[c];
-    tbox[c] = no;
-  }
-}
-
-function insertOption (newtext, newvalue)
-{
-  var form = document.forms['userform'];
-  var selectbox = form.elements['box_array'];
-  newentry = new Option (newtext, newvalue, false, true);
-  var i;
-  
-  if (selectbox.length > 0)
-  {  
-    var position = -1;
-
-    for (i=0; i<selectbox.length; i++)
-    {
-      if (selectbox.options[i].selected) position = i;
-      // duplicate entry
-      if (selectbox.options[i].value == newvalue) return false;
-    }
-    
-    if (position != -1)
-    {
-      selectbox.options[selectbox.length] = new Option();
-    
-      for (i=selectbox.length-1; i>position; i--)
-      {
-        selectbox.options[i].text = selectbox.options[i-1].text;
-        selectbox.options[i].value = selectbox.options[i-1].value;
-      }
-      
-      selectbox.options[position+1] = newentry;
-    }
-    else selectbox.options[selectbox.length] = newentry;
-  }
-  else selectbox.options[selectbox.length] = newentry;
-}
-
-function moveSelected (select, down)
-{
-  if (select.selectedIndex != -1)
-  {
-    if (down)
-    {
-      if (select.selectedIndex != select.options.length - 1)
-        var i = select.selectedIndex + 1;
-      else
-        return;
-    }
-    else
-    {
-      if (select.selectedIndex != 0)
-        var i = select.selectedIndex - 1;
-      else
-        return;
-    }
-
-    var swapOption = new Object();
-
-    swapOption.text = select.options[select.selectedIndex].text;
-    swapOption.value = select.options[select.selectedIndex].value;
-    swapOption.selected = select.options[select.selectedIndex].selected;
-
-    for (var property in swapOption) select.options[select.selectedIndex][property] = select.options[i][property];
-    for (var property in swapOption) select.options[i][property] = swapOption[property];
-  }
-}
-
-function deleteSelected (select)
-{
-  if (select.length > 0)
-  {
-    for(var i=0; i<select.length; i++)
-    {
-      if (select.options[i].selected == true) select.remove(i);
-    }
-  }
-}
-
-function selectAllOptions (select)
-{
-  for (var i=0; i<select.options.length; i++)
-  {
-    select.options[i].selected = true;
-  }
-}
-
 function setHomeBoxes ()
 {
   var form = document.forms['userform'];
 
-  if (form.elements['box_array'])
+  if (form.elements['list4'])
   {
-    var select = form.elements['box_array'];
+    var select = form.elements['list4'];
     var homeboxes = "|";
 
     if (select.options.length > 0)
     {
-      for(var i=0; i<select.options.length; i++)
+      for (var i=0; i<select.options.length; i++)
       {
         homeboxes = homeboxes + select.options[i].value + "|";
       }
@@ -790,8 +652,8 @@ if ($login != "" && $login != false)
             </td>
             <td style=\"text-align:center; vertical-align:middle;\">
               <br />
-              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list2'], this.form.elements['list1'])\" value=\"&lt;&lt;\" />
-              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list1'], this.form.elements['list2'])\" value=\"&gt;&gt;\" />
+              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"hcms_moveFromToSelect(this.form.elements['list1'], this.form.elements['list2'], true)\" value=\"&gt;&gt;\" />
+              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"hcms_moveFromToSelect(this.form.elements['list2'], this.form.elements['list1'], true)\" value=\"&lt;&lt;\" />
             </td>
             <td>
               ".getescapedtext ($hcms_lang['assigned-to-group'][$lang])."<br />
@@ -865,8 +727,8 @@ if ($login != "" && $login != false)
             </td>
             <td style=\"width:50px; text-align:center; vertical-align:middle;\">
               <br />
-              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list2'], this.form.elements['list1'])\" value=\"&lt;&lt;\" />
-              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list1'], this.form.elements['list2'])\" value=\"&gt;&gt;\" />
+              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"hcms_moveFromToSelect(this.form.elements['list1'], this.form.elements['list2'], true)\" value=\"&gt;&gt;\" />
+              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"hcms_moveFromToSelect(this.form.elements['list2'], this.form.elements['list1'], true)\" value=\"&lt;&lt;\" />
             </td>
             <td>
               ".getescapedtext ($hcms_lang['assigned-to-publication'][$lang])."<br />
@@ -894,48 +756,67 @@ if ($login != "" && $login != false)
     <!-- Home boxes -->
     <tr>
       <td colspan="2">
-        <table class="hcmsTableNarrow" style="margin-top:10px;">
+      <table class="hcmsTableNarrow" style="margin-top:10px;">
           <tr>
-            <td style="width:260px; vertical-align:top; text-align:left;">
+            <td>
               <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['home'][$lang]." ".$hcms_lang['objects'][$lang]); ?></span>
+              <select multiple name="list3" style="width:210px; height:100px;" size="10">
               <?php
+              $list3_array = array();
+              $list4_array = array();
+
               // get home boxes for selection
               if ($login_cat == "home" && $login == $user) $homebox_array = gethomeboxes ($siteaccess);
               elseif (!empty ($usersitearray)) $homebox_array = gethomeboxes ($usersitearray);
               else $homebox_array = false;
 
+              // get home boxes of user
+              $userbox_array = getuserboxes ($login);
+
               if (is_array ($homebox_array) && sizeof ($homebox_array) > 0)
               {
                 foreach ($homebox_array as $homebox_key => $homebox_name)
                 {
-                  echo "
-                  <div onclick=\"insertOption('".$homebox_name."', '".$homebox_key."');\" style=\"display:block; cursor:pointer;\" title=\"".$homebox_name."\"><img src=\"".getthemelocation()."img/log_info.png\" class=\"hcmsIconList\" />&nbsp;".showshorttext($homebox_name, 30)."&nbsp;</div>";
+                  // unselected home boxes
+                  if (!in_array ($homebox_name, $userbox_array))
+                  {
+                    $list3_array[] = "
+                    <option value=\"".$homebox_key."\" title=\"".$homebox_name."\">".showshorttext($homebox_name, 30)."</option>";
+                  }
+                }
+
+                natcasesort ($list3_array);
+                reset ($list3_array);
+                
+                if (is_array ($list3_array) && sizeof ($list3_array) > 0)
+                {
+                  foreach ($list3_array as $list3) echo $list3;
                 }
               }
               ?>
+              </select>
             </td>
-            <td style="vertical-align:top; text-align:left;">
-              <span style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
-              <select id="box_array" name="box_array" style="width:210px; height:240px;" size="14">
-                <?php
-                // get home boxes of user
-                $userbox_array = getuserboxes ($login);
-
-                if (is_array ($userbox_array) && sizeof ($userbox_array) > 0)
-                {
-                  foreach ($userbox_array as $userbox_key => $userbox_name)
-                  {
-                    echo "
-                    <option value=\"".$userbox_key."\">".showshorttext($userbox_name, 40)."</option>";
-                  }
-                }
-                ?>
+            <td style="width:50px; text-align:center; vertical-align:middle;">
+              <br />
+              <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="hcms_moveFromToSelect(this.form.elements['list3'], this.form.elements['list4'], false)" value="&gt;&gt;" />
+              <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="hcms_moveFromToSelect(this.form.elements['list4'], this.form.elements['list3'], false)" value="&lt;&lt;" />
+            </td>
+            <td>
+            <span style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
+              <select multiple name="list4" style="width:210px; height:100px;" size="10">
+              <?php
+              // selected home boxes
+              if (is_array ($userbox_array) && sizeof ($userbox_array) > 0)
+              {
+                foreach ($userbox_array as $userbox_key => $userbox_name) echo "
+                <option value=\"".$userbox_key."\" title=\"".$userbox_name."\">".showshorttext($userbox_name, 30)."</option>";
+              }
+              ?>
               </select>
             </td>
             <td style="width:32px; text-align:left; vertical-align:middle;">
-              <img onClick="moveSelected(document.forms['userform'].elements['box_array'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                     
-              <img onClick="deleteSelected(document.forms['userform'].elements['box_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
-              <img onClick="moveSelected(document.forms['userform'].elements['box_array'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
+              <img onClick="hcms_moveSelected(document.forms['userform'].elements['list4'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                             
+              <img onClick="hcms_moveSelected(document.forms['userform'].elements['list4'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
             </td>
           </tr>
         </table>
@@ -965,5 +846,6 @@ if ($login != "" && $login != false)
 
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

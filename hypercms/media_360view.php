@@ -95,5 +95,7 @@ const viewer = new PANOLENS.Viewer(<?php echo $option; ?>);
 viewer.add(panorama);
 <?php } ?>
 </script>
+
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

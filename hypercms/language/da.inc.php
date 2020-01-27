@@ -6,9 +6,10 @@ $hcms_lang_codepage['da'] = "utf-8";
 $hcms_lang_date['da'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['da'] = "ltr";
 
-// Text for hyperCMS
-$hcms_lang['share']['da'] = "Share";
-$hcms_lang['social-media-sharing']['da'] = "Social Media sharing";
+// Text for hyperCM
+$hcms_lang['clipboard']['da'] = "Udklipsholder";
+$hcms_lang['share']['da'] = "Del";
+$hcms_lang['social-media-sharing']['da'] = "Deling af sociale medier";
 $hcms_lang['remember-me']['da'] = "Husk mig";
 $hcms_lang['my-recent-tasks']['da'] = "Min seneste opgaver";
 $hcms_lang['my-recent-objects']['da'] = "Min seneste objekter";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['da'] = "Objekter";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['da'] = "Hold CTRL-tasten: Vælg objekter ved at klikke på";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['da'] = "Hold SHIFT-tasten: Vælg en gruppe af objekter med 2 klik";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['da'] = "Tryk på ALT-tasten: Kontakt til download-links til at kopiere og indsætte i e-mails";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['da'] = "Træk og slip: Tryk på CTRL-tasten for kopiering og ALT-tasten til tilsluttet cop";
 $hcms_lang['notify-me']['da'] = "Giv mig besked";
 $hcms_lang['send-to-chat']['da'] = "Send til chat";
 $hcms_lang['password-is-not-set']['da'] = "Adgangskode er ikke indstillet";

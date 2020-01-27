@@ -7,8 +7,9 @@ $hcms_lang_date['de'] = 'd.m.Y H:i:s';
 $hcms_lang_direction['de'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['de'] = "Share";
-$hcms_lang['social-media-sharing']['de'] = "Social Media sharing";
+$hcms_lang['clipboard']['de'] = "Zwischenablage";
+$hcms_lang['share']['de'] = "Teilen";
+$hcms_lang['social-media-sharing']['de'] = "Social Media Sharing";
 $hcms_lang['remember-me']['de'] = "Merken";
 $hcms_lang['my-recent-tasks']['de'] = "Meine aktuellen Aufgaben";
 $hcms_lang['my-recent-objects']['de'] = "Meine aktuellen Objekte";
@@ -342,9 +343,10 @@ $hcms_lang['view']['de'] = "Ansicht";
 $hcms_lang['views']['de'] = "Ansichten";
 $hcms_lang['more']['de'] = "Mehr";
 $hcms_lang['objects']['de'] = "Objekte";
-$hcms_lang['hold-ctrl-key-select-objects-by-click']['de'] = "STRG-Taste halten: Objekte mit Klick selektieren";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['de'] = "SHIFT-Taset halten: Eine Gruppe von Objekten mit 2 Klicks selektieren";
-$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['de'] = "ALT-Taste drücken: Wechsel auf Download-Links für Copy & Paste in E-Mails";
+$hcms_lang['hold-ctrl-key-select-objects-by-click']['de'] = "STRG-Taste drücken: Objekte mit Klick selektieren";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['de'] = "SHIFT-Taste drücken: Eine Reihe von Objekten mit 2 Klicks selektieren";
+$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['de'] = "ALT-Taste drücken: Wechsel auf Download-Links für Kopieren & Einfügen in E-Mails";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['de'] = "Ziehen und Ablegen: STRG-Taste für Kopie und ALT-Taste für gebundene Kopie drücken";
 $hcms_lang['notify-me']['de'] = "Benachrichtigung";
 $hcms_lang['send-to-chat']['de'] = "An Chat senden";
 $hcms_lang['password-is-not-set']['de'] = "Das Passwort ist leer";

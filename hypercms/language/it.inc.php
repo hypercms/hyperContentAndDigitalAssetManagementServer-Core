@@ -7,8 +7,9 @@ $hcms_lang_date['it'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['it'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['it'] = "Share";
-$hcms_lang['social-media-sharing']['it'] = "Social Media sharing";
+$hcms_lang['clipboard']['it'] = "Appunti";
+$hcms_lang['share']['it'] = "Condividere";
+$hcms_lang['social-media-sharing']['it'] = "Condivisione sui social media";
 $hcms_lang['remember-me']['it'] = "Ricordami";
 $hcms_lang['my-recent-tasks']['it'] = "La mia recente attività";
 $hcms_lang['my-recent-objects']['it'] = "La mia recente oggetti";
@@ -342,9 +343,10 @@ $hcms_lang['view']['it'] = "Vista";
 $hcms_lang['views']['it'] = "Visualizzazioni";
 $hcms_lang['more']['it'] = "Più";
 $hcms_lang['objects']['it'] = "Gli oggetti";
-$hcms_lang['hold-ctrl-key-select-objects-by-click']['it'] = "Tenere CTRL-Key: Selezionare gli oggetti di click";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['it'] = "Tenere SHIFT-Key: Selezionare un gruppo di oggetti di 2 scatti";
-$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['it'] = "Premere ALT-Key: Passa a scaricare, link per copiare e incollare in e-mail";
+$hcms_lang['hold-ctrl-key-select-objects-by-click']['it'] = "Premere CTRL: Selezionare gli oggetti di click";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['it'] = "Premere SHIFT: Selezionare un gruppo di oggetti di 2 scatti";
+$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['it'] = "Premere ALT: Passa a scaricare, link per copiare e incollare in e-mail";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['it'] = "Trascina selezione: premi il tasto CTRL per la copia e il tasto ALT per la copia connessa";
 $hcms_lang['notify-me']['it'] = "Comunica";
 $hcms_lang['send-to-chat']['it'] = "Invio di chat";
 $hcms_lang['password-is-not-set']['it'] = "La Password non è impostato";

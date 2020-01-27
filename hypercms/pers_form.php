@@ -222,5 +222,6 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"
 
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

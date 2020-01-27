@@ -563,5 +563,7 @@ foreach ($result as $row => $temp_array)
 </form>
 
 </div>
+
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

@@ -206,5 +206,6 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
 initalize();
 </script>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

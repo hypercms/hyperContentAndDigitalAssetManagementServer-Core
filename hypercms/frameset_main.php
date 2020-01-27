@@ -23,7 +23,6 @@ require ("function/servertime.class.php");
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
-
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -35,7 +34,6 @@ checkusersession ($user, false);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?ts=<?php echo time(); ?>" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
-
 <!-- JQuery used for AJAX viewport set request -->
 <script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 
@@ -112,7 +110,9 @@ function minNavFrame (width)
   {
     width = typeof width !== 'undefined' ? width : 0;
     
+    document.getElementById('navLayer').style.transition = "1s";
     document.getElementById('navLayer').style.width = width + 'px';
+    document.getElementById('workplLayer').style.transition = "1s";
     document.getElementById('workplLayer').style.left = offset + 'px';
   }
 }
@@ -125,7 +125,9 @@ function maxNavFrame (width)
   {
     width = typeof width !== 'undefined' ? width : 260;
     
+    document.getElementById('navLayer').style.transition = "1s";
     document.getElementById('navLayer').style.width = width + 'px';
+    document.getElementById('workplLayer').style.transition = "1s";
     document.getElementById('workplLayer').style.left = (width + offset) + 'px';
   }
 }
@@ -185,10 +187,6 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
 <body>
 
-<?php if (empty ($hcms_assetbrowser))
-{
-?>
-
 <!-- popup for preview/live-view and forms (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="objectviewMainLayer" style="display:none;">
   <div style="position:fixed; right:2px; top:2px; z-index:91;">
@@ -202,7 +200,10 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 <!-- top/left bar -->
 <div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; bottom:0; width:36px;">
   <img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsButtonTiny hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
+  
+  <?php if (empty ($hcms_assetbrowser)) { ?>
   <img src="<?php echo getthemelocation(); ?>img/home.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="showHome();" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />
+  <?php } ?>
 
   <?php if (linking_valid() == false) { ?>
   <img src="<?php echo getthemelocation(); ?>img/button_explorer.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="switchNav();" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
@@ -220,13 +221,13 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <img src="<?php echo getthemelocation(); ?>img/button_chat.png" class="hcmsButtonTiny  hcmsButtonSizeSquare" style="padding:2px;" onClick="hcms_openChat();" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
   <?php } ?>
   
-  <?php if (empty ($hcms_portal)) { ?>
+  <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
   <img src="<?php echo getthemelocation(); ?>img/button_logout.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="top.location='userlogout.php';" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
   <?php } ?>
 </div>
 
 <!-- user info -->
-<?php if (empty ($hcms_portal)) { ?>
+<?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
 <img src="<?php echo getthemelocation(); ?>img/button_info.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="position:absolute; left:0; bottom:0; padding:2px; margin:32px 0px;" onclick="hcms_showInfo ('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
   
 <div id="userInfoLayer" class="hcmsMessage" style="position:absolute; bottom:10px; left:32px; display:none; z-index:999; padding:4px; width:200px; min-height:80px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
@@ -238,10 +239,6 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 </div>
 <?php $servertime->InstallClockBody(); ?>
 <?php } ?>
-
-<?php
-}
-?>
 
 <?php if (linking_valid() == true) { ?>
 <!-- workplace -->
@@ -287,8 +284,8 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
 <!-- chat sidebar -->
 <?php if (!empty ($mgmt_config['chat']) && empty ($hcms_assetbrowser)) { ?>
-<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:0px; right:0; bottom:0; width:300px; z-index:100; display:none;">
-  <iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:0; right:-320px; bottom:0; width:300px; z-index:100;">
+  <iframe id="chatFrame" scrolling="auto" src="chat.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
 <?php } ?>
 

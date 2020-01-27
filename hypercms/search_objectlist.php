@@ -230,6 +230,7 @@ if (
      $action != "recyclebin" &&
      $action != "favorites" && 
      $action != "checkedout" && 
+     $action != "clipboard" && 
      ($action != "user_files" && $object_id == "" && $container_id == "") && 
      $action != "recipient" && 
      (!valid_publicationname ($site) || !valid_locationname ($search_dir))
@@ -280,6 +281,11 @@ elseif ($action == "recipient")
 elseif ($action == "favorites" && $user != "")
 {
   $object_array = getfavorites ($user, "path", @array_keys ($objectlistcols_reduced));
+}
+// clipboard of users session
+elseif ($action == "clipboard" && $user != "")
+{
+  $object_array = getclipboard ("path", @array_keys ($objectlistcols_reduced));
 }
 // checked out objects of user
 elseif ($action == "checkedout" && $user != "")
@@ -497,6 +503,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
               }
             }
+
+            // create folder file if it does not exist
+            if (!is_file ($location.$folder."/.folder"))
+            {
+              createobject ($site, $location.$folder."/", ".folder", "default.meta.tpl", "sys");
+            }
             
             if (!empty ($container_id))
             {
@@ -517,18 +529,18 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
                 }
               }
+            }
 
-              // link for copy & paste of download links (not if an access link is used)
-              if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
-              {
-                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$folder."/.folder\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
-                $dlink_end = "</a>";
-              }
-              else
-              {
-                $dlink_start = "<a data-href=\"javascript:void(0);\">";
-                $dlink_end = "</a>";
-              }
+            // link for copy & paste of download links (not if an access link is used)
+            if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
+            {
+              $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
+              $dlink_end = "</a>";
+            }
+            else
+            {
+              $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"javascript:void(0);\">";
+              $dlink_end = "</a>";
             }
             
             // fallback for modified date
@@ -556,11 +568,36 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             // set context
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
   
+            // if linking is used display download buttons
+            $linking_buttons = "";
+
+            // if mobile edition is used display edit button
+            if ($is_mobile && $setlocalpermission['root'] == 1)
+            {   
+              $linking_buttons .= "
+              <button class=\"hcmsButtonDownload\" onClick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/';\">".getescapedtext ($hcms_lang['navigate'][$lang])."</button>";
+            }
+
+            if ($linking_buttons != "")
+            {
+              if (!$is_mobile) $width = "160px";
+              else $width = "180px";
+                
+              $linking_buttons = "<div style=\"width:".$width."; margin:0 auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
+            }
+
             // listview - view option for locked folders
             if ($usedby != "")
             {
               $file_info['icon'] = "folder_lock.png";
             }
+
+            // drag events
+            if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
+            {
+              $dragevent = "draggable=\"true\" ondragstart=\"hcms_drag(event)\"";
+            }
+            else $dragevent = "";
 
             // metadata
             $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
@@ -568,10 +605,10 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             $listview .= "
                          <tr id=g".$items_row." style=\"cursor:pointer\" align=\"left\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
-                             <input type=\"hidden\" value=\"".$location_esc.$folder."\">
-                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\">
-                               <img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$dlink_start.$folder_name.$dlink_end."
+                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">
+                               ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end."
                              </div>
+                             ".$linking_buttons."
                             </td>";
   
             if (!$is_mobile)
@@ -585,7 +622,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
                 foreach ($objectlistcols_reduced as $key => $active)
                 {
-                  if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:115px;";
+                  if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:125px;";
                   else $style_td = "";
                   
                   $style_div = "";
@@ -637,7 +674,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
             $galleryview .= "
                             <td id=t".$items_row." style=\"width:".$cell_width.";\" ".$selectclick.">
-                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\">".
+                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
                                 $dlink_start."
                                   <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"border:0;\" /></div>
                                   ".showshorttext($folder_name, 18, true)."
@@ -744,12 +781,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 // link for copy & paste of download links (not if an access link is used)
                 if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
                 {
-                  $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
+                  $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-objectpath=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
                   $dlink_end = "</a>";
                 }
                 else
                 {
-                  $dlink_start = "<a data-href=\"javascript:void(0);\">";
+                  $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$object."\" data-href=\"javascript:void(0);\">";
                   $dlink_end = "</a>";
                 }
               }    
@@ -767,12 +804,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 // link for copy & paste of download links (not if an access link is used)
                 if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
                 {
-                  $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-location=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?wl=".$hash."\">";
+                  $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-objectpath=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?wl=".$hash."\">";
                   $dlink_end = "</a>";
                 }
                 else
                 {
-                  $dlink_start = "<a data-href=\"javascript:void(0);\">";
+                  $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$object."\" data-href=\"javascript:void(0);\">";
                   $dlink_end = "</a>";
                 }
               }
@@ -803,14 +840,20 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             if ($usedby != "")
             {
               $file_info['icon'] = "file_lock.png";
-            }         
+            }
+            
+            // drag events
+            if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
+            {
+              $dragevent = "draggable=\"true\" ondragstart=\"hcms_drag(event)\"";
+            }
+            else $dragevent = "";
             
             $listview .= "
                          <tr id=\"g".$items_row."\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
-                             <input type=\"hidden\" value=\"".$location_esc.$object."\" />
-                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\">
-                               <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$dlink_start.$object_name.$dlink_end."
+                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">
+                               ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end."
                              </div>
                            </td>";
             
@@ -825,7 +868,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 
                 foreach ($objectlistcols_reduced as $key => $active)
                 {
-                  if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:115px;";
+                  if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:125px;";
                   else $style_td = "";
                 
                   if ($active == 1)
@@ -1000,12 +1043,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if (!$is_mobile) $width = "160px";
               else $width = "180px";
                 
-              $linking_buttons = "<div style=\"width:".$width."; margin:0px auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
+              $linking_buttons = "<div style=\"width:".$width."; margin:0 auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
             }
   
             $galleryview .= "
                             <td id=\"t".$items_row."\" style=\"width:".$cell_width.";\" ".$selectclick.">
-                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\">".
+                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".
                                 $dlink_start."
                                   ".$thumbnail."
                                   ".showshorttext($object_name, 18, true)."
@@ -1068,6 +1111,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
 // select area
 var selectarea;
+
+// design theme
+themelocation = '<?php echo getthemelocation(); ?>';
 
 // context menu
 contextenable = true;
@@ -1172,7 +1218,7 @@ function initalize ()
   selectarea = document.getElementById('selectarea');
 
   // load screen
-  if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='none';
+  if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display = 'none';
 
   // collect objects and set objects array
   hcms_collectObjectpath ();
@@ -1186,7 +1232,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" onresize="resizecols();">
 
 <!-- load screen --> 
-<div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:none;"></div>
 
 <!-- select area --> 
 <div id="selectarea" class="hcmsSelectArea"></div>
@@ -1202,7 +1248,27 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 </div>
 
 <!-- contextual help --> 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang], $lang, "position:fixed; top:30px; right:30px;", "hcms_infoboxKeys"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang]."<br/>".$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy'][$lang], $lang, "position:fixed; top:30px; right:30px;", "hcms_infoboxKeys"); ?>
+
+<!-- memory (for drop event) -->
+<form name="memory" action="" method="post" target="popup_explorer" style="position:absolute; width:0; height:0; z-index:-1; left:0; top:0; visibility:hidden;">
+  <input type="hidden" name="action" value="" />
+  <input type="hidden" name="force" value="" />
+  <input type="hidden" name="contexttype" value="" />
+  <input type="hidden" name="site" value="" />
+  <input type="hidden" name="cat" value="" />
+  <input type="hidden" name="location" value="" />
+  <input type="hidden" name="targetlocation" value="" />
+  <input type="hidden" name="page" value="" />
+  <input type="hidden" name="pagename" value="" />
+  <input type="hidden" name="filetype" value="" />
+  <input type="hidden" name="media" value="" />
+  <input type="hidden" name="folder" value="" />
+  <input type="hidden" name="multiobject" value="" />
+  <input type="hidden" name="token" value="<?php echo $token; ?>" />
+  <input type="hidden" name="convert_type" value="" />
+  <input type="hidden" name="convert_cfg" value="" />
+</form>
 
 <!-- context menu --> 
 <div id="contextLayer" style="position:absolute; width:150px; height:260px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
@@ -1217,6 +1283,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
     <input type="hidden" name="site" value="" />
     <input type="hidden" name="cat" value="" />
     <input type="hidden" name="location" value="" />
+    <input type="hidden" name="targetlocation" value="" />
     <input type="hidden" name="page" value="" />
     <input type="hidden" name="pagename" value="" />
     <input type="hidden" name="filetype" value="" />
@@ -1315,7 +1382,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
         
         foreach ($objectlistcols_reduced as $key => $active)
         {
-          if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:115px; white-space:nowrap;";
+          if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:125px; white-space:nowrap;";
           else $style_td = "white-space:nowrap;";
           
           $sortnumeric = "";
@@ -1413,5 +1480,6 @@ if ($galleryview != "")
 initalize();
 </script>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

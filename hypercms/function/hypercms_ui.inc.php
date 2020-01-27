@@ -62,7 +62,7 @@ function toggleview ($view)
   // if not set and object linking is used, use medium gallery view
   elseif (empty ($_SESSION['hcms_temp_explorerview']) && is_array ($_SESSION['hcms_linking']))
   {
-    $_SESSION['hcms_temp_explorerview'] = "small";
+    setsession ('hcms_temp_explorerview', "small", true);
   }
   // if not set at all
   elseif (
@@ -70,7 +70,7 @@ function toggleview ($view)
     ($mgmt_config['explorerview'] == "detail" || $mgmt_config['explorerview'] == "small" || $mgmt_config['explorerview'] == "medium" || $mgmt_config['explorerview'] == "large")
   )
   {
-    $_SESSION['hcms_temp_explorerview'] = $mgmt_config['explorerview'];
+    setsession ('hcms_temp_explorerview', $mgmt_config['explorerview'], true);
   }
   else return false;
 
@@ -99,11 +99,11 @@ function togglesidebar ($view)
   // register sidebar
   if (!empty ($view) && $view != false && $view != "false")
   {
-    $_SESSION['hcms_temp_sidebar'] = true;
+    setsession ('hcms_temp_sidebar', true, true);
   }
   else
   {
-    $_SESSION['hcms_temp_sidebar'] = false;
+    setsession ('hcms_temp_sidebar', false, true);
   }
 
   // save GUI settings
@@ -572,8 +572,9 @@ function showsharelinks ($link, $mediafile, $lang="en", $style="", $id="hcms_sha
     <img src=\"".getthemelocation()."img/icon_pinterest.png\" title=\"Pinterest\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkPinterest('".$link."', hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
 
     // Google+ (support also videos and audio files as external links via GET API)
+    // $result .= "
+    // <img src=\"".getthemelocation()."img/icon_googleplus.png\" title=\"Google+\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkGooglePlus('".$link."') == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />
     $result .= "
-    <img src=\"".getthemelocation()."img/icon_googleplus.png\" title=\"Google+\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkGooglePlus('".$link."') == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />
   </div>";
 
     return $result;
@@ -1017,7 +1018,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // set media info
-        rdbms_setmedia ($container_id, $imageinfo['filesize'], $imageinfo['filetype'], $imageinfo['width'], $imageinfo['height'], $imageinfo['red'], $imageinfo['green'], $imageinfo['blue'], $imageinfo['colorkey'], $imageinfo['imagetype'], $imageinfo['md5_hash']);
+        if (is_array ($imageinfo)) rdbms_setmedia ($container_id, $imageinfo['filesize'], $imageinfo['filetype'], $imageinfo['width'], $imageinfo['height'], $imageinfo['red'], $imageinfo['green'], $imageinfo['blue'], $imageinfo['colorkey'], $imageinfo['imagetype'], $imageinfo['md5_hash']);
       }
 
       // if object will be deleted automatically
@@ -1212,16 +1213,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
         // check user browser for compatibility with pdf render javascript - PDF.JS and if original file is a pdf or is convertable to a pdf
         if (
-             (
-               (isset ($user_client['firefox']) && $user_client['firefox'] >= 6) || 
-               (isset ($user_client['msie'])) || 
-               (isset ($user_client['chrome']) && $user_client['chrome'] >= 24) || 
-               (isset ($user_client['unknown']))
-             ) && 
-             (
-               substr_count (".pdf", $file_info['orig_ext']) == 1 || 
-               (!empty ($mgmt_docconvert[$file_info['orig_ext']]) && is_array ($mgmt_docconvert[$file_info['orig_ext']]) && in_array (".pdf", $mgmt_docconvert[$file_info['orig_ext']]))
-             )
+            substr_count (".pdf", $file_info['orig_ext']) == 1 || 
+            (!empty ($mgmt_docconvert[$file_info['orig_ext']]) && is_array ($mgmt_docconvert[$file_info['orig_ext']]) && in_array (".pdf", $mgmt_docconvert[$file_info['orig_ext']]))
            )
         {
           // if original file is a pdf
@@ -3014,7 +3007,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
       {
         $dir = "";
         $temp_complocation[$site] = null;
-        $_SESSION['hcms_temp_complocation'] = $temp_complocation;
+        setsession ('hcms_temp_complocation', $temp_complocation, true);
       }
     }
 
@@ -3093,7 +3086,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     if (valid_locationname ($dir))
     {
       $temp_complocation[$site] = $dir;
-      $_SESSION['hcms_temp_complocation'] = $temp_complocation;
+      setsession ('hcms_temp_complocation', $temp_complocation, true);
     }
 
     // media format
@@ -5541,7 +5534,7 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
     $result = "
   <div style=\"".$style."\">
     ".getescapedtext ($hcms_lang['translate'][$lang], $charset, $lang)."&nbsp;
-    <select id=\"sourceLang_".$id."\" style=\"width:55px;\">
+    <select id=\"sourceLang_".$id."\" style=\"width:70px; padding-left:2px; padding-right:16px;\">
       <option value=\"\">Automatic</option>";
 
     $langcode_array = getlanguageoptions();
@@ -5560,7 +5553,7 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
     $result .= "
     </select>
     &#10095;
-    <select id=\"targetLang_".$id."\" style=\"width:55px;\">";
+    <select id=\"targetLang_".$id."\" style=\"width:70px; padding-left:2px; padding-right:16px;\">";
 
     if ($langcode_array != false)
     {

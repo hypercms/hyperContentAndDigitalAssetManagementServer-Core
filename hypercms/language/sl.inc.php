@@ -7,8 +7,9 @@ $hcms_lang_date['sl'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['sl'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['sl'] = "Share";
-$hcms_lang['social-media-sharing']['sl'] = "Social Media sharing";
+$hcms_lang['clipboard']['sl'] = "Odložišče";
+$hcms_lang['share']['sl'] = "Deliti";
+$hcms_lang['social-media-sharing']['sl'] = "Skupna raba socialnih medijev";
 $hcms_lang['remember-me']['sl'] = "Zapomni si me";
 $hcms_lang['my-recent-tasks']['sl'] = "Moje zadnje naloge";
 $hcms_lang['my-recent-objects']['sl'] = "Moje zadnje predmetov";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['sl'] = "Predmetov";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['sl'] = "Pridržite tipko CTRL-tipka: izberite predmete po kliknite";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['sl'] = "Držite tipko SHIFT-tipka: izberite skupino predmetov s 2 kliki";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['sl'] = "Pritisnite ALT-ključ: Stikalo za prenos - povezave do kopiranje & prilepite v e-pošto";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['sl'] = "Povlecite in spustite: Pritisnite tipko CTRL za kopiranje in tipko ALT za povezano kopijo";
 $hcms_lang['notify-me']['sl'] = "Obvesti me";
 $hcms_lang['send-to-chat']['sl'] = "Pošlji za klepet";
 $hcms_lang['password-is-not-set']['sl'] = "Geslo ni nastavljena";

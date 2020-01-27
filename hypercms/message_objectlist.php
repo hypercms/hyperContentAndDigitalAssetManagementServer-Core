@@ -124,9 +124,10 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
         $listview .= "
             <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
               <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
-                <input id=\"message_id\" type=\"hidden\" value=\"".$mailfile."\" />
                 <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >&nbsp; 
+                  <a data-objectpath=\"".$mailfile."\" data-href=\"javascript:void(0);\">
                     <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>
+                  </a>
                 </div>
               </td>
               <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$email_title."</span></td>
@@ -319,5 +320,6 @@ else
 initalize();
 </script>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

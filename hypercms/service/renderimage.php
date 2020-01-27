@@ -243,13 +243,13 @@ if (checktoken ($token, $user))
         {
           $formats = $formatstring;
         }
-        
+
         if (substr_count ($formatstring.".", ".png.") > 0)
         {
           $thumbformat = $formatstring;
         }
       }
-      
+
       if ($thumbformat == "") $thumbformat = ".png";
 
       if ($formats != "")
@@ -259,10 +259,10 @@ if (checktoken ($token, $user))
         // -s ... size in pixels (width x height)
         // -c ... offset in x and y (x-offset x y-offset)
         // -f ... image output format      
-   
+
         $mgmt_imageoptions[$formats]['preview'] = "";
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] = "";
-         
+
         // crop image
         if ($imageresize == "crop" && $imagecropwidth > 0 && $imagecropheight > 0 && $imagex >= 0 && $imagey >= 0)
         {
@@ -273,7 +273,7 @@ if (checktoken ($token, $user))
         {
           $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagewidth."x".$imageheight;
         }
-        
+
         if ($thumbwidth > 0 && $thumbheight > 0)
         {
           $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -s ".$thumbwidth."x".$thumbheight;
@@ -289,7 +289,7 @@ if (checktoken ($token, $user))
         elseif ($rotate == "flip" && array_key_exists ($flip, $available_flip))
         {
           $flipflop = str_replace (array("fv", "fh"), array("-fv", "-fh"), $flip);
-          
+
           $mgmt_imageoptions[$formats]['preview'] .= " ".$flipflop;
           $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " ".$flipflop;
         }

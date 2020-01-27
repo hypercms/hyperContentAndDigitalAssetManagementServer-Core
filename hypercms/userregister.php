@@ -151,20 +151,20 @@ $token_new = createtoken ("sys");
 <style>
 video#videoScreen
 { 
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    z-index: -100;
-    -ms-transform: translateX(-50%) translateY(-50%);
-    -moz-transform: translateX(-50%) translateY(-50%);
-    -webkit-transform: translateX(-50%) translateY(-50%);
-    transform: translateX(-50%) translateY(-50%);
-    background: url('<?php echo getthemelocation($theme); ?>/img/backgrd_start.png') no-repeat;
-    background-size: cover; 
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -100;
+  -ms-transform: translateX(-50%) translateY(-50%);
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+  background: url('<?php echo getthemelocation($theme); ?>/img/backgrd_start.png') no-repeat;
+  background-size: cover; 
 }
 
 @media screen and (max-device-width: 800px)
@@ -507,6 +507,6 @@ if ($show != "") echo "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"wi
 
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>
-

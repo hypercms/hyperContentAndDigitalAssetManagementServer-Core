@@ -1713,7 +1713,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // get user who checked the object out and read associated working content container file
 
     $usedby = "";
-
+    
     if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview" || $buildview == "publish" || $buildview == "unpublish" || $buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
     {
       // load working container for none-live-view
@@ -1855,7 +1855,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // get default value
           $session_defaultvalue = getattribute ($hypertag, "default");
 
-          // set default value in session if not set already
+          // set default value in session if not already set (DO NOT USE function setsession, since it is not a system session variable!)
           if (empty ($_SESSION[$language_sessionvar])) $_SESSION[$language_sessionvar] = $session_defaultvalue;
 
           if ($buildview != "template")
@@ -2230,6 +2230,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           $sizeheight = getattribute ($hypertag, "height");
 
           if ($sizeheight == false || $sizeheight <= 0) $sizeheight = "300";
+          elseif ($is_mobile && $sizeheight <= 30) $sizeheight = "34";
           elseif ($sizeheight <= 28) $sizeheight = "30";
 
           // get width in pixel of text field
@@ -2857,7 +2858,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $sizeheight = getattribute ($hypertag, "height");
 
             if ($sizeheight == false || $sizeheight <= 0) $sizeheight = "300";
-            elseif ($sizeheight < 28) $sizeheight = "30";
+            elseif ($is_mobile && $sizeheight <= 30) $sizeheight = "34";
+            elseif ($sizeheight <= 28) $sizeheight = "30";
 
             // get width in pixel of text field
             $sizewidth = getattribute ($hypertag, "width");
@@ -3476,10 +3478,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {
-                        // register site for editor
-                        $_SESSION['site_editor'] = $site;
-                        $_SESSION['contenttype_editor'] = $contenttype;
-
                         // setting the toolbar
                         if (empty ($toolbar)) $toolbar = 'Default';
 
@@ -3531,10 +3529,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {
-                        // register site for editor
-                        $_SESSION['site_editor'] = $site;
-                        $_SESSION['contenttype_editor'] = $contenttype;     
-
                         // setting the toolbar
                         if (empty ($toolbar)) $toolbar = 'Default'; 
 
@@ -3587,10 +3581,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {
-                        // register site for editor
-                        $_SESSION['site_editor'] = $site;
-                        $_SESSION['contenttype_editor'] = $contenttype;
-
                         // setting the toolbar
                         if (empty ($toolbar)) $toolbar = 'Default';
 
@@ -7216,7 +7206,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               // drag button
               if ($buildview != "preview" && ($headstoremeta != "" || $headstoreform != "" || $headstoreview != "" || $headstorelang != ""))
               {
-                $headstore = "<div id=\"meta_info\" style=\"all:unset; position:fixed; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.png\" style=\"all:unset; display:inline !important; width:32px; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left; cursor:pointer;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_drag(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div>";
+                $headstore = "<div id=\"meta_info\" style=\"all:unset; position:fixed; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.png\" style=\"all:unset; display:inline !important; width:32px; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left; cursor:pointer;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_dragLayers(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div>";
               }
             }
             // no body-tag available
@@ -7239,7 +7229,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   </head>
   <body class=\"hcmsWorkplaceGeneric\">\n";
 
-              if ($buildview != "preview") $viewstore_new .= "<div id=\"meta_info\" style=\"position:fixed; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.png\" style=\"all:unset; display:inline !important; width:32px; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_drag(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div><div style=\"width:100%; height:38px; display:block;\">&nbsp;</div>";
+              if ($buildview != "preview") $viewstore_new .= "<div id=\"meta_info\" style=\"position:fixed; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.png\" style=\"all:unset; display:inline !important; width:32px; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_dragLayers(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div><div style=\"width:100%; height:38px; display:block;\">&nbsp;</div>";
 
               $viewstore_new .= $viewstore."\n</body>\n</html>";
 

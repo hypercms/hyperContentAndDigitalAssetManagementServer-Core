@@ -164,19 +164,17 @@ if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_dev.inc.php"))
 // include session
 if (defined ("SESSION") && constant ("SESSION") == "create" && is_file ($mgmt_config['abs_path_cms']."include/session.inc.php"))
 {
+  // recreate session if session data of user is missing (experimental)
+  // if (function_exists ('recreateusersession') && !empty ($mgmt_config['writesessiondata'])) recreateusersession ();
+
+  // map session data to global variables
   require_once ($mgmt_config['abs_path_cms']."include/session.inc.php");
 
-  // get instance from session
-  if (!empty ($_SESSION['hcms_instance']))
-  {
-    $instance_name = $_SESSION['hcms_instance'];
-  }
-
   // if instances are used, load the main configuration file of the given instance
-  if (!empty ($mgmt_config['instances']) && !empty ($instance_name) && valid_publicationname ($instance_name) && is_file ($mgmt_config['instances'].$instance_name.".inc.php"))
+  if (!empty ($mgmt_config['instances']) && !empty ($instance) && valid_publicationname ($instance) && is_file ($mgmt_config['instances'].$instance.".inc.php"))
   {
     // in case a distributed system is used
-    require_once ($mgmt_config['instances'].$instance_name.".inc.php");
+    require_once ($mgmt_config['instances'].$instance.".inc.php");
   }
 }
 

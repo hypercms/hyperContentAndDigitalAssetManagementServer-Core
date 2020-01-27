@@ -236,6 +236,7 @@ if (!empty ($file_info['ext']))
   }
   ?>
 </div>
-  
+
+<?php include_once ($mgmt_config['abs_path_cms']."include/footer.inc.php"); ?>
 </body>
 </html>

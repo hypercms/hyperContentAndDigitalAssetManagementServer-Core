@@ -31,73 +31,73 @@ checkusersession ($user);
 <h2>Main API Functions</h2>
 <?php
 $file = "../function/hypercms_main.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>Get API Functions</h2>
 <?php
 $file = "../function/hypercms_get.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>Set API Functions</h2>
 <?php
 $file = "../function/hypercms_set.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>Connect API Functions</h2>
 <?php
 $file = "../function/hypercms_connect.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>Security API Functions</h2>
 <?php
 $file = "../function/hypercms_sec.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>Media API Functions</h2>
 <?php
 $file = "../function/hypercms_media.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>Metadata API Functions</h2>
 <?php
 $file = "../function/hypercms_meta.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>Link API Functions</h2>
 <?php
 $file = "../function/hypercms_link.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>Plugin API Functions</h2>
 <?php
 $file = "../function/hypercms_plugin.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>User Interface API Functions</h2>
 <?php
 $file = "../function/hypercms_ui.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>Template Engine API Functions</h2>
 <?php
 $file = "../function/hypercms_tplengine.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <h2>XML API Functions</h2>
 <?php
 $file = "../function/hypercms_xml.inc.php";
-echo showAPIdocs ($file);
+echo showAPIdocs ($file, "html", false);
 ?>
 
 <?php
@@ -107,7 +107,7 @@ if (is_file ($mgmt_config['abs_path_cms']."report/hypercms_report.inc.php"))
 <h2>Report API Functions</h2>
 <?php
   $file = $mgmt_config['abs_path_cms']."report/hypercms_report.inc.php";
-  echo showAPIdocs ($file);
+  echo showAPIdocs ($file, "html", false);
 }
 ?>
 
@@ -118,7 +118,7 @@ if (is_file ($mgmt_config['abs_path_cms']."project/hypercms_project.inc.php"))
 <h2>Project API Functions</h2>
 <?php
   $file = $mgmt_config['abs_path_cms']."project/hypercms_project.inc.php";
-  echo showAPIdocs ($file);
+  echo showAPIdocs ($file, "html", false);
 }
 ?>
 
@@ -129,7 +129,7 @@ if (is_file ($mgmt_config['abs_path_cms']."task/hypercms_task.inc.php"))
 <h2>Task API Functions</h2>
 <?php
   $file = $mgmt_config['abs_path_cms']."task/hypercms_task.inc.php";
-  echo showAPIdocs ($file);
+  echo showAPIdocs ($file, "html", false);
 }
 ?>
 
@@ -140,7 +140,7 @@ if (is_file ($mgmt_config['abs_path_cms']."workflow/hypercms_workflow.inc.php"))
 <h2>Workflow API Functions</h2>
 <?php
   $file = $mgmt_config['abs_path_cms']."workflow/hypercms_workflow.inc.php";
-  echo showAPIdocs ($file);
+  echo showAPIdocs ($file, "html", false);
 }
 ?>
 
@@ -151,7 +151,7 @@ if (is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.ph
 <h2>Cloud Storage API Functions</h2>
 <?php
   $file = $mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php";
-  echo showAPIdocs ($file);
+  echo showAPIdocs ($file, "html", false);
 }
 ?>
 
@@ -162,7 +162,7 @@ if (is_file ($mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.
 <h2>Import/Export API Functions</h2>
 <?php
   $file = $mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.inc.php";
-  echo showAPIdocs ($file);
+  echo showAPIdocs ($file, "html", false);
 }
 ?>
 </body>

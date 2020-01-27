@@ -671,18 +671,22 @@ function switchsidebar ()
     $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/togglesidebar.php", {view: view});
     
     // change view in object list
-    if (eval (parent.frames['mainFrame']) && eval (parent.frames['sidebarFrame']))
+    if (parent.frames['mainFrame'] && parent.frames['sidebarFrame'])
     {
       if (view)
       {
-        parent.document.getElementById('mainLayer').style.right = "330px";
-        parent.document.getElementById('sidebarLayer').style.width = "330px";
+        parent.document.getElementById('mainLayer').style.transition = "1s";
+        parent.document.getElementById('mainLayer').style.right = "350px";
+        parent.document.getElementById('sidebarLayer').style.transition = "1s";
+        parent.document.getElementById('sidebarLayer').style.width = "350px";
         parent.frames['mainFrame'].resizecols();
         sidebar = true;
       }
       else
       {
+        parent.document.getElementById('mainLayer').style.transition = "1s";
         parent.document.getElementById('mainLayer').style.right = "0px";
+        parent.document.getElementById('sidebarLayer').style.transition = "1s";
         parent.document.getElementById('sidebarLayer').style.width = "0px";
         parent.frames['mainFrame'].resizecols();
         sidebar = false;
@@ -1565,14 +1569,14 @@ else
     ?>
   </div>
   
-  <div style="float:right; margin:0px 8px 0px 0px">
+  <div style="float:right; <?php if (!$is_mobile && !$is_iphone) echo "margin:0px 8px 0px 0px"; else echo "margin:0px -2px 0px 0px;"; ?>">
     <?php
     // object list views
     echo "
       <form name=\"memory\" style=\"display:none;\">
         <input name=\"view\" type=\"hidden\" value=\"".$temp_explorerview."\" />
       </form>
-      <div id=\"button_obj_view\" onClick=\"hcms_hideSelector('select_obj_edit'); hcms_hideSelector('select_obj_convert'); hcms_switchSelector('select_obj_view');\" class=\"hcmsButton hcmsButtonSizeWide\">
+      <div id=\"button_obj_view\" onClick=\"hcms_switchSelector('select_obj_view'); hcms_hideSelector('select_obj_edit'); hcms_hideSelector('select_obj_convert');\" class=\"hcmsButton hcmsButtonSizeWide\">
         <img src=\"".getthemelocation()."img/button_view_gallery_".$temp_explorerview.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" />
 
         <div id=\"select_obj_view\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:-180px; visibility:hidden; z-index:999; width:180px; max-height:".($is_mobile ? "50px" : "76px")."; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">

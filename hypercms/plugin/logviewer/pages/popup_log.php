@@ -55,5 +55,6 @@ echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsBu
   <?php echo $description; ?>
 </div>
 
+<?php include_once ($mgmt_config['abs_path_cms']."include/footer.inc.php"); ?>
 </body>
 </html>

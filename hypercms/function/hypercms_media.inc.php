@@ -1779,33 +1779,36 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             // extensions for certain image rendering options
             foreach ($mgmt_imageoptions as $imageoptions_ext => $imageoptions)
             {
-              // if we make a thumbnail we always use the thumbnail configuration from the jpg
-              $check1 = $type == 'thumbnail' && substr_count ($imageoptions_ext.".", ".jpg.") > 0;
-              // else we check the format we convert to
-              $check2 = $type != 'thumbnail' && substr_count ($imageoptions_ext.".", ".".$format_set.".") > 0;
-              // we also need to check if the type array is present
-              $check3 = array_key_exists ($type, $mgmt_imageoptions[$imageoptions_ext]);
+              // if we create a thumbnail we always use the thumbnail configuration from the jpg
+              $check1 = ($type == 'thumbnail' && substr_count ($imageoptions_ext.".", ".jpg.") > 0);
+
+              // else we check the format we want to convert to
+              $check2 = ($type != 'thumbnail' && substr_count ($imageoptions_ext.".", ".".$format_set.".") > 0);
+
+              // check if the type array is present
+              if (is_string ($type) && !empty ($type)) $check3 = array_key_exists ($type, $mgmt_imageoptions[$imageoptions_ext]);
+              else $check3 = false;
 
               // get image rendering options based on given destination format
               if (($check1 || $check2) && $check3)
               {
                 // Options:
                 // -s ... output size in width x height in pixel (WxH)
-                // -f ... output format (file extension without dot [jpg, png, gif])
+                // -f ... output format (file extension without dot, e.g. jpg, png, gif)
                 // -d ... image density (DPI) for vector graphics and EPS files, common values are 72, 96 dots per inch for screen, while printers typically support 150, 300, 600, or 1200 dots per inch
-                // -q ... quality for compressed image formats like JPEG (1 to 100)
+                // -q ... quality for compressed image formats like JPEG  from 1 to 100
                 // -c ... crop x and y coordinates (XxY)
-                // -b ... image brightness
-                // -k .... image contrast
+                // -b ... image brightness from -100 to 100
+                // -k .... image contrast from -100 to 100
                 // -cs ... color space of image, e.g. RGB, CMYK, gray
                 // -rotate ... rotate image
-                // -fv ... flip image in the vertical direction
-                // -fh ... flop image in the horizontal direction
+                // -fv ... flip image in the vertical direction (no value required)
+                // -fh ... flip image in the horizontal direction (no value required)
                 // -sharpen ... sharpen image, e.g. one pixel size sharpen: -sharpen 0x1.0
-                // -sketch ... skecthes an image, e.g. -sketch 0x20+120
+                // -sketch ... sketches an image, e.g. -sketch 0x20+120
                 // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
                 // -monochrome ... transform image to black and white
-                // -wm ... watermark in watermark image->positioning->geometry, e.g. image.png->topleft->+30
+                // -wm ... watermark image-path->positioning->margin, e.g. /files/image.png->topleft->+30
 
                 // image size (in pixel) definition
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-s ") > 0)
@@ -2575,9 +2578,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         // -sh ... sharpness (blur -1 up to 1 sharpen)
         // -gbcs ... gamma, brightness, contrast, saturation (neutral values are 0.0:1:0:0.0:1.0)
         // -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright, center] e.g. image.png->topleft)
-        // -rotate ... rotate video
-        // -fv ... flip video in vertical direction
-        // -fh ... flop video in horizontal direction
+        // -rotate ... rotate video by degrees
+        // -fv ... flip video in vertical direction (no value required)
+        // -fh ... flop video in horizontal direction (no value required)
 
         // define default option for support of versions before 5.3.4
         // note: audio codec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
@@ -3590,7 +3593,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
       }
     }
 
-    // convert-config is not supported when we are using createdocument
+    // convert-config is not supported when createdocument is used
     if (is_document ($mediafile))
     {
       $result_conv = createdocument ($site, $location_source, $location_dest, $mediafile, $format, $force_no_encrypt);
@@ -3667,8 +3670,26 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
       // information needed to extract the file name only
       $media_info = getfileinfo ($site, $mediafile, "comp");
 
-      // predicting the name the file will get by createmedia
-      $newname = $media_info['filename'].".".$media_config.".".$format;
+      // predict the name of the media file after createmedia based on media_config (images)
+      if ($media_config != "")
+      {
+        $newname = $media_info['filename'].".".$media_config.".".$format;
+      }
+      // thumbnail video file if type=origthumb
+      elseif (is_video ($mediafile) && strtolower ($format) == "origthumb")
+      {
+        $newname = $media_info['filename'].".orig.mp4";
+      }
+      // video
+      elseif (is_video ($mediafile))
+      {
+        $newname = $media_info['filename'].".media.".$format;
+      }
+      // document or thumbnail image
+      else
+      {
+        $newname = $media_info['filename'].".thumb.".$format;
+      }
 
       // generate new file only if necessary
       if (!is_file ($location_dest.$newname) || @filemtime ($location_source.$mediafile) > @filemtime ($location_dest.$newname) || !empty ($force_recreate)) 
@@ -4981,7 +5002,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
     // check max file size (set default value to 2000 MB)
     if (!isset ($mgmt_config['maxzipsize'])) $mgmt_config['maxzipsize'] = 2000;
 
-    if ($mgmt_config['db_connect_rdbms'] != "")
+    if (!empty ($mgmt_config['db_connect_rdbms']))
     {
       $filesize = 0;
 

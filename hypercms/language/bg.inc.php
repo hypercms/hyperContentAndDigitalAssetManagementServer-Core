@@ -7,8 +7,9 @@ $hcms_lang_date['bg'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['bg'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['bg'] = "Share";
-$hcms_lang['social-media-sharing']['bg'] = "Social Media sharing";
+$hcms_lang['clipboard']['bg'] = "клипборда";
+$hcms_lang['share']['bg'] = "Дял";
+$hcms_lang['social-media-sharing']['bg'] = "Споделяне на социални медии";
 $hcms_lang['remember-me']['bg'] = "Запомни ме";
 $hcms_lang['my-recent-tasks']['bg'] = "Моят последните задачи";
 $hcms_lang['my-recent-objects']['bg'] = "Моят последните предмети";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['bg'] = "Предмети";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['bg'] = "Задръжте клавиша CTRL-ключ: Изберете обекти чрез щракване";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['bg'] = "Задръжте SHIFT бутон: Изберете група на предмети от 2 щраквания";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['bg'] = "Натиснете клавиша ALT ключ: Ключ за да изтеглите връзки за копиране и поставяне в e-mail";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['bg'] = "Плъзнете и пуснете: Натиснете клавиша CTRL за копие и клавиша ALT за свързано ченге";
 $hcms_lang['notify-me']['bg'] = "Информирай ме";
 $hcms_lang['send-to-chat']['bg'] = "Изпрати за чат";
 $hcms_lang['password-is-not-set']['bg'] = "Паролата не е зададена";

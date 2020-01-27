@@ -110,10 +110,10 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
           $listview .= "
                 <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
                   <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
-                    <input id=\"queue_id\" type=\"hidden\" value=\"".$queue_id."\" />
                     <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
-                        <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." />&nbsp;
-                        <span title=\"".$object_name."\">".$object_name."</span>&nbsp;
+                      <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
+                        <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name."&nbsp;
+                      </a>
                     </div>
                   </td>";
                   
@@ -154,10 +154,10 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
         $listview .= "
               <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
                 <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
-                  <input id=\"queue_id\" type=\"hidden\" value=\"".$queue_id."\" />
-                  <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
-                      <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." />&nbsp;
-                      <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>&nbsp;
+                  <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject.">
+                    <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
+                      <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>&nbsp;
+                    </a>
                   </div>
                 </td>";
                 
@@ -355,5 +355,6 @@ else
 initalize();
 </script>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

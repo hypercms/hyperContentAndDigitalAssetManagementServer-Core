@@ -7,8 +7,9 @@ $hcms_lang_date['so'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['so'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['so'] = "Share";
-$hcms_lang['social-media-sharing']['so'] = "Social Media sharing";
+$hcms_lang['clipboard']['so'] = "Clipboard";
+$hcms_lang['share']['so'] = "La Wadaag";
+$hcms_lang['social-media-sharing']['so'] = "Wadaagista Warbaahinta Bulshada";
 $hcms_lang['remember-me']['so'] = "igu soo xusuuso";
 $hcms_lang['my-recent-tasks']['so'] = "Aan dhawaan hawl";
 $hcms_lang['my-recent-objects']['so'] = "Aan dhawaan alaabta";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['so'] = "Alaabta";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['so'] = "CTRL Inay Qabtaan Xil-Fure: Xulo alaabta ( riix ) ay";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['so'] = "SHIFT Inay Qabtaan Xil-Fure: Guddigiinnu Inay koox alaabta 2 clicks";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['so'] = "ALT Shir Jaraa'Id-Fure: Shaabuug u download-somali links in koobi/nuqul & cajiin oo e-mailka";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['so'] = "Jiid oo hoos u riix: Riix furaha CTRL nuqul iyo ALT furaha nuqul ku xiran";
 $hcms_lang['notify-me']['so'] = "Ogeeysiisaa i";
 $hcms_lang['send-to-chat']['so'] = "Soo Dir u sheekeyso";
 $hcms_lang['password-is-not-set']['so'] = "Dheh Ereygii Baaqa waa la wadaajiseen cibaadada";

@@ -3758,7 +3758,7 @@ function rdbms_getobject ($object_identifier)
 // -------------------------------------------- get object info by unique id or hash ----------------------------------------------- 
 
 // function: rdbms_getobject_info()
-// input: object identifier (object hash OR object ID OR access hash) [string], text IDs to be returned [array] (optional)
+// input: object identifier (object path Or object hash OR object ID OR access hash) [string], text IDs to be returned [array] (optional)
 // output: array with object info / false
 
 // description:
@@ -3772,8 +3772,8 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
   {
     $objectpath = "";
     
-    // if object identifier is already a location
-    if (strpos ("_".$object_identifier, "%page%") > 0 || strpos ("_".$object_identifier, "%comp%") > 0) return $object_identifier;
+    // if object identifier is already a location and no object info besides the object path has been rerquested
+    if ((strpos ("_".$object_identifier, "%page%/") > 0 || strpos ("_".$object_identifier, "%comp%/") > 0) && sizeof ($return_text_id) < 1) return $object_identifier;
     
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
@@ -3846,13 +3846,19 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
     }
     
     // try table object if public download is allowed
-    if ($mgmt_config['publicdownload'] == true)
+    if (!empty ($mgmt_config['publicdownload']))
     {
       if (is_numeric ($object_identifier))
       {
         $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media'.$sql_add_attr.' FROM object AS obj ';
         if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
         $sql .= 'WHERE obj.deleteuser="" AND obj.object_id='.intval($object_identifier).' LIMIT 1';
+      }
+      elseif (strpos ("_".$object_identifier, "%comp%/") > 0 || strpos ("_".$object_identifier, "%page%/") > 0)
+      {
+        $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media'.$sql_add_attr.' FROM object AS obj ';
+        if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
+        $sql .= 'WHERE obj.deleteuser="" AND obj.objectpath="'.str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object_identifier).'" LIMIT 1';
       }
       else
       {

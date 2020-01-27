@@ -16,20 +16,114 @@ require ("function/hypercms_api.inc.php");
 
 
 // input parameters
+$action = getrequest ("action");
+$action_esc = getrequest_esc ("action");
 $multiobject = getrequest ("multiobject");
+$targetlocation = getrequest_esc ("targetlocation", "locationname");
 $location_orig = getrequest_esc ("location", "locationname");
 $folder = getrequest_esc ("folder", "objectname");
 $page = getrequest_esc ("page", "objectname");
 $force = getrequest_esc ("force");
-$action = getrequest_esc ("action");
 $method = getrequest_esc ("method");
 $maxcount = getrequest_esc ("maxcount", "numeric");
-$published_only = getrequest ("published_only");
+$published_only = getrequest_esc ("published_only");
 $tempfile = getrequest_esc ("tempfile", "locationname");
-$token = getrequest ("token");
-$from_page = getrequest ("from_page");
+$from_page = getrequest_esc ("from_page");
+$token= getrequest_esc ("token");
 
-// set current location (for action = paste the folder is not part of the location to paste)
+// ==================================== stage 1 (only for cut, copy, linkcopy) ====================================
+
+// if action includes 2 stages (cut or copy and paste)
+if ($force == "start" && substr_count ($action, "->") == 1)
+{
+  list ($method, $action) = explode ("->", $action);
+
+  // correct location for access permission
+  $location = $location_orig;
+
+  // get publication and category
+  $site = getpublication ($location);
+  $cat = getcategory ($site, $location);
+
+  // publication management config
+  if (valid_publicationname ($site)) require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+
+  // convert location
+  $location = deconvertpath ($location, "file");
+  $location_esc = convertpath ($site, $location, $cat);
+
+  // ------------------------------ permission section --------------------------------
+
+  // check authorization
+  $authorized = false;
+
+  // check access permissions
+  $ownergroup = accesspermission ($site, $location, $cat);
+  $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
+  if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
+  {
+    if (($method == "cut" || $method == "copy" || $method == "linkcopy") && ($setlocalpermission['rename'] == 1 && $setlocalpermission['folderrename'] == 1)) $authorized = true;
+  }
+
+  // --------------------------------- logic section ----------------------------------
+
+  // initalize
+  $result = array();
+
+  // execute action
+  if ($authorized == true)
+  {
+    // empty clipboard
+    setsession ('hcms_temp_clipboard', "");
+
+    if ($multiobject != "")
+    {
+      $multiobject_array = link_db_getobject ($multiobject);
+      $result['result'] = true;
+
+      foreach ($multiobject_array as $objectpath)
+      {
+        if ($objectpath != "" && $result['result'] == true)
+        {
+          $temp_site = getpublication ($objectpath);
+          $temp_location = getlocation ($objectpath);
+          $temp_page = getobject ($objectpath);
+
+          if ($temp_site != "" && $temp_location != "" && $temp_page != "")
+          {
+            if ($method == "cut") $result = cutobject ($temp_site, $temp_location, $temp_page, $user, true);
+            elseif ($method == "copy") $result = copyobject ($temp_site, $temp_location, $temp_page, $user, true);
+            elseif ($method == "linkcopy") $result = copyconnectedobject ($temp_site, $temp_location, $temp_page, $user, true);
+          }
+        }
+      }
+    }
+    elseif ($folder != "")
+    {
+      if ($method == "cut") $result = cutobject ($site, $location, $folder, $user);
+      elseif ($method == "copy") $result = copyobject ($site, $location, $folder, $user);
+      elseif ($method == "linkcopy") $result = copyconnectedobject ($site, $location, $folder, $user);
+    }     
+    elseif ($page != "")
+    {
+      if ($method == "cut") $result = cutobject ($site, $location, $page, $user);
+      elseif ($method == "copy") copyobject ($site, $location, $page, $user);
+      elseif ($method == "linkcopy") $result = copyconnectedobject ($site, $location, $page, $user);
+    } 
+
+    if (!empty ($result['message'])) $show = $result['message']; 
+
+    // use target location for paste
+    $location_orig = $targetlocation;
+    $folder = "";
+    $page = "";
+  }
+}
+
+// ==================================== stage 2 ====================================
+
+// set current location (for action "paste" the folder is not part of the location to paste)
 if ($folder != "" && $action != "paste")
 {
   $location = $location_orig.$folder."/";
@@ -41,7 +135,7 @@ $site = getpublication ($location);
 $cat = getcategory ($site, $location);
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site)) require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
 // convert location
 $location = deconvertpath ($location, "file");
@@ -60,7 +154,9 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
-$add_javascript = "";
+
+// initalize
+$add_javascript = "window.focus();";
 $count = 0;
 
 // check authorization of requested action
@@ -96,7 +192,7 @@ if ($authorized == true || $force == "stop")
   if ($force == "start" || $force == "continue")
   {
     $multiobject_array = array();
-    
+
     // define multiobject array as input
     if ($force == "start")
     {
@@ -177,14 +273,19 @@ if ($authorized == true || $force == "stop")
       // not suitable for EasyEdit
       $add_javascript = "
     if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();  
-    self.close();\n";
+    self.close();";
     }
     elseif ($action == "paste" && $method == "cut")
     {
       // not suitable for EasyEdit
       $add_javascript = "
-    if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();  
-    self.close();\n";
+    // reload root node in explorer
+    if (opener.document.getElementById('a_".$cat."_".$site."')) opener.document.getElementById('a_".$cat."_".$site."').click();
+    // reload objectlist from explorer
+    if (opener.parent.frames['workplFrame'] && opener.parent.frames['workplFrame'].frames['mainFrame']) opener.parent.frames['workplFrame'].frames['mainFrame'].location.reload();
+    // reload objectlist from itself
+    else if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); 
+    self.close();";
     }  
     elseif ($action == "delete" || $action == "deletemark" || $action == "deleteunmark" || $action == "restore" || $action == "emptybin")
     {
@@ -193,49 +294,39 @@ if ($authorized == true || $force == "stop")
       {
         // not suitable for EasyEdit
         $add_javascript = "
-    if (opener.parent.frames['mainFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?virtual=1&action=recyclebin';
-    opener.parent.frames['mainFrame'].location.reload();  
-    self.close();\n";
+    if (opener.parent.frames['controlFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?virtual=1&action=recyclebin';
+    if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();  
+    self.close();";
       }
       else
       {
         // not suitable for EasyEdit
         $add_javascript = "
-    if (opener.parent.frames['mainFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
-    opener.parent.frames['mainFrame'].location.reload();  
-    self.close();\n";
+    if (opener.parent.frames['controlFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+    if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();  
+    self.close();";
       }
     }
     elseif ($action == "publish" || $action == "unpublish")
     {
       // not suitable for EasyEdit
       $add_javascript = "
-        if (opener && opener.parent)
+      if (opener && opener.parent)
+      {
+        // called from objectlist
+        if (opener.parent.frames['mainFrame'] && opener.parent.frames['mainFrame'].location) opener.parent.frames['mainFrame'].location.reload(); 
+        
+        // called from explorer
+        if (opener.parent.frames['workplFrame'])
         {
-          // called from objectlist
-          if (opener.parent.frames['mainFrame'] && opener.parent.frames['mainFrame'].location) opener.parent.frames['mainFrame'].location.reload(); 
-          
-          // called from navigator
-          if (opener.parent.frames['workplFrame'])
-          {
-            if (opener.parent.frames['workplFrame'].frames['mainFrame'] && opener.parent.frames['workplFrame'].frames['mainFrame'].location) opener.parent.frames['workplFrame'].frames['mainFrame'].location.reload();
-            // Sadly we can't just use the location to reload the controlFrame, we must redefine all variables here
-            // if (opener.parent.frames['workplFrame'].frames['controlFrame'] && opener.parent.frames['workplFrame'].frames['controlFrame'].location) opener.parent.frames['workplFrame'].frames['controlFrame'].location = opener.parent.frames['workplFrame'].frames['controlFrame'].location;
-          }
-          
-          // called from the control content
-          if (opener.parent.frames['objFrame'] && opener.parent.frames['objFrame'].location) opener.parent.frames['objFrame'].location.reload();
-
-          // should possible also reload the opener of the content edit
-          if (opener.parent.opener && opener.parent.opener.top && opener.parent.opener.top.frames['workplFrame'])
-          {
-            // if (opener.parent.opener.top.frames['workplFrame'].frames['mainFrame'] && opener.parent.opener.top.frames['workplFrame'].frames['mainFrame'].location) opener.parent.opener.top.frames['workplFrame'].frames['mainFrame'].location.reload();
-            // Sadly we can't just use the location to reload the controlFrame, we must redefine all variables here
-            // if (opener.parent.opener.top.frames['workplFrame'].frames['controlFrame'] && opener.parent.opener.top.frames['workplFrame'].frames['controlFrame'].location) opener.parent.opener.top.frames['workplFrame'].frames['controlFrame'].location = opener.parent.opener.top.frames['workplFrame'].frames['controlFrame'].location;
-          }
+          if (opener.parent.frames['workplFrame'].frames['mainFrame'] && opener.parent.frames['workplFrame'].frames['mainFrame'].location) opener.parent.frames['workplFrame'].frames['mainFrame'].location.reload();
         }
+        
+        // called from control_content_menu
+        if (opener.parent.frames['objFrame'] && opener.parent.frames['objFrame'].location) opener.parent.frames['objFrame'].location.reload();
+      }
 
-        self.close();\n";
+      self.close();";
     }       
     else
     {
@@ -260,10 +351,11 @@ else
 }
 
 // define progress bar
-if ($maxcount > 0) $progress = (($maxcount - $count) / $maxcount) * 100;
-else $progress = 0;
-
-if ($progress == 0) $progress = 1;
+if ($maxcount > 0)
+{
+  $progress = (($maxcount - $count) / $maxcount) * 100;
+  if ($progress == 0) $progress = 1;
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -283,6 +375,7 @@ function refreshpopup ()
 }
 
 setTimeout ('refreshpopup()', 1000);
+<?php if ($force == "start" || $force == "finish") echo "window.focus();"; ?>
 </script>
 </head>
 
@@ -291,13 +384,16 @@ setTimeout ('refreshpopup()', 1000);
 <div style="display:block; width:100%; text-align:center; vertical-align:middle;">
   <p class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?> <?php echo $status; ?></p>
   
+  <?php if (!empty ($progress) && $progress >= 0) { ?>
   <div style="display:block; width:80%; height:16px; margin:10px auto; border:1px solid #000000;">
     <div class="hcmsRowHead1" style="width:<?php echo $progress; ?>%; height:100%;"></div>
   </div>
+  <?php } ?>
   
   <form name="stop" action="" method="post">
     <input type="hidden" name="force" value="stop" />
-    <input type="hidden" name="action" value="<?php echo $action; ?>" />
+    <input type="hidden" name="action" value="<?php echo $action_esc; ?>" />
+    <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
     <input type="hidden" name="location" value="<?php echo $location_orig; ?>" />
     <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
     <input type="hidden" name="page" value="<?php echo $page; ?>" />

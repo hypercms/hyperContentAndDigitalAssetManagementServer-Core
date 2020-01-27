@@ -7,6 +7,7 @@ $hcms_lang_date['en'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['en'] = "ltr";
 
 // Text for hyperCMS
+$hcms_lang['clipboard']['en'] = "Clipboard";
 $hcms_lang['share']['en'] = "Share";
 $hcms_lang['social-media-sharing']['en'] = "Social Media sharing";
 $hcms_lang['remember-me']['en'] = "Remember me";
@@ -342,9 +343,10 @@ $hcms_lang['view']['en'] = "View";
 $hcms_lang['views']['en'] = "Views";
 $hcms_lang['more']['en'] = "More";
 $hcms_lang['objects']['en'] = "Objects";
-$hcms_lang['hold-ctrl-key-select-objects-by-click']['en'] = "Hold CTRL-Key: Select objects by click";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['en'] = "Hold SHIFT-Key: Select a group of objects by 2 clicks";
-$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['en'] = "Press ALT-Key: Switch to download-links to copy & paste into e-mails";
+$hcms_lang['hold-ctrl-key-select-objects-by-click']['en'] = "Press CTRL key: Select objects by click";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['en'] = "Press SHIFT key: Select a group of objects by 2 clicks";
+$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['en'] = "Press ALT key: Change to download-links for copy & paste in e-mails";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['en'] = "Drag and drop: Press CTRL key for copy and ALT key for connected copy";
 $hcms_lang['notify-me']['en'] = "Notify me";
 $hcms_lang['send-to-chat']['en'] = "Send to chat";
 $hcms_lang['password-is-not-set']['en'] = "Password is not set";

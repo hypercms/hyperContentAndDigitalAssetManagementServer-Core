@@ -23,5 +23,5 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-$_SESSION['hcms_temp_appendcontent'] = $appendcontent;
+setsession ('hcms_temp_appendcontent', $appendcontent, true);
 ?>

@@ -56,7 +56,7 @@ function searchlog_delete ($search_delete_id, $user)
     if ($searchlog_array != false && sizeof ($searchlog_array) > 0)
     {
       $data = "";
-      
+
       foreach ($searchlog_array as $searchlog)
       {
         if (strpos ($searchlog, "|") > 0)
@@ -66,7 +66,7 @@ function searchlog_delete ($search_delete_id, $user)
           if ($search_id != $search_delete_id) $data .= $searchlog."\n";
         }
       }
-      
+
       // save search log
       return savefile ($mgmt_config['abs_path_data']."log/", $user.".search.log", $data);
     }
@@ -96,15 +96,21 @@ class hcms_menupoint
   private $ajax_rnr = '';
   private $onmouseover = '';
   private $onmouseout = '';
-  
+  private $ondrag = '';
+  private $ondragstart = '';
+  private $ondragover = '';
+  private $ondrop = '';
+  private $objectpath = '';
+  private $draggable = false;
+
   const DEFAULT_IDPRE = 'hcms_menupoint_';
-  
+
   private static $counter = 1;
-  
+
   public function __construct ($name, $link, $image, $id = '') 
   {
     $this->name = $name;
-    
+
     // If we start with a / we don't use a image from our theme location
     if (substr ($image, 0, strlen ('http://')) == 'http://' || substr ($image, 0, strlen ('https://')) == 'https://')
       $this->image = $image;
@@ -112,7 +118,7 @@ class hcms_menupoint
       $this->image = getthemelocation().'img/'.$image;
     else
       $this->image = false;
-    
+
     // build own id if none is given
     if (empty ($id)) 
     {
@@ -122,10 +128,10 @@ class hcms_menupoint
     {
       $this->id = $id;
     }
-    
+
     // building the link
     if ($link == "#") $link = "#".$this->id;
-    
+
     $this->link = $link;  
     $this->subpoints = array();
   }
@@ -134,33 +140,32 @@ class hcms_menupoint
   public function setNodeCSSClass ($newClass)
   {
     $this->nodeCSSClass = $newClass;
-  }  
-  
+  }
+
   // add a single hcms_menupoint as a subpoint of this point
   public function addSubPoint (hcms_menupoint $mp) 
   {
     $this->subpoints[] = $mp;
   }
-  
+
   // set the onclick script for the a element
   public function setOnClick ($onclick)
   {
     if (!empty ($onclick)) $this->onclick = $this->fixScript($onclick);
   }
-  
+
   // set the onmouseover script for the a element
   public function setOnMouseOver ($onmouseover)
   {
     if (!empty ($onmouseover)) $this->onmouseover = $this->fixScript($onmouseover);
-
   }
-  
+
   // Set the onmouseout script for the a element
   public function setOnMouseOut ($onmouseout)
   {
     if (!empty ($onmouseout)) $this->onmouseout = $this->fixScript($onmouseout);
   }
-  
+
   // set the target for the a element
   public function setTarget ($target)
   {
@@ -169,7 +174,7 @@ class hcms_menupoint
       $this->target = $target;
     }
   }
-  
+
   // set the data for the AJAX request
   public function setAjaxData ($location, $rnr="")
   {
@@ -182,7 +187,44 @@ class hcms_menupoint
       $this->ajax_rnr = $rnr;
     }
   }
-  
+
+  // Set the ondrag script for the a element
+  public function setOnDrag ($ondrag)
+  {
+    if (!empty ($ondrag)) $this->ondrag = $this->fixScript($ondrag);
+  }
+
+  // Set the ondragstart script for the a element
+  public function setOnDragStart ($ondragstart)
+  {
+    if (!empty ($ondragstart)) $this->oondragstartndrag = $this->fixScript($ondragstart);
+  }
+
+  // Set the ondragover script for the a element
+  public function setOnDragOver ($ondragover)
+  {
+    if (!empty ($ondragover)) $this->ondragover = $this->fixScript($ondragover);
+  }
+
+  // Set the ondrop script for the a element
+  public function setOnDrop ($ondrop)
+  {
+    if (!empty ($ondrop)) $this->ondrop = $this->fixScript($ondrop);
+  }
+
+  // Set the objectpath for the a element
+  public function setObjectPath ($objectpath)
+  {
+    if (!empty ($objectpath)) $this->objectpath = str_replace ('"', "'", $objectpath);
+  }
+
+  // Set the objectpath for the a element
+  public function setDraggable ($draggable)
+  {
+    if (!empty ($draggable)) $this->draggable = true;
+    else $this->draggable = false;
+  }
+
   // generates the html code for this point
   public function generateHTML () 
   {
@@ -194,10 +236,10 @@ class hcms_menupoint
     {
       $lipart .= ' class="'.$this->nodeCSSClass.'"';
     }
-    
+
     $lipart .= '>';
     $html[] = $lipart;
-    
+
     // eventually the AJAX data
     if (!empty ($this->ajax_location)) 
     {
@@ -208,24 +250,30 @@ class hcms_menupoint
         $html[] = '<span id="ajax_rnr_'.$this->id.'" style="display:none;">'.url_encode($this->ajax_rnr).'</span>';
       }
     }
-    
+
     // an element
-    $apart = '<a style="padding-left: 0px;" id="a_'.$this->id.'" name="a_'.$this->id.'" ';
-    
+    $apart = '<a style="padding-left:0px;" id="a_'.$this->id.'" name="a_'.$this->id.'" ';
+
     if ($this->onclick) $apart .= 'onclick="'.$this->onclick.'" ';
     if ($this->onmouseover) $apart .= 'onmouseover="'.$this->onmouseover.'" ';
     if ($this->onmouseout) $apart .= 'onmouseout="'.$this->onmouseout.'" ';
     if ($this->target) $apart .= 'target="'.$this->target.'" ';
-    
+    if ($this->ondrag) $apart .= 'ondrag="'.$this->ondrag.'" ';
+    if ($this->ondragstart) $apart .= 'ondragstart="'.$this->ondragstart.'" ';
+    if ($this->ondragover) $apart .= 'ondragover="'.$this->ondragover.'" ';
+    if ($this->ondrop) $apart .= 'ondrop="'.$this->ondrop.'" ';
+    if ($this->objectpath) $apart .= 'data-objectpath="'.$this->objectpath.'" ';
+    if ($this->draggable) $apart .= 'draggable="true" ondragstart="hcms_drag(event)" ';
+
     $apart .= 'href="'.$this->link.'">';
-    
+
     // generating the ins tag in the a tag
-    if ($this->image) $apart .= '<ins style="background-image: url(\''.$this->image.'\');" class="hcmsIconTree">&#160;</ins>';
+    if ($this->image) $apart .= '<ins style="background-image:url(\''.$this->image.'\');" class="hcmsIconTree">&#160;</ins>';
     // text output
-    $apart .= '<span id="context_name_'.$this->id.'">'.$this->name.'</span>';
+    $apart .= $this->name;
     $apart .= '</a>';
     $html[] = $apart;
-    
+
     // eventually add the subpoints
     if (!empty ($this->subpoints)) 
     {
@@ -235,15 +283,15 @@ class hcms_menupoint
       {
         $html[] = $point->generateHTML();
       }
-      
+
       $html[] = '</ul>';
     }
-    
+
     $html[] = '</li>';
-    
+
     return implode ("\n", $html)."\n";
   }
-  
+
   // fixes the script so that it can be used in the on* event.
   // adds a ; at the end of the script if not present and
   // exchanges " to ' because we use on*="<script>".
@@ -260,7 +308,7 @@ class hcms_menupoint
 function generateExplorerTree ($location, $user, $runningNumber=1) 
 {
   global $mgmt_config, $pageaccess, $compaccess, $localpermission, $hiddenfolder;
-  
+
   $site = getpublication ($location);
   $cat = getcategory ($site, $location);
 
@@ -270,17 +318,17 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
     $location = deconvertpath ($location);
     $id = "";
     $rnrid = "";
-
+  
     // full access to the folder
     if (accesspermission ($site, $location, $cat))
     {
       // get all files in dir
       $dir = @opendir ($location);
-    
+
       if ($dir != false)
       {   
         $folder_array = array ();
-        
+
         while ($folder = @readdir ($dir)) 
         { 
           // if directory
@@ -289,52 +337,52 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
             // check access permission
             $ownergroup = accesspermission ($site, $location.$folder."/", $cat);
             $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
-     
+
             if ($setlocalpermission['root'] == 1)
             {
               $folder_array[] = $folder;
-              
+
               // create folder object if it does not exist
-              if (!is_file ($location.$folder."/.folder") && is_writable ($location.$folder)) createobject ($site, $location.$folder."/", ".folder", "default.meta.tpl", "sys");
+              if (!is_file ($location.$folder."/.folder")) createobject ($site, $location.$folder."/", ".folder", "default.meta.tpl", "sys");
             }
           }
         }
-        
+
         $result = array();
-        
+
         // if we have access
         if (sizeof ($folder_array) > 0)
         {
           natcasesort ($folder_array);
           reset ($folder_array);
-          
+
           $i = 1;
-          
+
           foreach ($folder_array as $folder)
           {
             $folderinfo = getfileinfo ($site, $location.$folder, $cat);
-            
+
             // verify that folder has not been marked as deleted
             if ($folder != "" && $folderinfo['deleted'] == false)
             {
               $foldername = $folderinfo['name'];
               $icon = $folderinfo['icon'];
-              
+
               // the folder to be used for the AJAX request
               $ajaxfolder = $location_esc.$folder;
-              
+
               $id = $cat.'_'.$site.'_';
-              
+
               // generating the id from the running number so we don't have any ID problems
               if (!empty ($runningNumber))
               {
                 $id .= $runningNumber.'_';
                 $rnrid = $runningNumber.'_';
               }
-              
+
               $id .= $i;
               $rnrid .= $i++;
-  
+
               // generating the menupoint object with the needed configuration
               $point = new hcms_menupoint($foldername, 'frameset_objectlist.php?site='.url_encode($site).'&cat='.url_encode($cat).'&location='.url_encode($location_esc.$folder.'/'), $icon, $id);
               $point->setOnClick('hcms_jstree_open("'.$id.'");');
@@ -343,23 +391,27 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
               $point->setAjaxData($ajaxfolder, $rnrid);
               $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "'.$cat.'", "'.$location_esc.'", ".folder", "'.$foldername.'", "Folder", "", "'.$folder.'", "'.$id.'", $("#context_token").text());');
               $point->setOnMouseOut('hcms_resetContext();');
+              $point->setOnDrop('hcms_drop(event);'); 
+              $point->setOnDragOver('hcms_allowDrop(event)');
+              $point->setObjectPath($location_esc.$folder);
+              $point->setDraggable(true);
               $result[] = $point;
             }
           }
         }
-        
+
         @closedir ($dir);
-    
+
         return $result;
       }
       else 
       {
         $errcode = "10178";
         $error[] = $mgmt_config['today']."|explorer.php|error|".$errcode."|root directory for publication ".$site." is missing";         
-    
+
         // save log
         savelog (@$error);   
-      
+
         return false;
       }
     } 
@@ -399,20 +451,20 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
             }
           }
         }
-        
+
         $result = array();
-        
+
         // if we have access anywhere
         if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         {
           // remove double entries 
           $folder_array = array_unique ($folder_array);
-          
+
           natcasesort ($folder_array);
           reset ($folder_array);
 
           $i = 1;
-          
+
           foreach ($folder_array as $path)
           {
             $folderinfo = getfileinfo ($site, $path, $cat);
@@ -425,22 +477,22 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
               $folder = getobject ($location_esc);
               $foldername = $folderinfo['name'];
               $icon = $folderinfo['icon'];
-              
+
               // the folder to be used for the AJAX request
               $ajaxfolder = $location_esc;
-              
+
               $id = $cat.'_'.$site.'_';
-  
+
               // generating the id from the running number so we don't have any ID problems
               if (!empty ($runningNumber))
               {
                 $id .= $runningNumber.'_';
                 $rnrid = $runningNumber.'_';
               }
-              
+
               $id .= $i;
               $rnrid .= $i++;
-  
+
               // Generating the menupoint object with the needed configuration
               $point = new hcms_menupoint($foldername, 'frameset_objectlist.php?site='.url_encode($site).'&cat='.$cat.'&location='.url_encode($location_esc), $icon, $id);
               $point->setOnClick('hcms_jstree_open("'.$id.'");');
@@ -449,11 +501,15 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
               $point->setAjaxData($ajaxfolder, $rnrid);
               $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "'.$cat.'", "'.$folderpath.'", ".folder", "'.$foldername.'", "Folder", "", "'.$folder.'", "'.$id.'", $("#context_token").text());');
               $point->setOnMouseOut('hcms_resetContext();');
+              $point->setOnDrop('hcms_drop(event);'); 
+              $point->setOnDragOver('hcms_allowDrop(event)');
+              $point->setObjectPath($location_esc);
+              $point->setDraggable(false);
               $result[] = $point;
             } 
           }
         }
-        
+
         return $result;
       } 
       else return array();
@@ -472,25 +528,25 @@ function generateTaxonomyTree ($site, $tax_id, $runningNumber=1)
     $id = "";
     $rnrid = "";
     $result = array();
-    
+
     // get taxonomy keyword list
     $tax_array = gettaxonomy_sublevel ($site, $lang, $tax_id);
 
     if (is_array ($tax_array) && sizeof ($tax_array) > 0)
     {
       $i = 1;
-      
+
       foreach ($tax_array as $tax_id => $tax_keyword)
       {
         $id = 'tax_'.$site.'_';
-        
+
         // generating the id from the running number so we don't have any ID problems
         if (!empty ($runningNumber))
         {
           $id .= $runningNumber.'_';
           $rnrid = $runningNumber.'_';
         }
-        
+
         $id .= $i;
         $rnrid .= $i++;
 
@@ -504,7 +560,7 @@ function generateTaxonomyTree ($site, $tax_id, $runningNumber=1)
         $result[] = $point;
       }
     }
-    
+
     return $result;
   }
   else return false;
@@ -520,20 +576,20 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
     $id = "";
     $rnrid = "";
     $result = array();
-    
+
     // analyze hierarchy URL
     $hierarchy_url = trim ($hierarchy_url, "/");
     $hierarchy_array = explode ("/", $hierarchy_url);
     $site = $hierarchy_array[1];
     $name = $hierarchy_array[2];
-    
+
     // get hierarchy keyword list
     $text_array = gethierarchy_sublevel ($hierarchy_url);
 
     if (is_array ($text_array) && sizeof ($text_array) > 0)
     {
       $i = 1;
-      
+
       foreach ($text_array as $hierarchy_url => $label)
       {
         $id = 'text_'.$site.'_'.$name.'_';
@@ -544,16 +600,16 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
           $id .= $runningNumber.'_';
           $rnrid = $runningNumber.'_';
         }
-        
+
         $id .= $i;
         $rnrid .= $i++;
-        
+
         $hierarchy_url = trim ($hierarchy_url, "/");
         $hierarchy_array = explode ("/", $hierarchy_url);
-        
+
         $site = $hierarchy_array[1];
         $last_text_id = end ($hierarchy_array);
-        
+
         // if no text content is availbale
         if (trim ($label) == "") $label = $hcms_lang['none'][$lang];
         
@@ -579,7 +635,7 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
         }
       }
     }
-    
+
     return $result;
   }
   else return false;
@@ -591,9 +647,9 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
 function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false, $site=false)
 {
   global $mgmt_config;
-  
+
   $return = array();
-  
+
   if (is_array ($array) && sizeof ($array) > 0)
   {
     foreach ($array as $key => $point)
@@ -602,7 +658,7 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false, $site
       if (is_array ($point) && array_key_exists ('name', $point) && array_key_exists ('icon', $point) && (array_key_exists ('page', $point) || array_key_exists ('subpoints', $point)))
       {
         $icon = $point['icon'];
-        
+
         if (array_key_exists ('subpoints', $point) && is_array ($point['subpoints']))
         {
           $id = str_replace (array(" ", "/", '\\'), "_", $pluginKey.($groupKey !== false ? $groupKey : "").'_'.$key);
@@ -623,12 +679,12 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false, $site
           {
             $link .= '&control='.url_encode($point['control']);
           }
-          
+
           if ($site)
           {
             $link .= '&site='.url_encode($site);
           }
-          
+
           $curr = new hcms_menupoint($point['name'], $link, $icon);
           $curr->setOnClick('changeSelection(this)');
           $curr->setTarget('workplFrame');
@@ -638,7 +694,7 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false, $site
       }
     }
   }
-  
+
   return $return;
 }
 
@@ -661,7 +717,7 @@ if ($location != "")
   {
     $tree = generateHierarchyTree ($location, $rnr);
   }
-  
+
   if (!empty ($tree) && is_array ($tree)) 
   {
     // Generate the html for each point
@@ -714,7 +770,7 @@ else
     $point = new hcms_menupoint($hcms_lang['desktop'][$lang], '#desktop', 'desk.png', 'desktop');
     $point->setOnClick('hcms_jstree_toggle_preventDefault("desktop", event);');
     $point->setOnMouseOver('hcms_resetContext();');
-    
+
     if (checkrootpermission ('desktopsetting')) 
     {
       $subpoint = new hcms_menupoint($hcms_lang['personal-settings'][$lang], "user_edit.php?site=*Null*&login=".$user."&login_cat=home", 'userhome.png');
@@ -732,7 +788,7 @@ else
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
     }
-    
+
     if (checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && $mgmt_config['db_connect_rdbms'] != "")
     {
       $subpoint = new hcms_menupoint($hcms_lang['task-management'][$lang], "task/task_list.php", 'task.png');
@@ -741,7 +797,7 @@ else
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
     }
-    
+
     if (checkrootpermission ('desktopfavorites'))
     {
       $subpoint = new hcms_menupoint($hcms_lang['favorites'][$lang], "frameset_objectlist.php?virtual=1&action=favorites", 'favorites.png');
@@ -750,7 +806,7 @@ else
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
     }
-    
+
     if (checkrootpermission ('desktopcheckedout'))
     {
       $subpoint = new hcms_menupoint($hcms_lang['checked-out-items'][$lang], "frameset_objectlist.php?virtual=1&action=checkedout", 'file_locked.png');
@@ -759,8 +815,17 @@ else
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
     }
-    
-    if ($mgmt_config['db_connect_rdbms'] && !empty ($mgmt_config['recyclebin']))
+
+    if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config['clipboard']))
+    {
+      $subpoint = new hcms_menupoint($hcms_lang['clipboard'][$lang], "frameset_objectlist.php?virtual=1&action=clipboard", 'button_file_paste.png');
+      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setTarget('workplFrame');
+      $subpoint->setOnMouseOver('hcms_resetContext();');
+      $point->addSubPoint($subpoint);
+    }
+
+    if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config['recyclebin']))
     {
       $subpoint = new hcms_menupoint($hcms_lang['recycle-bin'][$lang], "frameset_objectlist.php?virtual=1&action=recyclebin", 'recycle_bin.png');
       $subpoint->setOnClick('changeSelection(this)');
@@ -768,13 +833,13 @@ else
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
     }
-    
+
     $messageaccess = false;
 
     if (is_array ($siteaccess))
     {
       reset ($siteaccess);
-      
+
       foreach ($siteaccess as $site_name)
       {
         // include configuration file of publication if not included already
@@ -795,8 +860,8 @@ else
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
     }
-    
-    if ($mgmt_config['db_connect_rdbms'])
+
+    if (!empty ($mgmt_config['db_connect_rdbms']))
     {
       $subpoint = new hcms_menupoint($hcms_lang['publishing-queue'][$lang], "frameset_queue.php?queueuser=".$user, 'queue.png');
       $subpoint->setOnClick('changeSelection(this)');
@@ -804,7 +869,7 @@ else
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
     }
-    
+
     if (checkrootpermission ('desktoptimetravel'))
     {
       $subpoint = new hcms_menupoint($hcms_lang['travel-through-time'][$lang], "history.php", 'history.png');
@@ -813,7 +878,7 @@ else
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
     }
-    
+
     $maintree .= $point->generateHTML();
   }
 
@@ -836,7 +901,7 @@ else
   if (is_array ($siteaccess))
   {
     reset ($siteaccess);
-    
+
     // loop through all publications
     foreach ($siteaccess as $site)  
     {
@@ -858,13 +923,13 @@ else
         if (empty ($hcms_assetbrowser) && $set_site_admin == false && $mgmt_config[$site]['site_admin'] == true)
         {
           $set_site_admin = true;
-        
+
           if ((checkrootpermission ('site') || checkrootpermission ('user')) && strtolower ($diskkey) == "server")
           {
             $point = new hcms_menupoint($hcms_lang['administration'][$lang], '#main', 'admin.png', 'main');
             $point->setOnClick('hcms_jstree_toggle_preventDefault("main", event);');
             $point->setOnMouseOver('hcms_resetContext();');
-            
+
             if (is_file ($mgmt_config['abs_path_cms']."connector/instance/frameset_instance.php") && $mgmt_config['instances'] && checkadminpermission () && checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['instance-management'][$lang], "connector/instance/frameset_instance.php?site=*Null*", 'instance.png');
@@ -873,7 +938,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['publication-management'][$lang], "frameset_site.php?site=*Null*", 'site.png');
@@ -882,7 +947,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkrootpermission ('user'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['user-management'][$lang], "frameset_user.php?site=*Null*", 'user.png');
@@ -891,7 +956,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php", 'event.png');
@@ -900,7 +965,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['publishing-queue'][$lang], "frameset_queue.php", 'queue.png');
@@ -909,7 +974,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (!$is_mobile && is_file ($mgmt_config['abs_path_cms']."connector/imexport/frameset_imexport.php") && $site != "hcms_empty" && checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['importexport'][$lang], "connector/imexport/frameset_imexport.php?site=*Null*", 'imexport.png');
@@ -918,7 +983,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-  
+
             if (is_file ($mgmt_config['abs_path_cms']."report/frameset_report.php") && $site != "hcms_empty" && checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['report-management'][$lang], "report/frameset_report.php?site=*Null*", 'template.png');
@@ -927,7 +992,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['plugins'][$lang], "plugin_management.php", 'plugin.png');
@@ -936,25 +1001,25 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             $maintree .= $point->generateHTML();
           }  
         }   
-        
+
         // ------------------------------------------- publication node -----------------------------------------------
         if ((empty ($hcms_portal) || !empty ($mgmt_config[$site]['portalaccesslink'])) && $site != "hcms_empty")
         {
           $publication = new hcms_menupoint($site, '#site_'.$site, 'site.png', 'site_'.$site);
           $publication->setOnClick('hcms_jstree_toggle_preventDefault("site_'.$site.'", event);');
           $publication->setOnMouseOver('hcms_resetContext();');
-        
+
           // -------------------------------------------- administration ------------------------------------------------
           if (empty ($hcms_assetbrowser) && (checkglobalpermission ($site, 'user') || checkglobalpermission ($site, 'group')))
           {
             $point = new hcms_menupoint($hcms_lang['administration'][$lang], '#admin_'.$site, 'admin.png', 'admin_'.$site);
             $point->setOnMouseOver('hcms_resetContext();');
             $point->setOnClick('hcms_jstree_toggle_preventDefault("admin_'.$site.'", event);');
-              
+
             if (checkglobalpermission ($site, 'user'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['user-management'][$lang], "frameset_user.php?site=".url_encode($site), 'user.png');
@@ -963,7 +1028,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkglobalpermission ($site, 'group'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['group-management'][$lang], "frameset_group.php?site=".url_encode($site), 'usergroup.png');
@@ -972,7 +1037,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             // display system log if it is not a server diskkey
             if (checkglobalpermission ($site, 'user') && strtolower ($diskkey) != "server")
             {
@@ -991,7 +1056,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-                  
+    
             $publication->addSubPoint($point);
           }
 
@@ -1000,7 +1065,7 @@ else
           {
             $point = new hcms_menupoint($hcms_lang['personalization'][$lang], '#pers_'.$site, 'pers_registration.png', 'pers_'.$site);
             $point->setOnClick('hcms_jstree_toggle_preventDefault("pers_'.$site.'", event);');
-              
+
             if (checkglobalpermission ($site, 'perstrack'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['customer-tracking'][$lang], "frameset_pers.php?site=".url_encode($site)."&cat=tracking", 'pers_registration.png');
@@ -1009,7 +1074,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkglobalpermission ($site, 'persprof'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['customer-profiles'][$lang], "frameset_pers.php?site=".url_encode($site)."&cat=profile", 'pers_profile.png');
@@ -1018,16 +1083,16 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             $publication->addSubPoint($point);
           }
-          
+
           // --------------------------------------------- workflow -----------------------------------------------------
           if (empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && !$is_mobile && checkglobalpermission ($site, 'workflow'))
           {
             $point = new hcms_menupoint($hcms_lang['workflow'][$lang], '#wrkflw_'.$site, 'workflow.png', 'wrkflw_'.$site);
             $point->setOnClick('hcms_jstree_toggle_preventDefault("wrkflw_'.$site.'", event);');
-              
+
             if (checkglobalpermission ($site, 'workflowproc'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['workflow-management'][$lang], "workflow/frameset_workflow.php?site=".url_encode($site)."&cat=man", 'workflow.png');
@@ -1045,17 +1110,17 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             $publication->addSubPoint($point);
           }
-          
+
           // --------------------------------------------- template ---------------------------------------------------
           if (empty ($hcms_assetbrowser) && !$is_mobile && checkglobalpermission ($site, 'template'))
           {
             $point = new hcms_menupoint($hcms_lang['templates'][$lang], '#template_'.$site, 'template.png', 'template_'.$site);
             $point->setOnMouseOver('hcms_resetContext();');
             $point->setOnClick('hcms_jstree_toggle_preventDefault("template_'.$site.'", event);');
-              
+
             if (checkglobalpermission ($site, 'tpl') && empty ($mgmt_config[$site]['dam']))
             {
               $subpoint = new hcms_menupoint($hcms_lang['page-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=page", 'template_page.png');
@@ -1064,7 +1129,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkglobalpermission ($site, 'tpl'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['component-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=comp", 'template_comp.png');
@@ -1082,7 +1147,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkglobalpermission ($site, 'tpl'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['meta-data-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=meta", 'template_media.png');
@@ -1091,7 +1156,7 @@ else
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
             }
-            
+
             if (checkglobalpermission ($site, 'tplmedia'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['template-media'][$lang], "frameset_media.php?site=".url_encode($site)."&mediacat=tpl", 'media.png');
@@ -1112,7 +1177,7 @@ else
             
             $publication->addSubPoint($point);
           }
-          
+
           // ----------------------------------------- plugins ----------------------------------------------
           if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin))
           { 
@@ -1126,7 +1191,7 @@ else
               }
             }
           }
-          
+
           // ----------------------------------------- taxonomy ----------------------------------------------
           if (!empty ($mgmt_config[$site]['taxonomy']) && (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page')))
           {
@@ -1136,12 +1201,12 @@ else
             $point->setAjaxData('%taxonomy%/'.$site.'/'.$lang.'/0/0');
             $publication->addSubPoint($point);
           }
-          
+
           // --------------------------------- metadata/content hierarchy -------------------------------------
           if (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page'))
           {
             $hierarchy = gethierarchy_defintion ($site);
-            
+
             if (is_array ($hierarchy) && sizeof ($hierarchy) > 0)
             {
               foreach ($hierarchy as $name => $level_array)
@@ -1153,7 +1218,7 @@ else
                     if (!empty ($label_array[$lang])) $label = $label_array[$lang];
                     elseif (!empty ($label_array['default'])) $label = $label_array['default'];
                     else $label = "undefined";
-                  
+
                     $point = new hcms_menupoint($label, '#text_'.$site.'_'.$name, 'folder.png', 'text_'.$site.'_'.$name);
                     $point->setOnClick('hcms_jstree_open("text_'.$site.'_'.$name.'", event);');
                     $point->setNodeCSSClass('jstree-closed jstree-reload');
@@ -1164,7 +1229,7 @@ else
               }
             }
           }
-          
+
           // ----------------------------------------- component ---------------------------------------------
           // category of content: cat=comp
           if (is_dir ($mgmt_config['abs_path_comp'].$site."/") && checkglobalpermission ($site, 'component'))
@@ -1172,13 +1237,13 @@ else
             // since version 5.6.3 the root folders also need to have containers
             // update comp/assets root
             $comp_root = deconvertpath ("%comp%/".$site."/", "file");
-            
+
             // create folder object if it does not exist  
             if (!is_file ($comp_root.".folder") && is_writable ($comp_root)) createobject ($site, $comp_root, ".folder", "default.meta.tpl", "sys");
-            
+
             // use component root
             $location_root = "%comp%/".$site."/";
-    
+
             $point = new hcms_menupoint($hcms_lang['assets'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=comp&location=".url_encode($location_root)."&virtual=1", 'folder_comp.png', 'comp_'.$site);
             $point->setOnClick('hcms_jstree_open("comp_'.$site.'", event);');
             $point->setTarget('workplFrame');
@@ -1186,9 +1251,13 @@ else
             $point->setAjaxData($location_root);
             $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "comp", "'.getlocation($location_root).'", ".folder", "'.getescapedtext ($hcms_lang['assets'][$lang]).'", "Folder", "", "'.getobject($location_root).'", "comp_'.$site.'", $("#context_token").text());');
             $point->setOnMouseOut('hcms_resetContext();');
+            $point->setOnDrop('hcms_drop(event);'); 
+            $point->setOnDragOver('hcms_allowDrop(event)');
+            $point->setObjectPath($location_root);
+            $point->setDraggable(false);
             $publication->addSubPoint($point);
           }
-  
+
           // ----------------------------------------- page ----------------------------------------------
           // category of content: cat=page
           if (empty ($hcms_assetbrowser) && !empty ($mgmt_config[$site]['abs_path_page']) && is_dir ($mgmt_config[$site]['abs_path_page']) && checkglobalpermission ($site, 'page') && empty ($mgmt_config[$site]['dam']))
@@ -1196,13 +1265,13 @@ else
             // since version 5.6.3 the root folders also need to have containers
             // update page root
             $page_root = deconvertpath ("%page%/".$site."/", "file");
-            
+
             // create folder object if it does not exist
             if (!is_file ($page_root.".folder") && is_writable ($page_root)) createobject ($site, $page_root, ".folder", "default.meta.tpl", "sys");
 
             // use page root
             $location_root = "%page%/".$site."/";
-  
+
             $point = new hcms_menupoint($hcms_lang['pages'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=page&location=".url_encode($location_root)."&virtual=1", 'folder_page.png', 'page_'.$site);
             $point->setOnClick('hcms_jstree_open("page_'.$site.'", event);');
             $point->setTarget('workplFrame');
@@ -1210,9 +1279,13 @@ else
             $point->setAjaxData($location_root);
             $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "page", "'.getlocation($location_root).'", ".folder", "'.getescapedtext ($hcms_lang['pages'][$lang]).'", "Folder", "", "'.getobject($location_root).'", "comp_'.$site.'", $("#context_token").text());');
             $point->setOnMouseOut('hcms_resetContext();');
+            $point->setOnDrop('hcms_drop(event);'); 
+            $point->setOnDragOver('hcms_allowDrop(event)');
+            $point->setObjectPath($location_root);
+            $point->setDraggable(false);
             $publication->addSubPoint($point);
           }
-          
+
           $tree .= $publication->generateHTML();
         }
       }
@@ -1225,9 +1298,8 @@ else
     <title>hyperCMS</title>
     <meta charset="<?php echo getcodepage ($lang); ?>" />
     <meta name="viewport" content="width=260, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css?ts=<?php echo time(); ?>" />
-    
+
     <!-- JQuery (for navigation tree and autocomplete) -->
     <script type="text/javascript" src="javascript/jquery/jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>  
@@ -1239,7 +1311,7 @@ else
     <!-- main and contextmenu library -->
     <script type="text/javascript" src="javascript/main.js?ts=<?php echo time(); ?>"></script>
     <script type="text/javascript" src="javascript/contextmenu.js?ts=<?php echo time(); ?>"></script>
-    
+
     <!-- Rich calendar -->
     <link  rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
     <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
@@ -1249,13 +1321,16 @@ else
     <script type="text/javascript" src="javascript/rich_calendar/rc_lang_pt.js"></script>
     <script type="text/javascript" src="javascript/rich_calendar/rc_lang_ru.js"></script>
     <script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
-    
+
     <!-- Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php echo $mgmt_config['googlemaps_appkey']; ?>"></script>
 
     <script type="text/javascript">
     // variable where lastSelected element is stored
     var lastSelected = "";
+
+    // design theme
+    themelocation = '<?php echo getthemelocation(); ?>';
 
     // set contect menu option
     contextenable = true;
@@ -1264,14 +1339,14 @@ else
 
     // define global variable for popup window name used in contextmenu.js
     var session_id = '<?php session_id(); ?>';
-    
+
     $(function ()
     {
       // fix the html of the existing menupoint for jstree to work correctly (no newline and no more than one space)
       var html = $('#menupointlist').html();
       html = html.replace('\n', '');
       html = html.replace(/ {2,}/, '');
-      
+
       // JS-TREE Configuration
       $("#menu").jstree({
         "plugins" : ["themes", "html_data"],
@@ -1306,20 +1381,20 @@ else
         reloadNode(data.args[0]);
       })
     });
-    
+
     // toggle a single node 
     function hcms_jstree_toggle (nodeName) 
     {
       $("#menu").jstree("toggle_node","#"+nodeName);
       changeSelection($("#"+nodeName).children('a'));
     }
-    
+
     function hcms_jstree_toggle_preventDefault (nodeName, event) 
     {
       hcms_jstree_toggle(nodeName);
       event.preventDefault();
     }
-    
+
     // just open a single node
     function hcms_jstree_open(nodeName) 
     {
@@ -1328,13 +1403,13 @@ else
       $("#menu").jstree("open_node","#"+nodeName);
       changeSelection($("#"+nodeName).children('a'));
     }
-    
+
     function hcms_jstree_open_preventDefault (nodeName, event) 
     {
       hcms_jstree_open(nodeName);
       event.preventDefault();
     }
-    
+
     // Reloads the data for a node via jstree functions if the node has the class jstree-reload
     function reloadNode (node) 
     {
@@ -1343,7 +1418,7 @@ else
         $("#menu").jstree('refresh', node);
       }
     }
-    
+
     // Changes the class so the node appears to be selected and the old node is unselected
     function changeSelection(node)
     {
@@ -1351,25 +1426,25 @@ else
       {
         lastSelected.children("span").removeClass('hcmsObjectSelected');
       }
-      
+
       lastSelected = $(node);
       lastSelected.children("span").addClass('hcmsObjectSelected');
     }
-    
+
     function unsetColors ()
     {
       if (document.getElementById('unsetcolors').checked == true)
       {
         var colors = document.getElementsByClassName('hcmsColorKey');
         var i;
-        
+
         for (i = 0; i < colors.length; i++)
         {
           colors[i].checked = false;
         }
       }
     }
-    
+
     function setColors ()
     {
       document.getElementById('unsetcolors').checked = false;
@@ -1391,7 +1466,7 @@ else
         return true;
       }
     }
-    
+
     // Google Maps JavaScript API v3: Map Simple
     var map;
     var dragging = false;
@@ -1399,7 +1474,7 @@ else
     var rect;
     var pos1, pos2;
     var latlng1, latlng2;
-    
+
     function initRectangle ()
     {
       rect = new google.maps.Rectangle({
@@ -1411,7 +1486,7 @@ else
         clickable: false
       });
     }
-    
+
     function initMap ()
     {
       var mapOptions = {
@@ -1420,20 +1495,20 @@ else
           disableDefaultUI: true,
           mapTypeId: google.maps.MapTypeId.ROADMAP
       };
-    
+
       map = new google.maps.Map(document.getElementById('map'), mapOptions);
-      
+
       <?php if (!$is_mobile) { ?>  
       initRectangle();
-      
+
       document.getElementById('map').onmousedown = function(e) {
         e = e || window.event;
-        
+
         // right mouse click
         if ((e.which && e.which == 3) || (e.button && e.button == 2))
         {
           rightclick = true;
-          
+
           // hide context menu
           setTimeout (hcms_hideContextmenu, 10);
         }
@@ -1447,22 +1522,22 @@ else
             // reset rectangle
             rect.setMap(null);
             initRectangle();
-            
+
             document.forms['searchform_advanced'].elements['geo_border_sw'].value = '';
             document.forms['searchform_advanced'].elements['geo_border_ne'].value = '';
           }
         }
       }
-    
+
       google.maps.event.addListener(map, 'mousedown', function(e) {
         map.setOptions({draggable: false});
-        
+
         // current position on the map
         latlng1 = e.latLng;
         dragging = true;
         pos1 = e.pixel;
       });
-    
+
       google.maps.event.addListener(map, 'mousemove', function(e) {
         // current position on the map
         latlng2 = e.latLng;
@@ -1481,22 +1556,22 @@ else
           rect.setBounds(latLngBounds);
         }
       });
-     
+
       google.maps.event.addListener(map, 'mouseup', function(e) {
         map.setOptions({draggable: true});
         dragging = false;
         rightclick = false;
-    
+
         if (rect && rect.getBounds() !== undefined)
         {
           var borderSW = rect.getBounds().getSouthWest();
           var borderNE = rect.getBounds().getNorthEast();
-    
+
           document.forms['searchform_advanced'].elements['geo_border_sw'].value = borderSW;
           document.forms['searchform_advanced'].elements['geo_border_ne'].value = borderNE;
         }
       });
-      
+
       <?php } else { ?>
       google.maps.event.addListener(map, 'bounds_changed', function() {
         if (map.getBounds() !== undefined)
@@ -1510,7 +1585,7 @@ else
       });
       <?php } ?>
     }
-    
+
     function activateFulltextSearch ()
     {
       if (document.getElementById('fulltextLayer').style.display == 'none')
@@ -1520,18 +1595,14 @@ else
         hcms_hideInfo('advancedLayer');
         hcms_hideInfo('contentLayer');
         hcms_hideInfo('keywordsLayer');
-        hcms_hideInfo('imageLayer');
-        hcms_hideInfo('mapLayer');
-        hcms_hideInfo('dateLayer');
         hcms_hideInfo('idLayer');
-        hcms_hideInfo('recipientLayer');
       }
       else
       {
         hcms_hideInfo('fulltextLayer');
       }
     }
-    
+
     function activateAdvancedSearch ()
     {
       if (document.getElementById('advancedLayer').style.display == 'none')
@@ -1541,11 +1612,7 @@ else
         hcms_showInfo('advancedLayer',0);
         hcms_showInfo('contentLayer',0);
         hcms_hideInfo('keywordsLayer');
-        hcms_hideInfo('imageLayer');
-        hcms_hideInfo('mapLayer');
-        hcms_hideInfo('dateLayer');
         hcms_hideInfo('idLayer');
-        hcms_hideInfo('recipientLayer');
       }
       else
       {
@@ -1553,7 +1620,7 @@ else
         hcms_hideInfo('contentLayer');
       }
     }
-    
+
     function activateKeywordSearch ()
     {
       if (document.getElementById('keywordsLayer').style.display == 'none')
@@ -1567,50 +1634,38 @@ else
         hcms_hideInfo('fulltextLayer');
         hcms_hideInfo('advancedLayer');
         hcms_hideInfo('contentLayer');
-        hcms_hideInfo('imageLayer');
         hcms_showInfo('keywordsLayer',0);
-        hcms_hideInfo('mapLayer');
-        hcms_hideInfo('dateLayer');
         hcms_hideInfo('idLayer');
-        hcms_hideInfo('recipientLayer');
       }
       else
       {
         hcms_hideInfo('keywordsLayer');
       }
     }
-    
+
     function activateImageSearch ()
     {
       if (document.getElementById('imageLayer').style.display == 'none')
       {
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
-        hcms_hideInfo('fulltextLayer');
-        hcms_hideInfo('advancedLayer');
         hcms_hideInfo('contentLayer');
-        hcms_hideInfo('keywordsLayer');
         hcms_showInfo('imageLayer',0);
-        hcms_hideInfo('mapLayer');
-        hcms_hideInfo('dateLayer');
         hcms_hideInfo('idLayer');
-        hcms_hideInfo('recipientLayer');
       }
       else
       {
         hcms_hideInfo('imageLayer');
       }
     }
-    
+
     function activateGeolocationSearch ()
     {
       document.forms['searchform_advanced'].elements['action'].value = 'base_search';
       hcms_switchInfo('mapLayer');
       initMap();
-      hcms_hideInfo('dateLayer');
       hcms_hideInfo('idLayer');
-      hcms_hideInfo('recipientLayer');
     }
-    
+
     function activateLastmodifiedSearch ()
     {
       document.forms['searchform_advanced'].elements['action'].value = 'base_search';
@@ -1618,7 +1673,7 @@ else
       hcms_hideInfo('idLayer');
       hcms_hideInfo('recipientLayer');
     }
-    
+
     function activateIdSearch ()
     {
       if (document.getElementById('idLayer').style.display == 'none')
@@ -1639,19 +1694,14 @@ else
         hcms_hideInfo('idLayer');
       }
     }
-    
+
     function activateRecipientSearch ()
     {
       if (document.getElementById('recipientLayer').style.display == 'none')
       {
         document.forms['searchform_advanced'].elements['action'].value = 'recipient';
-        hcms_hideInfo('fulltextLayer',0);
-        hcms_hideInfo('advancedLayer');
         hcms_hideInfo('contentLayer');
-        hcms_hideInfo('keywordsLayer');
-        hcms_hideInfo('imageLayer');
         hcms_hideInfo('dateLayer');
-        hcms_hideInfo('mapLayer');
         hcms_hideInfo('idLayer');
         hcms_showInfo('recipientLayer',0);
       }
@@ -1660,7 +1710,7 @@ else
         hcms_hideInfo('recipientLayer');
       }
     }
-    
+
     function activateSaveSearch ()
     {
       hcms_switchInfo('saveLayer');
@@ -1740,14 +1790,14 @@ else
           {
             var selectbox = form.elements['template'];
             var template = form.elements['template'].options[selectbox.selectedIndex].value;
-            
+
             if (template != "")
             {
               var parts = template.split("/");
               var domain = "%comp%";
-              
+
               if (template.indexOf(".page.tpl") > 0) domain = "%page%";
-              
+
               if (parts[0] != "") form.elements['search_dir'].value = domain + "/" + parts[0] + "/";
             }
           }
@@ -1755,12 +1805,12 @@ else
           // check if at least one keyword has been checked
           var keywordsLayer = document.getElementById('keywordsLayer');
           var keywordChecked = false;
-          
+
           if (keywordsLayer && keywordsLayer.style.display != "none")
           {
             var unchecked = false;
             var childs = keywordsLayer.getElementsByTagName('*');
-            
+
             for (var i=0; i<childs.length; i++)
             {
               // found unchecked element
@@ -1770,22 +1820,21 @@ else
                 break;
               }
             }
-            
+
             if (!keywordChecked)
             {
               return false;
             }
           }
-          
-          
+
           // check if all file-types have been checked
           var filetypeLayer = document.getElementById('filetypeLayer');
-          
+
           if (filetypeLayer && filetypeLayer.style.display != "none")
           {
             var unchecked = false;
             var childs = filetypeLayer.getElementsByTagName('*');
-            
+
             for (var i=0; i<childs.length; i++)
             {
               // found unchecked element
@@ -1794,7 +1843,7 @@ else
                 unchecked = true;
               }
             }
-            
+
             // disable checkboxes for file-type
             if (unchecked == false)
             {
@@ -1808,16 +1857,16 @@ else
             }
           }
         }
-        
+
         // if iframe is loaded
         if (iframe && iframe.location != "")
         {
           // load screen
           if (parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen')) parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen').style.display='inline';
-        
+
           // submit form
           form.submit();
-          
+
           // enable checkboxes for file-type
           if (filetypeLayer && filetypeLayer.style.display != "none")
           {
@@ -1829,14 +1878,14 @@ else
               }
             }
           }
-          
+
           // reload page for a new saved search
           if (document.forms['searchform_advanced'].elements['search_save'].checked == true)
           {
             document.forms['searchform_advanced'].elements['search_save'].checked = false;
             window.setTimeout('location.reload()', 1000);
           }
-          
+
           return true;
         }
         // wait 2000 ms
@@ -1848,13 +1897,13 @@ else
     var cal_obj = null;
     var cal_format = null;
     var cal_field = null;
-    
+
     function show_cal (el, field_id, format)
     {
       cal_field = field_id;
       cal_format = format;
       var datefield = document.getElementById(field_id);
-      
+
       cal_obj = new RichCalendar();
       cal_obj.start_week_day = 1;
       cal_obj.show_time = false;
@@ -1864,7 +1913,7 @@ else
       cal_obj.parse_date(datefield.value, cal_format);
       cal_obj.show_at_element(datefield, 'adj_left-top');
     }
-        
+
     // onchange handler
     function cal_on_change (cal, object_code)
     {
@@ -1881,7 +1930,7 @@ else
     {
       cal_obj = null;
     }
-    
+
     // delete saved search entry
     function deletesearch ()
     {
@@ -1897,40 +1946,40 @@ else
         }
       }
     }
-    
+
     function showSearch ()
     {
       hcms_showHideLayers ('menu','','hide','search','','show');
     }
-    
+
     function showNav ()
     {
       window.scrollTo (0, 0);
-      hcms_showHideLayers ('menu','','show','search','','hide');
+      hcms_showHideLayers ('search','','hide','menu','','show');
     }
 
     // Google Maps JavaScript API v3: Map Simple
     var map;
     var bounds = null;
-    
+
     $(document).ready(function ()
     {
       // initialize form
       activateFulltextSearch();
-    
+
       // search history
       <?php
       $keywords = getsearchhistory ($user);
       ?>
       var available_expressions = [<?php if (is_array ($keywords)) echo implode (",\n", $keywords); ?>];
-    
+
       $("#search_expression").autocomplete({
         source: available_expressions
       });
 
       <?php
       $user_option = array();
-      
+
       if (!empty ($siteaccess))
       {
         $user_array = getuserinformation ();      
@@ -1944,28 +1993,28 @@ else
               foreach ($user_array[$site_name] as $login => $value)
               {           
                 $text = $login;
-                
+
                 if (trim ($value['realname']) != "" && trim ($value['email']) != "") $text .= " (".trim ($value['realname']).", ".trim ($value['email']).")";
                 elseif (trim ($value['realname']) != "") $text .= " (".trim ($value['realname']).")";
                 elseif (trim ($value['email']) != "") $text .= " (".trim ($value['email']).")";
-                
+
                 $text = "'".str_replace ("'", "\\'", trim ($text))."'";                
                 $user_option[$login] = $text;
               }
             }
           }
-          
+
           ksort ($user_option, SORT_STRING | SORT_FLAG_CASE);
         }
       }
       ?>
       var user_options = [<?php if (is_array ($user_option)) echo implode (",\n", $user_option); ?>];
-      
+
       // sender
       $("#from_user").autocomplete({
         source: user_options
       });
-      
+
       // recipient
       $("#to_user").autocomplete({
         source: user_options
@@ -1973,26 +2022,49 @@ else
     });
     </script>
   </head>
-  
+
   <body class="hcmsWorkplaceExplorer">
-    
+
   <!-- load screen --> 
   <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
-    
-  <?php /* Saves the token for the context menu */ ?>
+
+  <!-- Saves the token for the context menu -->
   <span id="context_token" style="display:none;"><?php echo $token_new; ?></span>
+
+  <!-- Memory (for drop event) -->
+  <form name="memory" action="" method="post" target="popup_explorer" style="position:absolute; width:0; height:0; z-index:0; left:0; top:0; visibility:hidden;">
+    <input type="hidden" name="action" value="" />
+    <input type="hidden" name="force" value="" />
+    <input type="hidden" name="contexttype" value="" />
+    <input type="hidden" name="site" value="" />
+    <input type="hidden" name="cat" value="" />
+    <input type="hidden" name="location" value="" />
+    <input type="hidden" name="targetlocation" value="" />
+    <input type="hidden" name="page" value="" />
+    <input type="hidden" name="pagename" value="" />
+    <input type="hidden" name="filetype" value="" />
+    <input type="hidden" name="media" value="" />
+    <input type="hidden" name="folder" value="" /> 
+    <input type="hidden" name="multiobject" value="" />
+    <input type="hidden" name="token" value="<?php echo $token; ?>" />
+    <input type="hidden" name="convert_type" value="" />
+    <input type="hidden" name="convert_cfg" value="" />
+  </form>
+
+  <!-- Context menu -->
   <div id="contextLayer" style="position:absolute; width:150px; height:128px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
     <form name="contextmenu_object" action="" method="post" target="popup_explorer">
       <input type="hidden" name="contextmenustatus" value="" />
       <input type="hidden" name="contextmenulocked" value="false" />
-      <input type="hidden" name="action" value="" />  
-      <input type="hidden" name="force" value="" />  
+      <input type="hidden" name="action" value="" />
+      <input type="hidden" name="force" value="" />
       <input type="hidden" name="contexttype" value="" />
       <input type="hidden" name="xpos" value="" />
       <input type="hidden" name="ypos" value="" />
       <input type="hidden" name="site" value="" />
       <input type="hidden" name="cat" value="" />
       <input type="hidden" name="location" value="" />
+      <input type="hidden" name="targetlocation" value="" />
       <input type="hidden" name="page" value="" />
       <input type="hidden" name="pagename" value="" />
       <input type="hidden" name="filetype" value="" />
@@ -2001,7 +2073,9 @@ else
       <input type="hidden" name="folder_id" value="" /> 
       <input type="hidden" name="multiobject" value="" />
       <input type="hidden" name="token" value="" />
-      
+      <input type="hidden" name="convert_type" value="" />
+      <input type="hidden" name="convert_cfg" value="" />
+
       <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
         <tr>
           <td>
@@ -2026,7 +2100,7 @@ else
         <?php echo $maintree.$tree; ?>
       </ul>
     </div>
-    
+
     <!-- search form -->
     <div id="search" style="position:absolute; top:8px; left:4px; right:4px; text-align:top; visibility:hidden;">
       <form name="searchform_advanced" method="post" action="search_objectlist.php" target="mainFrame">
@@ -2037,7 +2111,7 @@ else
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></span>
           <img onClick="activateFulltextSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        
+
         <div id="fulltextLayer" style="display:none; clear:right;"> 
           <div style="padding-bottom:3px;">
             <label for="search_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
@@ -2052,7 +2126,7 @@ else
             if (!empty ($siteaccess) && is_array ($siteaccess))
             {
               $template_array = array();
-              
+
               foreach ($siteaccess as $site)
               {
                 if (!empty ($site)) echo "<option value=\"".$site."\">".$site."</option>\n";
@@ -2066,12 +2140,12 @@ else
           </div> 
         </div>
         <hr />
-        
+
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></span>
           <img onClick="activateAdvancedSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        
+
         <div id="advancedLayer" style="display:none; clear:right;">
           <label for="template"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?></label><br />
           <select id="template" name="template" style="width:230px;" onChange="loadForm();">
@@ -2080,26 +2154,26 @@ else
           if (!empty ($siteaccess) && is_array ($siteaccess))
           {
             $template_array = array();
-            
+
             foreach ($siteaccess as $site)
             {
               $site_array = array();
-              
+
               // load publication inheritance setting
               if (!empty ($mgmt_config[$site]['inherit_tpl']))
               {
                 $inherit_db = inherit_db_read ();
                 $site_array = inherit_db_getparent ($inherit_db, $site);
-                
+
                 // add own publication
                 $site_array[] = $site;
               }
               else $site_array[] = $site;
-              
+
               foreach ($site_array as $site_source)
               {
                 $dir_template = dir ($mgmt_config['abs_path_template'].$site_source."/");
-      
+
                 if ($dir_template != false)
                 {
                   while ($entry = $dir_template->read())
@@ -2109,12 +2183,12 @@ else
                       $template_array[] = $site_source."/".$entry;                
                     }
                   }
-      
+
                   $dir_template->close();
                 }
               }
             }
-    
+
             if (is_array ($template_array) && sizeof ($template_array) > 0)
             {
               // remove double entries (double entries due to parent publications won't be listed)
@@ -2127,15 +2201,15 @@ else
                 if (trim ($value) != "")
                 {
                   $tpl_name = "";
-                  
+
                   if (strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"))." (".getescapedtext ($hcms_lang['page'][$lang]).")";
                   elseif (strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"))." (".getescapedtext ($hcms_lang['component'][$lang]).")";
                   elseif (strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"))." (".getescapedtext ($hcms_lang['meta-data'][$lang]).")";
-                  
+
                   if ($tpl_name != "")
                   {
                     $tpl_name = str_replace ("/", " &gt; ", $tpl_name);
-   
+
                     if (!empty ($tpl_name)) echo "<option value=\"".$value."\">".$tpl_name."</option>\n";
                   }
                 }
@@ -2157,24 +2231,24 @@ else
           </div>   
         </div>
         <hr />
-        
+
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['keywords'][$lang]); ?></span>
           <img onClick="activateKeywordSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        
+
         <div id="keywordsLayer" style="display:none; clear:right;">
           <iframe id="keywordsFrame" name="keywordsFrame" width="0" height="0" frameborder="0"  style="width:0; height:0; frameborder:0;"></iframe> 
           <div id="keywordsTarget" style="width:100%; min-height:64px; max-height:500px; overflow:auto; background:url('<?php echo getthemelocation(); ?>/img/loading.gif') no-repeat center center;">
           </div>
         </div>
         <hr />
-        
+
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media'][$lang]); ?></span>
           <img onClick="activateImageSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        
+
         <div id="imageLayer" style="display:none; clear:right;">
           <div id="filetypeLayer" style="padding-bottom:3px;">
             <?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?><br />
@@ -2245,7 +2319,7 @@ else
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></span>
           <img onClick="activateGeolocationSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        
+
         <div id="mapLayer" style="display:none; clear:right;">
           <div style="position:relative; left:185px; top:15px; width:22px; height:22px; z-index:1000;">
             <img src="<?php echo getthemelocation(); ?>img/info.png" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" onmouseover="hcms_showInfo('helpmapLayer');" onmouseout="hcms_hideInfo('helpmapLayer');" class="hcmsButtonSizeSquare" style="cursor:pointer;" />
@@ -2259,12 +2333,12 @@ else
         </div>
         <hr />
         <?php } ?>
-        
+
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?></span>
           <img onClick="activateLastmodifiedSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        
+
         <div id="dateLayer" style="display:none; clear:right;">        
           <table class="hcmsTableStandard">     
             <tr>
@@ -2286,12 +2360,12 @@ else
           </table>          
         </div>
         <hr />
-        
+
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></span>
           <img onClick="activateIdSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        
+
         <div id="idLayer" style="display:none; clear:right;">        
           <div style="padding-bottom:3px;">
             <label nowrap="object_id"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></label><br />
@@ -2303,12 +2377,12 @@ else
           </div>          
         </div>
         <hr />
-        
+
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></span>
           <img onClick="activateRecipientSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
-        
+
         <div id="recipientLayer" style="display:none; clear:right;">        
           <div style="padding-bottom:3px;">
             <label for="from_user"><?php echo getescapedtext ($hcms_lang['sender'][$lang]); ?></label><br />

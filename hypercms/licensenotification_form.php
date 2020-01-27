@@ -287,6 +287,8 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
 </form>
 
 </div>
+
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>
 

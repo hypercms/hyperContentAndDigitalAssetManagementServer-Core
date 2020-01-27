@@ -7,8 +7,9 @@ $hcms_lang_date['nl'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['nl'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['nl'] = "Share";
-$hcms_lang['social-media-sharing']['nl'] = "Social Media sharing";
+$hcms_lang['clipboard']['nl'] = "Clipboard";
+$hcms_lang['share']['nl'] = "Delen";
+$hcms_lang['social-media-sharing']['nl'] = "Social media delen";
 $hcms_lang['remember-me']['nl'] = "Onthoud me";
 $hcms_lang['my-recent-tasks']['nl'] = "Mijn recente taken";
 $hcms_lang['my-recent-objects']['nl'] = "Mijn recente objecten";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['nl'] = "Objecten";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['nl'] = "Houd CTRL-toets: objecten selecteren door te klikken op";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['nl'] = "Houd de SHIFT-toets: Hiermee selecteert u een groep van objecten door 2 klikken";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['nl'] = "Druk op de ALT-toets: schakel naar download-links met kopiëren en plakken in e-mail s";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['nl'] = "Slepen en neerzetten: Druk op CTRL-toets voor kopiëren en ALT-toets voor verbonden kopiëren";
 $hcms_lang['notify-me']['nl'] = "Waarschuw mij";
 $hcms_lang['send-to-chat']['nl'] = "Verzenden om te chatten";
 $hcms_lang['password-is-not-set']['nl'] = "Wachtwoord is niet ingesteld";

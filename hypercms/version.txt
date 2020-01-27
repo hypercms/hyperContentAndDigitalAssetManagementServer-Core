@@ -3733,20 +3733,9 @@ Release 10/2019
 - Implementation of the new function showmedia in order to change default vidoe sizes ro 854x480px
 - Modifications in main configuration file in order to change default vidoe sizes ro 854x480px
 - Modifications in control_content_menu and control_objectlist_menu in order to improve file download options
-- Implementation of new plus/minus buttons for dark nd light mode in all design themes
+- Implementation of new plus/minus buttons for dark and light mode in all design themes
 - Modifications in template engine in order to sort the publication names of the search select box
 - Modifications in function showmessage and showinfobox in UI API in order to replace close button action JS function hcms_showhideInfo with hcms_switchInfo
-- Modifications in Report Management in order to seperate chart configuration values of column and area chart
-- Modifications in Report Management in order to verify the publication access of the user when executing a SQL query
-- Design modifications in Report Management
-- Implementation of download and access links as virtual html files in the Workplace Integration module (WebDAV)
-- Modifications in functions createobjectaccesslink, createwrapperlink, and createdownloadlink in Main API in order to support and extract the container ID from a media file
-- Modifications in function writeSessionDataToFile in Workplace Integration module in order to set time zone of the user
-- Modifications in class Sabre_hyperCMS_File and function getChildsForLocation, function get, function getFileContents, function httpGet in Workplace Integration module in order to support HTML access/download links (return HTML file instead of the files content)
-- Implementation of the new publication configuration settings in order to enable and disable WebDAV download and access links
-- Modifications in site_edit_form in order to support the new WebDAV download and access links
-- Modifications in function editpublication in Main API in order to support the new WebDAV download and access links
-- Implementation of the new function showthumbnail in UI API that provides an optionally base64 encoded thumbnail image
 - Modifications in function showgallery in UI API in order to always use the media location of thumbnails
 - Modifications in function getFileContents in Workplace Integration module in order to support embedded thumbnails in the HTML link files
 - Modifications in home box all_reports in order to use report title instead of the report file name for the select box
@@ -3765,7 +3754,18 @@ Release 10/2019
 - Modifications in Report Management in order to add log events to function createreport, deletereport and editreport in the Report API
 - Modifications in Report Management in order to add log events to all chart functions in the Report API
 - Implementation of the geo location viewer in popup_log
-- Modifications in log_list in order to resize popup window for log entries
+- Modifications in log_list in order to resize the popup window for log entries
+- Modifications in Report Management in order to seperate chart configuration values of column and area chart
+- Modifications in Report Management in order to verify the publication access of the user when executing a SQL query
+- Design modifications in Report Management
+- Implementation of download and access links as virtual html files in the Workplace Integration module (WebDAV)
+- Modifications in functions createobjectaccesslink, createwrapperlink, and createdownloadlink in Main API in order to support and extract the container ID from a media file
+- Modifications in function writeSessionDataToFile in Workplace Integration module in order to set time zone of the user
+- Modifications in class Sabre_hyperCMS_File and function getChildsForLocation, function get, function getFileContents, function httpGet in Workplace Integration module in order to support HTML access/download links (return HTML file instead of the files content)
+- Implementation of the new publication configuration settings in order to enable and disable WebDAV download and access links
+- Modifications in site_edit_form in order to support the new WebDAV download and access links
+- Modifications in function editpublication in Main API in order to support the new WebDAV download and access links
+- Implementation of the new function showthumbnail in UI API that provides an optionally base64 encoded thumbnail image
 - Bug fix: Function showmedia in UI API did not apply the CSS class "hcmsHeadlineTiny" to audio and video names
 - Bug fix: The height of the facename input fields has been to low in the template engine and has been corrected from 18px to 32px
 - Bug fix: control_objectlist_menu did not close the selector if multiple objects have been selected for editing
@@ -3783,7 +3783,7 @@ Release 10/2019
 - Bug fix: Function createfilename in Main API had issues if single and multibyte characters have been mixed in a string. The function verifies the result and corrects it in this case.
 
 Version 8.0.6
-Release 11/2019
+Release 01/2019
 - Modifications in German language file
 - Modifications in function userlogin in Security API in order to suppress PHP deprecated error and comment the use of a deprecated salt (used before version 7.0.6)
 - Modifications in function cleancontent in Main API in order to remove all multi-dots/commas/underscores, tab spaces, newlines, quotes, brackets, underscore, and semicolon from being removed from the string
@@ -3824,14 +3824,11 @@ Release 11/2019
 - Modifications in Task Management API functions in order to support the new main configuration settings $mgmt_config['api_checkpermission'] and check the user permissions
 - Modifications in Project Management API functions in order to support the new main configuration settings $mgmt_config['api_checkpermission'] and check the user permissions
 - Modifications in Workflow Management API functions in order to support the new main configuration settings $mgmt_config['api_checkpermission'] and check the user permissions
-- Implementation of the new function rewrite_restURI in Main API in order to rewrite the URL for the new REEStful API and its GET requests
 - Implementation of the new function getobjectlist in Get API as a simplified wrapper function for rdbms_searchcontent
-- Renamed the "openapi" connector directory to "soap" since the new OpenAPI will include a SOAP "soap" and RESTful API "rest"
 - Modifications in function createmultidownloadlink in Main API in order to support an array is multiobject input parameter and to accept multiobjects with only one object
 - Modifications in function showAPIdocs in order to use unordered lists for the HTML output of the input, global, and output parameters. Moved the description after the title.
 - Modifications in function showAPIdocs in UI API in order to support a new input parameter for horizontal rules and the display of the description, input parameters, global variables, and output in the HTML output
 - Modifications in function getusersonline in order to verify that the separator exists in the session record of the user
-- Modifications in API loader in order to include the RESTful API of the Connector module
 - Modifications in function uploadfile in Main API in order to fallback to rename if move_uploaded_file failed for the upload of a new thumbnail file
 - Modifications in function uploadfile in Main API in order to include new error log events
 - Modifications in group_edit_form in order to set default values before the extraction of the permissions from the group data
@@ -3850,3 +3847,102 @@ Release 11/2019
 - Bug fix: Modifications in function iptc_create, xmp_create, and id3_create in Meta API in order to extract the text ID without the type prefix from the mapping data
 - Bug fix: Function showcompexplorer in UI API did provide thumbnail file name instead of thumbnail image if no individual thumbnail has been created
 - Bug fix: Function manipulateobject did not remove dot of the .off file extension for action "page_rename" and therefore caused the creation of the same object if it has not been published
+
+Version 8.1.0
+Release 02/2020
+- Implementation of the new RESTful API in the Connector module
+- Implementation of the new RESTful API library and test script
+- Implementation of the new function rewrite_restURI in order to rewrite the URL for the new REStful API and its GET requests
+- Renamed the "openapi" connector directory to "soap" since the new OpenAPI will include a SOAP "soap" and RESTful API "rest"
+- Modifications in API loader in order to include the RESTful API of the Connector module
+- Implementation of the new drag and drop feature for objects and folders in order to support cut, copy, and connected copy by drag and drop (not supported by the Mobile Edition and by MS Internet Explorer)
+- Modifications in explorer in order to support the new drag and drop feature and attributes in the folder items of the navigation tree
+- Modifications in explorer_objetclist and search_objectlist in order to support the new drag attributes in the folder items
+- Implementation of the new JS function hcms_findElementByTagName in contextmenu.js
+- Modifications in the required permissions for linked copy- The create permission is has been removed from all functions and permission checks.
+- Modifications in popup_status in order to support 2 stages of actions (used for the new drag and drop features)
+- Modifications in popup_status in order to focus on the popup window for the start and the end of the process
+- Modifications in popup_action in order to reduce the code for the actions cut, copy, and linkcopy
+- Modifications in function cutobject, copyobject, and copyconnectedobject in order to remove duplicates in the clipboard
+- Implementation of the new function getclipboard in Get API in order to read the clipboard objects
+- Modifications in search_objectlist and frameset_objectlist in order to support the display of the clipboard objects
+- Modifications in function rdbms_getobject_info in DB Connect in order to support an object path as input besides the object id and object hash
+- Modifications in function manipulateallobjects in order to verify if a folder can be moved before calling function copyfolders
+- Modifications in explorer_objectlist and search_objectlist in order to create folder file if it does not exist
+- Modification in frameset_edit_link and frameset_edit_media in order to support scrolling on iOS devices
+- Renamed JS function hcms_drag to hcms_dragLayers in main.js
+- Modifications in workflow_manager and template engine due to the renamed JS function hcms_dragLayers
+- Design modifications in frameset_content 
+- Update of all language files
+- Modifications in frameset_edit_link and frameset_edit_media in order to support scrolling on iOS devices
+- Implementation of the new function recreateusersession in Security API in order to read and recreate the session data in case the data is missing (due to issues with Android Chrome and the Mobile Edition)
+- Modifications in function registeruser in Security API in order to save the session data of the user for recreation in case the data is missing
+- Modifications in function writesessiondata in Security API
+- Modifications in function writesession in Security API in order to force function writesessiondata to save the session data of the user
+- Modifications in function setsession in Set API in order to force function writesessiondata to save the users session data even if the main configuration setting $mgmt_config['writesessiondata'] is disabled
+- Modifications in various services in order to apply function setsession and save the users session data for recreation
+- Modifications in function toggleview, togglesidebar, and showcompexplorer in UI API in order to apply function setsession and save the users session data for recreation
+- Modifications in template engine in order to apply function setsession and save the users session data for recreation
+- Modifications in editorf in order to apply function setsession and save the users session data for recreation
+- Modifications in function, cutobject, copyobject, copyconnectedobject, manipulateallobjects, and createfavorite in Main API in order to apply function setsession and save the users session data for recreation
+- Modifications in the Youtube Connector module in order to apply function setsession and save the users session data for recreation
+- Modifications in the API loader in order to recreate the user session data if it is missing (experimental)
+- Removed JQuery Mobile Edition due to lack of support and issues with Android Chrome browser
+- New implementation of the Mobile Edition without any third-party library
+- Modifications in frameset_main and JS function hcms_openChat in main.js in order to apply transition effect on explorer and chat frames
+- Modifications in mobile design theme
+- Design modifications in control_objectlist_menu for the new Mobile Edition
+- Implementation of new JS function openChat in frameset_mobile due to issues with JS function hcms_openChat in main.js in Android Chrome
+- Removed deprecated session variables "site_editor" and "contenttype_editor" of the rich text editor in template engine and editorf
+- The chat is also supported on iOS devices by the Mobile Edition
+- Modification in JS function hcms_bubbleSort in main.js in order to treat empty strings as zero when sorting by numbers
+- Modifications in explorer_objectlist and search_objectlist in order to support the navigation of folders by the implementation of a new button for the Mobile Edition
+- Design modifications in Blue design theme
+- Design modifications in home screen
+- Modifications in portal_edit in order to load the new wallpaper by using a timestamp in the request
+- Modifications in JS function switchsidebar in control_objectlist_menu in order to apply transition effect for the sidebar
+- Modifications in JS function minControlFrame and maxControlFrame in control_content_menu in order to apply transition effect for the sidebar
+- Modifications in JS function hcms_showInfo, hcms_hideInfo, hcms_switchInfo, hcms_switchSelector, hcms_hideSelector, and hcms_showHideLayers in main.js in order to apply transition effect for the sidebar
+- Modifications in explorer in order to reduce the free spaces and the file size
+- Modifications in explorer in order to enable any combination of the full-text or advanced or keyword search with the recipient, date, media, geo location, and media search
+- Modifications in function link_db_getobject in Link API in order to return multiobjects that are an array
+- Modifications in function createmultidownloadlink in order to treat a single multiobject like a multimedia object
+- Implementation of the new JS functions for select boxes in main.js
+- Removed local JS function for select boxes from user_edit
+- Implementation of the new JS function hcms_getBrowserName in main.js
+- Removed deprecated browser information from main.js
+- Removed MS Internet Explorer support from drag and drop JS functions in contextmenu.js
+- Modifications in function showtranslator in UI API in order to change left padding for the select boxes
+- Modifications in main.css and navigator.css of all design themes in order to apply a new design for the select boxes
+- Modifications in frameset_objectlist and frameset_content ion order to adjust the popup frame for previews for the Mobile Edition
+- Implementation of the new local JS function switchInfo in the home screen in order to solve display issues with MS Edge
+- Modifications in local JS functions in explorer_objectview due to issues with Safari and offsetWidth and offsetHeight properties
+- Modifications of the standard preview sizes in explorer_objectview in order to replace 800x600 with 1024x768 as the new standard size
+- Modifications in message_objectlist, queue_objectlist, and user_objectlist in order to replace hidden input element by link element for the new content menu that selects the attribute data-objectpath of the links
+- Modifications in explorer_objectlist in order to set a max height for the context menu of the list header
+- Modifications in function showmedia in UI API in order to verify media info array (only used for fallback if media info is missing)
+- Modifications of the max file sizes for the preview of MS Powerpoint and MS Excel files in the main configuration (used for installation)
+- Modifications in explorer_objectlist, frameset_objectlist, and control_objectlst_menu in order to change the sidebar width from 330 to 350 pixels
+- Modifications in function GCanalyzeimage in Cloud Connector in order to render image in JPG format for API call
+- Modifications in function GCanalyzevideo in Cloud Connector in order to provide preview video for API call
+- Implemenentation of the new function metadata_exists in Meta API in order to verify if the metadata exists before making a Cloud API call
+- Modifications in function setmetadata in Meta API in order to make Cloud API calls after the standard metadata extraction from files and to verify if the metadata exists before making a Cloud API call 
+- Modifications in explorer_objectview in order to reduce the navigation area size around the arrows
+- Implementation of the Google Analytics support for most parts of the system in order to track the user activities in the system besides the event log
+- Implementation of the new function getgoogleanalytics in Get API
+- Implementation of the new footer include script in order to include JS code (required for Google Analytics)
+- Implementation of the new main configuration setting $mgmt_config['googleanalytics_key'] in order to save the Google Analytics key for user tracking
+- Removed Google Plus support from function showsharelinks in UI API
+- Modifications in frameset_main in order to display the left bar for the asset browser
+- Modifications in service mediawrapper in order to provide the file name (same as in service mediadownload)
+- Modifications in function convertmedia in Media API in order to support the type "origthumb" for thumbnail/preview videos
+- Modifications in function createmedia in Media API in order to verify the provided type exists in the image rendering options
+- Implementation of the advanced image editing options for download and wrapper links for single media objects in index, service mediadownload and mediawrapper
+- Update of all user manuals
+- Bug fix: frameset_edit_media did not close the div tag for the control layer
+- Bug fix: Function createmultidownloadlink did not remove the tailing separator from the multiobject input
+- Bug fix: Function showmedia in UI API did not support Safari and Opera for document preview due to missing browser verification
+- Bug fix: Function createmultidownloadlink in Main API did not verify if a single multiobject was a folder and therefore need to be zipped
+- Bug fix: Modifications in template_edit_mediatype in order to correct remove deprecated HTML table attributes and assign CSS class
+- Bug fix: explorer_imagepreview did not close the type attribute of the JavaScript tag
+- Bug fix: Function correctfile did use function createfilename on locked content container names and therefore was not able to load the locked container

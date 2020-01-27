@@ -869,10 +869,10 @@ $mgmt_maxsizepreview['.pdf'] = 500;
 $mgmt_maxsizepreview['.psd'] = 500;
 $mgmt_maxsizepreview['.doc'] = 100;
 $mgmt_maxsizepreview['.docx'] = 100;
-$mgmt_maxsizepreview['.ppt'] = 100;
-$mgmt_maxsizepreview['.pptx'] = 100;
-$mgmt_maxsizepreview['.xls'] = 100;
-$mgmt_maxsizepreview['.xlsx'] = 100;
+$mgmt_maxsizepreview['.ppt'] = 50;
+$mgmt_maxsizepreview['.pptx'] = 50;
+$mgmt_maxsizepreview['.xls'] = 50;
+$mgmt_maxsizepreview['.xlsx'] = 50;
 
 // Try to regenerate previews of multimedia files in explorer list if the thumbnail file doesn't exist.
 // This seeting can be used to avoid recurring kernel problems with GhostScript if ImageMagick fails to create a thumbnail of a PDF file.
@@ -932,6 +932,10 @@ $mgmt_config['dropbox_appkey'] = "";
 
 // Google Maps integration
 $mgmt_config['googlemaps_appkey'] = "";
+
+// Google Analytics integration
+// Provide a valid key in order to track the users behaviour with Google Analytics
+$mgmt_config['googleanalytics_key'] = "";
 
 // --------------------------------- Authentification Connectivity -------------------------------------
 

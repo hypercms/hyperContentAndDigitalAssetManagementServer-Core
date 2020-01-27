@@ -318,5 +318,6 @@ else
 ftp_userlogout ($conn_id);
 ?>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

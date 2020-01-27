@@ -473,5 +473,6 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
 </form>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

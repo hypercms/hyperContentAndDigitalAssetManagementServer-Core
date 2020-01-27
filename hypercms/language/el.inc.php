@@ -7,8 +7,9 @@ $hcms_lang_date['el'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['el'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['el'] = "Share";
-$hcms_lang['social-media-sharing']['el'] = "Social Media sharing";
+$hcms_lang['clipboard']['el'] = "Πρόχειρο";
+$hcms_lang['share']['el'] = "Μερίδιο";
+$hcms_lang['social-media-sharing']['el'] = "Κοινή χρήση κοινωνικών μέσων";
 $hcms_lang['remember-me']['el'] = "Θυμήσου με";
 $hcms_lang['my-recent-tasks']['el'] = "Πρόσφατα μου καθήκοντα";
 $hcms_lang['my-recent-objects']['el'] = "Πρόσφατα μου αντικείμενα";
@@ -343,9 +344,10 @@ $hcms_lang['view']['el'] = "Προβολή";
 $hcms_lang['views']['el'] = " Προβολές";
 $hcms_lang['more']['el'] = "Περισσότερα";
 $hcms_lang['objects']['el'] = "Αντικείμενα";
-$hcms_lang['hold-ctrl-key-select-objects-by-click']['el'] = "Κρατήστε πατημένο το CTRL-κλειδί: Επιλέξτε αντικείμενα, κάντε κλικ στο";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['el'] = "Κρατήστε πατημένο το πλήκτρο SHIFT-Key: Επιλέξτε μια ομάδα αντικειμένων με 2 κλικ";
-$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['el'] = "Πιέστε ALT-κλειδί: Διακόπτης για λήψη-δεσμούς με αντιγραφή & επικόλληση σε e-mail";
+$hcms_lang['hold-ctrl-key-select-objects-by-click']['el'] = "Πιέστε CTRL: Επιλέξτε αντικείμενα, κάντε κλικ στο";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['el'] = "Πιέστε SHIFT: Επιλέξτε μια ομάδα αντικειμένων με 2 κλικ";
+$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['el'] = "Πιέστε ALT: Διακόπτης για λήψη-δεσμούς με αντιγραφή & επικόλληση σε e-mail";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['el'] = "Μεταφορά και απόθεση: Πατήστε το πλήκτρο CTRL για αντιγραφή και το πλήκτρο ALT για συνδεδεμένο αντίγραφο";
 $hcms_lang['notify-me']['el'] = "Ενημέρωσέ με";
 $hcms_lang['send-to-chat']['el'] = "Αποστολή σε συνομιλία";
 $hcms_lang['password-is-not-set']['el'] = "Ο κωδικός πρόσβασης δεν έχει ρυθμιστεί";

@@ -112,5 +112,6 @@ elseif ($sender == "access" && checktoken ($token, $user))
 <?php
 echo showmessage ($show, 600, 70, $lang, "position:fixed; left:20px; top:20px;");
 ?>
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

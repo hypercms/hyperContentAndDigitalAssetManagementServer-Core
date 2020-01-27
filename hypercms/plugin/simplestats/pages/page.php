@@ -167,9 +167,11 @@ ob_end_flush();
   
   <div style="float:left; margin:10px;">
     <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['top-uploaded-files'][$lang]); ?></p>
-    <table border="0" cellspacing="2" cellpadding="2" style="min-width:400px;">
-   	  <tr align="left" valign="top">
-        <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['hits'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['traffic-in-mb'][$lang]); ?></td>
+    <table class="hcmsTableStandard" style="min-width:400px;">
+   	  <tr>
+        <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td>
+        <td class="hcmsHeadline" style="text-align:right;"><?php echo getescapedtext ($hcms_lang['hits'][$lang]); ?></td>
+        <td class="hcmsHeadline" style="text-align:right;"><?php echo getescapedtext ($hcms_lang['traffic-in-mb'][$lang]); ?></td>
       </tr>
       <?php
       $show = "";
@@ -231,5 +233,6 @@ ob_end_flush();
 if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';
 </script>
 
+<?php include_once ($mgmt_config['abs_path_cms']."include/footer.inc.php"); ?>
 </body>
 </html>

@@ -186,5 +186,6 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
 </script>
 
+<?php include_once ($mgmt_config['abs_path_cms']."include/footer.inc.php"); ?>
 </body>
 </html>

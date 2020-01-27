@@ -87,13 +87,14 @@ if ($hcms_user_token != "")
 // media conversion
 $type = getrequest ("type"); // format = file extension
 $mediacfg = getrequest ("mediacfg"); // media config to be used (see config.inc.php)
-$cfg = getrequest_esc ("cfg"); // new media configuration parameter since version 8.0.5
+$options = getrequest ("options"); // media editing options (must be an urlencoded string)
 $extuser = getrequest ("user"); // external user ID provided by request
 
 $add = "";
 
 if ($type != "") $add .= "&type=".url_encode($type);
 if ($mediacfg != "") $add .= "&mediacfg=".url_encode($mediacfg);
+if ($options != "") $add .= "&options=".url_encode($options);
 if ($extuser != "") $add .= "&user=".url_encode($extuser);
 
 //   new hash parameter for wrapper-link

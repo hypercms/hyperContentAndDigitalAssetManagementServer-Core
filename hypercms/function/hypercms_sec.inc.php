@@ -589,6 +589,7 @@ function checkpublicationpermission ($site, $strict=true)
 {
   global $mgmt_config, $siteaccess;
 
+  // try to get siteaccess from session
   if (!is_array ($siteaccess) && isset ($_SESSION['hcms_siteaccess'])) $siteaccess = $_SESSION['hcms_siteaccess'];
 
   if (valid_publicationname ($site) && is_array ($siteaccess))
@@ -1797,12 +1798,12 @@ function registerinstance ($instance, $load_config=true)
 
   if (!empty ($mgmt_config['instances']) && $instance != "")
   {
-    // create session if it doesn not exist
+    // create session if it does not exist
     createsession ();
 
     if (valid_publicationname ($instance) && is_file ($mgmt_config['instances'].$instance.".inc.php"))
     {
-      $_SESSION['hcms_instance'] = $instance;
+      setsession ('hcms_instance', $instance);
 
       // load management configuration of instance
       if ($load_config) require ($mgmt_config['instances'].$instance.".inc.php");
@@ -1927,7 +1928,7 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
       setsession ('hcms_linking', Null);
     }
 
-    // write hypercms session file
+    // write hypercms session file (as a backup for the recreation)
     $login_result['writesession'] = writesession ($login_result['user'], $login_result['passwd'], $login_result['checksum'], $login_result['siteaccess']);
 
     // session info could not be saved
@@ -1974,7 +1975,7 @@ function registerassetbrowser ($userhash, $objecthash="")
 
     // reset temporary view settings
     setsession ('hcms_temp_explorerview', "small");
-    setsession ('hcms_temp_sidebar', true);
+    setsession ('hcms_temp_sidebar', true, true);
 
     return true;
   }
@@ -1988,7 +1989,7 @@ function registerassetbrowser ($userhash, $objecthash="")
 // requires: hypercms_api.inc.php
 
 // description:
-// Creates the checksum of the user permissions
+// Creates the checksum of the user permissions.
 
 function createchecksum ($permissions="")
 {
@@ -2020,7 +2021,7 @@ function createchecksum ($permissions="")
 // requires: hypercms_api.inc.php
 
 // description:
-// Writes hyperCMS specific session data of a user
+// Writes hyperCMS specific session data of a user.
 
 function writesession ($user, $passwd, $checksum, $siteaccess=array())
 {
@@ -2028,7 +2029,7 @@ function writesession ($user, $passwd, $checksum, $siteaccess=array())
 
   if (session_id() != "" && valid_objectname ($user) && $passwd != "" && $checksum != "")
   {
-    // write session data for load balancer if required
+    // write session data for the load balancing
     writesessiondata ();
 
     // timestamp
@@ -2091,22 +2092,24 @@ function writesession ($user, $passwd, $checksum, $siteaccess=array())
 // requires: hypercms_api.inc.php
 
 // description:
-// Serializes and writes all session data of a user
+// Serializes and writes all session data of a user.
 
 function writesessiondata ()
 {
   global $mgmt_config;
 
-  if (valid_objectname (session_id()))
+  // session Id and user name must exist in session
+  if (valid_objectname (session_id()) && getsession ('hcms_user') != "")
   {
     // write session data for load balancer (third party load balancer or hyperCMS load balancer)
-    if ((!empty ($mgmt_config['writesessiondata']) && $mgmt_config['writesessiondata'] == true) || (!empty ($mgmt_config['url_path_service']) && is_array ($mgmt_config['url_path_service']) && sizeof ($mgmt_config['url_path_service']) > 0))
+    if (!empty ($mgmt_config['writesessiondata']) || (!empty ($mgmt_config['url_path_service']) && is_array ($mgmt_config['url_path_service']) && sizeof ($mgmt_config['url_path_service']) > 0))
     {
       // register current timestamp in session
       setsession ('hcms_temp_sessiontime', time());
  
       // serialize session data
       $session_data = session_encode ();
+      $tst = savefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", $session_data);
 
       // save session data
       if ($session_data != "") return savefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", $session_data);
@@ -2123,7 +2126,7 @@ function writesessiondata ()
 // output: true
 
 // description:
-// Checks if session data of a user is available. This function does access session variables directly!
+// Checks if session data of a user is available. This function does access session variables directly.
 
 function createsession ()
 {
@@ -2154,7 +2157,7 @@ function createsession ()
   // load balancer is used: if a valid session ID is provided, evalute session and copy session data if required
   elseif (!empty ($mgmt_config['abs_path_data']) && (!empty ($mgmt_config['url_path_service']) || !empty ($mgmt_config['writesessiondata'])))
   {
-    // define session file (a session file is only available if the load balancer is used)
+    // define session file (a session file is required if the load balancer is used)
     $session_file = $mgmt_config['abs_path_data']."session/".session_id().".dat";
 
     $session_time = (!empty ($_SESSION['hcms_temp_sessiontime']) ? $_SESSION['hcms_temp_sessiontime'] : 0);
@@ -2192,12 +2195,12 @@ function createsession ()
 
 // ---------------------- killsession -----------------------------
 // function: killsession()
-// input: user name for hyperCMS session [string] (optional), destroy php session [boolean] (optional), kill all sessions of the user [boolean] (optional)
+// input: user name for hyperCMS session [string] (optional), destroy php session [boolean] (optional), remove session file of the user [boolean] (optional)
 // output: true
 // requires: hypercms_api.inc.php
 
 // description:
-// Destroys session data of a user
+// Destroys session data of a user.
 
 function killsession ($user="", $destroy_php=true, $remove=false)
 {
@@ -2360,7 +2363,7 @@ function checkdiskkey ($users="", $site="")
 // output: true if passed / error message as string
 
 // description:
-// This function checks the strength of a password and return the error messages or true
+// This function checks the strength of a password and return the error messages or true.
 
 function checkpassword ($password, $user="")
 {
@@ -2520,7 +2523,7 @@ function checkuserip ($client_ip, $user="", $timeout=0)
 // output: true / false if a certain amount of reguests per minute is exceeded
 
 // description:
-// Provides security for Cross-Site Request Forgery
+// Provides security for Cross-Site Request Forgery.
 
 function checkuserrequests ($user="sys")
 {
@@ -2570,6 +2573,27 @@ function checkuserrequests ($user="sys")
   else return true;
 }
 
+// ------------------------- recreateusersession -----------------------------
+// function: recreateusersession()
+// input: %
+// output: true / false
+// requires config.inc.php
+
+// description:
+// Recreates the users session data in case it is missing (due to issues with Android Chrome and the Mobile Edition).
+// Recreates the session data only if the session ID is still available.
+
+function recreateusersession ()
+{
+  global $mgmt_config;
+
+  // read and set session data if not available
+  if (getsession ('hcms_user') == "" && is_file ($mgmt_config['abs_path_data']."session/".session_id().".dat"))
+  {
+    session_decode (file_get_contents ($mgmt_config['abs_path_data']."session/".session_id().".dat"));
+  }
+}
+
 // ------------------------- checkusersession -----------------------------
 // function: checkusersession()
 // input: user name [string] (optional), include CSRF detection [boolean]
@@ -2583,10 +2607,11 @@ function checkusersession ($user="sys", $CSRF_detection=true)
 {
   global $mgmt_config;
 
+  // initalize
+  $alarm = true;
+
   // add CSRF detection
   if ($CSRF_detection == true) checkuserrequests ($user); 
-
-  $alarm = true;
 
   if (valid_objectname ($user) && is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && !empty ($_SESSION['hcms_siteaccess']) && is_array ($_SESSION['hcms_siteaccess']) && !empty ($_SESSION['hcms_rootpermission']) && is_array ($_SESSION['hcms_rootpermission']))
   {
@@ -2624,7 +2649,7 @@ function checkusersession ($user="sys", $CSRF_detection=true)
 // requires config.inc.php
 
 // description:
-// Verifies if the client IP is in the range of valid IPs and logs IP addresses with no access
+// Verifies if the client IP is in the range of valid IPs and logs IP addresses with no access.
 
 function allowuserip ($site)
 {
@@ -2711,7 +2736,7 @@ function valid_objectname ($variable)
 // output: true / false
 
 // description:
-// Checks if an location includes forbidden characters in order to prevent directory browsing
+// Checks if an location includes forbidden characters in order to prevent directory browsing.
 
 function valid_locationname ($variable)
 {
@@ -2903,7 +2928,7 @@ function html_encode ($expression, $encoding="", $js_protection=false)
 // output: html decoded value as array or string / false on error
 
 // description:
-// This function decodes all characters which have been converted by html_encode
+// This function decodes all characters which have been converted by html_encode.
 
 function html_decode ($expression, $encoding="")
 {
@@ -2970,7 +2995,7 @@ function scriptcode_encode ($content)
 // output: script code as array / false on error or if noting was found
 
 // description:
-// This function extracts the script code of a given content
+// This function extracts the script code of a given content.
 
 function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="?>")
 {
@@ -3043,7 +3068,7 @@ function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="
 // output: result array / false on error
 
 // description:
-// This function removes all dangerous PHP functions
+// This function removes all dangerous PHP functions.
 
 function scriptcode_clean_functions ($content, $type=4, $application="PHP")
 {
@@ -3197,7 +3222,7 @@ function scriptcode_clean_functions ($content, $type=4, $application="PHP")
 // output: result array / false on error
 
 // description:
-// This function checks SQL statements for write operations
+// This function checks SQL statements for write operations.
 
 function sql_clean_functions ($content)
 {
@@ -3256,7 +3281,7 @@ function sql_clean_functions ($content)
 // output: urlencoded value as array or string / false on error
 
 // description:
-// This function encodes all characters
+// This function encodes all characters.
 
 function url_encode ($variable)
 {
@@ -3284,7 +3309,7 @@ function url_encode ($variable)
 // output: urldecoded value as array or string / false on error
 
 // description:
-// This function decodes all characters which have been converted by url_encode or urlencode (PHP)
+// This function decodes all characters which have been converted by url_encode or urlencode (PHP).
 
 function url_decode ($variable)
 {
@@ -3388,7 +3413,7 @@ function hcms_crypt ($string, $start=0, $length=0)
 // output: encoded string / false on error
 
 // description:
-// Encryption of a string. Only strong encryption is binary-safe!
+// Encryption of a string. Only strong encryption is binary-safe.
 
 function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 {
@@ -3509,7 +3534,7 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 // output: decoded string / false on error
 
 // description:
-// Decryption of a string. Only strong encryption is binary-safe!
+// Decryption of a string. Only strong encryption is binary-safe.
 
 function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
 {

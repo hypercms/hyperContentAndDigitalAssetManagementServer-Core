@@ -1380,6 +1380,6 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
   <?php echo $mediaview; ?>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>
-

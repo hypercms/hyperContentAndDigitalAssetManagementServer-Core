@@ -1963,9 +1963,9 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
   <?php } ?>
   <?php } ?>
   </script>
-  </head>
+</head>
   
-  <body class="hcmsWorkplaceGeneric" style="height:auto;">
+<body class="hcmsWorkplaceGeneric" style="height:auto;">
   
     <!-- save layer --> 
     <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; display:none; z-index:100;">
@@ -2573,5 +2573,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
   </script>
   ";
     ?>
-  </body>
+</body>
+
+<?php include_once ("include/footer.inc.php"); ?>
 </html>

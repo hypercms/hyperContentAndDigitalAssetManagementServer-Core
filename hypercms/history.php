@@ -213,5 +213,6 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
 </form>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

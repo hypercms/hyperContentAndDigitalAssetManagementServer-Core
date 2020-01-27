@@ -249,5 +249,6 @@ echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px
   </form>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

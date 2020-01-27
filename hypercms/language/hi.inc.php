@@ -7,8 +7,9 @@ $hcms_lang_date['hi'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['hi'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['hi'] = "Share";
-$hcms_lang['social-media-sharing']['hi'] = "Social Media sharing";
+$hcms_lang['clipboard']['hi'] = "क्लिपबोर्ड";
+$hcms_lang['share']['hi'] = "शेयर";
+$hcms_lang['social-media-sharing']['hi'] = "सोशल मीडिया शेयरिंग";
 $hcms_lang['remember-me']['hi'] = "मुझे याद रखना";
 $hcms_lang['my-recent-tasks']['hi'] = "हाल ही अपना कार्य";
 $hcms_lang['my-recent-objects']['hi'] = "हाल में अपने उद्देश्यों";
@@ -342,9 +343,10 @@ $hcms_lang['view']['hi'] = "मत";
 $hcms_lang['views']['hi'] = "दृश्य";
 $hcms_lang['more']['hi'] = "अधिक";
 $hcms_lang['objects']['hi'] = "वस् तुएं";
-$hcms_lang['hold-ctrl-key-select-objects-by-click']['hi'] = "द्वारा आयोजित ctrl-वस्तु का चयन करें पर क्लिक करें. कुंजी";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['hi'] = "shift कुंजी को दबाकर रखें और उद्देश्यों के एक समूह द्वारा 2 क्लिक होने से पहले कैमरे को हिलाते हैं चुनें:";
-$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['hi'] = "कुंजी दबाएं. alt-लिंक कॉपी करें और डाउनलोड करने के लिए को ई-मेल और चिपकाना";
+$hcms_lang['hold-ctrl-key-select-objects-by-click']['hi'] = "द्वारा आयोजित CTRL वस्तु का चयन करें पर क्लिक करें. कुंजी";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['hi'] = "SHIFT कुंजी को दबाकर रखें और उद्देश्यों के एक समूह द्वारा 2 क्लिक होने से पहले कैमरे को हिलाते हैं चुनें:";
+$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['hi'] = "कुंजी दबाएं ALT लिंक कॉपी करें और डाउनलोड करने के लिए को ई-मेल और चिपकाना";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['hi'] = "ड्रैग एंड ड्रॉप: कॉपी के लिए CTRL कुंजी और कनेक्टेड कॉपी के लिए ALT कुंजी दबाएं";
 $hcms_lang['notify-me']['hi'] = "मुझे सूचित करें";
 $hcms_lang['send-to-chat']['hi'] = "चैट भेजें";
 $hcms_lang['password-is-not-set']['hi'] = "पासवर्ड सेट नहीं है";

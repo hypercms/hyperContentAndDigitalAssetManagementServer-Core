@@ -32,6 +32,7 @@ $dm = getrequest ("dm", "url");
 // media conversion
 $type = getrequest_esc ("type");
 $media_config = getrequest_esc ("mediacfg");
+$options = getrequest ("options");
 
 // external user ID provided by request (Download link)
 if (empty ($user)) $extuser = getrequest ("user");
@@ -62,7 +63,7 @@ if (!empty ($dl) && substr ($dl, 0, 5) == "hcms.")
 if ($dl != "" && !empty ($mgmt_config['db_connect_rdbms']))
 {
   $result_dl = rdbms_getaccessinfo ($dl);
-  
+
   // if download link uses access hash
   if (!empty ($result_dl['object_id']) && $result_dl['object_id'] > 0)
   {
@@ -289,19 +290,30 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
     {
       $media_info = getfileinfo ($site, getobject ($media), "comp");
       $media_new = $site."/".$media_info['filename'].".orig.mp4";
-      
+
       // check media file
       if ($media_new != "" && is_file ($media_root.$media_new))
       {
         $media = $media_new;
         $media_info_new = getfileinfo ($site, getobject ($media_new), "comp");
-      } 
+      }
     }
     // convert file if requested
     elseif (!empty ($type) && strtolower ($type) != "original")
     {
       // target path for the temporary file
       $media_target = $mgmt_config['abs_path_temp'];
+
+      // advanced image editing options used in download and wrapper links
+      if (is_image ($media) && !empty ($options) && !empty ($type))
+      {
+        // try to create a "somehow" unique media-config parameter
+        $media_config = substr (md5 ($options), 0, 6);
+
+        // reset image options and set format/type
+        $mgmt_imageoptions = array();
+        $mgmt_imageoptions[".".$type][$media_config] = "-f ".$type." ".$options;
+      }
 
       // convert file
       $media_new = convertmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);

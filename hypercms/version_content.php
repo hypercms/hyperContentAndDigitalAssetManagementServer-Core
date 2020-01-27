@@ -303,5 +303,6 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
 </form>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

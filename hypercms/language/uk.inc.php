@@ -7,8 +7,9 @@ $hcms_lang_date['uk'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['uk'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['uk'] = "Share";
-$hcms_lang['social-media-sharing']['uk'] = "Social Media sharing";
+$hcms_lang['clipboard']['uk'] = "Буфер обміну";
+$hcms_lang['share']['uk'] = "Поділитися";
+$hcms_lang['social-media-sharing']['uk'] = "Обмін соціальними медіа";
 $hcms_lang['remember-me']['uk'] = "Пам'ятай мене";
 $hcms_lang['my-recent-tasks']['uk'] = "Мої останні завдань";
 $hcms_lang['my-recent-objects']['uk'] = "Мої останні об'єктів";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['uk'] = "Об'єкти";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['uk'] = "Натисніть клавішу Ctrl-: дозволяє вибрати об'єктів, натисніть кнопку";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['uk'] = "Утримуйте натиснутою клавішу Shift-: Вибрати групу об'єктів на 2 клацань";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['uk'] = "Натисніть комбінацію клавіш Alt ключ: перехід до завантаження-посилання для копіювання та вставки на електронну пошту";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['uk'] = "Перетягування: Натисніть клавішу CTRL для копіювання та клавішу ALT для підключеного копа";
 $hcms_lang['notify-me']['uk'] = "Сповістити Мене";
 $hcms_lang['send-to-chat']['uk'] = "Надіслати чат";
 $hcms_lang['password-is-not-set']['uk'] = "Пароль не встановлено";

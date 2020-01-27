@@ -7,8 +7,9 @@ $hcms_lang_date['sk'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['sk'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['sk'] = "Share";
-$hcms_lang['social-media-sharing']['sk'] = "Social Media sharing";
+$hcms_lang['clipboard']['sk'] = "Schránka";
+$hcms_lang['share']['sk'] = "Zdieľam";
+$hcms_lang['social-media-sharing']['sk'] = "Zdieľanie sociálnych médií";
 $hcms_lang['remember-me']['sk'] = "Pamätaj na mňa";
 $hcms_lang['my-recent-tasks']['sk'] = "Moje posledné úlohy";
 $hcms_lang['my-recent-objects']['sk'] = "Moje posledné objekty";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['sk'] = "Objekty";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['sk'] = "Podržte kláves Ctrl-kľúč: Vyberte objekty kliknite na";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['sk'] = "Podržte kláves SHIFT-kľúč: Vyberte si skupinu predmetov o 2 kliknutí";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['sk'] = "Stlačte kláves ALT-kláves: Prechod na download-linky ak chcete skopírovať a prilepiť do e-mailov";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['sk'] = "Drag and drop: Stlačte CTRL pre kopírovanie a ALT pre pripojenú kópiu";
 $hcms_lang['notify-me']['sk'] = "Notify me";
 $hcms_lang['send-to-chat']['sk'] = "Poslať na pokec";
 $hcms_lang['password-is-not-set']['sk'] = "Heslo nie je nastavené";

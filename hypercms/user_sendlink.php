@@ -1068,5 +1068,6 @@ $token_new = createtoken ($user);
     </form>
   </div>
 
-  </body>
+<?php include_once ("include/footer.inc.php"); ?>
+</body>
 </html>

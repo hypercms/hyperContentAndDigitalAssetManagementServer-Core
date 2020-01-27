@@ -83,25 +83,51 @@ function maxNavFrame ()
 </script>
 </head>
 
+<?php
+// iPad and iPhone requires special CSS settings
+if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scrolling:touch !important;";
+else $css_iphone = "";
+?>
 <body>
   <?php
-  if ($mediacat != "comp") echo "<div id=\"navLayer\" style=\"position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;\"><iframe id=\"navFrame2\" name=\"navFrame2\" scrolling=\"auto\" src=\"media_edit_explorer.php?site=".$site."&mediacat=".$mediacat."&mediatype=".$mediatype."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>\n";
-  elseif ($mediacat == "comp") echo "<div id=\"navLayer\" style=\"position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;\"><iframe id=\"navFrame2\" name=\"navFrame2\" scrolling=\"auto\" src=\"component_edit_explorer.php?site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&mediatype=".$mediatype."&scaling=".$scaling."&compcat=media\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>\n";
+  if ($mediacat != "comp")
+  {
+    echo "
+  <div id=\"navLayer\" style=\"position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;".$css_iphone."\">
+    <iframe id=\"navFrame2\" name=\"navFrame2\" scrolling=\"auto\" src=\"media_edit_explorer.php?site=".$site."&mediacat=".$mediacat."&mediatype=".$mediatype."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>
+  </div>";
+  }
+  elseif ($mediacat == "comp")
+  {
+    echo "
+  <div id=\"navLayer\" style=\"position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;".$css_iphone."\">
+    <iframe id=\"navFrame2\" name=\"navFrame2\" scrolling=\"auto\" src=\"component_edit_explorer.php?site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&mediatype=".$mediatype."&scaling=".$scaling."&compcat=media\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>
+  </div>";
+  }
 
   if ($action == "mediafile_delete")
   {
-    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_delete.php?site=".$site."&mediacat=".$mediacat."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+    echo "
+  <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\">
+    <iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_delete.php?site=".$site."&mediacat=".$mediacat."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>
+  </div>";
   }
   elseif ($action == "mediafile_preview")
   {
-    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_preview.php?site=".$site."&cat=".$cat."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+    echo "
+  <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\">
+    <iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_preview.php?site=".$site."&cat=".$cat."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>
+  </div>";
   }
   else
   {
-    echo "<div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\"><iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&db_connect=".$db_connect."&id=".$id."&label=".$label."&tagname=".$tagname."&mediaalttext=".$mediaalttext."&mediaalign=".$mediaalign."&mediawidth=".$mediawidth."&mediaheight=".$mediaheight."&scaling=".$scaling."&mediatype=".$mediatype."&contenttype=".$contenttype."&mediafile=".$mediafile."&mediaobject=".$mediaobject."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+    echo "
+  <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\">
+    <iframe id=\"controlFrame2\" name=\"controlFrame2\" scrolling=\"no\" src=\"media_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&db_connect=".$db_connect."&id=".$id."&label=".$label."&tagname=".$tagname."&mediaalttext=".$mediaalttext."&mediaalign=".$mediaalign."&mediawidth=".$mediawidth."&mediaheight=".$mediaheight."&scaling=".$scaling."&mediatype=".$mediatype."&contenttype=".$contenttype."&mediafile=".$mediafile."&mediaobject=".$mediaobject."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>
+  </div>";
   }
   ?>
-  <div id="mainLayer" style="position:fixed; top:220px; right:0; bottom:0; left:260px; margin:0; padding:0;">
+  <div id="mainLayer" style="position:fixed; top:220px; right:0; bottom:0; left:260px; margin:0; padding:0; <?php echo $css_iphone; ?>">
     <iframe id="mainFrame2" name="mainFrame2" scrolling="auto" src="<?php echo "media_view.php?site=".$site."&mediacat=".$mediacat."&mediafile=".$mediafile."&mediaobject=".$mediaobject."&mediatype=".$mediatype."&scaling=".$scaling; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
 </body>

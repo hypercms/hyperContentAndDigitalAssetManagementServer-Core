@@ -7,8 +7,9 @@ $hcms_lang_date['he'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['he'] = "rtl";
 
 // Text for hyperCMS
-$hcms_lang['share']['he'] = "Share";
-$hcms_lang['social-media-sharing']['he'] = "Social Media sharing";
+$hcms_lang['clipboard']['he'] = "הלוח";
+$hcms_lang['share']['he'] = "שתף";
+$hcms_lang['social-media-sharing']['he'] = "שיתוף מדיה חברתית";
 $hcms_lang['remember-me']['he'] = "זכור אותי";
 $hcms_lang['my-recent-tasks']['he'] = "האחרונים שלי משימות";
 $hcms_lang['my-recent-objects']['he'] = "האחרונים שלי אובייקטים";
@@ -342,9 +343,10 @@ $hcms_lang['view']['he'] = "הצג";
 $hcms_lang['views']['he'] = "צפיות";
 $hcms_lang['more']['he'] = "יותר";
 $hcms_lang['objects']['he'] = "חפצים";
-$hcms_lang['hold-ctrl-key-select-objects-by-click']['he'] = "החזק Ctrl-מפתח: לבחור אובייקטים על ידי לחץ על";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['he'] = "החזק Shift-מפתח: בחר קבוצה של אובייקטים על ידי 2 לחיצות";
-$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['he'] = "לחץ על Alt-מפתח: כדי להוריד מתג-קישורים העתק והדבק לתוך הודעת דואר אלקטרוני";
+$hcms_lang['hold-ctrl-key-select-objects-by-click']['he'] = "החזק CTRL מפתח: לבחור אובייקטים על ידי לחץ על";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['he'] = "החזק SHIFT מפתח: בחר קבוצה של אובייקטים על ידי 2 לחיצות";
+$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['he'] = "לחץ על ALT מפתח: כדי להוריד מתג-קישורים העתק והדבק לתוך הודעת דואר אלקטרוני";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['he'] = "גרור ושחרר: לחץ על מקש CTRL להעתקה ועל מקש ALT להעתקה מחוברת";
 $hcms_lang['notify-me']['he'] = "הודיעו לי";
 $hcms_lang['send-to-chat']['he'] = "שלח צ'אט";
 $hcms_lang['password-is-not-set']['he'] = "סיסמה לא מוגדר";

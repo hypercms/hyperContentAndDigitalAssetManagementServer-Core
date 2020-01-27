@@ -32,13 +32,13 @@ $wl = getrequest ("wl", "url");
 // media conversion
 $type = getrequest_esc ("type");
 $media_config = getrequest_esc ("mediacfg");
+$options = getrequest ("options");
 
 // external user ID provided by request (Wrapper link)
 if (empty ($user)) $extuser = getrequest ("user");
 
 // default language
 if ($lang == "") $lang = "en";
-
 
 // ------------------------------ permission section --------------------------------
 
@@ -219,24 +219,44 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
 
   if ($media_root != "")
   {
+    // provide thumbnail video file
+    if (!empty ($type) && strtolower ($type) == "origthumb")
+    {
+      $media_info = getfileinfo ($site, getobject ($media), "comp");
+      $media_new = $site."/".$media_info['filename'].".orig.mp4";
+
+      // check media file
+      if ($media_new != "" && is_file ($media_root.$media_new))
+      {
+        $media = $media_new;
+        $media_info_new = getfileinfo ($site, getobject ($media_new), "comp");
+      }
+    }
     // convert file if requested
-    if ($type != "" && strtolower ($type) != "original")
+    elseif ($type != "" && strtolower ($type) != "original")
     {
       // target path for the temporary file
       $media_target = $mgmt_config['abs_path_temp'];
 
+      // advanced image editing options used in download and wrapper links
+      if (is_image ($media) && !empty ($options) && !empty ($type))
+      {
+        // try to create a "somehow" unique media-config parameter
+        $media_config = substr (md5 ($options), 0, 6);
+
+        // reset image options and set format/type
+        $mgmt_imageoptions = array();
+        $mgmt_imageoptions[".".$type][$media_config] = "-f ".$type." ".$options;
+      }
+
       // convert file
       $media_new = convertmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);
-      
+
       // if new file has been converted successfully, set new media root path and new media file name
       if ($media_new != "") 
       { 
         $media = $media_new;
         $media_info_new = getfileinfo ($site, getobject ($media_new), "comp");
-        
-        // define new name
-        $name_info = getfileinfo ($site, getobject ($name), "comp");
-        $name = $name_info['filename'].$media_info_new['ext'];
         
         // recheck media location (due to changed location by function convertdocument)
         if (is_file ($media_target.$media_new)) $media_root = $media_target;
@@ -248,7 +268,7 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
 
     // don't show HTML-files directly in browser since JS-code can be embedded in the file 
     $media_info = getfileinfo ($site, $media_root.$media, "comp");
-    
+
     if (is_array ($media_info) && substr_count (strtolower ($hcms_ext['cms']).".", $media_info['ext'].".") > 0)
     {
       header ('HTTP/1.0 403 Forbidden', true, 403);
@@ -266,18 +286,18 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
         else $media_info = getfileinfo ($site, getobject ($media), "comp");
 
         $name = $media_info['name'];
-        
-        // replace file extension if file was converted
-        if (!empty ($media_info_new['ext']))
-        {
-          $name_info = getfileinfo ($site, getobject ($name), "comp");
-          $name = $name_info['filename'].$media_info_new['ext'];
-        }
+      }
+
+      // replace file extension if file was converted
+      if (!empty ($media_info_new['ext']))
+      {
+        $name_info = getfileinfo ($site, getobject ($name), "comp");
+        $name = $name_info['filename'].$media_info_new['ext'];
       }
 
       // reset user if a user ID has been provided by the request
       if (!empty ($extuser)) $user = $extuser;
-            
+
       // stream file content
       downloadfile ($media_root.$media, $name, "wrapper", $user);
     }

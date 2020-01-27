@@ -7,8 +7,9 @@ $hcms_lang_date['fr'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['fr'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['fr'] = "Share";
-$hcms_lang['social-media-sharing']['fr'] = "Social Media sharing";
+$hcms_lang['clipboard']['fr'] = "Presse-papiers";
+$hcms_lang['share']['fr'] = "Partager";
+$hcms_lang['social-media-sharing']['fr'] = "Partage de médias sociaux";
 $hcms_lang['remember-me']['fr'] = "Souviens-toi de moi";
 $hcms_lang['my-recent-tasks']['fr'] = "Mes tâches récentes";
 $hcms_lang['my-recent-objects']['fr'] = "Ma récente objets";
@@ -342,9 +343,10 @@ $hcms_lang['view']['fr'] = "Vue";
 $hcms_lang['views']['fr'] = "Vues";
 $hcms_lang['more']['fr'] = "Plus";
 $hcms_lang['objects']['fr'] = "Objets";
-$hcms_lang['hold-ctrl-key-select-objects-by-click']['fr'] = "Maintenir la touche CTRL: sélectionner des objets en un clic";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['fr'] = "Maintenez SHIFT-Key: Sélectionner un groupe d'objets de 2 clics";
-$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['fr'] = "Appuyez sur ALT-Key: Passer à télécharger-liens de copier-coller dans les e-mails";
+$hcms_lang['hold-ctrl-key-select-objects-by-click']['fr'] = "Appuyez sur CTRL: sélectionner des objets en un clic";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['fr'] = "Appuyez sur SHIFT: Sélectionner un groupe d'objets de 2 clics";
+$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['fr'] = "Appuyez sur ALT: Passer à télécharger-liens de copier-coller dans les e-mails";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['fr'] = "Glisser-déposer: appuyez sur les touches CTRL pour copier et ALT pour copier";
 $hcms_lang['notify-me']['fr'] = "Informez-moi";
 $hcms_lang['send-to-chat']['fr'] = "Envoyer à chat";
 $hcms_lang['password-is-not-set']['fr'] = "Mot de passe n'est pas défini";

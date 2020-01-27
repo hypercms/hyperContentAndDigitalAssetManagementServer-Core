@@ -7,8 +7,9 @@ $hcms_lang_date['id'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['id'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['id'] = "Share";
-$hcms_lang['social-media-sharing']['id'] = "Social Media sharing";
+$hcms_lang['clipboard']['id'] = "Papan klip";
+$hcms_lang['share']['id'] = "Bagikan";
+$hcms_lang['social-media-sharing']['id'] = "Berbagi Media Sosial";
 $hcms_lang['remember-me']['id'] = "Ingat saya";
 $hcms_lang['my-recent-tasks']['id'] = "Tugas terakhir Saya";
 $hcms_lang['my-recent-objects']['id'] = "Objek terakhir Saya";
@@ -342,9 +343,10 @@ $hcms_lang['view']['id'] = "Melihat";
 $hcms_lang['views']['id'] = "Views";
 $hcms_lang['more']['id'] = "Lebih Lanjut";
 $hcms_lang['objects']['id'] = "Benda";
-$hcms_lang['hold-ctrl-key-select-objects-by-click']['id'] = "Tahan tombol CTRL-Tombol: Pilih benda dengan klik";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['id'] = "Tahan SHIFT-Kunci: Pilih sebuah grup benda oleh 2 mengklik";
+$hcms_lang['hold-ctrl-key-select-objects-by-click']['id'] = "Tahan tombol CTRL: Pilih benda dengan klik";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['id'] = "Tahan tombol SHIFT: Pilih sebuah grup benda oleh 2 mengklik";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['id'] = "Tekan tombol ALT: Berpindah ke download-link untuk menyalin & menempelkan ke e-mail";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['id'] = "Seret dan lepas: Tekan tombol CTRL untuk menyalin dan tombol ALT untuk salinan yang terhubung";
 $hcms_lang['notify-me']['id'] = "Beri tahu saya";
 $hcms_lang['send-to-chat']['id'] = "Kirim ke obrolan";
 $hcms_lang['password-is-not-set']['id'] = "Kata Sandi tidak disetel";

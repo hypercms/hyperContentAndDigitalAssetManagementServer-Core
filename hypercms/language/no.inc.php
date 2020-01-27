@@ -7,8 +7,9 @@ $hcms_lang_date['no'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['no'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['no'] = "Share";
-$hcms_lang['social-media-sharing']['no'] = "Social Media sharing";
+$hcms_lang['clipboard']['no'] = "Utklippstavlen ";
+$hcms_lang['share']['no'] = "Dele";
+$hcms_lang['social-media-sharing']['no'] = "Deling av sosiale medier";
 $hcms_lang['remember-me']['no'] = "Husk meg";
 $hcms_lang['my-recent-tasks']['no'] = "Min siste oppgaver";
 $hcms_lang['my-recent-objects']['no'] = "Mine siste objekter";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['no'] = "Objekter";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['no'] = "Hold nede CTRL-tasten: Velg objekter ved klikk på";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['no'] = "Hold nede Skift-tasten: Velg en gruppe av objekter med 2 klikker";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['no'] = "Trykk på ALT-tasten: Bryter for å laste ned-koblinger til kopier & lim inn i e-post";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['no'] = "Dra og slipp: Trykk CTRL-tasten for kopiering og ALT-tasten for tilkoblet kopi";
 $hcms_lang['notify-me']['no'] = "Varsle meg";
 $hcms_lang['send-to-chat']['no'] = "Send til chat";
 $hcms_lang['password-is-not-set']['no'] = "Passord er ikke angitt";

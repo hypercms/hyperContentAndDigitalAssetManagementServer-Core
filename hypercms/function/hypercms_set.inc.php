@@ -26,7 +26,10 @@ function setsession ($variable, $content="", $write=false)
       $_SESSION[$variable] = $content;
 
       // write session data for load balancer
-      if ($write == true) return writesessiondata ();
+      if ($write == true)
+      {
+        return writesessiondata ();
+      }
       else return true;
     }
     elseif (is_array ($variable))

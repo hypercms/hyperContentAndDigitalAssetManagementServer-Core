@@ -7,8 +7,9 @@ $hcms_lang_date['ms'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ms'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['ms'] = "Share";
-$hcms_lang['social-media-sharing']['ms'] = "Social Media sharing";
+$hcms_lang['clipboard']['ms'] = "Papan klip";
+$hcms_lang['share']['ms'] = "Kongsi";
+$hcms_lang['social-media-sharing']['ms'] = "Perkongsian Media Sosial";
 $hcms_lang['remember-me']['ms'] = "Ingat aku";
 $hcms_lang['my-recent-tasks']['ms'] = "Saya terkini tugasan";
 $hcms_lang['my-recent-objects']['ms'] = "Saya objek terbaru";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['ms'] = "Objek";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['ms'] = "Pegang Ctrl- Kunci: Pilih Objek oleh klik";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['ms'] = "Pegang Shift-kekunci: Pilih kumpulan objek oleh 2 klik";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['ms'] = "Tekan Alt-kekunci: Tukar ke Muatturun-pautan untuk salin & tampal ke dalam e- mel";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['ms'] = "Seret dan lepas: Tekan kekunci CTRL untuk menyalin dan kekunci ALT untuk disambungkan";
 $hcms_lang['notify-me']['ms'] = "Beritahu";
 $hcms_lang['send-to-chat']['ms'] = "Hantar ke chat";
 $hcms_lang['password-is-not-set']['ms'] = "Kata laluan tidak diset";

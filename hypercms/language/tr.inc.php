@@ -7,8 +7,9 @@ $hcms_lang_date['tr'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['tr'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['tr'] = "Share";
-$hcms_lang['social-media-sharing']['tr'] = "Social Media sharing";
+$hcms_lang['clipboard']['tr'] = "Pano";
+$hcms_lang['share']['tr'] = "Pay";
+$hcms_lang['social-media-sharing']['tr'] = "Sosyal medya paylaşımı";
 $hcms_lang['remember-me']['tr'] = "Beni hatırla";
 $hcms_lang['my-recent-tasks']['tr'] = "My son görevleri";
 $hcms_lang['my-recent-objects']['tr'] = "My son nesneler";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['tr'] = "Nesneler";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['tr'] = "Hold CTRL tuşu: tıklatma nesneleri Seçmek";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['tr'] = "SHIFT tuşunu basılı tutup-Tuşu: nesnelerin bir grup seçin 2 tıklama";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['tr'] = "ALT tuşuna basın-Tuşu: Anahtarını yükleme için bağlantılar kopyala - yapıştır e-posta";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['tr'] = "Sürükle ve bırak: Kopyalama için CTRL tuşuna, bağlı kopya için ALT tuşuna basın";
 $hcms_lang['notify-me']['tr'] = "Bana Bildir";
 $hcms_lang['send-to-chat']['tr'] = "Sohbet etmek için Gönder";
 $hcms_lang['password-is-not-set']['tr'] = "Şifre ayarlı değil";

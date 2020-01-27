@@ -7,8 +7,9 @@ $hcms_lang_date['hu'] = 'd.m.Y H:i:s';
 $hcms_lang_direction['hu'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['hu'] = "Share";
-$hcms_lang['social-media-sharing']['hu'] = "Social Media sharing";
+$hcms_lang['clipboard']['hu'] = "Vágólap";
+$hcms_lang['share']['hu'] = "Ossza meg";
+$hcms_lang['social-media-sharing']['hu'] = "Közösségi média megosztása";
 $hcms_lang['remember-me']['hu'] = "Emlékezz rám";
 $hcms_lang['my-recent-tasks']['hu'] = "Az újabb feladatok";
 $hcms_lang['my-recent-objects']['hu'] = "Az én újabb objektumok";
@@ -342,9 +343,10 @@ $hcms_lang['view']['hu'] = "Tekintse meg";
 $hcms_lang['views']['hu'] = "Nézetek";
 $hcms_lang['more']['hu'] = "Több";
 $hcms_lang['objects']['hu'] = "Objektumok";
-$hcms_lang['hold-ctrl-key-select-objects-by-click']['hu'] = "Tartsa lenyomva a CTRL billentyűt és kattintson az objektumok kiválasztása:";
-$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['hu'] = "Tartsa lenyomva a Shift gombot és válassza ki a csoport által a tárgyak 2 kattintással";
-$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['hu'] = "Nyomja meg az Alt gombot: a kapcsoló a letöltés-kapcsolatok a másolás + beillesztés e-mailek felismerése";
+$hcms_lang['hold-ctrl-key-select-objects-by-click']['hu'] = "Nyomja meg az CTRL gombot: billentyűt és kattintson az objektumok kiválasztása:";
+$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['hu'] = "Nyomja meg az SHIFT gombot: és válassza ki a csoport által a tárgyak 2 kattintással";
+$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['hu'] = "Nyomja meg az ALT gombot: a kapcsoló a letöltés-kapcsolatok a másolás + beillesztés e-mailek felismerése";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['hu'] = "Húzás: Nyomja meg a CTRL gombot a másoláshoz és az ALT gombot a csatlakoztatott másoláshoz";
 $hcms_lang['notify-me']['hu'] = "Értesítést kérek";
 $hcms_lang['send-to-chat']['hu'] = "Küldés a chat";
 $hcms_lang['password-is-not-set']['hu'] = "Nincs jelszó beállítva";

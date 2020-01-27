@@ -7,8 +7,9 @@ $hcms_lang_date['zh-s'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['zh-s'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['zh-s'] = "Share";
-$hcms_lang['social-media-sharing']['zh-s'] = "Social Media sharing";
+$hcms_lang['clipboard']['zh-s'] = "剪贴板";
+$hcms_lang['share']['zh-s'] = "分享";
+$hcms_lang['social-media-sharing']['zh-s'] = "社交媒体分享";
 $hcms_lang['remember-me']['zh-s'] = "记住账号";
 $hcms_lang['my-recent-tasks']['zh-s'] = "我最近的任务";
 $hcms_lang['my-recent-objects']['zh-s'] = "我最近对象";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['zh-s'] = "对象";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['zh-s'] = "按住Ctrl键:选择对象,单击";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['zh-s'] = "按住Shift键:选择一个组对象,点击2";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['zh-s'] = "按下Alt键:切换到下载链接复制和粘贴到电子邮件";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['zh-s'] = "拖放：按CTRL键进行复制，按ALT键进行连接的警察";
 $hcms_lang['notify-me']['zh-s'] = "撏ㄖ救藬";
 $hcms_lang['send-to-chat']['zh-s'] = "发送到聊天";
 $hcms_lang['password-is-not-set']['zh-s'] = "密码未设置";

@@ -1359,5 +1359,6 @@ else $css_iphone = " overflow-x:hidden; overflow-y:hidden;";
   </div>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

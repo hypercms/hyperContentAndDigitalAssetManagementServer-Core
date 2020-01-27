@@ -391,5 +391,6 @@ updateCodeSegment();
 ?>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

@@ -24,6 +24,6 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-$_SESSION['hcms_temp_latitude'] = $latitude;
-$_SESSION['hcms_temp_longitude'] = $longitude;
+setsession ('hcms_temp_latitude', $latitude);
+setsession ('hcms_temp_longitude', $longitude, true);
 ?>

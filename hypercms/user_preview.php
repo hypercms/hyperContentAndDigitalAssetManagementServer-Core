@@ -149,5 +149,6 @@ function checkForm (form, field)
   </form>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

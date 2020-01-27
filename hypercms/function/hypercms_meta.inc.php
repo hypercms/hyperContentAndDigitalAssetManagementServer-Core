@@ -2797,6 +2797,40 @@ google:keywords => 'textk:Keywords'";
   }
 }
 
+// ------------------------- metadata_exists -----------------------------
+// function: metadata_exists()
+// input: mapping [array:metadata-tag-name => text-id], text [array:metadata-text-id => content]
+// output: true / false
+
+// description:
+// Verifies if the content of a specific text ID that triggers a Cloud API call exists already.
+// This function is used to reduce/trigger Cloud API calls in case the content exists already and the media file does not need to be analyzed by a cloud service.
+
+function metadata_exists ($mapping, $text_array)
+{
+  $result = true;
+
+  if (is_array ($mapping) && is_array ($text_array))
+  {
+    reset ($mapping);
+
+    foreach ($mapping as $key => $text_id)
+    {
+      // only for google namespace
+      if (strpos ("_".$key, "google:") > 0 && $text_id != "")
+      {
+        // get type and text ID
+        if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+
+        // verify content in textnode
+        if (empty ($text_array[$text_id])) $result = false;
+      }
+    }
+  }
+
+  return $result;
+}
+
 // ------------------------- setmetadata -----------------------------
 // function: setmetadata()
 // input: publication name [string], location path [string] (optional), object name [string] (optional), media file name [string] (optional), mapping [array:metadata-tag-name => text-id] (optional), 
@@ -2904,309 +2938,6 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
           $mediafile = $temp['file'];
         }
 
-        // ------------------- use Google Speech Service -------------------
-        if (is_audio ($mediafile) || is_video ($mediafile))
-        {
-          if (function_exists ("GCspeech2text")) $google_data = GCspeech2text ($site, $medialocation.$mediafile);
-          else $google_data = "";
-
-          if (!empty ($google_data) && is_array ($google_data))
-          {
-            // source charset
-            $charset_source = "UTF-8";
-
-            $vtt_str = "";
-
-            // create VTT
-            foreach ($google_data as $record)
-            {
-              // only for tags
-              if (!empty ($record['description']))
-              {
-                if (empty ($langcode)) $langcode = $record['language'];
-
-                $temp_str = $record['description'];
-
-                // remove tags
-                $temp_str = strip_tags ($temp_str);
-
-                // convert string for container
-                if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
-                {
-                  $temp_str = convertchars ($temp_str, $charset_source, $charset_dest);
-                }
-                elseif ($charset_dest == "UTF-8")
-                {
-                  // encode to UTF-8
-                  if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
-                }
-
-                $vtt_str .= sec2time ($record['starttime'])." --> ".sec2time ($record['endtime'])."\n";
-                $vtt_str .= $temp_str."\n\n";
-              }
-            }
-
-            if (!empty ($langcode) && !empty ($vtt_str))
-            {
-              $text_id = "VTT-".$langcode;
-              $vtt_str = "WEBVTT\n\n".$vtt_str;
-
-              // textnodes search index in database
-              $text_array[$text_id] = $vtt_str;
-                        
-              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$vtt_str."]]>", "<text_id>", $text_id);
-
-              if ($containerdata_new == false)
-              {
-                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$vtt_str."]]>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
-              }
-
-              if ($containerdata_new != false) $containerdata = $containerdata_new;
-              else
-              {
-                $errcode = "20600";
-                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Speech meta data to container with ID: ".$container_id;
-              }
-            }
-          }
-        }
-
-        // ------------------- use Google Vision Cloud Service -------------------
-        if (is_image ($mediafile))
-        {
-          if (function_exists ("GCanalyzeimage")) $google_data = GCanalyzeimage ($site, $medialocation.$mediafile);
-          else $google_data = "";
-
-          if (!empty ($google_data) && is_array ($google_data))
-          {
-            // source charset
-            $charset_source = "UTF-8";
-
-            // inject meta data based on mapping
-            reset ($mapping);
-
-            foreach ($mapping as $key => $text_id)
-            {
-              // only for tags
-              if (strpos ("_".$key, "google:") > 0 && $text_id != "")
-              {
-                // get tag name
-                list ($namespace, $key) = explode (":", $key);
-                $key = trim ($key);
-
-                // get type and text ID
-                if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
-                elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
-                else $type = "textu";
-
-                if (!empty ($type)) $type_array[$text_id] = $type;
-
-                // get data
-                if (!empty ($google_data[$key])) $temp_str = $google_data[$key];
-                else $temp_str = "";
-
-                if ($temp_str != "")
-                {
-                  // clean keywords
-                  if ($type == "textk")
-                  {
-                    $keywords = splitkeywords ($temp_str, $charset_dest);
-
-                    if (is_array ($keywords)) $temp_str = implode (",", $keywords);
-                    else $temp_str = "";
-                  }
-
-                  // remove tags
-                  $temp_str = strip_tags ($temp_str);
-
-                  // convert string for container
-                  if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
-                  {
-                    $temp_str = convertchars ($temp_str, $charset_source, $charset_dest);
-                  }
-                  elseif ($charset_dest == "UTF-8")
-                  {
-                    // encode to UTF-8
-                    if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
-                  }
-
-                  // textnodes search index in database
-                  $text_array[$text_id] = $temp_str;
-                            
-                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
-
-                  if ($containerdata_new == false)
-                  {
-                    $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
-                  }
-
-                  if ($containerdata_new != false) $containerdata = $containerdata_new;
-                  else
-                  {
-                    $errcode = "20602";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Vision meta data to container with ID: ".$container_id;
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        // ------------------- use Google Video Intelligence Cloud Service -------------------
-        if (is_video ($mediafile))
-        {
-          if (function_exists ("GCanalyzevideo")) $google_data = GCanalyzevideo ($site, $medialocation.$mediafile);
-          else $google_data = "";
-
-          if (!empty ($google_data) && is_array ($google_data))
-          {
-            // source charset
-            $charset_source = "UTF-8";
-
-            // thumbnail file is always in repository
-            $thumb_root = getmedialocation ($site, ".hcms.".$mediafile, "abs_path_media").$site."/";
-            $file_info = getfileinfo ($site, $mediafile, "comp");
-
-            // get video dimensions
-            avoidfilecollision ();
-            $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
-
-            if (empty ($config['width'])) $config['width'] = 360;
-            if (empty ($config['height'])) $config['height'] = 240;
-
-            $faces_array = array();
-            $google_data_collect = array();
-
-            foreach ($google_data as $temp_array)
-            {
-              if (is_array ($temp_array))
-              {
-                // remove tags
-                $temp_array['description'] = strip_tags ($temp_array['description']);
-                $temp_array['keywords'] = strip_tags ($temp_array['keywords']);
- 
-                // convert string for container
-                if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
-                {
-                  $temp_array['description'] = convertchars ($temp_array['description'], $charset_source, $charset_dest);
-                  $temp_array['keywords'] = convertchars ($temp_array['keywords'], $charset_source, $charset_dest);
-                }
-                elseif ($charset_dest == "UTF-8")
-                {
-                  // encode to UTF-8
-                  if (!is_utf8 ($temp_array['description'] )) $temp_array['description'] = utf8_encode ($temp_array['description']);
-                  if (!is_utf8 ($temp_array['keywords'] )) $temp_array['keywords'] = utf8_encode ($temp_array['keywords']);
-                } 
-
-                // JSON substring
-                $faces_array[] = "{\"videowidth\":".$config['width'].", \"videoheight\":".$config['height'].", \"time\":".$temp_array['starttime'].", \"x\":10, \"y\":10, \"width\":".(intval ($config['width']) - 20).", \"height\":".(intval ($config['height']) - 120).", \"name\":\"".$temp_array['keywords']."\"}";
-
-                // collect data
-                if (!empty ($google_data_collect['description'])) $google_data_collect['description'] .= ", ".$temp_array['description'];
-                else $google_data_collect['description'] = $temp_array['description'];
-
-                if (!empty ($google_data_collect['keywords'])) $google_data_collect['keywords'] .= ",".$temp_array['keywords'];
-                else $google_data_collect['keywords'] = $temp_array['keywords'];
-              }
-            }
-
-            // save JSON string to container
-            if (sizeof ($faces_array) > 0)
-            {
-              $text_id = "Faces-JSON";
-              $faces_json = "[".implode (", ", $faces_array)."]";
-
-              // textnodes search index in database
-              $text_array[$text_id] = $faces_json;
-                        
-              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
-
-              if ($containerdata_new == false)
-              {
-                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
-              }
-
-              if ($containerdata_new != false) $containerdata = $containerdata_new;
-              else return false;
-            }
-
-            // inject meta data based on mapping
-            reset ($mapping);
-
-            foreach ($mapping as $key => $text_id)
-            {
-              // only for tags
-              if (strpos ("_".$key, "google:") > 0 && $text_id != "")
-              {
-                // get tag name
-                list ($namespace, $key) = explode (":", $key);
-                $key = trim ($key);
-
-                // get type and text ID
-                if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
-                elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
-                else $type = "textu";
-
-                if (!empty ($type)) $type_array[$text_id] = $type;
-
-                // get data
-                if (!empty ($google_data_collect[$key])) $temp_str = $google_data_collect[$key];
-                else $temp_str = "";
-
-                if ($temp_str != "")
-                {
-                  // clean keywords
-                  if ($type == "textk")
-                  {
-                    $keywords = splitkeywords ($temp_str, $charset_dest);
-
-                    if (is_array ($keywords)) $temp_str = implode (",", $keywords);
-                    else $temp_str = "";
-                  }
-
-                  // remove tags
-                  $temp_str = strip_tags ($temp_str);
-
-                  // convert string for container
-                  if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
-                  {
-                    $temp_str = convertchars ($temp_str, $charset_source, $charset_dest);
-                  }
-                  elseif ($charset_dest == "UTF-8")
-                  {
-                    // encode to UTF-8
-                    if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
-                  }
-
-                  // textnodes search index in database
-                  $text_array[$text_id] = $temp_str;
-                            
-                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
-
-                  if ($containerdata_new == false)
-                  {
-                    $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
-                  }
-
-                  if ($containerdata_new != false) $containerdata = $containerdata_new;
-                  else
-                  {
-                    $errcode = "20603";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Video Intelligence meta data to container with ID: ".$container_id;
-                  }
-                }
-              }
-            }
-          }
-        }
 
         // ------------------- extract metadata using EXIFTOOL -------------------
         // Can be used for all metadata formats supported by EXIFTOOL
@@ -3754,6 +3485,310 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               }
             }
           } 
+        }
+
+        // ------------------- use Google Speech Service -------------------
+        if (is_audio ($mediafile) || is_video ($mediafile))
+        {
+          if (function_exists ("GCspeech2text")) $google_data = GCspeech2text ($site, $medialocation.$mediafile);
+          else $google_data = "";
+
+          if (!empty ($google_data) && is_array ($google_data))
+          {
+            // source charset
+            $charset_source = "UTF-8";
+
+            $vtt_str = "";
+
+            // create VTT
+            foreach ($google_data as $record)
+            {
+              // only for tags
+              if (!empty ($record['description']))
+              {
+                if (empty ($langcode)) $langcode = $record['language'];
+
+                $temp_str = $record['description'];
+
+                // remove tags
+                $temp_str = strip_tags ($temp_str);
+
+                // convert string for container
+                if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+                {
+                  $temp_str = convertchars ($temp_str, $charset_source, $charset_dest);
+                }
+                elseif ($charset_dest == "UTF-8")
+                {
+                  // encode to UTF-8
+                  if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
+                }
+
+                $vtt_str .= sec2time ($record['starttime'])." --> ".sec2time ($record['endtime'])."\n";
+                $vtt_str .= $temp_str."\n\n";
+              }
+            }
+
+            if (!empty ($langcode) && !empty ($vtt_str))
+            {
+              $text_id = "VTT-".$langcode;
+              $vtt_str = "WEBVTT\n\n".$vtt_str;
+
+              // textnodes search index in database
+              $text_array[$text_id] = $vtt_str;
+                        
+              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$vtt_str."]]>", "<text_id>", $text_id);
+
+              if ($containerdata_new == false)
+              {
+                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$vtt_str."]]>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+              }
+
+              if ($containerdata_new != false) $containerdata = $containerdata_new;
+              else
+              {
+                $errcode = "20600";
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Speech meta data to container with ID: ".$container_id;
+              }
+            }
+          }
+        }
+
+        // ------------------- use Google Vision Cloud Service -------------------
+        if (is_image ($mediafile) && !metadata_exists ($mapping, $text_array))
+        {
+          if (function_exists ("GCanalyzeimage")) $google_data = GCanalyzeimage ($site, $medialocation.$mediafile);
+          else $google_data = "";
+
+          if (!empty ($google_data) && is_array ($google_data))
+          {
+            // source charset
+            $charset_source = "UTF-8";
+
+            // inject meta data based on mapping
+            reset ($mapping);
+
+            foreach ($mapping as $key => $text_id)
+            {
+              // only for tags
+              if (strpos ("_".$key, "google:") > 0 && $text_id != "")
+              {
+                // get tag name
+                list ($namespace, $key) = explode (":", $key);
+                $key = trim ($key);
+
+                // get type and text ID
+                if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+                elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
+                else $type = "textu";
+
+                if (!empty ($type)) $type_array[$text_id] = $type;
+
+                // get data
+                if (!empty ($google_data[$key])) $temp_str = $google_data[$key];
+                else $temp_str = "";
+
+                if ($temp_str != "")
+                {
+                  // clean keywords
+                  if ($type == "textk")
+                  {
+                    $keywords = splitkeywords ($temp_str, $charset_dest);
+
+                    if (is_array ($keywords)) $temp_str = implode (",", $keywords);
+                    else $temp_str = "";
+                  }
+
+                  // remove tags
+                  $temp_str = strip_tags ($temp_str);
+
+                  // convert string for container
+                  if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+                  {
+                    $temp_str = convertchars ($temp_str, $charset_source, $charset_dest);
+                  }
+                  elseif ($charset_dest == "UTF-8")
+                  {
+                    // encode to UTF-8
+                    if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
+                  }
+
+                  // textnodes search index in database
+                  $text_array[$text_id] = $temp_str;
+                            
+                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+
+                  if ($containerdata_new == false)
+                  {
+                    $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                  }
+
+                  if ($containerdata_new != false) $containerdata = $containerdata_new;
+                  else
+                  {
+                    $errcode = "20602";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Vision meta data to container with ID: ".$container_id;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // ------------------- use Google Video Intelligence Cloud Service -------------------
+        if (is_video ($mediafile) && !metadata_exists ($mapping, $text_array))
+        {
+          if (function_exists ("GCanalyzevideo")) $google_data = GCanalyzevideo ($site, $medialocation.$mediafile);
+          else $google_data = "";
+
+          if (!empty ($google_data) && is_array ($google_data))
+          {
+            // source charset
+            $charset_source = "UTF-8";
+
+            // thumbnail file is always in repository
+            $thumb_root = getmedialocation ($site, ".hcms.".$mediafile, "abs_path_media").$site."/";
+            $file_info = getfileinfo ($site, $mediafile, "comp");
+
+            // get video dimensions
+            avoidfilecollision ();
+            $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
+
+            if (empty ($config['width'])) $config['width'] = 360;
+            if (empty ($config['height'])) $config['height'] = 240;
+
+            $faces_array = array();
+            $google_data_collect = array();
+
+            foreach ($google_data as $temp_array)
+            {
+              if (is_array ($temp_array))
+              {
+                // remove tags
+                $temp_array['description'] = strip_tags ($temp_array['description']);
+                $temp_array['keywords'] = strip_tags ($temp_array['keywords']);
+ 
+                // convert string for container
+                if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+                {
+                  $temp_array['description'] = convertchars ($temp_array['description'], $charset_source, $charset_dest);
+                  $temp_array['keywords'] = convertchars ($temp_array['keywords'], $charset_source, $charset_dest);
+                }
+                elseif ($charset_dest == "UTF-8")
+                {
+                  // encode to UTF-8
+                  if (!is_utf8 ($temp_array['description'] )) $temp_array['description'] = utf8_encode ($temp_array['description']);
+                  if (!is_utf8 ($temp_array['keywords'] )) $temp_array['keywords'] = utf8_encode ($temp_array['keywords']);
+                } 
+
+                // JSON substring
+                $faces_array[] = "{\"videowidth\":".$config['width'].", \"videoheight\":".$config['height'].", \"time\":".$temp_array['starttime'].", \"x\":10, \"y\":10, \"width\":".(intval ($config['width']) - 20).", \"height\":".(intval ($config['height']) - 120).", \"name\":\"".$temp_array['keywords']."\"}";
+
+                // collect data
+                if (!empty ($google_data_collect['description'])) $google_data_collect['description'] .= ", ".$temp_array['description'];
+                else $google_data_collect['description'] = $temp_array['description'];
+
+                if (!empty ($google_data_collect['keywords'])) $google_data_collect['keywords'] .= ",".$temp_array['keywords'];
+                else $google_data_collect['keywords'] = $temp_array['keywords'];
+              }
+            }
+
+            // save JSON string to container
+            if (sizeof ($faces_array) > 0)
+            {
+              $text_id = "Faces-JSON";
+              $faces_json = "[".implode (", ", $faces_array)."]";
+
+              // textnodes search index in database
+              $text_array[$text_id] = $faces_json;
+                        
+              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
+
+              if ($containerdata_new == false)
+              {
+                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+              }
+
+              if ($containerdata_new != false) $containerdata = $containerdata_new;
+              else return false;
+            }
+
+            // inject meta data based on mapping
+            reset ($mapping);
+
+            foreach ($mapping as $key => $text_id)
+            {
+              // only for tags
+              if (strpos ("_".$key, "google:") > 0 && $text_id != "")
+              {
+                // get tag name
+                list ($namespace, $key) = explode (":", $key);
+                $key = trim ($key);
+
+                // get type and text ID
+                if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+                elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
+                else $type = "textu";
+
+                if (!empty ($type)) $type_array[$text_id] = $type;
+
+                // get data
+                if (!empty ($google_data_collect[$key])) $temp_str = $google_data_collect[$key];
+                else $temp_str = "";
+
+                if ($temp_str != "")
+                {
+                  // clean keywords
+                  if ($type == "textk")
+                  {
+                    $keywords = splitkeywords ($temp_str, $charset_dest);
+
+                    if (is_array ($keywords)) $temp_str = implode (",", $keywords);
+                    else $temp_str = "";
+                  }
+
+                  // remove tags
+                  $temp_str = strip_tags ($temp_str);
+
+                  // convert string for container
+                  if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+                  {
+                    $temp_str = convertchars ($temp_str, $charset_source, $charset_dest);
+                  }
+                  elseif ($charset_dest == "UTF-8")
+                  {
+                    // encode to UTF-8
+                    if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
+                  }
+
+                  // textnodes search index in database
+                  $text_array[$text_id] = $temp_str;
+                            
+                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+
+                  if ($containerdata_new == false)
+                  {
+                    $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                  }
+
+                  if ($containerdata_new != false) $containerdata = $containerdata_new;
+                  else
+                  {
+                    $errcode = "20603";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Video Intelligence meta data to container with ID: ".$container_id;
+                  }
+                }
+              }
+            }
+          }
         }
 
         // ------------------- define and set image quality -------------------

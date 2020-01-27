@@ -76,7 +76,7 @@ $height = $screenheight - 80;
   height: <?php echo $height; ?>px;
 }
 </style>	
-<script type="text/javascript>
+<script type="text/javascript">
 $(function()
 {
   $('#cropper').ZoomCrop(
@@ -93,5 +93,6 @@ $(function()
   <div id="cropper"></div>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

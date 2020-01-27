@@ -21,33 +21,42 @@ $user = getsession ("hcms_user");
 $passwd = getsession ("hcms_passwd");
 $lang = getsession ("hcms_lang", "en");
 $timezone = getsession ("hcms_timezone");
+
 // access parameter (array)
 $siteaccess = getsession ("hcms_siteaccess");
 $pageaccess = getsession ("hcms_pageaccess");
 $compaccess = getsession ("hcms_compaccess");
+
 // permission parameter (array)
 $rootpermission = getsession ("hcms_rootpermission");
 $globalpermission = getsession ("hcms_globalpermission"); 
 $localpermission = getsession ("hcms_localpermission");
 $adminpermission = getsession ("hcms_superadmin");
 $hiddenfolder = getsession ("hcms_hiddenfolder");
+
 // download formats
 $downloadformats = getsession ("hcms_downloadformats");
+
 // mobile browser
 $is_mobile = getsession ("hcms_mobile");
 $is_iphone = getsession ("hcms_iphone");
 $viewportwidth = getsession ("hcms_temp_viewportwidth");
+
 // HTML5 file support
 $html5file = getsession ("hcms_html5file");
+
 // mail linking parameter (array)
 $hcms_linking = getsession ("hcms_linking");
+
 // portal (public access link)
 $hcms_portal = getsession ("hcms_portal");
 $hcms_favroites = getsession ("hcms_favorites");
+
 // asset browser
 $hcms_assetbrowser = getsession ("hcms_assetbrowser");
 $hcms_assetbrowser_location = getsession ("hcms_assetbrowser_location");
 $hcms_assetbrowser_object = getsession ("hcms_assetbrowser_object");
+
 // other temporary session parameters
 $temp_sessiontime = getsession ("hcms_temp_sessiontime");
 $temp_clipboard = getsession ("hcms_temp_clipboard");
@@ -64,19 +73,25 @@ $temp_chatstate = getsession ("hcms_temp_chatstate");
 $temp_balancer_id = getsession ("hcms_temp_balancer_id");
 $temp_project_id = getsession ("hcms_temp_project_id");
 $temp_appendcontent = getsession ("hcms_temp_appendcontent");
+
 // the temporary storage is used to pass container content of files between functions
 // and to trigger saving of the file [yes/no]
 $temp_cache = getsession ("hcms_temp_cache", "");
 $temp_save = getsession ("hcms_temp_save", "yes");
+
 // security token
 $temp_token = getsession ("hcms_temp_token");
+
 // hyperCMS theme
 $hcms_themename = getsession ("hcms_themename");
 $hcms_themelocation = getsession ("hcms_themelocation");
+
 // filter options for object list
 $objectfilter = getsession ("hcms_objectfilter");
+
 // definition of objectlist columns
 $objectlistcols = getsession ("hcms_objectlistcols");
+
 // definition of labels from templates
 $labels = getsession ("hcms_labels");
 ?>

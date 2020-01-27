@@ -248,5 +248,6 @@ else showmessage ($hcms_lang['error-occured-no-text-based-content-could-be-found
 ?>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

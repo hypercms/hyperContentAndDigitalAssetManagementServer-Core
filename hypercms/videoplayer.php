@@ -163,6 +163,7 @@ if ($playercode != "")
   </head>
   <body style="padding:0; margin:0;">
     <?php echo $playercode; ?>
+    <?php include_once ("include/footer.inc.php"); ?>
   </body>
 </html>
 <?php

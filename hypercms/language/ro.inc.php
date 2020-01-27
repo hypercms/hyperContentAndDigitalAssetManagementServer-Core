@@ -7,8 +7,9 @@ $hcms_lang_date['ro'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ro'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['ro'] = "Share";
-$hcms_lang['social-media-sharing']['ro'] = "Social Media sharing";
+$hcms_lang['clipboard']['ro'] = "Clipboard";
+$hcms_lang['share']['ro'] = "Acțiune";
+$hcms_lang['social-media-sharing']['ro'] = "Partajare social media";
 $hcms_lang['remember-me']['ro'] = "Amintește-ți de mine";
 $hcms_lang['my-recent-tasks']['ro'] = "Sarcinile Mele recente";
 $hcms_lang['my-recent-objects']['ro'] = "Obiectele mele recente";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['ro'] = "Obiecte";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['ro'] = "Menţineţi apăsat CTRL-cheie: Selectaţi obiectele prin clic";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['ro'] = "Ţineţi apăsată tasta SHIFT-cheie: Selectaţi un grup de obiecte prin 2 clicuri";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['ro'] = "Apăsaţi ALT-cheie: Comutatorul pentru a descărca-copy-paste la link in e-mailuri";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['ro'] = "Drag and drop: Apăsați tasta CTRL pentru copiere și tasta ALT pentru copie conectată";
 $hcms_lang['notify-me']['ro'] = "Înştiinţează-mă";
 $hcms_lang['send-to-chat']['ro'] = "Trimite la chat";
 $hcms_lang['password-is-not-set']['ro'] = "Parola nu este setată";

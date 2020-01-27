@@ -7,8 +7,9 @@ $hcms_lang_date['ja'] = 'Y-m-d H:i:s';
 $hcms_lang_direction['ja'] = "ltr";
 
 // Text for hyperCMS
-$hcms_lang['share']['ja'] = "Share";
-$hcms_lang['social-media-sharing']['ja'] = "Social Media sharing";
+$hcms_lang['clipboard']['ja'] = "クリップボード";
+$hcms_lang['share']['ja'] = "シェア";
+$hcms_lang['social-media-sharing']['ja'] = "ソーシャルメディアの共有";
 $hcms_lang['remember-me']['ja'] = "私を覚えてますか";
 $hcms_lang['my-recent-tasks']['ja'] = "私の最近のタスク";
 $hcms_lang['my-recent-objects']['ja'] = "私の最近のオブジェクト";
@@ -345,6 +346,7 @@ $hcms_lang['objects']['ja'] = "オブジェクト";
 $hcms_lang['hold-ctrl-key-select-objects-by-click']['ja'] = "Ctrlキーを押しながらキーを押します。[選択]をクリックして、オブジェクト";
 $hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks']['ja'] = "Shiftキーを押しながらキーを押し続けます。オブジェクトのグループを2回のクリックで選択";
 $hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails']['ja'] = "Altキーを押し、キー:スイッチのリンクをコピー&貼り付けE-メールににダウンロードする";
+$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy']['ja'] = "ドラッグアンドドロップ：Ctrlキーを押してコピーし、ALTキーを押してコピーをコピーします";
 $hcms_lang['notify-me']['ja'] = "私に通知";
 $hcms_lang['send-to-chat']['ja'] = "チャットに送信";
 $hcms_lang['password-is-not-set']['ja'] = "パスワードが設定されていません。";

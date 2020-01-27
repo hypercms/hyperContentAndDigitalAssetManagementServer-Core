@@ -124,5 +124,6 @@ echo showtopbar ($hcms_lang['meta-information-of-'][$lang]." ".$pagename, $lang,
   ?>
 </div>
 
+<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>
