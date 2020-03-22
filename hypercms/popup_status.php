@@ -196,10 +196,12 @@ if ($authorized == true || $force == "stop")
     // define multiobject array as input
     if ($force == "start")
     {
-      // multiobjects are not possible if action = paste 
-      if ($multiobject != "" && strlen ($multiobject) > 6 && $action != "paste")
+      // multiobjects are not possible if action = paste
+      if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_temp = link_db_getobject ($multiobject);
+
+      if (is_array ($multiobject_temp) && sizeof ($multiobject_temp) > 1 && $action != "paste")
       {
-        $multiobject_array = link_db_getobject ($multiobject);
+        $multiobject_array = $multiobject_temp;
       }
       elseif ($site != "" && $location != "" && strlen ($location) > 6)
       {

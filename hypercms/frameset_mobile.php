@@ -193,7 +193,6 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
       <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
         <input type="hidden" name="action" value="base_search" />
         <input type="hidden" name="search_dir" value="" />
-        <input type="hidden" name="maxhits" value="100" />
         <input type="text" name="search_expression" <?php if (empty ($mgmt_config['db_connect_rdbms'])) echo "readonly=\"readonly\""; ?> style="margin:3px 0px 3px 3px; padding:3px; width:215px;" maxlength="200" value="" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" />
         <img src="<?php echo getthemelocation(); ?>img/button_search.png" <?php if (!empty ($mgmt_config['db_connect_rdbms']) && linking_valid() == false) echo "onclick=\"if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();\""; ?> class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
       </form>

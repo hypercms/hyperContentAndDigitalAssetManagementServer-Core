@@ -1453,8 +1453,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $file = $temp_source['file'];
     }
 
-    // check if file exists
-    if (!is_file ($location_source.$file)) return false;
+    // check if source file exists and has a size of min. 100 bytes
+    if (!is_file ($location_source.$file) || filesize ($location_source.$file) < 100) return false;
 
     // check if symbolic link
     if (is_link ($location_source.$file)) 

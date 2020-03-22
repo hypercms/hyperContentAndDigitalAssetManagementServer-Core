@@ -1569,7 +1569,7 @@ else
     ?>
   </div>
   
-  <div style="float:right; <?php if (!$is_mobile && !$is_iphone) echo "margin:0px 8px 0px 0px"; else echo "margin:0px -2px 0px 0px;"; ?>">
+  <div style="float:right; <?php if (!$is_mobile || $is_iphone) echo "margin:0px 8px 0px 0px"; elseif (!$is_iphone) echo "margin:0px -2px 0px 0px;"; ?>">
     <?php
     // object list views
     echo "

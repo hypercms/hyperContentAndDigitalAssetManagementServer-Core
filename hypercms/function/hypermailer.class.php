@@ -15,6 +15,8 @@ class HyperMailer extends PHPMailer
   {
     global $mgmt_config, $hcms_lang_codepage, $lang;
 
+    if (empty ($lang)) $lang = "en";
+
     $this->IsSMTP();
     $this->SMTPAuth = true;
     $this->CharSet = $hcms_lang_codepage[$lang];

@@ -1968,14 +1968,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <body class="hcmsWorkplaceGeneric" style="height:auto;">
   
     <!-- save layer --> 
-    <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; display:none; z-index:100;">
-      <span style="position:absolute; top:50%; height:150px; margin-top:-75px; width:200px; left:50%; margin-left:-100px;">
-        <b><?php echo getescapedtext ($hcms_lang['saving-in-progress'][$lang], $charset, $lang); ?></b>
-        <br />
-        <br />
-        <img src="<?php echo getthemelocation(); ?>img/loading.gif" />
-      </span>
-    </div>
+    <div id="savelayer" class="hcmsLoadScreen"></div>
     
     <!-- top bar -->
     <div id="bar" class="hcmsWorkplaceBar">

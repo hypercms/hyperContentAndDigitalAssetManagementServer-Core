@@ -220,7 +220,6 @@ function submitTo(url, action, target, features, width, height)
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
       <form name="searchform" method="post" action="message_objectlist.php" target="mainFrame" style="margin:0; padding:0; border:0;">
-        <input type="hidden" name="maxhits" value="300" />
         <input type="text" name="search" style="float:left; width:200px; height:20px; padding:2px;" maxlength="200" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="" />
         <img src="<?php echo getthemelocation(); ?>img/button_search.png" onclick="document.searchform.submit();" style="float:left; cursor:pointer; margin:2px 0px 2px -24px; width:22px; height:22px;" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
       </form>

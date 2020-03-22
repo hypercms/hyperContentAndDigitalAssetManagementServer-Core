@@ -920,7 +920,7 @@ function hcms_selectObject (row_id, event)
     var multiobject_str2 = multiobject_str + '|';
   
     var td = document.getElementById('h' + row_id + '_0');
-    var links = td.getElementsByTagName('a');
+    var links = td.getElementsByTagName('A');
 
     if (links) var object = links[0].getAttribute('data-objectpath');
     else var object = '';
@@ -979,7 +979,7 @@ function hcms_selectObject (row_id, event)
         var lastselection = multiobject_str.substring (multiobject_str.lastIndexOf ('|') + 1);
         var currentselection = object;        
         var table = document.getElementById('objectlist');   
-        var rows = table.getElementsByTagName("tr");
+        var rows = table.getElementsByTagName("TR");
         var row_id = 0;
         var startselect = false;
         var stopselect = false;
@@ -1036,7 +1036,7 @@ function hcms_selectObject (row_id, event)
     var multiobject_str = contextmenu_form.elements['multiobject'].value;
   
     var td = document.getElementById('h' + row_id + '_0');
-    var links = td.getElementsByTagName('a');
+    var links = td.getElementsByTagName('A');
 
     if (links[0]) var object = links[0].getAttribute('data-objectpath');
     else var object = false;
@@ -1126,7 +1126,7 @@ function hcms_unselectAll ()
   if (document.getElementById('objectlist'))
   {
     var table = document.getElementById('objectlist');   
-    var tablerows = table.getElementsByTagName("tr");
+    var tablerows = table.getElementsByTagName("TR");
     
     for (i = 0; i < tablerows.length; i++)
     {           
@@ -1137,7 +1137,7 @@ function hcms_unselectAll ()
   if (document.getElementById('objectgallery'))
   {
     var table = document.getElementById('objectgallery');   
-    var tabledata = table.getElementsByTagName("td");
+    var tabledata = table.children;
     
     for (i = 0; i < tabledata.length; i++)
     {           
@@ -1484,12 +1484,11 @@ function hcms_endSelectArea ()
         
       for (var i = 0; i < objects.length; i++)
       {
-        div_id = objects[i].id;
         pos = objects[i].getBoundingClientRect();
         x = pos.left;
         y = pos.top;
   
-        if (div_id != "" && x >= (x3-x_diff) && y >= (y3-y_diff) && x <= (x4-x_diff) && y <= (y4-y_diff))
+        if (x >= (x3-x_diff) && y >= (y3-y_diff) && x <= (x4-x_diff) && y <= (y4-y_diff))
         {
           row_id = objects[i].parentElement.id;
           hcms_selectObject (row_id, 'selectarea');
@@ -1536,7 +1535,7 @@ function hcms_collectObjectpath ()
     // collect object path from the link tag
     while (td = document.getElementById("h"+i+"_0"))
     {
-      var links = td.getElementsByTagName("a");
+      var links = td.getElementsByTagName("A");
       if (links[0].getAttribute("data-objectpath")) hcms_objectpath[i] = links[0].getAttribute("data-objectpath");
       i++;
     }

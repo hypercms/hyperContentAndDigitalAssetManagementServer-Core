@@ -5,8 +5,8 @@ $maxcount = 20;
 
 $object_array = array();
 
-// get downloads stats of user
-$stats_array = rdbms_getmediastat ("", "", "download", "", "", $user, false);
+// get downloads stats of user (use higher limit since folders will not be displayed)
+$stats_array = rdbms_getmediastat ("", "", "download", "", "", $user, false, 60);
 
 // prepare array
 if (is_array ($stats_array) && sizeof ($stats_array) > 0)
@@ -37,27 +37,30 @@ if (is_array ($stats_array) && sizeof ($stats_array) > 0)
 if (is_array ($object_array) && sizeof ($object_array) > 0)
 {
   $object_array = array_unique ($object_array);
-  
+
   if (!empty ($is_mobile)) $width = "92%";
   else $width = "320px";
 
   echo "
   <div id=\"recent_downloads\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
     <div class=\"hcmsHeadline\" style=\"margin:6px;\">".getescapedtext ($hcms_lang['my-recent-downloads'][$lang])."</div>";
-  
+
   reset ($object_array);
-  $i = 0;
-  
+  $i = 1;
+
   foreach ($object_array as $objectpath)
   {
     // show only object items
-    if (getobject ($objectpath) != ".folder" && $i < $maxcount)
+    if (getobject ($objectpath) != ".folder")
     {
+      // max count reached
+      if ($i > $maxcount) break;
+
       // get site
       $item_site = getpublication ($objectpath);        
       // get category
-      $item_cat = getcategory ($item_site, $objectpath); 
-      
+      $item_cat = getcategory ($item_site, $objectpath);
+
       if (valid_publicationname ($item_site) && $item_cat != "")
       {
         // get location
@@ -71,16 +74,16 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         $item_object = correctfile ($item_location, $item_object, $user); 
         $item_fileinfo = getfileinfo ($item_site, $item_location.$item_object, $item_cat);
         $item_objectinfo = getobjectinfo ($item_site, $item_location, $item_object, $user);
-        
+
         // check access permission
         $ownergroup = accesspermission ($item_site, $item_location, $item_cat);
         $setlocalpermission = setlocalpermission ($item_site, $ownergroup, $item_cat);
-        
+
         if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($item_location) && valid_objectname ($item_object))
         {
           // open on double click
           $openObject = "onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($item_location_esc)."&page=".url_encode($item_object)."', '".$item_objectinfo['container_id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\"";
-        
+
           echo "
           <div ".$openObject." style=\"display:block; cursor:pointer;\" title=\"".$item_locationname.$item_fileinfo['name']."\"><img src=\"".getthemelocation()."img/".$item_fileinfo['icon']."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($item_fileinfo['name'], 30)."&nbsp;</div>";
           $i++;
@@ -88,8 +91,8 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       }
     }
   }
-  
+
   echo "
-  </div>\n";
+  </div>";
 }
 ?>

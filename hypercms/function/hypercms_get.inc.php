@@ -308,7 +308,7 @@ function getlanguagefile ($lang="en")
 {
   global $mgmt_config;
 
-  if ($lang != "" && $mgmt_config['abs_path_cms'] != "")
+  if ($lang != "" && !empty ($mgmt_config['abs_path_cms']))
   {
     if (is_file ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php")) return $lang.".inc.php";
     else return "en.inc.php";

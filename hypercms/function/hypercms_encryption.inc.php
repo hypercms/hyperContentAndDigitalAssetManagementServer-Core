@@ -14,10 +14,23 @@
 // input: path to file [string], file name [string], key [string] (optional)
 // output: false
 
-
 function encryptfile ($location, $file, $key="")
 {
-  return false;
+  global $user, $mgmt_config, $hcms_lang, $lang;
+  
+  if (valid_locationname ($location) && valid_objectname ($file))
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    if (is_file ($location.$file))
+    {
+      // load file
+      return loadfile ($location, $file);
+    }
+    else return false;
+  }
+  else return false;
 }
 
 // ---------------------- decryptfile -----------------------------
@@ -27,7 +40,19 @@ function encryptfile ($location, $file, $key="")
 
 function decryptfile ($location, $file, $key="")
 {
-  return false;
+  if (valid_locationname ($location) && valid_objectname ($file))
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    if (is_file ($location.$file))
+    {
+      // load file
+      return loadfile ($location, $file);
+    }
+    else return false;
+  }
+  else return false;
 }
 
 // ---------------------- createtempfile -----------------------------

@@ -15,7 +15,7 @@ if (empty ($mgmt_config['abs_path_cms']) && is_file ("../config.inc.php"))
   require_once ("../config.inc.php");
 }
 
-// initalize
+// initalize todays date and time
 if (empty ($mgmt_config['today'])) $mgmt_config['today'] = date ("Y-m-d H:i", time());
 
 // include Get API
@@ -149,8 +149,8 @@ if (is_file ($mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.
   require_once ($mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.inc.php");
 }
 
-// include RESTful API (not included in Free Edition)
-if (is_file ($mgmt_config['abs_path_cms']."connector/rest/library/hypercms_rest.inc.php"))
+// include RESTful API if SOAP API is not in use (not included in Free Edition)
+if (is_file ($mgmt_config['abs_path_cms']."connector/rest/library/hypercms_rest.inc.php") && empty ($mgmt_config['soap']))
 {
   require_once ($mgmt_config['abs_path_cms']."connector/rest/library/hypercms_rest.inc.php");
 }
@@ -178,18 +178,18 @@ if (defined ("SESSION") && constant ("SESSION") == "create" && is_file ($mgmt_co
   }
 }
 
+// include language file for API functions
+if (empty ($lang)) $lang = "en";
+
+if (!empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)))
+{
+  require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+}
+
 // reset main configuration values for the Mobile Edition (always open new object window, disable face detection)
 if (!empty ($is_mobile))
 {
   $mgmt_config['object_newwindow'] = true;
   $mgmt_config['facedetection'] = false;
-}
-
-// include language file for API functions
-if (empty ($lang)) $lang = "en";
-
-if ((empty ($hcms_lang) || is_string ($hcms_lang)) && !empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)))
-{
-  require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
 }
 ?>

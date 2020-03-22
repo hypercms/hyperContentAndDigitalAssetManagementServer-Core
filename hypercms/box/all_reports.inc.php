@@ -4,10 +4,10 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
 {
   // language file
   require_once ("language/".getlanguagefile ($lang));
-  
+
   if (!empty ($is_mobile)) $width = "92%";
   else $width = "670px";
-  
+
   echo "
   <div id=\"reportviewer\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
     <div style=\"display:block; padding-bottom:5px;\">
@@ -18,7 +18,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
   ";
   
   $report_files = getdirectoryfiles ($mgmt_config['abs_path_data']."report/", ".report.dat");
-  
+
   if (is_array ($report_files))
   {
     foreach ($report_files as $report_file)
@@ -37,7 +37,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
       }
     }
   }
-    
+
   echo"
         </select>
         <img name=\"Button\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_ok.png\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" onClick=\"document.getElementById('report').src=document.getElementById('reportfile').value;\" />   

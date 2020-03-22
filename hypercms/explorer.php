@@ -747,7 +747,7 @@ else
   if (empty ($hcms_assetbrowser) && $is_mobile)
   {
     $point = new hcms_menupoint ($hcms_lang['home'][$lang], 'home.php', 'home.png');
-    $point->setOnClick('changeSelection(this)');
+    $point->setOnClick('changeSelection(this); minNavFrame();');
     $point->setTarget('workplFrame');
     $point->setOnMouseOver('hcms_resetContext();');
     $maintree .= $point->generateHTML();
@@ -758,7 +758,7 @@ else
   if (!empty ($hcms_portal) && checkrootpermission ('desktopfavorites'))
   {
     $point = new hcms_menupoint($hcms_lang['favorites'][$lang], "frameset_objectlist.php?virtual=1&action=favorites", 'favorites.png');
-    $point->setOnClick('changeSelection(this)');
+    $point->setOnClick('changeSelection(this); minNavFrame();');
     $point->setTarget('workplFrame');
     $point->setOnMouseOver('hcms_resetContext();');
     $maintree .= $point->generateHTML();
@@ -774,7 +774,7 @@ else
     if (checkrootpermission ('desktopsetting')) 
     {
       $subpoint = new hcms_menupoint($hcms_lang['personal-settings'][$lang], "user_edit.php?site=*Null*&login=".$user."&login_cat=home", 'userhome.png');
-      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
@@ -783,7 +783,7 @@ else
     if (checkrootpermission ('desktopprojectmgmt') && is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && $mgmt_config['db_connect_rdbms'] != "")
     {
       $subpoint = new hcms_menupoint($hcms_lang['project-management'][$lang], "project/project_list.php", 'project.png');
-      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
@@ -792,7 +792,7 @@ else
     if (checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && $mgmt_config['db_connect_rdbms'] != "")
     {
       $subpoint = new hcms_menupoint($hcms_lang['task-management'][$lang], "task/task_list.php", 'task.png');
-      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
@@ -801,7 +801,7 @@ else
     if (checkrootpermission ('desktopfavorites'))
     {
       $subpoint = new hcms_menupoint($hcms_lang['favorites'][$lang], "frameset_objectlist.php?virtual=1&action=favorites", 'favorites.png');
-      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
@@ -810,7 +810,7 @@ else
     if (checkrootpermission ('desktopcheckedout'))
     {
       $subpoint = new hcms_menupoint($hcms_lang['checked-out-items'][$lang], "frameset_objectlist.php?virtual=1&action=checkedout", 'file_locked.png');
-      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
@@ -819,7 +819,7 @@ else
     if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config['clipboard']))
     {
       $subpoint = new hcms_menupoint($hcms_lang['clipboard'][$lang], "frameset_objectlist.php?virtual=1&action=clipboard", 'button_file_paste.png');
-      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
@@ -828,7 +828,7 @@ else
     if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config['recyclebin']))
     {
       $subpoint = new hcms_menupoint($hcms_lang['recycle-bin'][$lang], "frameset_objectlist.php?virtual=1&action=recyclebin", 'recycle_bin.png');
-      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
@@ -855,7 +855,7 @@ else
     if ($messageaccess == true)
     {
       $subpoint = new hcms_menupoint($hcms_lang['messages'][$lang], "frameset_message.php", 'button_user_sendlink.png');
-      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
@@ -864,7 +864,7 @@ else
     if (!empty ($mgmt_config['db_connect_rdbms']))
     {
       $subpoint = new hcms_menupoint($hcms_lang['publishing-queue'][$lang], "frameset_queue.php?queueuser=".$user, 'queue.png');
-      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
@@ -873,7 +873,7 @@ else
     if (checkrootpermission ('desktoptimetravel'))
     {
       $subpoint = new hcms_menupoint($hcms_lang['travel-through-time'][$lang], "history.php", 'history.png');
-      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
@@ -933,7 +933,7 @@ else
             if (is_file ($mgmt_config['abs_path_cms']."connector/instance/frameset_instance.php") && $mgmt_config['instances'] && checkadminpermission () && checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['instance-management'][$lang], "connector/instance/frameset_instance.php?site=*Null*", 'instance.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -942,7 +942,7 @@ else
             if (checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['publication-management'][$lang], "frameset_site.php?site=*Null*", 'site.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -951,7 +951,7 @@ else
             if (checkrootpermission ('user'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['user-management'][$lang], "frameset_user.php?site=*Null*", 'user.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -960,7 +960,7 @@ else
             if (checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php", 'event.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -969,7 +969,7 @@ else
             if (checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['publishing-queue'][$lang], "frameset_queue.php", 'queue.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -978,7 +978,7 @@ else
             if (!$is_mobile && is_file ($mgmt_config['abs_path_cms']."connector/imexport/frameset_imexport.php") && $site != "hcms_empty" && checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['importexport'][$lang], "connector/imexport/frameset_imexport.php?site=*Null*", 'imexport.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -987,7 +987,7 @@ else
             if (is_file ($mgmt_config['abs_path_cms']."report/frameset_report.php") && $site != "hcms_empty" && checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['report-management'][$lang], "report/frameset_report.php?site=*Null*", 'template.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -996,7 +996,7 @@ else
             if (checkrootpermission ('site'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['plugins'][$lang], "plugin_management.php", 'plugin.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1023,7 +1023,7 @@ else
             if (checkglobalpermission ($site, 'user'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['user-management'][$lang], "frameset_user.php?site=".url_encode($site), 'user.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1032,7 +1032,7 @@ else
             if (checkglobalpermission ($site, 'group'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['group-management'][$lang], "frameset_group.php?site=".url_encode($site), 'usergroup.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1042,7 +1042,7 @@ else
             if (checkglobalpermission ($site, 'user') && strtolower ($diskkey) != "server")
             {
               $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php", 'event.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1051,7 +1051,7 @@ else
             elseif (checkglobalpermission ($site, 'user') && is_file ($mgmt_config['abs_path_data']."log/".$site.".publication.log"))
             {
               $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php?site=".url_encode($site), 'event.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1069,7 +1069,7 @@ else
             if (checkglobalpermission ($site, 'perstrack'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['customer-tracking'][$lang], "frameset_pers.php?site=".url_encode($site)."&cat=tracking", 'pers_registration.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1078,7 +1078,7 @@ else
             if (checkglobalpermission ($site, 'persprof'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['customer-profiles'][$lang], "frameset_pers.php?site=".url_encode($site)."&cat=profile", 'pers_profile.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1096,7 +1096,7 @@ else
             if (checkglobalpermission ($site, 'workflowproc'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['workflow-management'][$lang], "workflow/frameset_workflow.php?site=".url_encode($site)."&cat=man", 'workflow.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1105,7 +1105,7 @@ else
             if (checkglobalpermission ($site, 'workflowscript'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['workflow-scripts'][$lang], "workflow/frameset_workflow.php?site=".url_encode($site)."&cat=script", 'workflowscript.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1124,7 +1124,7 @@ else
             if (checkglobalpermission ($site, 'tpl') && empty ($mgmt_config[$site]['dam']))
             {
               $subpoint = new hcms_menupoint($hcms_lang['page-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=page", 'template_page.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1133,7 +1133,7 @@ else
             if (checkglobalpermission ($site, 'tpl'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['component-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=comp", 'template_comp.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1142,7 +1142,7 @@ else
             if (checkglobalpermission ($site, 'tpl'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['template-includes'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=inc", 'template_inc.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1151,7 +1151,7 @@ else
             if (checkglobalpermission ($site, 'tpl'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['meta-data-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=meta", 'template_media.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1160,7 +1160,7 @@ else
             if (checkglobalpermission ($site, 'tplmedia'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['template-media'][$lang], "frameset_media.php?site=".url_encode($site)."&mediacat=tpl", 'media.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1169,7 +1169,7 @@ else
             if (!empty ($mgmt_config[$site]['portalaccesslink']) && checkglobalpermission ($site, 'tpl'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['portal-templates'][$lang], "frameset_portal.php?site=".url_encode($site), 'template_media.png');
-              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
               $subpoint->setTarget('workplFrame');
               $subpoint->setOnMouseOver('hcms_resetContext();');
               $point->addSubPoint($subpoint);
@@ -1187,7 +1187,11 @@ else
               if (is_array ($data) && array_key_exists ('active', $data) && $data['active'] == true && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('publication', $data['menu']) && is_array ($data['menu']['publication']))
               {
                 $pluginmenu = generatePluginTree ($data['menu']['publication'], $key, $data['folder'], false, $site);
-                foreach ($pluginmenu as $point) $publication->addSubPoint ($point);
+
+                foreach ($pluginmenu as $point)
+                {
+                  $publication->addSubPoint($point);
+                }
               }
             }
           }
@@ -1396,7 +1400,7 @@ else
     }
 
     // just open a single node
-    function hcms_jstree_open(nodeName) 
+    function hcms_jstree_open (nodeName) 
     {
       // no need to reload here because the content could have been changed
       reloadNode("#"+nodeName);
@@ -1413,22 +1417,28 @@ else
     // Reloads the data for a node via jstree functions if the node has the class jstree-reload
     function reloadNode (node) 
     {
-      if($(node).hasClass('jstree-reload') && $(node).has('ul').length != 0)
+      if ($(node).hasClass('jstree-reload') && $(node).has('ul').length != 0)
       {
         $("#menu").jstree('refresh', node);
       }
     }
 
     // Changes the class so the node appears to be selected and the old node is unselected
-    function changeSelection(node)
+    function changeSelection (node)
     {
-      if(lastSelected != "")
+      if (lastSelected != "")
       {
         lastSelected.children("span").removeClass('hcmsObjectSelected');
       }
 
       lastSelected = $(node);
       lastSelected.children("span").addClass('hcmsObjectSelected');
+    }
+
+    // minimize navigation frame
+    function minNavFrame ()
+    {
+      <?php if ($is_mobile) echo "parent.minNavFrame();"; else echo "return true;"; ?>
     }
 
     function unsetColors ()

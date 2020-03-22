@@ -18,7 +18,7 @@ require ("function/hypercms_api.inc.php");
 // input parameters
 $site = getrequest_esc ("site"); // site can be *Null* which is not a valid name!
 $group = getrequest_esc ("group");
-$next = getrequest ("next");
+$start = getrequest ("start", "numeric", 0);
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -33,6 +33,12 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initalize
+$objects_counted = 0;
+$objects_total = 0;
+$items_row = -1;
+$listview = "";
+
 // create secure token
 $token = createtoken ($user);
 
@@ -40,8 +46,8 @@ $token = createtoken ($user);
 if (empty ($mgmt_config['explorer_list_maxitems'])) $mgmt_config['explorer_list_maxitems'] = 100; 
 
 // define next max number of items on the list 
-if ($next != "" && is_numeric ($next)) $next_max = $next + $mgmt_config['explorer_list_maxitems'];
-else $next_max = $mgmt_config['explorer_list_maxitems'];
+if (is_numeric ($start)) $end = $start + $mgmt_config['explorer_list_maxitems'];
+else $end = $mgmt_config['explorer_list_maxitems'];
 
 // collect user data
 $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
@@ -193,12 +199,7 @@ if ($userdata != false)
 $user_online_array = getusersonline ();
 
 // generate user list
-$objects_counted = 0;
-$objects_total = 0;
-$items_row = 0;
-$listview = "";
-
-if (@isset ($object_array) && @sizeof ($object_array) > 0)
+if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array) > 0)
 {
   // get size of user array
   $objects_total = sizeof ($object_array['login']);
@@ -208,13 +209,19 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
   
   for ($i = 1; $i <= sizeof ($object_array['login']); $i++)
   {
+    // break loop if maximum has been reached
+    if (($items_row + 1) >= $end) break;
+
     $key = key ($object_array['login']);
     
-    // subtract admin user
-    if ($object_array['login'][$key] == "admin" || $object_array['login'][$key] == "hcms_download" || empty ($object_array['login'][$key])) $objects_total--;
-    
-    if ($object_array['login'][$key] != "admin" && $object_array['login'][$key] != "sys" && !empty ($object_array['login'][$key]) && $object_array['login'][$key] != "hcms_download" && $items_row < $next_max)
+    if (!empty ($object_array['login'][$key]) && $object_array['login'][$key] != "admin" && $object_array['login'][$key] != "sys" && $object_array['login'][$key] != "hcms_download")
     {
+      // count valid objects 
+      $items_row++;
+  
+      // skip rows for paging
+      if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+
       // user status
       if (is_array ($user_online_array) && in_array ($object_array['login'][$key], $user_online_array)) $user_status = getescapedtext ($hcms_lang['active'][$lang]);
       else $user_status = getescapedtext ($hcms_lang['logged-out'][$lang]);
@@ -249,11 +256,11 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
               <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$user_status."</span></td>";
 
       $listview .= "
-            </tr>";
-  
-      $items_row++;  
+            </tr>"; 
     }
-    
+    // subtract hidden user
+    else $objects_total--;
+
     next ($object_array['login']);
   }
 }
@@ -405,22 +412,43 @@ function initalize ()
 </div>
 
 <?php
-if ($objects_counted >= $next_max)
+// expanding
+if (empty ($mgmt_config['explorer_paging']) && $objects_total >= $end)
 {
+  $next_start = $objects_counted + 1;
 ?>
 <!-- status bar incl. more button -->
-<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="window.location='<?php echo $_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location)."&next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['versionhcms_lang'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
-  <div style="margin-left:auto; margin-right:auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.png" class="hcmsButtonSizeSquare" style="border:0;" alt="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" /></div>
+<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <?php
 }
+// paging
+elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_total > $end))
+{
+  // start positions (inital start is 0 and not 1)
+  $previous_start = $start - intval ($mgmt_config['explorer_list_maxitems']);
+  $next_start = $objects_counted + 1;
+?>
+<!-- status bar incl. previous and next buttons -->
+<div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<?php
+}
+// status bar without buttons
 else
 {
+  $next_start = $objects_counted + 1;
 ?>
 <!-- status bar -->
 <div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
-    <div style="margin:auto; padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
 </div>
 <?php
 }

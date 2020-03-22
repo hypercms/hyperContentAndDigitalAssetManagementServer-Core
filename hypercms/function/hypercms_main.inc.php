@@ -1308,7 +1308,9 @@ function createfilename ($filename)
       // escaped character must be even for multibyte characters (does not work if single and multibyte characters are mixed) and has been removed in version 8.0.5
       // if (substr_count ($filename_new, "~") % 2 != 0) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
 
-      // verify string and cut off last escaped character in order to correct the string
+      // verify string and cut off last escaped character in order to correct the string (3 times)
+      if (strpos ("_".$filename, specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
+      if (strpos ("_".$filename, specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
       if (strpos ("_".$filename, specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
 
       $filename_new = $filename_new.$file_ext;
@@ -6547,9 +6549,15 @@ function createpublication ($site_name, $user="sys")
 // youtube ... enbale Youtube upload [boolean]
 // theme ... standard design theme of the publication [string]
 // translate ... languges that can be used for automated translation (en,fr,de) [string]
-// ocr .. languges that can be used for OCR (en,de) [string]
+// ocr ... languges that can be used for OCR (en,de,...) [string]
+// crypt_content ... encrypt content [boolean]
+// connector_rest ... Enable RESTful API [boolean]
+// connector_soap ... enable SOAP API [boolean]
 // storage_limit ... storage limit in MB [integer]
 // gs_access_json ... Google Cloud service JSON access code [string]
+// gs_analyze_image ... Enable automatted image tagging [boolean]
+// gs_analyze_video ... Enable automatted video tagging [boolean]
+// gs_speech2text ... Enable automatted speech to text translation for video and audio files [boolean]
 // gs_speech2text_langcode ... language code to be used for Google Speech2Text Cloud service (en-US) [string]
 // url_publ_page ... URL to page root on publication server [string]
 // abs_publ_page ... absolute path to page root on publication server [string]
@@ -6644,6 +6652,12 @@ function editpublication ($site_name, $setting, $user="sys")
 
     if (array_key_exists ('crypt_content', $setting) && $setting['crypt_content'] == true) $crypt_content_new = "true";
     else $crypt_content_new = "false";
+
+    if (array_key_exists ('connector_rest', $setting) && $setting['connector_rest'] == true) $connector_rest_new = "true";
+    else $connector_rest_new = "false";
+
+    if (array_key_exists ('connector_soap', $setting) && $setting['connector_soap'] == true) $connector_soap_new = "true";
+    else $connector_soap_new = "false";
 
     if (array_key_exists ('gs_analyze_image', $setting) && $setting['gs_analyze_image'] == true) $gs_analyze_image_new = "true";
     else $gs_analyze_image_new = "false";
@@ -6874,15 +6888,24 @@ function editpublication ($site_name, $setting, $user="sys")
 
 ";
 
+  // only if the connector module is installed
   if (is_dir ($mgmt_config['abs_path_cms']."connector/")) $site_mgmt_config .= "
 // Storage type for all multimedia files (assets), possible values are 'local', 'cloud' and 'both'
 \$mgmt_config['".$site_name."']['storage_type'] = \"".$storage_type_new."\";
+
+// RESTful API
+// Enable (true) or disable (false) the access to the API
+\$mgmt_config['".$site_name."']['connector_rest'] = ".$connector_soap_new.";
+
+// SOAP API
+// Enable (true) or disable (false) the access to the API
+\$mgmt_config['".$site_name."']['connector_soap'] = ".$connector_soap_new.";
 
 ";
 
   $site_mgmt_config .= "
 // Encrypt content on server
-// Enable (false) or disable (true) encryption of content
+// Enable (true) or disable (false) encryption of content
 \$mgmt_config['".$site_name."']['crypt_content'] = ".$crypt_content_new.";
 
 // Watermark options for images and videos
@@ -6891,6 +6914,7 @@ function editpublication ($site_name, $setting, $user="sys")
 
 ";
 
+// only if the connector module is installed
   if (is_dir ($mgmt_config['abs_path_cms']."connector/")) $site_mgmt_config .= "
 // Allow sharing of social media links
 // Enable (false) or disable (true) restricted system usage of social media link sharing. 
@@ -6910,6 +6934,7 @@ function editpublication ($site_name, $setting, $user="sys")
 \$mgmt_config['".$site_name."']['ocr'] = \"".$ocr_new."\";
 
 ";
+
   $site_mgmt_config .= "
 // Design theme
 \$mgmt_config['".$site_name."']['theme'] = \"".$theme_new."\";
@@ -10716,6 +10741,7 @@ function createfolder ($site, $location, $folder, $user)
 
     // deconvertpath location
     $location = deconvertpath ($location, "file");
+    $location_esc = convertpath ($site, $location, $cat);
 
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
@@ -10778,6 +10804,9 @@ function createfolder ($site, $location, $folder, $user)
 
         if ($folderfile['result'] != false)
         {
+          $errcode = "10263";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|new folder '".$folder_orig."' was created in '".$location_esc."' by user '".$user."'";
+
           $add_onload = "parent.frames['mainFrame'].location.reload(); ";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-was-created'][$lang]."</span><br />\n";
 
@@ -10791,7 +10820,7 @@ function createfolder ($site, $location, $folder, $user)
           if ($savefile == false)
           {
             $errcode = "10262";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|folder name '".$folder_orig."' could not be saved for ".$location.$folder;
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|folder object for '".$folder_orig."' could not be saved in '".$location_esc."' by user '".$user."'";
           }
 
           $container = $folderfile['container'];
@@ -10808,6 +10837,9 @@ function createfolder ($site, $location, $folder, $user)
       // directory could not be created due to missing write permission
       else
       {
+        $errcode = "10263";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|folder '".$folder_orig."' could not be created in '".$location_esc."' by user '".$user."'";
+
         $add_onload = "";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }
@@ -10815,6 +10847,9 @@ function createfolder ($site, $location, $folder, $user)
     // location is not a valid directory
     else
     {
+      $errcode = "10264";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|folder '".$folder_orig."' could not be created in '".$location_esc."' by user '".$user."'";
+
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
     }
@@ -15348,7 +15383,9 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
     else
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />";
+
+      $error_switch = "yes";
     }
 
     // eventsystem
@@ -15469,7 +15506,9 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
       else
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />";
+
+        $error_switch = "yes";
       }
 
       // eventsystem
@@ -15593,7 +15632,9 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
       else
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />";
+
+        $error_switch = "yes";
       }
 
       // eventsystem
@@ -17458,7 +17499,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       }
     }
 
-    // set rootpathes in the session
+    // set rootpathes in the session (do not use function setsession here)
     if ($action == "delete")
     {
       if (is_array ($rootpathdelete_array)) $_SESSION['clipboard_rootpathdelete'] = $rootpathdelete_array;

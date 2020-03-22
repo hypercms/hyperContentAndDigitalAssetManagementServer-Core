@@ -269,15 +269,15 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   <input type="hidden" name="setting[registration_notify]" value="<?php echo $mgmt_config[$site_name]['registration_notify']; ?>" />
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>">
   
-  <table class="hcmsTableStandard" style="width:590px;">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;" colspan="2"><p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['configuration-of-publication'][$lang]); ?> <?php echo $site_name; ?></p></td>
+      <td style="white-space:nowrap; vertical-align:top;" colspan="2"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['configuration-of-publication'][$lang]); ?> <?php echo $site_name; ?></span><hr /></td>
     </tr>    
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['management-system-configuration'][$lang]); ?> </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['grant-publication-management'][$lang]); ?> </td>
+      <td style="width:20%; white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['grant-publication-management'][$lang]); ?> </td>
       <td style="white-space:nowrap; vertical-align:top;">
       <label><input type="checkbox" name="setting[site_admin]" value="true" <?php if (@$mgmt_config[$site_name]['site_admin'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
@@ -616,6 +616,20 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <?php } ?>
 
     <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/")) { ?>
+      <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("RESTful API"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" id="connector_rest" name="setting[connector_rest]" value="true" <?php if (@$mgmt_config[$site_name]['connector_rest'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("SOAP API"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" id="connector_soap" name="setting[connector_soap]" value="true" <?php if (@$mgmt_config[$site_name]['connector_soap'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("Google Cloud API Key (JSON)"); ?> </td>
       <td style="white-space:nowrap; vertical-align:top;">
@@ -653,7 +667,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <?php } ?>
 
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;" colspan="2">&nbsp;</td>
+      <td style="white-space:nowrap; vertical-align:top;" colspan="2"><hr /></td>
     </tr>      
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['publication-target-configuration'][$lang]); ?> </td>
@@ -700,7 +714,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['inclusion-of-components-via-http'][$lang]); ?><br />
         <span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['for-jsp-or-asp-only-http-method-is-supported'][$lang]); ?></span></td>
       <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" name="setting[http_incl]" value="true" <?php if ($publ_config['http_incl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <label><input type="checkbox" name="setting[http_incl]" value="true" <?php if ($publ_config['http_incl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>

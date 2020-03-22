@@ -50,6 +50,7 @@ checkusersession ($user, false);
 // initalize
 $show = "";
 $add_onload = "";
+$multiobject_array = array();
 $result = array();
 
 // correct location for access permission
@@ -99,9 +100,10 @@ if ($authorized == true)
     // reset action
     if ($from_page != "recyclebin" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark";
 
-    if ($multiobject != "")
+    if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_array = link_db_getobject ($multiobject);
+
+    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 1)
     {
-      $multiobject_array = link_db_getobject ($multiobject);
       $result['result'] = true;
 
       // delete objects
@@ -144,9 +146,10 @@ if ($authorized == true)
   // cut, copy, linkcopy
   elseif ($action == "cut" || $action == "copy" || $action == "linkcopy") 
   {
-    if ($multiobject != "")
+    if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_array = link_db_getobject ($multiobject);
+
+    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 1)
     {
-      $multiobject_array = link_db_getobject ($multiobject);
       $result['result'] = true;
 
       foreach ($multiobject_array as $objectpath)
@@ -181,7 +184,7 @@ if ($authorized == true)
     elseif ($page != "")
     {
       if ($action == "cut") $result = cutobject ($site, $location, $page, $user);
-      elseif ($action == "copy") copyobject ($site, $location, $page, $user);
+      elseif ($action == "copy") $result = copyobject ($site, $location, $page, $user);
       elseif ($action == "linkcopy") $result = copyconnectedobject ($site, $location, $page, $user);
 
       if (!empty ($result['add_onload'])) $add_onload = $result['add_onload'];
@@ -191,28 +194,25 @@ if ($authorized == true)
   // delete objects from favorites
   elseif (($action == "page_favorites_create" || $action == "page_favorites_delete") && $setlocalpermission['root'] == 1)
   {
-    if ($multiobject != "")
-    {
-      $multiobject_array = link_db_getobject ($multiobject);
-      
-      if (is_array ($multiobject_array))
-      {
-        $result['result'] = true;
+    if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_array = link_db_getobject ($multiobject);
 
-        foreach ($multiobject_array as $multiobject_item)
+    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 1)
+    {
+      $result['result'] = true;
+
+      foreach ($multiobject_array as $multiobject_item)
+      {
+        if ($multiobject_item != "" && $result['result'] == true)
         {
-          if ($multiobject_item != "" && $result['result'] == true)
-          {
-            $site = getpublication ($multiobject_item);
-            $page = getobject ($multiobject_item);
-            $location = getlocation ($multiobject_item);
-            $location = deconvertpath ($location, "file");
-  
-            if ($action == "page_favorites_create") $result['result'] = createfavorite ($site, $location, $page, "", $user);
-            elseif ($action == "page_favorites_delete") $result['result'] = deletefavorite ($site, $location, $page, "", $user);
-          }
-        }   
-      } 
+          $site = getpublication ($multiobject_item);
+          $page = getobject ($multiobject_item);
+          $location = getlocation ($multiobject_item);
+          $location = deconvertpath ($location, "file");
+
+          if ($action == "page_favorites_create") $result['result'] = createfavorite ($site, $location, $page, "", $user);
+          elseif ($action == "page_favorites_delete") $result['result'] = deletefavorite ($site, $location, $page, "", $user);
+        }
+      }
     }
     elseif ($folder != "" && is_dir ($location.$folder))
     {
@@ -246,27 +246,24 @@ if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload
   // check-in / unlock objects
   elseif ($action == "page_unlock" && checkrootpermission ("desktopcheckedout") && $setlocalpermission['root'] == 1)
   {
-    if ($multiobject != "")
+    if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_array = link_db_getobject ($multiobject);
+
+    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 1)
     {
-      $multiobject_array = link_db_getobject ($multiobject);
+      $result['result'] = true;
 
-      if (is_array ($multiobject_array))
+      foreach ($multiobject_array as $multiobject_item)
       {
-        $result['result'] = true;
-
-        foreach ($multiobject_array as $multiobject_item)
+        if ($multiobject_item != "" && $result['result'] == true)
         {
-          if ($multiobject_item != "" && $result['result'] == true)
-          {
-            $site = getpublication ($multiobject_item);
-            $page = getobject ($multiobject_item);
-            $location = getlocation ($multiobject_item);
-            $location = deconvertpath ($location, "file");
-  
-            $result = unlockobject ($site, $location, $page, $user);
-          }
-        }   
-      } 
+          $site = getpublication ($multiobject_item);
+          $page = getobject ($multiobject_item);
+          $location = getlocation ($multiobject_item);
+          $location = deconvertpath ($location, "file");
+
+          $result = unlockobject ($site, $location, $page, $user);
+        }
+      }
     }
     elseif ($folder != "" && is_dir ($location.$folder))
     {

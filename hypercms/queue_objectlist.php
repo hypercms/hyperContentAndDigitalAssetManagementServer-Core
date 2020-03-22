@@ -18,7 +18,7 @@ require ("function/hypercms_api.inc.php");
 // input parameters
 $site = getrequest_esc ("site", "publicationname");
 $queueuser = getrequest_esc ("queueuser", "objectname");
-$next = getrequest ("next");
+$start = getrequest ("start", "numeric", 0);
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -36,72 +36,81 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initalize
+$objects_counted = 0;
+$objects_total = 0;
+$items_row = -1;
+$listview = "";
+
 // create secure token
 $token = createtoken ($user);
 
 // default value for inital max items in list
-if ($mgmt_config['explorer_list_maxitems'] == "") $mgmt_config['explorer_list_maxitems'] = 100; 
+if (empty ($mgmt_config['explorer_list_maxitems'])) $mgmt_config['explorer_list_maxitems'] = 100; 
 
 // define next max number of items on the list 
-if ($next != "" && is_int ($next)) $next_max = $next + $mgmt_config['explorer_list_maxitems'];
-else $next_max = $mgmt_config['explorer_list_maxitems'];
+if (is_numeric ($start)) $end = $start + $mgmt_config['explorer_list_maxitems'];
+else $end = $mgmt_config['explorer_list_maxitems'];
 
 // generate object list
-$objects_counted = 0;
-$objects_total = 0;
-$listview = "";
-$items_row = 0;
-
 $queue_array = rdbms_getqueueentries ("", $site, "", $queueuser);
 
 // write object entries
-if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
+if (is_array ($queue_array) && sizeof ($queue_array) > 0)
 {
   $objects_total = sizeof ($queue_array); 
 
   foreach ($queue_array as $queue)
   {
-    if ($queue['queue_id'] != "" && $queue['action'] != "" && ($queue['object_id'] > 0 || $queue['objectpath'] != "") && $queue['user'] != "" && $items_row < $next_max)
+    // break loop if maximum has been reached
+    if (($items_row + 1) >= $end) break;
+
+    if ($queue['queue_id'] != "" && $queue['action'] != "" && ($queue['object_id'] > 0 || $queue['objectpath'] != "") && $queue['user'] != "")
     {  
       $queue_id = $queue['queue_id'];
-      $action = $queue['action'];
-      $queueuser = $queue['user'];
-      $date = date ("Y-m-d H:i", strtotime($queue['date']));
+      $queue_action = $queue['action'];
+      $queue_user = $queue['user'];
+      $queue_date = date ("Y-m-d H:i", strtotime($queue['date']));
 
       // object
       if ($queue['objectpath'] != "")
       {
-        $site = getpublication ($queue['objectpath']);
-  
-        $location_esc = getlocation ($queue['objectpath']);
-        $cat = getcategory ($site, $location_esc);
-        $location = deconvertpath ($location_esc, "file");
-        $location_name = getlocationname ($site, $location_esc, $cat, "path");
+        $temp_site = getpublication ($queue['objectpath']);  
+        $temp_location_esc = getlocation ($queue['objectpath']);
+        $temp_cat = getcategory ($temp_site, $temp_location_esc);
+        $temp_location = deconvertpath ($temp_location_esc, "file");
+        $temp_location_name = getlocationname ($temp_site, $temp_location_esc, $temp_cat, "path");
         
-        $object = getobject ($queue['objectpath']);
-        $object = correctfile ($location, $object, $user);
+        $temp_object = getobject ($queue['objectpath']);
+        $temp_object = correctfile ($temp_location, $temp_object, $user);
         
-        // if objet exists based on correctfile
-        if (valid_locationname ($location) && valid_objectname ($object))
-        {              
-          $file_info = getfileinfo ($site, $location.$object, $cat);
+        // if object exists based on correctfile
+        if (valid_locationname ($temp_location) && valid_objectname ($temp_object))
+        {
+          // count valid objects 
+          $items_row++;
+      
+          // skip rows for paging
+          if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+                    
+          $file_info = getfileinfo ($temp_site, $temp_location.$temp_object, $temp_cat);
           
           // transformation for folders
-          if ($object == ".folder") 
+          if ($temp_object == ".folder") 
           {
-            $object_name = getobject ($location_name);
-            $location_name = getlocation ($location_name);
+            $temp_object_name = getobject ($temp_location_name);
+            $temp_location_name = getlocation ($temp_location_name);
           }
-          else $object_name = $file_info['name'];
+          else $temp_object_name = $file_info['name'];
   
           // open on double click
-          $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
+          $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($temp_site)."&cat=".url_encode($temp_cat)."&location=".url_encode($temp_location_esc)."&page=".url_encode($temp_object)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
           
           // onclick for marking objects
           $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlQueueMenu();\"";
           
           // set context
-          $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('".$site."', '".$cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$queueuser."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
+          $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('".$temp_site."', '".$temp_cat."', '".$temp_location_esc."', '".$temp_object."', '".$temp_object_name."', '".$file_info['type']."', '".$queue_user."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
   
           // listview - view option for un/published objects
           if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
@@ -112,32 +121,36 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
                   <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                     <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
                       <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
-                        <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name."&nbsp;
+                        <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$temp_object_name."&nbsp;
                       </a>
                     </div>
                   </td>";
                   
           if (!$is_mobile) $listview .= "
-                  <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$site."\">&nbsp;&nbsp;".$site."</span></td>
-                  <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$location_name."\">&nbsp;&nbsp;".$location_name."</span></td>
-                  <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                  <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
-                  <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>";
+                  <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$temp_site."\">&nbsp;&nbsp;".$temp_site."</span></td>
+                  <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$temp_location_name."\">&nbsp;&nbsp;".$temp_location_name."</span></td>
+                  <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                  <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_action."</span></td>
+                  <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_user."</span></td>";
                   
           $listview .= "
                 </tr>";
-      
-          $items_row++;  
         }
       }
       // mail
-      elseif ($queue['object_id'] > 0 && $user == $queueuser)
+      elseif ($queue['object_id'] > 0 && $user == $queue_user)
       {
-        $mailfile = $queue['object_id'].".".$queueuser.".mail";
-        $cat = "comp";
+        // count valid objects 
+        $items_row++;
+    
+        // skip rows for paging
+        if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
         
-        $file_info = getfileinfo ("", $mailfile, $cat);
-        $object_name = $file_info['name'];
+        $mailfile = $queue['object_id'].".".$queue_user.".mail";
+        $temp_cat = "comp";
+        
+        $file_info = getfileinfo ("", $mailfile, $temp_cat);
+        $temp_object_name = $file_info['name'];
         
         // open on double click
         $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', 600, 900);\"";
@@ -146,7 +159,7 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
         $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlQueueMenu();\"";
         
         // set context
-        $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('', '".$cat."', '', '".$mailfile."', '".$object_name."', 'mail', '".$queueuser."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
+        $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('', '".$temp_cat."', '', '".$mailfile."', '".$temp_object_name."', 'mail', '".$queue_user."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
         // listview
         $class_image = "class=\"hcmsIconList\"";
@@ -156,7 +169,7 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
                 <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                   <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject.">
                     <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
-                      <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>&nbsp;
+                      <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$temp_object_name."</span>&nbsp;
                     </a>
                   </div>
                 </td>";
@@ -164,15 +177,15 @@ if (is_array ($queue_array) && @sizeof ($queue_array) > 0)
           if (!$is_mobile) $listview .= "
                 <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
                 <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
-                <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
-                <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>";
+                <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_action."</span></td>
+                <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_user."</span></td>";
                 
           $listview .= "
               </tr>";
-              
-        $items_row++;  
       }
+      // queue entry not valid for user
+      else $objects_total--;
     }
   }
 }
@@ -304,7 +317,7 @@ function initalize ()
       <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:200px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>
       </td> 
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:140px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>
       </td>
       <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="width:60px; white-space:nowrap;">
@@ -329,22 +342,43 @@ function initalize ()
 </div>
 
 <?php
-if ($objects_counted >= $next_max)
+// expanding
+if (empty ($mgmt_config['explorer_paging']) && $objects_total >= $end)
 {
+  $next_start = $objects_counted + 1;
 ?>
 <!-- status bar incl. more button -->
-<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0px; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="window.location='<?php echo $_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['sionhcms_lang'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
-  <div style="margin-left:auto; margin-right:auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.png" style="border:0;" alt="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" /></div>
+<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&queueuser=".url_encode($queueuser)."&start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <?php
 }
+// paging
+elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_total > $end))
+{
+  // start positions (inital start is 0 and not 1)
+  $previous_start = $start - intval ($mgmt_config['explorer_list_maxitems']);
+  $next_start = $objects_counted + 1;
+?>
+<!-- status bar incl. previous and next buttons -->
+<div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&queueuser=".url_encode($queueuser)."&start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&queueuser=".url_encode($queueuser)."&start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<?php
+}
+// status bar without buttons
 else
 {
+  $next_start = $objects_counted + 1;
 ?>
 <!-- status bar -->
-<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0px; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
-    <div style="margin:auto; padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
+  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
 </div>
 <?php
 }

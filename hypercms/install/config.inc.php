@@ -192,6 +192,10 @@ $mgmt_config['explorerview'] = "medium";
 // How many items (folders and objects) should be displayed in the explorer object list initally
 $mgmt_config['explorer_list_maxitems'] = 500;
 
+// Enable paging (true) or expand object list (false)
+// More than 500 objects per page does not perform well with most browsers
+$mgmt_config['explorer_paging'] = true;
+
 // Open objects in new window (true) or same window (false)
 $mgmt_config['object_newwindow'] = false;
 
@@ -577,7 +581,7 @@ $mgmt_config['search_operator'] = "";
 // and therefore will not find search expressions that are in the list of stopwords
 $mgmt_config['search_query_match'] = "match";
 
-// Maximum number of search results
+// Maximum number of search results (per page/request)
 $mgmt_config['search_max_results'] = 300;
 
 // Strong Passwords

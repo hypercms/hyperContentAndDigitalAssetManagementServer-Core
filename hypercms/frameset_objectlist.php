@@ -21,7 +21,6 @@ $location = url_encode (getrequest ("location", "url"));
 $virtual = url_encode (getrequest ("virtual", "numeric"));
 $search_dir = url_encode (getrequest ("search_dir", "url"));
 $search_expression = url_encode (getrequest ("search_expression", "url"));
-$maxhits = url_encode (getrequest ("maxhits", "url"));
 
 // ------------------------------ permission section --------------------------------
 
@@ -121,7 +120,7 @@ if ($action == "base_search")
   // control
   echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"loading.php\" frameBorder=\"0\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
   // object list
-  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"search_objectlist.php?action=".$action."&site=".$site."&search_dir=".$search_dir."&search_expression=".$search_expression."&maxhits=".$maxhits."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"search_objectlist.php?action=".$action."&site=".$site."&search_dir=".$search_dir."&search_expression=".$search_expression."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
   // sidebar
   if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" scrolling=\"auto\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 }

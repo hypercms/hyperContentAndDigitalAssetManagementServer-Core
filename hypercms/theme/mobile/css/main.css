@@ -5,7 +5,7 @@ html, body
   padding: 0;
   margin: 0;
   font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 15px; 
+  font-size: 16px; 
   font-weight: normal; 
   color: #FFFFFF;
   text-decoration: none;
@@ -23,9 +23,10 @@ img
 
 input, select, textarea, button, .hcmsTextArea
 {
+  border-radius: 0px;
   box-sizing: border-box;
   font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 15px;
+  font-size: 16px;
   font-weight: normal;
   color: #000000;
   text-decoration: none;
@@ -34,7 +35,19 @@ input, select, textarea, button, .hcmsTextArea
   border: 1px solid #FFFFFF;
   background-color: #F3F3F3;;
   margin: 2px 2px 2px 0px;
-  padding: 6px 2px;
+  padding: 4px 2px;
+}
+
+select
+{
+  -webkit-appearance: none;
+  -webkit-border-radius: 0px;
+  -moz-appearance: none;
+  appearance: none;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAB3RJTUUH4wscBwMfknFSCQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAARnQU1BAACxjwv8YQUAAACZSURBVHjaY2AYBdQBfn5+lUDqP6kYqo+BoampiSEuLi6JFM0g9SB9YNDQ0MDQ3NzMkJ6e7grkfiWg+StIHUg9SB/cABAGmVhQUKArLi7+FJtmkDhIHqQOpgfFAJghZWVlEpqamhdAmhgZGcGaQXyQOLJmrAbADKmurua0srLaCtIMokF8dM04DUAyhMPQ0HA9iMamGW7ACAcAA6+GjDAKFtwAAAAASUVORK5CYII=') no-repeat 100% 50%;
+  background-color: #F3F3F3;
+  padding-left: 2px;
+  padding-right: 16px;
 }
 
 a 
@@ -134,6 +147,11 @@ hr
 
 .hcmsBlur
 {
+}
+
+.hcmsWorkplaceTop
+{
+  background-color: #0375A2;
 }
 
 .hcmsLogonScreen
@@ -249,9 +267,16 @@ hr
 
 .hcmsWorkplaceExplorer
 {
+  width: 100%;
+  height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #353535;
+  border-right: 1px solid #000000;
+  background-color: #212121;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
 .hcmsWorkplaceObjectlist
@@ -349,6 +374,21 @@ hr
 .hcmsPriorityLow
 {
   background-color: #83B2C6;
+}
+
+.hcmsToDo
+{
+  background-color: #FB7C0C;
+}
+
+.hcmsInProgress
+{
+  background-color: #3094D7;
+}
+
+.hcmsFinished
+{
+  background-color: #69A738;
 }
 
 .hcmsMessage
@@ -497,31 +537,31 @@ hr
 
 .hcmsButtonSizeSquare
 {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
 }
 
 .hcmsButtonSizeNarrow
 {
-  width: 15px;
-  height: 30px;
+  width: 16px;
+  height: 32px;
 }
 
 .hcmsButtonSizeWide
 {
-  width: 47px;
-  height: 30px;
+  width: 50px;
+  height: 32px;
 }
 
 .hcmsButtonSizeHeight
 {
-  height: 30px;
+  height: 32px;
 }
 
 .hcmsButtonMenu
 {
-  height: 30px;
-  line-height: 30px;
+  height: 32px;
+  line-height: 32px;
   border-right: 1px solid #C0C0C0;
   float: left;
   padding: 0px 6px;
@@ -678,7 +718,7 @@ hr
 .hcmsHeadline 
 {  
   font-family: inherit;
-  font-size: 15px; 
+  font-size: 16px; 
   font-weight: bold; 
   color: #FFFFFF; 
   text-decoration: none;
@@ -688,7 +728,7 @@ hr
 .hcmsHeadlineTiny 
 {  
   font-family: inherit;
-  font-size: 15px; 
+  font-size: 16px; 
   font-weight: normal; 
   color: #9ADBE4; 
   text-decoration: none;

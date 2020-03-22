@@ -24,6 +24,11 @@ img
 
 input, select, textarea, button, .hcmsTextArea 
 {
+  -webkit-appearance: none;
+  -webkit-border-radius: 0px;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0px;
   box-sizing: border-box;
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px;
@@ -33,9 +38,17 @@ input, select, textarea, button, .hcmsTextArea
   display: inline-block;
   vertical-align: middle;
   border: 1px solid #C0C0C0;
-  background-color: #FFFFFF;
+  background-color: #F3F3F3;
   margin: 1px 1px 1px 0px;
   padding: 6px 4px;
+}
+
+select
+{
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAB3RJTUUH4wscBwMfknFSCQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAARnQU1BAACxjwv8YQUAAACZSURBVHjaY2AYBdQBfn5+lUDqP6kYqo+BoampiSEuLi6JFM0g9SB9YNDQ0MDQ3NzMkJ6e7grkfiWg+StIHUg9SB/cABAGmVhQUKArLi7+FJtmkDhIHqQOpgfFAJghZWVlEpqamhdAmhgZGcGaQXyQOLJmrAbADKmurua0srLaCtIMokF8dM04DUAyhMPQ0HA9iMamGW7ACAcAA6+GjDAKFtwAAAAASUVORK5CYII=') no-repeat 100% 50%;
+  background-color: #F3F3F3;
+  padding-left: 2px;
+  padding-right: 16px;
 }
 
 a 
@@ -182,13 +195,6 @@ hr
   -webkit-box-shadow: 0px 3px 3px #000000;
   -moz-box-shadow: 0px 3px 3px #000000;
   filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='180',strength='4');
-}
-
-.hcmsObjectGalleryMarker
-{
-  cursor: pointer;
-  display: block;
-  text-align: center;
 }
 
 .hcmsButton
@@ -399,13 +405,29 @@ hr
   text-decoration: none;
 }
 
-.hcmsObjectSelected
+tr.hcmsObjectSelected
 {
-  background-color: #bebebe;
+  background-color: #BEBEBE;
 }
 
-.hcmsObjectUnselected
+tr.hcmsObjectUnselected
 {
+  background-color: transparent;
+}
+
+div.hcmsObjectSelected
+{
+  margin: 2px;
+  background-color: #BEBEBE;
+  background-image: url("../img/button_textc.png");
+  background-repeat: no-repeat !important;
+  background-position: 2% 98% !important;
+  background-size: 22px 22px !important;
+}
+
+div.hcmsObjectUnselected
+{
+  margin: 2px;
   background-color: transparent;
 }
 
@@ -468,13 +490,13 @@ hr
 
 .hcmsThumbnailWidthlarge img
 {
-  width: 180px;
+  width: 220px;
   border: 0;
 }
 
 .hcmsThumbnailWidthmedium img
 {
-  width: 140px;
+  width: 160px;
   border: 0;
 }
 
@@ -492,13 +514,13 @@ hr
 
 .hcmsThumbnailHeightlarge img
 {
-  height: 180px;
+  height: 220px;
   border: 0;
 }
 
 .hcmsThumbnailHeightmedium img
 {
-  height: 140px;
+  height: 160px;
   border: 0;
 }
 

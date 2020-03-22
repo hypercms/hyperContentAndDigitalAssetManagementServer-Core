@@ -17,8 +17,7 @@ require ("function/hypercms_api.inc.php");
 
 // input parameters
 $search = getrequest ("search");
-$maxhits = getrequest ("maxhits", "numeric");
-$next = getrequest ("next");
+$start = getrequest ("start", "numeric", 0);
 
 // ------------------------------ permission section --------------------------------
 
@@ -30,21 +29,21 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initalize
+$objects_counted = 0;
+$objects_total = 0;
+$listview = "";
+$items_row = -1;
+
 // create secure token
 $token = createtoken ($user);
 
 // default value for inital max items in list
-if ($mgmt_config['explorer_list_maxitems'] == "") $mgmt_config['explorer_list_maxitems'] = 100; 
+if (empty ($mgmt_config['explorer_list_maxitems'])) $mgmt_config['explorer_list_maxitems'] = 100; 
 
 // define next max number of items on the list 
-if ($next != "" && is_int ($next)) $next_max = $next + $mgmt_config['explorer_list_maxitems'];
-else $next_max = $mgmt_config['explorer_list_maxitems'];
-
-// generate object list
-$objects_counted = 0;
-$objects_total = 0;
-$listview = "";
-$items_row = 0;
+if (is_numeric ($start)) $end = $start + $mgmt_config['explorer_list_maxitems'];
+else $end = $mgmt_config['explorer_list_maxitems'];
 
 // message directory
 $dir = $mgmt_config['abs_path_data']."message/";
@@ -71,14 +70,21 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
 
   foreach ($message_array as $message_file)
   {
+    // break loop if maximum has been reached
+    if (($items_row + 1) >= $end) break;
+
+    // extract data from file
     list ($message_time, $message_user, $message_type, $ext) = explode (".", $message_file);
     
-    if ($message_time > 0 && $items_row < $next_max)
-    {  
+    if ($message_time > 0)
+    {
+      // message date and time
       $date = date ("Y-m-d H:i", $message_time);
 
+      // message file
       $mailfile = $message_time.".".$message_user.".mail";
       
+      // name
       $file_info = getfileinfo ("", $mailfile, "comp");
       $object_name = $file_info['name'];
       
@@ -121,6 +127,12 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
   
       if ($found == true || trim ($search) == "")
       {
+        // count valid objects 
+        $items_row++;
+    
+        // skip rows for paging
+        if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+
         $listview .= "
             <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
               <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
@@ -135,14 +147,11 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
               <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
               <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">sent</span></td>
               <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$message_user."</span></td>
-            </tr>";
-            
-        $items_row++;  
+            </tr>"; 
       }
-      
-      // limit results
-      if ($items_row >= $next_max || ($maxhits > 0 && $items_row >= $maxhits)) break;
     }
+    // message not valid
+    else $objects_total--;
   }
 }
 
@@ -294,22 +303,43 @@ function initalize ()
 </div>
 
 <?php
-if ($objects_counted >= $next_max)
+// expanding
+if (empty ($mgmt_config['explorer_paging']) && $objects_total >= $end)
 {
+  $next_start = $objects_counted + 1;
 ?>
 <!-- status bar incl. more button -->
-<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0px; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="window.location='<?php echo $_SERVER['PHP_SELF']."?next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['sionhcms_lang'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
-  <div style="margin-left:auto; margin-right:auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.png" style="border:0;" alt="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" /></div>
+<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <?php
 }
+// paging
+elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_total > $end))
+{
+  // start positions (inital start is 0 and not 1)
+  $previous_start = $start - intval ($mgmt_config['explorer_list_maxitems']);
+  $next_start = $objects_counted + 1;
+?>
+<!-- status bar incl. previous and next buttons -->
+<div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<?php
+}
+// status bar without buttons
 else
 {
+  $next_start = $objects_counted + 1;
 ?>
 <!-- status bar -->
-<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0px; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
-    <div style="margin:auto; padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
+  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
 </div>
 <?php
 }

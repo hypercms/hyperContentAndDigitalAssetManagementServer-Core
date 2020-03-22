@@ -3938,6 +3938,7 @@ Release 02/2020
 - Modifications in function convertmedia in Media API in order to support the type "origthumb" for thumbnail/preview videos
 - Modifications in function createmedia in Media API in order to verify the provided type exists in the image rendering options
 - Implementation of the advanced image editing options for download and wrapper links for single media objects in index, service mediadownload and mediawrapper
+- Design modifications in explorer_objectlist
 - Update of all user manuals
 - Bug fix: frameset_edit_media did not close the div tag for the control layer
 - Bug fix: Function createmultidownloadlink did not remove the tailing separator from the multiobject input
@@ -3946,3 +3947,70 @@ Release 02/2020
 - Bug fix: Modifications in template_edit_mediatype in order to correct remove deprecated HTML table attributes and assign CSS class
 - Bug fix: explorer_imagepreview did not close the type attribute of the JavaScript tag
 - Bug fix: Function correctfile did use function createfilename on locked content container names and therefore was not able to load the locked container
+
+Version 8.1.1
+Release 03/2020
+- Implementation of the new publication access permissions for SOAP and RESt services in order to activate and deactive them per publication
+- Modifications in all SOAP and REST functions in order to support the new publication setting
+- Modifications in function editpublication in order to support the new settings for the SOAP and REStful API access permissions
+- Modifications in API loader in order to include RESTful library only if the SOAP API is not loaded already (SOAP configuration)
+- Modifications in site_edit_form in order to include the settings for the RESTful and SOAP API
+- Design modifications in site_edit_form
+- Design modifications in task management
+- Implementation of the new Kanban style view in the task management
+- Design modifications in page_multiedit
+- Modifications in function isLoggedInHyperdav in WebDAV module in order to only accept user session files that are not older than 24 hours
+- Modifications in function setGlobalsForConfig in WebDAV module in order to include globals of the language files
+- Modifications in WebDAV index (loader) in order to load english as default language file 
+- Modifications in function createfolder in Main API in order to add log events
+- Modifications in API loader in order to include language file without verification of the $hcms_lang variable
+- Modifications in hypermailer API in order to set default language code
+- Modifications in function createmedia in Media API in order to require a source file of at least 100 bytes (to avoid WebDAV error on empty files)
+- Modifications in JS function hcms_showHideLayers in main.js in order to set z-index (2nd argument) besides the visibility
+- Design modifications in workflow_manager of the Workflow Management module
+- Implementation of the new CSS classes hycmsToDo, hcmsInProgress, and hcmsFinished in all design themes
+- Implementation of the function showdate in the task management in order to localize the displayed start and end dates of the tasks
+- Design modifications in user_sendlink
+- Modifications in function showmessage in UI API in order to assign unique tag id if the defaukt id is used
+- Updgrade of the hypridauth API in the Connector module
+- Modifications in the Mobile Edition in order to minimize the navigaton sidebar on most navigation endpoints except for the asset or page navigation items
+- Modifications in news home box in order to support max/min the display of the box
+- Modifications in function rdbms_getmediastat in DB Connect in order to sort the result by date (important for home boxes recent downlods, uploads, and uploadlinks)
+- Modifications in function rdbms_getmediastat in DB Connect in order to support the new input parameter maxhits for the limition of the number of the returned results
+- Modifications in recent downlods, uploads, and uploadlinks home box in order to use the maxhits paramater for the call of function rdbms_getmediastat and to break the loop when maxount has been reached
+- Update of all language files
+- Implementation of paging besides the expanding of folder and objects in explorer_objectlist and search_objectlist
+- Implementation of the new main configuration setting $mgmt_config['explorer_paging'] in order to enable paging instead of expanding of the object list
+- Modifications in explorer_objectlist in order to break loop when the requested objects have been collected
+- Modifications in function createfilename in Main API in order to verify the truncated file name 2 times
+- Removed the CSS class hcmsObjectListMarker from all design themes
+- Implementation of the CSS class hcmsObjectListMarker in explorer_objectlist and search_objectlist
+- Modifications in explorer_objectlist and search_objectlist in order to replace the gallery view table data elements width div elements
+- Modifications in contextmenu.js in order to support the new gallery based on div elements
+- Modifications in explorer_objectlist and search_objectlist in order to provide larger thumbnail images for medium (max 160px) and large (max 220px) views
+- Modifications in all design themens in order to support larger thumbnail images for medium (160px) and (max 220px) large views
+- Removed deprecated image button_explorer_more.png from all design themes
+- Modifications in control_message_menu and message_objectlist in order to remove the maxhits parameter (maxhits is 300 by default)
+- Modifications in control_objectlist_menu in order to correct view icon placement on iPhones
+- Modifications in frameset_objectlist and frameset_mobile in order to remove the maxhits parameter
+- Modifications in explorer_objectlist and search_objectlist in order to correct the total number of objects if the object has been marked as deleted or the user has no access permission
+- Modifications in user_objectlist in order to correct the total number of users if hidden users are in the list
+- Modifications in queue_objectlist in order to correct the total number of queue entries if the entry is not valid for the current user
+- Modifications in message_objectlist in order to correct the total number of message entries if the message is not valid
+- Implementation of paging besides the expanding in queue_objectlist, message_objectlist, and user_objectlist
+- Design modifications in queue_objectlist
+- Modifications in OpenSearch Connector module in order to have all input request parameters in the same code section
+- Implementation of the client side memory for the column widths per publication and category in explorer_objectlist
+- Implementation of the new JS function sizecols in explorer_objectlist
+- Implementation of function addslashes in all chart functions of the Report Management API in order to escape the text used in the charts
+- Modifications in function showgeolocationchart in Report Management API in order to define default geo location for the center of the map
+- Modifications in function showgeolocationchart in Report Management API in order to support links in markers thatb will be opened in a new browser windows/tab
+- Modifications in function showgeolocationchart in Report Management API in order to support label text for markers
+- Implementation of a selected icon for CSS class hcmsObjectSelected for the gallery view in all design themes
+- Modifications in explorer_objectlist and search_objectlist in order to assign CSS class hcmsObjectUnselected as default
+- Bug fix: Function showpiechart in Report Management module did not declare the global user variable
+- Bug fix: Function rdbms_getmediastat in DB Connect did only apply order by date in some cases based on the input parameters for the container ID and object path
+- Bug fix: The temporary variables for each queue entry have not benn fully seperated from the filter variables (issue with $site)
+- Bug fix: popup_action did not assign result of function copyobject for a single object to a variable
+- Bug fix: popup_actiona and poup_status did not verify if the multiobject variable holds more than one object
+- Bug fix: Function encryptfile and decryptfile of the Free Edition did not return the content of the media file

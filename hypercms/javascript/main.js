@@ -946,22 +946,35 @@ function hcms_dragLayers (elem, moveelem)
 function hcms_showHideLayers () 
 {
   // uses visibilty
-  var i, p, v, o, obj;
+  var i, p, z, v, o, obj;
   var args = hcms_showHideLayers.arguments;
 
   for (i=0; i<(args.length-2); i+=3)
   {
     if ((obj = hcms_findObj(args[i])) != null)
     {
+      // z-index
+      z = args[i+1];
+      // visibility
       v = args[i+2];
 
       if (obj.style)
       {
+        // transition
         obj.style.transition = 'all 0.3s linear';
         o = (v == 'show') ? '1' : (v == 'hide') ? '0' : '0';
         obj.style.opacity = o;
+
+        // z-index
+        if (z != '')
+        {
+          z = (v == 'show') ? z : (v == 'hide') ? '-1' : '-1';
+          obj.style.zIndex = z;
+        }
+
+        // visibility
         v = (v == 'show') ? 'visible' : (v == 'hide') ? 'hidden' : v;
-        obj.style.visibility = v;
+        obj.style.visibility = v; 
       }
     }
   }
@@ -1237,8 +1250,8 @@ function hcms_bubbleSort (c, _ud, _isNumber)
         _left = parseInt(_left) || 0;
         _right = parseInt(_right) || 0;
 
-         if (_ud && (_left-_right > 0)) _yes = true;
-         if (!_ud && (_left-_right < 0)) _yes = true;
+        if (_ud && (_left-_right > 0)) _yes = true;
+        if (!_ud && (_left-_right < 0)) _yes = true;
       }
       else
       {

@@ -2579,7 +2579,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
     $sql .= 'WHERE obj.deleteuser="" ';
     if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
-    // removed "order by" due to poor DB performance and moved to array sort
+    // removed "order by substring_index()" due to poor DB performance and moved to array sort
     // $sql .= ' ORDER BY SUBSTRING_INDEX(obj.objectpath,"/",-1)';
     $sql .= 'ORDER BY '.$order_by;
 
@@ -2618,7 +2618,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     if (!empty ($count))
     {
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj';
-      if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= " ".implode (' ', $sql_table).' ';
+      if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (' ', $sql_table).' ';
       $sql .= ' WHERE obj.deleteuser="" ';
       if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' AND '.implode (' AND ', $sql_where);
       
@@ -5330,13 +5330,21 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
 
 // ----------------------------------------------- get statistics from dailystat -------------------------------------------------
 
-function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $container_id="", $objectpath="", $user="", $return_filesize=true)
+// function: rdbms_getmediastat()
+// input: date from [date] (optional), date to [date] (optional), activity [string] (optional), container ID [integer,array] (optional), object path [string] (optional), user name [string] (optional), 
+//        return file size of objects [boolean] (optional), limit returned results [integer] (optional)
+// output: result array of objects / false on error
+
+// description:
+// Provides the data of objects based on the information of table dailystats. The results will be sorted by date in descending order (most recent first).
+
+function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $container_id="", $objectpath="", $user="", $return_filesize=true, $maxhits=0)
 {
   global $mgmt_config;
 
   // mySQL connect
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
-  
+
   // clean input
   if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
   if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
@@ -5344,7 +5352,18 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   if ($container_id != "") $container_id = $db->rdbms_escape_string (intval($container_id));
   if ($objectpath != "") $objectpath = $db->rdbms_escape_string ($objectpath);
   if ($user != "") $user = $db->rdbms_escape_string ($user);
-  
+
+  if ($maxhits != "" && $maxhits > 0)
+  {
+    if (strpos ($maxhits, ",") > 0)
+    {
+      list ($starthits, $endhits) = explode (",", $maxhits);
+      $starthits = $db->rdbms_escape_string (trim ($starthits));
+      $endhits = $db->rdbms_escape_string (trim ($endhits));
+    }
+    else $maxhits = $db->rdbms_escape_string ($maxhits);
+  }
+
   // get object info
   if ($objectpath != "")
   {
@@ -5354,12 +5373,13 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
     $objectpath = str_replace ('%', '*', $objectpath);
     if (getobject ($objectpath) == ".folder") $location = getlocation ($objectpath);
   }
-  
+
   $sqlfilesize = "";
   $sqltable = "";
   $sqlwhere = "";
   $sqlgroup = "";
-  
+  $limit = "";
+
   // include media table for file size
   if (!empty ($return_filesize))
   {
@@ -5370,7 +5390,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       $sqltable = "LEFT JOIN media ON dailystat.id=media.id INNER JOIN object ON dailystat.id=object.id";
       if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
       else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
-      $sqlgroup = 'GROUP BY dailystat.id, dailystat.user ORDER BY dailystat.date';
+      $sqlgroup = 'GROUP BY dailystat.id, dailystat.user';
     }
     // search by container id
     elseif ($container_id != "")
@@ -5378,7 +5398,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       $sqlfilesize = ', media.filesize AS filesize';
       $sqltable = "LEFT JOIN media ON dailystat.id=media.id";
       $sqlwhere = 'AND dailystat.id='.$container_id;
-      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user ORDER BY dailystat.date';
+      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
     }
   }
   else
@@ -5390,7 +5410,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       $sqltable = 'LEFT JOIN object ON dailystat.id=object.id';
       if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
       else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
-      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user ORDER BY dailystat.date';
+      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
     }
     // search by container id
     elseif ($container_id != "")
@@ -5398,7 +5418,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       $sqlfilesize = "";
       $sqltable = '';
       $sqlwhere = 'AND dailystat.id='.$container_id;
-      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user ORDER BY dailystat.date';
+      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
     }
   }
   
@@ -5406,8 +5426,13 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   if ($date_to != "") $sqlwhere .= ' AND dailystat.date<="'.date("Y-m-d", strtotime($date_to)).'"';
   if ($activity != "") $sqlwhere .= ' AND dailystat.activity="'.$activity.'"';
   if ($user != "") $sqlwhere .= ' AND dailystat.user="'.$user.'"';
+
+  if (empty ($sqlgroup)) $sqlgroup = 'GROUP BY dailystat.id';
+
+  if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $limit = 'LIMIT '.intval ($starthits).','.intval ($endhits);
+  elseif (isset ($maxhits) && intval ($maxhits) > 0) $limit = 'LIMIT 0,'.intval ($maxhits);
   
-  $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) AS count'.$sqlfilesize.', dailystat.user FROM dailystat '.$sqltable.' WHERE dailystat.id!="" '.$sqlwhere.' '.$sqlgroup;
+  $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) AS count'.$sqlfilesize.', dailystat.user FROM dailystat '.$sqltable.' WHERE dailystat.id!="" '.$sqlwhere.' '.$sqlgroup.' ORDER BY dailystat.date DESC '.$limit;
 
   $errcode = "50039";
   $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);

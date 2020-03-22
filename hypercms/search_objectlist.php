@@ -19,6 +19,7 @@ require_once ("include/format_ext.inc.php");
 
 // input parameters
 $action = getrequest ("action");
+$start = getrequest ("start", "numeric", 0);
 $site = getrequest ("site"); // site can be %Null%
 $login = getrequest ("login", "objectname");
 $search_dir = getrequest ("search_dir", "locationname");
@@ -40,18 +41,35 @@ $object_id = getrequest ("object_id");
 $container_id = getrequest ("container_id");
 $geo_border_sw = getrequest ("geo_border_sw");
 $geo_border_ne = getrequest ("geo_border_ne");
-$maxhits = getrequest ("maxhits", "numeric");
 $search_save = getrequest ("search_save");
 $search_execute = getrequest ("search_execute");
 
+// --------------------------------- logic section ----------------------------------
+
 // initalize
 $cat = "";
+$object_array = array();
+$search_dir_esc = array ();
+$exclude_dir_esc = array ();
+$search_filename = "";
+$galleryview = "";
+$listview = "";
+$items_row = -1;
+$objects_total = 0;
 
-// set default value
-if (empty ($maxhits) && !empty ($mgmt_config['search_max_results'])) $maxhits = $mgmt_config['search_max_results'];
+// SQL limit (result does not conain unique objetpaths if content is returned!)
+$limit = 1000;
 
-if ($maxhits > 1000) $maxhits = 1000;
-elseif ($maxhits < 1) $maxhits = 300;
+// search parameters as URL coded query string (exluding the limit parameter)
+unset ($_REQUEST['start']);
+$search_url = http_build_query ($_REQUEST);
+
+// default value for inital max items in search result
+if (empty ($mgmt_config['search_max_results'])) $mgmt_config['search_max_results'] = 100;
+
+// define next max number of items
+if (is_numeric ($start)) $end = $start + $mgmt_config['search_max_results'];
+else $end = $mgmt_config['search_max_results'];
 
 // extract publication and template name
 if (substr_count ($template, "/") == 1) list ($site, $template) = explode ("/", $template);
@@ -241,12 +259,6 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
-$object_array = array();
-$search_dir_esc = array ();
-$exclude_dir_esc = array ();
-$search_filename = "";
-
 // create secure token
 $token = createtoken ($user);
 
@@ -264,18 +276,18 @@ if ($action == "linking")
 // deleted objects of a user
 elseif ($action == "recyclebin" && $user != "")
 {
-  if (!empty ($adminpermission)) $object_array = rdbms_getdeletedobjects ("", "", $maxhits, @array_keys ($objectlistcols_reduced));
-  else $object_array = rdbms_getdeletedobjects ($user, "", $maxhits, @array_keys ($objectlistcols_reduced));
+  if (!empty ($adminpermission)) $object_array = rdbms_getdeletedobjects ("", "", $limit, @array_keys ($objectlistcols_reduced));
+  else $object_array = rdbms_getdeletedobjects ($user, "", $limit, @array_keys ($objectlistcols_reduced));
 }
 // collect all objects of given user 
 elseif ($action == "user_files" && $login != "" && $site != "" && (($site == "*Null*" && checkrootpermission ('user')) || checkglobalpermission ($site, 'user')))
 {
-  $object_array = rdbms_searchuser ($site, $login, $maxhits, @array_keys ($objectlistcols_reduced)); 
+  $object_array = rdbms_searchuser ($site, $login, $limit, @array_keys ($objectlistcols_reduced)); 
 }
 // search for sender, recipient or date sent
 elseif ($action == "recipient")
 {
-  $object_array = rdbms_searchrecipient ($site, $from_user, $to_user, $date_from, $date_to, $maxhits, @array_keys ($objectlistcols_reduced));
+  $object_array = rdbms_searchrecipient ($site, $from_user, $to_user, $date_from, $date_to, $limit, @array_keys ($objectlistcols_reduced));
 }
 // favorites of user
 elseif ($action == "favorites" && $user != "")
@@ -400,32 +412,27 @@ elseif ($action == "base_search" || $search_dir != "")
     }
     
     // start search
-    if ($replace_expression == "") $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $maxhits, @array_keys ($objectlistcols_reduced));
+    if ($replace_expression == "") $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $limit, @array_keys ($objectlistcols_reduced));
     // start search and replace
     elseif ($setlocalpermission['create'] == 1) $object_array = rdbms_replacecontent ($search_dir_esc, $search_format, $date_from, $date_to, $search_expression, $replace_expression, $user);
   }
 }
 
-// create view of items
-// how many images/folders in each row
-$table_cells = getobjectlistcells ($viewportwidth, $is_mobile);
-
-// define cell width of table
-if ($table_cells > 0) $cell_width = floor (100 / $table_cells)."%"; 
-
-$galleryview = "";
-$listview = "";
-$items_row = 0;
-
 if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array) > 0)
 {
+  // total results count
+  $objects_total = sizeof ($object_array);
+
   // the hash is used for download and wrapper links
   foreach ($object_array as $hash => $object_item)
   {
+    // break loop if maximum has been reached
+    if (($items_row + 1) >= $end) break;
+
     // set object path
     if (!empty ($object_item['objectpath'])) $objectpath = $object_item['objectpath'];
     else $objectpath = $object_item;
-    
+
     // hashcode and path must be provided
     if ($hash != "count" && substr_count ($objectpath, "/") > 0)
     {
@@ -490,7 +497,13 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
           $setlocalpermission = setlocalpermission ($item_site, $ownergroup, $item_cat);
           
           if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder))
-          { 
+          {
+            // count valid objects
+            $items_row++;
+
+            // skip rows for paging
+            if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+
             // read file
             if (empty ($container_id))
             {
@@ -575,15 +588,13 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             if ($is_mobile && $setlocalpermission['root'] == 1)
             {   
               $linking_buttons .= "
-              <button class=\"hcmsButtonDownload\" onClick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/';\">".getescapedtext ($hcms_lang['navigate'][$lang])."</button>";
+              <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/';\">".getescapedtext ($hcms_lang['navigate'][$lang])."</button>";
             }
 
             if ($linking_buttons != "")
             {
-              if (!$is_mobile) $width = "160px";
-              else $width = "180px";
-                
-              $linking_buttons = "<div style=\"width:".$width."; margin:0 auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
+              $linking_buttons = "
+              <div style=\"width:100%; margin:0 auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
             }
 
             // listview - view option for locked folders
@@ -603,9 +614,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
   
             $listview .= "
-                         <tr id=g".$items_row." style=\"cursor:pointer\" align=\"left\" ".$selectclick.">
+                         <tr id=\"g".$items_row."\" style=\"cursor:pointer\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
-                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">
+                             <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">
                                ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end."
                              </div>
                              ".$linking_buttons."
@@ -673,17 +684,17 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                          </tr>";
 
             $galleryview .= "
-                            <td id=t".$items_row." style=\"width:".$cell_width.";\" ".$selectclick.">
-                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
+                            <div id=\"t".$items_row."\" ".$selectclick." class=\"hcmsObjectUnselected\">
+                              <div class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
                                 $dlink_start."
-                                  <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"border:0;\" /></div>
+                                  <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"max-width:186px; max-height:186px;\" /></div>
                                   ".showshorttext($folder_name, 18, true)."
                                 ".$dlink_end."
                               </div>
-                            </td>";
-                            
-            $items_row++;
+                            </div>";
           }
+          // folder does not exist or user has no access permission 
+          else $objects_total--;
         }     
       }
       // --------------------------------------------------------- object items ----------------------------------------------------
@@ -714,6 +725,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
           if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
           {
+            // count valid objects
+            $items_row++;
+
+            // skip rows for paging
+            if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+
             // page
             if ($file_info['type'] == "Page") $file_type = getescapedtext ($hcms_lang['object-page'][$lang]);
             // component
@@ -850,9 +867,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             else $dragevent = "";
             
             $listview .= "
-                         <tr id=\"g".$items_row."\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
+                         <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
-                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">
+                             <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">
                                ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end."
                              </div>
                            </td>";
@@ -997,7 +1014,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
                 else $class_image = "";
                         
-                $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /></div>";
+                $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
               }           
             }
             // display file icon for non multimedia objects 
@@ -1007,7 +1024,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
               else $class_image = "";
                       
-              $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /></div>";
+              $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
             }
 
             // if linking is used display download buttons, display edit button for mobile edition
@@ -1019,8 +1036,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
               {            
                 $linking_buttons .= "
-                <button class=\"hcmsButtonDownload\" onClick=\"openObjectView('".url_encode($location_esc)."', '".url_encode($object)."', 'preview');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
-                <a href=\"".createviewlink ($item_site, $mediafile, $object_name, false, "download")."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
+                <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"openObjectView('".url_encode($location_esc)."', '".url_encode($object)."', 'preview');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
+                <a href=\"".createviewlink ($item_site, $mediafile, $object_name, false, "download")."\" target=\"_blank\"><button class=\"hcmsButtonDownload\" style=\"width:94%;\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
               }
             }
 
@@ -1028,50 +1045,43 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             if ($is_mobile && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
             {   
               $linking_buttons .= "
-              <button class=\"hcmsButtonDownload\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
+              <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
             }
             
             // if assetbrowser is used display edit button
             if (!empty ($hcms_assetbrowser) && $mediafile != "" && $setlocalpermission['root'] == 1)
             {   
               $linking_buttons .= "
-              <button class=\"hcmsButtonDownload\" style=\"width:154px;\" onClick=\"parent.parent.returnMedia('".url_encode($location_esc.$object)."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_modified."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
+              <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"parent.parent.returnMedia('".url_encode($location_esc.$object)."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_modified."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
             }
             
             if ($linking_buttons != "")
             {
-              if (!$is_mobile) $width = "160px";
-              else $width = "180px";
-                
-              $linking_buttons = "<div style=\"width:".$width."; margin:0 auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
+              $linking_buttons = "<div style=\"width:100%; margin:0 auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
             }
   
             $galleryview .= "
-                            <td id=\"t".$items_row."\" style=\"width:".$cell_width.";\" ".$selectclick.">
-                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".
+                            <div id=\"t".$items_row."\" ".$selectclick." class=\"hcmsObjectUnselected\">
+                              <div class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".
                                 $dlink_start."
                                   ".$thumbnail."
                                   ".showshorttext($object_name, 18, true)."
                                 ".$dlink_end."
                               </div>
                               ".$linking_buttons."
-                            </td>";
-                            
-            $items_row++;
+                            </div>";
           }
+          // object does not exist or user has no access permission 
+          else $objects_total--;
         }
-      }
-      
-      // close tr if row is filled up
-      if (strpos (($items_row / $table_cells), ".") < 1)
-      {
-        $galleryview .= "
-                           </tr>
-                           <tr>";
       }
     } 
   }
 }
+
+// objects counted
+if ($items_row > 0) $objects_counted = $items_row;
+else $objects_counted = 0;
 ?>
 <!DOCTYPE html>
 <html>
@@ -1087,17 +1097,42 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 <script type="text/javascript" src="javascript/chat.js"></script>
 <script type="text/javascript" src="javascript/lazysizes/lazysizes.min.js" async=""></script>
 <style type="text/css">
+#objectlist
+{
+  table-layout: fixed;
+  border-collapse: collapse;
+  border: 0;
+  border-spacing: 0;
+  padding: 0;
+  width: 100%;
+}
+
+#objectgallery
+{
+  border: 0;
+  padding: 0;
+  width: 100%;
+}
+
+#objectgallery > div
+{
+  display: block;
+  float: left;
+  padding: 4px;
+}
+
 .hcmsObjectListMarker
 {
   display: block;
   padding: 0px 5px;
 }
 
-#objectgallery td
+.hcmsObjectGalleryMarker
 {
+  cursor: pointer;
+  display: table-cell;
   text-align: center;
   vertical-align: bottom;
-  padding: 2px;
 }
 
 .hcmsCell
@@ -1105,6 +1140,15 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media screen and (max-width: 360px)
+{
+  #objectgallery
+  {
+    width: 260px;
+    margin: 0px auto;
+  }
 }
 </style>
 <script type="text/javascript">
@@ -1148,12 +1192,30 @@ function toggleview (viewoption)
 {
   if (viewoption == "detail") hcms_showHideLayers ('objectLayer','','show','detailviewReset','','show','galleryviewLayer','','hide','galleryviewReset','','hide');
   else if (viewoption == "small" || viewoption == "medium" || viewoption == "large") hcms_showHideLayers ('objectLayer','','hide','detailviewReset','','show','galleryviewLayer','','show','galleryviewReset','');
+  else return false;
   
-  var id = '';
+  var style = "";
+  var frames;
+  var thumbnail;
+
+  // thumbnail frame size definitions
+  if (viewoption == "large") style = "width:236px; height:276px;";
+  else if (viewoption == "medium") style = "width:176px; height:216px;";
+  else if (viewoption == "small") style = "width:164px; height:154px;";
+
+  frames = document.getElementsByClassName('hcmsObjectGalleryMarker');
+
+  if (frames && style != "")
+  {
+    for (i = 0; i < frames.length; i++)
+    {           
+      frames[i].style.cssText = style;     
+    }
+  }
   
   for (var i = 0; i <= <?php echo $items_row; ?>; i++)
   {
-    thumbnail = eval (document.getElementById('w' + i));
+    thumbnail = document.getElementById('w' + i);
     
     if (thumbnail)
     {
@@ -1161,11 +1223,11 @@ function toggleview (viewoption)
     }
     else
     {
-      thumbnail = eval (document.getElementById('h' + i));
+      thumbnail = document.getElementById('h' + i);
       if (thumbnail) thumbnail.className = 'hcmsThumbnailHeight' + viewoption;    
     }
-  }
-  
+  } 
+
   return true;
 }
 
@@ -1438,8 +1500,8 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 </div>
 
 <!-- Detail View -->
-<div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:0; margin:0; padding:0; width:100%; z-index:1; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
-  <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
+<div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:1; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
+  <table id="objectlist" name="objectlist">
   <?php 
   echo $listview;
   ?>
@@ -1448,32 +1510,61 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 </div>
 
 <!-- Gallery View -->
-<div id="galleryviewLayer" style="position:fixed; top:20px; left:0; bottom:0; width:100%; z-index:1; visibility:hidden; overflow-y:scroll;">
+<div id="galleryviewLayer" style="position:fixed; top:20px; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:1; visibility:hidden; overflow-y:scroll;">
 <?php
 if ($galleryview != "")
 {
   echo "
-  <table id=\"objectgallery\" name=\"objectgallery\" style=\"table-layout:fixed; border-collapse:separate; border:0; border-spacing:4px; padding:0; width:100%;\">
-    <tr>";
-  
-  // add table cells till table row adds up to the defined table cells in a row
-  while (strpos (($items_row / $table_cells), ".") > 0)
-  {
-    $items_row++;
-    
-    $galleryview .= "
-      <td onMouseOver=\"hcms_resetContext();\">&nbsp;</td>";
-  }
-  
-  echo $galleryview;
-  
-  echo "
-    </tr>
-  </table>";
+  <div id=\"objectgallery\" name=\"objectgallery\">  
+    ".$galleryview."
+  </div>";
 }
 ?>
   <br /><div style="width:100%; height:3px; z-index:0; visibility:visible;" onMouseOver="hcms_hideContextmenu();"></div>
 </div>
+
+<?php
+// expanding
+if (empty ($mgmt_config['explorer_paging']) && $objects_total > $end)
+{
+  $next_start = $objects_counted + 1;
+?>
+<!-- status bar incl. more button -->
+<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?".$search_url."&start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<?php
+}
+// paging
+elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_total >= $end))
+{
+  // start positions (inital start is 0 and not 1)
+  $previous_start = $start - intval ($mgmt_config['search_max_results']);
+  $next_start = $objects_counted + 1;
+?>
+<!-- status bar incl. previous and next buttons -->
+<div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?".$search_url."&start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?".$search_url."&start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<?php
+}
+// status bar without buttons
+else
+{
+  $next_start = $objects_counted + 1;
+?>
+<!-- status bar -->
+<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
+  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+</div>
+<?php
+}
+?>
 
 <!-- initalize -->
 <script type="text/javascript">

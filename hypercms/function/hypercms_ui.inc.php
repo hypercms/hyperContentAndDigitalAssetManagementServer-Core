@@ -316,7 +316,7 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
   <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
     <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
-        <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:0; margin:0; white-space:nowrap;\">&nbsp;".$show."&nbsp;</td>".
+        <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:0; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp;".$show."&nbsp;</td>".
         $individual_button_code.$close_button_code.
       "</tr>
     </table>
@@ -448,6 +448,9 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
 
     // define unique name for close button
     $close_id = uniqid();
+
+    // define unique id if default id is used
+    if ($id == "hcms_messageLayer") $id .= "_".$close_id;
 
     return "
   <div id=\"".$id."\" class=\"hcmsMessage\" style=\"".$style." width:".$width."; height:".$height."; z-index:9999; padding:0; margin:5px;\">
@@ -3169,13 +3172,12 @@ $(document).ready(function()
     if ($compcat == "media" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1 && $search_expression == "")
     {
       // Upload Button
-      if ($html5file) $popup_upload = "popup_upload_html.php";
-      else $popup_upload = "popup_upload_swf.php";
-
       $result .= "
       <div style=\"text-align:left; padding:2px; width:100%;\">
-        <button name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" 
-        onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\">".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."</button>
+        <button name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" onClick=\"";
+        // only new upload window supported
+        $result .= "hcms_openWindow('".$mgmt_config['url_path_cms']."popup_upload_html.php?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'location=no,status=yes,scrollbars=yes,resizable=yes,titlebar=no', 800, 600);";
+        $result .= "\">".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."</button>
         <img class=\"hcmsButtonTiny hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
       <div style=\"clear:both;\"></div>";
@@ -3185,8 +3187,7 @@ $(document).ready(function()
     {
       $result .= "
       <div style=\"text-align:left; padding:2px; width:100%;\">
-        <button name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" 
-        onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">".getescapedtext ($hcms_lang['new-component'][$lang], $hcms_charset, $lang)."</button>
+        <button name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">".getescapedtext ($hcms_lang['new-component'][$lang], $hcms_charset, $lang)."</button>
         <img class=\"hcmsButtonTiny hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
       <div style=\"clear:both;\"></div>";
@@ -3208,7 +3209,7 @@ $(document).ready(function()
         <input type=\"hidden\" name=\"callback\" value=\"".$callback."\" />
 
         <input type=\"text\" name=\"search_expression\" id=\"search_expression\" placeholder=\"".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."\" value=\"".($search_expression != "" ? html_encode ($search_expression) : "")."\" 
-        style=\"width:174px;\" maxlength=\"200\" onclick=\"showOptions();\" /><img name=\"SearchButton\" src=\"".getthemelocation()."img/button_ok.png\" onClick=\"submitForm();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_ok_over.png',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"OK\" title=\"OK\" />";
+        style=\"width:184px;\" maxlength=\"200\" onclick=\"showOptions();\" /><img name=\"SearchButton\" src=\"".getthemelocation()."img/button_ok.png\" onClick=\"submitForm();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_ok_over.png',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"OK\" title=\"OK\" />";
 
       // search options
       if (($compcat == "media" && $mediatype == "") || $mgmt_config[$site]['dam']) $result .= "

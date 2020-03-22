@@ -1035,11 +1035,11 @@ $token_new = createtoken ($user);
                 <table class="hcmsTableStandard" style="margin:0px 0px 0px 16px;">
                   <tr>
                     <td><?php echo getescapedtext ($hcms_lang['start'][$lang]); ?> </td>
-                    <td><input type="text" name="task_startdate" id="task_startdate" readonly="readonly" style="width:80px;" value="<?php echo showdate ($task_startdate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_startdate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /></td>
+                    <td><input type="text" name="task_startdate" id="task_startdate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_startdate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_startdate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /></td>
                   </tr>
                   <tr>
                     <td><?php echo getescapedtext ($hcms_lang['end'][$lang]); ?> </td>
-                    <td><input type="text" name="task_enddate" id="task_enddate" readonly="readonly" style="width:80px;" value="<?php echo showdate ($task_enddate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_enddate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /></td>
+                    <td><input type="text" name="task_enddate" id="task_enddate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_enddate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_enddate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /></td>
                     </td>
                   </tr>
               </table>
