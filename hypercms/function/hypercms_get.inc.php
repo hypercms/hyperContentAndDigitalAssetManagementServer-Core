@@ -342,7 +342,7 @@ function getcodepage ($lang="en")
 
 // ----------------------------------------- getcalendarlang ------------------------------------------
 // function: getcalendarlang()
-// input: language code [string] (optional)
+// input: 2-digits language code [string] (optional)
 // output: supported language code for calendar
 
 function getcalendarlang ($lang="en")
@@ -360,6 +360,28 @@ function getcalendarlang ($lang="en")
     else return "en";
   }
   else return "en";
+}
+
+// ----------------------------------------- getscaytlang ------------------------------------------
+// function: getscaytlang()
+// input: 2-digits language code [string] (optional)
+// output: supported language locale for CKEditor scayt plugin
+
+function getscaytlang ($lang="en")
+{
+  global $mgmt_config;
+
+  if ($lang != "")
+  {
+    // define supported languages pairs
+    $lang_supported = array('da'=>'da_DK', 'de'=>'de_DE', 'el'=>'el_GR', 'en'=>'en_US', 'es'=>'es_ES', 'fi'=>'fi_FI', 'fr'=>'fr_FR', 'it'=>'it_IT', 'no'=>'nb_NO', 'nl'=>'nl_NL', 'sv'=>'sv_SE');
+
+    $lang = strtolower ($lang);
+
+    if (!empty ($lang_supported[$lang])) return $lang_supported[$lang];
+    else return "en_US";
+  }
+  else return "en_US";
 }
 
 // ----------------------------------------- getescapedtext ------------------------------------------
@@ -2706,6 +2728,22 @@ function getobjectid ($objectlink)
   else return $objectlink;
 }
 
+// ------------------------------------- getobjectpath ------------------------------------------
+
+// function: getobjectpath()
+// input: object identifier (object hash OR object ID OR access hash) [string]
+// output: object path / false
+
+// description:
+// Returns the location path of an object as string. This function is an alias for function rdbms_getobject in DB Connect.
+
+function getobjectpath ($object_identifier)
+{
+  global $mgmt_config;
+
+  return rdbms_getobject ($object_identifier);
+}
+
 // ---------------------- getobjectlink -----------------------------
 // function: getobjectlink()
 // input: converted object ID or IDs separated by | [string]
@@ -3351,7 +3389,7 @@ function getfileinfo ($site, $file, $cat="comp")
 // requires: config.inc.php
 
 // description:
-// Get all file pointers (container, media, template) and object name from object file and collect info from container version, if provided
+// Get all file pointers (container, media, template) and object name from object file and collect info from container version, if provided.
 
 function getobjectinfo ($site, $location, $object, $user="sys", $container_version="")
 {
@@ -3608,6 +3646,34 @@ function getmimetype ($file)
     else return "application/octetstream";
   }
   else return "";
+}
+
+// ---------------------- getbase64fileextension -----------------------------
+// function: getbase64fileextension()
+// input: base 64 encoded file content [string] 
+// output: file extension
+
+// description:
+// Returns the file extension based on the base64 encoded file content.
+
+function getbase64fileextension ($base64)
+{
+  global $mgmt_config;
+
+  if (!empty ($base64))
+  {
+    include ($mgmt_config['abs_path_cms']."include/format_mime.inc.php");
+
+    // get the file extension (first entry will be returned)
+    // keep in mind that the same mime-type is assoziated to different file extension
+    foreach ($mimetype as $ext => $mimetype)
+    {
+      if (strpos ($base64, $mimetype.";") > 0) return $ext;
+    }
+  }
+
+  // if mime-type has not been found
+  return "";
 }
 
 // ---------------------- getfiletype -----------------------------
@@ -6387,6 +6453,8 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
     // check if user owns workflow items
     $item_array = getxmlcontent ($workflow, "<item>");
 
+    $useritem_array = array();
+
     foreach ($item_array as $item)
     {
       $type_array = getcontent ($item, "<type>");
@@ -6395,13 +6463,15 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
       {
         $buffer_array = getcontent ($item, "<user>");
 
-        if ($buffer_array[0] == $user) $useritem_array[] = $item;
+        // empty means "automatic select" of user
+        if ($buffer_array[0] == $user || $buffer_array[0] == "") $useritem_array[] = $item;
       }
       elseif ($type_array[0] == "usergroup")
       {
         $buffer_array = getcontent ($item, "<group>");
 
-        if (in_array ($buffer_array[0], $group_array)) $useritem_array[] = $item;
+        // empty means "automatic select" of group
+        if (in_array ($buffer_array[0], $group_array) || $buffer_array[0] == "") $useritem_array[] = $item;
       }
     }
 
@@ -6462,10 +6532,10 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
           $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $id_array[0]);
           $sucpassed_array = getcontent ($buffer_array[0], "<passed>");
 
-          // if item has sucessors
+          // if item has successors
           if ($sucpassed_array != false) 
           {
-            // check if the sucessor has not already passed the workflow
+            // check if the successor has not already passed the workflow
             if ($sucpassed_array[0] != 1) 
             {
               if ($passed_array[0] != 1) $freeitem_array[] = $useritem;

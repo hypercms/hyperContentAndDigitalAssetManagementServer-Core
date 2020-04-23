@@ -32,9 +32,9 @@ checkusersession ($user, false);
 </head>
 
 <body>
-  <iframe id="controlFrame" name="controlFrame" scrolling="no" src="<?php echo "control_portal_menu.php?site=".$site; ?>" frameBorder="0" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="controlFrame" name="controlFrame" src="<?php echo "control_portal_menu.php?site=".$site; ?>" frameBorder="0" scrolling="no" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;">
-    <iframe id="mainFrame" name="mainFrame" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> src="empty.php?site=<?php echo $site; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+    <iframe id="mainFrame" name="mainFrame" src="empty.php?site=<?php echo $site; ?>" frameBorder="0" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 </body>
 </html>

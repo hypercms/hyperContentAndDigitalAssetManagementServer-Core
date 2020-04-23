@@ -17,6 +17,7 @@ require ("function/hypercms_api.inc.php");
 
 // input parameters
 $location = getrequest ("location", "locationname");
+$folder = getrequest ("folder", "objectname");
 $page = getrequest ("page", "objectname");
 $view = getrequest ("view", "objectname");
 $screenwidth = getrequest ("width", "numeric", 800);
@@ -50,16 +51,16 @@ if ($location == "" && !empty ($hcms_assetbrowser_location) && !empty ($hcms_ass
 $site = getpublication ($location);
 $cat = getcategory ($site, $location);
 
-// convert location
-$location = deconvertpath ($location, "file");
-$location_esc = convertpath ($site, $location, $cat);
-
 // if folder
 if ($page == ".folder")
 {
-  $location = getlocation ($location);
   $page = getobject ($location);
+  $location = getlocation ($location);
 }
+
+// convert location
+$location = deconvertpath ($location, "file");
+$location_esc = convertpath ($site, $location, $cat);
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -105,7 +106,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     
     $objectview = "
     <div id=\"objectcontainer\" style=\"width:".($screenwidth - 100)."px; height:".($screenheight - 160)."px; border:1px #000000 solid;\">
-      <iframe id=\"objectiframe\" scrolling=\"auto\" src=\"".$url_page."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>
+      <iframe id=\"objectiframe\" src=\"".$url_page."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
       <div style=\"padding:5px 0px 8px 0px; width:100%; text-align:left;\" class=\"hcmsHeadlineTiny\">".$object_info['name']."</div>
     </div>";
   }
@@ -114,7 +115,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   {
     $objectview = "
     <div id=\"objectcontainer\" style=\"width:".($screenwidth - 100)."px; height:".($screenheight - 160)."px; border:1px #000000 solid;\">
-      <iframe id=\"objectiframe\" scrolling=\"auto\" src=\"page_preview.php?location=".url_encode($location_esc)."&page=".url_encode($page)."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe>
+      <iframe id=\"objectiframe\" src=\"page_preview.php?location=".url_encode($location_esc)."&page=".url_encode($page)."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
       <div style=\"padding:5px 0px 8px 0px; width:100%; text-align:left;\" class=\"hcmsHeadlineTiny\">".$object_info['name']."</div>
     </div>";
   }

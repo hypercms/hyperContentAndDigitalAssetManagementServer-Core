@@ -247,10 +247,10 @@
         // Could be separated into another file
         CKEDITOR.dialog.add( 'hcms_video_dialog', function ( editor ) {
           return {
-            title : editor.lang.hcms_video.title,
-            minWidth : 420,
-            minHeight : 310,
-            contents :
+            title: editor.lang.hcms_video.title,
+            minWidth: 420,
+            minHeight: 310,
+            contents:
             [{
               // General Tab
               id : 'gen',
@@ -258,9 +258,9 @@
               elements :
               [{
                 // Videolink and Select Button
-                type : 'hbox',
-                align : 'left',
-                children : 
+                type: 'hbox',
+                align: 'left',
+                children: 
                 [{
                   // Video input field
                   type : 'text',
@@ -278,11 +278,12 @@
                 {
                   // Select Button
                   type : 'button',
-                  id : 'videobrowser',
-                  label : editor.lang.hcms_video.tab.gen.video.browser,
-                  filebrowser : 
+                  id: 'videobrowser',
+                  style: "display:inline-block;margin-top:22px;",
+                  label: editor.lang.hcms_video.tab.gen.video.browser,
+                  filebrowser: 
                   {
-                    action : 'Browse',
+                    action: 'Browse',
                     url: editor.config.filebrowserVideoBrowseUrl,
                     onSelect: function( fileURL, info) {
                       if(info.split)
@@ -303,10 +304,7 @@
 
                       return false;
                     }
-                  },
-                  // v-align with the 'src' field.
-                  // TODO: We need something better than a fixed size here.
-                  style : 'display:inline-block;margin-top:12px;'
+                  }
                 }]
               }, {
                 // Height and Width
@@ -362,6 +360,7 @@
                   // Select Button
                   type : 'button',
                   id : 'posterbrowser',
+                  style: "display:inline-block;margin-top:22px;",
                   label : editor.lang.hcms_video.tab.gen.poster.browser,
                   filebrowser : 
                   {
@@ -374,10 +373,7 @@
 
                       return false;
                     }
-                  },
-                  // v-align with the 'src' field.
-                  // TODO: We need something better than a fixed size here.
-                  style : 'display:inline-block;margin-top:12px;'
+                  }
                 }]
               }]
             }, {

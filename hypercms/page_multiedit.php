@@ -1223,7 +1223,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
   function openerReload ()
   {
     // reload main frame
-    if (opener != null && eval (opener.parent.frames['mainFrame']))
+    if (opener && opener.parent.frames['mainFrame'])
     {
       opener.parent.frames['mainFrame'].location.reload();
     }

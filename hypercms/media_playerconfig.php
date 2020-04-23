@@ -124,7 +124,7 @@ if ($config && is_array ($config))
       $fullscreen = "allowFullScreen=\\\"true\\\" webkitallowfullscreen=\\\"true\\\" mozallowfullscreen=\\\"true\\\"";
     }
     
-    $playercode = "<iframe id=\\\"".$frameid."\\\" style=\\\"width:\" + width + \"px; height:\" + height + \"px; border:0;\\\" frameborder=\\\"0\\\" scrolling=\\\"no\\\" src=\\\"".$url."\" + newurl + \"\\\" ".$fullscreen."></iframe>";
+    $playercode = "<iframe id=\\\"".$frameid."\\\" style=\\\"width:\" + width + \"px; height:\" + height + \"px; border:0; overflow:hidden;\\\" frameborder=\\\"0\\\" src=\\\"".$url."\" + newurl + \"\\\" ".$fullscreen."></iframe>";
   }
   // older versions
   else

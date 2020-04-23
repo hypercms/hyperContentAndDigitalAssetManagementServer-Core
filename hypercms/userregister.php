@@ -181,7 +181,7 @@ video#videoScreen
 <script type="text/javascript">
 function is_mobilebrowser()
 {
-  if (eval (document.forms['userform']) && hcms_mobileBrowser())
+  if (document.forms['userform'] && hcms_mobileBrowser())
   {
     document.forms['userform'].elements['is_mobile'].value = '1';
     return true;

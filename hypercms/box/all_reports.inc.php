@@ -16,7 +16,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
         <select id=\"reportfile\" style=\"width:240px;\">
           <option value=\"".$mgmt_config['url_path_cms']."empty.php\">".getescapedtext ($hcms_lang['select'][$lang])."</option>
   ";
-  
+
   $report_files = getdirectoryfiles ($mgmt_config['abs_path_data']."report/", ".report.dat");
 
   if (is_array ($report_files))
@@ -42,7 +42,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
         </select>
         <img name=\"Button\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_ok.png\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" onClick=\"document.getElementById('report').src=document.getElementById('reportfile').value;\" />   
       </div>
-      <div style=\"float:right;\"><img class=\"hcmsButton\" style=\"width:43px; height:22px; margin:6px;\" onClick=\"hcms_minMaxLayer('reportviewer');\" src=\"".getthemelocation()."img/button_plusminus_light.png\" alt=\"+/-\" title=\"+/-\" /></div>
+      <div style=\"float:right;\"><img class=\"hcmsButtonTiny\" style=\"width:43px; height:22px; margin:6px;\" onClick=\"hcms_minMaxLayer('reportviewer');\" src=\"".getthemelocation()."img/button_plusminus_light.png\" alt=\"+/-\" title=\"+/-\" /></div>
     </div>
     <div style=\"width:100%; height:calc(100% - 42px);\">
       <iframe id=\"report\" src=\"".$mgmt_config['url_path_cms']."empty.php\" style=\"width:100%; height:100%; border:1px solid #000000;\"></iframe>

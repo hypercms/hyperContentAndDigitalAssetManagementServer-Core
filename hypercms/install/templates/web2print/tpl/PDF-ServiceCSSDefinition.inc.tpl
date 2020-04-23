@@ -8,21 +8,23 @@
 <content><![CDATA[[hyperCMS:scriptbegin
 $css = "
 <style>
-	.body
-	{
-	 font-family:verdana,geneva,sans-serif;
-	 font-size: 10px;
-	}
-	h1
-	{
-		font-family:verdana,geneva,sans-serif;
-		font-size: 16px;
-	}
-	h2
-	{
-		font-family:verdana,geneva,sans-serif;
-		font-size: 12px;
-	}
+.body
+{
+  font-family:verdana,geneva,sans-serif;
+  font-size: 10px;
+}
+
+h1
+{
+  font-family:verdana,geneva,sans-serif;
+  font-size: 16px;
+}
+
+h2
+{
+  font-family:verdana,geneva,sans-serif;
+  font-size: 12px;
+}
 </style>
 ";
 scriptend]]]></content>

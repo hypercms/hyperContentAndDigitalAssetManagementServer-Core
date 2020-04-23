@@ -240,7 +240,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
       $listview .= "
             <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
               <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
-                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">&nbsp; 
+                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">
                   <a data-objectpath=\"".$object_array['login'][$key]."\" data-href=\"javascript:void(0);\">
                     <img src=\"".getthemelocation()."img/user.png\" class=\"hcmsIconList\" /> ".$object_array['login'][$key]."&nbsp;
                   </a>
@@ -378,7 +378,7 @@ function initalize ()
 </div>
 
 <!-- Table Header -->
-<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; width:100%; z-index:1; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:32px; width:100%; z-index:1; visibility:visible;">
   <table id="objectlist_head" cols="5" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
@@ -401,7 +401,7 @@ function initalize ()
     </tr>
   </table>
   
-  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:30px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:32px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
   <?php
   echo $listview;
@@ -419,7 +419,7 @@ if (empty ($mgmt_config['explorer_paging']) && $objects_total >= $end)
 ?>
 <!-- status bar incl. more button -->
 <div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['users'][$lang]); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <?php
@@ -433,7 +433,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 ?>
 <!-- status bar incl. previous and next buttons -->
 <div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['users'][$lang]); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
@@ -444,11 +444,12 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 // status bar without buttons
 else
 {
-  $next_start = $objects_counted + 1;
+  if ($objects_counted > 0) $next_start = $objects_counted + 1;
+  else $next_start = 0;
 ?>
 <!-- status bar -->
 <div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
-  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['users'][$lang]); ?></div>
 </div>
 <?php
 }

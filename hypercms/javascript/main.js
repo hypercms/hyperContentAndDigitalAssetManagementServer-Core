@@ -149,7 +149,7 @@ function hcms_convertGet2Post (link)
   return false;
 }
 
-// ----------------------------- standard AJAX request --------------------------------
+// ----------------------------- standard async AJAX request --------------------------------
 
 function hcms_ajaxService (url)
 {
@@ -165,6 +165,8 @@ function hcms_ajaxService (url)
   {
     xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
   }
+
+  xmlhttp.open('GET', url, true);
   
   xmlhttp.onreadystatechange = function()
   {
@@ -172,9 +174,16 @@ function hcms_ajaxService (url)
     {
       return xmlhttp.responseText;
     }
+    else
+    {
+      console.error (xmlhttp.statusText);
+    }
   }
 
-  xmlhttp.open('GET', url, true);
+  xmlhttp.onerror = function (e) {
+    console.error (xmlhttp.statusText);
+  };
+
   xmlhttp.send();
 }
 
@@ -258,6 +267,9 @@ function hcms_translateText (sourceText, sourceLang, targetLang)
     var translatedText = "";
     
     if (sourceLang == "") sourceLang = 'auto';
+
+    // wait
+    hcms_sleep (300);
     
     // remove html tags
     sourceText = hcms_stripTags (sourceText);
@@ -344,6 +356,16 @@ function hcms_translateTextField (textarea_id, sourcelang_id, targetlang_id)
 }
 
 // ---------------------------------------- standard functions ---------------------------------------
+
+function hcms_sleep (milliseconds)
+{
+  var start = new Date().getTime();
+
+  for (var i = 0; i < 1e7; i++)
+  {
+    if ((new Date().getTime() - start) > milliseconds) break;
+  }
+}
 
 function hcms_getImageSize (imgSrc)
 {
@@ -534,16 +556,16 @@ function hcms_minMaxLayer (id)
 
   if (element)
   {
-    // if max
+    // minimize if max
     if (element.style.width == '90%')
     {
-      element.style.cssText = hcms_style + ' transition:width .5s;';
+      element.style.cssText = hcms_style + ' transition:width 0.3s;';
     }
-    // if min
+    // maximize if min
     else
     {
       hcms_style = element.style.cssText;
-      element.style.cssText = 'position:fixed; z-index:9999; width:90%; height:90%; top:50%; left:50%; transform:translate(-50%, -50%); transition:width 1s;';
+      element.style.cssText = 'position:fixed; z-index:9999; width:90%; height:90%; top:50%; left:50%; transform:translate(-50%, -50%); transition:width 0.3s;';
     }
   }
 }
@@ -594,7 +616,7 @@ function hcms_openChat ()
 
   if (chatsidebar)
   {
-    chatsidebar.style.transition = "1s";
+    chatsidebar.style.transition = "0.3s";
     if (chatsidebar.style.right == "0px") chatsidebar.style.right = "-320px";
     else chatsidebar.style.right = "0px";
   }
@@ -887,9 +909,63 @@ function hcms_selectAllOptions (select)
 
 // ----------------------------------------  drag layer ---------------------------------------
 
-// Activates dragging of moveelem when elem is dragged. Also disables any default behaviour on elem.
-function hcms_dragLayers (elem, moveelem)
+function hcms_dragLayer (elem, connection_id)
 {
+  connection_id = (typeof connection_id !== 'undefined') ? connection_id : '';
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+  // move the DIV from anywhere inside the DIV
+  elem.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e)
+  {
+    e = e || window.event;
+    e.preventDefault();
+
+    // get the mouse cursor position at startup
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+
+    // call a function whenever the cursor moves
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e)
+  {
+    e = e || window.event;
+    e.preventDefault();
+
+    // calculate the new cursor position
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+
+    // set the element's new position:
+    elem.style.top = (elem.offsetTop - pos2) + "px";
+    elem.style.left = (elem.offsetLeft - pos1) + "px";
+
+    // redraw connections based on the affected connection id
+    if (connection_id != '' && typeof hcms_connections_repaintConnections === 'function')
+    {
+      hcms_connections_repaintConnections (connection_id);
+    }
+  }
+
+  function closeDragElement()
+  {
+    // stop moving when mouse button is released
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+// Activates dragging of moveelem when elem is dragged and updates all connections that include the connection id (in from or to, connection id)
+function hcms_dragLayers (elem, moveelem, connection_id)
+{
+  connection_id = (typeof connection_id !== 'undefined') ? connection_id : '';
+
   // Setting up needed variables
   document.hcms_move = {};
   elem.hcms_move = {}
@@ -925,8 +1001,14 @@ function hcms_dragLayers (elem, moveelem)
       var event = e || window.event;
 
       // Moving the element to the correct position
-      document.hcms_move.elem.style.left = (event.clientX - document.hcms_move.diffx)+'px';
-      document.hcms_move.elem.style.top = (event.clientY - document.hcms_move.diffy)+'px';
+      document.hcms_move.elem.style.left = (event.clientX - document.hcms_move.diffx) + 'px';
+      document.hcms_move.elem.style.top = (event.clientY - document.hcms_move.diffy) + 'px';
+
+      // redraw connections based on the affected connection id
+      if (connection_id != '' && typeof hcms_connections_repaintConnections === 'function')
+      {
+        hcms_connections_repaintConnections (connection_id);
+      }
     }
 
     // Clear everything when mouse is released
@@ -942,6 +1024,8 @@ function hcms_dragLayers (elem, moveelem)
     }
   }
 }
+
+// ----------------------------------------  show/hide layer ---------------------------------------
 
 function hcms_showHideLayers () 
 {

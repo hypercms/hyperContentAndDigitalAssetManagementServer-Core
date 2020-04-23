@@ -93,29 +93,30 @@ if (!empty ($mediafile) && $mediafile != "Null_media.png")
   // show media
   $show = showmedia ($mediafile, $object_info['name'], "preview_no_rendering", "", 288);
 
-  // extract width and height from content
+  // try to extract width and height from content
   if ($show != "")
   {
     $mediawidth = getfilename ($show, "width");
     $mediaheight = getfilename ($show, "height");
   }
-  
-  // define with and height of media
+
+  // fallback: try to extract width and height from source file
   if (empty ($mediawidth) || empty ($mediaheight))
   {
-    // get file information
     $media_size = @getimagesize ($mediadir.$mediafile);
     
-    if ($media_size == false || $media_size[3] == "")
+    if (!empty ($media_size[0]) && !empty ($media_size[1]))
     {
-      $mediawidth = 0;
-      $mediaheight = 0;
+      $mediawidth = $media_size[0];
+      $mediaheight = $media_size[1];
     }
-    else
-    {
-      $mediawidth = round ($media_size[0] * $scaling, 0);
-      $mediaheight = round ($media_size[1] * $scaling, 0);
-    }
+  }
+
+  // scale width and height according to the dpi setting
+  if (!empty ($mediawidth) && !empty ($mediaheight))
+  {
+    $mediawidth = round (($mediawidth * $scaling), 0);
+    $mediaheight = round (($mediaheight * $scaling), 0);
   }
 }
 ?>
@@ -206,6 +207,7 @@ if (!empty ($file_info['ext']))
     <input type=\"hidden\" name=\"mediawidth\" value=\"".$mediawidth."\" />
     <input type=\"hidden\" name=\"mediaheight\" value=\"".$mediaheight."\" />
     <input type=\"hidden\" name=\"mediatype\" value=\"".$mediatype."\" />
+    <input type=\"hidden\" name=\"scaling\" value=\"".$scaling."\" />
   
     <table class=\"hcmsTableStandard\">
       <tr>
@@ -236,7 +238,6 @@ if (!empty ($file_info['ext']))
   }
   ?>
 </div>
-
-<?php include_once ($mgmt_config['abs_path_cms']."include/footer.inc.php"); ?>
+  
 </body>
 </html>

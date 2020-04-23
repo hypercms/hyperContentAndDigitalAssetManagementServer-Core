@@ -81,7 +81,7 @@ if ($actual != "" && checktoken ($token, $user))
   if ($page != $rollbackversion['object'])
   {
     $page = $rollbackversion['object'];
-    $add_onload = "if (eval (parent.frames['controlFrame'])) parent.frames['controlFrame'].location='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
+    $add_onload = "if (parent.frames['controlFrame']) parent.frames['controlFrame'].location='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
   }
 }
 
@@ -216,8 +216,7 @@ function toggledelete (source)
     {
       reset ($files_v);
 
-      $color = false;
-      $i = 0;
+      $rowcolor = "";
 
       foreach ($files_v as $date_v => $file_v)
       {        
@@ -228,16 +227,8 @@ function toggledelete (source)
         else $pagename_v = $pagename;
 
         // define row color
-        if ($color == true)
-        {
-          $rowcolor = "hcmsRowData1";
-          $color = false;
-        }
-        else
-        {
-          $rowcolor = "hcmsRowData2";
-          $color = true;
-        }
+        if ($rowcolor == "hcmsRowData1") $rowcolor = "hcmsRowData2";
+        else $rowcolor = "hcmsRowData1";
 
         echo "<tr class=\"".$rowcolor."\">
           <td style=\"white-space:nowrap;\">".showdate ($date_v, "Y-m-d H:i:s", $hcms_lang_date[$lang])."</td>
@@ -247,8 +238,6 @@ function toggledelete (source)
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"radio\" name=\"actual\" value=\"".$file_v."\" /></td>
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" class=\"delete\" /></td>
         </tr>";
-
-        $i++;
       }
     }
 

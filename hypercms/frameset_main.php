@@ -110,9 +110,9 @@ function minNavFrame (width)
   {
     width = typeof width !== 'undefined' ? width : 0;
     
-    document.getElementById('navLayer').style.transition = "1s";
+    document.getElementById('navLayer').style.transition = "0.3s";
     document.getElementById('navLayer').style.width = width + 'px';
-    document.getElementById('workplLayer').style.transition = "1s";
+    document.getElementById('workplLayer').style.transition = "0.3s";
     document.getElementById('workplLayer').style.left = offset + 'px';
   }
 }
@@ -125,9 +125,9 @@ function maxNavFrame (width)
   {
     width = typeof width !== 'undefined' ? width : 260;
     
-    document.getElementById('navLayer').style.transition = "1s";
+    document.getElementById('navLayer').style.transition = "0.3s";
     document.getElementById('navLayer').style.width = width + 'px';
-    document.getElementById('workplLayer').style.transition = "1s";
+    document.getElementById('workplLayer').style.transition = "0.3s";
     document.getElementById('workplLayer').style.left = (width + offset) + 'px';
   }
 }
@@ -164,6 +164,96 @@ function setwindows ()
   localStorage.setItem ('user_newwindow', <?php if (!empty ($mgmt_config['user_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
 }
 
+var uploadwindows = 1;
+
+function openUpload (site, cat, location, id)
+{
+  if (site != "" && cat != "" && location != "" && id != "")
+  {
+    // upload layer for location exists
+    if (document.getElementById(id))
+    {
+      maxUpload (id);
+    }
+    // create new upload layer for location
+    else if (uploadwindows <= 5)
+    {
+      var div = document.createElement("div");
+      div.id = id;
+      div.className = "hcmsContextMenu";
+      div.style.cssText = "position:fixed; right:20px; bottom:0px; width:260px; height:36px; transition:height 0.3s;";
+      div.innerHTML = '<div class="hcmsWorkplaceGeneric" style="position:absolute; right:0px; top:0px; width:106px; height:35px; margin:0; padding:2px 0px 1px 2px; z-index:91;">' + 
+      '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" onclick="maxUpload(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" />' + 
+      '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" onclick="minUpload(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" />' + 
+      '  <img src="<?php echo getthemelocation(); ?>img/button_close.png" name="close' + id + '" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage(\'close' + id + '\',\'\',\'<?php echo getthemelocation(); ?>img/button_close_over.png\',1);" onClick="closeUpload(\'' + id + '\');" />' + 
+      '</div>' + 
+      '<div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> overflow:hidden; position:absolute; width:100%; height:100%; z-index:90;">' + 
+      ' <iframe id="uploadsFrame" src="popup_upload_html.php?uploadmode=multi&site=' + encodeURIComponent(site) + '&cat=' + encodeURIComponent(cat) + '&location=' + encodeURIComponent(location) + '" frameborder="0" style="width:100%; height:100%; margin:0; padding:0; border:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;" ?>" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>' + 
+      '</div>';
+      document.getElementById('uploadsLayer').appendChild(div);
+      maxUpload (id);
+      uploadwindows++;
+    }
+    // max upload layers reached
+    else
+    {
+      alert ('<?php echo getescapedtext ($hcms_lang['uploads'][$lang]); ?>: max 5');
+    }
+  }
+}
+
+function minUpload (id)
+{
+  if (id != "" && document.getElementById(id))
+  {
+    var div = document.getElementById(id);
+
+    if (div.style.height != "36px")
+    {
+      // minimize upload layer
+      div.style.cssText = "position:fixed; right:20px; bottom:0px; width:640px; height:36px; transition:height 0.3s;";
+
+      setTimeout(function() {
+        div.style.cssText = "position:relative; width:260px; height:36px; transition:all 0.2s; float:right; z-index:80; overflow:hidden;";
+      }, 200);
+    }
+  }
+}
+
+function maxUpload (id)
+{
+  if (id != "" && document.getElementById(id))
+  {
+    var div = document.getElementById(id);
+
+    // maximize upload layer
+    if (div.style.height == "36px") div.style.cssText = "position:fixed; right:20px; bottom:0px; width:640px; height:600px; transition:height 0.3s; z-index:90;";
+    // full screen
+    else div.style.cssText = "position:fixed; left:0; right:0; bottom:0; height:100%; transition:height 0.3s; z-index:90;";
+  }
+}
+
+function closeUpload (id)
+{
+  // verify if objects beeing edited in upload layer
+  var warning = document.getElementById("uploadsFrame").contentWindow.showwarning();
+
+  if (warning != "") alert ("<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>");
+
+  // close upload layer
+  if (document.getElementById(id) && warning == "")
+  {
+    var div = document.getElementById(id); 
+    div.parentNode.removeChild(div);
+    uploadwindows--;
+  }
+}
+
+function showwarning ()
+{
+  return "<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-all-events'][$lang]); ?>";
+}
+
 $(document).ready(function()
 {
   setviewport();
@@ -185,15 +275,15 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 </script>
 </head>
 
-<body>
+<body onbeforeunload="return showwarning();">
 
 <!-- popup for preview/live-view and forms (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
-<div id="objectviewMainLayer" style="display:none;">
+<div id="objectviewMainLayer" style="display:none; z-index:20;">
   <div style="position:fixed; right:2px; top:2px; z-index:91;">
     <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closeMainView();" />
   </div>
-  <div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:90;">
-   <iframe id="objectviewMain" name="objectviewMain" src="" frameBorder="0" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> style="width:100%; height:100%; margin:0; padding:0; border:0;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+  <div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:90;">
+   <iframe id="objectviewMain" name="objectviewMain" src="" frameborder="0" style="width:100%; height:100%; margin:0; padding:0; border:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;" ?>" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
   </div>
 </div>
 
@@ -230,7 +320,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
 <img src="<?php echo getthemelocation(); ?>img/button_info.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="position:absolute; left:0; bottom:0; padding:2px; margin:32px 0px;" onclick="hcms_showInfo ('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
   
-<div id="userInfoLayer" class="hcmsMessage" style="position:absolute; bottom:10px; left:32px; display:none; z-index:999; padding:4px; width:200px; min-height:80px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
+<div id="userInfoLayer" class="hcmsMessage" style="position:absolute; bottom:10px; left:32px; display:none; z-index:100; padding:4px; width:200px; min-height:80px; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
   <img src="<?php echo getthemelocation()."img/user.png"; ?>" class="hcmsIconList" /> <span class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></span><br/>
   <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php echo getsession ('hcms_user'); ?></span><br/><br/>
 
@@ -243,51 +333,54 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 <?php if (linking_valid() == true) { ?>
 <!-- workplace -->
 <div id="workplLayer" style="position:fixed; top:0; bottom:0; left:36px; right:0; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php?action=linking" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+  <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?action=linking" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
 </div>
 <?php } elseif (!empty ($hcms_assetbrowser)) {
   // location set by assetbrowser
   if (!empty ($hcms_assetbrowser_location)) { ?>
 <!-- explorer -->
 <div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;">
-  <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="navFrame" name="navFrame" src="explorer.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
 </div>
 
 <!-- workplace -->
 <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php?location=<?php echo url_encode ($hcms_assetbrowser_location); ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+  <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?location=<?php echo url_encode ($hcms_assetbrowser_location); ?>" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
 </div>
 <?php } 
   // no location set by assetbrowser
   else { ?>
 <!-- explorer -->
 <div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;">
-  <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="navFrame" name="navFrame" src="explorer.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
 </div>
 
 <!-- workplace -->
 <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="empty.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="workplFrame" name="workplFrame" src="empty.php" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
 </div>
 <?php }
 } else { ?>
 <!-- explorer -->
 <div id="navLayer" style="position:fixed; top:0; bottom:0; left:36px; width:260px; margin:0; padding:0;">
-  <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php?refresh=1" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="navFrame" name="navFrame" src="explorer.php?refresh=1" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
 </div>
 
 <!-- workplace -->
 <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:296px; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="home.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+  <iframe id="workplFrame" name="workplFrame" src="home.php" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
 </div>
 <?php } ?>
 
 <!-- chat sidebar -->
 <?php if (!empty ($mgmt_config['chat']) && empty ($hcms_assetbrowser)) { ?>
 <div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:0; right:-320px; bottom:0; width:300px; z-index:100;">
-  <iframe id="chatFrame" scrolling="auto" src="chat.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="chatFrame" src="chat.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
 </div>
 <?php } ?>
+
+<!-- uploads -->
+<div id="uploadsLayer" style="position:fixed; bottom:0; right:0; max-width:100%; max-height:36px; margin:0; padding:0; z-index:10;"></div>
 
 </body>
 </html>

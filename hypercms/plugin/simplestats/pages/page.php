@@ -106,9 +106,11 @@ ob_end_flush();
   
   <div style="float:left; margin:10px;">
     <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['top-downloaded-files'][$lang]); ?></p>
-    <table border="0" cellspacing="2" cellpadding="2" style="min-width:400px;">
+    <table class="hcmsTableStandard" style="min-width:400px;">
    	  <tr>
-        <td class="hcmsHeadline" style="text-align:left; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['hits'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['traffic-in-mb'][$lang]); ?></td>
+        <td class="hcmsHeadline hcmsRowHead1" style="text-align:left; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td>
+        <td class="hcmsHeadline hcmsRowHead1" style="text-align:right;"><?php echo getescapedtext ($hcms_lang['hits'][$lang]); ?></td>
+        <td class="hcmsHeadline hcmsRowHead1" style="text-align:right;"><?php echo getescapedtext ($hcms_lang['traffic-in-mb'][$lang]); ?></td>
       </tr>
       <?php
       $show = "";
@@ -126,7 +128,9 @@ ob_end_flush();
         $sql = "SELECT dailystat.id, object.objectpath, SUM(dailystat.count) count, SUM(media.filesize) filesize FROM dailystat, object, media WHERE dailystat.activity='download' AND dailystat.id=object.id AND dailystat.id=media.id GROUP BY dailystat.id ORDER BY count DESC LIMIT 0,10";
       
         if ($result = $mysqli->query ($sql))
-        { 
+        {
+          $rowcolor = "";
+
           while ($row = $result->fetch_assoc())
           {
             $row['objectpath'] = str_replace ("*", "%", $row['objectpath']);
@@ -142,9 +146,13 @@ ob_end_flush();
             
             if ($setlocalpermission['root']) $link = "<a href=\"#\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">".$info['name']."</a>";
             else $link = $info['name'];
+
+            // define row color
+            if ($rowcolor == "hcmsRowData1") $rowcolor = "hcmsRowData2";
+            else $rowcolor = "hcmsRowData1";
                
             $show .= "
-        <tr class=\"hcmsButtonTiny hcmsRowData1\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
+        <tr class=\"hcmsButtonTiny ".$rowcolor."\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
           <td><img src=\"".getthemelocation()."img/".$info['icon']."\" class=\"hcmsIconList\" /> ".$info['name']."</td>
           <td style=\"text-align:right;\">".$row['count']."</td>
           <td style=\"text-align:right;\">".number_format ($row['filesize'], 0, ",", ".")."</td>
@@ -152,7 +160,7 @@ ob_end_flush();
           }
         }
         else $show .= "
-        <tr class=\"hcmsRowData1\">
+        <tr class=\"".$rowcolor."\">
           <td colspan=\"3\" class=\"hcmsHeadline\">DB error (".$mysqli->errno."): ".$mysqli->error."</td>
         </tr>";
         
@@ -169,9 +177,9 @@ ob_end_flush();
     <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['top-uploaded-files'][$lang]); ?></p>
     <table class="hcmsTableStandard" style="min-width:400px;">
    	  <tr>
-        <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td>
-        <td class="hcmsHeadline" style="text-align:right;"><?php echo getescapedtext ($hcms_lang['hits'][$lang]); ?></td>
-        <td class="hcmsHeadline" style="text-align:right;"><?php echo getescapedtext ($hcms_lang['traffic-in-mb'][$lang]); ?></td>
+        <td class="hcmsHeadline hcmsRowHead1"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td>
+        <td class="hcmsHeadline hcmsRowHead1" style="text-align:right;"><?php echo getescapedtext ($hcms_lang['hits'][$lang]); ?></td>
+        <td class="hcmsHeadline hcmsRowHead1" style="text-align:right;"><?php echo getescapedtext ($hcms_lang['traffic-in-mb'][$lang]); ?></td>
       </tr>
       <?php
       $show = "";
@@ -189,7 +197,9 @@ ob_end_flush();
         $sql = "SELECT dailystat.id, object.objectpath, SUM(dailystat.count) count, SUM(media.filesize) filesize FROM dailystat, object, media WHERE dailystat.activity='upload' AND dailystat.id=object.id AND dailystat.id=media.id GROUP BY dailystat.id ORDER BY count DESC LIMIT 0,10";
       
         if ($result = $mysqli->query ($sql))
-        { 
+        {
+          $rowcolor = "";
+          
           while ($row = $result->fetch_assoc())
           {
             $row['objectpath'] = str_replace ("*", "%", $row['objectpath']);
@@ -203,8 +213,12 @@ ob_end_flush();
             $ownergroup = accesspermission ($site, $location_esc, $cat);
             $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
             
+            // define row color
+            if ($rowcolor == "hcmsRowData1") $rowcolor = "hcmsRowData2";
+            else $rowcolor = "hcmsRowData1";
+
             $show .= "
-        <tr class=\"hcmsButtonTiny hcmsRowData1\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
+        <tr class=\"hcmsButtonTiny ".$rowcolor."\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
           <td><img src=\"".getthemelocation()."img/".$info['icon']."\" class=\"hcmsIconList\" /> ".$info['name']."</td>
           <td style=\"text-align:right;\">".$row['count']."</td>
           <td style=\"text-align:right;\">".number_format ($row['filesize'], 0, ",", ".")."</td>
@@ -212,7 +226,7 @@ ob_end_flush();
           }
         }
         else $show .= "
-        <tr class=\"hcmsRowData1\">
+        <tr class=\"".$rowcolor."\">
           <td colspan=\"3\" class=\"hcmsHeadline\">DB error (".$mysqli->errno."): ".$mysqli->error."</td>
         </tr>";
         

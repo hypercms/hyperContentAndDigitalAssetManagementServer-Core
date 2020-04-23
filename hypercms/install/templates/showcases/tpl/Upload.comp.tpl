@@ -69,7 +69,7 @@ scriptend]
 
   if ($compinfo['published'])
   {
-    $embed_code = "<iframe id='frame_".$uniqid."' src='".$mgmt_config['url_path_cms']."?wl=".$hash."' scrolling='no' frameborder=0 border=0 width='".$uploadWidth."' height='".$uploadHeight."'></iframe>";
+    $embed_code = "<iframe id='frame_".$uniqid."' src='".$mgmt_config['url_path_cms']."?wl=".$hash."' frameborder='0' style='border:0; width:".$uploadWidth."px; height:".$uploadHeight."px; overflow:hidden;'></iframe>";
   }
   else
   {
@@ -646,7 +646,7 @@ function openEditWindow (objectpath)
     var location = objectpath.substring(0, index);
     var newpage = objectpath.substr(index);
     
-    iframe.src='page_view.php?rlreload=yes&location=' + location + '&page=' + newpage;
+    iframe.src='page_view.php?rlreload=yes&location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(newpage);
     window.style.display='inline';
     
     // remove first array element
@@ -670,7 +670,7 @@ function nextEditWindow ()
     var newpage = objectpath.substr(index);
 
     // load next object
-    iframe.src='page_view.php?ctrlreload=yes&location=' + location + '&page=' + newpage;
+    iframe.src='page_view.php?ctrlreload=yes&location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(newpage);
     
     if (window.style.display == 'none')
     {
@@ -754,7 +754,7 @@ else $css_iphone = "";
     <div style="padding:4px;"><b><?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?></b></div>
   </div>
   <div class="hcmsWorkplaceGeneric" style="position:fixed; top:28px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1001; <?php echo $css_iphone; ?>">
-    <iframe id="editiframe" scrolling="auto" src="" style="width:100%; height:95%; border-bottom:1px solid #000000; margin:0; padding:0;" frameborder="0"></iframe>
+    <iframe id="editiframe" src="" style="width:100%; height:95%; border-bottom:1px solid #000000; margin:0; padding:0; overflow:auto;" frameborder="0"></iframe>
   </div>
 </div>
 

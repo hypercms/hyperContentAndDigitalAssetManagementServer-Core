@@ -44,8 +44,30 @@ if ($ownergroup == false || $setlocalpermission['root'] != 1 || !valid_publicati
 
 // check session of user
 checkusersession ($user, false);
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>hyperCMS</title>
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="theme-color" content="#000000" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<script src="javascript/click.js" type="text/javascript"></script>
+</head>
 
+<body class="hcmsWorkplaceGeneric">
+
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
+
+<?php
 // --------------------------------- logic section ----------------------------------
+
+// flush
+ob_implicit_flush (true);
+ob_end_flush ();
+sleep (1);
 
 // initalize
 $show = "";
@@ -234,9 +256,9 @@ if ($authorized == true)
     else 
     {
       $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
-      $add_onload = "if (eval(opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();
-if (eval(parent.frames['objFrame'])) parent.frames['objFrame'].location.reload();
-if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload();";
+      $add_onload = "if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
+if (opener && parent.frames['objFrame']) parent.frames['objFrame'].location.reload();
+if (opener && parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
       $location = "";
       $page = "";
       $pagename = "";  
@@ -318,37 +340,10 @@ else
 {
   $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang])."</span>";
 }
-?>
-<!DOCTYPE html>
-<html>
-<head>
-<title>hyperCMS</title>
-<meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="theme-color" content="#000000" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="javascript/click.js" type="text/javascript"></script>
-<script type="text/javascript">
-function popupfocus ()
-{
-  self.focus();
-  setTimeout('popupfocus()', 500);
-}
 
-popupfocus ();
-</script>
-</head>
-
-<body class="hcmsWorkplaceGeneric">
-
-<?php
 // show loading screen for unzip 
 if ($action == "unzip" && $authorized == true)
 {
-?>
-<!-- load screen -->
-<div id="loadingLayer" class="hcmsLoadScreen" style="display:inline;"></div>
-<?php
   // load object file and get container and media file
   $objectdata = loadfile ($location, $page);
   $mediafile = getfilename ($objectdata, "media");    
@@ -375,21 +370,21 @@ if ($action == "unzip" && $authorized == true)
   if (!empty ($result_unzip))
   {
     $result['result'] = true;
-    $add_onload = "document.getElementById('loadingLayer').style.display='none'; if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['mainFrame'].location.reload();}\n";
+    $add_onload = "document.getElementById('hcmsLoadScreen').style.display='none'; if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();\n";
     $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['file-extracted-succesfully'][$lang])."</span><br />\n";
   }
   else
   {
     $result['result'] = false;
-    $add_onload = "document.getElementById('loadingLayer').style.display='none';\n";
+    $add_onload = "document.getElementById('hcmsLoadScreen').style.display='none';\n";
     $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['file-could-not-be-extracted'][$lang])."</span><br />\n";
   }
 }
 ?>
 
-<?php
-echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" />&nbsp;".getescapedtext ($hcms_lang['information'][$lang]), $lang);
-?>
+<!-- top bar -->
+<?php echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" />&nbsp;".getescapedtext ($hcms_lang['information'][$lang]), $lang); ?>
+
 <div class="hcmsWorkplaceFrame">
   <table class="hcmsTableNarrow" style="width:100%; height:140px;">
     <tr>
@@ -399,12 +394,25 @@ echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsBu
 </div>
 
 <script type="text/javascript">
+// load screen
+if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'none';
+
+// focus
+function popupfocus ()
+{
+  self.focus();
+  setTimeout('popupfocus()', 500);
+}
+
+popupfocus ();
+
 <?php
 echo $add_onload;
 
 if (!empty ($result['result']))
 {
   echo "
+// close window
 function popupclose ()
 {
   self.close();

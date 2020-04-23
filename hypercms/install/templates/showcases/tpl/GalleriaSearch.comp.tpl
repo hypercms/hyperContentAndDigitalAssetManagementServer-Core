@@ -98,7 +98,7 @@ if ($view == "cmsview")
 
   if ($compinfo['published'])
   {
-    $embed_code = "<iframe id='frame_$uniqid' src='%url_location%/%object%' scrolling='no' frameborder=0 border=0 width='".$galleriaWidth."' height='".$galleriaHeight."'></iframe>";
+    $embed_code = "<iframe id='frame_$uniqid' src='%url_location%/%object%' frameborder='0' style='border:0; width:".$galleriaWidth."px; height:".$galleriaHeight."px; overflow:hidden;'></iframe>";
   }
   else
   {
@@ -115,7 +115,7 @@ if ($view == "cmsview")
       <hr/>
       <strong>Online view</strong>
       <br />
-      <?php if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='%url_location%/%object%' scrolling='no' frameborder=0 border=0 width='".$galleriaWidth."' height='".$galleriaHeight."' style='border:1px solid grey; background-color:#000000;'></iframe>"; ?>
+      <?php if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='%url_location%/%object%' frameborder='0' style='border:1px solid grey; background-color:#000000; width:".$galleriaWidth."px; height:".$galleriaHeight."px; overflow:hidden;'></iframe>"; ?>
     </div>
   </body>
 </html>

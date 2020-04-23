@@ -69,15 +69,10 @@ function switchDAM ()
   if (document.getElementById('dam').checked == true)
   {
     document.getElementById('url_path_page').disabled = true;
-    document.getElementById('url_path_page').classList.add("hcmsPriorityMedium");
     document.getElementById('abs_path_page').disabled = true;
-    document.getElementById('abs_path_page').classList.add("hcmsPriorityMedium");
     document.getElementById('url_publ_page').disabled = true;
-    document.getElementById('url_publ_page').classList.add("hcmsPriorityMedium");
     document.getElementById('abs_publ_page').disabled = true;
-    document.getElementById('abs_publ_page').classList.add("hcmsPriorityMedium");
     document.getElementById('abs_publ_app').disabled = true;
-    document.getElementById('abs_publ_app').classList.add("hcmsPriorityMedium");
     document.getElementById('linkengine').disabled = true;
     document.getElementById('crypt_content').disabled = false;
     document.getElementById('upload_pages').disabled = true;
@@ -88,15 +83,10 @@ function switchDAM ()
   else
   {
     document.getElementById('url_path_page').disabled = false;
-    document.getElementById('url_path_page').classList.remove("hcmsPriorityMedium");
     document.getElementById('abs_path_page').disabled = false;
-    document.getElementById('abs_path_page').classList.remove("hcmsPriorityMedium");
     document.getElementById('url_publ_page').disabled = false;
-    document.getElementById('url_publ_page').classList.remove("hcmsPriorityMedium");
     document.getElementById('abs_publ_page').disabled = false;
-    document.getElementById('abs_publ_page').classList.remove("hcmsPriorityMedium");
     document.getElementById('abs_publ_app').disabled = false;
-    document.getElementById('abs_publ_app').classList.remove("hcmsPriorityMedium");
     document.getElementById('linkengine').disabled = false;
     document.getElementById('crypt_content').disabled = true;
     document.getElementById('upload_pages').disabled = false;

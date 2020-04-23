@@ -244,17 +244,14 @@ function goToURL()
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <?php
-      // define title
-      echo "<td><b>".getescapedtext ($hcms_lang['template-media'][$lang])."</b></td>\n";
-      ?>
+      <td class="hcmsHeadline"> <?php echo getescapedtext ($site." &gt; ".$hcms_lang['template-media'][$lang]); ?> </td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['template-media'][$lang]); ?></span>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$hcms_lang['template-media'][$lang]); ?></span>
   <?php } ?>
 </div>
 

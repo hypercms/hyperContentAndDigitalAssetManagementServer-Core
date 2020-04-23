@@ -1,4 +1,4 @@
-﻿CKEDITOR.plugins.setLang('youtube', 'nl', {
+CKEDITOR.plugins.setLang('youtube', 'nl', {
 	button : 'Youtube video insluiten',
 	title : 'Youtube video insluiten',
 	txtEmbed : 'Plak embedcode hier',
@@ -10,6 +10,7 @@
 	chkPrivacy : 'Privacy-enhanced mode inschakelen',
 	chkOlderCode : 'Gebruik oude embedcode',
 	chkAutoplay: 'Automatisch starten',
+	chkControls: 'Afspeelbediening weergeven',
 	noCode : 'U moet een embedcode of url ingeven',
 	invalidEmbed : 'De ingegeven embedcode lijkt niet geldig',
 	invalidUrl : 'De ingegeven url lijkt niet geldig',
@@ -19,5 +20,6 @@
 	noHeight : 'U moet een hoogte ingeven',
 	invalidHeight : 'U moet een geldige starttijd ingeven',
 	invalidTime : 'Inform a valid start time',
-	txtResponsive : 'Responsive video'
+	txtResponsive : 'Responsive video',
+	txtNoEmbed : 'Alleen video afbeelding en link'
 });

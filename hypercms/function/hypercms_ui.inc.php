@@ -316,7 +316,7 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
   <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
     <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
-        <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:0; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp;".$show."&nbsp;</td>".
+        <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:0px 4px; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".$show."</td>".
         $individual_button_code.$close_button_code.
       "</tr>
     </table>
@@ -362,7 +362,7 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
   <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
     <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
-        <td class=\"hcmsHeadline\" style=\"width:80px; text-align:left; vertical-align:middle; padding:0; margin:0; white-space:nowrap;\">&nbsp;".$show."&nbsp;</td>
+        <td class=\"hcmsHeadline\" style=\"width:80px; text-align:left; vertical-align:middle; padding:0px 4px; margin:0; white-space:nowrap;\">".$show."</td>
         <td style=\"text-align:left; vertical-align:middle; padding:0; margin:0;\">".$menu_button."</td>".
         $close_button.
       "</tr>
@@ -2818,7 +2818,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             $downloads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;">
-                <button class="hcmsButtonBlue" onclick="'.$download_link.'"><img src="'.getthemelocation().'img/button_file_download.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button>
+                <button class="hcmsButtonBlue" style="width:100%;" onclick="'.$download_link.'"><img src="'.getthemelocation().'img/button_file_download.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button>
               </td>';
 
             // Youtube upload (not for portals)
@@ -2828,7 +2828,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {		
               $youtube_uploads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openPopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
+                <button type="button" name="media_youtube" class="hcmsButtonGreen" style="width:100%;" onclick=\'parent.openPopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
               </td>';
             }
           }
@@ -2921,7 +2921,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   {
                     $downloads[$media_extension] = '
                       <td class="hcmsHeadlineTiny" style="text-align:left;">
-                        <button class="hcmsButtonBlue" onclick="'.$download_link.'"><img src="'.getthemelocation().'img/button_file_download.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button>
+                        <button class="hcmsButtonBlue" style="width:100%;" onclick="'.$download_link.'"><img src="'.getthemelocation().'img/button_file_download.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button>
                       </td>'; 
 
                     // Youtube upload (not for portals)
@@ -2931,7 +2931,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                     {	
                       $youtube_uploads[$media_extension] = '
                       <td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                        <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'parent.openPopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
+                        <button type="button" name="media_youtube" class="hcmsButtonGreen" style="width:100%;" onclick=\'parent.openPopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'");\'><img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button>
                       </td>';
                     }
                   }
@@ -3108,7 +3108,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     $result = "<!-- Jquery and Jquery UI Autocomplete -->
 <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.3.1.min.js\" type=\"text/javascript\"></script>
 <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
-<script src=\"javascript/lazysizes/lazysizes.min.js\" type=\"text/javascript\" async=\"\"></script>
+<script src=\"".$mgmt_config['url_path_cms']."javascript/lazysizes/lazysizes.min.js\" type=\"text/javascript\" async=\"\"></script>
 <script type=\"text/javascript\">
 function sendCompOption(newtext, newvalue)
 {
@@ -3574,7 +3574,7 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
           baseHref:					               		'".$publ_config['url_publ_page']."',
           customConfig:             			  	'".$mgmt_config['url_path_cms']."editor/ckeditor_custom/editorf_config.js',
           language:	              						'".$lang."',
-          scayt_sLang:		              			'".$lang."',
+          scayt_sLang:		              			'".getscaytlang ($lang)."',
           height:					              			'".$sizeheight."',
           width:							              	'".$sizewidth."',
           filebrowserImageBrowseUrl:	    		'".$mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&scaling=".url_encode($scalingfactor)."',
@@ -4261,7 +4261,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 baseHref:					               		'".$publ_config['url_publ_page']."',
                 customConfig:             			  	'".$mgmt_config['url_path_cms']."editor/ckeditor_custom/inline_config.js',
                 language:	              						'".$lang."',
-                scayt_sLang:		              			'".$lang."',
+                scayt_sLang:		              			'".getscaytlang ($lang)."',
                 height:					              			'".$sizeheight."',
                 width:							              	'".$sizewidth."',
                 filebrowserImageBrowseUrl:	    		'".$mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&scaling=".url_encode($scalingfactor)."',
@@ -5964,13 +5964,13 @@ function showworkflowstatus ($site, $location, $page)
         
         echo "
     <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['workflow-status'][$lang])."</p>
-    <table class=\"hcmsTableStandard\" style=\"width:90%;\">\n";
-        echo "
+    <table class=\"hcmsTableStandard\" style=\"width:95%;\">
       <tr>
         <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['member-type'][$lang])."</td>
-        <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['member'][$lang])."</td>
-        <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['status'][$lang])."</td>
-        <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['date'][$lang])."</td>
+        <td class=\"hcmsHeadline\" style=\"width:25%;\">".getescapedtext ($hcms_lang['task'][$lang])."</td>
+        <td class=\"hcmsHeadline\" style=\"width:15%;\">".getescapedtext ($hcms_lang['member'][$lang])."</td>
+        <td class=\"hcmsHeadline\" style=\"width:15%;\">".getescapedtext ($hcms_lang['status'][$lang])."</td>
+        <td class=\"hcmsHeadline\" style=\"width:15%;\">".getescapedtext ($hcms_lang['date'][$lang])."</td>
       </tr>"; 
         
         for ($stage=$stage_start; $stage<=$stage_max; $stage++)
@@ -5979,41 +5979,51 @@ function showworkflowstatus ($site, $location, $page)
           {
             echo "
       <tr class=\"hcmsRowHead2\">
-        <td colspan=\"4\">".getescapedtext ($hcms_lang['members-on-workflow-stage'][$lang])." ".$stage."</td>
+        <td colspan=\"5\" class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['members-on-workflow-stage'][$lang])." ".$stage."</td>
       </tr>"; 
             
             foreach ($item_array[$stage] as $item)
             {
-              $type_array = getcontent ($item, "<type>"); // unique        
+              $task_array = getcontent ($item, "<task>");
+              if (!empty ($task_array[0])) $task = $task_array[0];
+              else $task = "";
+
+              $type_array = getcontent ($item, "<type>");       
              
               if ($type_array[0] == "user")
               {
                 $type = getescapedtext ($hcms_lang['user'][$lang]);
-                $member_array = getcontent ($item, "<user>"); // unique
+                $member_array = getcontent ($item, "<user>");
               }
               elseif ($type_array[0] == "usergroup")
               {
                 $type = getescapedtext ($hcms_lang['user-group'][$lang]);
-                $member_array = getcontent ($item, "<group>"); // unique
+                $member_array = getcontent ($item, "<group>");
               }
               elseif ($type_array[0] == "script") 
               {
                 $type = getescapedtext ($hcms_lang['robot-script'][$lang]);
                 $member_array[0] = "-";
-              }                      
+              }
               
-              $passed_array = getcontent ($item, "<passed>"); // unique
+              if (empty ($member_array[0])) $member_array[0] = "-";
+              
+              $passed_array = getcontent ($item, "<passed>");
               
               if ($passed_array[0] == 1) $passed = getescapedtext ($hcms_lang['accepted'][$lang]);
               else $passed = getescapedtext ($hcms_lang['pendingrejected'][$lang]);
               
-              $date_array = getcontent ($item, "<date>"); // unique  
+              $date_array = getcontent ($item, "<date>");
+              
+              if (strlen ($date_array[0]) < 6) $class = "hcmsToDo";
+              else $class = "hcmsFinished";
             
               echo "
-        <tr class=\"hcmsRowData1\">
-          <td style=\"width:25%;\">".$type."</td>
-          <td style=\"width:25%;\">".$member_array[0]."</td>
-          <td style=\"width:25%;\">".$passed."</td>
+        <tr class=\"".$class."\">
+          <td>".$type."</td>
+          <td>".$task."</td>
+          <td>".$member_array[0]."</td>
+          <td>".$passed."</td>
           <td>".$date_array[0]."</td>
         </tr>"; 
             }

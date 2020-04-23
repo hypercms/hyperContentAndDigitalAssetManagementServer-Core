@@ -143,14 +143,14 @@ function checkForm_tpl_create()
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <td><b><?php echo getescapedtext ($hcms_lang['portal-templates'][$lang]); ?></b></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($site." &gt; ".$hcms_lang['portal-templates'][$lang]); ?></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['portal-templates'][$lang]); ?></span>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$hcms_lang['portal-templates'][$lang]); ?></span>
   <?php } ?>
 </div>
 

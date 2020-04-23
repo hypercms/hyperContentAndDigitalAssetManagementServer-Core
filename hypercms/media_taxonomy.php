@@ -133,14 +133,15 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && !
 <html>
 <head>
 <title>hyperCMS</title>
-<meta charset="<?php echo getcodepage ($lang); ?>">
+<meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <style>
 #taxonomy select
 {
-  padding:3px;
+  padding-top:3px;
+  padding-bottom:3px;
 }
 </style>
 <script type="text/javascript">
@@ -275,6 +276,7 @@ function translatelanguage (sourcelang_id, targetlang_id)
     
           if (sourceText[0].value != "")
           {
+            // translate
             var translated = hcms_translateText (sourceText[0].value, sourceLang, targetLang);
     
             if (translated != "")
@@ -520,8 +522,8 @@ foreach ($result as $row => $temp_array)
             
             echo "
             <th class=\"hcmsHeadline ".$langcode."\" style=\"position:relative; left:274px; width:140px; height:20px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; ".$style."\">
-              <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButton hcmsIconList\" onclick=\"deletelanguage('".$langcode."');\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
-              <div style=\"float:left;\" title=\"".getescapedtext ($langname)."\">".showshorttext (getescapedtext ($langname), 16)."</div>
+              <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButtonTiny hcmsIconList\" style=\"margin-left:5px; float:left;\" onclick=\"deletelanguage('".$langcode."');\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
+              <div style=\"margin-left:5px; float:left;\" title=\"".getescapedtext ($langname)."\">".showshorttext (getescapedtext ($langname), 16)."</div>
             </th>";
           }
         }

@@ -177,6 +177,9 @@ $mgmt_config['abs_path_media'] = $mgmt_config['abs_path_rep']."media_cnt/";
 // Enable (true) or disable (false) html tags used in text editor for unformatted text
 $mgmt_config['editoru_html'] = true;
 
+// Define the alternative image editor "minipaint", leave empty for the default image editor of the system
+$mgmt_config['imageeditor'] = "minipaint";
+
 // Define videoplayer name, leave empty for the default player (VIDEO.JS) or use "projekktor" as alternative
 $mgmt_config['videoplayer'] = "";
 
@@ -204,6 +207,9 @@ $mgmt_config['message_newwindow'] = false;
 
 // Open users in new window (true) or same window (false)
 $mgmt_config['user_newwindow'] = false;
+
+// Open uploads in new window (true) or same window (false)
+$mgmt_config['upload_newwindow'] = false;
 
 // Window size for objects in pixel (for new window)
 $mgmt_config['window_object_width'] = 1280;

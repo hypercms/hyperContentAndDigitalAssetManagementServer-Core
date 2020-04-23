@@ -50,9 +50,11 @@ function minNavFrame ()
 {
   if (document.getElementById('navFrame2'))
   {
-    var width = 26;
+    var width = 36;
     
+    document.getElementById('navLayer').style.transition = "0.3s";
     document.getElementById('navLayer').style.width = width + 'px';
+    document.getElementById('mainLayer').style.transition = "0.3s";
     document.getElementById('mainLayer').style.left = width + 'px';
     window.frames['navFrame2'].document.getElementById('Navigator').style.display = 'none';
     window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.left = '0px';
@@ -66,7 +68,9 @@ function maxNavFrame ()
   {
     var width = 260;
     
+    document.getElementById('navLayer').style.transition = "0.3s";
     document.getElementById('navLayer').style.width = width + 'px';
+    document.getElementById('mainLayer').style.transition = "0.3s";
     document.getElementById('mainLayer').style.left = width + 'px';
     window.frames['navFrame2'].document.getElementById('Navigator').style.display = 'block';
     window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.left = '';
@@ -78,15 +82,24 @@ function maxNavFrame ()
 
 <body>
   <?php
-  echo "<div id=\"navLayer\" style=\"position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;\"><iframe id=\"navFrame2\" name=\"navFrame2\" scrolling=\"auto\" src=\"component_edit_explorer.php?site=".$site."&cat=".$cat."&compcat=".$compcat."&location=".$location."&page=".$page."&mediatype=".$mediatype."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "
+  <div id=\"navLayer\" style=\"position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;\">
+    <iframe id=\"navFrame2\" name=\"navFrame2\" src=\"component_edit_explorer.php?site=".$site."&cat=".$cat."&compcat=".$compcat."&location=".$location."&page=".$page."&mediatype=".$mediatype."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
+  </div>";
 
   if ($compcat == "single")
   {
-    echo "<div id=\"mainLayer\" style=\"position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;\"><iframe id=\"mainFrame2\" name=\"mainFrame2\" scrolling=\"auto\" src=\"component_edit_page_single.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."&component=".$component."&condition=".$condition."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+    echo "
+  <div id=\"mainLayer\" style=\"position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;\">
+    <iframe id=\"mainFrame2\" name=\"mainFrame2\" src=\"component_edit_page_single.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."&component=".$component."&condition=".$condition."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
+  </div>";
   }
   elseif ($compcat == "multi")
   {
-    echo "<div id=\"mainLayer\" style=\"position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;\"><iframe id=\"mainFrame2\" name=\"mainFrame2\" scrolling=\"auto\" src=\"component_edit_page_multi.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."&condition=".$condition."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+    echo "
+  <div id=\"mainLayer\" style=\"position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;\">
+    <iframe id=\"mainFrame2\" name=\"mainFrame2\" src=\"component_edit_page_multi.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."&condition=".$condition."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
+  </div>";
   }
   ?>
 </body>

@@ -277,7 +277,7 @@ textarea {
 	border: 1px solid #eaeaea;
 	line-height: 20px;
 	width: 100%;
-	margin: 0 0 30px;
+	margin: 0;
 	background-color: #f9f9f9;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;

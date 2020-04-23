@@ -130,7 +130,7 @@ function submitTo(url, action, target, features, width, height)
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <td><b><?php echo getescapedtext ($hcms_lang['messages'][$lang]); ?></b></td>
+      <td class="hcmsHeadline"> <?php echo getescapedtext ($hcms_lang['messages'][$lang]); ?> </td>
     </tr>
     <tr>
       <td>

@@ -58,21 +58,19 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
   if (!empty ($data) && is_array ($data)) 
   {
   ?>
-  <iframe width="620" height="400" frameborder="no" scrolling="no" style="margin:10px; border:0;" 
-    src="https://maps.google.de/maps?ll=<?php echo @$data['lat']; ?>,<?php echo @$data['lon']; ?>&amp;ie=UTF8&amp;om=1&amp;iwloc=near
-    &amp;z=13&amp;iwloc=addr&amp;output=embed">
-  </iframe>
+  <iframe frameborder="0" scrolling="no" style="width:620px; height:400px; margin:10px; border:0; overflow:hidden;" src="https://maps.google.de/maps?ll=<?php echo @$data['lat']; ?>,<?php echo @$data['lon']; ?>&amp;ie=UTF8&amp;om=1&amp;iwloc=near&amp;z=13&amp;iwloc=addr&amp;output=embed"></iframe>
   
   <div style="margin:10px;">
   <?php
-    echo "<table class=\"hcmsTableStandard\" style=\"width:620px;\">\n";
-    echo "  <tr class=\"hcmsRowData1\"><td style=\"width:180px;\">Country </td><td>".@$data['country']." </td></tr>\n";
-    echo "  <tr class=\"hcmsRowData2\"><td>Region </td><td>".@$data['regionName']." </td></tr>\n";
-    echo "  <tr class=\"hcmsRowData1\"><td>City </td><td>".@$data['city']." </td></tr>\n";
-    echo "  <tr class=\"hcmsRowData2\"><td>ZIP code </td><td>".@$data['zip']." </td></tr>\n";
-    echo "  <tr class=\"hcmsRowData1\"><td>Latitude </td><td>".@$data['lat']." </td></tr>\n";
-    echo "  <tr class=\"hcmsRowData2\"><td>Longitude </td><td>".@$data['lon']." </td></tr>\n";   
-    echo "</table>\n";
+    echo "
+    <table class=\"hcmsTableStandard\" style=\"width:620px;\">
+      <tr class=\"hcmsRowData1\"><td style=\"width:180px;\">Country </td><td>".@$data['country']." </td></tr>
+      <tr class=\"hcmsRowData2\"><td>Region </td><td>".@$data['regionName']." </td></tr>
+      <tr class=\"hcmsRowData1\"><td>City </td><td>".@$data['city']." </td></tr>
+      <tr class=\"hcmsRowData2\"><td>ZIP code </td><td>".@$data['zip']." </td></tr>
+      <tr class=\"hcmsRowData1\"><td>Latitude </td><td>".@$data['lat']." </td></tr>
+      <tr class=\"hcmsRowData2\"><td>Longitude </td><td>".@$data['lon']." </td></tr>
+    </table>";
   ?>
   </div>
   <?php

@@ -305,7 +305,7 @@ function switchInfo (id)
 <?php if (!$is_mobile && checkrootpermission ('desktop') && checkrootpermission ('desktopsetting')) { ?>
   <!-- plus/minus button -->
   <div id="plusminus" style="position:fixed; top:12px; right:28px; z-index:200;">
-    <img id="button_plusminus" onClick="switchInfo('menubox');" class="hcmsButton" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
+    <img id="button_plusminus" onClick="switchInfo('menubox');" class="hcmsButtonTiny" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
   </div>
 
   <!-- add / remove home boxes menu -->
@@ -360,7 +360,7 @@ function switchInfo (id)
   <?php } ?>
 
 <!-- content -->
-<div id="contentScreen" style="position:fixed; top:0; left:0; right:0; height:100%; overflow:auto; z-index:100; transition:all 0.5s linear;">
+<div id="contentScreen" style="position:fixed; top:0; left:0; right:0; height:100%; overflow:auto; z-index:100; transition:all 0.3s linear;">
 
   <!-- spacer -->
   <div class="hcmsHomeSpacer" id="homespacer"></div>

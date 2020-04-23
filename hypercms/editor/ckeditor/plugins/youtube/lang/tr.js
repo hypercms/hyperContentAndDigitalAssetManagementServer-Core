@@ -1,4 +1,4 @@
-﻿CKEDITOR.plugins.setLang('youtube', 'tr', {
+CKEDITOR.plugins.setLang('youtube', 'tr', {
 	button : 'Youtube Video Gömün (Embed)',
 	title : 'Youtube Video',
 	txtEmbed : 'Youtube gömülü kodu (embed) buraya yapıştırınız',
@@ -10,6 +10,7 @@
 	chkPrivacy : 'Gizlilik modunu etkinleştir',
 	chkOlderCode : 'Eski gömülü kodu (embed) kullan',
 	chkAutoplay: 'Otomatik',
+	chkControls: 'Oynatıcı kontrollerini göster',
 	noCode : 'Gömülü kod (embed) veya url yapıştırmak zorundasınız',
 	invalidEmbed : 'Verdiğiniz gömülü kod (embed) ile video bulunamadı',
 	invalidUrl : 'Verdiğiniz linkte video bulunamadı',

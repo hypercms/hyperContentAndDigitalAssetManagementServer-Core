@@ -507,16 +507,17 @@ function hcms_createContextmenuItem (action)
       {
         if (contexttype == "object" || contexttype == "media")
         {
-          URLparaView = 'site=' + site + '&cat=' + cat + '&location=' + location + '&page=' + page + '&token=' + token;
+          URLparaView = 'site=' + encodeURIComponent(site) + '&cat=' + encodeURIComponent(cat) + '&location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(page) + '&token=' + token;
         }
         else if (contexttype == "folder")
         {
-          URLparaView = 'site=' + site + '&cat=' + cat + '&location=' + location + folder + '/&folder=' + folder + '&page=' + page + '&token=' + token;
+          URLparaView = 'site=' + encodeURIComponent(site) + '&cat=' + encodeURIComponent(cat) + '&location=' + encodeURIComponent(location + folder) + '/&folder=' + encodeURIComponent(folder) + '&page=' + encodeURIComponent(page) + '&token=' + token;
         }
       }
       
       if (action == "preview")
       {
+        if (folder != "") location = location + folder + '/';
         openObjectView(location, page, 'preview');
       }
       else if (action == "cmsview" && multiobject.split("|").length > 2 && parent && parent.frames && parent.frames['controlFrame'] && parent.frames['controlFrame'].submitToWindow)
@@ -575,7 +576,7 @@ function hcms_createContextmenuItem (action)
       }
       else if (action == "paste")
       {
-        if (site != "" && location != "") hcms_openWindow('popup_status.php?force=start&action=' + action + '&site=' + site + '&cat=' + cat + '&location=' + location + '&token=' + token, '', 'status=no,scrollbars=no,resizable=no', 400, 180);    
+        if (site != "" && location != "") hcms_openWindow('popup_status.php?force=start&action=' + encodeURIComponent(action) + '&site=' + encodeURIComponent(site) + '&cat=' + encodeURIComponent(cat) + '&location=' + encodeURIComponent(location) + '&token=' + token, '', 'status=no,scrollbars=no,resizable=no', 400, 180);    
       }
       else if (action == "publish" || action == "unpublish")
       {
@@ -627,8 +628,8 @@ function hcms_createContextmenuItem (action)
     
     if (action == "edit")
     {
-      if (user_newwindow == true) hcms_openWindow('user_edit.php?site=' + site + '&group=' + group + '&login=' + login + '&token=' + token, 'edit', 'status=yes,scrollbars=yes,resizable=yes', 560, 800);
-      else parent.openPopup('user_edit.php?site=' + site + '&group=' + group + '&login=' + login + '&token=' + token);
+      if (user_newwindow == true) hcms_openWindow('user_edit.php?site=' + encodeURIComponent(site) + '&group=' + encodeURIComponent(group) + '&login=' + encodeURIComponent(login) + '&token=' + token, 'edit', 'status=yes,scrollbars=yes,resizable=yes', 560, 800);
+      else parent.openPopup('user_edit.php?site=' + encodeURIComponent(site) + '&group=' + encodeURIComponent(group) + '&login=' + encodeURIComponent(login) + '&token=' + token);
     }
     else if (action == "delete")
     {
@@ -662,14 +663,14 @@ function hcms_createContextmenuItem (action)
       // object
       if (site != "" && location != "")
       {
-        if (object_newwindow == true) hcms_openWindow('frameset_content.php?site=' + site + '&ctrlreload=yes&cat=' + cat + '&location=' + location + '&page=' + page + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 800, 1000);
-        else top.openMainView('frameset_content.php?site=' + site + '&ctrlreload=yes&cat=' + cat + '&location=' + location + '&page=' + page + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token);
+        if (object_newwindow == true) hcms_openWindow('frameset_content.php?site=' + encodeURIComponent(site) + '&ctrlreload=yes&cat=' + encodeURIComponent(cat) + '&location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(page) + '&queueuser=' + encodeURIComponent(queueuser) + '&queue_id=' + encodeURIComponent(queue_id) + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 800, 1000);
+        else top.openMainView('frameset_content.php?site=' + encodeURIComponent(site) + '&ctrlreload=yes&cat=' + encodeURIComponent(cat) + '&location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(page) + '&queueuser=' + encodeURIComponent(queueuser) + '&queue_id=' + encodeURIComponent(queue_id) + '&token=' + token);
       }
       // message
       else if (page != "")
       {
-        if (message_newwindow == true) hcms_openWindow('user_sendlink.php?mailfile=' + page + '&cat=' + cat + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);
-        else if (page != "") parent.openPopup('user_sendlink.php?mailfile=' + page + '&cat=' + cat + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token);
+        if (message_newwindow == true) hcms_openWindow('user_sendlink.php?mailfile=' + encodeURIComponent(page) + '&cat=' + encodeURIComponent(cat) + '&queueuser=' + encodeURIComponent(queueuser) + '&queue_id=' + encodeURIComponent(queue_id) + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);
+        else if (page != "") parent.openPopup('user_sendlink.php?mailfile=' + encodeURIComponent(page) + '&cat=' + encodeURIComponent(cat) + '&queueuser=' + encodeURIComponent(queueuser) + '&queue_id=' + encodeURIComponent(queue_id) + '&token=' + token);
       }
     }
     else if (action == "delete")
@@ -695,8 +696,8 @@ function hcms_createContextmenuItem (action)
     
     if (action == "edit")
     {
-      if (message_newwindow == true) hcms_openWindow('user_sendlink.php?mailfile=' + message_id + '&cat=comp&messageuser=' + messageuser + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);
-      else parent.openPopup('user_sendlink.php?mailfile=' + message_id + '&cat=comp&messageuser=' + messageuser + '&token=' + token);
+      if (message_newwindow == true) hcms_openWindow('user_sendlink.php?mailfile=' + encodeURIComponent(message_id) + '&cat=comp&messageuser=' + encodeURIComponent(messageuser) + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);
+      else parent.openPopup('user_sendlink.php?mailfile=' + encodeURIComponent(message_id) + '&cat=comp&messageuser=' + encodeURIComponent(messageuser) + '&token=' + token);
     }
     else if (action == "delete")
     {

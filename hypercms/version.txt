@@ -3925,7 +3925,7 @@ Release 02/2020
 - Modifications in explorer_objectlist, frameset_objectlist, and control_objectlst_menu in order to change the sidebar width from 330 to 350 pixels
 - Modifications in function GCanalyzeimage in Cloud Connector in order to render image in JPG format for API call
 - Modifications in function GCanalyzevideo in Cloud Connector in order to provide preview video for API call
-- Implemenentation of the new function metadata_exists in Meta API in order to verify if the metadata exists before making a Cloud API call
+- Implementation of the new function metadata_exists in Meta API in order to verify if the metadata exists before making a Cloud API call
 - Modifications in function setmetadata in Meta API in order to make Cloud API calls after the standard metadata extraction from files and to verify if the metadata exists before making a Cloud API call 
 - Modifications in explorer_objectview in order to reduce the navigation area size around the arrows
 - Implementation of the Google Analytics support for most parts of the system in order to track the user activities in the system besides the event log
@@ -3950,8 +3950,8 @@ Release 02/2020
 
 Version 8.1.1
 Release 03/2020
-- Implementation of the new publication access permissions for SOAP and RESt services in order to activate and deactive them per publication
-- Modifications in all SOAP and REST functions in order to support the new publication setting
+- Implementation of the new publication access permissions for SOAP and RESTful services in order to activate and deactive them per publication
+- Modifications in all SOAP and RESTful functions in order to support the new publication setting
 - Modifications in function editpublication in order to support the new settings for the SOAP and REStful API access permissions
 - Modifications in API loader in order to include RESTful library only if the SOAP API is not loaded already (SOAP configuration)
 - Modifications in site_edit_form in order to include the settings for the RESTful and SOAP API
@@ -3971,7 +3971,7 @@ Release 03/2020
 - Implementation of the new CSS classes hycmsToDo, hcmsInProgress, and hcmsFinished in all design themes
 - Implementation of the function showdate in the task management in order to localize the displayed start and end dates of the tasks
 - Design modifications in user_sendlink
-- Modifications in function showmessage in UI API in order to assign unique tag id if the defaukt id is used
+- Modifications in function showmessage in UI API in order to assign unique tag id if the default id is used
 - Updgrade of the hypridauth API in the Connector module
 - Modifications in the Mobile Edition in order to minimize the navigaton sidebar on most navigation endpoints except for the asset or page navigation items
 - Modifications in news home box in order to support max/min the display of the box
@@ -4013,4 +4013,96 @@ Release 03/2020
 - Bug fix: The temporary variables for each queue entry have not benn fully seperated from the filter variables (issue with $site)
 - Bug fix: popup_action did not assign result of function copyobject for a single object to a variable
 - Bug fix: popup_actiona and poup_status did not verify if the multiobject variable holds more than one object
-- Bug fix: Function encryptfile and decryptfile of the Free Edition did not return the content of the media file
+- Bug fix: Function encryptfile and decryptfile of the Free Edition did not return the content of the media file 
+
+Version 8.1.2
+Release 04/2020
+- Implementation of the new main configuration setting $mgmt_config['upload_newwindow'] in order to open the upload window in the same or new browser window (does not apply for Mobile Edition)
+- Implementation of the new JS function openUpload and switchUpload in frameset_main
+- Modifications in popup_upload_html in order to support the new upload design
+- Modifications in control_objectlist_menu in order to support the new upload design
+- Modifications in function showcompexplorer in UI API in order to support the new upload design
+- Added and partially replaced CSS style overflow to iframe scrolling attribute in explorer_objectview, frameset_edit_component, frameset_content, frameset_edit_link, frameset_edit_media, frameset_group_access, frameset_group, 
+  frameset_licensenotification, frameset_log, frameset_main, framset_media, frameset_message, frameset_mobile, frameset_objectlist, frameset_pers, frameset_portal, frameset_queue, frameset_site_edit, frameset_site, 
+  frameset_template_change, frameset_template_edit, frameset_template, frameset_user, media_playerconfig, page_info_ip, plugin_showpage, popup_upload_html, search_objectlist
+- Added and partially replaced CSS style overflow to iframe scrolling attribute in news home box
+- Added and partially replaced CSS style overflow to iframe scrolling attribute in the Connector modules frameset_imexport, frameset_instance
+- Added and partially replaced CSS style overflow to iframe scrolling attribute in frameset_report, frameset_workflow
+- Added and partially replaced CSS style overflow to iframe scrolling attribute in media_frameset of editor
+- Added and partially replaced CSS style overflow to iframe scrolling attribute in the templates 360view.comp.tpl, CarouselZoom.comp.tpl, Galleria.comp.tpl, GalleriaSearch.comp.tpl, PhotoSwipe.comp.tpl, Upload.comp.tpl
+- Minor design modifications in log_list, message_objectlist, and user_objectlist
+- Changed background color in CSS class hcmsWorkplaceObjectlist in navigator.css of the day design theme
+- Design modifications in function showtopbar in UI API
+- Enabled the standard context menu in page_info in order to copy and paste links more easily
+- Modifications in various JS functions in main.js in order to change the transition duration to 0.3 seconds
+- Modifications in control_objectlist_menu, frameset_content, frameset_main, and frameset_mobile in order to change the transition duration to 0.3 seconds
+- Design modifications in the home screen and home boxes
+- Implementation of the new JS function showwarning in frameset_main in order to display a warning message before an unload
+- Updates in the English and German languages files
+- Design modifications of the video buttons in function showmedia in UI API
+- Implementation of the loading screen in popup_action and popup_status due to long processing times for larger collections of objects in case the recycle bin is used (database needs to update all entries)
+- Removed JS eval function for the evaluation of HTML elements in the JS code of various scripts
+- Design modification in the CSS classes in main.css and navigator.css of all design themes regarding the select elements and background colors of input, textarea, and select elements
+- Implementation of transparent effect for all disabled form elements in the CSS classes in main.css and navigator.css of all design themes
+- Design modification in the search form of the explorer
+- Removed top bar from page_info
+- Implementation of the JS function encodeURIComponent for all GET parameters values of JS function hcms_createContextmenuItem in contextmenu.js
+- Removed url_encode on JS function parameters in explorer_objectlist and search_objectlist
+- Implementation of the JS function encodeURIComponent in JS function openUpload in frameset_main
+- Implementation of the JS function encodeURIComponent in JS function openObjectView in frameset_content
+- Implementation of the JS function encodeURIComponent in JS function openObjectView in frameset_objectlist
+- Implementation of the JS function encodeURIComponent in JS function jumpTo in control_queue_menu
+- Implementation of the JS function encodeURIComponent in JS function openBrWindowComp in component_edit_page_single and component_edit_page_multi
+- Implementation of the JS function encodeURIComponent in JS function geturl in link_edit_page
+- Implementation of the JS function encodeURIComponent in JS function openBrWindowMedia in media_edit_page
+- Implementation of the JS function encodeURIComponent in various JS function in popup_upload_html
+- Implementation of the JS function encodeURIComponent in various JS function in template engine
+- Implementation of paging and expanding in the event log viewer log_list
+- Modifications in search statistics plugin in order to escape the search expressions for the display
+- Modifications in simple statistics plugin in order to apply a new table design
+- Modifications in explorer in order to escape the saved search parameters for display
+- Added the display of the publication name to all controls
+- Implementation of the new function getobjectpath in the Get API (alias for function rdbms_getobject in DB Connect)
+- Modifications in function showtopbar and showtopmenubar in UI API in order to add padding to the title/text
+- Design modifications in site_edit_form
+- Implementation of the full screen upload layer (fully maximized upload window/layer)
+- Modifications in log_list and popup_log in order to display all attributes of a log entry
+- Implementation of the new main configuration setting $mgmt_config['imageeditor'] in order to define an alternative image editor for single images
+- Modifications in service savecontent in order to support the new main configuration setting $mgmt_config['imageeditor']
+- Implementation of the new alternative image editor JS-library based on miniPaint (javascript/minipaint)
+- Implementation of the new alternative image editor image_minipaint based on miniPaint
+- Various modifications in the minipaint bundle.js and user interface in order to support "Quick save" and "Save as" in the system
+- Modifications in image_rendering in order to replace the old saving screen by the new one based on CSS class hcmsLoadScreen
+- Modifications in function editmediaobject in Main API in order to support a new input parameter for the base64 encoded media data (as alternative to server-side conversion using createmedia)
+- Implementation of the new service savemedia in order to save a media file that has been provided/rendered by the client (no server-side rendering except for the new thumbnail)
+- Implementation of the new function getbase64fileextension in Get API in order to return the file extension based on the base64 encoded file content
+- Modifications in the Attitude design templates (style.css) in install/templates
+- Modifications in the web2print example templates in install/templates 
+- Upgrade of the rich text editor CKEditor to version 4.14 (upgrade was highly recommended due to security issues in older versions)
+- Modifications in editor/ckeditor/plugins/image/dialogs/image.js in order to support the asset browser and the provided scaled media sizes
+- Update of TCPDF library to version 6.3.5
+- Modifications in function showgeolocationchart of the Report Management API in order to adjus map zoom level and positioning
+- Implementation of the new function getscaytlang in Get API in order to provide the language locale for the Scayt plugin of CKEditor 4.14
+- Modifications in function showeditor and showinlineeditor in UI API in order to support the new function getscaytlang
+- Implementation of the new JS function hcms_dragLayer in main.js for dragging a single element
+- Modifications in JS function hcms_ajaxService in main.js in order to log errors in browser console
+- Modifications in frameset_edit_component, framset_group_access, frameset_edit_link, frameset_edit_media, media_frameset, and frameset_workflow_folder in order to support animations for the min/max of the navigation layer
+- Modifications in function load_csv in Main API in order to support character encoding and remove exsiting UTF-8 BOM
+- Modifications in function create_csv in Main API in order to support MS Excel by optionally adding an UTF-8 BOM to the file and to support character encoding
+- Modifications in control_objectlist_menu, control_template_menu in order to support the new input parameter of the function create_csv
+- Modifications in JS function translatelanguage of the taxonomy editor (media_taxonomy) in order to delay translation requests
+- Design modifications in the taxonomy editor (media_taxonomy)
+- Modifications in standard taxonomy in install/data/include/default.taxonomy.csv
+- Modifications in the function convertchars in the Main API in order to use function mb_convert_encoding for character conversion and function iconv as fallback
+- Implementation of the new JS function hcms_sleep in main.js in order to pause a script
+- Modifications in JS function hcms_translateText in main.js in order to delay function calls to translate cloud service
+- Modifications in English language file
+- Bug fix: popup_status did not initialize the array multiobject_temp
+- Bug fix: explorer_objectview did not resolve the folders location correctly
+- Bug fix: JS function hcms_createContextmenuItem in contextmenu.js did not add the folder to the location for action "preview"
+- Bug fix: control_objectlist_menu did reset variable show after initalization and suppressed previous messages of actions
+- Bug fix: popup_status reloaded objectlist and caused a repost of data, the reload has been replaced by a request to the same location
+- Bug fix: Function showcompexplorer in UI API did not include the full path to lazysizes.min.js
+- Bug fix: media_select in editor did not scale the images according to the provided scaling factor (dpi) if the width and height has been correctly provided by function showmedia
+- Bug fix: Function savetaxonomy in Meta API did not update the existing taxonomy entries if a new language has been added or an exsiting language has been removed from the taxonomy
+- Bug fix: Function showAPIdocs in UI API was not able to resolve the input of functions if a '//' occured in the default input values

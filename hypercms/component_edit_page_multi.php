@@ -235,7 +235,7 @@ function openBrWindowComp (winName, features, type)
         var page_comp = url.substr (position2 + 1, url.length);
         page_comp = escape (page_comp);
         
-        theURL = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_content.php?ctrlreload=yes&cat=comp&site=' + location_site + '&location=' + location_comp + '&page=' + page_comp + '&user=<?php echo $user; ?>';
+        theURL = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_content.php?ctrlreload=yes&cat=comp&site=' + encodeURIComponent(location_site) + '&location=' + encodeURIComponent(location_comp) + '&page=' + encodeURIComponent(page_comp) + '&user=<?php echo url_encode($user); ?>';
       }
       else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['this-is-an-external-component-link'][$lang]); ?>'));
     }

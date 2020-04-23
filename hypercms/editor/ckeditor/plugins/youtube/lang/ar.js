@@ -1,4 +1,4 @@
-﻿CKEDITOR.plugins.setLang('youtube', 'ar', {
+CKEDITOR.plugins.setLang('youtube', 'ar', {
 	button : 'شيفرة تضمين اليوتيوب',
 	title : 'شيفرة تضمين اليوتيوب',
 	txtEmbed : 'الصق شيفرة التضمين هنا',
@@ -10,6 +10,7 @@
 	chkPrivacy : 'تفعيل وضع تحسين الخصوصية',
 	chkOlderCode : 'استخدم شيفرة التضمين القديمة',
 	chkAutoplay : 'Autoplay',
+	chkControls: 'إظهار عناصر التحكم بالمشغّل',
 	noCode : 'يجب عليك ادخال شيفرة التضمين او الرابط',
 	invalidEmbed : 'شيفرة التضمين التي قمت بإدخالها تبدو غير صحيحة',
 	invalidUrl : 'الرابط الذي قمت بإدخاله يبدو غير صحيح',

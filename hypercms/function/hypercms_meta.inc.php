@@ -406,7 +406,7 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
   if (!empty ($csv) && is_file ($csv))
   {
     // load CSV file
-    $taxonomy = load_csv ($csv, ";", '"', "utf-8");
+    $taxonomy = load_csv ($csv, ";", '"', "utf-8", "utf-8");
 
     // prepare taxonomy
     if (!empty ($taxonomy) && is_array ($taxonomy))
@@ -490,7 +490,7 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
 
 // --------------------------------------- savetaxonomy -------------------------------------------
 // function: savetaxonomy ()
-// input: publication name [string], taxonomy with rows and languages as keys [array], replace rows starting with row number [integer], replace rows ending with row number [integer]
+// input: publication name [string], new taxonomy with row number and languages as keys [array], replace rows starting with row number [integer], replace rows ending with row number [integer]
 // output: true / false
 
 // description:
@@ -502,6 +502,23 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
 
   // load taxonomy
   $taxonomy_old = loadtaxonomy ($site);
+
+  // get languages from first entry of the new taxonomy
+  $lang_array = array_keys ($taxonomy[$saveindex_start]);
+
+  // get languages from same entry of the loaded taxonomy
+  $lang_old_array = array_keys ($taxonomy_old[$saveindex_start]);
+
+  // new languages have been added to the taxonomy
+  if (sizeof ($lang_old_array) < sizeof ($lang_array))
+  {
+    $lang_new_array = array_diff ($lang_array, $lang_old_array);
+  }
+  // languages have been removed from the taxonomy
+  elseif (sizeof ($lang_old_array) > sizeof ($lang_array))
+  {
+    $lang_remove_array = array_diff ($lang_old_array, $lang_array);
+  }
 
   // update taxonomy
   if (valid_publicationname ($site) && is_array ($taxonomy) && $saveindex_start >= 0 && $saveindex_stop >= 0)
@@ -516,6 +533,17 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
         // untouched rows (outside of saveindex)
         if ($row < $saveindex_start || $row > $saveindex_stop)
         {
+          // add new languages
+          if (!empty ($lang_new_array)) foreach ($lang_new_array as $temp) $old_array[$temp] = "";
+
+          // sort by language
+          ksort ($old_array);
+
+          // move 'level' key to first psoition
+          $temp = $old_array['level'];
+          unset ($old_array['level']);
+          $old_array = array_merge (array('level'=>$temp), $old_array);
+
           $taxonomy_new[$id] = $old_array;
           $id++;
         }
@@ -524,6 +552,17 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
         {
           foreach ($taxonomy as $new_array)
           {
+            // remove languages
+            if (!empty ($lang_remove_array)) foreach ($lang_remove_array as $temp) unset ($new_array[$temp]);
+
+            // sort by language
+            ksort ($new_array);
+
+            // move 'level' key to first psoition
+            $temp = $new_array['level'];
+            unset ($new_array['level']);
+            $new_array = array_merge (array('level'=>$temp), $new_array);
+
             $taxonomy_new[$id] = $new_array;
             $id++;
           }
@@ -572,7 +611,7 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
       }
  
       // save data
-      return create_csv ($taxonomy_new, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8");
+      return create_csv ($taxonomy_new, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8", "utf-8", false);
     }
     // nothing to update
     else return true;
@@ -581,7 +620,7 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
   elseif (valid_publicationname ($site) && is_array ($taxonomy))
   {
     // save data
-    return create_csv ($taxonomy, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8");
+    return create_csv ($taxonomy, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8", "utf-8", false);
   }
   else return false;
 }
@@ -642,7 +681,7 @@ function createtaxonomy ($site_name="", $recreate=false)
       if (valid_publicationname ($site) && is_file ($file))
       {
         // load CSV file
-        $data = load_csv ($file, ";", '"', "utf-8");
+        $data = load_csv ($file, ";", '"', "utf-8", "utf-8");
 
         if (is_array ($data) && sizeof ($data) > 0)
         {
@@ -681,6 +720,7 @@ function createtaxonomy ($site_name="", $recreate=false)
                 $level_prev = $level;
                 $id_prev = $id;
               }
+              // keyword for a specfic entry for a language
               else
               {
                 // clean text
@@ -881,7 +921,7 @@ function extractmetadata ($file)
 {
   global $user, $mgmt_config, $mgmt_mediametadata;
 
-	if (is_file ($file) && is_array ($mgmt_mediametadata))
+  if (is_file ($file) && is_array ($mgmt_mediametadata))
   {
     $result = array();
     $hide_properties = array ("version number", "file name", "directory", "file permissions", "app14 flags", "thumbnail", "xmp toolkit");
@@ -924,7 +964,7 @@ function extractmetadata ($file)
         if ($errorCode)
         {
           $errcode = "20247";
-          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for file: ".getobject($file);
+          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) '".$cmd."' failed for file: ".getobject($file);
         }
         elseif (is_array ($output))
         {

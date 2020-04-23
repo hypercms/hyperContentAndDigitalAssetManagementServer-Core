@@ -51,7 +51,7 @@ function openObjectView (location, object, view)
   var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
   var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 
-  document.getElementById('objectview').src = 'explorer_objectview.php?location=' + location + '&page=' + object + '&width=' + width + '&height=' + height + '&view=' + view;
+  document.getElementById('objectview').src = 'explorer_objectview.php?location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(object) + '&width=' + encodeURIComponent(width) + '&height=' + encodeURIComponent(height) + '&view=' + encodeURIComponent(view);
   
   // load screen
   if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
@@ -91,21 +91,29 @@ function openBrWindowLink (url, winName, features)
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
 
-<!-- popup for preview/live-view and forms (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
+<!-- popup for preview/live-view and forms (do not use nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="objectviewLayer" style="display:none;">
   <div style="position:fixed; right:2px; top:2px; z-index:8001;">
     <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
   </div>
   <div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> position:fixed; margin:0; padding:0; left:0; top:<?php if ($is_mobile) echo "0px;"; else echo "36px;"; ?> right:0; bottom:0; z-index:8000;">
-    <iframe id="objectview" name="objectview" src="" frameBorder="0" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> style="width:100%; height:100%; margin:0; padding:0; border:0;" sandbox="allow-same-origin allow-scripts allow-forms" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+    <iframe id="objectview" name="objectview" src="" frameborder="0" style="width:100%; height:100%; margin:0; padding:0; border:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>" sandbox="allow-same-origin allow-scripts allow-forms" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
   </div>
 </div>
 
 <!-- frames -->
 <?php
-// scrolling for control frame
-if ($is_mobile) $scrolling = "YES";
-else $scrolling = "NO";
+// scrolling for control frame (HTML5 issue with overflow still requires deprecated scrolling attribute)
+if ($is_mobile)
+{
+  $scrolling = "auto";
+  $overflow = "auto";
+}
+else
+{
+  $scrolling = "no";
+  $overflow = "hidden";
+}
 
 // object list width in pixel
 if ($temp_sidebar && !$is_mobile) $sidebar_width = 350;
@@ -118,31 +126,31 @@ if ($location == "" && $action == "" && linking_valid() == true) $action = "link
 if ($action == "base_search")
 {
   // control
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"loading.php\" frameBorder=\"0\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:".$overflow.";\"></iframe>\n";
   // object list
-  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"search_objectlist.php?action=".$action."&site=".$site."&search_dir=".$search_dir."&search_expression=".$search_expression."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"search_objectlist.php?action=".$action."&site=".$site."&search_dir=".$search_dir."&search_expression=".$search_expression."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar
-  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" scrolling=\"auto\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe></div>\n";
 }
 // search for files of a user
 elseif ($action == "user_files")
 {
   // control
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"loading.php\" frameBorder=\"0\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:".$overflow.";\"></iframe>\n";
   // object list
-  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"search_objectlist.php?action=".$action."&site=".$site."&login=".$login."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"search_objectlist.php?action=".$action."&site=".$site."&login=".$login."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar
-  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe></div>\n";
 }
 // favorites, checked out, recycle bin or access link objects
 elseif ($action == "favorites" || $action == "checkedout" || $action == "clipboard" || $action == "recyclebin" || $action == "linking")
 {
   // control
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"control_objectlist_menu.php?virtual=1&from_page=".$action."\" frameBorder=\"0\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_objectlist_menu.php?virtual=1&from_page=".$action."\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:".$overflow.";\"></iframe></div>\n";
   // object list
-  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"search_objectlist.php?action=".$action."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"search_objectlist.php?action=".$action."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar
-  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe></div>\n";
 }
 // standard object explorer for given location
 elseif ($location != "")
@@ -150,21 +158,21 @@ elseif ($location != "")
   if (!isset ($virtual)) $virtual = 0;
 
   // control
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"control_objectlist_menu.php?location=".$location."&virtual=".$virtual."\" frameBorder=\"0\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_objectlist_menu.php?location=".$location."&virtual=".$virtual."\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:".$overflow.";\"></iframe>\n";
   // object list
-  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"explorer_objectlist.php?location=".$location."&virtual=".$virtual."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"explorer_objectlist.php?location=".$location."&virtual=".$virtual."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar
-  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" scrolling=\"auto\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe></div>\n";
 }
 // no action
 else
 {
   // control
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"loading.php\" frameBorder=\"0\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:".$overflow.";\"></iframe></div>\n";
   // object list
-  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"empty.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"empty.php\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar
-  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe></div>\n";
 }
 ?>
 </body>

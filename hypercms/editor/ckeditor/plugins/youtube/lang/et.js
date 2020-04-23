@@ -1,4 +1,4 @@
-﻿CKEDITOR.plugins.setLang('youtube', 'et', {
+CKEDITOR.plugins.setLang('youtube', 'et', {
 	button : 'Lisa YouTube video',
 	title : 'YouTube video lisamine',
 	txtEmbed : 'Kleepige manustatud kood siia',
@@ -10,6 +10,7 @@
 	chkPrivacy : 'Aktiveerige privaatsust täiendav režiim',
 	chkOlderCode : 'Kasutage vana manuskoodi',
 	chkAutoplay: 'Automaatesitlus',
+	chkControls : 'Kuva pleieri nupud',
 	noCode : 'Te peate sisestama video manuskoodi või veebiaadressi',
 	invalidEmbed : 'Manuskood mille sisestasite ei paista olevat korrektne',
 	invalidUrl : 'Veebiaadress mille sisestasite ei paista olevat korrektne',

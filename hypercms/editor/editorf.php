@@ -145,7 +145,7 @@ $token = createtoken ($user);
   <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
   <script type="text/javascript" src="../javascript/main.js" ></script>
   <script type="text/javascript">
-  function setsavetype(type)
+  function setsavetype (type)
   {
     document.forms['hcms_formview'].elements['savetype'].value = type;
     document.forms['hcms_formview'].submit();

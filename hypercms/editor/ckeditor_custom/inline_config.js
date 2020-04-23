@@ -29,7 +29,7 @@ CKEDITOR.editorConfig = function( config )
     [
       { name: 'document',    items : [ 'Source','-','Print','-','Templates' ] },
       { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','SpellChecker','Scayt' ] },
+      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','Scayt' ] },
       { name: 'tools',       items : [ 'ShowBlocks' ] },
       '/',
       { name: 'basicstyles', items : [ 'TextColor','BGColor','-','Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
@@ -48,7 +48,7 @@ CKEDITOR.editorConfig = function( config )
     [
       { name: 'document',    items : [ 'Source','-','Print','-','Templates' ] },
       { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','SpellChecker','Scayt' ] },
+      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','Scayt' ] },
       { name: 'tools',       items : [ 'ShowBlocks' ] },
       '/',
       { name: 'basicstyles', items : [ 'TextColor','BGColor','-','Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
@@ -70,7 +70,7 @@ CKEDITOR.editorConfig = function( config )
   config.toolbar_PDF = 
     [
       { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','SpellChecker','Scayt' ] },
+      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','Scayt' ] },
       { name: 'basicstyles', items : [ 'TextColor','BGColor','-','Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
       { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
       { name: 'insert',      items : [ 'Image','Table','HorizontalRule','SpecialChar' ] },
@@ -78,7 +78,7 @@ CKEDITOR.editorConfig = function( config )
     ];
 
   config.toolbar = 'Default';
-  config.skin = 'hypercms';
+  config.skin = 'moono-lisa';
   config.filebrowserWindowWidth = 600;
   config.filebrowserWindowHeight = 600;
   

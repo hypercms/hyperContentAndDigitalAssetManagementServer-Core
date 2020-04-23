@@ -151,14 +151,14 @@ function goToURL()
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <td><b><?php echo getescapedtext ($hcms_lang['group-management'][$lang]); ?></b></td>
+      <td class="hcmsHeadline"> <?php echo getescapedtext ($site." &gt; ".$hcms_lang['group-management'][$lang]); ?> </td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['group-management'][$lang]); ?></span>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$hcms_lang['group-management'][$lang]); ?></span>
   <?php } ?>
 </div>
 

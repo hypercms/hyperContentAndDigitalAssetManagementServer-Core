@@ -152,14 +152,14 @@ function checkForm_item_create()
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <td><b><?php echo getescapedtext ($item_type); ?></b></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($site." &gt; ".$item_type); ?></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($item_type); ?></span>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$item_type); ?></span>
   <?php } ?>
 </div>
 

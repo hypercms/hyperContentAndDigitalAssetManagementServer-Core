@@ -7282,7 +7282,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           location_site = location_site.substring(0, location_site.indexOf('/'));
 
           var page_comp = theURL.substr (position2+1, theURL.length);
-          theURL = '".$mgmt_config['url_path_cms']."frameset_content.php?ctrlreload=yes&cat=comp&site=' + location_site + '&location=' + location_comp + '&page=' + page_comp + '&user=".$user."';
+          theURL = '".$mgmt_config['url_path_cms']."frameset_content.php?ctrlreload=yes&cat=comp&site=' + encodeURIComponent(location_site) + '&location=' + encodeURIComponent(location_comp) + '&page=' + encodeURIComponent(page_comp) + '&user=".url_encode($user)."';
 
           hcms_openWindow (theURL, winName, features, ".windowwidth ("object").", ".windowheight ("object").");
         }
@@ -7902,18 +7902,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
           var location_page = theURL.substring (position1, position2+1);
           location_page = replace (location_page, '/".$site."/', '%page%/".$site."/');
-          location_page = encodeURIComponent (location_page);
 
           var location_site = theURL.substring (position1+1, theURL.length);
           location_site = location_site.substring(0, location_site.indexOf('/'));
-          location_site = encodeURIComponent (location_site);
 
           var page = theURL.substring (position2 + 1, theURL.length);
           if (page.indexOf('?') > 0) page = page.substring (0, page.indexOf('?'));
           if (page.indexOf('#') > 0) page = page.substring (0, page.indexOf('#'));
-          page = encodeURIComponent (page);
 
-          theURL = '".$mgmt_config['url_path_cms']."frameset_content.php?ctrlreload=yes&cat=page&site=' + location_site + '&location=' + location_page + '&page=' + page + '&user=".$user."';
+          theURL = '".$mgmt_config['url_path_cms']."frameset_content.php?ctrlreload=yes&cat=page&site=' + encodeURIComponent(location_site) + '&location=' + encodeURIComponent(location_page) + '&page=' + encodeURIComponent(page) + '&user=".url_encode($user)."';
 
           hcms_openWindow (theURL, winName, features, ".windowwidth ("object").", ".windowheight ("object").");
         }
@@ -7946,16 +7943,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           var position1 = theURL.indexOf('/');
           var position2 = theURL.lastIndexOf('/');
           var location_comp = '%comp%/' + theURL.substring (position1 + 1, position2 + 1);
-          location_comp = encodeURIComponent (location_comp);
 
           var location_site = theURL.substring (position1+1, theURL.length);
           location_site = location_site.substring(0, location_site.indexOf('/'));
-          location_site = encodeURIComponent (location_site);
 
           var page_comp = theURL.substr (position2+1, theURL.length);
-          page_comp = encodeURIComponent (page_comp);
 
-          theURL = '".$mgmt_config['url_path_cms']."frameset_content.php?ctrlreload=yes&cat=comp&site=' + location_site + '&location=' + location_comp + '&page=' + page_comp + '&user=".$user."';
+          theURL = '".$mgmt_config['url_path_cms']."frameset_content.php?ctrlreload=yes&cat=comp&site=' + encodeURIComponent(location_site) + '&location=' + encodeURIComponent(location_comp) + '&page=' + encodeURIComponent(page_comp) + '&user=".url_encode($user)."';
 
           hcms_openWindow (theURL, winName, features, ".windowwidth ("object").", ".windowheight ("object").");
         }
@@ -8294,9 +8288,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   // ----- Set save type and save -----
 
-  function setSaveType (type, url, methode)
+  function setSaveType (type, url, method)
   {
-    if (typeof (methode) === 'undefined') methode = 'post';
+    if (typeof (method) === 'undefined') method = 'post';
     var checkcontent = true;
     var save = false;
 
@@ -8314,8 +8308,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       collectFaces();
       initFaceOnVideo();
 
-      // save content using form POST methode
-      if (methode == 'post' || isNewComment()) saveContent();
+      // save content using form POST method
+      if (method == 'post' || isNewComment()) saveContent();
       // save content using AJAX in all other cases
       else save = autoSave(true);
 

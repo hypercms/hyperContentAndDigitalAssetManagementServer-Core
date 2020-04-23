@@ -298,12 +298,14 @@ function goToURL()
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <td><b><?php echo getescapedtext ($hcms_lang['user-management'][$lang]); ?></b></td>
+      <td class="hcmsHeadline"> <?php if (valid_publicationname ($site)) echo getescapedtext ($site." &gt; "); echo getescapedtext ($hcms_lang['user-management'][$lang]); ?> </td>
     </tr>
     <tr>
       <td>
-        <b><?php if ($login != "") echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;</b>
-        <span class="hcmsHeadlineTiny">
+        <b><?php if ($login != "") echo "
+          <img src=\"".getthemelocation()."img/user.png\" title=\"".getescapedtext ($hcms_lang['user'][$lang])."\" class=\"hcmsIconList\" style=\"margin-left:0;\" />";
+          ?>
+          <span class="hcmsHeadlineTiny">
           <?php            
             if ($multiobject_count > 1)
             {
@@ -323,7 +325,7 @@ function goToURL()
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['user-management'][$lang])." &gt; ".(!empty ($login) ? $login : ""); ?></span>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php if (valid_publicationname ($site)) echo getescapedtext ($site." &gt; "); echo getescapedtext ($hcms_lang['user-management'][$lang])." &gt; ".(!empty ($login) ? $login : ""); ?></span>
   <?php } ?>
 </div>
 

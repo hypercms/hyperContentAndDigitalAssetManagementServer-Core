@@ -136,7 +136,7 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
         $listview .= "
             <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
               <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
-                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >&nbsp; 
+                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." > 
                   <a data-objectpath=\"".$mailfile."\" data-href=\"javascript:void(0);\">
                     <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>
                   </a>
@@ -267,7 +267,7 @@ function initalize ()
   </form>
 </div>
 
-<div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:3; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:3; visibility:visible;">
   <table id="objectlist_head" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:100px; white-space:nowrap;">
@@ -291,7 +291,7 @@ function initalize ()
     </tr>
   </table>
   
-  <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cols="6" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
     <?php 
     echo $listview;
@@ -335,7 +335,8 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 // status bar without buttons
 else
 {
-  $next_start = $objects_counted + 1;
+  if ($objects_counted > 0) $next_start = $objects_counted + 1;
+  else $next_start = 0;
 ?>
 <!-- status bar -->
 <div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">

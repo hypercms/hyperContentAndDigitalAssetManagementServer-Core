@@ -33,7 +33,7 @@ input, select, textarea, button, .hcmsTextArea
   display: inline-block;
   vertical-align: middle;
   border: 1px solid #C0C0C0;
-  background-color: #F3F3F3;
+  background-color: #FFFFFF;
   margin: 1px 1px 1px 0px;
   padding: 6px 4px;
 }
@@ -44,10 +44,25 @@ select
   -webkit-border-radius: 0px;
   -moz-appearance: none;
   appearance: none;
-  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAB3RJTUUH4wscBwMfknFSCQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAARnQU1BAACxjwv8YQUAAACZSURBVHjaY2AYBdQBfn5+lUDqP6kYqo+BoampiSEuLi6JFM0g9SB9YNDQ0MDQ3NzMkJ6e7grkfiWg+StIHUg9SB/cABAGmVhQUKArLi7+FJtmkDhIHqQOpgfFAJghZWVlEpqamhdAmhgZGcGaQXyQOLJmrAbADKmurua0srLaCtIMokF8dM04DUAyhMPQ0HA9iMamGW7ACAcAA6+GjDAKFtwAAAAASUVORK5CYII=') no-repeat 100% 50%;
-  background-color: #F3F3F3;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAB3RJTUUH5AIODR8uwkpHZQAAAAlwSFlzAAAHRAAAB0QBKlH81AAAAARnQU1BAACxjwv8YQUAAABhSURBVHjaY2AYXMDd3X0ekPqPjqHiqKC6ulrQwcFhB7JCEB8kjqG4ubmZoaKiQl5BQeE5SCGIBvFB4higoaGBoampiSEjIyOIk5PzG4gG8UHiWBVDMWNkZGQpiIaJDTIAAHhVLzM4i7OKAAAAAElFTkSuQmCC');
+  background-repeat: no-repeat;
+  background-position: 100% 50%;
+  background-color: #FFFFFF;
   padding-left: 2px;
-  padding-right: 16px;
+  padding-right: 12px;
+}
+
+/* pseudo-element for the dropdown arrow on IE */
+select::-ms-expand
+{
+  display: none;
+}
+
+input:disabled, select:disabled, textarea:disabled, button:disabled
+{
+  filter: alpha(opacity=35);
+  -moz-opacity: 0.35;
+  opacity: 0.35;
 }
 
 a 
@@ -200,8 +215,9 @@ hr
 
 .hcmsWorkplaceBar
 {
-  background-color: #A2C5F9;
-  border-left: 5px solid #EB6804;
+  background-color: #86B7FD;
+  border-left: 6px solid #EB6804;
+  border-bottom: 3px solid #009900;
   position: fixed;
   top: 0;
   left: 0;
@@ -218,7 +234,7 @@ hr
   background-color: #86B7FD;
   margin: 0;
   padding: 0px 3px;
-  border-left: 5px solid #EB6804;
+  border-left: 6px solid #EB6804;
   display: block;
 }
 
@@ -291,17 +307,17 @@ hr
 
 .hcmsWorkplaceObjectlist
 {
-  background-color: #E7F1FF;
+  background-color: #A5C9FE;
 }
 
 .hcmsWorkplaceWorkflow
 {
-  background-color: #7BB5FF;
+  background-color: #A5C9FE;
 }
 
 .hcmsWorkplaceGeneric
 {
-  background-color: #C8DCFF;
+  background-color: #86B7FD;
   margin: 0; 
   padding: 0;
   overflow: auto;
@@ -751,11 +767,11 @@ hr
 .hcmsTabActive
 {
   float: left;
-  background-color: #CEDEFF;
+  background-color: #86B7FD;
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;
   border-left: 1px solid #000000;
-  border-bottom: 2px solid #CEDEFF;
+  border-bottom: 2px solid #86B7FD;
   width: 116px;
   height: 17px;
   padding: 2px;

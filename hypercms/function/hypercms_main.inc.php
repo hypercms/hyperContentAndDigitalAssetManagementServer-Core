@@ -166,14 +166,10 @@ function cleancontent ($text, $charset="UTF-8")
 
 function remove_utf8_bom ($text)
 {
-  if ($text != "")
-  {
-    $bom = pack ('H*','EFBBBF');
-    $text = preg_replace ("/^$bom/", '', $text);
+  $bom = pack ('H*','EFBBBF');
+  $text = preg_replace ("/^$bom/", "", $text);
 
-    if (!empty ($text)) return $text;
-    else return false;
-  }
+  if (!empty ($text)) return $text;
   else return false;
 }
 
@@ -243,7 +239,8 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
         if (!is_array ($expression))
         {
           // convert
-          $expression = iconv ($charset_from, $charset_to, $expression);
+          if (function_exists ("mb_convert_encoding")) $expression = mb_convert_encoding ($expression, $charset_to, $charset_from);
+          else $expression = iconv ($charset_from, $charset_to, $expression);
         }
         elseif (is_array ($expression))
         {
@@ -2984,7 +2981,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
 
           if (empty ($rename_2) || empty ($copy_2))
           {
-            $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
+            $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
           }
         }
         else
@@ -4882,6 +4879,13 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
 
 // description:
 // Help function for function buildview to evaluate the workflow of an object and return the manipulated view store, view name, workflow ID, workflow role and the encrypted workflow token.
+// Workflow roles:
+// 0 ... user is not a member of workflow (no permissions)
+// 1 ... read
+// 2 ... read + edit
+// 3 ... read + publish
+// 4 ... read + edit + publish 
+// 5 ... no workflow  (users permissions apply)
 
 function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $contentdata="", $buildview="cmsview", $viewstore="", $user)
 {
@@ -13264,13 +13268,14 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 // ---------------------- editmediaobject -----------------------------
 // function: editmediaobject()
 // input: publication name [string], location [string], object name [string], format (file extension w/o dot) [string] (optional), 
-//        type of image/video/audio file [thumbnail,origthumb(thumbail made from original video/audio),original,any other string present in $mgmt_imageoptions] (optional)
+//        type of image/video/audio file [thumbnail,origthumb(thumbail made from original video/audio),original,any other string present in $mgmt_imageoptions] (optional),
+//        base64 encoded media data as alternative to server-side conversion using createmedia [string] (optional), user name [string]
 // output: result array / false on error (saves original or thumbnail media file of an object, for thumbnail only jpeg format is supported as output), user name
 
 // description:
 // This function mainly uses function createmedia to render the objects media, but at the same time takes care of versioning and the object name, if the file extension has been changed
 
-function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbnail", $user)
+function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbnail", $mediadata="", $user)
 {
   global $wf_token, $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $hcms_lang, $lang;
 
@@ -13299,11 +13304,50 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
     $mediafile_orig = $pageobject_info['media'];
     $mediafile_location = getmedialocation ($site, $mediafile_orig, "abs_path_media").$site."/";
 
-    // create new version
+    // get the file extension of the old file
+    $file_ext_old = strtolower (strrchr ($mediafile_orig, "."));
+    // get file name without extension of the old file
+    $mediafile_nameonly = strrev (substr (strstr (strrev ($mediafile_orig), "."), 1));
+    // get object name without extension
+    $page_nameonly = strrev (substr (strstr (strrev ($pagefile_info['name']), "."), 1));
+
+    // create new version of the media file
     $createversion = createversion ($site, $mediafile_orig);
 
+    // write provided base64 encoded media file
+    if ($createversion && !empty ($mediafile_orig) && !empty ($mediadata))
+    {
+      // if symbolic link
+      if (is_link ($mediafile_location.$mediafile_orig))
+      {
+        $target_path = readlink ($mediafile_location.$mediafile_orig);
+        $target_location = getlocation ($target_path);
+      }
+      else $target_location = $mediafile_location;
+
+      // detect file extension by its mime-type
+      $file_ext_new = getbase64fileextension ($mediadata);
+
+      // new media file name
+      if ($file_ext_old != $file_ext_new) $mediafile_new = $mediafile_nameonly.$file_ext_new;
+      else $mediafile_new = $mediafile_orig;
+
+      $result_save = base64_to_file ($mediadata, $target_location, $mediafile_new);
+
+      // create new thumbnail
+      $thumbnail_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_new, "jpg", "thumbnail", true);
+ 
+      // remote client
+      remoteclient ("save", "abs_path_media", $site, $mediafile_location, "", $mediafile_new, "");
+
+      // save to cloud storage
+      if (!empty ($result_save) && function_exists ("savecloudobject")) savecloudobject ($site, $mediafile_location, $mediafile_new, $user);
+    }
     // render media file of object
-    if ($createversion) $mediafile_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_orig, $format, $type);
+    elseif ($createversion)
+    {
+      $mediafile_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_orig, $format, $type);
+    }
     else $mediafile_new = false;
 
     // if successful
@@ -13311,14 +13355,8 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
     {
       $processresult = true;
 
-      // get the file extension of the old file
-      $file_ext_old = strtolower (strrchr ($mediafile_orig, "."));
       // get the file extension of the new file
       $file_ext_new = strtolower (strrchr ($mediafile_new, "."));
-      // get file name without extension of the old file
-      $mediafile_nameonly = strrev (substr (strstr (strrev ($mediafile_orig), "."), 1));
-      // get object name without extension
-      $page_nameonly = strrev (substr (strstr (strrev ($pagefile_info['name']), "."), 1));
 
       // rename object file extension if file extension has changed due to coversion
       if ($file_ext_old != $file_ext_new)
@@ -13333,6 +13371,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
         if ($filedata != false)
         {
           $savepage = savefile ($location, $page, $filedata);
+
           // remote client
           remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");
 
@@ -18456,7 +18495,7 @@ function savelog ($error, $logfile="event")
     {
       foreach ($log_array as $log)
       {
-        if (strpos ($log, "|error|") > 0 || strpos ($log, "|warning|") > 0)
+        if (is_string ($log) && strpos ($log, "|error|") > 0 || strpos ($log, "|warning|") > 0)
         {
           // prepare log data
           list ($date, $source, $type, $errorcode, $description) = explode ("|", trim ($log));
@@ -19416,17 +19455,17 @@ function rewrite_homepage ($site, $rewrite_type="forward")
 
 // --------------------------------------- load_csv -------------------------------------------
 // function: load_csv ()
-// input: path to CSV file [string], delimiter [string] (optional), enclosure [string] (optional), character set [string] (optional)
+// input: path to CSV file [string], delimiter [string] (optional), enclosure [string] (optional), character set of source data [string] (optional), character set of output data [string] (optional)
 // output: array / false on error
 
 // description:
 // Analyzes the content from the CSV file and detects delimiter and enclosure characters if left empty. On success the data will be returned as array starting with row index of 1.
 
-function load_csv ($file, $delimiter=";", $enclosure='"', $charset="utf-8")
+function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8", $charset_to="utf-8")
 {
   global $mgmt_config, $eventsystem;
 
-  // define delimiters and enclosures
+  // define possible delimiters and enclosures
   $delimiters_csv = array (",", ";", "\t", "|");
   $enclosures_csv = array ('"', "'");
 
@@ -19434,20 +19473,31 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset="utf-8")
 
   if ($file != "" && is_file ($file))
   {
-    // convert to input character set
     $data = file_get_contents ($file);
 
+    // prepare and save CSV data
     if ($data != "")
     {
-      // detect
-      $charset_csv = mb_detect_encoding ($data, mb_detect_order(), true);
+      // remove UTF-8 BOM
+      $data = remove_utf8_bom ($data);
 
-      // convert if not the same character set
-      if ($charset_csv != "" && strtolower ($charset_csv) != strtolower ($charset))
+      // detect charset
+      if (empty ($charset_from)) 
       {
-        $data = convertchars ($data, "", $charset);
-        if ($data != "") $save = file_put_contents ($file, $data);
+        $charset_from = mb_detect_encoding ($data, mb_detect_order(), true);
+
+        // use UTF-8 as default
+        if (empty ($charset_from)) $charset_from = "utf-8";
       }
+
+      // convert characters
+      if (!empty ($charset_from) && !empty ($charset_to) && strtolower ($charset_from) != strtolower ($charset_to))
+      {
+        $data = convertchars ($data, $charset_from, $charset_to);
+      }
+
+      // save CSV
+      if ($data != "") $save = file_put_contents ($file, $data);
     }
 
     $row = 0;
@@ -19575,18 +19625,23 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset="utf-8")
 // ------------------------------------- create_csv ------------------------------------------
 
 // function: create_csv ()
-// input: associative data with row-id and column name as keys [array], file name [string] (optonal), file path for saving the CSV file [string] (optional), delimiter [string] (optional), enclosure [string] (optional), character set [string] (optional)
+// input: associative data with row-id and column name as keys [array], file name [string] (optonal), file path for saving the CSV file [string] (optional), delimiter [string] (optional), enclosure [string] (optional), character set of input data [string] (optional), character set of output data [string] (optional), add UTF-8 BOM [boolean] (optional)
 // output: true / false on error
 
 // description:
-// Creates a CSV file from an associative data array and returns the file as download or writes the file to the file system if a valid path to a directory has been provided. The encoding is UTF-16LE in order to support MS Excel.
+// Creates a CSV file from an associative data array and returns the file as download or writes the file to the file system if a valid path to a directory has been provided.
+// For support of MS Excel the encoding should be UTF-16LE in older versions or an UTF-8 BOM need to be added for newer versions of Excel.
 
-function create_csv ($assoc_array, $filename="export.csv", $filepath="php://output", $delimiter=";", $enclosure='"', $charset="utf-8")
+function create_csv ($assoc_array, $filename="export.csv", $filepath="php://output", $delimiter=";", $enclosure='"', $charset_from="utf-8", $charset_to="utf-8", $add_bom=false)
 {
   if (is_array ($assoc_array) && sizeof ($assoc_array) > 0)
   {
     // remember input path
     $mempath = $filepath;
+
+    // define new character set for MS Excel (not required anymore due to UTF-8 BOM)
+    // if (!empty ($excel)) $charset_to = "UTF-16LE";
+    // else $charset_to = $charset;
 
     // http header for file download
     if (!is_dir ($mempath))
@@ -19596,7 +19651,7 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
       header('Expires: 0');
       header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
       header('Cache-Control: private', false);
-      header('Content-Type: text/csv; charset=UTF-16LE');
+      header('Content-Type: text/csv; charset='.$charset_to);
       header('Content-Disposition: attachment;filename='.$filename);
     }
     // absolute path to file
@@ -19610,13 +19665,16 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
 
     if ($fp)
     {
+      // Excel requires UTF-8 BOM
+      if (!empty ($add_bom)) fputs ($fp, "\xEF\xBB\xBF");
+      
       // use first record for header titles
       fputcsv ($fp, array_keys (reset ($assoc_array)), $delimiter, $enclosure);
 
       foreach ($assoc_array as $values)
       {
-        // For MS EXCEL: Make sure that you convert your UTF-8 text to UTF-16LE
-        $values = convertchars ($values, $charset, "UTF-16LE");
+        // convert characters
+        if (strtolower ($charset_from) != strtolower ($charset_to)) $values = convertchars ($values, $charset_from, $charset_to);
 
         // write CSV record based on array holding all values
         fputcsv ($fp, $values, $delimiter, $enclosure);

@@ -1,4 +1,4 @@
-﻿CKEDITOR.plugins.setLang('youtube', 'it', {
+CKEDITOR.plugins.setLang('youtube', 'it', {
 	button : 'Incorpora video Youtube',
 	title : 'Incorpora video Youtube',
 	txtEmbed : 'Incolla qui il codice di incorporamento',
@@ -10,6 +10,7 @@
 	chkPrivacy : 'Abilita la protezione della privacy',
 	chkOlderCode : 'Usa il vecchio codice di incorporamento',
 	chkAutoplay : 'Autoplay',
+	chkControls : 'Mostra i controlli del player',
 	noCode : 'Devi inserire un codice di incorporamento o un URL',
 	invalidEmbed : 'Il codice di incorporamento inserito non sembra valido',
 	invalidUrl : 'L\'URL inserito non sembra valido',

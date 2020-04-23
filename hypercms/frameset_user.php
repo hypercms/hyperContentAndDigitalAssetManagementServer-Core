@@ -59,13 +59,13 @@ function closePopup ()
       <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
     </div>
     <div class="hcmsWorkplaceExplorer" style="overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:9000;">
-      <iframe id="objectview" name="objectview" frameBorder="0" src="" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> <?php if (!$is_iphone) echo 'style="width:100%; height:100%; border:0; margin:0; padding:0;"'; ?> allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+      <iframe id="objectview" name="objectview" frameBorder="0" src="" style="<?php if (!$is_iphone) echo "width:100%; height:100%; border:0; margin:0; padding:0;"; ?> <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
     </div>
   </div>
 
-  <iframe id="controlFrame" name="controlFrame" scrolling="no" src="control_user_menu.php?site=<?php echo url_encode ($site); ?>&group=*all*" frameborder="0" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="controlFrame" name="controlFrame" src="control_user_menu.php?site=<?php echo url_encode ($site); ?>&group=*all*" frameborder="0" scrolling="no" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;">
-    <iframe id="mainFrame" name="mainFrame" scrolling="no" src="user_objectlist.php?site=<?php echo url_encode ($site); if (valid_publicationname ($site)) echo "&group=*all*"; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+    <iframe id="mainFrame" name="mainFrame" src="user_objectlist.php?site=<?php echo url_encode ($site); if (valid_publicationname ($site)) echo "&group=*all*"; ?>" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
   </div>
   
 </body>

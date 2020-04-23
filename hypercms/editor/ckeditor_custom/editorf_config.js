@@ -29,7 +29,7 @@ CKEDITOR.editorConfig = function( config )
     [
       { name: 'document',    items : [ 'Source','-','Print','-','Templates' ] },
       { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','SpellChecker','Scayt' ] },
+      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','Scayt' ] },
       { name: 'tools',       items : [ 'ShowBlocks' ] },
       '/',
       { name: 'basicstyles', items : [ 'TextColor','BGColor','-','Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
@@ -48,7 +48,7 @@ CKEDITOR.editorConfig = function( config )
     [
       { name: 'document',    items : [ 'Source','-','Print','-','Templates' ] },
       { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','SpellChecker','Scayt' ] },
+      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','Scayt' ] },
       { name: 'tools',       items : [ 'ShowBlocks' ] },
       '/',
       { name: 'basicstyles', items : [ 'TextColor','BGColor','-','Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
@@ -70,7 +70,7 @@ CKEDITOR.editorConfig = function( config )
   config.toolbar_PDF = 
     [
       { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','SpellChecker','Scayt' ] },
+      { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','Scayt' ] },
       { name: 'basicstyles', items : [ 'TextColor','BGColor','-','Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
       { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
       { name: 'insert',      items : [ 'Image','Table','HorizontalRule','SpecialChar' ] },
@@ -79,7 +79,7 @@ CKEDITOR.editorConfig = function( config )
 
   config.resize_dir = 'both';
   config.toolbar = 'Default';
-  config.skin = 'hypercms';
+  config.skin = 'moono-lisa';
   config.filebrowserWindowWidth = 600;
   config.filebrowserWindowHeight = 600;
   
@@ -98,32 +98,5 @@ CKEDITOR.editorConfig = function( config )
   CKEDITOR.plugins.addExternal( 'hcms_video', customPath + '/ckeditor_custom/hcms_video/plugin.js' );
   
   // Enable plugin
-  config.extraPlugins = "hcms_linkbrowsebuttons,hcms_video,youtube,scayt";
+  config.extraPlugins = "hcms_linkbrowsebuttons,hcms_video,youtube";
 };
-
-// We need this or else all our elements would've an automatic \n after each save
-/*CKEDITOR.on('instanceReady', function( ev ) {
-  var blockTags = ['div','h1','h2','h3','h4','h5','h6','p','pre','li','blockquote','ul','ol','table','thead','tbody','tfoot','td','th'];
-
-  for (var i = 0; i < blockTags.length; i++) {
-    ev.editor.dataProcessor.writer.setRules( '*', 
-      {
-        indent : true,
-        breakBeforeOpen : false,
-        breakAfterOpen : false,
-        breakBeforeClose : false,
-        breakAfterClose : false
-      }
-    );
-  }
-});*/
-// We need this or our dialogs would all be fixed and on small windows you couldn't click on the 
-// bottom Ok, Cancel buttons.
-/*CKEDITOR.on( 'dialogDefinition', function( event ) {
-    //svar dialogName = event.data.name;
-    var dialogDefinition = event.data.definition;
-    dialogDefinition.dialog.parts.dialog.setStyles(
-      {
-          position : 'absolute'
-      });
-});*/

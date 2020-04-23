@@ -84,7 +84,7 @@ function minNavFrame (width)
   {
     width = typeof width !== 'undefined' ? width : -280;
 
-    document.getElementById('navLayer').style.transition = "1s";
+    document.getElementById('navLayer').style.transition = "0.3s";
     document.getElementById('navLayer').style.left = width + 'px';
   }
 }
@@ -97,7 +97,7 @@ function maxNavFrame (width)
   {
     width = typeof width !== 'undefined' ? width : 0;
 
-    document.getElementById('navLayer').style.transition = "1s";
+    document.getElementById('navLayer').style.transition = "0.3s";
     document.getElementById('navLayer').style.left = width + 'px';
   }
 }
@@ -117,7 +117,7 @@ function openChat ()
 
   if (chatsidebar)
   {
-    chatsidebar.style.transition = "1s";
+    chatsidebar.style.transition = "0.3s";
     if (chatsidebar.style.right == "0px") chatsidebar.style.right = "-320px";
     else chatsidebar.style.right = "0px";
   }
@@ -223,7 +223,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <!-- chat panel -->
   <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
   <div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:36px; right:-320px; bottom:0; width:300px; z-index:100; overflow:auto; -webkit-overflow-scrolling:touch;">
-    <iframe id="chatFrame" scrolling="auto" src="chat.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+    <iframe id="chatFrame" src="chat.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
   </div>  
   <?php } ?>
 

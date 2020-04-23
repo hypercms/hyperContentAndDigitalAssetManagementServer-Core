@@ -146,13 +146,13 @@ function jumpTo (target)
 {
   site = document.forms['selectboxes'].elements['site'].options[document.selectboxes.site.selectedIndex].value;
   
-  if (eval (document.forms['selectboxes'].elements['queueuser']))
+  if (document.forms['selectboxes'] && document.forms['selectboxes'].elements['queueuser'])
   {
     queueuser = document.forms['selectboxes'].elements['queueuser'].options[document.selectboxes.queueuser.selectedIndex].value;
   }
   else queueuser = "";
   
-  eval (target + ".location='queue_objectlist.php?site=" + site + "&queueuser=" + queueuser + "'");
+  eval (target + ".location='queue_objectlist.php?site=" + encodeURIComponent(site) + "&queueuser=" + encodeURIComponent(queueuser) + "'");
 }
 </script>
 </head>
@@ -167,7 +167,7 @@ function jumpTo (target)
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <td><b><?php echo getescapedtext ($hcms_lang['publishing-queue-management'][$lang]); ?></b></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['publishing-queue-management'][$lang]); ?></td>
     </tr>
     <tr>
       <td>

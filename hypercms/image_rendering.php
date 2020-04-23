@@ -274,11 +274,6 @@ $token_new = createtoken ($user);
 {
   font-size: 11px;
 }
-
-#renderOptions input[type=text], #renderOptions select
-{
-  padding: 3px;
-}
 </style>
 
 <script>
@@ -508,7 +503,8 @@ function submitform (check)
   
   if (result == true)
   {
-    hcms_showHideLayers('savelayer','','show');
+    // saving screen
+    if (document.getElementById('savelayer')) document.getElementById('savelayer').style.display = 'inline';
     document.forms['mediaconfig'].submit();
   }
   else return false;
@@ -517,7 +513,7 @@ function submitform (check)
 function openerReload ()
 {
   // reload main frame
-  if (opener != null && eval (opener.parent.frames['mainFrame']))
+  if (opener && opener.parent.frames['mainFrame'])
   {
     opener.parent.frames['mainFrame'].location.reload();
   }
@@ -938,7 +934,8 @@ function showPreview ()
 {  
   if (!checkform()) return false;
   
-  hcms_showHideLayers('savelayer','','show');
+  // saving screen
+  if (document.getElementById('savelayer')) document.getElementById('savelayer').style.display = 'inline';
   
   var link = "<?php echo $mgmt_config['url_path_cms']; ?>service/renderimage.php?site=<?php echo url_encode ($site); ?>&media=<?php echo url_encode ($mediafile); ?>&cat=<?php echo url_encode ($cat); ?>&location=<?php echo url_encode ($location_esc); ?>&token=<?php echo $token_new; ?>";
     
@@ -1082,13 +1079,18 @@ function showPreview ()
     dataType: 'json'
   })
   .success(function(data) {
-     hcms_showHideLayers('savelayer','','hide');
-     if(data.success) {
-       // deprecated since version 6.2.7: hcms_openWindow(data.imagelink, 'preview', '', data.imagewidth, data.imageheight);
-       openimageview (data.imagelink);
-     } else {
-       alert(data.message);
-     }
+    // saving screen
+    if (document.getElementById('savelayer')) document.getElementById('savelayer').style.display = 'none';
+
+    if (data.success)
+    {
+      // deprecated since version 6.2.7: hcms_openWindow(data.imagelink, 'preview', '', data.imagewidth, data.imageheight);
+      openimageview (data.imagelink);
+    }
+    else
+    {
+      alert(data.message);
+    }
   });
 }
 
@@ -1154,15 +1156,7 @@ $(window).load( function()
 <body class="hcmsWorkplaceGeneric">
 
 <!-- saving --> 
-<div id="savelayer" class="hcmsWorkplaceGeneric" style="position:absolute; width:100%; height:100%; z-index:999; left:0px; top:0px; visibility:hidden;">
-  <table class="hcmsTableStandard" style="width:100%; height:100%;">
-    <tr>
-      <td style="text-align:center; vertical-align:middle;"><b><?php echo getescapedtext ($hcms_lang['the-file-is-being-processed'][$lang]); ?></b>
-      <br /><br />
-      <img src="<?php echo getthemelocation(); ?>img/loading.gif"></td>
-    </tr>
-  </table>
-</div>
+<div id="savelayer" class="hcmsLoadScreen" style="display:none;"></div>
 
 <?php
 echo showmessage ($show, 600, 80, $lang, "position:fixed; left:50px; top:150px;");
@@ -1177,13 +1171,13 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
 <div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin:-4px 10px 0px 10px;" class="hcmsMediaRendering">    
   <!-- start edit image -->
   <form name="mediaconfig" id="mediaconfig" action="service/renderimage.php" method="post">
-    <input type="hidden" id="action" name="action" value="rendermedia">
-    <input type="hidden" name="savetype" value="editor_so">
-    <input type="hidden" name="site" value="<?php echo $site; ?>">
-    <input type="hidden" name="location" value="<?php echo $location_esc; ?>">
-    <input type="hidden" name="cat" value="<?php echo $cat; ?>">
-    <input type="hidden" name="page" value="<?php echo $page; ?>">
-    <input type="hidden" name="media" value="<?php echo $mediafile; ?>">
+    <input type="hidden" id="action" name="action" value="rendermedia" />
+    <input type="hidden" name="savetype" value="editor_so" />
+    <input type="hidden" name="site" value="<?php echo $site; ?>" />
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
+    <input type="hidden" name="page" value="<?php echo $page; ?>" />
+    <input type="hidden" name="media" value="<?php echo $mediafile; ?>" />
     <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
@@ -1310,12 +1304,12 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
       <div style="margin-left:20px" class="row">
         <strong><?php echo getescapedtext ($hcms_lang['adjust'][$lang]); ?></strong>
       </div>
-      <div>
+      <div class="row">
         <input type="checkbox" id="chbx_brightness" name="use_brightness" value="1" onclick="toggle_brightness();" />
         <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang]); ?></label>
         <input name="brightness" type="text" id="brightness" size="4" value="0" />
       </div>
-      <div>
+      <div class="row">
          <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
         <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang]); ?></label>
         <input name="contrast" type="text" id="contrast" size="4" value="0" />
@@ -1350,7 +1344,7 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
       </div>
       <div style="margin-left:20px">
         <label for="imageformat"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?></label>
-        <select name="imageformat" id="imageformat">
+        <select name="imageformat" id="imageformat" style="width:">
           <?php 
             $file_ext_old = strtolower (strrchr ($mediafile, ".")); 
             
@@ -1370,6 +1364,7 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
       <button type="button" class="hcmsButtonGreen" name="save" onclick="submitform(true);"><img src="<?php echo getthemelocation()."img/button_save.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></button>
       <button type="button" class="hcmsButtonGreen" name="preview" onclick="showPreview();"><img src="<?php echo getthemelocation()."img/button_file_preview.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></button>
     </div>
+
   </form>
   <!-- end edit image -->
 </div>

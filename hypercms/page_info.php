@@ -59,13 +59,9 @@ $filecount = 0;
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/click.js" type="text/javascript"></script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
-
-<!-- top bar -->
-<?php echo showtopbar ($hcms_lang['information'][$lang], $lang); ?>
 
 <!-- content -->
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">

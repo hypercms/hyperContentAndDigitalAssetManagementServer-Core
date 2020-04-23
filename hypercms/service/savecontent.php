@@ -553,7 +553,7 @@ if ($usedby == "" || $usedby == $user)
 
       	if (!$auto)
         {
-         	// define meta tag
+         	// define forward to URL
          	if ($savetype == "editorf_so" || $savetype == "editorf_wysiwyg")
           {
          	  $add_onload =  "document.location='".$mgmt_config['url_path_cms']."editor/editorf.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&contenttype=".url_encode($contenttype)."&width=".url_encode($width)."&height=".url_encode($height)."&toolbar=".url_encode($toolbar)."';\n";
@@ -589,7 +589,11 @@ if ($usedby == "" || $usedby == $user)
          	} 
          	elseif ($savetype == "imagerendering_so")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."image_rendering.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
+            // define image editor
+            if (!empty ($mgmt_config['imageeditor']) && strtolower ($mgmt_config['imageeditor']) == "minipaint") $imageeditor = "image_minipaint.php";
+            else $imageeditor = "image_rendering.php";
+
+            $add_onload =  "document.location='".$mgmt_config['url_path_cms'].$imageeditor."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
           }
          	elseif ($savetype == "imageviewerconfig_so")
          	{

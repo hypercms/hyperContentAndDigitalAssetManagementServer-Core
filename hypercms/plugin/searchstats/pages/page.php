@@ -62,7 +62,7 @@ function showkeywordlist ($keywords, $sort_type="value", $css="hcmsButtonGreen")
       
       $show .= "
       <tr>
-        <td><button class=\"".$css."\" style=\"max-width:420px; overflow:hidden; text-overflow:ellipsis;\" onclick=\"location='../../../frameset_objectlist.php?action=base_search&search_expression=".urlencode($value)."';\">".$value." ".$count."</button></td>
+        <td><button class=\"".$css."\" style=\"max-width:420px; overflow:hidden; text-overflow:ellipsis;\" onclick=\"location='../../../frameset_objectlist.php?action=base_search&search_expression=".urlencode($value)."';\">".htmlspecialchars($value)." ".$count."</button></td>
       </tr>";
     }
       

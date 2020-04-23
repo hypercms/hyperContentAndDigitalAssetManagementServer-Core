@@ -72,16 +72,17 @@ if (checktoken ($token, $user) && valid_publicationname ($site))
   {
     if (!empty ($_FILES["importfile"]) && move_uploaded_file ($_FILES["importfile"]["tmp_name"], $file_csv))
     {
-      $import = load_csv ($file_csv, "", "", "utf-8");
+      // load imported CSV file and try to detect delimiter, enclosure, and character set
+      $import = load_csv ($file_csv, "", "", "", "utf-8");
 
       // the index starts with 1
       if (is_array ($import) && !empty ($import[1]['level']))
       {
-        $save = create_csv ($import, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8");
+        $save = create_csv ($import, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8", "utf-8", false);
       }
       
       // remove uploaded file on error
-      if (empty ($save)) unlink ($file_csv);
+      // if (empty ($save)) unlink ($file_csv);
     }
     
     if (!empty ($save)) $show = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang]);
@@ -90,11 +91,11 @@ if (checktoken ($token, $user) && valid_publicationname ($site))
   // export as CSV
   elseif ($action == "export" && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
   {
-    if (is_file ($file_csv)) $export = load_csv ($file_csv, "", "", "utf-8");
+    if (is_file ($file_csv)) $export = load_csv ($file_csv, ";", '"', "utf-8", "utf-8");
     else $export = loadtaxonomy ($site);
 
     // CSV export
-    if (is_array ($export)) create_csv ($export, "taxonomy.csv");
+    if (is_array ($export)) create_csv ($export, "taxonomy.csv", "php://output", ";", '"', "utf-8", "utf-8", true);
     else $show = getescapedtext ($hcms_lang['configuration-not-available'][$lang]);
   }
   // create template
@@ -210,14 +211,14 @@ function checkForm_import()
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <td><b><?php echo $pagecomp; ?></b></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($site." &gt; ".$pagecomp); ?></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo $pagecomp; ?></span>
+  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$pagecomp); ?></span>
   <?php } ?>
 </div>
 

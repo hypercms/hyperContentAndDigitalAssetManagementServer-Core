@@ -215,22 +215,13 @@ function toggledelete (source)
     {
       reset ($files_v);
 
-      $color = false;
-      $i = 0;
+      $rowcolor = "";
 
       foreach ($files_v as $date_v => $file_v)
       {
         // define row color
-        if ($color == true)
-        {
-          $rowcolor = "hcmsRowData1";
-          $color = false;
-        }
-        else
-        {
-          $rowcolor = "hcmsRowData2";
-          $color = true;
-        }
+        if ($rowcolor == "hcmsRowData1") $rowcolor = "hcmsRowData2";
+        else $rowcolor = "hcmsRowData1";
 
         echo "
         <tr class=\"".$rowcolor."\">
@@ -240,8 +231,6 @@ function toggledelete (source)
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"radio\" name=\"actual\" value=\"".$file_v."\" /></td>
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" class=\"delete\" /></td>
         </tr>";
-
-        $i++;
       }
     }
 

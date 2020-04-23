@@ -30,6 +30,31 @@ $published_only = getrequest_esc ("published_only");
 $tempfile = getrequest_esc ("tempfile", "locationname");
 $from_page = getrequest_esc ("from_page");
 $token= getrequest_esc ("token");
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>hyperCMS</title>
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="theme-color" content="#000000" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<script src="javascript/click.js" type="text/javascript"></script>
+</head>
+
+<body class="hcmsWorkplaceGeneric">
+
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
+
+<?php
+// flush
+if ($force == "start")
+{
+  ob_implicit_flush (true);
+  ob_end_flush ();
+  sleep (1);
+}
 
 // ==================================== stage 1 (only for cut, copy, linkcopy) ====================================
 
@@ -154,7 +179,6 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
-
 // initalize
 $add_javascript = "window.focus();";
 $count = 0;
@@ -191,6 +215,7 @@ if ($authorized == true || $force == "stop")
   // start/continue process
   if ($force == "start" || $force == "continue")
   {
+    $multiobject_temp = array();
     $multiobject_array = array();
 
     // define multiobject array as input
@@ -274,20 +299,25 @@ if ($authorized == true || $force == "stop")
     {
       // not suitable for EasyEdit
       $add_javascript = "
-    if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();  
-    self.close();";
+    if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
+
+    self.close();
+    ";
     }
     elseif ($action == "paste" && $method == "cut")
     {
       // not suitable for EasyEdit
       $add_javascript = "
     // reload root node in explorer
-    if (opener.document.getElementById('a_".$cat."_".$site."')) opener.document.getElementById('a_".$cat."_".$site."').click();
+    if (opener && opener.document.getElementById('a_".$cat."_".$site."')) opener.document.getElementById('a_".$cat."_".$site."').click();
+
     // reload objectlist from explorer
-    if (opener.parent.frames['workplFrame'] && opener.parent.frames['workplFrame'].frames['mainFrame']) opener.parent.frames['workplFrame'].frames['mainFrame'].location.reload();
+    if (opener && opener.parent.frames['workplFrame'] && opener.parent.frames['workplFrame'].frames['mainFrame']) opener.parent.frames['workplFrame'].frames['mainFrame'].location.reload();
     // reload objectlist from itself
-    else if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); 
-    self.close();";
+    else if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
+
+    self.close();
+    ";
     }  
     elseif ($action == "delete" || $action == "deletemark" || $action == "deleteunmark" || $action == "restore" || $action == "emptybin")
     {
@@ -296,43 +326,52 @@ if ($authorized == true || $force == "stop")
       {
         // not suitable for EasyEdit
         $add_javascript = "
-    if (opener.parent.frames['controlFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?virtual=1&action=recyclebin';
-    if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();  
-    self.close();";
+    // reload control
+    if (opener && opener.parent.frames['controlFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?virtual=1&action=recyclebin';
+
+    // reload objectlist
+    if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
+
+    self.close();
+    ";
       }
       else
       {
         // not suitable for EasyEdit
         $add_javascript = "
-    if (opener.parent.frames['controlFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
-    if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();  
-    self.close();";
+    // reload control
+    if (opener && opener.parent.frames['controlFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+
+    // reload objectlist
+    if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
+
+    self.close();
+    ";
       }
     }
     elseif ($action == "publish" || $action == "unpublish")
     {
       // not suitable for EasyEdit
       $add_javascript = "
-      if (opener && opener.parent)
-      {
-        // called from objectlist
-        if (opener.parent.frames['mainFrame'] && opener.parent.frames['mainFrame'].location) opener.parent.frames['mainFrame'].location.reload(); 
-        
-        // called from explorer
-        if (opener.parent.frames['workplFrame'])
-        {
-          if (opener.parent.frames['workplFrame'].frames['mainFrame'] && opener.parent.frames['workplFrame'].frames['mainFrame'].location) opener.parent.frames['workplFrame'].frames['mainFrame'].location.reload();
-        }
-        
-        // called from control_content_menu
-        if (opener.parent.frames['objFrame'] && opener.parent.frames['objFrame'].location) opener.parent.frames['objFrame'].location.reload();
-      }
+    // called from control content, reload object view
+    if (opener && opener.parent.frames['objFrame']) opener.parent.frames['objFrame'].location.reload();
 
-      self.close();";
+    // called from objectlist or control, reload objectlist
+    if (opener && opener.parent.frames['mainFrame'])
+    {
+      if (opener.parent.frames['mainFrame'].location.pathname.indexOf('explorer_objectlist.php') > -1) opener.parent.frames['mainFrame'].location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+    }
+    // called from explorer, reload workplace (control + objectlist)
+    else if (opener && opener.parent.frames['workplFrame'] && opener.parent.frames['workplFrame'].frames['mainFrame']) opener.parent.frames['workplFrame'].frames['mainFrame'].location.reload();
+
+    self.close();
+    ";
     }       
     else
     {
-      $add_javascript = "self.close();\n";  
+      $add_javascript = "
+    self.close();
+    ";  
     }
   
     $status = $maxcount." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
@@ -342,7 +381,9 @@ if ($authorized == true || $force == "stop")
   {
     deletefile ($mgmt_config['abs_path_temp'], session_id().".coll.dat", 1);
   
-    $add_javascript = "self.close();\n";
+    $add_javascript = "
+    self.close();
+    ";
   
     $status = ($maxcount - $count)." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
   }
@@ -359,29 +400,6 @@ if ($maxcount > 0)
   if ($progress == 0) $progress = 1;
 }
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-<title>hyperCMS</title>
-<meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="theme-color" content="#000000" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="javascript/click.js" type="text/javascript"></script>
-<script>
-window.innerHeight = 120;
-
-function refreshpopup ()
-{
-  <?php echo $add_javascript; ?>
-}
-
-setTimeout ('refreshpopup()', 1000);
-<?php if ($force == "start" || $force == "finish") echo "window.focus();"; ?>
-</script>
-</head>
-
-<body class="hcmsWorkplaceGeneric">
 
 <div style="display:block; width:100%; text-align:center; vertical-align:middle;">
   <p class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?> <?php echo $status; ?></p>
@@ -407,6 +425,25 @@ setTimeout ('refreshpopup()', 1000);
     <button class="hcmsButtonBlue" type="submit" /><?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?></button>
   </form>
 </div>
+
+<script type="text/javascript">
+// load screen
+if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'none';
+
+// set window height
+window.innerHeight = 120;
+
+// reload status window
+function refreshpopup ()
+{
+  <?php echo $add_javascript; ?>
+}
+
+setTimeout ('refreshpopup()', 1000);
+
+// focus on start and finish
+<?php if ($force == "start" || $force == "finish") echo "window.focus();\n"; ?>
+</script>
 
 </body>
 </html>

@@ -101,7 +101,7 @@ scriptend]
       $iframe_zoom_height = $iframe_standard_height;
       
     $iframe_zoom_width = 	$imageContainer_width + $zoomWindow_width + (2 * $zoomWindow_border)+1;
-    $embed_code = "<div style=\"width: {$imageContainer_width}px; height: {$iframe_standard_height}px; position: relative; z-index: 2147483647;\" onmouseover=\"document.getElementById('frame_$uniqid').style.height = $iframe_zoom_height + 'px'; document.getElementById('frame_$uniqid').style.width = $iframe_zoom_width + 'px';\" onmouseout=\"document.getElementById('frame_$uniqid').style.height = $iframe_standard_height + 'px'; document.getElementById('frame_$uniqid').style.width = $imageContainer_width + 'px';\"><iframe id='frame_$uniqid' src='{$mgmt_config['url_path_cms']}?wl=$hash' scrolling='no' frameborder=0 border=0 style='width: {$imageContainer_width}px; height: {$iframe_standard_height}px;'></iframe></div>";
+    $embed_code = "<div style=\"width: {$imageContainer_width}px; height: {$iframe_standard_height}px; position: relative; z-index: 2147483647;\" onmouseover=\"document.getElementById('frame_$uniqid').style.height = $iframe_zoom_height + 'px'; document.getElementById('frame_$uniqid').style.width = $iframe_zoom_width + 'px';\" onmouseout=\"document.getElementById('frame_$uniqid').style.height = $iframe_standard_height + 'px'; document.getElementById('frame_$uniqid').style.width = $imageContainer_width + 'px';\"><iframe id='frame_$uniqid' src='{$mgmt_config['url_path_cms']}?wl=$hash' frameborder='0' style='border:0; width:{$imageContainer_width}px; height:{$iframe_standard_height}px; overflow:hidden;'></iframe></div>";
   }
   else
   {
@@ -118,7 +118,7 @@ scriptend]
       <hr/>
       <strong>Online view</strong>
       <br />
-      [hyperCMS:scriptbegin if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_cms']."?wl=$hash' scrolling='no' frameborder=0 border=0 width='90%' height='600' style='border:1px solid grey;'></iframe>"; scriptend]
+      [hyperCMS:scriptbegin if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_cms']."?wl=$hash' frameborder='0' style='width:90%; height:600px; border:1px solid grey; overflow:hidden;'></iframe>"; scriptend]
     </div>
   </body>
 </html>

@@ -96,7 +96,21 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=0.6, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css" />
+<style type="text/css">
+#contentLayer
+{
+  display: block;
+}
+
+@media screen and (max-width: 320px)
+{
+  #contentLayer
+  {
+    display: none;
+  }
+}
+</style>
 
 <script src="javascript/main.js" type="text/javascript"></script>
 
@@ -120,7 +134,6 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 
 // memory for uploaded objects
 var editobjects = [];
-
   
 // when document is ready
 $(document).ready(function ()
@@ -1064,12 +1077,18 @@ $(document).ready(function ()
 function frameReload (objectpath, timeout)
 {
   // reload main frame (upload by control objectlist)
+  // if new upload window
   if (opener && opener.parent.frames['mainFrame'])
   {
     opener.parent.frames['mainFrame'].location.reload();
   }
+  // if upload layer in main frame
+  else if (window.top && window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame'])
+  {
+    window.top.frames['workplFrame'].frames['mainFrame'].location.reload();
+  }
   
-  // reload explorer frame (upload by component explorer)
+  // reload explorer frame (upload by component explorer in new upload window)
   if (opener && opener.parent.frames['navFrame2'])
   {
     opener.parent.frames['navFrame2'].location.reload();
@@ -1079,7 +1098,13 @@ function frameReload (objectpath, timeout)
   {
     if (objectpath == "")
     {
+      // reload same iframe source
       var iframe = parent.document.getElementById('objFrame');
+
+      // start file conversion with async AJAX request
+      // hcms_ajaxService (iframe.src);
+
+      // reload object view
       iframe.src = iframe.src;
     }
     else
@@ -1089,10 +1114,14 @@ function frameReload (objectpath, timeout)
       var location = objectpath.substring(0, index);
       var newpage = objectpath.substr(index);
 
-      parent.document.getElementById('objFrame').src='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
+      // start file conversion with async AJAX request
+      // hcms_ajaxService ('<?php echo $mgmt_config['url_path_cms']; ?>page_view.php?ctrlreload=yes&location=' +  encodeURIComponent(location) + '&page=' + encodeURIComponent(newpage));
+
+      // reload object view
+      parent.document.getElementById('objFrame').src='page_view.php?ctrlreload=yes&location=' +  encodeURIComponent(location) + '&page=' + encodeURIComponent(newpage);
     }
 
-    setTimeout('parent.closePopup()', timeout);
+    setTimeout ('parent.closePopup()', timeout);
   }
 }
 
@@ -1112,7 +1141,7 @@ function openEditWindow (objectpath)
     var location = objectpath.substring(0, index);
     var newpage = objectpath.substr(index);
     
-    iframe.src='page_view.php?rlreload=yes&location=' + location + '&page=' + newpage;
+    iframe.src='page_view.php?rlreload=yes&location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(newpage);
     window.style.display='inline';
     
     // remove first array element
@@ -1137,7 +1166,7 @@ function nextEditWindow ()
     var newpage = objectpath.substr(index);
 
     // load next object
-    iframe.src='page_view.php?ctrlreload=yes&location=' + location + '&page=' + newpage;
+    iframe.src='page_view.php?ctrlreload=yes&location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(newpage);
     
     if (window.style.display == 'none')
     {
@@ -1152,13 +1181,14 @@ function nextEditWindow ()
 }
 
 // if user closes window while still in edit mode
-window.onbeforeunload = function() {
+function showwarning ()
+{
   if (document.getElementById('editwindow') && document.getElementById('editwindow').style.display != "none")
   {
     return "<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>";
   }
+  else return "";
 }
-
 </script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
@@ -1249,28 +1279,27 @@ function switchthumbnail ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric">
+<body class="hcmsWorkplaceGeneric" onbeforeunload="return showwarning();">
 
 <!-- top bar -->
 <?php
-if ($uploadmode == "multi") $title = getescapedtext ($hcms_lang['upload-file'][$lang]);
-else $title = getescapedtext ($hcms_lang['upload-new-file-in'][$lang]);
-
 if ($uploadmode == "multi")
 {
+  $title = "<span id=\"status\">0</span>&nbsp;".getescapedtext ($hcms_lang['files-uploaded'][$lang]);
   $object_name = getlocationname ($site, $location_esc, $cat, "path");
-  $object_name = "&nbsp;<img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" />&nbsp;".str_replace ("/", " &gt; ", trim ($object_name, "/"));
+  $object_name = "<img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" />&nbsp;".str_replace ("/", " &gt; ", trim ($object_name, "/"));
 }
 else
 {
+  $title = getescapedtext ($hcms_lang['upload-new-file-in'][$lang])."<span id=\"status\" style=\"display:none;\">0</span>";
   $fileinfo = getfileinfo ($site, $object, $cat);
-  $object_name = "&nbsp;<img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" title=\"".getescapedtext ($hcms_lang['object'][$lang])."\" class=\"hcmsIconList\" />&nbsp;".$fileinfo['name'];
+  $object_name = "<img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" title=\"".getescapedtext ($hcms_lang['object'][$lang])."\" class=\"hcmsIconList\" />&nbsp;".$fileinfo['name'];
 }
 
-echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name."</style>", $lang);
+echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name."</span>", $lang);
 ?>
 
-<div id="content" class="hcmsWorkplaceFrame">
+<div id="contentLayer" class="hcmsWorkplaceFrame">
   <form name="upload" id="upload" enctype="multipart/form-data">
     <input type="hidden" name="PHPSESSID" value="<?php echo session_id(); ?>" />
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -1282,10 +1311,10 @@ echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
     <input type="hidden" name="zipcount" id="zipcount" value="" />
     
+    <!-- selected files -->
     <div id="selectedFiles"></div>
     
-    <div style="padding:5px;"><span id="status">0</span>&nbsp;<?php echo getescapedtext ($hcms_lang['files-uploaded'][$lang]); ?></div>
-    
+    <!-- controls -->
     <div>
       <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
       <div class="row">
@@ -1324,12 +1353,12 @@ echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name
         <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" /><img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
       </div>
       <?php } ?>
-      <div style="margin:10px 0px 10px 0px;">
-        <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsButtonSizeSquare" />
+      <div style="margin:5px 0px;">
+        <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsIconList" />
         <?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?>
       </div>
-      <div style="margin:0px 0px 10px 0px;">
-        <div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?>/></div>
+      <div style="min-height:40px; margin:5px 0px;">
+        <div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?> /></div>
         <?php if (!empty ($mgmt_config['dropbox_appkey']) && !empty ($mgmt_config['publicdownload'])) { ?>
         <div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['dropbox'][$lang]); ?></span></div>
         <?php } ?>
@@ -1351,11 +1380,11 @@ else $css_iphone = " overflow-x:hidden; overflow-y:hidden;";
 ?>
 <!-- Edit Window -->
 <div id="editwindow" style="display:none; position:fixed; top:0px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1000;">
-  <div class="hcmsPriorityHigh" style="width:100%; height:28px;">
+  <div class="hcmsPriorityHigh" style="width:100%; height:36px;">
     <div style="padding:4px;"><b><?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?></b></div>
   </div>
-  <div class="hcmsWorkplaceGeneric" style="position:fixed; top:28px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1001; <?php echo $css_iphone; ?>">
-    <iframe id="editiframe" scrolling="auto" src="" style="width:100%; height:100%; border-bottom:1px solid #000000; margin:0; padding:0;" frameborder="0"></iframe>
+  <div class="hcmsWorkplaceGeneric" style="position:fixed; top:36px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1001; <?php echo $css_iphone; ?>">
+    <iframe id="editiframe" src="" frameborder="0" style="width:100%; height:100%; border-bottom:1px solid #000000; margin:0; padding:0; overflow:auto;"></iframe>
   </div>
 </div>
 

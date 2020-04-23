@@ -1,4 +1,4 @@
-﻿CKEDITOR.plugins.setLang('youtube', 'ru', {
+CKEDITOR.plugins.setLang('youtube', 'ru', {
 	button : 'Вставить YouTube видео',
 	title : 'Вставить YouTube видео',
 	txtEmbed : 'Вставьте HTML-код сюда',
@@ -10,6 +10,7 @@
 	chkPrivacy : 'Включить режим повышенной конфиденциальности',
 	chkOlderCode : 'Использовать старый код вставки',
 	chkAutoplay: 'Автозапуск',
+	chkControls: 'Показать панель управления',
 	noCode : 'Вы должны ввести HTML-код или адрес',
 	invalidEmbed : 'Ваш HTML-код не похож на правильный',
 	invalidUrl : 'Ваш адрес видео не похож на правильный',
@@ -19,5 +20,6 @@
 	noHeight : 'Вы должны указать высоту',
 	invalidHeight : 'Укажите правильную высоту',
 	invalidTime : 'Укажите правильное время начала',
-	txtResponsive : 'Растягиваемое видео'
+	txtResponsive : 'Растягиваемое видео',
+	txtNoEmbed : 'Не встраивать видео (обложка-ссылка на YouTube)'
 });

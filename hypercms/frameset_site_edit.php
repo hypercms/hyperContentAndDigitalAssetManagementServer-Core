@@ -39,9 +39,9 @@ if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scr
 else $css_iphone = "";
 ?>
 <body>
-  <iframe id="controlFrame2" name="controlFrame2" scrolling="no" src="<?php echo "site_edit_menu.php?site=".$site."&preview=".$preview."&site_name=".$site_name; ?>" frameborder="0" style="position:fixed; top:0; left:0; width:100%; height:24px; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="controlFrame2" name="controlFrame2" src="<?php echo "site_edit_menu.php?site=".$site."&preview=".$preview."&site_name=".$site_name; ?>" frameborder="0" scrolling="no" style="position:fixed; top:0; left:0; width:100%; height:24px; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
   <div style="position:fixed; top:24px; right:0; bottom:0; left:0; margin:0; padding:0; <?php echo $css_iphone; ?>">
-    <iframe id="mainFrame2" name="mainFrame2" <?php if (!$is_mobile) echo 'scrolling="auto"'; else echo 'scrolling="yes"'; ?> src="<?php echo "site_edit_form.php?site=".$site."&preview=".$preview."&site_name=".$site_name; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+    <iframe id="mainFrame2" name="mainFrame2" src="<?php echo "site_edit_form.php?site=".$site."&preview=".$preview."&site_name=".$site_name; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 </body>
 </html>

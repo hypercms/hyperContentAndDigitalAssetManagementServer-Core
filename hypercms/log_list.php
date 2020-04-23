@@ -17,6 +17,7 @@ require ("function/hypercms_api.inc.php");
 
 // input parameters
 $site = getrequest ("site", "publicationname");
+$start = getrequest ("start", "numeric", 0);
 
 // ------------------------------ permission section --------------------------------
 
@@ -27,6 +28,18 @@ if ((!valid_publicationname ($site) && !checkrootpermission ('site')) && !checkr
 checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
+
+// initalize
+$objects_counted = 0;
+$objects_total = 0;
+$items_row = 0;
+
+// default value for inital max items in list
+if (empty ($mgmt_config['explorer_list_maxitems'])) $mgmt_config['explorer_list_maxitems'] = 100; 
+
+// define next max number of items on the list 
+if (is_numeric ($start)) $end = $start + $mgmt_config['explorer_list_maxitems'];
+else $end = $mgmt_config['explorer_list_maxitems'];
 
 // file name of event log
 if (valid_publicationname ($site)) $logfile = $site.".publication";
@@ -52,18 +65,22 @@ else $logfile = "event";
 }
 </style>
 <script type="text/javascript">
-function submitToWindow (url, description, windowname, features, width, height)
+function submitToWindow (date, source, type, errorcode, description)
 {
-  if (features == undefined) features = 'scrollbars=yes,resizable=yes';
-  if (width == undefined) width = 600;
-  if (height == undefined) height = 200;
-  if (windowname == '') windowname = Math.floor(Math.random()*9999999);
+  var features = 'scrollbars=yes,resizable=yes';
+  var width = 700;
+  var height = 700;
+  var windowname = Math.floor(Math.random()*9999999);
   
   hcms_openWindow('', windowname, features, width, height);
   
   var form = document.forms['log_details'];
   
-  form.attributes['action'].value = url;
+  form.attributes['action'].value = 'popup_log.php';
+  form.elements['date'].value = date;
+  form.elements['source'].value = source;
+  form.elements['type'].value = type;
+  form.elements['errorcode'].value = errorcode;
   form.elements['description'].value = description;
   form.target = windowname;
   form.submit();
@@ -97,7 +114,7 @@ function initalize ()
 <body class="hcmsWorkplaceObjectlist" style="overflow:hidden;" onresize="resizecols();">
 
 <!-- Table Header -->
-<div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:0; width:100%; z-index:1; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:32px; width:100%; z-index:1; visibility:visible;">
   <table id="objectlist_head" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:105px; white-space:nowrap;">
@@ -120,75 +137,88 @@ function initalize ()
     </tr>
   </table>
 
-  <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:32px; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
 <?php
 if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".log"))
 {
-  $items_row = 0;
+  $items_row = -1;
   
   // load log file
   $event_array = loadlog ($logfile);
 
-  if ($event_array != false && sizeof ($event_array) > 0)
+  // get size of user array
+  $objects_total = sizeof ($event_array);
+
+  if ($event_array != false && $objects_total > 0)
   {
     // reverse array
     $event_array = array_reverse ($event_array);
    
     foreach ($event_array as $event)
     {
-      list ($date, $source, $type, $errorcode, $description) = explode ("|", trim ($event));
-      
-      $description = str_replace ("\\", "/", $description);
-      $description = str_replace ("'", "`", $description);
-      $description = str_replace ("\"", "`", $description);
-      
-      // escape special characters
-      $description = html_encode (specialchr_decode ($description));
-      
-      if (strlen ($description) > 150) 
-      {
-        $description_short = substr ($description, 0, 150)."...";
-      }
-      else $description_short = $description;
+      // break loop if maximum has been reached
+      if (($items_row + 1) >= $end) break;
 
-      // define event type name
-      // error
-      if ($type == "error")
+      if ($event != "")
       {
-        $type_name = getescapedtext ($hcms_lang['error'][$lang]);
-        $icon = "log_alert.png";
-      }
-      // warning
-      elseif ($type == "warning")
-      {
-        $type_name = getescapedtext ($hcms_lang['warning'][$lang]);
-        $icon = "log_warning.png";
-      }
-      // information
-      else
-      {
-        $type_name = getescapedtext ($hcms_lang['information'][$lang]);
-        $icon = "log_info.png";
-      }
+        // count valid objects 
+        $items_row++;
 
-      echo "
-<tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top;\">
-  <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">&nbsp;<a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', '600', '200');\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</a></td>";
+        // skip rows for paging
+        if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
 
-      if (!$is_mobile) echo "
-  <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
-  <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$source."</td>
-  <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$errorcode."</td>";
-  
-      echo "
-  <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', 720, 700);\">".$description_short."</a></td>
- </tr>";
+        // extract data from log record
+        list ($date, $source, $type, $errorcode, $description) = explode ("|", trim ($event));
+        
+        $description = str_replace ("\\", "/", $description);
+        $description = str_replace ("'", "`", $description);
+        $description = str_replace ("\"", "`", $description);
+        
+        // escape special characters
+        $description = html_encode (specialchr_decode ($description));
+        
+        if (strlen ($description) > 150) 
+        {
+          $description_short = substr ($description, 0, 150)."...";
+        }
+        else $description_short = $description;
 
-      $items_row++;
-      
-      // break if row count is greater than 500
-      if ($items_row > 500) break;
+        // define event type name
+        // error
+        if ($type == "error")
+        {
+          $type_name = getescapedtext ($hcms_lang['error'][$lang]);
+          $icon = "log_alert.png";
+        }
+        // warning
+        elseif ($type == "warning")
+        {
+          $type_name = getescapedtext ($hcms_lang['warning'][$lang]);
+          $icon = "log_warning.png";
+        }
+        // information
+        else
+        {
+          $type_name = getescapedtext ($hcms_lang['information'][$lang]);
+          $icon = "log_info.png";
+        }
+
+        echo "
+  <tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top; cursor:pointer;\" onClick=\"submitToWindow ('".$date."', '".$source."', '".$type."', '".$errorcode."', '".$description."');\">
+    <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</td>";
+
+        if (!$is_mobile) echo "
+    <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+    <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$source."</td>
+    <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$errorcode."</td>";
+
+        echo "
+    <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$description_short."</td>
+  </tr>";
+      }
+      // subtract empty entries
+      else $objects_total--;
     }
   }
 }
@@ -197,8 +227,60 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
   </div>
 </div>
 
+<?php
+// objects counted
+if ($items_row > 0) $objects_counted = $items_row;
+else $objects_counted = 0;
+
+// expanding
+if (empty ($mgmt_config['explorer_paging']) && $objects_total >= $end)
+{
+  $next_start = $objects_counted + 1;
+?>
+<!-- status bar incl. more button -->
+<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['items'][$lang]); ?></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<?php
+}
+// paging
+elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_total > $end))
+{
+  // start positions (inital start is 0 and not 1)
+  $previous_start = $start - intval ($mgmt_config['explorer_list_maxitems']);
+  $next_start = $objects_counted + 1;
+?>
+<!-- status bar incl. previous and next buttons -->
+<div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['items'][$lang]); ?></div>
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
+  <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
+</div>
+<?php
+}
+// status bar without buttons
+else
+{
+  if ($objects_counted > 0) $next_start = $objects_counted + 1;
+  else $next_start = 0;
+?>
+<!-- status bar -->
+<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
+  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['items'][$lang]); ?></div>
+</div>
+<?php
+}
+?>
+
 <form target="_blank" method="post" action="" name="log_details">
-  <input type="hidden" name="description" value="">
+  <input type="hidden" name="date" value="" />
+  <input type="hidden" name="source" value="" />
+  <input type="hidden" name="type" value="" />
+  <input type="hidden" name="errorcode" value="" />
+  <input type="hidden" name="description" value="" />
 </form>
 
 <!-- initalize -->

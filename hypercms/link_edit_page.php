@@ -217,7 +217,7 @@ function geturl (type)
         if (page.indexOf('#') > 0) page = page.substring (0, page.indexOf('#'));
         page = escape (page);
         
-        return theURL = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_content.php?ctrlreload=yes&cat=page&site=' + location_site + '&location=' + location_page + '&page=' + page + '&user=<?php echo $user; ?>';
+        return theURL = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_content.php?ctrlreload=yes&cat=page&site=' + encodeURIComponent(location_site) + '&location=' + encodeURIComponent(location_page) + '&page=' + encodeURIComponent(page) + '&user=<?php echo url_encode($user); ?>';
       }
       else
       {
@@ -243,7 +243,7 @@ function openBrWindowLink (winName, features, type)
 
 function checkForm()
 { 
-  if (eval (document.forms['link'].elements['link_name']) && eval (document.forms['link'].elements['linkhref']))
+  if (document.forms['link'] && document.forms['link'].elements['link_name'] && document.forms['link'].elements['linkhref'])
   {    
     if (document.forms['link'].elements['link_name'].value != "")
     {

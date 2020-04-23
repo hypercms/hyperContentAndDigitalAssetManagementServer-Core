@@ -294,19 +294,19 @@ function insertAtCaret (aTag, eTag)
 
 function format_tag (format)
 {
-  if (eval (document.forms['template_edit'].elements['artid'])) var artid = document.forms['template_edit'].elements['artid'].value;
+  if (document.forms['template_edit'].elements['artid']) var artid = document.forms['template_edit'].elements['artid'].value;
   else var artid = "";
   
-  if (eval (document.forms['template_edit'].elements['tagid'])) var tagid = document.forms['template_edit'].elements['tagid'].value;
+  if (document.forms['template_edit'].elements['tagid']) var tagid = document.forms['template_edit'].elements['tagid'].value;
   else var tagid = "";
   
-  if (eval (document.forms['template_edit'].elements['onpublish']) && document.forms['template_edit'].elements['onpublish'].checked) var onpublish = " onPublish='hidden'";  
+  if (document.forms['template_edit'].elements['onpublish'] && document.forms['template_edit'].elements['onpublish'].checked) var onpublish = " onPublish='hidden'";  
   else var onpublish = ""; 
   
-  if (eval (document.forms['template_edit'].elements['onedit']) && document.forms['template_edit'].elements['onedit'].checked) var onedit = " onEdit='hidden'";  
+  if (document.forms['template_edit'].elements['onedit'] && document.forms['template_edit'].elements['onedit'].checked) var onedit = " onEdit='hidden'";  
   else var onedit = "";
   
-  if (eval (document.forms['template_edit'].elements['infotype']) && document.forms['template_edit'].elements['infotype'].checked) var infotype = " infotype='meta'";
+  if (document.forms['template_edit'].elements['infotype'] && document.forms['template_edit'].elements['infotype'].checked) var infotype = " infotype='meta'";
   else var infotype = "";
     
   var constraint = "";
@@ -362,19 +362,19 @@ function format_tag (format)
 
 function format_tag_attr(format)
 {
-  if (eval (document.forms['template_edit'].artid)) var artid = document.forms['template_edit'].elements['artid'].value;
+  if (document.forms['template_edit'].artid) var artid = document.forms['template_edit'].elements['artid'].value;
   else var artid = "";
   
-  if (eval (document.forms['template_edit'].tagid)) var tagid = document.forms['template_edit'].elements['tagid'].value;
+  if (document.forms['template_edit'].tagid) var tagid = document.forms['template_edit'].elements['tagid'].value;
   else var tagid = "";
   
-  if (eval (document.forms['template_edit'].onpublish) && document.forms['template_edit'].elements['onpublish'].checked) var onpublish = " onPublish='hidden'";  
+  if (document.forms['template_edit'].onpublish && document.forms['template_edit'].elements['onpublish'].checked) var onpublish = " onPublish='hidden'";  
   else var onpublish = ""; 
   
-  if (eval (document.forms['template_edit'].onedit) && document.forms['template_edit'].elements['onedit'].checked) var onedit = " onEdit='hidden'";  
+  if (document.forms['template_edit'].onedit && document.forms['template_edit'].elements['onedit'].checked) var onedit = " onEdit='hidden'";  
   else var onedit = "";
   
-  if (eval (document.forms['template_edit'].infotype) && document.forms['template_edit'].elements['infotype'].checked) var infotype = " infotype='meta'";
+  if (document.forms['template_edit'].infotype && document.forms['template_edit'].elements['infotype'].checked) var infotype = " infotype='meta'";
   else var infotype = "";  
   
   if (tagid == "" || tagid == null)
@@ -434,10 +434,10 @@ function customertracking()
 
 function geolocation()
 {
-  if (eval (document.forms['template_edit'].onpublish) && document.forms['template_edit'].elements['onpublish'].checked) var onpublish = " onPublish='hidden'";  
+  if (document.forms['template_edit'].onpublish && document.forms['template_edit'].elements['onpublish'].checked) var onpublish = " onPublish='hidden'";  
   else var onpublish = ""; 
   
-  if (eval (document.forms['template_edit'].onedit) && document.forms['template_edit'].elements['onedit'].checked) var onedit = " onEdit='hidden'";  
+  if (document.forms['template_edit'].onedit && document.forms['template_edit'].elements['onedit'].checked) var onedit = " onEdit='hidden'";  
   else var onedit = "";
   
   code = "[hyperCMS:geolocation infotype='meta'"+onpublish+onedit+"]";
@@ -551,7 +551,7 @@ function include(format)
 
 function savetemplate(mode)
 {
-  if (eval (document.forms['template_edit'].elements['extension']))
+  if (document.forms['template_edit'].elements['extension'])
   {
     if (document.forms['template_edit'].elements['extension'].value != "")
     {

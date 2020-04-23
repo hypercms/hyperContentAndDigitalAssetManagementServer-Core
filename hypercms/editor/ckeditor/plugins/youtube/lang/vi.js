@@ -1,4 +1,4 @@
-﻿CKEDITOR.plugins.setLang('youtube', 'vi', {
+CKEDITOR.plugins.setLang('youtube', 'vi', {
 	button : 'Embed Youtube Video',
 	title : 'Nhúng Video Youtube',
 	txtEmbed : 'Dãn mã nhúng Embed vào đây',
@@ -10,6 +10,7 @@
 	chkPrivacy : 'Kích hoạt chế độ bảo mật nâng cao',
 	chkOlderCode : 'Sử dụng mã nhúng cũ',
 	chkAutoplay: 'Tự động chạy video',
+	chkControls: 'Hiển thị các điều khiển trình phát',
 	noCode : 'Bạn phải nhập mã nhúng hoặc URL',
 	invalidEmbed : 'Mã nhúng bạn đã nhập không đúng',
 	invalidUrl : 'URL bạn đã nhập không đúng',

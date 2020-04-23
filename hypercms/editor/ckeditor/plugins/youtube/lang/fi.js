@@ -1,4 +1,4 @@
-﻿CKEDITOR.plugins.setLang('youtube', 'fi', {
+CKEDITOR.plugins.setLang('youtube', 'fi', {
 	button : 'Upota YouTube-video',
 	title : 'Upota YouTube-video',
 	txtEmbed : 'Syötä YouTube-videon upotuskoodi',
@@ -10,6 +10,7 @@
 	chkPrivacy : 'Aktivoi yksityisyyttä parantava tila',
 	chkOlderCode : 'Käytä vanhaa upotuskoodia',
 	chkAutoplay: 'Soita automaattisesti',
+	chkControls : 'Näytä soittimen ohjaimet',
 	noCode : 'Sinun täytyy syötää upotuskoodi tai www-osoite',
 	invalidEmbed : 'Upotuskoodi on virheellinen',
 	invalidUrl : 'Www-osoite on virheellinen',

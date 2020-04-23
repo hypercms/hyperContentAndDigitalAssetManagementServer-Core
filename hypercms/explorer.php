@@ -2229,7 +2229,7 @@ else
           ?>
           </select><br />
           <iframe id="contentFrame" name="contentFrame" width="0" height="0" frameborder="0"  style="width:0; height:0; frameborder:0;"></iframe> 
-          <div class="hcmsObjectSelected" style="border:1px solid #000000; width:226px; height:200px; padding:2px; overflow:auto;">
+          <div class="hcmsWorkplaceObjectlist" style="border:1px solid #000000; width:226px; height:200px; padding:2px; overflow:auto;">
             <div id="contentLayer"></div>
           </div>
           <div style="margin-top:5px;">
@@ -2454,7 +2454,7 @@ else
 
                   list ($uniqid, $date, $action, $site, $search_dir, $date_from, $date_to, $template, $search_textnode, $search_expression, $search_cat, $search_format, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $object_id, $container_id) = explode ("|", trim ($searchlog));
                   
-                  // update to version 8.0.2
+                  // update to version 8.0.2 (use date and time as unique id)
                   if (empty ($uniqid)) $uniqid = $date;
 
                   // text based search
@@ -2502,7 +2502,7 @@ else
                   if (!empty ($object_id) || !empty ($container_id)) $search_parameter['id'] .= getescapedtext ($hcms_lang['object-id-link-id'][$lang])." (".(!empty ($object_id) ? $object_id : $container_id).")";
                   
                   echo "
-                    <option value=\"".$uniqid."\">".implode (", ", $search_parameter)."</option>";
+                    <option value=\"".$uniqid."\">".htmlspecialchars (implode (", ", $search_parameter))."</option>";
                 }
               }
               

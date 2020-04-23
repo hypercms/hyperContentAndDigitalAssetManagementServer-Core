@@ -142,7 +142,7 @@ function checkForm ()
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
-      <td><b><?php echo getescapedtext ($hcms_lang['publication-management'][$lang]); ?></b></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['publication-management'][$lang]); ?></td>
     </tr>
     <tr>
       <td>&nbsp;</td>

@@ -366,10 +366,9 @@ if (checktoken ($token, $user))
         {
           $mgmt_imageoptions[$formats]['original'] = $mgmt_imageoptions[$formats]['preview'];
 
-          $editmediaobject = editmediaobject ($site, $location, $page, $imageformat, "original", $user);
+          $editmediaobject = editmediaobject ($site, $location, $page, $imageformat, "original", "", $user);
 
-          if ($editmediaobject['result']) $result = $editmediaobject['mediafile'];
-          else $result = false;
+          if (!empty ($editmediaobject['result'])) $result = $editmediaobject['mediafile'];
         }
         // create preview for image editing
         else
