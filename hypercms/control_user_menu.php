@@ -367,7 +367,7 @@ function goToURL()
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ";
 
-             if (!empty ($mgmt_config['user_newwindow'])) echo "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 800);\" ";
+             if (!empty ($mgmt_config['user_newwindow'])) echo "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 880);\" ";
              else echo "onClick=\"parent.openPopup('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."');\" ";
  
       echo "name=\"media_edit\" src=\"".getthemelocation()."img/button_user_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
@@ -447,7 +447,8 @@ function goToURL()
     ?> 
   </div>
   <div class="hcmsToolbarBlock">
-    <div style="padding:3px; float:left;">  
+    <div style="padding:3px; float:left;">
+      <img src="<?php echo getthemelocation(); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
       <select name="group" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" title="<?php echo $item_name; ?>" style="width:180px;">
         <?php
         // select users by group membership

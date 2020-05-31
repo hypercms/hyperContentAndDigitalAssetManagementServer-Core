@@ -672,18 +672,18 @@ function switchsidebar ()
     {
       if (view)
       {
-        parent.document.getElementById('mainLayer').style.transition = "0.3s";
+        if (hcms_transitioneffect == true) parent.document.getElementById('mainLayer').style.transition = "0.3s";
         parent.document.getElementById('mainLayer').style.right = "350px";
-        parent.document.getElementById('sidebarLayer').style.transition = "0.3s";
+        if (hcms_transitioneffect == true) parent.document.getElementById('sidebarLayer').style.transition = "0.3s";
         parent.document.getElementById('sidebarLayer').style.width = "350px";
         parent.frames['mainFrame'].resizecols();
         sidebar = true;
       }
       else
       {
-        parent.document.getElementById('mainLayer').style.transition = "0.3s";
+        if (hcms_transitioneffect == true) parent.document.getElementById('mainLayer').style.transition = "0.3s";
         parent.document.getElementById('mainLayer').style.right = "0px";
-        parent.document.getElementById('sidebarLayer').style.transition = "0.3s";
+        if (hcms_transitioneffect == true) parent.document.getElementById('sidebarLayer').style.transition = "0.3s";
         parent.document.getElementById('sidebarLayer').style.width = "0px";
         parent.frames['mainFrame'].resizecols();
         sidebar = false;
@@ -768,6 +768,8 @@ function sendtochat (text)
 <body class="hcmsWorkplaceControlWallpaper" onload="<?php echo $add_onload; ?>">
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
+
+<?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
 
 <?php
 // define location name
@@ -1495,18 +1497,6 @@ else
   <?php if (!$is_mobile) { ?>
   <div class="hcmsToolbarBlock">
     <?php
-    // if link references to an object and not a folder, disable search
-    if ($location != "" && $mgmt_config['db_connect_rdbms'] != "" && $from_page != "recyclebin")
-    {
-      echo "
-    <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"if (locklayer == false) parent.mainFrame.location='search_form.php?location=".url_encode($location_esc)."';\" name=\"pic_obj_search\" src=\"".getthemelocation()."img/button_search.png\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />";
-    }
-    else
-    {
-      echo "
-    <img src=\"".getthemelocation()."img/button_search.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
-    }
-    
     // CSV import
     if ($setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1 && $from_page == "")
     {
@@ -1573,27 +1563,39 @@ else
     <?php
     // object list views
     echo "
-      <form name=\"memory\" style=\"display:none;\">
-        <input name=\"view\" type=\"hidden\" value=\"".$temp_explorerview."\" />
-      </form>
-      <div id=\"button_obj_view\" onClick=\"hcms_switchSelector('select_obj_view'); hcms_hideSelector('select_obj_edit'); hcms_hideSelector('select_obj_convert');\" class=\"hcmsButton hcmsButtonSizeWide\">
-        <img src=\"".getthemelocation()."img/button_view_gallery_".$temp_explorerview.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" />
+    <form name=\"memory\" style=\"display:none;\">
+      <input name=\"view\" type=\"hidden\" value=\"".$temp_explorerview."\" />
+    </form>
+    <div id=\"button_obj_view\" onClick=\"hcms_switchSelector('select_obj_view'); hcms_hideSelector('select_obj_edit'); hcms_hideSelector('select_obj_convert');\" class=\"hcmsButton hcmsButtonSizeWide\">
+      <img src=\"".getthemelocation()."img/button_view_gallery_".$temp_explorerview.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" />
 
-        <div id=\"select_obj_view\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:-180px; visibility:hidden; z-index:999; width:180px; max-height:".($is_mobile ? "50px" : "76px")."; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">
-          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('large'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_large.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['large-thumbnails'][$lang])."</div>
-          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('medium'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_medium.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['medium-thumbnails'][$lang])."</div>
-          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('small'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_small.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['small-thumbnails'][$lang])."</div>
-          <div class=\"hcmsSelectorItem\" onclick=\"switchview ('detail'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_detail.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['details'][$lang])."</div>
-        </div>
-      </div>";
+      <div id=\"select_obj_view\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:-180px; visibility:hidden; z-index:999; width:180px; max-height:".($is_mobile ? "50px" : "76px")."; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">
+        <div class=\"hcmsSelectorItem\" onclick=\"switchview ('large'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_large.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['large-thumbnails'][$lang])."</div>
+        <div class=\"hcmsSelectorItem\" onclick=\"switchview ('medium'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_medium.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['medium-thumbnails'][$lang])."</div>
+        <div class=\"hcmsSelectorItem\" onclick=\"switchview ('small'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_small.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['small-thumbnails'][$lang])."</div>
+        <div class=\"hcmsSelectorItem\" onclick=\"switchview ('detail'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_detail.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['details'][$lang])."</div>
+      </div>
+    </div>";
     ?>
     
     <?php
-    // sidebar
     if (!$is_mobile)
     {
+      // sidebar
+      echo "
+    <img src=\"".getthemelocation()."img/button_sidebar.png\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"switchsidebar();\" title=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" />";
+
+      // search
+      if ($location != "" && !empty ($mgmt_config['db_connect_rdbms']) && $from_page != "recyclebin")
+      {
         echo "
-      <img src=\"".getthemelocation()."img/button_sidebar.png\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"switchsidebar();\" title=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" />";
+    <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"if (locklayer == false) parent.setSearchLocation('".$location_esc."', '".getlocationname ($site, $location, $cat, "path")."');\" name=\"pic_obj_search\" src=\"".getthemelocation()."img/button_search.png\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />";
+      }
+      else
+      {
+        echo "
+    <img src=\"".getthemelocation()."img/button_search.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      }
     }
     ?>
   </div>
@@ -1616,10 +1618,6 @@ else
   </form>
 </div>
 <?php } ?>
-
-<?php
-echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
-?>
 
 <div id="foldercreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:1; left:15px; top:15px; visibility:hidden">
 <form name="folder_create" action="" method="post" onsubmit="return checkForm_folder_create();">

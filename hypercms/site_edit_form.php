@@ -19,19 +19,18 @@ require ("include/diskkey.inc.php");
 
 // input parameters
 $action = getrequest ("action");
-$site = getrequest_esc ("site"); // site can be *Null*
 $site_name = getrequest_esc ("site_name", "publicationname");
-$preview = getrequest ("preview");
 $setting = getrequest ("setting", "array");
 $token = getrequest ("token");
-
-// publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
 // ------------------------------ permission section --------------------------------
 
 // check permissions
 if (!checkrootpermission ('site')) killsession ($user);
+
+// edit permission defines view mode
+if (checkrootpermission ('siteedit')) $preview = "no";
+else $preview = "yes";
 
 // check session of user
 checkusersession ($user);
@@ -189,7 +188,7 @@ function submitForm ()
 {
   submitLanguage ('list2', 'setting[translate]');
   submitLanguage ('ocr2', 'setting[ocr]');
-  hcms_showInfo ('savelayer', 0);
+  hcms_showFormLayer ('savelayer', 0);
   document.forms['siteform'].submit();
 }
 </script>
@@ -248,7 +247,6 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 
 <form name="siteform" action="<?php echo $formaction; ?>" method="post">
   <input type="hidden" name="action" value="site_edit" />
-  <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="site_name" value="<?php echo $site_name; ?>">
   <input type="hidden" name="setting[inherit_obj]" value="<?php echo $mgmt_config[$site_name]['inherit_obj']; ?>" />
   <input type="hidden" name="setting[inherit_comp]" value="<?php echo $mgmt_config[$site_name]['inherit_comp']; ?>" />
@@ -295,7 +293,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <tr> 
       <td style="vertical-align:top;"><?php echo getescapedtext ($hcms_lang['allow-access-through-webdav'][$lang]); ?> <br />
       <td style="white-space:nowrap; vertical-align:top;">
-        <label><input type="checkbox" name="setting[webdav]" value="true" onclick="hcms_switchInfo ('webdavLayer');" <?php if (!empty ($mgmt_config[$site_name]['webdav'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <label><input type="checkbox" name="setting[webdav]" value="true" onclick="hcms_switchFormLayer ('webdavLayer');" <?php if (!empty ($mgmt_config[$site_name]['webdav'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
         <div id="webdavLayer" style="<?php if (!empty ($mgmt_config[$site_name]['webdav'])) echo "display:inline;"; else echo "display:none;"; ?>">
           <br/><label><input type="checkbox" name="setting[webdav_dl]" value="true" <?php if (!empty ($mgmt_config[$site_name]['webdav_dl'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />

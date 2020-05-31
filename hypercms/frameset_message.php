@@ -32,19 +32,22 @@ function openPopup (link)
   if (link != "")
   {
     document.getElementById('objectview').src = link;
-    hcms_showInfo('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer',0);
   }
 }
 
 function closePopup ()
 {
   document.getElementById('objectview').src = '';
-  hcms_hideInfo('objectviewLayer');
+  hcms_hideFormLayer('objectviewLayer');
 }
 </script>
 </head>
 
 <body>
+
+  <!-- load screen --> 
+  <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
 
   <!-- popup for preview/live-view (do not used nested fixed positioned div-layers due to MS IE and Edge issue) --> 
   <div id="objectviewLayer" style="display:none;">

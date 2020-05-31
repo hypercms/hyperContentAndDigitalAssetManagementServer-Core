@@ -2420,7 +2420,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         ".getescapedtext ($hcms_lang['selected-languages'][$lang], $charset, $lang)."<br />
                         <select id=\"".$hypertagname."\" multiple size=\"10\" name=\"list2\" style=\"width:250px; height:160px;\" ".$disabled.">";
 
-                  if (sizeof ($list2_array) > 0)
+                  if (!empty ($list2_array) && is_array ($list2_array) && sizeof ($list2_array) > 0)
                   {
                     foreach ($list2_array as $list2)
                     {
@@ -2949,7 +2949,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
-    <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."], [".$tagd."] ".$hcms_lang['and-or'][$lang]." [".$tagk."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
+    <p class=\"hcmsHeadline\">".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."], [".$tagd."] ".$hcms_lang['and-or'][$lang]." [".$tagk."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
     ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
   </body>
   </html>";
@@ -3268,10 +3268,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {
-                        $add_submittext .= "
-                        submitText ('".$hypertagname."_".$id."', '".$hypertagname."[".$id."]');";
+                        // extract display
+                        $display = strtolower (getattribute ($hypertag, "display"));
 
-                        if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
+                        // submitText and constraints do not apply for the taxonomy tree (checkboxes)
+                        if ($display != "taxonomy")
+                        {
+                          $add_submittext .= "
+                          submitText ('".$hypertagname."_".$id."', '".$hypertagname."[".$id."]');";
+
+                          if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."', '".$labelname."', '".$constraint."'";
+                        }
 
                         // if keyword list
                         if ($hypertagname == $searchtag."k")
@@ -3281,55 +3288,72 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           // extract source file (file path or URL) for text list
                           $list_sourcefile = getattribute ($hypertag, "file");
 
-                          if ($list_sourcefile != "")
+                          // taxonomy tree view
+                          if ($display == "taxonomy")
                           {
-                            $list .= getlistelements ($list_sourcefile);
+                            // list_sourcefile must be a valid taxonomy path: %taxonomy%/site/language-code/taxonomy-ID/taxonomy-child-levels
+                            $formitem[$key] = "
+                            <div class=\"hcmsFormRowLabel ".$hypertagname."_".$id."\">
+                              <b>".$labelname."</b>
+                            </div>
+                            <div class=\"hcmsFormRowContent ".$hypertagname."_".$id."\" style=\"position:relative; width:".$sizewidth.(strpos ($sizewidth, "%") > 0 ? "" : "px")."; height:".$sizeheight."px;\">
+                              ".showtaxonomytree ($site, $container_id, $id, $hypertagname, $lang, $list_sourcefile, $sizewidth, $sizeheight)."
+                            </div>";
                           }
-
-                          // extract text list
-                          $list_add = getattribute ($hypertag, "list");
-
-                          // add seperator
-                          if ($list_add != "") $list = $list_add.",".$list;
-
-                          // extract text list
-                          $onlylist = strtolower (getattribute ($hypertag, "onlylist"));
-
-                          // get list entries
-                          if ($list != "")
+                          // keyword list view (default)
+                          else
                           {
-                            // replace line breaks
-                            $list = str_replace ("\r\n", ",", $list);
-                            $list = str_replace ("\n", ",", $list);
-                            $list = str_replace ("\r", ",", $list);
-                            // escape single quotes
-                            $list = str_replace ("'", "\\'", $list);
-                            // create array
-                            $list_array = explode (",", $list);
-                            // create keyword string for Javascript
-                            $keywords = "['".implode ("', '", $list_array)."']";
-
-                            $keywords_tagit = "availableTags:".$keywords.", ";
-
-                            if ($onlylist == "true" || $onlylist == "yes" || $onlylist == "1")
+                            // get list items (incl. taxonomy)
+                            if ($list_sourcefile != "")
                             {
-                              $keywords_tagit .= "beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$keywords.") == -1) { return false; } }, ";
+                              $list .= getlistelements ($list_sourcefile);
                             }
-                          }
-                          else $keywords_tagit = "availableTags:[], ";
+  
+                            // extract text list
+                            $list_add = getattribute ($hypertag, "list");
+  
+                            // add separator
+                            if ($list_add != "") $list = $list_add.",".$list;
+  
+                            // extract text list
+                            $onlylist = strtolower (getattribute ($hypertag, "onlylist"));
 
-                          $add_onload .= "
-    $('#".$hypertagname."_".$id."').tagit({".$keywords_tagit.(!empty ($disabled) ? "readOnly:true, " : "")."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$hypertagname."_".$id."')});";
- 
-                          $formitem[$key] = "
-                          <div class=\"hcmsFormRowLabel ".$hypertagname."_".$id."\">
-                            <b>".$labelname."</b>
-                          </div>
-                          <div class=\"hcmsFormRowContent ".$hypertagname."_".$id."\" style=\"position:relative; width:".$sizewidth.(strpos ($sizewidth, "%") > 0 ? "" : "px")."\">
-                            <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
-                            <input type=\"text\" id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px;\" ".$disabled." value=\"".$contentbot."\" />
-                            <div id=\"".$hypertagname."_".$id."_protect\" style=\"position:absolute; top:0; left:0; width:".$sizewidth."px; height:100%; display:none;\"></div>
-                          </div>";
+                            // get list entries
+                            if ($list != "")
+                            {
+                              // replace line breaks
+                              $list = str_replace ("\r\n", ",", $list);
+                              $list = str_replace ("\n", ",", $list);
+                              $list = str_replace ("\r", ",", $list);
+                              // escape single quotes
+                              $list = str_replace ("'", "\\'", $list);
+                              // create array
+                              $list_array = explode (",", $list);
+                              // create keyword string for Javascript
+                              $keywords = "['".implode ("', '", $list_array)."']";
+
+                              $keywords_tagit = "availableTags:".$keywords.", ";
+
+                              if ($onlylist == "true" || $onlylist == "yes" || $onlylist == "1")
+                              {
+                                $keywords_tagit .= "beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$keywords.") == -1) { return false; } }, ";
+                              }
+                            }
+                            else $keywords_tagit = "availableTags:[], ";
+
+                            $add_onload .= "
+      $('#".$hypertagname."_".$id."').tagit({".$keywords_tagit.(!empty ($disabled) ? "readOnly:true, " : "")."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$hypertagname."_".$id."')});";
+
+                            $formitem[$key] = "
+                            <div class=\"hcmsFormRowLabel ".$hypertagname."_".$id."\">
+                              <b>".$labelname."</b>
+                            </div>
+                            <div class=\"hcmsFormRowContent ".$hypertagname."_".$id."\" style=\"position:relative; width:".$sizewidth.(strpos ($sizewidth, "%") > 0 ? "" : "px").";\">
+                              <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
+                              <input type=\"text\" id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px;\" ".$disabled." value=\"".$contentbot."\" />
+                              <div id=\"".$hypertagname."_".$id."_protect\" style=\"position:absolute; top:0; left:0; width:".$sizewidth."px; height:100%; display:none;\"></div>
+                            </div>";
+                          }
                         }
                         // if unformatted text (supports preview window)
                         else
@@ -3385,7 +3409,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $add_submittext .= "
                         submitText ('".$hypertagname."_".$artid."_".$elementid."', '".$hypertagname."[".$id."]');";
 
-                        if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
+                        if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."', '".$labelname."', '".$constraint."'";
 
                         $formitem[$key] = "
                           <div class=\"hcmsFormRowLabel ".$hypertagname."_".$artid."_".$elementid."\">
@@ -4535,7 +4559,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           }
                           else $mediaobjectname = $mediafilebot[$id][$tagid];
 
-                          if ($mediatype[$id] != "") $constraint_array[$key] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['multimedia-file'][$lang]."', '".$mediatype[$id]."'";
+                          if ($mediatype[$id] != "") $constraint_array[$key] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname." (".$hcms_lang['multimedia-file'][$lang].")', '".$mediatype[$id]."'";
 
                           $formitem[$key] .= "
                           <tr>
@@ -4593,7 +4617,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                         if ($mediawidthbot[$id] != "*Null*")
                         {
-                          $constraint_array[$key] = "'".$hypertagname_width[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['width'][$lang]."','NisNum'";
+                          $constraint_array[$key] = "'".$hypertagname_width[$id]."[".$id."]', '".$labelname." (".$hcms_lang['width'][$lang].")', 'NisNum'";
                           $formitem[$key] .= "
                           <tr>
                             <td style=\"width:150px;\">".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang)." </td>
@@ -4603,7 +4627,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                         if ($mediaheightbot[$id] != "*Null*")
                         {
-                          $constraint_array[$key] = "'".$hypertagname_height[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['height'][$lang]."','NisNum'";
+                          $constraint_array[$key] = "'".$hypertagname_height[$id]."[".$id."]', '".$labelname." (".$hcms_lang['height'][$lang].")', 'NisNum'";
                           $formitem[$key] .= "
                           <tr>
                             <td style=\"width:150px;\">".getescapedtext ($hcms_lang['height'][$lang], $charset, $lang)." </td>
@@ -4668,7 +4692,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           }
                           else $mediaobjectname = $mediafilebot[$id][$tagid];
 
-                          if ($mediatype[$id] != "") $constraint_array[$key] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['multimedia-file'][$lang]."', '".$mediatype[$id]."'";
+                          if ($mediatype[$id] != "") $constraint_array[$key] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname." (".$hcms_lang['multimedia-file'][$lang].")', '".$mediatype[$id]."'";
 
                           $formitem[$key] .= "
                           <tr>
@@ -4713,7 +4737,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                         if ($mediawidthbot[$id] != "*Null*")
                         {
-                          $constraint_array[$key] = "'".$hypertagname_width[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['width'][$lang]."','NisNum'";
+                          $constraint_array[$key] = "'".$hypertagname_width[$id]."[".$id."]', '".$labelname." (".$hcms_lang['width'][$lang].")', 'NisNum'";
                           $formitem[$key] .= "
                           <tr>
                             <td style=\"width:150px;\">".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang)." </td>
@@ -4723,7 +4747,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                         if ($mediaheightbot[$id] != "*Null*")
                         {
-                          $constraint_array[$key] = "'".$hypertagname_height[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['height'][$lang]."','NisNum'";
+                          $constraint_array[$key] = "'".$hypertagname_height[$id]."[".$id."]', '".$labelname." (".$hcms_lang['height'][$lang].")', 'NisNum'";
                           $formitem[$key] .= "
                           <tr>
                             <td style=\"width:150px;\">".getescapedtext ($hcms_lang['height'][$lang], $charset, $lang)." </td>
@@ -7640,13 +7664,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   function validateForm ()
   {
-    var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
+    var i,p,q,nm,contentname,test,num,min,max,errors='',args=validateForm.arguments;
 
     for (i=0; i<(args.length-2); i+=3)
     {
-      test = args[i+2];
-      contentname = args[i+1];
-      val = hcms_findObj(args[i]);
+      val = hcms_findObj(args[i]); // 1st argument
+      contentname = args[i+1]; // 2nd argument
+      test = args[i+2]; // 3rd argument
 
       if (val)
       {
@@ -7660,36 +7684,47 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           nm = nm.substring(nm.indexOf('_')+1, nm.length);
         }
 
-        if ((val=val.value) != '' && test != '')
+        // value is required
+        if (test.charAt(0) == 'R' && val.value.trim() == '' && val.type && val.type.toLowerCase() != 'checkbox' && val.type.toLowerCase() != 'radio')
+        {
+          errors += nm+' - ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang).".\\n';
+        }
+        // test value
+        else if ((val=val.value) != '' && test != '')
         {
           if (test == 'audio' || test == 'compressed' || test == 'flash' || test == 'image' || test == 'text' || test == 'video' || test == 'watermark')
           {
             errors += checkMediaType(val, contentname, test);
           }
-          else if (test.indexOf('isEmail')!=-1)
+          else if (test.indexOf('isEmail') != -1)
           {
-            p=val.indexOf('@');
+            p = val.indexOf('@');
             if (p<1 || p==(val.length-1)) errors += nm+' - ".getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang).".\\n';
           }
-          else if (test!='R')
+          else if (test != 'R')
           {
             num = parseFloat(val);
             if (isNaN(val)) errors += nm+' - ".getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang).".\\n';
+
             if (test.indexOf('inRange') != -1)
             {
-              p=test.indexOf(':');
-              if(test.substring(0,1) == 'R')
+              p = test.indexOf(':');
+
+              if (test.substring(0,1) == 'R')
               {
-                min=test.substring(8,p);
-              } else {
-                min=test.substring(7,p);
+                min = test.substring(8,p);
               }
-              max=test.substring(p+1);
+              else
+              {
+                min = test.substring(7,p);
+              }
+
+              max = test.substring(p+1);
               if (num<min || max<num) errors += nm+' - ".getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang)." '+min+' - '+max+'.\\n';
             }
           }
         }
-        else if (test.charAt(0) == 'R') errors += nm+' - ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang).".\\n';
+
       }
     }
 
@@ -8073,7 +8108,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   // ----- Field controls for form views -----
 
-  // Alisa for checkFieldValue
+  // Alias for checkFieldValue
   function checkValue (id, value)
   {
     return checkFieldValue (id, value);
@@ -8370,7 +8405,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }
 
         // present saving overlay
-        hcms_showInfo ('saveLayer', 0);
+        hcms_showFormLayer ('saveLayer', 0);
         $(\"#savetype\").val('auto');
 
         // write annotation image to hidden input
@@ -8389,7 +8424,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             {
               alert (hcms_entity_decode(data.message));
             }				
-            setTimeout (\"hcms_hideInfo('saveLayer')\", 500);
+            setTimeout (\"hcms_hideFormLayer('saveLayer')\", 500);
           },
           dataType: \"json\",
           async: false
@@ -8436,6 +8471,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
     var myOptions = {
       zoom: 2,
+      scrollwheel: true,
       center: latlng,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
@@ -9353,6 +9389,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }
 
         $viewstore .= "
+        <div style=\"display:block; clear:both; height:10px;\"></div>
       </div>
     </div>";
 
@@ -9790,6 +9827,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 
   $viewstore .= "
 ".($report != "" ? "</form>" : "")."
+  <div style=\"display:block; clear:both; height:3px;\"></div>
 </body>
 </html>";
 
@@ -9800,7 +9838,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 
 // --------------------------------- buildbarchart -------------------------------------------
 // function: buildbarchart()
-// input: name/id of paper [string], width of paper in pixel [integer], height of paper in pixel [integer], top space in pixel [integer], left space in pixel [integer], x-axis values [array], y1-axis values [array], y2-axis values [array] (optional), y3-axis values [array] (optional),
+// input: name/id of paper [string], width of paper in pixel [integer], height of paper in pixel [integer], top space in pixel [integer], left space in pixel [integer], x-axis values with index as 1st key and 'value','text','onclick' as 2nd key [array], y1-axis values [array], y2-axis values [array] (optional), y3-axis values [array] (optional),
 //        paper CSS style [string], 1st bar chart CSS style [string], 2nd bar chart CSS style [string], 3rd bar chart CSS style [string], show y-value in bar [boolean]
 // output: bar chart view / false on error
 
@@ -9878,11 +9916,17 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
       $bar_top = ($paper_height - $bar_height);
       $bar_left = ($i * ($x_width + 1)) + 1;
       $x_left = ($i * ($x_width + 1)) + 1;
+
       if ($show_value == true) $bar_value = $y1_axis[$key]['value'];
       else $bar_value = "&nbsp;";
 
+      // link
+      if (!empty ($y1_axis[$key]['onclick'])) $link = "onclick=\"".$y1_axis[$key]['onclick']."\"";
+      else $link = "";
+
       // 1st bar
-      if ($bar_height > 0) $result .= "  <div id=\"bar1_".$i."\" title=\"".$y1_axis[$key]['text']."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center;  vertical-align:top; z-index:200; ".$bar1_style."\">".$bar_value."</div>\n";
+      if ($bar_height > 0) $result .= "  <div id=\"bar1_".$i."\" ".$link." title=\"".addslashes($y1_axis[$key]['text'])."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center;  vertical-align:top; z-index:200; ".$bar1_style."\">".$bar_value."</div>\n";
+      
       // x-axis values
       $result .= "  <div id=\"xval".$i."\" style=\"position:absolute; width:".$x_width."px; top:".$paper_height."px; left:".$x_left."px; margin:0; padding:0; border:0; text-align:center; vertical-align:top; z-index:100;\">".$x_axis[$key]."</div>\n";
       $i++;
@@ -9899,11 +9943,16 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
         $bar_height = round ($bar_height);
         $bar_top = ($paper_height - $bar_height);
         $bar_left = ($i * ($x_width + 1)) + $bar_width + 1;
+
         if ($show_value == true) $bar_value = $y2_axis[$key]['value'];
         else $bar_value = "&nbsp;";
 
+        // link
+        if (!empty ($y2_axis[$key]['onclick'])) $link = "onclick=\"".$y2_axis[$key]['onclick']."\"";
+        else $link = "";
+
         // 2nd bar
-        if ($bar_height > 0) $result .= "  <div id=\"bar2_".$i."\" title=\"".$y2_axis[$key]['text']."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center;  vertical-align:top; z-index:200; ".$bar2_style."\">".$bar_value."</div>\n";
+        if ($bar_height > 0) $result .= "  <div id=\"bar2_".$i."\" ".$link." title=\"".addslashes($y2_axis[$key]['text'])."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center;  vertical-align:top; z-index:200; ".$bar2_style."\">".$bar_value."</div>\n";
         $i++;
       }
     }
@@ -9919,11 +9968,16 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
         $bar_height = round ($bar_height);
         $bar_top = ($paper_height - $bar_height);
         $bar_left = ($i * ($x_width + 1)) + (2 * $bar_width) + 1;
+
         if ($show_value == true) $bar_value = $y3_axis[$key]['value'];
         else $bar_value = "&nbsp;";
 
+        // link
+        if (!empty ($y3_axis[$key]['onclick'])) $link = "onclick=\"".$y3_axis[$key]['onclick']."\"";
+        else $link = "";
+
         // 3rd bar
-        if ($bar_height > 0) $result .= "  <div id=\"bar3_".$i."\" title=\"".$y3_axis[$key]['text']."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center;  vertical-align:top; z-index:200; ".$bar3_style."\">".$bar_value."</div>\n";
+        if ($bar_height > 0) $result .= "  <div id=\"bar3_".$i."\" ".$link." title=\"".addslashes($y3_axis[$key]['text'])."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center;  vertical-align:top; z-index:200; ".$bar3_style."\">".$bar_value."</div>\n";
         $i++;
       }
     }

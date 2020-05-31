@@ -64,7 +64,7 @@ if (isset ($siteaccess) && is_array ($siteaccess))
       // MS IE or Edge does not support video blur if a reload is used
       if (!isset ($user_client['msie'])) echo "
       <script type=\"text/javascript\">
-      setInterval (function() { window.location.reload(); }, 300000); 
+      setInterval (function() { window.location.reload(); }, 600000); 
       </script>";
 
       echo "

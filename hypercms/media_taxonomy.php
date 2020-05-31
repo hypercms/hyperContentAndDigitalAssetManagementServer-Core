@@ -152,7 +152,7 @@ function startpoint (row)
 {
   var form = document.forms['taxonomyform'];
 
-  hcms_showInfo ('savelayer', 0);
+  hcms_showFormLayer ('savelayer', 0);
   if (changed == true) form.elements['action'].value = "save";
   else form.elements['action'].value = "scroll";
   form.elements['start'].value = row;
@@ -163,7 +163,7 @@ function savetaxonomy ()
 {
   var form = document.forms['taxonomyform'];
 
-  hcms_showInfo ('savelayer', 0);
+  hcms_showFormLayer ('savelayer', 0);
   form.elements['action'].value = "save";
   form.submit();
 }
@@ -176,7 +176,7 @@ function reindex ()
 
   if (check == true)
   {   
-    hcms_showInfo ('savelayer', 0);
+    hcms_showFormLayer ('savelayer', 0);
     form.elements['action'].value = "reindex";
     form.submit();
   }
@@ -188,7 +188,7 @@ function createrow (position)
   {
     var form = document.forms['taxonomyform'];
   
-    hcms_showInfo ('savelayer', 0);
+    hcms_showFormLayer ('savelayer', 0);
     form.elements['action'].value = "createrow";
     form.elements['position'].value = position;
     form.submit();
@@ -201,13 +201,14 @@ function deleterow (position)
   {
     var form = document.forms['taxonomyform'];
   
-    hcms_showInfo ('savelayer', 0);
+    hcms_showFormLayer ('savelayer', 0);
     form.elements['action'].value = "deleterow";
     form.elements['position'].value = position;
     form.submit();
   }
 }
 
+// deprecated since version 8.1.3
 function deletelanguage (langcode)
 {
   var form = document.forms['taxonomyform'];
@@ -373,7 +374,7 @@ $id = $start;
 foreach ($result as $row => $temp_array)
 {
   $show_taxonomy .= "
-          <tr>";
+          <tr style=\"height:32px;\">";
   
   // create table cells for each row  
   // first column
@@ -382,7 +383,7 @@ foreach ($result as $row => $temp_array)
     $level = $temp_array['level'];
     
     $show_taxonomy .= "
-          <td class=\"hcmsRowHead2\" style=\"text-align:left; white-space:nowrap; width:160px; position:absolute; z-index:2;\">
+          <td class=\"hcmsRowHead2\" style=\"text-align:left; white-space:nowrap; width:160px; box-sizing:border-box;\">
             <select name=\"taxonomy[".$row."][level]\" class=\"hcmsRowHead1\" onchange=\"setlevel(this)\" style=\"margin-left:".(($level - 1) * 20)."px\">";
 
     for ($l=1; $l<=5; $l++)
@@ -394,8 +395,8 @@ foreach ($result as $row => $temp_array)
     $show_taxonomy .= "
             </select><img src=\"".getthemelocation()."img/button_arrow_right.png\" align=\"absmiddle\" class=\"hcmsButtonSizeSquare\" />
           </td>
-          <td class=\"hcmsRowHead2\" style=\"text-align:right; width:32px; height:32px; position:absolute; left:160px; z-index:2;\"><b>".$id."</b>&nbsp;</td>
-          <td class=\"hcmsRowHead2\" style=\"text-align:right; width:84px; height:32px; position:absolute; left:194px; z-index:2;\">
+          <td class=\"hcmsRowHead2\" style=\"text-align:right; width:32px; box-sizing:border-box;\"><b>".$id."</b>&nbsp;</td>
+          <td class=\"hcmsRowHead2\" style=\"text-align:right; width:92px !important; min-width:92px; box-sizing:border-box; white-space:nowrap;\">
             <img src=\"".getthemelocation()."img/button_moveup.png\" class=\"hcmsButton hcmsIconList up\" alt=\"".getescapedtext ($hcms_lang['move-up'][$lang])."\" title=\"".getescapedtext ($hcms_lang['move-up'][$lang])."\" />
             <img src=\"".getthemelocation()."img/button_movedown.png\" class=\"hcmsButton hcmsIconList down\" alt=\"".getescapedtext ($hcms_lang['move-down'][$lang])."\" title=\"".getescapedtext ($hcms_lang['move-down'][$lang])."\" />
             <img src=\"".getthemelocation()."img/button_file_new.png\" class=\"hcmsButton hcmsIconList\" onclick=\"createrow(".$row.");\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
@@ -422,8 +423,8 @@ foreach ($result as $row => $temp_array)
       else $style = "";
 
       $show_taxonomy .= "
-          <td class=\"".$langcode."\" style=\"".$style."\">
-            <input type=\"text\" name=\"taxonomy[".$row."][".$langcode."]\" value=\"".$text."\" onkeyup=\"settext(this);\" class=\"hcmsRowData1\" style=\"position:relative; left:274px;\" />
+          <td class=\"".$langcode."\" style=\"".$style." box-sizing:border-box;\">
+            <input type=\"text\" name=\"taxonomy[".$row."][".$langcode."]\" value=\"".$text."\" onkeyup=\"settext(this);\" class=\"hcmsRowData1\" style=\"\" />
           </td>";
      }
   }
@@ -506,12 +507,12 @@ foreach ($result as $row => $temp_array)
   <div style="width:94%; overflow:auto; padding-bottom:6px;">
     <table id="taxonomy" class="hcmsTableStandard">
       <thead>
-        <tr>
+        <tr style="height:28px;">
         <?php
         echo "
-          <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:left; width:160px; height:20px; position:absolute; z-index:2; white-space:nowrap;\">&nbsp;".getescapedtext ($hcms_lang['level'][$lang])."</th>
-          <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:right; width:38px; height:20px; position:absolute; left:160px; z-index:2; white-space:nowrap;\">&nbsp;ID&nbsp;</th>
-          <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:right; width:82px; height:20px; position:absolute; left:198px; z-index:2; white-space:nowrap;\">&nbsp;&nbsp;</th>";
+          <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:left; width:160px; height:20px; white-space:nowrap; box-sizing:border-box;\">&nbsp;".getescapedtext ($hcms_lang['level'][$lang])."</th>
+          <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:right; width:38px; height:20px; white-space:nowrap; box-sizing:border-box;\">&nbsp;ID&nbsp;</th>
+          <th class=\"hcmsHeadline hcmsRowHead1\" style=\"text-align:right; width:92px; height:20px; white-space:nowrap; box-sizing:border-box;\">&nbsp;&nbsp;</th>";
 
         if (!empty ($activelanguage) && is_array ($activelanguage))
         {
@@ -521,8 +522,7 @@ foreach ($result as $row => $temp_array)
             else $style = "";
             
             echo "
-            <th class=\"hcmsHeadline ".$langcode."\" style=\"position:relative; left:274px; width:140px; height:20px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; ".$style."\">
-              <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButtonTiny hcmsIconList\" style=\"margin-left:5px; float:left;\" onclick=\"deletelanguage('".$langcode."');\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
+            <th class=\"hcmsHeadline hcmsRowHead1 ".$langcode."\" style=\"width:140px; height:20px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-sizing:border-box; ".$style."\">
               <div style=\"margin-left:5px; float:left;\" title=\"".getescapedtext ($langname)."\">".showshorttext (getescapedtext ($langname), 16)."</div>
             </th>";
           }
@@ -536,6 +536,7 @@ foreach ($result as $row => $temp_array)
     </table>
   </div>
   
+  <!-- paging -->
   <div class="hcmsHeadline" style="display:block; width:220px; margin:10px auto; text-align:center;">
     <?php if (($start - $perpage) >= 0) { ?>
     <img src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" class="hcmsButton hcmsButtonSizeSquare" onclick="startpoint(<?php echo ($start - $perpage); ?>);" alt="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>" />
@@ -551,6 +552,7 @@ foreach ($result as $row => $temp_array)
   </div>
   <br/>
 
+  <!-- save buttons -->
   <table class="hcmsTableStandard" style="margin-top:10px;">
     <tr>
       <td><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> </td>

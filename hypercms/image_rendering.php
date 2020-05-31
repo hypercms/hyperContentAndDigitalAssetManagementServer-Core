@@ -276,7 +276,7 @@ $token_new = createtoken ($user);
 }
 </style>
 
-<script>
+<script type="text/javascript">
 var jcrop;
 var crop_active = false;
 var thumbWidth = <?php echo $thumb_size[0] ?>;

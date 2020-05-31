@@ -26,11 +26,9 @@ checkusersession ($user, false);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="javascript/click.js" type="text/javascript">
-</script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric">
   <table style="width:100%; height:100%;">
     <tr>
       <td style="text-align:center; vertical-align:middle;">

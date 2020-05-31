@@ -136,7 +136,7 @@ scriptend]
 
   <div id="galleria"></div>
 
-<script>
+<script type="text/javascript">
 var data = [
 [hyperCMS:scriptbegin
   // check if picture (folder) is choosen or if it exsists

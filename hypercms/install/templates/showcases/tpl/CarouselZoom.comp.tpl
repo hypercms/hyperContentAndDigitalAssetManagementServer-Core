@@ -217,7 +217,7 @@ scriptend]
 scriptend]
       </ul>
     </div>
-    <script>
+    <script type="text/javascript">
       $("#zoom_[hyperCMS:scriptbegin echo $uniqid; scriptend]").elevateZoom({
             gallery : "gal_[hyperCMS:scriptbegin echo $uniqid; scriptend]",
             galleryActiveClass: "active",
@@ -232,7 +232,7 @@ scriptend]
       else
       {
 scriptend]
-    <script>
+    <script type="text/javascript">
       $("#zoom_[hyperCMS:scriptbegin echo $uniqid; scriptend]").elevateZoom();
     </script>
 [hyperCMS:scriptbegin						

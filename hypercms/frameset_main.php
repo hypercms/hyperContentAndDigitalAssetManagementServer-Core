@@ -16,6 +16,10 @@ require ("function/hypercms_api.inc.php");
 // servertime class
 require ("function/servertime.class.php");
 
+// layer size definitions
+$width_top = 36;
+$width_navigation = 300;
+$width_search = 440;
 
 // ------------------------------ permission section --------------------------------
 
@@ -23,6 +27,7 @@ require ("function/servertime.class.php");
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
+
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -48,8 +53,29 @@ $servertime = new servertime;
 $servertime->InstallClockHead();
 ?>
 <script type="text/javascript">
+
 // search window state
 var search = false;
+
+// callback for hcms_geolocation
+function hcms_geoposition (position)
+{
+  if (position)
+  {
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+  }
+  else return false;
+  
+  if (latitude != "" && longitude != "")
+  {
+    // AJAX request to set geo location
+    $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/setgeolocation.php", {latitude: latitude, longitude: longitude});
+
+    return true;
+  }
+  else return false;
+}
 
 function setviewport ()
 {
@@ -71,15 +97,15 @@ function openInfo()
 
 function showHome ()
 {
-  minNavFrame(0);
   document.getElementById('workplFrame').src='home.php';
+  minNavFrame();
 }
 
 function showSearch ()
 {
   search = true;
   parent.frames['navFrame'].showSearch();
-  maxNavFrame();
+  maxSearchFrame();
 }
 
 function switchNav ()
@@ -87,11 +113,12 @@ function switchNav ()
   if (search == true)
   {
     search = false;
-    parent.frames['navFrame'].showNav(); 
+    parent.frames['navFrame'].showNav();
+    maxNavFrame ();
   }
   else if (document.getElementById('navLayer'))
   {
-    if (document.getElementById('navLayer').style.width == '260px')
+    if (document.getElementById('navLayer').style.width == '<?php echo $width_navigation; ?>px')
     {
       minNavFrame ();
     }
@@ -102,32 +129,68 @@ function switchNav ()
   }
 }
 
+function switchSearch ()
+{
+  if (search == false)
+  {
+    search = true;
+    parent.frames['navFrame'].showSearch();
+    maxSearchFrame ();
+  }
+  else if (document.getElementById('navLayer'))
+  {
+    if (document.getElementById('navLayer').style.width == '<?php echo $width_search; ?>px')
+    {
+      minNavFrame ();
+    }
+    else
+    {
+      maxSearchFrame ();
+    }
+  }
+}
+
 function minNavFrame (width)
 {
-  var offset = 36;
+  var offset = <?php echo $width_top; ?>;
   
   if (document.getElementById('navFrame'))
   {
     width = typeof width !== 'undefined' ? width : 0;
     
-    document.getElementById('navLayer').style.transition = "0.3s";
+    if (hcms_transitioneffect == true) document.getElementById('navLayer').style.transition = "0.3s";
     document.getElementById('navLayer').style.width = width + 'px';
-    document.getElementById('workplLayer').style.transition = "0.3s";
+    if (hcms_transitioneffect == true) document.getElementById('workplLayer').style.transition = "0.3s";
     document.getElementById('workplLayer').style.left = offset + 'px';
   }
 }
 
 function maxNavFrame (width)
 {
-  var offset = 36;
+  var offset = <?php echo $width_top; ?>;
   
   if (document.getElementById('navFrame'))
   {
-    width = typeof width !== 'undefined' ? width : 260;
+    width = typeof width !== 'undefined' ? width : <?php echo $width_navigation; ?>;
     
-    document.getElementById('navLayer').style.transition = "0.3s";
+    if (hcms_transitioneffect == true) document.getElementById('navLayer').style.transition = "0.3s";
     document.getElementById('navLayer').style.width = width + 'px';
-    document.getElementById('workplLayer').style.transition = "0.3s";
+    if (hcms_transitioneffect == true) document.getElementById('workplLayer').style.transition = "0.3s";
+    document.getElementById('workplLayer').style.left = (width + offset) + 'px';
+  }
+}
+
+function maxSearchFrame (width)
+{
+  var offset = <?php echo $width_top; ?>;
+  
+  if (document.getElementById('navFrame'))
+  {
+    width = typeof width !== 'undefined' ? width : <?php echo $width_search; ?>;
+    
+    if (hcms_transitioneffect == true) document.getElementById('navLayer').style.transition = "0.3s";
+    document.getElementById('navLayer').style.width = width + 'px';
+    if (hcms_transitioneffect == true) document.getElementById('workplLayer').style.transition = "0.3s";
     document.getElementById('workplLayer').style.left = (width + offset) + 'px';
   }
 }
@@ -139,16 +202,16 @@ function openMainView (link)
     document.getElementById('objectviewMain').src = link;
   }
 
-  hcms_showInfo('objectviewMainLayer', 0);
+  hcms_showFormLayer('objectviewMainLayer', 0);
 }
 
 function closeMainView ()
 {
   document.getElementById('objectviewMain').src = '';
-  hcms_hideInfo('objectviewMainLayer');
+  hcms_hideFormLayer('objectviewMainLayer');
 }
 
-function setwindows ()
+function setWindows ()
 {
   // set window width and height for contextmenu
   localStorage.setItem ('windowwidth', <?php echo windowwidth ("object"); ?>);
@@ -181,7 +244,7 @@ function openUpload (site, cat, location, id)
       var div = document.createElement("div");
       div.id = id;
       div.className = "hcmsContextMenu";
-      div.style.cssText = "position:fixed; right:20px; bottom:0px; width:260px; height:36px; transition:height 0.3s;";
+      div.style.cssText = "position:fixed; right:20px; bottom:0px; width:300px; height:36px; transition:height 0.3s;";
       div.innerHTML = '<div class="hcmsWorkplaceGeneric" style="position:absolute; right:0px; top:0px; width:106px; height:35px; margin:0; padding:2px 0px 1px 2px; z-index:91;">' + 
       '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" onclick="maxUpload(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" />' + 
       '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" onclick="minUpload(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" />' + 
@@ -214,7 +277,7 @@ function minUpload (id)
       div.style.cssText = "position:fixed; right:20px; bottom:0px; width:640px; height:36px; transition:height 0.3s;";
 
       setTimeout(function() {
-        div.style.cssText = "position:relative; width:260px; height:36px; transition:all 0.2s; float:right; z-index:80; overflow:hidden;";
+        div.style.cssText = "position:relative; width:300px; height:36px; transition:all 0.2s; float:right; z-index:80; overflow:hidden;";
       }, 200);
     }
   }
@@ -254,10 +317,18 @@ function showwarning ()
   return "<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-all-events'][$lang]); ?>";
 }
 
+function setSearchLocation (location, name)
+{
+  if (document.getElementById('navFrame'))
+  {
+    document.getElementById('navFrame').contentWindow.setSearchLocation (location, name);
+  }
+}
+
 $(document).ready(function()
 {
   setviewport();
-  setwindows();
+  setWindows();
   
   window.onresize = function()
   {
@@ -275,7 +346,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 </script>
 </head>
 
-<body onbeforeunload="return showwarning();">
+<body onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>" onbeforeunload="return showwarning();">
 
 <!-- popup for preview/live-view and forms (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="objectviewMainLayer" style="display:none; z-index:20;">
@@ -288,8 +359,8 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 </div>
 
 <!-- top/left bar -->
-<div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; bottom:0; width:36px;">
-  <img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsButtonTiny hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
+<div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; bottom:0; width:<?php echo $width_top; ?>px;">
+  <img src="<?php if (!empty ($mgmt_config['logo_top'])) echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsButtonTiny hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
   
   <?php if (empty ($hcms_assetbrowser)) { ?>
   <img src="<?php echo getthemelocation(); ?>img/home.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="showHome();" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />
@@ -297,7 +368,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
   <?php if (linking_valid() == false) { ?>
   <img src="<?php echo getthemelocation(); ?>img/button_explorer.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="switchNav();" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
-  <img src="<?php echo getthemelocation(); ?>img/button_search.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="showSearch();" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+  <img src="<?php echo getthemelocation(); ?>img/button_search.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="switchSearch();" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
   <?php } ?>
   
   <?php if (linking_valid() == true)  { ?>
@@ -318,58 +389,71 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
 <!-- user info -->
 <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
-<img src="<?php echo getthemelocation(); ?>img/button_info.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="position:absolute; left:0; bottom:0; padding:2px; margin:32px 0px;" onclick="hcms_showInfo ('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
+
+<img src="<?php echo getthemelocation(); ?>img/button_info.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="position:absolute; left:0; bottom:0; padding:2px; margin:32px 0px;" onclick="hcms_showFormLayer ('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
   
 <div id="userInfoLayer" class="hcmsMessage" style="position:absolute; bottom:10px; left:32px; display:none; z-index:100; padding:4px; width:200px; min-height:80px; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
   <img src="<?php echo getthemelocation()."img/user.png"; ?>" class="hcmsIconList" /> <span class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></span><br/>
   <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php echo getsession ('hcms_user'); ?></span><br/><br/>
-
   <img src="<?php echo getthemelocation()."img/button_time.png"; ?>" class="hcmsIconList" /> <span class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?></span><br/>
   <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php $servertime->InstallClock(); ?></span>
 </div>
 <?php $servertime->InstallClockBody(); ?>
+
 <?php } ?>
 
+<!-- Access Links -->
 <?php if (linking_valid() == true) { ?>
-<!-- workplace -->
-<div id="workplLayer" style="position:fixed; top:0; bottom:0; left:36px; right:0; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?action=linking" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
-</div>
+
+  <!-- workplace -->
+  <div id="workplLayer" style="position:fixed; top:0; bottom:0; left:<?php echo $width_top; ?>px; right:0; margin:0; padding:0;">
+    <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?action=linking" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+  </div>
+
+<!-- Asset Browser -->
 <?php } elseif (!empty ($hcms_assetbrowser)) {
   // location set by assetbrowser
   if (!empty ($hcms_assetbrowser_location)) { ?>
-<!-- explorer -->
-<div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;">
-  <iframe id="navFrame" name="navFrame" src="explorer.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
-</div>
 
-<!-- workplace -->
-<div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?location=<?php echo url_encode ($hcms_assetbrowser_location); ?>" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
-</div>
-<?php } 
-  // no location set by assetbrowser
-  else { ?>
-<!-- explorer -->
-<div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;">
-  <iframe id="navFrame" name="navFrame" src="explorer.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
-</div>
+  <!-- explorer -->
+  <div id="navLayer" style="position:fixed; top:0; bottom:0; left:<?php echo $width_top; ?>px; width:<?php echo $width_navigation; ?>px; margin:0; padding:0;">
+    <iframe id="navFrame" name="navFrame" src="explorer.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
+  </div>
 
-<!-- workplace -->
-<div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" src="empty.php" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
-</div>
+  <!-- workplace -->
+  <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:<?php echo ($width_top + $width_navigation); ?>px; margin:0; padding:0;">
+    <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?location=<?php echo url_encode ($hcms_assetbrowser_location); ?>" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+  </div>
+
+  <?php }
+    // no location set by assetbrowser
+    else { ?>
+
+  <!-- explorer -->
+  <div id="navLayer" style="position:fixed; top:0; bottom:0; left:<?php echo $width_top; ?>px; width:<?php echo $width_navigation; ?>px; margin:0; padding:0;">
+    <iframe id="navFrame" name="navFrame" src="explorer.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
+  </div>
+
+  <!-- workplace -->
+  <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:<?php echo ($width_top + $width_navigation); ?>px; margin:0; padding:0;">
+    <iframe id="workplFrame" name="workplFrame" src="empty.php" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
+  </div>
+
+<!-- Standard -->
 <?php }
+// standard workplace with home screen
 } else { ?>
-<!-- explorer -->
-<div id="navLayer" style="position:fixed; top:0; bottom:0; left:36px; width:260px; margin:0; padding:0;">
-  <iframe id="navFrame" name="navFrame" src="explorer.php?refresh=1" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
-</div>
 
-<!-- workplace -->
-<div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:296px; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" src="home.php" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
-</div>
+  <!-- explorer -->
+  <div id="navLayer" style="position:fixed; top:0; bottom:0; left:<?php echo $width_top; ?>px; width:<?php echo $width_navigation; ?>px; margin:0; padding:0;">
+    <iframe id="navFrame" name="navFrame" src="explorer.php?refresh=1" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
+  </div>
+
+  <!-- workplace -->
+  <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:<?php echo ($width_top + $width_navigation); ?>px; margin:0; padding:0;">
+    <iframe id="workplFrame" name="workplFrame" src="home.php" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+  </div>
+
 <?php } ?>
 
 <!-- chat sidebar -->

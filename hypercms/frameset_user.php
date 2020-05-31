@@ -39,14 +39,14 @@ function openPopup (link)
   if (link != "")
   {
     document.getElementById('objectview').src = link;
-    hcms_showInfo('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer',0);
   }
 }
 
 function closePopup ()
 {
   document.getElementById('objectview').src = '';
-  hcms_hideInfo('objectviewLayer');
+  hcms_hideFormLayer('objectviewLayer');
 }
 </script>
 </head>

@@ -159,7 +159,7 @@ scriptend]
       }
 scriptend]
 <img id="image_[hyperCMS:scriptbegin echo $uniqid; scriptend]" src="[hyperCMS:scriptbegin echo $imageURLs[0]; scriptend]" width="[hyperCMS:scriptbegin echo $stageWidth; scriptend]" height="[hyperCMS:scriptbegin echo $stageHeight; scriptend]"/>
-<script>
+<script type="text/javascript">
   $(function(){ // when DOM ready
       $("#image_[hyperCMS:scriptbegin echo $uniqid; scriptend]").reel({
         cw: true,

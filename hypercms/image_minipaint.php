@@ -325,7 +325,7 @@ function transfermedia (filecontent)
 {
   if (filecontent != '')
   {
-    hcms_showInfo ('saveLayer', 0);
+    hcms_showFormLayer ('saveLayer', 0);
 
     // write file content to field
     document.forms['mediaconfig'].elements['mediadata'].value = filecontent;
@@ -338,7 +338,7 @@ function transfermedia (filecontent)
       success: function (data)
       {
         // close saving layer
-        setTimeout ("hcms_hideInfo ('saveLayer')", 500);
+        setTimeout ("hcms_hideFormLayer ('saveLayer')", 500);
 
         // update form values due to change of the file extension
         if (data.object.length !== 0)	document.forms['mediaconfig'].elements['page'].value = data.object;

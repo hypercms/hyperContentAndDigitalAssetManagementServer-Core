@@ -42,7 +42,10 @@ checkusersession ($user);
     <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?></td>
   </tr>
   <?php
-  //load code page index file
+  // initalize
+  $color = true;
+
+  // load code page index file
   $codepage_array = file ($mgmt_config['abs_path_cms']."include/codepage.dat");
 
   if ($codepage_array != false)

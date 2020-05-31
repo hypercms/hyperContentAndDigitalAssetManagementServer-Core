@@ -52,7 +52,7 @@ function checkReindex ()
 
   if (check == true)
   {   
-    hcms_showInfo ('savelayer', 0);
+    hcms_showFormLayer ('savelayer', 0);
     document.forms['reindex'].submit();
   }
 }

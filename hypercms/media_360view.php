@@ -23,6 +23,7 @@ $type = getrequest ("type");
 $autoplay = getrequest ("autoplay", "bool", false);
 $loop = getrequest ("loop", "bool", false);
 $muted = getrequest ("muted", "bool", false);
+$view = getrequest ("view");
 $controls = getrequest ("controls", "bool", true);
 
 // ------------------------------ permission section --------------------------------
@@ -88,10 +89,14 @@ if (!empty ($code))
 {
   echo $code;
 
-  if ($controls) $option = "{ controlBar:true }";
-  else $option = "{ controlBar:false }";
+  $option = array();
+
+  if ($controls) $option[] = "controlBar:true";
+  else $option[] = "controlBar:false";
+
+  if (strtolower ($view) == "horizontal") $option[] = "horizontalView:true";
 ?>
-const viewer = new PANOLENS.Viewer(<?php echo $option; ?>);
+const viewer = new PANOLENS.Viewer({ <?php echo implode (", ", $option); ?> });
 viewer.add(panorama);
 <?php } ?>
 </script>

@@ -1,3 +1,7 @@
+// ------------------------ default values ----------------------------
+
+var hcms_transitioneffect = true;
+
 // ------------------------ browser information ----------------------------
 
 function hcms_getBrowserName()
@@ -269,7 +273,7 @@ function hcms_translateText (sourceText, sourceLang, targetLang)
     if (sourceLang == "") sourceLang = 'auto';
 
     // wait
-    hcms_sleep (300);
+    hcms_sleep (500);
     
     // remove html tags
     sourceText = hcms_stripTags (sourceText);
@@ -624,18 +628,19 @@ function hcms_openChat ()
 
 function hcms_findObj (n, d) 
 {
-  var p,i,x;  
+  var p, i, x;  
 
-  if (!d) d=document; 
+  if (!d) d = document; 
 
-  if ((p=n.indexOf("?"))>0&&parent.frames.length) 
+  if ((p=n.indexOf("?"))>0 && parent.frames.length) 
   {
-    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);
+    d = parent.frames[n.substring(p+1)].document;
+    n = n.substring(0,p);
   }
 
-  if (!(x=d[n])&&d.all) x=d.all[n]; 
-  for (i=0; !x&&i<d.forms.length; i++) x=d.forms[i][n];
-  for (i=0; !x&&d.layers&&i<d.layers.length; i++) x=hcms_findObj(n,d.layers[i].document);
+  if (!(x = d[n]) && d.all) x = d.all[n]; 
+  for (i=0; !x && i<d.forms.length; i++) x = d.forms[i][n];
+  for (i=0; !x && d.layers && i<d.layers.length; i++) x = hcms_findObj(n,d.layers[i].document);
   if (!x && d.getElementById) x=d.getElementById(n);
 
   return x;
@@ -643,25 +648,25 @@ function hcms_findObj (n, d)
 
 function hcms_swapImgRestore ()
 {
-  var i,x,a=document.sr;
+  var i, x, a = document.sr;
 
-  for (i=0; a&&i<a.length&&(x=a[i])&&x.oSrc; i++) x.src=x.oSrc;
+  for (i=0; a && i<a.length && (x=a[i]) && x.oSrc; i++) x.src = x.oSrc;
 }
 
 function hcms_preloadImages ()
 {
-  var d=document;
+  var d = document;
 
   if (d.images)
   {
-    if (!d.p) d.p=new Array();
-    var i,j=d.p.length,a=hcms_preloadImages.arguments;
+    if (!d.p) d.p = new Array();
+    var i, j = d.p.length, a = hcms_preloadImages.arguments;
 
     for (i=0; i<a.length; i++)
     {
-      if (a[i].indexOf("#")!=0)
+      if (a[i].indexOf("#") != 0)
       {
-        d.p[j]=new Image;
+        d.p[j] = new Image;
         d.p[j++].src=a[i];
       }
     }
@@ -670,24 +675,26 @@ function hcms_preloadImages ()
 
 function hcms_swapImage ()
 {
-  var i,j=0,x,a=hcms_swapImage.arguments;
+  var i, j = 0, x, a = hcms_swapImage.arguments;
 
-  document.sr=new Array;
+  document.sr = new Array;
 
-  for(i=0;i<(a.length-2);i+=3)
+  for (i=0; i<(a.length-2); i+=3)
   {
     if ((x=hcms_findObj(a[i]))!=null)
     {
-      document.sr[j++]=x;
-      if(!x.oSrc) x.oSrc=x.src;
-      x.src=a[i+2];
+      document.sr[j++] = x;
+      if (!x.oSrc) x.oSrc = x.src;
+      x.src = a[i+2];
     }
   }
 }
 
 function hcms_scanStyles (obj, prop)
 {
-  var inlineStyle = null; var ccProp = prop; var dash = ccProp.indexOf("-");
+  var inlineStyle = null;
+  var ccProp = prop;
+  var dash = ccProp.indexOf("-");
   
   while (dash != -1)
   {
@@ -751,6 +758,21 @@ function hcms_getProp (obj, prop)
     }
   }
 }
+
+// ----------------------------------------  jump to link ---------------------------------------
+
+function hcms_jumpMenu (target, selObj, restore)
+{
+  eval (target + ".location='" + selObj.options[selObj.selectedIndex].value + "'");
+  if (restore) selObj.selectedIndex = 0;
+}
+
+function hcms_jumpMenuGo (selName, target, restore)
+{
+  var selObj = hcms_findObj (selName); 
+  if (selObj) hcms_jumpMenu (target, selObj, restore);
+}
+
 
 // ---------------------------------------- select box ---------------------------------------
 
@@ -1027,27 +1049,57 @@ function hcms_dragLayers (elem, moveelem, connection_id)
 
 // ----------------------------------------  show/hide layer ---------------------------------------
 
+function hcms_slideDownLayer (id, offset) 
+{
+  // default value
+  offset = typeof offset !== 'undefined' ? offset : "0px";
+
+  var layer = document.getElementById(id);
+  
+  if (layer)
+  {
+    // transition
+    if (hcms_transitioneffect) layer.style.transition = 'height 0.3s linear';
+    layer.style.overflow = 'hidden';
+    layer.style.visibility = 'visible';
+
+    if (layer.style.height == offset + "px")
+    {
+      layer.style.height = 'auto';
+    }
+    else
+    {
+      layer.style.height = offset + "px";
+    }
+  }
+}
+
 function hcms_showHideLayers () 
 {
-  // uses visibilty
+  // uses visibilty (included form data will be submitted)
   var i, p, z, v, o, obj;
   var args = hcms_showHideLayers.arguments;
 
   for (i=0; i<(args.length-2); i+=3)
   {
-    if ((obj = hcms_findObj(args[i])) != null)
+    // 1st argument
+    if ((obj = hcms_findObj (args[i])) != null)
     {
-      // z-index
+      // z-index (2nd argument)
       z = args[i+1];
-      // visibility
+      // visibility (3rd argument)
       v = args[i+2];
 
       if (obj.style)
       {
         // transition
-        obj.style.transition = 'all 0.3s linear';
+        if (hcms_transitioneffect) obj.style.transition = 'all 0.3s linear';
+
+        // opacity
         o = (v == 'show') ? '1' : (v == 'hide') ? '0' : '0';
         obj.style.opacity = o;
+        // fix for MS IE
+        obj.style.filter = 'alpha(opacity=' + (o * 100) + ')';
 
         // z-index
         if (z != '')
@@ -1064,24 +1116,53 @@ function hcms_showHideLayers ()
   }
 }
 
-function hcms_jumpMenu (targ, selObj, restore)
+function hcms_displayLayers () 
 {
-  eval(targ+".location='"+selObj.options[selObj.selectedIndex].value+"'");
-  if (restore) selObj.selectedIndex=0;
+  // uses display (included form data will not be submitted if display is 'none')
+  var i, p, z, v, o, obj;
+  var args = hcms_displayLayers.arguments;
+
+  for (i=0; i<(args.length-2); i+=3)
+  {
+    // 1st argument
+    if ((obj = hcms_findObj (args[i])) != null)
+    {
+      // z-index (2nd argument)
+      z = args[i+1];
+      // visibility (3rd argument)
+      v = args[i+2];
+
+      if (obj.style)
+      {
+        // transition
+        if (hcms_transitioneffect) obj.style.transition = 'all 0.3s linear';
+
+        // opacity
+        o = (v == 'show') ? '1' : (v == 'hide') ? '0' : '0';
+        obj.style.opacity = o;
+        // fix for MS IE
+        obj.style.filter = 'alpha(opacity=' + o * 100 + ')';
+
+        // z-index
+        if (z != '')
+        {
+          z = (v == 'show') ? z : (v == 'hide') ? '-1' : '-1';
+          obj.style.zIndex = z;
+        }
+
+        // display
+        v = (v == 'show') ? 'inline' : (v == 'hide') ? 'none' : v;
+        obj.style.display = v; 
+      }
+    }
+  }
 }
 
-function hcms_jumpMenuGo (selName, targ, restore)
-{
-  var selObj = hcms_findObj(selName); 
-  if (selObj) hcms_jumpMenu(targ,selObj,restore);
-}
-
-function hcms_showInfo (id, sec)
+function hcms_showFormLayer (id, sec)
 {
   // default value
   sec = typeof sec !== 'undefined' ? sec : 0;
 
-  // uses display
   var info = document.getElementById(id);
 
   if (info)
@@ -1098,12 +1179,13 @@ function hcms_showInfo (id, sec)
     }
 
     // do not apply effect on load screen
+    // show based on display style
     info.style.display = 'inline';
 
     // hide element
     if (sec > 0)
     {
-      var function_hide = "hcms_hideInfo('" + id + "')";
+      var function_hide = "hcms_hideFormLayer('" + id + "')";
       setTimeout (function_hide, (sec * 1000));
     }
 
@@ -1112,20 +1194,19 @@ function hcms_showInfo (id, sec)
   else return false;
 }
 
-function hcms_hideInfo (id)
+function hcms_hideFormLayer (id)
 {
-  // uses display
   var info = document.getElementById(id);
 
   if (info)
   {
-    // hide
+    // hide based on display style
     info.style.display = 'none';
 
     // disable all form elements
     var nodes = info.getElementsByTagName('*');
 
-    for (var i = 0; i < nodes.length; i++)
+    for (var i=0; i<nodes.length; i++)
     {
       if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
       {
@@ -1138,9 +1219,8 @@ function hcms_hideInfo (id)
   else return false;
 }
 
-function hcms_switchInfo (id)
+function hcms_switchFormLayer (id)
 {
-  // uses display
   var info = document.getElementById(id);
   
   if (info)
@@ -1150,7 +1230,7 @@ function hcms_switchInfo (id)
       // enable all form elements
       var nodes = info.getElementsByTagName('*');
 
-      for (var i = 0; i < nodes.length; i++)
+      for (var i=0; i<nodes.length; i++)
       {
         if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
         {
@@ -1169,7 +1249,7 @@ function hcms_switchInfo (id)
       // disable all form elements
       var nodes = info.getElementsByTagName('*');
 
-      for (var i = 0; i < nodes.length; i++)
+      for (var i=0; i<nodes.length; i++)
       {
         if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
         {
@@ -1190,11 +1270,14 @@ function hcms_switchSelector (id)
 
   if (selector)
   {
-    selector.style.transition = '0.3s';
+    if (hcms_transitioneffect) selector.style.transition = 'all 0.3s linear';
 
     if (selector.style.visibility == 'hidden') 
     {
       selector.style.opacity = '1';
+      // for MS IE
+      selector.style.filter = 'alpha(opacity=100)';
+
       selector.style.visibility = 'visible';
     }
     else
@@ -1215,8 +1298,11 @@ function hcms_hideSelector (id)
 
   if (selector)
   {
-    selector.style.transition = '0.3s';
+    if (hcms_transitioneffect) selector.style.transition = 'all 0.3s linear';
+
     selector.style.opacity = '0';
+    // for MS IE
+    selector.style.filter = 'alpha(opacity=0)';
 
     if (selector.style.visibility == 'visible') selector.style.visibility = 'hidden';
 
@@ -1227,12 +1313,12 @@ function hcms_hideSelector (id)
 
 // ------------------------------ element style functions -------------------------------
 
-function hcms_ElementStyle (Element, ElementClass)
+function hcms_elementStyle (Element, ElementClass)
 {
   if (Element.className != ElementClass) Element.className = ElementClass;
 }
 
-function hcms_ElementbyIdStyle (id, ElementClass)
+function hcms_elementbyIdStyle (id, ElementClass)
 {
   var Element = document.getElementById(id);
 

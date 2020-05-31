@@ -95,7 +95,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     </tr>
     <tr> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['keywords-with-optional-mandatory-or-open-list'][$lang]); ?></td>
-      <td class="hcmsRowData1">[hyperCMS:textk id='...' list='...' file='...' onlylist='yes/no']</td>
+      <td class="hcmsRowData1">[hyperCMS:textk id='...' list='...' file='...' onlylist='yes/no' display='taxonomy']</td>
     </tr>
     <tr> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['unformatted-comment'][$lang]); ?></td>

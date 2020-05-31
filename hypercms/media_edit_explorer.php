@@ -68,8 +68,7 @@ if (trim ($mediacat_data) != "")
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script>
-<!--
+<script type="text/javascript">
 function sendInput(file)
 {
   parent.frames['controlFrame2'].document.forms['media'].elements['mediafile'].value = file;
@@ -82,7 +81,6 @@ function goToURL()
   document.returnValue = false;
   for (i=0; i<(args.length-1); i+=2) eval(args[i]+".location='"+args[i+1]+"'");
 }
-//-->
 </script>
 </head>
 

@@ -58,87 +58,113 @@ function cleancontent ($text, $charset="UTF-8")
 
   // list of preg* regular expression patterns to search for, used in conjunction with $replace
   $search = array(
-    "/\r/",                                           // Non-legal carriage return
-    "/[\n\t]+/",                                    // Newlines and tabs
-    '/<head\b[^>]*>.*?<\/head>/i',        // <head>
-    '/<script\b[^>]*>.*?<\/script>/i',      // <script>s -- which strip_tags supposedly has problems with
-    '/<style\b[^>]*>.*?<\/style>/i',        // <style>s -- which strip_tags supposedly has problems with
-    '/<i\b[^>]*>(.*?)<\/i>/i',                 // <i>
-    '/<em\b[^>]*>(.*?)<\/em>/i',           // <em>
-    '/(<ul\b[^>]*>|<\/ul>)/i',                 // <ul> and </ul>
-    '/(<ol\b[^>]*>|<\/ol>)/i',                 // <ol> and </ol>
-    '/(<dl\b[^>]*>|<\/dl>)/i',                 // <dl> and </dl>
-    '/<li\b[^>]*>(.*?)<\/li>/i',                // <li> and </li>
-    '/<dd\b[^>]*>(.*?)<\/dd>/i',            // <dd> and </dd>
-    '/<dt\b[^>]*>(.*?)<\/dt>/i',             // <dt> and </dt>
-    '/<li\b[^>]*>/i',                              // <li>
-    '/<hr\b[^>]*>/i',                             // <hr>
-    '/<div\b[^>]*>/i',                            // <div>
-    '/(<table\b[^>]*>|<\/table>)/i',         // <table> and </table>
-    '/(<tr\b[^>]*>|<\/tr>)/i',                  // <tr> and </tr>
-    '/<td\b[^>]*>(.*?)<\/td>/i',              // <td> and </td>
-    '/<span class="_html2text_ignore">.+?<\/span>/i', // <span class="_html2text_ignore">...</span>
-    '/<(img)\b[^>]*alt=\"([^>"]+)\"[^>]*>/i',   // <img> with alt tag
+    "/\r/",                                  // Non-legal carriage return
+    "/[\n\t]+/",                             // Newlines and tabs
+    '/<head[^>]*>.*?<\/head>/i',             // <head>
+    '/<script[^>]*>.*?<\/script>/i',         // <script>s -- which strip_tags supposedly has problems with
+    '/<style[^>]*>.*?<\/style>/i',           // <style>s -- which strip_tags supposedly has problems with
+    '/<p[^>]*>/i',                           // <P>
+    '/<br[^>]*>/i',                          // <br>
+    '/<i[^>]*>(.*?)<\/i>/i',                 // <i>
+    '/<em[^>]*>(.*?)<\/em>/i',               // <em>
+    '/(<ul[^>]*>|<\/ul>)/i',                 // <ul> and </ul>
+    '/(<ol[^>]*>|<\/ol>)/i',                 // <ol> and </ol>
+    '/(<dl[^>]*>|<\/dl>)/i',                 // <dl> and </dl>
+    '/<li[^>]*>(.*?)<\/li>/i',               // <li> and </li>
+    '/<dd[^>]*>(.*?)<\/dd>/i',               // <dd> and </dd>
+    '/<dt[^>]*>(.*?)<\/dt>/i',               // <dt> and </dt>
+    '/<li[^>]*>/i',                          // <li>
+    '/<hr[^>]*>/i',                          // <hr>
+    '/<div[^>]*>/i',                         // <div>
+    '/(<table[^>]*>|<\/table>)/i',           // <table> and </table>
+    '/(<tr[^>]*>|<\/tr>)/i',                 // <tr> and </tr>
+    '/<td[^>]*>(.*?)<\/td>/i',               // <td> and </td>
+    '/<span class="_html2text_ignore">.+?<\/span>/i'  // <span class="_html2text_ignore">...</span>
   );
 
   // list of pattern replacements corresponding to patterns searched
   $replace = array(
-    '',                              // Non-legal carriage return
-    ' ',                             // Newlines and tabs
-    '',                              // <head>
-    '',                              // <script>s -- which strip_tags supposedly has problems with
-    '',                              // <style>s -- which strip_tags supposedly has problems with
-    '_\\1_',                       // <i>
-    '_\\1_',                       // <em>
-    "\n\n",                        // <ul> and </ul>
-    "\n\n",                        // <ol> and </ol>
-    "\n\n",                        // <dl> and </dl>
-    "\t* \\1\n",                  // <li> and </li>
-    " \\1\n",                      // <dd> and </dd>
-    "\t* \\1",                     // <dt> and </dt>
-    "\n\t* ",                      // <li>
-    "\n-------------------------\n", // <hr>
-    "<div>\n",                    // <div>
-    "\n\n",                         // <table> and </table>
-    "\n",                            // <tr> and </tr>
-    "\t\t\\1\n",                   // <td> and </td>
-    "",                               // <span class="_html2text_ignore">...</span>
-    '[\\2]',                          // <img> with alt tag
+    '',                                     // Non-legal carriage return
+    ' ',                                    // Newlines and tabs
+    '',                                     // <head>
+    '',                                     // <script>s -- which strip_tags supposedly has problems with
+    '',                                     // <style>s -- which strip_tags supposedly has problems with
+    "\n\n",                                 // <P>
+    "\n",                                   // <br>
+    '_\\1_',                                // <i>
+    '_\\1_',                                // <em>
+    "\n\n",                                 // <ul> and </ul>
+    "\n\n",                                 // <ol> and </ol>
+    "\n\n",                                 // <dl> and </dl>
+    "\t* \\1\n",                            // <li> and </li>
+    " \\1\n",                               // <dd> and </dd>
+    "\t* \\1",                              // <dt> and </dt>
+    "\n\t* ",                               // <li>
+    "\n-------------------------\n",        // <hr>
+    "<div>\n",                              // <div>
+    "\n\n",                                 // <table> and </table>
+    "\n",                                   // <tr> and </tr>
+    "\t\t\\1\n",                            // <td> and </td>
+    ""                                      // <span class="_html2text_ignore">...</span>
   );
 
   // list of preg* regular expression patterns to search for, used in conjunction with $entReplace
   $entSearch = array(
-    '/&#153;/i',                                     // TM symbol in win-1252
-    '/&#151;/i',                                     // m-dash in win-1252
-    '/&(amp|#38);/i',                             // Ampersand: see converter()
-    '/[ ]{2,}/',                                     // Runs of spaces, post-handling
+    '/&(nbsp|#160);/i',                      // Non-breaking space
+    '/&(quot|rdquo|ldquo|#8220|#8221|#147|#148);/i', // Double quotes
+    '/&(apos|rsquo|lsquo|#8216|#8217);/i',   // Single quotes
+    '/&gt;/i',                               // Greater-than
+    '/&lt;/i',                               // Less-than
+    '/&(copy|#169);/i',                      // Copyright
+    '/&(trade|#8482|#153);/i',               // Trademark
+    '/&(reg|#174);/i',                       // Registered
+    '/&(mdash|#151|#8212);/i',               // mdash
+    '/&(ndash|minus|#8211|#8722);/i',        // ndash
+    '/&(bull|#149|#8226);/i',                // Bullet
+    '/&(pound|#163);/i',                     // Pound sign
+    '/&(euro|#8364);/i',                     // Euro sign
+    '/&(amp|#38);/i'                         // Ampersand
     );
 
   // list of pattern replacements corresponding to patterns searched
   $entReplace = array(
-    '�',         // TM symbol
-    '�',         // m-dash
-    '|+|amp|+|', // Ampersand: see converter()
-    ' ',         // Runs of spaces, post-handling
+    ' ',                                    // Non-breaking space
+    '"',                                    // Double quotes
+    "'",                                    // Single quotes
+    '>',                                    // Greater-than
+    '<',                                    // Less-than
+    '©',                                    // Copyright
+    '™',                                    // Trademark
+    '®',                                    // Registered
+    '—',                                    // mdash
+    '-',                                    // ndash
+    '*',                                    // Bullet
+    '£',                                    // Pound sign
+    '€',                                    // Euro sign
+    '&'                                     // Ampersand
   );
 
+  // replace characters
   if ($text != "" && $charset != "")
   {
-    if (!is_array ($text))
+    if (is_string ($text))
     {
-      // clean up tags
+      // clean up all tags
       $text = preg_replace ($search, $replace, $text);
       $text = strip_tags ($text);
       $text = preg_replace ($entSearch, $entReplace, $text);
 
       // decode characters
       $text = html_decode ($text, $charset);
-
-      // replace characters
+  
       // removed in version 8.0.6: $text = str_replace (array(".....", "....", "...", ".."), ".", $text);
       // removed in version 8.0.6: $text = str_replace (array(",,,,,", ",,,,", ",,,", ",,"), ",", $text);
       // removed in version 8.0.6: $text = str_replace (array("_____", "____", "___", "__"), "_", $text);
+
+      // double quotes an line feeds
       $text = str_replace (array("&quot;", "&#xA;", "&#10;"), array("\"", "\n", "\n"), $text);
+
+      // multiple free spaces
       $text = preg_replace ('/\s+/', " ", $text);
     }
     elseif (is_array ($text))
@@ -6422,7 +6448,7 @@ function createpublication ($site_name, $user="sys")
 
             if ($test != false)
             {
-              // set user permission for new publication and register them in session
+              // set user permission for new publication and register them in the session
               $_SESSION['hcms_siteaccess'][] = $site_name;
               $_SESSION['hcms_pageaccess'][$site_name]['Administrator'] = deconvertpath ("%page%/".$site_name."/|", "file");
               $_SESSION['hcms_compaccess'][$site_name]['Administrator'] = deconvertpath ("%comp%/".$site_name."/|", "file");
@@ -6467,7 +6493,7 @@ function createpublication ($site_name, $user="sys")
               if ($eventsystem['oncreatepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
                 oncreatepublication_post ($site_name, $user);
  
-              $add_onload = "parent.frames['mainFrame'].location='site_edit_form.php?site=*Null*&preview=no&site_name=".url_encode($site_name)."'; setTimeout (function(){parent.frames['controlFrame'].location='control_site_menu.php?site=".url_encode($site_name)."'}, 1000); ";
+              $add_onload = "parent.frames['mainFrame'].location='site_edit_form.php?preview=no&site_name=".url_encode($site_name)."'; setTimeout (function(){parent.frames['controlFrame'].location='control_site_menu.php?site_name=".url_encode($site_name)."'}, 2000); ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-publication-was-created-successfully'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-publication'][$lang]."\n";
 
               // success
@@ -6475,38 +6501,27 @@ function createpublication ($site_name, $user="sys")
             }
             else
             {
-              // unlock file
-              inherit_db_close ($user);
-
               $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-publication-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
             }
           }
           else
           {
-            // unlock file
-            inherit_db_close ($user);
-
             $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-publication-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['an-error-occurred-in-the-data-manipulation'][$lang]."\n";
           }
-        }
-        else
-        {
-          // unlock file
-          inherit_db_close ($user);
         }
       }
     }
     else
     {
-      // unlock file
-      inherit_db_close ($user);
-
       $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
+
+  // unlock file
+  inherit_db_close ($user);
 
   // save log
   savelog (@$error);
@@ -7605,26 +7620,15 @@ function deletepublication ($site_name, $user="sys")
             // success
             $result_ok = true;
           }
-          else
-          {
-            // unlock file
-            inherit_db_close ($user);
-          }
         }
         else
         {
-          // unlock file
-          inherit_db_close ($user);
-
           $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-publication-cannot-be-removed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
         }
       }
       else
       {
-        // unlock file
-        inherit_db_close ($user);
-
         $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
       }
@@ -7636,6 +7640,9 @@ function deletepublication ($site_name, $user="sys")
     $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-a-publication'][$lang]."\n";
   }
+
+  // unlock file
+  inherit_db_close ($user);
 
   // save log
   savelog (@$error);
@@ -8295,14 +8302,14 @@ function createportal ($site, $template)
 // ----------------------------------------- editportal ---------------------------------------------
 // function: editportal()
 // input: publication name [string], template name or file name [string], portal user name [string], design theme name [string] (optional), primary color as hex code [string] (optional),
-//        PHP global FILES variable for file upload/remove [array] (optional), download formats [JSON-string] (optional), user name [string] (optional)
+//        PHP global FILES variable for file upload/remove [array] (optional), navigation tree names [array] (optional), download formats [JSON-string] (optional), user name [string] (optional)
 // output: result array
 // requires: config.inc.php to be loaded before
 
 // description:
 // This function edites the settings of a portal.
 
-function editportal ($site, $template, $portaluser, $design="day", $primarycolor="", $global_files=array(), $formats="", $user="sys")
+function editportal ($site, $template, $portaluser, $design="day", $primarycolor="", $global_files=array(), $navigation=array(), $formats="", $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
@@ -8469,6 +8476,14 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
       if ($primarycolor != "") $templatedata = setcontent ($templatedata, "", "<primarycolor>", $primarycolor, "", "");
 
       if ($formats != "") $templatedata = setcontent ($templatedata, "", "<downloadformats>", $formats, "", "");
+
+      // add navigation node (added in version 8.1.3)
+      if (strpos ($templatedata, "<navigation>") < 1)
+      {
+        $templatedata = str_replace ("</downloadformats>", "</downloadformats>\n<navigation></navigation>", $templatedata);
+      }
+
+      if (is_array ($navigation)) $templatedata = setcontent ($templatedata, "", "<navigation>", implode ("|", $navigation), "", "");
     }
     else $templatedata = false;
 
@@ -19455,15 +19470,18 @@ function rewrite_homepage ($site, $rewrite_type="forward")
 
 // --------------------------------------- load_csv -------------------------------------------
 // function: load_csv ()
-// input: path to CSV file [string], delimiter [string] (optional), enclosure [string] (optional), character set of source data [string] (optional), character set of output data [string] (optional)
+// input: path to CSV file [string], delimiter [string] (optional), enclosure [string] (optional), character set of the source data [string] (optional), character set of the output data [string] (optional)
 // output: array / false on error
 
 // description:
-// Analyzes the content from the CSV file and detects delimiter and enclosure characters if left empty. On success the data will be returned as array starting with row index of 1.
+// Analyzes the content from the CSV file and detects delimiter and enclosure characters if left empty. On success the data will be returned as array starting with a row index of 1.
 
 function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8", $charset_to="utf-8")
 {
   global $mgmt_config, $eventsystem;
+
+  // initalize
+  $temp_file = false;
 
   // define possible delimiters and enclosures
   $delimiters_csv = array (",", ";", "\t", "|");
@@ -19479,12 +19497,12 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8",
     if ($data != "")
     {
       // remove UTF-8 BOM
-      $data = remove_utf8_bom ($data);
+      $data_new = remove_utf8_bom ($data);
 
       // detect charset
       if (empty ($charset_from)) 
       {
-        $charset_from = mb_detect_encoding ($data, mb_detect_order(), true);
+        $charset_from = mb_detect_encoding ($data_new, mb_detect_order(), true);
 
         // use UTF-8 as default
         if (empty ($charset_from)) $charset_from = "utf-8";
@@ -19493,11 +19511,16 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8",
       // convert characters
       if (!empty ($charset_from) && !empty ($charset_to) && strtolower ($charset_from) != strtolower ($charset_to))
       {
-        $data = convertchars ($data, $charset_from, $charset_to);
+        $data_new = convertchars ($data_new, $charset_from, $charset_to);
       }
 
-      // save CSV
-      if ($data != "") $save = file_put_contents ($file, $data);
+      // save temp CSV file if changed
+      if ($data_new != "" && $data_new != $data) 
+      {
+        $file = $mgmt_config['abs_path_temp'].uniqid().".csv";
+        $temp_file = true;
+        $save = file_put_contents ($file, $data_new);
+      }
     }
 
     $row = 0;
@@ -19616,6 +19639,9 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8",
         }
       }
     }
+
+    // remove temp file
+    if (!empty ($temp_file)) unlink ($file);
   }
 
   if (sizeof ($result) > 0) return $result;
@@ -19623,7 +19649,6 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8",
 }
 
 // ------------------------------------- create_csv ------------------------------------------
-
 // function: create_csv ()
 // input: associative data with row-id and column name as keys [array], file name [string] (optonal), file path for saving the CSV file [string] (optional), delimiter [string] (optional), enclosure [string] (optional), character set of input data [string] (optional), character set of output data [string] (optional), add UTF-8 BOM [boolean] (optional)
 // output: true / false on error
@@ -19995,6 +20020,11 @@ function linking_inscope ($site="", $location, $page="", $cat="")
 //   array(
 //     "id"=>"MyText", 
 //     "textu"=>"I am a text"
+//    ),
+//   array(
+//     "id"=>"MyKeywords", 
+//     "textk"=>"apple,car,mobile",
+//     "language"=>"en"
 //    ), 
 //   array(
 //     "id"=>"MyImage", 
@@ -20103,6 +20133,51 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
           // convert to array
           if (is_object ($content)) $content = (array) $content;
 
+          // taxonomy tree selector returns an array
+          $lang_taxonomy = array();
+
+          if (!empty ($content['textk']) && !empty ($content['language']) && !empty ($content['id']))
+          {
+            // get and set language for text ID
+            $lang_taxonomy[$content['id']] = $content['language'];
+
+            // create unique keywords and convert array to comma separated keyword list
+            if (is_array ($content['textk']))
+            {
+              $temp = implode (",", $content['textk']);
+              $temp = explode (",", $temp);
+              $temp = array_unique ($temp);
+              $content['textk'] = implode (",", $temp);
+            }
+            else
+            {
+              $temp = explode (",", $content['textk']);
+              $temp = array_unique ($temp);
+              $content['textk'] = implode (",", $temp);
+            }
+          }
+
+          if (!empty ($content['arttextk']) && !empty ($content['language']) && !empty ($content['id']))
+          {
+            // get and set language for text ID
+            $lang_taxonomy[$content['id']] = $content['language'];
+
+            // create unique keywords and convert array to comma separated keyword list
+            if (is_array ($content['textk']))
+            {
+              $temp = implode (",", $content['arttextk']);
+              $temp = explode (",", $temp);
+              $temp = array_unique ($temp);
+              $content['arttextk'] = implode (",", $temp);
+            }
+            else
+            {
+              $temp = explode (",", $content['arttextk']);
+              $temp = array_unique ($temp);
+              $content['arttextk'] = implode (",", $temp);
+            }
+          }
+
           // head content (unique for a content container)
           $headcontent = array();
           if (!empty ($content['pagetitle'])) $headcontent['pagetitle'] = $content['pagetitle'];
@@ -20132,8 +20207,9 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
             if (!empty ($content['arttextc']) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, array($id => $content['arttextc']), "c", "yes", $user, $user, $charset);
             if (!empty ($content['textd']) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, array($id => $content['textd']), "d", "no", $user, $user, $charset);
             if (!empty ($content['arttextd']) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, array($id => $content['arttextd']), "d", "yes", $user, $user, $charset);
-            // keywords only apply for metadata templates (no support for articles)
+            // keywords usually only apply for metadata templates (support for articles added in version 8.1.3)
             if (!empty ($content['textk']) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, array($id => $content['textk']), "k", "no", $user, $user, $charset);
+            if (!empty ($content['arttextk']) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, array($id => $content['arttextk']), "k", "yes", $user, $user, $charset);
             // only if autosaving is not used
             if (!empty ($content['commentu']) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, array($id => $content['commentu']), "u", "no", $user, $user, $charset, true);
             if (!empty ($content['commentf']) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, array($id => $content['commentf']), "f", "no", $user, $user, $charset, true);
@@ -20300,6 +20376,12 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
         }
         else
         {
+          // set taxonomy
+          settaxonomy ($site, $container_id, $lang_taxonomy);
+        
+          // set keywords
+          rdbms_setkeywords ($site, $container_id);
+
           // notification
           notifyusers ($site, $location, $page, "onedit", $user);
         }

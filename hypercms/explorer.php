@@ -30,6 +30,9 @@ $rnr = getrequest_esc ("rnr", "locationname", false);
 $search_delete = getrequest ("search_delete");
 $token = getrequest ("token");
 
+// field size definitions
+$width_searchfield = 410;
+
 // ------------------------------ permission section --------------------------------
 
 // check session of user
@@ -551,7 +554,7 @@ function generateTaxonomyTree ($site, $tax_id, $runningNumber=1)
         $rnrid .= $i++;
 
         // generating the menupoint object with the needed configuration
-        $point = new hcms_menupoint(showshorttext ($tax_keyword, 22), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode("%taxonomy%/".$site."/all/".$tax_id."/0"), "folder_taxonomy.png", $id);
+        $point = new hcms_menupoint(showshorttext ($tax_keyword, 32), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode("%taxonomy%/".$site."/all/".$tax_id."/0"), "folder_taxonomy.png", $id);
         $point->setOnClick('hcms_jstree_open("'.$id.'");');
         $point->setTarget('workplFrame');
         $point->setNodeCSSClass('jstree-closed jstree-reload');
@@ -616,7 +619,7 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
         // generating the menupoint object with the needed configuration
         if (strpos ($last_text_id, "=") > 0)
         {
-          $point = new hcms_menupoint(showshorttext ($label, 22), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode($hierarchy_url), "folder_taxonomy.png", $id);
+          $point = new hcms_menupoint(showshorttext ($label, 32), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode($hierarchy_url), "folder_taxonomy.png", $id);
           $point->setOnClick('hcms_jstree_open("'.$id.'");');
           $point->setTarget('workplFrame');
           $point->setNodeCSSClass('jstree-closed jstree-reload');
@@ -626,7 +629,7 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
         }
         else
         {
-          $point = new hcms_menupoint(showshorttext ($label, 22), '#'.$id, "folder.png", $id);
+          $point = new hcms_menupoint(showshorttext ($label, 32), '#'.$id, "folder.png", $id);
           $point->setOnClick('hcms_jstree_open("'.$id.'");');
           $point->setNodeCSSClass('jstree-closed jstree-reload');
           $point->setOnMouseOver('hcms_resetContext();');
@@ -918,6 +921,29 @@ else
           $mgmt_config[$site]['site_admin'] = true;
         }
 
+        // load portal template for navigation settings
+        $portalnavigation = array();
+
+        if (!empty ($hcms_portal))
+        {
+          list ($portalsite, $portaltemplate) = explode ("/", $hcms_portal);
+
+          // go to next publication
+          if ($site != $portalsite) continue;
+          
+          // get navigation settings
+          if ($site == $portalsite && !empty ($portaltemplate))
+          {
+            $result_load = loadtemplate ($portalsite, $portaltemplate.".portal.tpl");
+            
+            if ($result_load['result'] == true)
+            {
+              $temp = getcontent ($result_load['content'], "<navigation>");
+              if (!empty ($temp[0])) $portalnavigation = explode ("|", $temp[0]);
+            }
+          }
+        }
+
         // Publication specific Menu Points
         // ----------------------------------------- main administration ----------------------------------------------  
         if (empty ($hcms_assetbrowser) && $set_site_admin == false && $mgmt_config[$site]['site_admin'] == true)
@@ -1197,7 +1223,7 @@ else
           }
 
           // ----------------------------------------- taxonomy ----------------------------------------------
-          if (!empty ($mgmt_config[$site]['taxonomy']) && (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page')))
+          if ((empty ($hcms_portal) || in_array ("taxonomy", $portalnavigation)) && !empty ($mgmt_config[$site]['taxonomy']) && (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page')))
           {
             $point = new hcms_menupoint($hcms_lang['taxonomy'][$lang], '#tax_'.$site, 'folder_taxonomy.png', 'tax_'.$site);
             $point->setOnClick('hcms_jstree_open("tax_'.$site.'", event);');
@@ -1209,25 +1235,28 @@ else
           // --------------------------------- metadata/content hierarchy -------------------------------------
           if (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page'))
           {
-            $hierarchy = gethierarchy_defintion ($site);
+            $hierarchy = gethierarchy_definition ($site);
 
             if (is_array ($hierarchy) && sizeof ($hierarchy) > 0)
             {
               foreach ($hierarchy as $name => $level_array)
               {
-                foreach ($level_array[1] as $text_id => $label_array)
+                if (empty ($hcms_portal) || in_array (getescapedtext ($name), $portalnavigation))
                 {
-                  if ($text_id != "")
+                  foreach ($level_array[1] as $text_id => $label_array)
                   {
-                    if (!empty ($label_array[$lang])) $label = $label_array[$lang];
-                    elseif (!empty ($label_array['default'])) $label = $label_array['default'];
-                    else $label = "undefined";
+                    if ($text_id != "")
+                    {
+                      if (!empty ($label_array[$lang])) $label = $label_array[$lang];
+                      elseif (!empty ($label_array['default'])) $label = $label_array['default'];
+                      else $label = "undefined";
 
-                    $point = new hcms_menupoint($label, '#text_'.$site.'_'.$name, 'folder.png', 'text_'.$site.'_'.$name);
-                    $point->setOnClick('hcms_jstree_open("text_'.$site.'_'.$name.'", event);');
-                    $point->setNodeCSSClass('jstree-closed jstree-reload');
-                    $point->setAjaxData('%hierarchy%/'.$site.'/'.$name.'/1/'.$text_id);
-                    $publication->addSubPoint($point);
+                      $point = new hcms_menupoint(getescapedtext ($label), '#text_'.$site.'_'.$name, 'folder.png', 'text_'.$site.'_'.$name);
+                      $point->setOnClick('hcms_jstree_open("text_'.$site.'_'.$name.'", event);');
+                      $point->setNodeCSSClass('jstree-closed jstree-reload');
+                      $point->setAjaxData('%hierarchy%/'.$site.'/'.$name.'/1/'.$text_id);
+                      $publication->addSubPoint($point);
+                    }
                   }
                 }
               }
@@ -1236,7 +1265,7 @@ else
 
           // ----------------------------------------- component ---------------------------------------------
           // category of content: cat=comp
-          if (is_dir ($mgmt_config['abs_path_comp'].$site."/") && checkglobalpermission ($site, 'component'))
+          if ((empty ($hcms_portal) || in_array ("assets", $portalnavigation)) && is_dir ($mgmt_config['abs_path_comp'].$site."/") && checkglobalpermission ($site, 'component'))
           {
             // since version 5.6.3 the root folders also need to have containers
             // update comp/assets root
@@ -1330,6 +1359,7 @@ else
     <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php echo $mgmt_config['googlemaps_appkey']; ?>"></script>
 
     <script type="text/javascript">
+
     // variable where lastSelected element is stored
     var lastSelected = "";
 
@@ -1435,46 +1465,42 @@ else
       lastSelected.children("span").addClass('hcmsObjectSelected');
     }
 
-    // minimize navigation frame
-    function minNavFrame ()
+    // calendar
+    var cal_obj = null;
+    var cal_format = null;
+    var cal_field = null;
+
+    function show_cal (el, field_id, format)
     {
-      <?php if ($is_mobile) echo "parent.minNavFrame();"; else echo "return true;"; ?>
+      cal_field = field_id;
+      cal_format = format;
+      var datefield = document.getElementById(field_id);
+
+      cal_obj = new RichCalendar();
+      cal_obj.start_week_day = 1;
+      cal_obj.show_time = false;
+      cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
+      cal_obj.user_onchange_handler = cal_on_change;
+      cal_obj.user_onautoclose_handler = cal_on_autoclose;
+      cal_obj.parse_date(datefield.value, cal_format);
+      cal_obj.show_at_element(datefield, 'adj_left-top');
     }
 
-    function unsetColors ()
+    // onchange handler
+    function cal_on_change (cal, object_code)
     {
-      if (document.getElementById('unsetcolors').checked == true)
+      if (object_code == 'day')
       {
-        var colors = document.getElementsByClassName('hcmsColorKey');
-        var i;
-
-        for (i = 0; i < colors.length; i++)
-        {
-          colors[i].checked = false;
-        }
+        document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
+        cal.hide();
+        cal_obj = null;
       }
     }
 
-    function setColors ()
+    // onautoclose handler
+    function cal_on_autoclose (cal)
     {
-      document.getElementById('unsetcolors').checked = false;
-    }
-
-    function loadForm ()
-    {
-      var selectbox = document.forms['searchform_advanced'].elements['template'];
-      var template = selectbox.options[selectbox.selectedIndex].value;
-      
-      if (template != "")
-      {
-        hcms_loadPage('contentFrame', 'search_form_advanced.php?template=' + template + '&css_display=block');
-        return true;
-      }
-      else
-      {
-        hcms_loadPage('contentFrame', 'search_form_advanced.php?template=&css_display=block');
-        return true;
-      }
+      cal_obj = null;
     }
 
     // Google Maps JavaScript API v3: Map Simple
@@ -1501,6 +1527,7 @@ else
     {
       var mapOptions = {
           zoom: 1,
+          scrollwheel: true,
           center: new google.maps.LatLng(0, 0),
           disableDefaultUI: true,
           mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -1596,20 +1623,97 @@ else
       <?php } ?>
     }
 
+    // delete saved search entry
+    function deleteSearch ()
+    {
+      var element = document.forms['searchform_advanced'].elements['search_execute'];
+
+      if (element.options[element.selectedIndex].value != '')
+      {
+        check = confirm ("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>");
+      
+        if (check == true)
+        {
+          document.location='?search_delete=' + element.options[element.selectedIndex].value + '&token=<?php echo $token_new; ?>';
+        }
+      }
+    }
+
+    // minimize navigation frame
+    function minNavFrame ()
+    {
+      <?php if ($is_mobile) echo "parent.minNavFrame();"; else echo "return true;"; ?>
+    }
+
+    // show search layer
+    function showSearch ()
+    {
+      hcms_showFormLayer('search',0);
+      hcms_hideFormLayer('menu');+
+      parent.maxSearchFrame();
+    }
+
+    // show navigation layer
+    function showNav ()
+    {
+      window.scrollTo (0, 0);
+      hcms_hideFormLayer('search');
+      hcms_showFormLayer('menu',0);
+    }
+
+    // color search options
+    function unsetColors ()
+    {
+      if (document.getElementById('unsetcolors').checked == true)
+      {
+        var colors = document.getElementsByClassName('hcmsColorKey');
+        var i;
+
+        for (i = 0; i < colors.length; i++)
+        {
+          colors[i].checked = false;
+        }
+      }
+    }
+
+    function setColors ()
+    {
+      document.getElementById('unsetcolors').checked = false;
+    }
+
+    // load advanced search form
+    function loadForm ()
+    {
+      var selectbox = document.forms['searchform_advanced'].elements['template'];
+      var template = selectbox.options[selectbox.selectedIndex].value;
+      
+      if (template != "")
+      {
+        hcms_loadPage('contentFrame', 'search_form_advanced.php?template=' + template + '&css_display=block');
+        return true;
+      }
+      else
+      {
+        hcms_loadPage('contentFrame', 'search_form_advanced.php?template=&css_display=block');
+        return true;
+      }
+    }
+
+    // activate search options
     function activateFulltextSearch ()
     {
       if (document.getElementById('fulltextLayer').style.display == 'none')
       {
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
-        hcms_showInfo('fulltextLayer',0);
-        hcms_hideInfo('advancedLayer');
-        hcms_hideInfo('contentLayer');
-        hcms_hideInfo('keywordsLayer');
-        hcms_hideInfo('idLayer');
+        hcms_showFormLayer('fulltextLayer',0);
+        hcms_hideFormLayer('advancedLayer');
+        hcms_hideFormLayer('searchreplaceLayer');
+        hcms_hideFormLayer('keywordsLayer');
+        hcms_hideFormLayer('idLayer');
       }
       else
       {
-        hcms_hideInfo('fulltextLayer');
+        hcms_hideFormLayer('fulltextLayer');
       }
     }
 
@@ -1618,16 +1722,36 @@ else
       if (document.getElementById('advancedLayer').style.display == 'none')
       {
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
-        hcms_hideInfo('fulltextLayer');
-        hcms_showInfo('advancedLayer',0);
-        hcms_showInfo('contentLayer',0);
-        hcms_hideInfo('keywordsLayer');
-        hcms_hideInfo('idLayer');
+        hcms_hideFormLayer('fulltextLayer');
+        hcms_hideFormLayer('searchreplaceLayer');
+        hcms_showFormLayer('advancedLayer',0);
+        hcms_hideFormLayer('keywordsLayer');
+        hcms_hideFormLayer('idLayer');
       }
       else
       {
-        hcms_hideInfo('advancedLayer');
-        hcms_hideInfo('contentLayer');
+        hcms_hideFormLayer('advancedLayer');
+      }
+    }
+
+    function activateSearchReplace ()
+    {
+      if (document.getElementById('searchreplaceLayer').style.display == 'none')
+      {
+        document.forms['searchform_advanced'].elements['action'].value = 'search';
+        hcms_hideFormLayer('fulltextLayer');
+        hcms_hideFormLayer('advancedLayer');
+        hcms_showFormLayer('searchreplaceLayer',0);
+        hcms_hideFormLayer('keywordsLayer');
+        hcms_hideFormLayer('imageLayer');
+        hcms_hideFormLayer('mapLayer');
+        hcms_hideFormLayer('idLayer');
+        hcms_hideFormLayer('recipientLayer');
+        hcms_hideFormLayer('saveLayer');
+      }
+      else
+      {
+        hcms_hideFormLayer('searchreplaceLayer');
       }
     }
 
@@ -1641,15 +1765,30 @@ else
         }
       
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
-        hcms_hideInfo('fulltextLayer');
-        hcms_hideInfo('advancedLayer');
-        hcms_hideInfo('contentLayer');
-        hcms_showInfo('keywordsLayer',0);
-        hcms_hideInfo('idLayer');
+        hcms_hideFormLayer('fulltextLayer');
+        hcms_hideFormLayer('advancedLayer');
+        hcms_hideFormLayer('searchreplaceLayer');
+        hcms_showFormLayer('keywordsLayer',0);
+        hcms_hideFormLayer('idLayer');
       }
       else
       {
-        hcms_hideInfo('keywordsLayer');
+        hcms_hideFormLayer('keywordsLayer');
+      }
+    }
+
+    function activateFiletypeSearch ()
+    {
+      if (document.getElementById('filetypeLayer').style.display == 'none')
+      {
+        // do not set due to search & replace:
+        // document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+        hcms_showFormLayer('filetypeLayer',0);
+        hcms_hideFormLayer('idLayer');
+      }
+      else
+      {
+        hcms_hideFormLayer('filetypeLayer');
       }
     }
 
@@ -1658,30 +1797,31 @@ else
       if (document.getElementById('imageLayer').style.display == 'none')
       {
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
-        hcms_hideInfo('contentLayer');
-        hcms_showInfo('imageLayer',0);
-        hcms_hideInfo('idLayer');
+        hcms_showFormLayer('imageLayer',0);
+        hcms_hideFormLayer('idLayer');
       }
       else
       {
-        hcms_hideInfo('imageLayer');
+        hcms_hideFormLayer('imageLayer');
       }
     }
 
     function activateGeolocationSearch ()
     {
       document.forms['searchform_advanced'].elements['action'].value = 'base_search';
-      hcms_switchInfo('mapLayer');
+      hcms_hideFormLayer('searchreplaceLayer');
+      hcms_switchFormLayer('mapLayer');
       initMap();
-      hcms_hideInfo('idLayer');
+      hcms_hideFormLayer('idLayer');
     }
 
     function activateLastmodifiedSearch ()
     {
-      document.forms['searchform_advanced'].elements['action'].value = 'base_search';
-      hcms_switchInfo('dateLayer');
-      hcms_hideInfo('idLayer');
-      hcms_hideInfo('recipientLayer');
+      // do not set due to search & replace:
+      // document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+      hcms_switchFormLayer('dateLayer');
+      hcms_hideFormLayer('idLayer');
+      hcms_hideFormLayer('recipientLayer');
     }
 
     function activateIdSearch ()
@@ -1689,19 +1829,20 @@ else
       if (document.getElementById('idLayer').style.display == 'none')
       {
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
-        hcms_hideInfo('fulltextLayer',0);
-        hcms_hideInfo('advancedLayer');
-        hcms_hideInfo('contentLayer');
-        hcms_hideInfo('keywordsLayer');
-        hcms_hideInfo('imageLayer');
-        hcms_hideInfo('mapLayer');
-        hcms_hideInfo('dateLayer');
-        hcms_showInfo('idLayer',0);
-        hcms_hideInfo('recipientLayer');
+        hcms_hideFormLayer('fulltextLayer',0);
+        hcms_hideFormLayer('advancedLayer');
+        hcms_hideFormLayer('searchreplaceLayer');
+        hcms_hideFormLayer('keywordsLayer');
+        hcms_hideFormLayer('filetypeLayer');
+        hcms_hideFormLayer('imageLayer');
+        hcms_hideFormLayer('mapLayer');
+        hcms_hideFormLayer('dateLayer');
+        hcms_showFormLayer('idLayer',0);
+        hcms_hideFormLayer('recipientLayer');
       }
       else
       {
-        hcms_hideInfo('idLayer');
+        hcms_hideFormLayer('idLayer');
       }
     }
 
@@ -1710,20 +1851,21 @@ else
       if (document.getElementById('recipientLayer').style.display == 'none')
       {
         document.forms['searchform_advanced'].elements['action'].value = 'recipient';
-        hcms_hideInfo('contentLayer');
-        hcms_hideInfo('dateLayer');
-        hcms_hideInfo('idLayer');
-        hcms_showInfo('recipientLayer',0);
+        hcms_hideFormLayer('searchreplaceLayer');
+        hcms_hideFormLayer('dateLayer');
+        hcms_hideFormLayer('idLayer');
+        hcms_showFormLayer('recipientLayer',0);
       }
       else
       {
-        hcms_hideInfo('recipientLayer');
+        hcms_hideFormLayer('recipientLayer');
       }
     }
 
     function activateSaveSearch ()
     {
-      hcms_switchInfo('saveLayer');
+      hcms_switchFormLayer('saveLayer');
+      hcms_hideFormLayer('searchreplaceLayer');
     }
 
     function selectedSavedSearch ()
@@ -1731,22 +1873,66 @@ else
       if (document.getElementById('search_execute').value != "")
       {
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
-        hcms_hideInfo('fulltextLayer');
-        hcms_hideInfo('advancedLayer');
-        hcms_hideInfo('contentLayer');
-        hcms_hideInfo('keywordsLayer');
-        hcms_hideInfo('imageLayer');
-        hcms_hideInfo('mapLayer');
-        hcms_hideInfo('dateLayer');
-        hcms_hideInfo('idLayer');
-        hcms_hideInfo('recipientLayer');
+        hcms_hideFormLayer('fulltextLayer');
+        hcms_hideFormLayer('advancedLayer');
+        hcms_hideFormLayer('searchreplaceLayer');
+        hcms_hideFormLayer('keywordsLayer');
+        hcms_hideFormLayer('filetypeLayer');
+        hcms_hideFormLayer('imageLayer');
+        hcms_hideFormLayer('mapLayer');
+        hcms_hideFormLayer('dateLayer');
+        hcms_hideFormLayer('idLayer');
+        hcms_hideFormLayer('recipientLayer');
+      }
+    }
+
+    function setSearchLocation (location, name)
+    {
+      // search form
+      var form = document.forms['searchform_advanced'];
+
+      if (form && location != '' && name != '')
+      {
+        // show location and hide publication select
+        hcms_hideFormLayer('searchPublicationLayer');
+        hcms_showFormLayer('searchLocationLayer',0);
+
+        // set search_dir
+        form.elements['search_dir'].value = location;
+        form.elements['search_locationname'].value = name;
+
+        // enable search and replace
+        hcms_showFormLayer('searchreplaceFeatureLayer',0);
+
+        // show search form
+        showSearch();
+      }
+    }
+
+    function deleteSearchLocation ()
+    {
+      // search form
+      var form = document.forms['searchform_advanced'];
+
+      if (form)
+      {
+        // show publication select and hide location
+        hcms_hideFormLayer('searchLocationLayer');
+        hcms_showFormLayer('searchPublicationLayer',0);
+
+        // set search_dir
+        form.elements['search_dir'].value = '';
+        form.elements['search_locationname'].value = '';
+
+        // disable search and replace
+        hcms_hideFormLayer('searchreplaceFeatureLayer');
       }
     }
 
     function startSearch (type)
     {
       // iframe for search result
-      var iframe = parent.frames['workplFrame'].frames['mainFrame'];
+      var targetframe = parent.frames['workplFrame'].frames['mainFrame'];
 
       // search form
       var form = document.forms['searchform_advanced'];
@@ -1756,12 +1942,15 @@ else
 
       if (document.getElementById('fulltextLayer').style.display != 'none') opened = true;
       else if (document.getElementById('advancedLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('searchreplaceLayer').style.display != 'none') opened = true;
       else if (document.getElementById('keywordsLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('filetypeLayer').style.display != 'none') opened = true;
       else if (document.getElementById('imageLayer').style.display != 'none') opened = true;
       else if (document.getElementById('mapLayer').style.display != 'none') opened = true;
       else if (document.getElementById('dateLayer').style.display != 'none') opened = true;
       else if (document.getElementById('idLayer').style.display != 'none') opened = true;
       else if (document.getElementById('recipientLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('saveLayer').style.display != 'none') opened = true;
 
       // check if saved search has been selected (if no other search tab has been opened)
       if (form && opened == false && document.getElementById('saveLayer').style.display != 'none' && document.getElementById('search_execute') && document.getElementById('search_execute').value == "")
@@ -1769,46 +1958,54 @@ else
         return false;
       }
 
-      // verify if the saved search tab is open
+      // if the saved search tab is open
       if (document.getElementById('saveLayer').style.display != 'none') opened = true;
 
+      // if at least one search tab is open
       if (form && opened)
       {
-        if (!iframe)
-        {
-          parent.frames['workplFrame'].location = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_objectlist.php';
-        }
-
         // if no saved search has been selected
         if (document.getElementById('saveLayer').style.display == 'none' || !document.getElementById('search_execute') || document.getElementById('search_execute').value == "")
         {
           // full text search
-          if (document.getElementById('fulltextLayer').style.display != 'none' && form.elements['search_expression'].value.trim() == "")
+          if (document.getElementById('fulltextLayer').style.display != 'none' && document.getElementById('search_expression').value.trim() == "")
           {
             alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-search-expression'][$lang]); ?>"));
-            form.elements['search_expression'].focus();
+            document.getElementById('search_expression').focus();
             return false;
           }
 
-          // delete search_dir
-          if (document.getElementById('fulltextLayer').style.display != 'none')
+          // search and replace
+          if (document.getElementById('searchreplaceLayer').style.display != 'none' && document.getElementById('find_expression').value.trim() == "")
           {
-            form.elements['search_dir'].value = "";
+            alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-search-expression'][$lang]); ?>"));
+            document.getElementById('find_expression').focus();
+            return false;
           }
-          // set search dir
-          else if (document.getElementById('advancedLayer').style.display != 'none')
+
+          // set search_dir if it has not been set already
+          if (form.elements['search_dir'].value == "")
           {
-            var selectbox = form.elements['template'];
-            var template = form.elements['template'].options[selectbox.selectedIndex].value;
-
-            if (template != "")
+            // set search dir if a template has been selected
+            if (document.getElementById('advancedLayer').style.display != 'none')
             {
-              var parts = template.split("/");
-              var domain = "%comp%";
+              var selectbox = form.elements['template'];
+              var template = form.elements['template'].options[selectbox.selectedIndex].value;
 
-              if (template.indexOf(".page.tpl") > 0) domain = "%page%";
+              if (template != "")
+              {
+                var parts = template.split("/");
+                var domain = "%comp%";
 
-              if (parts[0] != "") form.elements['search_dir'].value = domain + "/" + parts[0] + "/";
+                if (template.indexOf(".page.tpl") > 0) domain = "%page%";
+
+                if (parts[0] != "") form.elements['search_dir'].value = domain + "/" + parts[0] + "/";
+              }
+            }
+            // delete search_dir
+            else
+            {
+              form.elements['search_dir'].value = "";
             }
           }
 
@@ -1819,12 +2016,12 @@ else
           if (keywordsLayer && keywordsLayer.style.display != "none")
           {
             var unchecked = false;
-            var childs = keywordsLayer.getElementsByTagName('*');
+            var childs = keywordsLayer.getElementsByTagName('INPUT');
 
             for (var i=0; i<childs.length; i++)
             {
               // found unchecked element
-              if (childs[i].tagName == "INPUT" && childs[i].checked == true)
+              if (childs[i].checked == true)
               {
                 keywordChecked = true;
                 break;
@@ -1843,12 +2040,12 @@ else
           if (filetypeLayer && filetypeLayer.style.display != "none")
           {
             var unchecked = false;
-            var childs = filetypeLayer.getElementsByTagName('*');
+            var childs = filetypeLayer.getElementsByTagName('INPUT');
 
             for (var i=0; i<childs.length; i++)
             {
               // found unchecked element
-              if (childs[i].tagName == "INPUT" && childs[i].checked == false)
+              if (childs[i].checked == false)
               {
                 unchecked = true;
               }
@@ -1859,33 +2056,40 @@ else
             {
               for (var i=0; i<childs.length; i++)
               {
-                if (childs[i].tagName == "INPUT")
-                {
-                  childs[i].disabled = true;
-                }
+                childs[i].disabled = true;
               }
             }
           }
         }
 
-        // if iframe is loaded
-        if (iframe && iframe.location != "")
+        // if the frameset has not been loaded
+        if (parent.frames['workplFrame'].location.href.indexOf('frameset_objectlist.php') < 0)
         {
-          // load screen
+          // load frameset
+          parent.frames['workplFrame'].location.href = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_objectlist.php';
+        }
+
+        // reassign
+        if (!targetframe && parent.frames['workplFrame'].frames['mainFrame'])
+        {
+          targetframe = parent.frames['workplFrame'].frames['mainFrame'];
+        }
+
+        // if frameset has been loaded
+        if (targetframe && targetframe.location.href != "")
+        {
+          // workplace frame load screen
           if (parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen')) parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen').style.display='inline';
 
           // submit form
           form.submit();
 
           // enable checkboxes for file-type
-          if (filetypeLayer && filetypeLayer.style.display != "none")
+          if (filetypeLayer && filetypeLayer.style.display != 'none')
           {
             for (var i=0; i<childs.length; i++)
             {
-              if (childs[i].tagName == "INPUT")
-              {
-                childs[i].disabled = false;
-              }
+              childs[i].disabled = false;
             }
           }
 
@@ -1898,84 +2102,27 @@ else
 
           return true;
         }
-        // wait 2000 ms
-        else window.setTimeout(startSearch, 2000);
+        // wait
+        else window.setTimeout(startSearch, 1000);
       }
       else return false;
     }
 
-    var cal_obj = null;
-    var cal_format = null;
-    var cal_field = null;
-
-    function show_cal (el, field_id, format)
-    {
-      cal_field = field_id;
-      cal_format = format;
-      var datefield = document.getElementById(field_id);
-
-      cal_obj = new RichCalendar();
-      cal_obj.start_week_day = 1;
-      cal_obj.show_time = false;
-      cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
-      cal_obj.user_onchange_handler = cal_on_change;
-      cal_obj.user_onautoclose_handler = cal_on_autoclose;
-      cal_obj.parse_date(datefield.value, cal_format);
-      cal_obj.show_at_element(datefield, 'adj_left-top');
-    }
-
-    // onchange handler
-    function cal_on_change (cal, object_code)
-    {
-      if (object_code == 'day')
-      {
-        document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
-        cal.hide();
-        cal_obj = null;
-      }
-    }
-
-    // onautoclose handler
-    function cal_on_autoclose (cal)
-    {
-      cal_obj = null;
-    }
-
-    // delete saved search entry
-    function deletesearch ()
-    {
-      var element = document.forms['searchform_advanced'].elements['search_execute'];
-
-      if (element.options[element.selectedIndex].value != "")
-      {
-        check = confirm ("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>");
-      
-        if (check == true)
-        {
-          document.location='?search_delete=' + element.options[element.selectedIndex].value + '&token=<?php echo $token_new; ?>';
-        }
-      }
-    }
-
-    function showSearch ()
-    {
-      hcms_showHideLayers ('menu','','hide','search','','show');
-    }
-
-    function showNav ()
-    {
-      window.scrollTo (0, 0);
-      hcms_showHideLayers ('search','','hide','menu','','show');
-    }
-
-    // Google Maps JavaScript API v3: Map Simple
-    var map;
-    var bounds = null;
-
+    // onload
     $(document).ready(function ()
     {
-      // initialize form
+      // initialize search form
+      hcms_hideFormLayer('advancedLayer');
+      hcms_hideFormLayer('searchreplaceLayer');
+      hcms_hideFormLayer('keywordsLayer');
+      hcms_hideFormLayer('filetypeLayer');
+      hcms_hideFormLayer('imageLayer');
+      hcms_hideFormLayer('mapLayer');
+      hcms_hideFormLayer('dateLayer');
+      hcms_hideFormLayer('idLayer');
+      hcms_hideFormLayer('recipientLayer');
       activateFulltextSearch();
+      parent.maxNavFrame();
 
       // search history
       <?php
@@ -1987,6 +2134,7 @@ else
         source: available_expressions
       });
 
+      // user
       <?php
       $user_option = array();
 
@@ -2105,18 +2253,46 @@ else
     </div>
 
     <!-- navigator -->
-    <div id="menu" style="position:absolute; top:4px; left:0px; visibility:hidden;">
+    <div id="menu" style="position:absolute; top:4px; left:0px; display:none;">
       <ul id="menupointlist">
         <?php echo $maintree.$tree; ?>
       </ul>
     </div>
 
     <!-- search form -->
-    <div id="search" style="position:absolute; top:8px; left:4px; right:4px; text-align:top; visibility:hidden;">
+    <div id="search" style="position:absolute; top:8px; left:4px; right:4px; text-align:top; display:none;">
       <form name="searchform_advanced" method="post" action="search_objectlist.php" target="mainFrame">
         <input type="hidden" name="action" value="base_search" />
         <input type="hidden" name="search_dir" value="" />
 
+        <div style="display:block; margin-bottom:3px;">
+          <div id="searchLocationLayer" style="padding-bottom:3px; display:none;">
+            <img src="<?php echo getthemelocation(); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" /><label for="search_locationname" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?></label><br />
+            <input type="text" id="search_locationname" name="search_locationname" value="" style="width:<?php echo ($width_searchfield - 32); ?>px;" readonly="readonly" />
+            <img onClick="deleteSearchLocation();" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_delete.png" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
+          </div>
+          <div id="searchPublicationLayer" style="padding-bottom:3px;">
+            <img src="<?php echo getthemelocation(); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" /><label for="publication" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
+            <select id="publication" name="site" style="width:<?php echo $width_searchfield; ?>px;">
+              <option value=""><?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></option>
+              <?php
+              if (!empty ($siteaccess) && is_array ($siteaccess))
+              {
+                $template_array = array();
+
+                foreach ($siteaccess as $site)
+                {
+                  if (valid_publicationname ($site)) echo "
+                <option value=\"".$site."\">".$site."</option>";
+                }
+              }
+              ?>
+            </select>
+          </div>
+        </div>
+        <hr />
+
+        <!-- fulltext search -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></span>
           <img onClick="activateFulltextSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
@@ -2125,25 +2301,8 @@ else
         <div id="fulltextLayer" style="display:none; clear:right;"> 
           <div style="padding-bottom:3px;">
             <label for="search_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
-            <input type="text" id="search_expression" name="search_expression" onkeydown="if (hcms_enterKeyPressed(event)) startSearch('post');" style="width:230px; padding-right:30px;" maxlength="2000" />
+            <input type="text" id="search_expression" name="search_expression" onkeydown="if (hcms_enterKeyPressed(event)) startSearch('post');" style="width:<?php echo $width_searchfield; ?>px; padding-right:30px;" maxlength="2000" />
             <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" style="cursor:pointer; width:22px; height:22px; margin-left:-30px;" onClick="startSearch('post');" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
-          </div>
-          <div style="padding-bottom:3px;">
-            <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
-            <select id="publication" name="site" style="width:230px;">
-              <option value=""><?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></option>
-            <?php
-            if (!empty ($siteaccess) && is_array ($siteaccess))
-            {
-              $template_array = array();
-
-              foreach ($siteaccess as $site)
-              {
-                if (!empty ($site)) echo "<option value=\"".$site."\">".$site."</option>\n";
-              }
-            }
-            ?>
-            </select>
           </div>
           <div style="padding-bottom:3px;">
             <label><input type="checkbox" name="search_cat" value="file" /> <?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?></label><br />
@@ -2151,6 +2310,7 @@ else
         </div>
         <hr />
 
+        <!-- advanced/detailed search -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></span>
           <img onClick="activateAdvancedSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
@@ -2158,7 +2318,7 @@ else
 
         <div id="advancedLayer" style="display:none; clear:right;">
           <label for="template"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?></label><br />
-          <select id="template" name="template" style="width:230px;" onChange="loadForm();">
+          <select id="template" name="template" style="width:<?php echo $width_searchfield; ?>px;" onChange="loadForm();">
             <option value="">&nbsp;</option>
           <?php
           if (!empty ($siteaccess) && is_array ($siteaccess))
@@ -2229,12 +2389,12 @@ else
           ?>
           </select><br />
           <iframe id="contentFrame" name="contentFrame" width="0" height="0" frameborder="0"  style="width:0; height:0; frameborder:0;"></iframe> 
-          <div class="hcmsWorkplaceObjectlist" style="border:1px solid #000000; width:226px; height:200px; padding:2px; overflow:auto;">
+          <div class="hcmsWorkplaceObjectlist" style="box-sizing:border-box; border:1px solid #000000; width:<?php echo $width_searchfield; ?>px; height:200px; padding:2px; overflow:auto;">
             <div id="contentLayer"></div>
           </div>
           <div style="margin-top:5px;">
             <label for="search_operator"><?php echo getescapedtext ($hcms_lang['link-fields-with'][$lang]); ?></label><br />
-            <select id="search_operator" name="search_operator" style="width:230px;">
+            <select id="search_operator" name="search_operator" style="width:<?php echo $width_searchfield; ?>px;">
               <option value="AND" <?php if (empty ($mgmt_config['search_operator']) || (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "AND")) echo "selected"; ?>>AND</option>
               <option value="OR" <?php if (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "OR") echo "selected"; ?>>OR</option>
             </select>
@@ -2242,6 +2402,27 @@ else
         </div>
         <hr />
 
+        <!-- search and replace (location must be provided) -->
+        <div id="searchreplaceFeatureLayer" style="display:none;">
+          <div style="display:inline; margin-bottom:3px;">
+            <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['search-and-replace'][$lang]); ?></span> <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsIconList" style="cursor:pointer;" title="<?php echo getescapedtext ($hcms_lang['the-replacement-is-case-sensitive'][$lang]); ?>" />
+            <img onClick="activateSearchReplace()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
+          </div>
+
+          <div id="searchreplaceLayer" style="display:none; clear:right;">
+            <div style="padding-bottom:3px;">
+              <label for="find_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
+              <input type="text" id="find_expression" name="find_expression" style="width:<?php echo $width_searchfield; ?>px;" maxlength="2000" />
+            </div>
+            <div style="padding-bottom:3px;">
+              <label for="replace_expression"><?php echo getescapedtext ($hcms_lang['replace-with'][$lang]); ?></label><br />
+              <input type="text" id="replace_expression" name="replace_expression" style="width:<?php echo $width_searchfield; ?>px;" maxlength="2000" />
+            </div>
+          </div>
+          <hr />
+        </div>
+
+        <!-- keyword search -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['keywords'][$lang]); ?></span>
           <img onClick="activateKeywordSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
@@ -2255,13 +2436,13 @@ else
         <hr />
 
         <div style="display:block; margin-bottom:3px;">
-          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media'][$lang]); ?></span>
-          <img onClick="activateImageSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?></span>
+          <img onClick="activateFiletypeSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
 
-        <div id="imageLayer" style="display:none; clear:right;">
-          <div id="filetypeLayer" style="padding-bottom:3px;">
-            <?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?><br />
+        <!-- filetype search -->
+        <div id="filetypeLayer" style="display:none; clear:right;">
+          <div style="padding-bottom:3px;">
             <input type="checkbox" id="search_format_page" name="search_format[]" value="page" checked="checked" />&nbsp;<label for="search_format_page"><?php echo getescapedtext ($hcms_lang['page'][$lang]); ?></label><br />
             <input type="checkbox" id="search_format_comp" name="search_format[]" value="comp" checked="checked" />&nbsp;<label for="search_format_comp"><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
             <input type="checkbox" id="search_format_image" name="search_format[]" value="image" checked="checked" />&nbsp;<label for="search_format_image"><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
@@ -2269,6 +2450,16 @@ else
             <input type="checkbox" id="search_format_video" name="search_format[]" value="video" checked="checked" />&nbsp;<label for="search_format_video"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label><br />
             <input type="checkbox" id="search_format_audio" name="search_format[]" value="audio" checked="checked" />&nbsp;<label for="search_format_audio"><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label><br />
           </div>
+        </div>
+        <hr />
+
+        <!-- media search -->
+        <div style="display:block; margin-bottom:3px;">
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media'][$lang]); ?></span>
+          <img onClick="activateImageSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
+        </div>
+
+        <div id="imageLayer" style="display:none; clear:right;">
           <div style="padding-bottom:3px;">
             <?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?><br />
             <select name="search_filesize_operator">
@@ -2281,7 +2472,7 @@ else
           </div>
           <div style="padding-bottom:3px;">
             <label for="search_imagesize"><?php echo getescapedtext ($hcms_lang['media-size'][$lang]); ?></label><br />
-            <select id="search_imagesize" name="search_imagesize" style="width:230px;" onchange="if (this.options[this.selectedIndex].value=='exact') document.getElementById('searchfield_imagesize').style.display='block'; else document.getElementById('searchfield_imagesize').style.display='none';">
+            <select id="search_imagesize" name="search_imagesize" style="width:<?php echo $width_searchfield; ?>px;" onchange="if (this.options[this.selectedIndex].value=='exact') document.getElementById('searchfield_imagesize').style.display='block'; else document.getElementById('searchfield_imagesize').style.display='none';">
               <option value="" selected="selected"><?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></option>
               <option value="1024-9000000"><?php echo getescapedtext ($hcms_lang['big-1024px'][$lang]); ?></option>
               <option value="640-1024"><?php echo getescapedtext ($hcms_lang['medium-640-1024px'][$lang]); ?></option>
@@ -2295,7 +2486,7 @@ else
           </div>
           <div style="padding-bottom:3px;">
             <label for="search_imagetype"><?php echo getescapedtext ($hcms_lang['image-type'][$lang]); ?></label><br />
-            <select id="search_imagetype" name="search_imagetype" style="width:230px;">
+            <select id="search_imagetype" name="search_imagetype" style="width:<?php echo $width_searchfield; ?>px;">
               <option value="" selected="selected"><?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></option>
               <option value="landscape"><?php echo getescapedtext ($hcms_lang['landscape'][$lang]); ?></option>
               <option value="portrait"><?php echo getescapedtext ($hcms_lang['portrait'][$lang]); ?></option>
@@ -2305,7 +2496,7 @@ else
           <div style="padding-bottom:3px;">
             <label><?php echo getescapedtext ($hcms_lang['image-color'][$lang]); ?></label><br />
             <div style="display:block;">
-              <div style="width:240px; margin:1px; padding:0; float:left;"><div style="float:left;"><input id="unsetcolors" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="" checked="checked" onclick="unsetColors()"  /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></div>
+              <div style="width:<?php echo $width_searchfield; ?>px; margin:1px; padding:0; float:left;"><div style="float:left;"><input id="unsetcolors" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="" checked="checked" onclick="unsetColors()"  /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></div>
               <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#000000; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="K" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['black'][$lang]); ?></div>
               <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FFFFFF; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="W" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['white'][$lang]); ?></div>
               <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#808080; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="E" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['grey'][$lang]); ?></div>
@@ -2324,6 +2515,7 @@ else
         </div>
         <hr />
 
+        <!-- geolocation search -->
         <?php if (!$is_mobile) { ?>
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></span>
@@ -2331,19 +2523,20 @@ else
         </div>
 
         <div id="mapLayer" style="display:none; clear:right;">
-          <div style="position:relative; left:185px; top:15px; width:22px; height:22px; z-index:1000;">
-            <img src="<?php echo getthemelocation(); ?>img/info.png" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" onmouseover="hcms_showInfo('helpmapLayer');" onmouseout="hcms_hideInfo('helpmapLayer');" class="hcmsButtonSizeSquare" style="cursor:pointer;" />
+          <div style="position:relative; left:<?php echo ($width_searchfield - 42); ?>px; top:15px; width:22px; height:22px; z-index:1000;">
+            <img src="<?php echo getthemelocation(); ?>img/info.png" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" onmouseover="hcms_showFormLayer('helpmapLayer');" onmouseout="hcms_hideFormLayer('helpmapLayer');" class="hcmsButtonSizeSquare" style="cursor:pointer;" />
             <div id="helpmapLayer" style="display:none; position:absolute; top:20px; right:10px;"><img src="<?php echo getthemelocation(); ?>img/info-right-click-drag.png" /></div>
           </div>
-          <div id="map" style="width:222px; height:180px; margin-top:-15px; margin-bottom:3px; border:1px solid grey;"></div>
+          <div id="map" style="width:<?php echo ($width_searchfield - 4); ?>px; height:<?php echo ($width_searchfield - 160); ?>px; margin-top:-15px; margin-bottom:3px; border:1px solid grey;"></div>
           <label for="geo_border_sw"><?php echo getescapedtext ($hcms_lang['sw-coordinates'][$lang]); ?></label><br />
-          <input type="text" id="geo_border_sw" name="geo_border_sw" style="width:220px;" maxlength="100" /><br />
+          <input type="text" id="geo_border_sw" name="geo_border_sw" style="width:<?php echo $width_searchfield; ?>px;" maxlength="100" /><br />
           <label for="geo_border_ne"><?php echo getescapedtext ($hcms_lang['ne-coordinates'][$lang]); ?></label><br />
-          <input type="text" id="geo_border_ne" name="geo_border_ne" style="width:220px;" maxlength="100" /><br />
+          <input type="text" id="geo_border_ne" name="geo_border_ne" style="width:<?php echo $width_searchfield; ?>px;" maxlength="100" /><br />
         </div>
         <hr />
         <?php } ?>
 
+        <!-- last modified search -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?></span>
           <img onClick="activateLastmodifiedSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
@@ -2356,7 +2549,7 @@ else
                 <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;&nbsp;
               </td>
               <td>
-                <input type="text" name="date_from" id="date_from" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+                <input type="text" name="date_from" id="date_from" readonly="readonly" value="" style="width:92px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_from', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
               </td>
             </tr>
             <tr>
@@ -2364,13 +2557,14 @@ else
               <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp;&nbsp; 
               </td>
               <td>
-                <input type="text" name="date_to" id="date_to" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
+                <input type="text" name="date_to" id="date_to" readonly="readonly" value="" style="width:92px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_to', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
               </td>
             </tr>
           </table>          
         </div>
         <hr />
 
+        <!-- ID based search -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></span>
           <img onClick="activateIdSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
@@ -2379,15 +2573,16 @@ else
         <div id="idLayer" style="display:none; clear:right;">        
           <div style="padding-bottom:3px;">
             <label nowrap="object_id"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></label><br />
-            <input type="text" id="object_id" name="object_id" value="" style="width:220px;" />
+            <input type="text" id="object_id" name="object_id" value="" style="width:<?php echo $width_searchfield; ?>px;" />
           </div>          
           <div style="padding-bottom:3px;">    
             <label nowrap="container_id"><?php echo getescapedtext ($hcms_lang['container-id'][$lang]); ?></label><br />
-            <input type="text" id="container_id" name="container_id" value="" style="width:220px;" />
+            <input type="text" id="container_id" name="container_id" value="" style="width:<?php echo $width_searchfield; ?>px;" />
           </div>          
         </div>
         <hr />
 
+        <!-- recipient search -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></span>
           <img onClick="activateRecipientSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
@@ -2396,11 +2591,11 @@ else
         <div id="recipientLayer" style="display:none; clear:right;">        
           <div style="padding-bottom:3px;">
             <label for="from_user"><?php echo getescapedtext ($hcms_lang['sender'][$lang]); ?></label><br />
-            <input type="text" id="from_user" name="from_user" style="width:220px;" maxlength="200" />
+            <input type="text" id="from_user" name="from_user" style="width:<?php echo $width_searchfield; ?>px;" maxlength="200" />
           </div>          
           <div style="padding-bottom:3px;">
             <label for="to_user"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></label><br />
-            <input type="text" id="to_user" name="to_user" style="width:220px;" maxlength="200" />
+            <input type="text" id="to_user" name="to_user" style="width:<?php echo $width_searchfield; ?>px;" maxlength="200" />
           </div>          
           <table class="hcmsTableStandard" style="margin-top:4px;">     
             <tr>
@@ -2408,7 +2603,7 @@ else
                 <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;&nbsp;
               </td>
               <td>
-                <input type="text" name="date_from" id="date_sent_from" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_sent_from', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+                <input type="text" name="date_from" id="date_sent_from" readonly="readonly" value="" style="width:92px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_sent_from', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />
               </td>
             </tr>
             <tr>
@@ -2416,13 +2611,14 @@ else
               <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp;&nbsp; 
               </td>
               <td>
-                <input type="text" name="date_to" id="date_sent_to" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_sent_to', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
+                <input type="text" name="date_to" id="date_sent_to" readonly="readonly" value="" style="width:92px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'date_sent_to', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
               </td>
             </tr>
           </table>          
         </div>
         <hr />
 
+        <!-- save search -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['save-search'][$lang]); ?></span>
           <img onClick="activateSaveSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
@@ -2439,7 +2635,7 @@ else
               echo "
           <div style=\"padding-bottom:3px;\">
             <label>".getescapedtext ($hcms_lang['saved-searches'][$lang])."</label><br/>
-            <select id=\"search_execute\" name=\"search_execute\" style=\"width:190px;\" onchange=\"selectedSavedSearch();\">
+            <select id=\"search_execute\" name=\"search_execute\" style=\"width:".($width_searchfield - 32)."px;\" onchange=\"selectedSavedSearch();\">
               <option value=\"\">".getescapedtext ($hcms_lang['select'][$lang])."</option>";
               
               foreach ($searchlog_array as $searchlog)
@@ -2508,7 +2704,7 @@ else
               
               echo "
               </select>
-              <img onClick=\"deletesearch()\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.png\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
+              <img onClick=\"deleteSearch();\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_delete.png\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
             </div>";
             }
           }
@@ -2523,7 +2719,7 @@ else
     </div>
         
     <!-- initalize -->
-    <script>
+    <script type="text/javascript">
     // load screen
     if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';
     

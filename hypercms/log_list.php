@@ -55,7 +55,7 @@ else $logfile = "event";
 <script type="text/javascript" src="javascript/click.js"></script>
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
 <style>
 .hcmsCell
 {
@@ -106,7 +106,7 @@ function resizecols()
 function initalize ()
 {
   // resize columns
-  $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
 }
 </script>
 </head>
@@ -115,30 +115,30 @@ function initalize ()
 
 <!-- Table Header -->
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:32px; width:100%; z-index:1; visibility:visible;">
-  <table id="objectlist_head" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
+  <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:105px; white-space:nowrap;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:105px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>
       </td>
       <?php if (!$is_mobile) { ?>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:120px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:180px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['source'][$lang]); ?>
       </td>
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:55px; white-space:nowrap;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:55px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['code'][$lang]); ?>
       </td>
       <?php } ?>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="white-space:nowrap;">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell">
         &nbsp; <?php echo getescapedtext ($hcms_lang['description'][$lang]); ?>
       </td>
     </tr>
   </table>
 
   <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:32px; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
-    <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
+    <table id="objectlist" name="objectlist" cols="5" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
 <?php
 if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".log"))
 {
@@ -206,15 +206,15 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
 
         echo "
   <tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top; cursor:pointer;\" onClick=\"submitToWindow ('".$date."', '".$source."', '".$type."', '".$errorcode."', '".$description."');\">
-    <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</td>";
+    <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:105px;\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</td>";
 
         if (!$is_mobile) echo "
-    <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
-    <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$source."</td>
-    <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$errorcode."</td>";
+    <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"padding-left:3px; width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+    <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:180px;\">".$source."</td>
+    <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:55px;\">".$errorcode."</td>";
 
         echo "
-    <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\">".$description_short."</td>
+    <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px;\">".$description_short."</td>
   </tr>";
       }
       // subtract empty entries
@@ -239,7 +239,7 @@ if (empty ($mgmt_config['explorer_paging']) && $objects_total >= $end)
 ?>
 <!-- status bar incl. more button -->
 <div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['items'][$lang]); ?></div>
+  <div style="padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['items'][$lang]) : ""); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <?php
@@ -253,7 +253,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 ?>
 <!-- status bar incl. previous and next buttons -->
 <div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['items'][$lang]); ?></div>
+  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['items'][$lang]) : ""); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
@@ -269,7 +269,7 @@ else
 ?>
 <!-- status bar -->
 <div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
-  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['items'][$lang]); ?></div>
+  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['items'][$lang]) : ""); ?></div>
 </div>
 <?php
 }

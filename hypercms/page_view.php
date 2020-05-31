@@ -18,6 +18,7 @@ require ("function/hypercms_tplengine.inc.php");
 
 
 // input parameters
+$action = getrequest ("action", "objectname");
 $site = getrequest_esc ("site", "publicationname");
 $location = getrequest_esc ("location", "locationname");
 $page = getrequest_esc ("page", "objectname");
@@ -86,7 +87,15 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-if ($ctrlreload == "") $ctrlreload = "yes"; 
+if ($ctrlreload == "") $ctrlreload = "yes";
+
+// delete/reset workflow of the object
+if ($action == "wf_reset" && valid_publicationname ($site) && checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocedit'))
+{
+  $objectinfo = getobjectinfo ($site, $location, $page);
+
+  if (!empty ($objectinfo['container'])) deletefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $objectinfo['container'], false);
+}
 
 // set view in session
 if ($view != "")
@@ -218,7 +227,7 @@ else
         echo "</head>\n";    
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-        echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-due-to-empty-content-container'][$lang])."</p>\n";
+        echo "<p class=\"hcmsHeadline\"><img src=\"".getthemelocation()."img/info.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['could-not-create-view-due-to-empty-content-container'][$lang])."</p>\n";
         echo "<div class=\"hcmsWorkplaceFrame\">\n";
         echo getescapedtext ($hcms_lang['the-content-container-holds-no-information'][$lang]).": '".$contentfile."'\n";
         echo "</div>\n";
@@ -238,7 +247,7 @@ else
         echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-        echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-of-the-object'][$lang])."</p>\n";
+        echo "<p class=\"hcmsHeadline\"><img src=\"".getthemelocation()."img/info.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['could-not-create-view-of-the-object'][$lang])."</p>\n";
         echo "<div class=\"hcmsWorkplaceFrame\">\n";
         echo getescapedtext ($hcms_lang['an-error-occured-while-creating-the-view'][$lang])."\n";
         echo "</div>\n";
@@ -278,8 +287,13 @@ else
       echo "</head>\n";
       echo "<body class=\"hcmsWorkplaceGeneric\">\n";
       echo "<div class=\"hcmsWorkplaceFrame\">\n";
-      echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms-or-you-dont-have-access-to-it'][$lang])."</p>\n";
+      echo "<p class=\"hcmsHeadline\"><img src=\"".getthemelocation()."img/info.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms-or-you-dont-have-access-to-it'][$lang])."</p>\n";
       echo showworkflowstatus ($site, $location, $page);
+      // delete/reset workflow of the object
+      if (checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocedit'))
+      {
+        echo "<br/><button class=\"hcmsButtonOrange\" onclick=\"location.href='?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&action=wf_reset&view=".url_encode($view)."&follow=".url_encode($follow)."&ctrlreload=".url_encode($ctrlreload)."&hcms_session=".url_encode($hcms_session)."'\">".getescapedtext ($hcms_lang['delete-workflow'][$lang])."</button>\n";
+      }
       echo "</div>\n";
       echo "</body>\n";
       echo "</html>\n";
@@ -297,7 +311,7 @@ else
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
     echo "<div class=\"hcmsWorkplaceFrame\">\n";
-    echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-object-does-not-exist'][$lang])."</p>\n";
+    echo "<p class=\"hcmsHeadline\"><img src=\"".getthemelocation()."img/info.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['the-object-does-not-exist'][$lang])."</p>\n";
     echo "</div>\n";
     echo "</body>\n";
     echo "</html>";

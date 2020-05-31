@@ -21,8 +21,10 @@ $location = getrequest_esc ("location", "locationname");
 $page = getrequest_esc ("page", "objectname");
 $wf_token = getrequest ("wf_token");
 $action = getrequest_esc ("action");
-$message = getrequest ("message");
-$priority = getrequest ("priority");
+$task_message = getrequest ("task_message");
+$task_startdate = getrequest_esc ("task_startdate");
+$task_enddate = getrequest_esc ("task_enddate");
+$task_priority = getrequest ("task_priority");
 $intention = getrequest ("intention");
 $token = getrequest ("token");
 
@@ -81,7 +83,7 @@ if ($intention == "send" && ($action == "accept" || $action == "reject") && chec
       $show = $result['message'];      
     }
     
-    $result = acceptobject ($site, $location, $page, $wf_id, $user, $message, $mgmt_config[$site]['sendmail'], $priority);
+    $result = acceptobject ($site, $location, $page, $wf_id, $user, $task_message, $mgmt_config[$site]['sendmail'], $task_priority, $task_startdate, $task_enddate);
     
     $add_onload = $result['add_onload'];
     $show = $result['message'];  
@@ -89,7 +91,7 @@ if ($intention == "send" && ($action == "accept" || $action == "reject") && chec
   // workflow reject
   elseif ($action == "reject" && function_exists ("rejectobject")) 
   {
-    $result = rejectobject ($site, $location, $page, $wf_id, $user, $message, $mgmt_config[$site]['sendmail'], $priority);
+    $result = rejectobject ($site, $location, $page, $wf_id, $user, $task_message, $mgmt_config[$site]['sendmail'], $task_priority, $task_startdate, $task_enddate);
     
     $add_onload = $result['add_onload'];
     $show = $result['message'];  
@@ -102,12 +104,69 @@ $token_new = createtoken ($user);
 <!DOCTYPE html>
 <html>
 <head>
-<title>hyperCMS</title>
-<meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="theme-color" content="#000000" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="javascript/main.js" type="text/javascript"></script>
+  <title>hyperCMS</title>
+  <meta charset="<?php echo getcodepage ($lang); ?>" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
+  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+  <script src="javascript/main.js" type="text/javascript"></script>
+
+  <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
+  <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+  <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+  <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+  <script src="javascript/rich_calendar/domready.js"></script>
+
+  <script type="text/javascript">
+
+  var cal_obj = null; 
+  var cal_format = '%Y-%m-%d';
+  var cal_field = null;
+
+  // show calendar
+  function show_cal (el, field_id, format, time)
+  {
+    if (cal_obj) return;
+    
+    cal_field = field_id;
+    cal_format = format;
+    var datefield = document.getElementById(field_id);
+
+    cal_obj = new RichCalendar();
+    cal_obj.start_week_day = 1;
+    cal_obj.show_time = time;
+    cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
+    cal_obj.user_onchange_handler = cal_on_change;
+    cal_obj.user_onclose_handler = cal_on_close;
+    cal_obj.user_onautoclose_handler = cal_on_autoclose;
+    cal_obj.parse_date(datefield.value, cal_format);
+    cal_obj.show_at_element(datefield, "adj_right-top");
+  }
+
+  // user defined onchange handler
+  function cal_on_change(cal, object_code)
+  {
+    if (object_code == 'day')
+    {
+      document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
+      cal.hide();
+      cal_obj = null;
+    }
+  }
+
+  // user defined onclose handler (used in pop-up mode - when auto_close is true)
+  function cal_on_close(cal)
+  {
+    cal.hide();
+    cal_obj = null;
+  }
+
+  // user defined onautoclose handler
+  function cal_on_autoclose(cal)
+  {
+    cal_obj = null;
+  }
+  </script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
@@ -116,7 +175,7 @@ $token_new = createtoken ($user);
   
   <!-- top bar -->
   <?php
-  echo showtopbar ("<img src=\"".$icon."\" class=\"hcmsButtonSizeSquare\" /> ".$hcms_lang['message'][$lang], $lang);
+  echo showtopbar ("<img src=\"".$icon."\" class=\"hcmsButtonSizeSquare\" /> ".$hcms_lang['workflow'][$lang], $lang);
   ?>
 
   <!-- content -->
@@ -130,13 +189,28 @@ $token_new = createtoken ($user);
       <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
       
       <div class="hcmsFormRowContent">
-        <textarea name="message" style="width:380px; height:200px;" placeholder="<?php echo $message_default; ?>"></textarea><br />
+        <?php echo getescapedtext ($hcms_lang['message'][$lang]); ?>
+      </div>
+      <div class="hcmsFormRowContent">
+        <textarea name="task_message" style="width:380px; height:200px;" placeholder="<?php echo $message_default; ?>"></textarea><br />
+      </div>
+      <div class="hcmsFormRowContent">
+        <?php echo getescapedtext ($hcms_lang['start'][$lang]); ?>
+      </div>
+      <div class="hcmsFormRowContent">
+        <input type="text" name="task_startdate" id="task_startdate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_startdate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_startdate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" style="vertical-align:top;" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+      </div>
+      <div class="hcmsFormRowContent">
+        <?php echo getescapedtext ($hcms_lang['end'][$lang]); ?>
+      </div>
+      <div class="hcmsFormRowContent">
+        <input type="text" name="task_enddate" id="task_enddate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_enddate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_enddate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" style="vertical-align:top;" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
       </div>
       <div class="hcmsFormRowContent">
   	    <?php echo getescapedtext ($hcms_lang['priority'][$lang]); ?>
       </div>
       <div class="hcmsFormRowContent">
-        <select name="priority">
+        <select name="task_priority">
           <option value="low"><?php echo getescapedtext ($hcms_lang['low'][$lang]); ?></option>
           <option value="medium" selected="selected"><?php echo getescapedtext ($hcms_lang['medium'][$lang]); ?></option>
           <option value="high"><?php echo getescapedtext ($hcms_lang['high'][$lang]); ?></option>
@@ -147,11 +221,11 @@ $token_new = createtoken ($user);
 <?php } else { ?>
   <!-- top bar -->
   <?php
-  echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" /> ".$hcms_lang['information'][$lang], $lang);
+  echo showtopbar ("<img src=\"".$icon."\" class=\"hcmsButtonSizeSquare\" /> ".$hcms_lang['workflow'][$lang], $lang);
   ?>
   <!-- content -->
   <div class="hcmsWorkplaceFrame">
-    <?php echo $show; ?>
+    <?php if (!empty ($show)) echo "<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsIconList\" /> ".$show; ?>
   </div>
 <?php } ?>
 

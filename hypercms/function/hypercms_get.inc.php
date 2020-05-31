@@ -525,8 +525,8 @@ function getsynonym ($text, $lang="")
 // output: array holding all keywords of the next taxonomy level / false on error
 
 // description:
-// Returns sorted keywords of a taxonomy level (multilingual support based on taxonomies).
-// Global variable $taxonomy can be used to pass the taxonomy as array.
+// Returns the sorted keywords of a taxonomy level (multilingual support based on taxonomies).
+// The global variable $taxonomy can be used to pass the taxonomy as array.
 
 function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
 {
@@ -561,22 +561,24 @@ function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
 
 // ----------------------------------------- gettaxonomy_childs ------------------------------------------
 // function: gettaxonomy_childs()
-// input: publication name [string] (optional), language code [string] (optional), 
-//        taxonomy ID or expression or taxonomy path in the form %taxonomy%/publication-name or 'default'/language-code/taxonomy-ID/taxonomy-child-levels [string], 
-//        taxonomy child levels [integer] (optional), only return taxonomy IDs without language and keyword information [boolean] (optional)
+// input: publication name [string] (optional), taxonomy language code [string] (optional), 
+//        taxonomy ID or expression or taxonomy path in the form %taxonomy%/publication-name/language-code/taxonomy-ID/taxonomy-child-levels or 'default'/language-code/taxonomy-ID/taxonomy-child-levels [string], 
+//        taxonomy child levels to include [integer] (optional), only return taxonomy IDs without language and keyword information [boolean] (optional), return taxonomy ID path [boolean] (optional)
 // output: array holding all taxonomy IDs / false on error
 
 // description:
-// Returns keywords based on taxonomy defintion and synonyms if expression is a keyword (multilingual support based on taxonomies and synonyms).
+// Returns the keywords based on taxonomy defintion and synonyms if expression is a keyword (multilingual support based on taxonomies and synonyms).
 // The expression can be a taxonomy path in the form of %taxonomy%/site/language-code/taxonomy-ID/taxonomy-child-levels (use "all" for all languages and "0" for all taxonomy-IDs on first level).
-// Global variable $taxonomy can be used to pass the taxonomy as array.
+// The global variable $taxonomy can be used to pass the taxonomy as array.
 
-function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $id_only=true)
+function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $id_only=true, $id_path=false)
 {
   global $mgmt_config, $taxonomy;
 
   if ($childlevels >= 0 && is_array ($mgmt_config))
   {
+    $result = array();
+    
     // get taxonomy parameters from search expression
     if (strpos ("_".$expression, "%taxonomy%/") > 0)
     {
@@ -614,8 +616,6 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
       require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
-    $result = array();
-
     // load taxonomy of publication
     if (!is_array ($taxonomy) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
     {
@@ -649,8 +649,12 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
             if (isset ($tax_id) && $tax_id == "0" && (substr_count ($path, "/") - 2) < $childlevels)
             {
               // get ID
-              $path_temp = substr ($path, 0, -1);
-              $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+              if (empty ($id_path))
+              {
+                $path_temp = substr ($path, 0, -1);
+                $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+              }
+              else $id = $path;
 
               if ($id_only == true) $result[$id] = $keyword;
               else $result[$tax_lang][$id] = $keyword;
@@ -665,8 +669,12 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
               if ($levels <= $childlevels)
               {
                 // get ID
-                $path_temp = substr ($path, 0, -1);
-                $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+                if (empty ($id_path))
+                {
+                  $path_temp = substr ($path, 0, -1);
+                  $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+                }
+                else $id = $path;
 
                 if ($id_only == true) $result[$id] = $keyword;
                 else $result[$tax_lang][$id] = $keyword;
@@ -676,8 +684,12 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
             elseif (!empty ($expression_array) && array_search (strtolower ($keyword), $expression_array) !== false)
             {
               // get ID
-              $path_temp = substr ($path, 0, -1);
-              $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+              if (empty ($id_path))
+              {
+                $path_temp = substr ($path, 0, -1);
+                $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+              }
+              else $id = $path;
 
               if ($id != "")
               {
@@ -702,15 +714,15 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
   else return false;
 }
 
-// ----------------------------------------- gethierarchy_defintion ------------------------------------------
-// function: gethierarchy_defintion()
+// ----------------------------------------- gethierarchy_definition ------------------------------------------
+// function: gethierarchy_definition()
 // input: publication name [string], hierarchy name [string] (optional) 
 // output: hierarchy array in form of array[name][level][text-id][language] = label / false on error
 
 // description:
 // Reads the metadata/content hierarchy defintion and returns a multidimensinal array.
 
-function gethierarchy_defintion ($site, $selectname="")
+function gethierarchy_definition ($site, $selectname="")
 {
   global $mgmt_config;
 
@@ -835,7 +847,7 @@ function gethierarchy_sublevel ($hierarchy_url)
       // last hierarchy element presents a value pair
       if (strpos ($last_text_id, "=") > 0)
       {
-        $hierarchy = gethierarchy_defintion ($site, $name);
+        $hierarchy = gethierarchy_definition ($site, $name);
 
         if (is_array ($hierarchy) && sizeof ($hierarchy) > 0)
         {
@@ -1581,7 +1593,7 @@ function getmetadata_multiobjects ($multiobject_array, $user)
           $objectinfo = getobjectinfo ($site, $location, $object);
 
           // for pages and components
-          if (!empty ($objectinfo['media'])) $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id WHERE object.id='.intval($objectinfo['container_id']));
+          if (empty ($objectinfo['media'])) $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id WHERE object.id='.intval($objectinfo['container_id']));
           // for media assets
           else $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id LEFT JOIN media ON object.id=media.id WHERE object.id='.intval($objectinfo['container_id']));
 
@@ -1601,6 +1613,7 @@ function getmetadata_multiobjects ($multiobject_array, $user)
               }
             }
 
+            // query all content exluding references
             $textnodes = rdbms_externalquery ('SELECT text_id, textcontent FROM textnodes WHERE id='.intval($id).' AND type!="file" AND type!="media" AND type!="page" AND type!="comp"');
 
             // text content
@@ -1610,7 +1623,7 @@ function getmetadata_multiobjects ($multiobject_array, $user)
               {
                 if (is_array ($textnode))
                 {
-                  $intermediate[$multiobject][$textnode['text_id']] = $textnode['textcontent'];
+                  $intermediate[$multiobject][$textnode['text_id']] = strip_tags (html_entity_decode ($textnode['textcontent'], ENT_COMPAT));
 
                   // collect text IDs
                   if (!in_array ($textnode['text_id'], $text_ids)) $text_ids[] = $textnode['text_id'];
@@ -2010,13 +2023,13 @@ function getwallpaper ($theme="", $version="")
       if (!empty ($wallpaper_file))
       {
         if (savefile ($mgmt_config['abs_path_temp']."view/", $wallpaper_name, $wallpaper_file)) return $mgmt_config['url_path_temp']."view/".$wallpaper_name;
-        else return false;
       }
-      else return false;
     }
     else return $mgmt_config['url_path_temp']."view/".$wallpaper_name;
   }
-  else return false;
+
+  // default wallpaper
+  return getthemelocation($theme)."img/backgrd_start.png";
 }
  
 // ======================================== GET INFORMATION ===========================================
@@ -4328,9 +4341,10 @@ function getvideoinfo ($filepath)
   // read media information from media files
   if (valid_locationname ($filepath))
   {
-  	$dimensionRegExp = "/, ([0-9]+x[0-9]+)/";
-  	$durationRegExp = "/Duration: ([0-9\:\.]+)/i";
-  	$bitRateRegExp = "/bitrate: ([0-9]+ [a-z]+\/s)/i";
+    $dimensionRegExp = "/, ([0-9]+x[0-9]+)/";
+    $durationRegExp = "/Duration: ([0-9\:\.]+)/i";
+    $bitRateRegExp = "/bitrate: ([0-9]+ [a-z]+\/s)/i";
+    $rotateRegExp = "/rotate +: ([0-9]+)/i";
 
     $dimension = "";
     $width = "";
@@ -4418,11 +4432,11 @@ function getvideoinfo ($filepath)
         if (is_array ($metadata) && sizeof ($metadata) > 0)
         {
           // video dimension in pixels
-    			$matches = array();
+    	  $matches = array();
 
-    			if (preg_match ($dimensionRegExp, implode ("\n", $metadata), $matches))
+    	  if (preg_match ($dimensionRegExp, implode ("\n", $metadata), $matches))
           {
-    				$dimension = $matches[1];
+    	    $dimension = $matches[1];
 
             if ($dimension != "")
             {
@@ -4430,7 +4444,7 @@ function getvideoinfo ($filepath)
 
               $dimension = $dimension." px";
  
-            	// set 'portrait', 'landscape' or 'square' for the image type
+              // set 'portrait', 'landscape' or 'square' for the image type
               if ($width > 0 && $height > 0)
               {
               	if ($width > $height) $imagetype = "landscape";
@@ -4444,45 +4458,33 @@ function getvideoinfo ($filepath)
                 $height = "";
               }
             }
-    			}
+          }
 
           // video duration in hours:minutes:seconds.milliseconds
-    			$matches = array();
+          $matches = array();
 
-    			if (preg_match ($durationRegExp, implode ("\n", $metadata), $matches))
+          if (preg_match ($durationRegExp, implode ("\n", $metadata), $matches))
           {
             // cut of milliseconds
             if (strpos ($matches[1], ".") > 6) $duration_no_ms = substr ($matches[1], 0, -3);
 
             $duration = $matches[1];
-    			}
+          }
 
           // video bitrate in kB/s (flac file uses the same bitrate declaration as video streams)
-    			$matches = array();
+    	  $matches = array();
 
-    			if (preg_match ($bitRateRegExp, implode ("\n", $metadata), $matches))
+    	  if (preg_match ($bitRateRegExp, implode ("\n", $metadata), $matches))
           {
-    				$video_bitrate = $matches[1];
-    			}
+            $video_bitrate = $matches[1];
+          }
 
-          // video roation in degrees
-          reset ($metadata);
+          // video rotation in degrees
+          $matches = array();
 
-          foreach ($metadata as $line)
+          if (preg_match ($rotateRegExp, implode ("\n", $metadata), $matches))
           {
-            if (strpos ("_".$line, "rotate") > 0)
-            {
-              // Rotate    : 180
-              $line = substr ($line, strpos ($line, "rotate") + 7);
-
-              // audio (audio bitrate might be missing in flac files)
-              @list ($rest, $rotate) = explode (":", $line);
-
-              // clean
-              if (!empty ($rotate)) $rotate = trim ($rotate);
-
-              break;
-            }
+            $rotate = $matches[1];
           }
 
           // audio and video information (codec, bitrate and frequenzy)

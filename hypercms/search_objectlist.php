@@ -25,13 +25,14 @@ $login = getrequest ("login", "objectname");
 $search_dir = getrequest ("search_dir", "locationname");
 $search_textnode = getrequest ("search_textnode", "array");
 $search_expression = getrequest ("search_expression");
-$replace_expression = getrequest ("replace_expression");
 $search_cat = getrequest ("search_cat", "objectname");
 $search_format = getrequest ("search_format", "array");
 $search_filesize = getrequest ("search_filesize", "numeric");
 $search_filesize_operator = getrequest ("search_filesize_operator");
 $search_imagecolor = getrequest ("search_imagecolor", "array");
 $search_operator = getrequest ("search_operator", "objectname");
+$find_expression = getrequest ("find_expression");
+$replace_expression = getrequest ("replace_expression");
 $date_from = getrequest ("date_from");
 $date_to = getrequest ("date_to");
 $from_user = getrequest ("from_user");
@@ -56,6 +57,9 @@ $galleryview = "";
 $listview = "";
 $items_row = -1;
 $objects_total = 0;
+$thumbnailsize_small = 100;
+$thumbnailsize_medium = 160;
+$thumbnailsize_large = 220;
 
 // SQL limit (result does not conain unique objetpaths if content is returned!)
 $limit = 1000;
@@ -411,10 +415,16 @@ elseif ($action == "base_search" || $search_dir != "")
       if (checkglobalpermission ($site, 'page')) $search_dir_esc[] = "%page%/".$site."/";
     }
     
-    // start search
-    if ($replace_expression == "") $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $limit, @array_keys ($objectlistcols_reduced));
     // start search and replace
-    elseif ($setlocalpermission['create'] == 1) $object_array = rdbms_replacecontent ($search_dir_esc, $search_format, $date_from, $date_to, $search_expression, $replace_expression, $user);
+    if ($setlocalpermission['create'] == 1 && $find_expression != "")
+    {
+      $object_array = rdbms_replacecontent ($search_dir_esc, $search_format, $date_from, $date_to, $find_expression, $replace_expression, $user);
+    }
+    // start search
+    else
+    {
+      $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $limit, @array_keys ($objectlistcols_reduced));
+    }
   }
 }
 
@@ -772,6 +782,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
                   if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
                   if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+                  if (!empty ($container_info['width'])) $file_width = $container_info['width'];
+                  if (!empty ($container_info['height'])) $file_height = $container_info['height'];
                 }
               }
   
@@ -868,7 +880,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             
             $listview .= "
                          <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
-                           <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
+                           <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"padding-left:3px; width:280px;\">
                              <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">
                                ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end."
                              </div>
@@ -936,7 +948,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                          </tr>";  
 
             // default value
-            $ratio = "Width";
+            $ratio = "Height";
 
             // if there is a thumb file, display the thumb
             if ($mediafile != false && empty ($usedby))
@@ -958,54 +970,41 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 // use original image size from RDBMS
                 if (!empty ($file_width) && !empty ($file_height))
                 {
-                  $imgsize = array();
-                  $imgsize[0] = $file_width;
-                  $imgsize[1] = $file_height;
-                }
-                elseif (!empty ($container_info['width']) && !empty ($container_info['height']))
-                {
-                  $imgsize = array();
-                  $imgsize[0] = $container_info['width'];
-                  $imgsize[1] = $container_info['height'];
-                }
-                // use size of thumbnail file
-                else
-                {
-                  $imgsize = getimagesize ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg");
-                }
-
-                // calculate image ratio to define CSS for image container div-tag
-                if (is_array ($imgsize))
-                {
-                  $imgwidth = $imgsize[0];
-                  $imgheight = $imgsize[1];
-                  $imgratio = $imgwidth / $imgheight;   
+                  // calculate image ratio to define CSS for image container div-tag
+                  $imgratio = $file_width / $file_height;   
                   
                   // image width >= height
                   if ($imgratio >= 1) $ratio = "Width";
                   // image width < height
                   else $ratio = "Height";
+
+                  // if thumbnail is smaller than defined thumbnail size
+                  if ($file_width < 100 && $file_height < 100)
+                  {
+                    $div_id = "id=\"x".$items_row."\"";
+                    $class_size = "";
+                  }
+                  else
+                  {
+                    $div_id = "id=\"".strtolower(substr($ratio, 0, 1)).$items_row."\"";
+                    $class_size = "class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"";
+                  }
+                }
+                // no size from RDBMS available
+                else
+                {
+                  // deprecated since version 8.1.3
+                  // use size of thumbnail file (will increase I/O and reduce performance)
+                  // $imgsize = getimagesize ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg");
+                  $div_id = "id=\"b".$items_row."\"";
+                  $class_size = "class=\"hcmsThumbnailWidth".$temp_explorerview." hcmsThumbnailHeight".$temp_explorerview."\"";
                 }
         
                 // galleryview - view option for locked multimedia objects
-                if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsIconOff\"";
-                else $class_image = "class=\"lazyload hcmsImageItem\"";               
-                
-                // if thumbnail is smaller than defined thumbnail size
-                if ($imgwidth < 100 && $imgheight < 100)
-                {
-                  $div_id = "id=\"x".$items_row."\"";
-                  $class_size = "";
-                  $style_image = "style=\"width:".$imgwidth."px; height:".$imgheight."px;\"";
-                }
-                else
-                {
-                  $div_id = "id=\"".strtolower(substr($ratio, 0, 1)).$items_row."\"";
-                  $class_size = "class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"";
-                  $style_image = "";
-                }
+                if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
+                else $class_image = "class=\"lazyload hcmsImageItem\"";
 
-                $thumbnail = "<div ".$div_id." ".$class_size."><img data-src=\"".createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name)."\" ".$class_image." ".$style_image." /></div>";
+                $thumbnail = "<div ".$div_id." ".$class_size."><img data-src=\"".createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name)."\" ".$class_image." /></div>";
               }
               // display file icon if thumbnail fails 
               else
@@ -1093,7 +1092,7 @@ else $objects_counted = 0;
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" type="text/javascript"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
 <script type="text/javascript" src="javascript/lazysizes/lazysizes.min.js" async=""></script>
 <style type="text/css">
@@ -1140,6 +1139,46 @@ else $objects_counted = 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.hcmsThumbnailWidthlarge img
+{
+  width: <?php echo $thumbnailsize_large; ?>px;
+}
+
+.hcmsThumbnailWidthmedium img
+{
+  width: <?php echo $thumbnailsize_medium; ?>px;
+}
+
+.hcmsThumbnailWidthsmall img
+{
+  width: <?php echo $thumbnailsize_small; ?>px;
+}
+
+.hcmsThumbnailWidthdetail img
+{
+  width: 124px;
+}
+
+.hcmsThumbnailHeightlarge img
+{
+  height: <?php echo $thumbnailsize_large; ?>px;
+}
+
+.hcmsThumbnailHeightmedium img
+{
+  height: <?php echo $thumbnailsize_medium; ?>px;
+}
+
+.hcmsThumbnailHeightsmall img
+{
+  height: <?php echo $thumbnailsize_small; ?>px;
+}
+
+.hcmsThumbnailHeightdetail img
+{
+  height: 124px;
 }
 
 @media screen and (max-width: 360px)
@@ -1199,9 +1238,9 @@ function toggleview (viewoption)
   var thumbnail;
 
   // thumbnail frame size definitions
-  if (viewoption == "large") style = "width:236px; height:276px;";
-  else if (viewoption == "medium") style = "width:176px; height:216px;";
-  else if (viewoption == "small") style = "width:164px; height:154px;";
+  if (viewoption == "large") style = "width:<?php echo ($thumbnailsize_large + 16); ?>px; height:<?php echo ($thumbnailsize_large + 56); ?>px;";
+  else if (viewoption == "medium") style = "width:<?php echo ($thumbnailsize_medium + 16); ?>px; height:<?php echo ($thumbnailsize_medium + 56); ?>px;";
+  else if (viewoption == "small") style = "width:<?php echo ($thumbnailsize_small + 54); ?>px; height:<?php echo ($thumbnailsize_small + 56); ?>px;";
 
   frames = document.getElementsByClassName('hcmsObjectGalleryMarker');
 
@@ -1215,6 +1254,7 @@ function toggleview (viewoption)
   
   for (var i = 0; i <= <?php echo $items_row; ?>; i++)
   {
+    // width
     thumbnail = document.getElementById('w' + i);
     
     if (thumbnail)
@@ -1223,8 +1263,23 @@ function toggleview (viewoption)
     }
     else
     {
+      // height
       thumbnail = document.getElementById('h' + i);
-      if (thumbnail) thumbnail.className = 'hcmsThumbnailHeight' + viewoption;    
+
+      if (thumbnail)
+      {
+        thumbnail.className = 'hcmsThumbnailHeight' + viewoption;    
+      }
+      else
+      {
+        // both
+        thumbnail = document.getElementById('b' + i);
+
+        if (thumbnail)
+        {
+          thumbnail.className = 'hcmsThumbnailWidth' + viewoption + ' hcmsThumbnailHeight' + viewoption;    
+        }
+      }
     }
   } 
 
@@ -1429,14 +1484,14 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 
 <!-- Table Header -->
 <div id="tableHeadLayer" style="position:fixed; top:0; left:0; margin:0; padding:0; width:100%; z-index:2; visibility:visible;">
-  <table id="objectlist_head" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;">
+  <table id="objectlist_head" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;">
     <tr>
-      <td id="c0" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:280px; white-space:nowrap;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
+      <td id="c0" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:280px;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
     <?php
     if (!$is_mobile)
     {
     ?>
-      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:250px; white-space:nowrap;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
+      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:250px;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
     <?php
       if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
       {
@@ -1444,8 +1499,8 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
         
         foreach ($objectlistcols_reduced as $key => $active)
         {
-          if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:125px; white-space:nowrap;";
-          else $style_td = "white-space:nowrap;";
+          if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:125px;";
+          else $style_td = "";
           
           $sortnumeric = "";
           
@@ -1487,7 +1542,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
             }
             
             echo "
-      <td id=\"c".$i."\" onClick=\"hcms_sortTable(".$i.$sortnumeric.");\" class=\"hcmsTableHeader\" style=\"".$style_td."\">&nbsp;".$title."&nbsp;</td>";
+      <td id=\"c".$i."\" onClick=\"hcms_sortTable(".$i.$sortnumeric.");\" class=\"hcmsTableHeader hcmsCell\" style=\"".$style_td."\">&nbsp;".$title."&nbsp;</td>";
 
             $i++;
           }
@@ -1501,7 +1556,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 
 <!-- Detail View -->
 <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:1; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
-  <table id="objectlist" name="objectlist">
+  <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
   <?php 
   echo $listview;
   ?>
@@ -1531,7 +1586,7 @@ if (empty ($mgmt_config['explorer_paging']) && $objects_total > $end)
 ?>
 <!-- status bar incl. more button -->
 <div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?".$search_url."&start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['objects'][$lang]) : ""); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <?php
@@ -1545,7 +1600,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 ?>
 <!-- status bar incl. previous and next buttons -->
 <div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?".$search_url."&start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['objects'][$lang]) : ""); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?".$search_url."&start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
@@ -1561,7 +1616,7 @@ else
 ?>
 <!-- status bar -->
 <div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
-  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." ".(!$is_mobile ? getescapedtext ($hcms_lang['objects'][$lang]) : ""); ?></div>
 </div>
 <?php
 }

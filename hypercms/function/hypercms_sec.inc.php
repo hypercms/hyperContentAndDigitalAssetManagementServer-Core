@@ -1736,7 +1736,8 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   // eventsystem
   if ($eventsystem['onlogon_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
   {
-    onlogon_post ($user, $result['auth']);
+    $temp = onlogon_post ($user, $result);
+    if (is_array ($temp)) $result = $temp;
   }
 
   // save log

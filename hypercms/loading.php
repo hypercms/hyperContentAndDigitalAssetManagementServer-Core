@@ -30,9 +30,9 @@ checkusersession ($user, false);
 </script>
 </head>
 
-<body class="hcmsWorkplaceControlWallpaper">
-<div style="width:128px; margin:40px auto;">
-  <img src="<?php echo getthemelocation(); ?>img/loading.gif" />
-</div>
+<body class="hcmsWorkplaceControlWallpaper" style="display:table; width:100%; height:100%;">
+  <div style="display:table-cell; width:100%; height:100%; text-align:center; vertical-align:middle;">
+    <img src="<?php echo getthemelocation(); ?>img/loading.gif" />
+  </div>
 </body>
 </html>

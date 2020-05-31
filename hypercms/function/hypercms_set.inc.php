@@ -153,7 +153,7 @@ function settemplate ($site, $location, $object, $template, $recursive=false)
 
 // ----------------------------------------- settaxonomy ------------------------------------------
 // function: settaxonomy()
-// input: publication name [string], container ID [string], 2-digit language code [string] (optional), taxonomy definition [array] (optional)
+// input: publication name [string], container ID [string], 2-digit language code [string]][array] (optional), taxonomy definition [array] (optional)
 // output: result array / false on error
 
 // description:
@@ -165,6 +165,8 @@ function settaxonomy ($site, $container_id, $langcode="", $taxonomy="")
 
   if (valid_publicationname ($site) && intval ($container_id) > 0 && is_array ($mgmt_config))
   {
+    $langcount = array();
+
     // load publication management config
     if (!isset ($mgmt_config[$site]['taxonomy']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
@@ -199,7 +201,8 @@ function settaxonomy ($site, $container_id, $langcode="", $taxonomy="")
           {
             $langcount = array();
 
-            if ($text_id != "" && $text != "")
+            // content is not empty
+            if ($text_id != "" && trim ($text) != "")
             {
               // clean text
               $text = cleancontent ($text, "UTF-8");
@@ -208,53 +211,68 @@ function settaxonomy ($site, $container_id, $langcode="", $taxonomy="")
               reset ($taxonomy);
 
               // return key = taxonomy ID and value = keyword
-              foreach ($taxonomy as $lang => $tax_array)
+              foreach ($taxonomy as $tax_lang => $tax_array)
               {
                 // language restriction
-                if ($lang == strtolower ($langcode) || $langcode == "")
+                if (
+                     (is_string ($langcode) && $langcode != "" && $tax_lang == strtolower ($langcode)) || 
+                     (!empty ($langcode[$text_id]) && $tax_lang == strtolower ($langcode[$text_id])) || 
+                     (is_string ($langcode) && $langcode == "") || 
+                     empty ($langcode[$text_id])
+                )
                 {
-                  $langcount[$lang] = 0;
+                  $langcount[$text_id][$tax_lang] = 0;
 
                   foreach ($tax_array as $path => $keyword)
                   {
                     // find taxonomy keyword in text
-                    if ($keyword != "" && strpos (" ".$text." ", strtolower (" ".$keyword)) > 0)
+                    if ($keyword != "" && (strpos ("_ ".$text." ", strtolower (" ".$keyword)) > 0 || strpos ("_,".$text.",", strtolower (",".$keyword.",")) > 0))
                     {
                       // get taxonomy ID from taxonomy path (last item in path)
                       $path_temp = substr ($path, 0, -1);
                       $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
 
-                      // result array
-                      $result[$text_id][$lang][$id] = $keyword;
+                      if (intval ($id) > 0)
+                      {
+                        // result array
+                        $result[$text_id][$tax_lang][$id] = $keyword;
 
-                      // count number of found expressions per language and text ID if keyword has more than 5 digits
-                      if (strlen ($keyword) > 5) $langcount[$lang]++;
+                        // count number of found expressions per language and text ID if keyword has more than 5 digits
+                        if (strlen ($keyword) > 5) $langcount[$text_id][$tax_lang]++;
+                      }
                     }
                   }
                 }
               }
 
               // analyze languages for text ID
-              if (is_array ($langcount) && sizeof ($langcount) > 1 && !empty ($result[$text_id]))
+              if (is_array ($langcount) && sizeof ($langcount[$text_id]) > 0 && !empty ($result[$text_id]))
               {
                 // get highest count
-                $count = max ($langcount);
+                $count = max ($langcount[$text_id]);
 
                 // get language with highest count
-                $langcode = array_search ($count, $langcount);
+                $selected_langcode = array_search ($count, $langcount[$text_id]);
 
                 // remove other languages
-                if (!empty ($langcode))
+                if (!empty ($selected_langcode))
                 {
                   foreach ($result[$text_id] as $lang_delete => $array)
                   {
-                    if ($lang_delete != $langcode) unset ($result[$text_id][$lang_delete]);
+                    if ($lang_delete != $selected_langcode) unset ($result[$text_id][$lang_delete]);
                   }
                 }
               }
             }
+            // content is empty
+            elseif ($text_id != "")
+            {
+              // result array in order to delete all taxonomy entries for the text ID
+              $result[$text_id]['en'][0] = "";
+            }
           }
 
+          // write entries to database
           rdbms_settaxonomy ($site, $container_id, $result);
         }
 
@@ -401,6 +419,9 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
         if (!empty ($typebuffer)) $type[$id] = $typebuffer;
         if (!empty ($artbuffer)) $art[$id] = $artbuffer;
         if (!empty ($userbuffer)) $textuser[$id] = $userbuffer;
+
+        // taxonomy tree selector returns an array
+        if (is_array ($text[$id])) $text[$id] = implode (",", $text[$id]);
 
         // remove freespaces
         $textcontent = trim ($text[$id]);

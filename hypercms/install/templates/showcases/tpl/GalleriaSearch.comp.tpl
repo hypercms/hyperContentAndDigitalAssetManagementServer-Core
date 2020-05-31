@@ -174,7 +174,7 @@ elseif ($view == "publish" || $view == "preview")
 
   <div id="galleria"></div>
 
-<script>
+<script type="text/javascript">
 var data = [
 <?php
   if (!empty ($filter) && sizeof ($filter) > 0)

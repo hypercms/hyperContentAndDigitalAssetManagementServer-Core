@@ -2219,7 +2219,7 @@ Release 08/2017
 - Implementation of new rename icon and action to support renaming of objects and folders in control_objectlist_menu
 - Removed support for small icons from function getfileinfo in Get API
 - Removed small file icon set (gif) from themes
-- Implementation of new JS function hcms_ElementbyIdStyle in main.js
+- Implementation of new JS function hcms_elementbyIdStyle in main.js
 - Implementation of new tabs based on CSS instead of background images
 - Improved loading speed of all icons due to single file icon set 
 - Removed navigation history buttons from control_content_menu
@@ -3674,7 +3674,7 @@ Release 10/2019
 - Modifications in template engine in order to call JS function hcms_arrayUnique in JS function collectFaces (remove duplicates)
 - Modifications in JS function detectFaceOnImage in order to remove all face markers before creating them based on the JSON definition
 - Modifications in JS function deleteFace in order to remove all face markers instead of hiding them
-- Modifications in function createimages_video in Media API in order to support width and height input parameter for the size of the created images (does not save thumbnails in the cloud or by remote client)
+- Modifications in function createimages_video in Media API in order to support the width and height input parameter for the size of the created images (does not save thumbnails in the cloud or by remote client)
 - Modifications in function createmedia in Media API in order to create thumbnails for each video of type "origthumb"
 - Modifications in function deletemediafiles in Main API in order to remove directory for video thumbnail images
 - Implementation of the thumbnail support for the VIDEO.JS video player in order to display thumbnails when hovering over the progress bar 
@@ -3737,7 +3737,7 @@ Release 10/2019
 - Modifications in template engine in order to sort the publication names of the search select box
 - Modifications in function showmessage and showinfobox in UI API in order to replace close button action JS function hcms_showhideInfo with hcms_switchInfo
 - Modifications in function showgallery in UI API in order to always use the media location of thumbnails
-- Modifications in function getFileContents in Workplace Integration module in order to support embedded thumbnails in the HTML link files
+- Modifications in function getFileContents in the Workplace Integration module in order to support embedded thumbnails in the HTML link files
 - Modifications in home box all_reports in order to use report title instead of the report file name for the select box
 - Modifications in Google Cloud Connector in order to support publication specific cloud connections
 - Modifications in function setmetadata in Meta API in order to support the new Google Cloud Connector functions
@@ -3950,9 +3950,9 @@ Release 02/2020
 
 Version 8.1.1
 Release 03/2020
-- Implementation of the new publication access permissions for SOAP and RESTful services in order to activate and deactive them per publication
+- Implementation of the new publication access permissions for SOAP and RESTful services in order to activate and deactivate them per publication
 - Modifications in all SOAP and RESTful functions in order to support the new publication setting
-- Modifications in function editpublication in order to support the new settings for the SOAP and REStful API access permissions
+- Modifications in function editpublication in order to support the new settings for the SOAP and RESTful API access permissions
 - Modifications in API loader in order to include RESTful library only if the SOAP API is not loaded already (SOAP configuration)
 - Modifications in site_edit_form in order to include the settings for the RESTful and SOAP API
 - Design modifications in site_edit_form
@@ -3961,7 +3961,7 @@ Release 03/2020
 - Design modifications in page_multiedit
 - Modifications in function isLoggedInHyperdav in WebDAV module in order to only accept user session files that are not older than 24 hours
 - Modifications in function setGlobalsForConfig in WebDAV module in order to include globals of the language files
-- Modifications in WebDAV index (loader) in order to load english as default language file 
+- Modifications in WebDAV index (loader) in order to load English as the default language file 
 - Modifications in function createfolder in Main API in order to add log events
 - Modifications in API loader in order to include language file without verification of the $hcms_lang variable
 - Modifications in hypermailer API in order to set default language code
@@ -3972,12 +3972,12 @@ Release 03/2020
 - Implementation of the function showdate in the task management in order to localize the displayed start and end dates of the tasks
 - Design modifications in user_sendlink
 - Modifications in function showmessage in UI API in order to assign unique tag id if the default id is used
-- Updgrade of the hypridauth API in the Connector module
-- Modifications in the Mobile Edition in order to minimize the navigaton sidebar on most navigation endpoints except for the asset or page navigation items
+- Upgrade of the hypridauth API in the Connector module
+- Modifications in the Mobile Edition in order to minimize the navigation sidebar on most navigation endpoints except for the asset or page navigation items
 - Modifications in news home box in order to support max/min the display of the box
-- Modifications in function rdbms_getmediastat in DB Connect in order to sort the result by date (important for home boxes recent downlods, uploads, and uploadlinks)
-- Modifications in function rdbms_getmediastat in DB Connect in order to support the new input parameter maxhits for the limition of the number of the returned results
-- Modifications in recent downlods, uploads, and uploadlinks home box in order to use the maxhits paramater for the call of function rdbms_getmediastat and to break the loop when maxount has been reached
+- Modifications in function rdbms_getmediastat in DB Connect in order to sort the result by date (important for home boxes recent downloads, uploads, and uploadlinks)
+- Modifications in function rdbms_getmediastat in DB Connect in order to support the new input parameter maxhits for the limitation of the number of the returned results
+- Modifications in recent downloads, uploads, and uploadlinks home box in order to use the maxhits parameter for the call of function rdbms_getmediastat and to break the loop when maxcount has been reached
 - Update of all language files
 - Implementation of paging besides the expanding of folder and objects in explorer_objectlist and search_objectlist
 - Implementation of the new main configuration setting $mgmt_config['explorer_paging'] in order to enable paging instead of expanding of the object list
@@ -3988,7 +3988,7 @@ Release 03/2020
 - Modifications in explorer_objectlist and search_objectlist in order to replace the gallery view table data elements width div elements
 - Modifications in contextmenu.js in order to support the new gallery based on div elements
 - Modifications in explorer_objectlist and search_objectlist in order to provide larger thumbnail images for medium (max 160px) and large (max 220px) views
-- Modifications in all design themens in order to support larger thumbnail images for medium (160px) and (max 220px) large views
+- Modifications in all design themes in order to support larger thumbnail images for medium (160px) and (max 220px) large views
 - Removed deprecated image button_explorer_more.png from all design themes
 - Modifications in control_message_menu and message_objectlist in order to remove the maxhits parameter (maxhits is 300 by default)
 - Modifications in control_objectlist_menu in order to correct view icon placement on iPhones
@@ -4000,19 +4000,19 @@ Release 03/2020
 - Implementation of paging besides the expanding in queue_objectlist, message_objectlist, and user_objectlist
 - Design modifications in queue_objectlist
 - Modifications in OpenSearch Connector module in order to have all input request parameters in the same code section
-- Implementation of the client side memory for the column widths per publication and category in explorer_objectlist
+- Implementation of the client-side memory for the column widths per publication and category in explorer_objectlist
 - Implementation of the new JS function sizecols in explorer_objectlist
 - Implementation of function addslashes in all chart functions of the Report Management API in order to escape the text used in the charts
 - Modifications in function showgeolocationchart in Report Management API in order to define default geo location for the center of the map
-- Modifications in function showgeolocationchart in Report Management API in order to support links in markers thatb will be opened in a new browser windows/tab
+- Modifications in function showgeolocationchart in Report Management API in order to support links in markers that will be opened in a new browser windows/tab
 - Modifications in function showgeolocationchart in Report Management API in order to support label text for markers
 - Implementation of a selected icon for CSS class hcmsObjectSelected for the gallery view in all design themes
 - Modifications in explorer_objectlist and search_objectlist in order to assign CSS class hcmsObjectUnselected as default
-- Bug fix: Function showpiechart in Report Management module did not declare the global user variable
-- Bug fix: Function rdbms_getmediastat in DB Connect did only apply order by date in some cases based on the input parameters for the container ID and object path
-- Bug fix: The temporary variables for each queue entry have not benn fully seperated from the filter variables (issue with $site)
-- Bug fix: popup_action did not assign result of function copyobject for a single object to a variable
-- Bug fix: popup_actiona and poup_status did not verify if the multiobject variable holds more than one object
+- Bug fix: Function showpiechart in the Report Management module did not declare the global user variable
+- Bug fix: Function rdbms_getmediastat in DB Connect did only apply 'order by date' in some cases based on the input parameters for the container ID and object path
+- Bug fix: The temporary variables for each queue entry have not been fully seperated from the filter variables (issue with $site)
+- Bug fix: popup_action did not assign the result of function copyobject for a single object to a variable
+- Bug fix: popup_action and poup_status did not verify if the multiobject variable holds more than one object
 - Bug fix: Function encryptfile and decryptfile of the Free Edition did not return the content of the media file 
 
 Version 8.1.2
@@ -4095,14 +4095,192 @@ Release 04/2020
 - Modifications in standard taxonomy in install/data/include/default.taxonomy.csv
 - Modifications in the function convertchars in the Main API in order to use function mb_convert_encoding for character conversion and function iconv as fallback
 - Implementation of the new JS function hcms_sleep in main.js in order to pause a script
-- Modifications in JS function hcms_translateText in main.js in order to delay function calls to translate cloud service
-- Modifications in English language file
+- Modifications in JS function hcms_translateText in main.js in order to delay function calls to the translate cloud service
+- Modifications in the English language file
 - Bug fix: popup_status did not initialize the array multiobject_temp
 - Bug fix: explorer_objectview did not resolve the folders location correctly
 - Bug fix: JS function hcms_createContextmenuItem in contextmenu.js did not add the folder to the location for action "preview"
-- Bug fix: control_objectlist_menu did reset variable show after initalization and suppressed previous messages of actions
+- Bug fix: control_objectlist_menu did reset variable show after initialization and suppressed previous messages of actions
 - Bug fix: popup_status reloaded objectlist and caused a repost of data, the reload has been replaced by a request to the same location
 - Bug fix: Function showcompexplorer in UI API did not include the full path to lazysizes.min.js
 - Bug fix: media_select in editor did not scale the images according to the provided scaling factor (dpi) if the width and height has been correctly provided by function showmedia
-- Bug fix: Function savetaxonomy in Meta API did not update the existing taxonomy entries if a new language has been added or an exsiting language has been removed from the taxonomy
+- Bug fix: Function savetaxonomy in Meta API did not update the existing taxonomy entries if a new language has been added or an existing language has been removed from the taxonomy
 - Bug fix: Function showAPIdocs in UI API was not able to resolve the input of functions if a '//' occured in the default input values
+
+Version 9.0.0
+Release 05/2020
+- Implementation of the new system GUI version 9 (Redesign of various toolbars, Redesign of the search and search & replace form)
+- Implementation of connections between the workflow items of the Workflow Management module
+- Implementation of the new domarrow JS library (does not support IE < 10)
+- Implementation of new JS function acceptConnections and rejectConnections in the workflow_manager of the Workflow Management module in order to update connections between the workflow items
+- Implementation of the new task title for the workflow items of the Workflow Management module
+- Modifications in various function of the of the Workflow Management API in order to support the task title
+- Modifications in showworkflowstatus in UI API in order to display the task name in the workflow status
+- Modifications in JS functions hcms_dragLayer and hcms_dragLayers in main.js in order to support connections between draggable elements
+- Modifications in user_sendlink in order to remove deprecated align attribute in date selector images
+- Implementation of optional task start and end date in popup_message (used for accept and reject when executing a workflow)
+- Modifications in various functions of the Workflow Management API in order to support the optional task start and end date
+- Modifications in various functions of the Workflow Management API in order to support the new task title defined in the workflow definition
+- Modifications in task_list in order to show and hide the filter icon
+- Design modifications in the Workflow Management
+- Implementation of the new refresh button in the task_list of the Task Management module in order to update the task list form the server
+- Design modifications in task_list of the Task Management module
+- Modifications in page_view in order to delete/reset the existing workflow of the object (workflow edit permission required)
+- Modifications in control_workflow_menu in the Workflow Management module in order to disable "Apply workflow to page folders" if the publication is configured as DAM solution
+- Design modifications in framset_imexport_folder of the Im/Export Connector module
+- Modifications in the function gettaxonomy_childs in the Get API in order to optionally return the full taxonomy ID path instead of the ID
+- Implementation of the new function rdbms_gettaxonomy in DB Connect in order to retrieve the taxonomy data of a specific container
+- Implementation of the new function showtaxonomytree in the UI API in order to display the taxonomy tree or a branch including checkboxes for the keywords
+- Implementation of a JS based search function with auto scroll feature for the next search results in function showtaxonomytree in the UI API
+- Implementation of the new JS function hcms_slideDownLayer in main.js
+- Implementation of the new keywords template tag attribute display in the template engine in order to display the taxonomy tree or branch
+- Modifications in function settext in Set API in order to support the new keyword tag result array of the new taxonomy tree
+- Modifications in service savecontent in order to support the new keyword tag result array of the new taxonomy tree (convert array to comma separated keyword list)
+- Modifications in function settaxonomy in order to verify the used language in a text for each text ID individually and to support language settings foreach text ID individually
+- Modifications in function rdbms_setcontent in DB Connect in order to reduce database I/O. Function settaxonomy and rdbms_setkeywords have been executed with each content update (both functions analyze the full content of a container, query and update the database)
+- Implementation of function settaxonomy and rdbms_setkeywords in service savecontent
+- Implementation of function settaxonomy and rdbms_setkeywords in function savecontent in the Main API
+- Modifications in page_multiedit in order to support the new taxonomy tree
+- Removed the assigned CSS class for disabled fields from page_multiedit
+- Modifications in JS function validateForm in page_multiedit and template engine in order to exclude required-constraint on checkboxes
+- Modifications in various system components in order to add the attribute type="text/javascript" to the script tag
+- Modifications in service savecontent and function savecontent in order to provide the language code to function settaxonomy (restriction of settaxonomy to the selected language provided by the taxonomy tree in function showtaxonomytree)
+- Modifications in service savecontent and function savecontent in order to create and save unique keywords for each text ID
+- Renamed JS function save to savecontent in page_multiedit
+- Modifications in JS function savecontent in page_multiedit in order to process and prepare the content of the taxonomy tree for the AJAX post request
+- Design modifications in page_multiedit
+- Modifications in page_multiedit in order to display the contents of objects even if they are not the same (if fields are not editable/locked)
+- Modifications in media_360view in order to support horizontal panoramic views
+- Modifications in function showmedia in UI API in order to use horizontal panoramic view instead of 360 degree view if the media ratio is greater than 3.5
+- Design modifications in frameset_objectlist in order to position the close button
+- Modifications in media_taxonomy in order to remove the delete language feature (JS function deletelanguage)
+- Design modifications in media_taxonomy
+- Design modifications in page_multiedit for enhanced usability
+- Design modifications in task_list fo Task Management module
+- Renamed function gethierarchy_defintion to gethierarchy_definition in Get API and all function calls in the system
+- Modifications in portal XML schema in order to add the new navigation node
+- Modifications in function editportal in Main API in order to support the new navigation settings
+- Modifications in function editportal in Main API in order to automatically update the portal template by adding the new XML node for the navigation
+- Modifications in portal_edit in order to implement the new navigation settings and enable the navigation tree options
+- Modifications in explorer in order to implement the portal navigation settings for the display of the defined navigation trees of the portal
+- Modifications in explorer in order to skip all other publications even if the portal user has access to them
+- Moved geolocation detection from home to frameset_main and frameset_mobile
+- Design modifications in function showmedia in UI API in order to adjust height of 360 degree video player
+- Downgraded three.js to revision 105 due to JS console log message of Panolens
+- Design modifications in project_list and function showprojectrecord of the Project Management module/API
+- Implementation of the new JS function setdate and setrowclass in project_list
+- Modifications in function showprojectrecord of the Project Management API in order to change the row color according to the selected task priority
+- Design modifications in task_list of the Task Management module
+- Implementation of the new JS function setdate and setrowclass in task_list
+- Modifications in task_list in order to change the row color according to the selected task priority
+- Modifications in the paging of task_list
+- Implementation of the new global JS setting hcms_transitioneffect in main.js in order to enable and disable the transition effect of some functions
+- Design modifications in control_message_menu
+- Implementation of the load screen in frameset_message
+- Modifications in link_explorer in order to update the search field to the new placeholder standard
+- Modifications in link_explorer, link_edit_explorer, and function showcompexplorer in UI API in order to execute search if the search expression is empty in order to list all objects of the current location
+- Implementation of the new JS function hcms_displayLayers in main.js in order to use the CSS style display instead of visibility (compare JS function hcms_showHideLayers)
+- Implementation of the autocomplete search expression history of the user in the home screen search box
+- Modifications in function getwallpaper in Get API in order to return default wallpaper in case of an error
+- Modifications in all design themes in order to add the new default wallpaper
+- Implementation of the new main configuration setting for the Support password $mgmt_config['pass_support']
+- Modifications in function rdbms_setcontent in DB Connect
+- Modifications in function userlogin in Security API in order to provide the result array as input and use the result array by onlogon_post event
+- Modifications in function onlogon_post of the event system in order to return the result array
+- Modifications in explorer in order to preload framseset_objectlist if it has not been loaded
+- Modifications in function buildbarchart in template engine in order to support onclick events (links) for the chart bars (use 'onclick' as key name)
+- Modifications in function rdbms_getobjects in DB Connect in order to support multiple values separated by | as input for the container ID
+- Modifications in up- and down load statistics home screen box in order to support links in the chart bars which will lead to a list of all the daily viewed, downloaded, and uploaded objects (search by container ID)
+- Modifications in page_info_stats for folders in order to support links in the chart bars which will lead to a list of all the daily viewed, downloaded, and uploaded objects (search by container ID)
+- Modifications in frameset_objectlist in order to support the container_id parameter
+- Modifications in home screen in order to support popup layers for detailed information and view
+- Implementation of the new popup_gallery in order to provide a gallery view for popup layers
+- Modifications in serverload home box in order to reload every 10 minutes instead of 5 minutes
+- Design modifications in the loading screen
+- Minor modifications in popup_save_dropbox
+- Implementation of lazyload in function showgallery in UI API
+- Modifications in function showgallery in UI API in order to reduce the execution duration on large collections
+- Modifications in function showcompexplorer in UI API in order to reduce the execution duration on large collections
+- Modifications in all file and folder icons of all design themes in order to remove the shadow effect
+- Modifications in the CSS class hcmsImageItem of all design themes in order to remove shadow effect
+- Modifications in the CSS classes hcmsThumbnailWidthlarge/medium/small and hcmsThumbnailHeightlarge/medium/small in order to remove border style
+- Modifications in explorer_objectlist and search_objectlist in order to remove the image style for asset thumbnails
+- Modifications in function getFileContents in the Workplace Integration module in order to delay the access or download link call
+- Modifications in template engine in order to add a spacer at the end of the form elements
+- Modifications in function createmedia in Media API in order to switch width and height if the video has been autorotated
+- Modifications in function readmediaplayer_config in Media API in order to switch width and height if the video has been autorotated
+- Modifications in function createthumbnail_video and createimages_video in order to remove the input parameter for the autorotation of the video (only main configuration setting $mgmt_mediaoptions['autorotate-video'] will be applied)
+- Updates in the user manuals
+- Update of lazysizes JS library to version 5.2.0
+- Update of colResizable JQuery library to version 1.6
+- Design modifications in all list views
+- Modifications in Mobile Edition in order to optimize the status bar in all list views
+- Implementation of the new local JS function resetcols in explorer_objectlist in order to reset the width of all columns
+- Modifications in function getmetadata_multiobjects in Get API in order to remove all tags from the text content
+- Modifications in function cleancontent in Main API in order to convert additional escaped special characters
+- Modifications in frameset_objectlist and search objectlist in order to remove function getimagesize and assign both CSS classes for width and height
+- Removed all thumbnail size definitions from the design themes CSS and included them locally in frameset_objectlist and search objectlist
+- Modifications in control_group_menu and group_edit_form in order to implement the new graphical user interface for managing groups
+- Modifications in control_instance_menu in order to implement the new graphical user interface for managing instances
+- Modifications in control_site_menu and site_edit_form in order to implement the new graphical user interface for managing publications
+- Modifications in control_pers_menu and pers_form in order to implement the new graphical user interface for managing personalization
+- Modifications in control_portal_menu and portal_edit in order to implement the new graphical user interface for managing portals1
+- Modifications in control_template_menu and template_edit in order to implement the new graphical user interface for managing portals
+- Modifications in control_workflow_menu in order to implement the new graphical user interface for managing workflows
+- Modifications in control_report_menu in order to implement the new graphical user interface for managing reports
+- Modifications in publication management in order to remove unused $site parameter
+- Removed site_edit_menu that has been implemented in frameset_site_edit
+- Removed template_edit_menu that has been implemented in frameset_template_edit
+- Modifications in function createpublication and deletepublication in Main API in order to always close the inheritance database/index
+- Design modifications in control_objectlist_menu in order to place the search icon at the right end of the tool bar  
+- Design modifications in template media management
+- Design modifications in explorer
+- Design modifications in frameset_main in order to resize the navigation layer
+- Design modifications in explorer in order to resize the search form
+- Modifications in explorer in order to implement the search & replace feature and the search inside a location
+- Modifications in explorer and explorer_keywords in order to resize according to the size of the new search layer
+- Implementation of the new local JS function setSearchLocation in frameset_objectlist, frameset_main, and explorer in order to set the search location
+- Removed deprecated search_form
+- Modifications in search_objectlist in order to support new search and replace parameter $find_expression (replaces $search_expression that is now only used for the search)
+- Design modifications in Import/Export module
+- Renamed JS function hcms_ElementStyle to hcms_elementStyle in main.js and all function calls
+- Renamed JS function hcms_ElementbyIdStyle to hcms_elementbyIdStyle in main.js and all function calls
+- Renamed JS function hcms_showInfo to hcms_showFormLayer in main.js and all function calls
+- Renamed JS function hcms_hideInfo to hcms_hideFormLayer in main.js and all function calls
+- Renamed JS function hcms_switchInfo to hcms_switchFormLayer in main.js and all function calls
+- Enabled scrollwheel option for Google Maps in explorer, template engine, and Report Management module
+- Design modifications in control_message_menu for the Mobile Edition
+- Design modifications in history for the Mobile Edition
+- Design modifications in user_edit
+- Design modifications in group_edit_form
+- Modifications in message_objectlist in order to remove name column and replace it with the title column
+- Modifications in frameset_main in order to switch (max/min) search frame when clicking the search icon
+- Modifications in head_contentype in order to initialize the variable $color
+- Modifications in template engine in order to verify the variable $list2_array
+- Modifications in frameset_main and control_objectlist_menu in order to enable and disable transition effects
+- Design modifications in colorful design theme
+- Bug fix: CSS classes have been missing in main.css of the standard design theme
+- Bug fix: Function getworkflowitem in Get API did not include empty values for "automatic select" of users and groups for a workflow item
+- Bug fix: Function settaxonomy in Set API did not perform a search in a standard keyword lists string
+- Bug fix: Function settaxonomy in Set API did not provide an empty entry in order to delete all taxonomy entries for the text ID
+- Bug fix: Function rdbms_settaxonomy in DB Connect included entries with a taxonomy ID of zero (zero is not a valid taxonomy ID since the taxonomy index start with 1)
+- Bug fix: page_multiedit did not correct the field heights based on limits
+- Bug fix: page_multiedit did not display the text if it is the same for all selected objects
+- Bug fix: hcms_favorites variable name in include/session.inc.php was not correct
+- Bug fix: JS function validateForm in template engine did not validate requited fields before testing their values
+- Bug fix: JS function validateForm in template engine did not use trim on required values
+- Bug fix: Function showthumbnail in UI API did not provide proper link for portal themes
+- Bug fix: Disabled automatic design theme in user_edit for the Mobile Edition since it would apply a non-mobile design theme for mobile devices
+- Bug fix: Function showcompexplorer in UI API did not provide view parameter when executing the search
+- Bug fix: Function showcompexplorer in UI API used the current location instead of the location of the search result objects and therefore was not able to find the object and provide the thumbnail
+- Bug fix: Function showcompexplorer in UI API did not provide the CSS class for the gallery view for non-media components/assets
+- Bug fix: MS IE did not hide the nested child elements of the div-layers in task_list, using opacity:inherit and z-index:inherit on the child elements to fix the MS IE bug
+- Bug fix: Login form userlogin displayed loading screen if not input has been provided
+- Bug fix: French language file did not properly end the line of $hcms_lang['please-wait-for-the-approval']
+- Bug fix: Function getvideoinfo in Get API did not properly extract the video rotation if the word "rotate" was part of the video file name
+- Bug fix: Function getmetadata_multiobjects in Get API did not export the defined columns/content for pages and components
+- Bug fix: Reset of columns sizes if the selection of columns has been changed in explorer_objectlist
+- Bug fix: explorer_objectlist did set the initial columns size before initializing colResizable
+- Bug fix: Function deletereport used wrong language text key for the success message
+- Bug fix: Removed deprecated JS function escape from component_edit_page_multi, component_edit_page_single, media_edit_page, and link_edit_page due to issues
+

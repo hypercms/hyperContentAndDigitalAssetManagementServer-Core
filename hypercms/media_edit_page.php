@@ -315,14 +315,11 @@ function openBrWindowMedia (winName, features, type)
         position2 = url.lastIndexOf("/");
         
         var location_comp = "%comp%/" + url.substring (position1+1, position2+1);
-        location_comp = escape (location_comp);
         
         var location_site = url.substring (position1+1, url.length);              
         location_site = location_site.substring(0, location_site.indexOf('/'));
-        location_site = escape (location_site);
         
         var page_comp = url.substr (position2+1, url.length);
-        page_comp = escape (page_comp);
         
         url_result = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_content.php?ctrlreload=yes&cat=comp&site=' + encodeURIComponent(location_site) + '&location=' + encodeURIComponent(location_comp) + '&page=' + encodeURIComponent(page_comp) + '&user=<?php echo url_encode($user); ?>';
       }

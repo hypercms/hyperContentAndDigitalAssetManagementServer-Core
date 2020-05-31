@@ -19,7 +19,6 @@ require ("function/hypercms_api.inc.php");
 $site = getrequest_esc ("site", "publicationname");
 $cat = getrequest_esc ("cat", "objectname");
 $save = getrequest ("save");
-$preview = getrequest ("preview");
 $persfile = getrequest ("persfile", "objectname");
 $persdata = getrequest ("persdata");
 $token = getrequest ("token");
@@ -36,6 +35,13 @@ if (
      ($cat == "profile" && !checkglobalpermission ($site, 'persprof')) || 
      $mgmt_config[$site]['dam'] == true || !valid_publicationname ($site)
    ) killsession ($user);
+
+// edit permission defines view mode
+if (
+     ($cat == "profile" && checkglobalpermission ($site, 'persprofedit')) || 
+     ($cat == "tracking" && checkglobalpermission ($site, 'perstrackedit'))
+   ) $preview = "no";
+else $preview = "yes";
 
 // check session of user
 checkusersession ($user);
@@ -116,10 +122,10 @@ if ($save == "yes" && $persfile != "" && checktoken ($token, $user))
   {
     $savefile = savefile ($mgmt_config['abs_path_data']."customer/".$site."/", $persfile, $persdata_save);
 
-    if ($savefile == false) $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span><br />\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
-    else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
+    if ($savefile == false) $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span><br />\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
+    else $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
   }
-  else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span><br />\n".getescapedtext ($hcms_lang['there-are-insecure-functions-in-the-code'][$lang]).": <span style=\"color:red;\">".$persdata_check['found']."</span>";
+  else $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span><br />\n".getescapedtext ($hcms_lang['there-are-insecure-functions-in-the-code'][$lang]).": <span style=\"color:red;\">".$persdata_check['found']."</span>";
 }
 else
 {
@@ -159,7 +165,7 @@ if ($preview == "no")
 {
   $action = "pers_form.php";
 }
-elseif ($preview == "yes")
+else
 {
   $action = "";
 }
@@ -188,9 +194,7 @@ function openHelp ()
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-<?php
-echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;")
-?>
+<?php echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"); ?>
 
 <p class="hcmsHeadline"><?php echo $regpro; ?>: <?php echo getescapedtext ($pers_name); ?></p>
 
@@ -205,7 +209,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"
   <table class="hcmsTableNarrow" style="width:100%; border:1px solid #000000; margin:2px;">
     <tr>
       <td style="text-align:left;">
-        <?php if ($preview == "no") echo "<img onclick=\"hcms_showInfo ('savelayer', 0); document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>
+        <?php if ($preview == "no") echo "<img onclick=\"hcms_showFormLayer ('savelayer', 0); document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>
       </td>
       <td style="text-align:right; width:36px;">
         <img onClick="openHelp();" name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.png" class="hcmsButton hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" />

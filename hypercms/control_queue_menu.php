@@ -227,22 +227,7 @@ function jumpTo (target)
 <div class="hcmsToolbar">
   <form name="selectboxes" action="">
   <div class="hcmsToolbarBlock">
-    <?php
-    // QUEUE DELETE BUTTON
-    if ($queue_id != "" && (($queueuser != "" && checkrootpermission ('desktop')) || ($queueuser == "" && (checkrootpermission ('site') || checkrootpermission ('user')))))
-    {
-      echo 
-      "<img ".
-        "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-        "onClick=\"if (warning_delete()==true) submitTo('control_queue_menu.php', 'delete', 'controlFrame'); \" ".
-        "name=\"media_delete\" src=\"".getthemelocation()."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />\n";
-    }    
-    else
-    {
-      echo "<img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
-    }
-    ?>
-    <?php
+  <?php
     // QUEUE EDIT BUTTON
     // object
     if ($multiobject_count <= 1 && $page != "" && 
@@ -285,7 +270,21 @@ function jumpTo (target)
       echo "<img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
-    
+    <?php
+    // QUEUE DELETE BUTTON
+    if ($queue_id != "" && (($queueuser != "" && checkrootpermission ('desktop')) || ($queueuser == "" && (checkrootpermission ('site') || checkrootpermission ('user')))))
+    {
+      echo 
+      "<img ".
+        "class=\"hcmsButton hcmsButtonSizeSquare\" ".
+        "onClick=\"if (warning_delete()==true) submitTo('control_queue_menu.php', 'delete', 'controlFrame'); \" ".
+        "name=\"media_delete\" src=\"".getthemelocation()."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />\n";
+    }    
+    else
+    {
+      echo "<img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+    }
+    ?>
   </div>
   <div class="hcmsToolbarBlock">
     <?php
@@ -294,7 +293,8 @@ function jumpTo (target)
     
   </div>
   <div class="hcmsToolbarBlock">
-    <div style="padding:3px; float:left;"> 
+    <div style="padding:3px; float:left;">
+      <img src="<?php echo getthemelocation(); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
       <select name="site" onChange="jumpTo('parent.frames[\'mainFrame\']')" style="<?php if ($is_mobile) echo "40%"; else echo "220px"; ?>" title="<?php  echo getescapedtext ($hcms_lang['publication'][$lang]); ?> ">
         <option value=""><?php echo getescapedtext ($hcms_lang['all-publications'][$lang]); ?></option>
         <?php
@@ -331,8 +331,9 @@ function jumpTo (target)
     <?php if (getsession ('hcms_temp_user') == "" && (checkrootpermission ('site') || checkrootpermission ('user'))) { ?>
     
   </div>
-  <div class="hcmsToolbarBlock">    
+  <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
+      <img src="<?php echo getthemelocation(); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
       <select name="queueuser" onChange="jumpTo('parent.frames[\'mainFrame\']')" title="<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['all-users'][$lang]); ?></option>
         <?php

@@ -58,14 +58,14 @@ if ($action == "delete" && checktoken ($token, $user) && $message_id != "" && $m
       
       if ($result == true)
       {
-        $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
+        $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
         $add_onload = "parent.frames['mainFrame'].location.reload();";
         $multiobject = "";
         $message_id = "";
       }
       else
       {
-        $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span>";
+        $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span>";
         $add_onload = "";
       }      
     }
@@ -84,14 +84,28 @@ $token_new = createtoken ($user);
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
-function warning_delete()
+function startSearch ()
+{
+  if (document.forms['searchform'])
+  {
+    var form = document.forms['searchform'];
+
+    // load screen
+    if (parent.frames['mainFrame'].document.getElementById('hcmsLoadScreen')) parent.frames['mainFrame'].document.getElementById('hcmsLoadScreen').style.display='inline';
+    
+    // submit form
+    form.submit();
+  }
+}
+
+function warning_delete ()
 {
   check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-selected-entries'][$lang]); ?>"));
   
   return check;
 }
 
-function submitTo(url, action, target, features, width, height)
+function submitTo (url, action, target, features, width, height)
 {
   if (features == undefined)
   {
@@ -174,22 +188,6 @@ function submitTo(url, action, target, features, width, height)
 <div class="hcmsToolbar">
   <div class="hcmsToolbarBlock">
     <?php
-    // DELETE BUTTON
-    if ($message_id != "" && $messageuser != "" && checkrootpermission ('desktop'))
-    {
-      echo "
-      <img class=\"hcmsButton hcmsButtonSizeSquare\" ".
-      "onClick=\"if (warning_delete()==true) ".
-      "submitTo('control_message_menu.php', 'delete', 'controlFrame'); \" ".
-      "name=\"media_delete\" src=\"".getthemelocation()."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />";
-    }    
-    else
-    {
-      echo "
-      <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
-    }
-    ?>
-    <?php
     // EDIT BUTTON
     // mail
     if ($multiobject_count <= 1 && $message_id != "" && !empty ($mgmt_config['db_connect_rdbms']))
@@ -208,6 +206,22 @@ function submitTo(url, action, target, features, width, height)
       <img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
+    <?php
+    // DELETE BUTTON
+    if ($message_id != "" && $messageuser != "" && checkrootpermission ('desktop'))
+    {
+      echo "
+      <img class=\"hcmsButton hcmsButtonSizeSquare\" ".
+      "onClick=\"if (warning_delete()==true) ".
+      "submitTo('control_message_menu.php', 'delete', 'controlFrame'); \" ".
+      "name=\"media_delete\" src=\"".getthemelocation()."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />";
+    }    
+    else
+    {
+      echo "
+      <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+    }
+    ?>
   </div>
   
   <div class="hcmsToolbarBlock">
@@ -220,8 +234,8 @@ function submitTo(url, action, target, features, width, height)
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
       <form name="searchform" method="post" action="message_objectlist.php" target="mainFrame" style="margin:0; padding:0; border:0;">
-        <input type="text" name="search" style="float:left; width:200px; height:20px; padding:2px;" maxlength="200" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="" />
-        <img src="<?php echo getthemelocation(); ?>img/button_search.png" onclick="document.searchform.submit();" style="float:left; cursor:pointer; margin:2px 0px 2px -24px; width:22px; height:22px;" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+        <input type="text" name="search" onkeydown="if (hcms_enterKeyPressed(event)) startSearch();" style="float:left; width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" maxlength="400" placeholder="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" value="" />
+        <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" onclick="startSearch();" style="float:left; cursor:pointer; width:22px; height:22px; margin:5px 0px 3px -26px; " title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
       </form>
     </div>
   </div>

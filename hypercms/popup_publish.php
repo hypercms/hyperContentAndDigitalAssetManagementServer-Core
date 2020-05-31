@@ -118,7 +118,7 @@ if ($action != "" && valid_publicationname ($site) && $cat != "" && valid_locati
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 
-<link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
+<link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
 <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>

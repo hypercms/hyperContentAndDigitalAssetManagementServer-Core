@@ -104,14 +104,12 @@ $object_name = getlocationname ($site, $location, $cat, "path");
 <html>
 <head>
 <title>hyperCMS</title>
-<meta charset="utf-8" />
+<meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/jquery-fileupload.css" type="text/css" />
-
 <script src="javascript/main.js" type="text/javascript"></script>
-<!-- <script src="javascript/click.js" type="text/javascript"></script> -->
 <!-- JQuery -->
 <script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 <!-- JQuery UI -->

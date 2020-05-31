@@ -543,11 +543,13 @@ function submitlogin()
       localStorage.setItem('username', username);
       localStorage.setItem('password', password);
     }
-
-    // local load screen
-    if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='inline';
   
-    if (username.trim() != "" && password.trim() != "") return true;
+    if (username.trim() != "" && password.trim() != "")
+    {
+      // local load screen
+      if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='inline';
+      return true;
+    }
     else return false;
   }
   else return false;
@@ -573,7 +575,6 @@ function resetpassword()
     {
       // local load screen
       if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='inline';
-
       document.forms['login'].submit();
     }
     else return false;

@@ -133,7 +133,7 @@ function onlogon_pre ($user)
 
 // --------------------------------------------- on logon POST event ----------------------------------------------
 // this function will be executed for each user after logon
-function onlogon_post ($user, $result="")
+function onlogon_post ($user, $result)
 {
   global $eventsystem, $mgmt_config;
 
@@ -142,8 +142,8 @@ function onlogon_post ($user, $result="")
   
   // insert your program code here
 
-  // return true if successful
-  return true;
+  // return result array if successful
+  return $result;
 }
 
 // --------------------------------------------- on objectlist PRE event ----------------------------------------------

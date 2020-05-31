@@ -81,9 +81,38 @@ if ($pagedata != false)
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
+<script type="text/javascript">
+function openPopup (link, title)
+{
+  if (link != "")
+  {
+    document.getElementById('popupTitle').innerHTML = title;
+    document.getElementById('popupViewer').src = link;
+    hcms_minMaxLayer('popupLayer');
+  }
+}
+
+function closePopup ()
+{
+  document.getElementById('popupTitle').innerHTML = '';
+  document.getElementById('popupViewer').src = '<?php echo $mgmt_config['url_path_cms']; ?>loading.php';
+  hcms_minMaxLayer('popupLayer');
+}
+</script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
+
+<!-- popup (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
+<div id="popupLayer" class="hcmsInfoBox" style="position:fixed; left:50%; bottom:0px; z-index:-1; overflow:hidden; width:0px; height:0px; visibility:hidden;">
+  <div style="display:block; padding-bottom:5px;">
+    <div id="popupTitle" class="hcmsHeadline" style="float:left; margin:6px;"></div>
+    <div style="float:right;"><img name="closedailystatsviewer" src="<?php echo getthemelocation(); ?>img/button_close.png" onClick="closePopup();" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closedailystatsviewer','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" /></div>
+  </div>
+  <div style="width:100%; height:calc(100% - 42px);">
+    <iframe id="popupViewer" src="<?php echo $mgmt_config['url_path_cms']; ?>loading.php" style="width:100%; height:100%; border:1px solid #000000;"></iframe>
+  </div>
+</div>
 
 <!-- top bar -->
 <?php
@@ -189,6 +218,7 @@ if (!empty ($container_id))
     // views
     $view_axis[$i]['value'] = 0;
     $view_axis[$i]['text'] = "";
+    $view_axis[$i]['onclick'] = "";
     
     if (isset ($result_view) && is_array ($result_view)) 
     { 
@@ -202,12 +232,21 @@ if (!empty ($container_id))
    
           $view_axis[$i]['value'] = $view_axis[$i]['value'] + $row['count'];
           if (strpos (" ".$view_axis[$i]['text'].",", " ".$row['user'].",") === false) $view_axis[$i]['text'] .= $delimiter.$row['user'];
+
+          // container ID for link
+          if ($page == ".folder")
+          { 
+            if (strpos ("|".$view_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($view_axis[$i]['onclick']) < 2000) $view_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+          }
           
           // total
           $view_total_count = $view_total_count + $row['count'];
         }
       }
-      
+
+      // link for popup
+      if (!empty ($view_axis[$i]['onclick'])) $view_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($view_axis[$i]['onclick'], "|"))."', '".getescapedtext ($date_year."-".$date_month."-".$day." ".$hcms_lang['views'][$lang])."');";
+
       // bar text
       $view_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$view_axis[$i]['value']." ".getescapedtext ($hcms_lang['views'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$view_axis[$i]['text'];
     }
@@ -215,6 +254,7 @@ if (!empty ($container_id))
     // downloads
     $download_axis[$i]['value'] = 0;
     $download_axis[$i]['text'] = "";
+    $download_axis[$i]['onclick'] = "";
 
     if (isset ($result_download) && is_array ($result_download)) 
     { 
@@ -228,13 +268,22 @@ if (!empty ($container_id))
    
           $download_axis[$i]['value'] = $download_axis[$i]['value'] + $row['count'];
           if (strpos (" ".$download_axis[$i]['text'].",", " ".$row['user'].",") === false) $download_axis[$i]['text'] .= $delimiter.$row['user'];
+
+          // container ID for link
+          if ($page == ".folder")
+          {
+            if (strpos ("|".$download_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($download_axis[$i]['onclick']) < 2000) $download_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+          }
           
           // total
           $download_total_count = $download_total_count + $row['count'];
           $download_total_filesize = $download_total_filesize + $row['totalsize'];
         }
       }
-      
+
+      // link for popup
+      if (!empty ($download_axis[$i]['onclick'])) $download_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($download_axis[$i]['onclick'], "|"))."', '".getescapedtext ($date_year."-".$date_month."-".$day." ".$hcms_lang['downloads'][$lang])."');";
+
       // bar text
       $download_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$download_axis[$i]['value']." ".getescapedtext ($hcms_lang['downloads'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$download_axis[$i]['text'];
     }
@@ -242,6 +291,7 @@ if (!empty ($container_id))
     // uploads
     $upload_axis[$i]['value'] = 0;
     $upload_axis[$i]['text'] = "";
+    $upload_axis[$i]['onclick'] = "";
       
     if (isset ($result_upload) && is_array ($result_upload)) 
     {
@@ -255,13 +305,22 @@ if (!empty ($container_id))
                   
           $upload_axis[$i]['value'] = $upload_axis[$i]['value'] + $row['count'];
           if (strpos (" ".$upload_axis[$i]['text'].",", " ".$row['user'].",") === false) $upload_axis[$i]['text'] .= $delimiter.$row['user'];
+
+          // container ID for link
+          if ($page == ".folder")
+          {
+            if (strpos ("|".$upload_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($upload_axis[$i]['onclick']) < 2000) $upload_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+          }
      
           // total
           $upload_total_count = $upload_total_count + $row['count'];
           $upload_total_filesize = $upload_total_filesize + $row['totalsize'];
         }
       }
-      
+
+      // link for popup
+      if (!empty ($upload_axis[$i]['onclick'])) $upload_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($upload_axis[$i]['onclick'], "|"))."', '".getescapedtext ($date_year."-".$date_month."-".$day." ".$hcms_lang['uploads'][$lang])."');";
+
       // bar text
       $upload_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$upload_axis[$i]['value']." ".getescapedtext ($hcms_lang['uploads'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$upload_axis[$i]['text'];   
     }
@@ -349,7 +408,6 @@ if (!empty ($container_id))
   }
   ?>
   </div>
-  
 </div>
 
 <?php include_once ("include/footer.inc.php"); ?>

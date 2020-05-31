@@ -121,7 +121,7 @@ if (!empty ($mgmt_config['abs_path_data']))
   }
   
   // load hierarchy
-  $hierarchy = gethierarchy_defintion ($site);
+  $hierarchy = gethierarchy_definition ($site);
 
   // get text IDs from templates
   $attributes_all = array();

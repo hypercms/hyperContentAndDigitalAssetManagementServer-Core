@@ -43,7 +43,7 @@ $description = str_replace ("\t", "<br />", $description);
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script>
+<script type="text/javascript">
 function popupfocus ()
 {
   self.focus();

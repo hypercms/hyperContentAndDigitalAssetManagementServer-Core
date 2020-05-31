@@ -20,6 +20,7 @@ $login = url_encode (getrequest ("login", "objectname"));
 $location = url_encode (getrequest ("location", "url"));
 $virtual = url_encode (getrequest ("virtual", "numeric"));
 $search_dir = url_encode (getrequest ("search_dir", "url"));
+$container_id = url_encode (getrequest ("container_id", "url"));
 $search_expression = url_encode (getrequest ("search_expression", "url"));
 
 // ------------------------------ permission section --------------------------------
@@ -57,7 +58,7 @@ function openObjectView (location, object, view)
   if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
   
   // object view
-  hcms_showInfo('objectviewLayer',0);
+  hcms_showFormLayer('objectviewLayer',0);
 }
 
 function openPopup (link)
@@ -65,14 +66,14 @@ function openPopup (link)
   if (link != "")
   {
     document.getElementById('objectview').src = link;
-    hcms_showInfo('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer', 0);
   }
 }
 
 function closePopup ()
 {
   document.getElementById('objectview').src = '';
-  hcms_hideInfo('objectviewLayer');
+  hcms_hideFormLayer('objectviewLayer');
 }
 
 function openBrWindowLink (url, winName, features)
@@ -83,17 +84,22 @@ function openBrWindowLink (url, winName, features)
   }
   else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang]); ?>'));
 }
+
+function setSearchLocation (location, name)
+{
+  parent.setSearchLocation (location, name);
+}
 </script>
 </head>
 
-<body class="hcmsWorkplaceObjectlist" >
+<body class="hcmsWorkplaceObjectlist">
 
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
 
 <!-- popup for preview/live-view and forms (do not use nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="objectviewLayer" style="display:none;">
-  <div style="position:fixed; right:2px; top:2px; z-index:8001;">
+  <div style="position:fixed; right:2px; top:<?php if ($is_mobile) echo "2px;"; else echo "38px;"; ?>; z-index:8001;">
     <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
   </div>
   <div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> position:fixed; margin:0; padding:0; left:0; top:<?php if ($is_mobile) echo "0px;"; else echo "36px;"; ?> right:0; bottom:0; z-index:8000;">
@@ -128,7 +134,7 @@ if ($action == "base_search")
   // control
   echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:".$overflow.";\"></iframe>\n";
   // object list
-  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"search_objectlist.php?action=".$action."&site=".$site."&search_dir=".$search_dir."&search_expression=".$search_expression."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
+  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"search_objectlist.php?action=".$action."&site=".$site."&search_dir=".$search_dir."&search_expression=".$search_expression."&container_id=".$container_id."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar
   if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe></div>\n";
 }

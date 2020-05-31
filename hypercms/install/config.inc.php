@@ -673,6 +673,10 @@ $mgmt_config['requests_per_minute'] = 500;
 // Define lifetime of security token in seconds (min. 60 sec.)
 $mgmt_config['token_lifetime'] = 86400;
 
+// Support password
+// Set a support password for the support log file access
+$mgmt_config['support_pass'] = "";
+
 // Instances
 // Instances don't share the same database, internal and external repository.
 // Enable multiple hyperCMS instances by providing a path to the instance configuration directory.

@@ -22,8 +22,8 @@ $save = getrequest ("save");
 $delete_logo_top = getrequest ("delete_logo_top");
 $delete_logo = getrequest ("delete_logo");
 $delete_wallpaper = getrequest ("delete_wallpaper");
-$preview = getrequest ("preview");
 $portaluser = getrequest ("portaluser");
+$navigation = getrequest ("navigation", "array");
 $designtheme = getrequest ("designtheme");
 $primarycolor = getrequest ("primarycolor");
 $token = getrequest ("token");
@@ -41,6 +41,10 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 
 // check permissions
 if (!valid_publicationname ($site) || !checkglobalpermission ($site, 'template') || !checkglobalpermission ($site, 'tpl') || empty ($mgmt_config[$site]['portalaccesslink'])) killsession ($user);
+
+// edit permission defines view mode
+if (checkglobalpermission ($site, 'tpledit')) $preview = "no";
+else $preview = "yes";
 
 // check session of user
 checkusersession ($user);
@@ -109,7 +113,7 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
   if (!empty ($delete_wallpaper)) $_FILES['wallpaper']['delete'] = 1;
 
   // save template file
-  $result_save = editportal ($site, $template, $portaluser, $designtheme, $primarycolor, $_FILES, $formats, $user);
+  $result_save = editportal ($site, $template, $portaluser, $designtheme, $primarycolor, $_FILES, $navigation, $formats, $user);
   
   if ($result_save['result'] == false)
   {
@@ -124,6 +128,7 @@ else
   $primarycolor = "";
   $designtheme = "";
   $designuser = "";
+  $navigation = array();
   $format_img = array();
   $format_doc = array();
   $format_vid= array();
@@ -140,6 +145,9 @@ else
 
   $temp_array = getcontent ($templatedata, "<portaluser>");
   if (!empty ($temp_array[0])) $portaluser = $temp_array[0];
+
+  $temp_array = getcontent ($templatedata, "<navigation>");
+  if (!empty ($temp_array[0])) $navigation = explode ("|", $temp_array[0]);
 
   $temp_array = getcontent ($templatedata, "<downloadformats>");
 
@@ -212,6 +220,23 @@ function toggleCheckboxes (name, source)
   }
 }
 
+function switchLayer ()
+{
+  var form = document.forms['template_edit'];
+  var layer = document.getElementById('additionalLayer');
+
+  if (form.elements['portaluser'].value != '')
+  {
+    layer.style.height = 'auto';
+    layer.style.overflow = 'auto';
+  }
+  else
+  {
+    layer.style.overflow = 'hidden';
+    layer.style.height = '0px';
+  }
+}
+
 function deleteSelected (name)
 {
  var form = document.forms['template_edit'];
@@ -228,7 +253,7 @@ function savetemplate ()
 {
   if (document.forms['template_edit'])
   {
-    hcms_showInfo ('savelayer', 0); 
+    hcms_showFormLayer ('savelayer', 0); 
     document.forms['template_edit'].submit();
     return true;
   }
@@ -324,7 +349,7 @@ table.TableNarrow th, table.TableNarrow td
 </style>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onload="setwallpaper();">
+<body class="hcmsWorkplaceGeneric" onload="setwallpaper(); switchLayer();">
 
 <!-- saving --> 
 <div id="savelayer" class="hcmsLoadScreen"></div>
@@ -332,7 +357,7 @@ table.TableNarrow th, table.TableNarrow td
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
   <?php
-  echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;")
+  echo showmessage ($show, 650, 30, $lang, "position:fixed; left:15px; top:100px;")
   ?>
 
   <!-- form  -->
@@ -391,8 +416,8 @@ table.TableNarrow th, table.TableNarrow td
       <hr/><br/>
 
       <!-- Portal user -->
-      <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]." (".$hcms_lang['access-to-folders'][$lang].")"); ?></span><br/><br/>
-      <select name="portaluser" style="width:280px;">
+      <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]." (".$hcms_lang['permissions'][$lang].", ".$hcms_lang['access-to-folders'][$lang].")"); ?></span><br/><br/>
+      <select name="portaluser" onchange="switchLayer();" style="width:280px;">
         <option value=""><?php echo $hcms_lang['please-select-a-user'][$lang]; ?></option>
       <?php
       $user_array = getuserinformation ();
@@ -419,135 +444,160 @@ table.TableNarrow th, table.TableNarrow td
       </select>
       <hr/><br/>
 
-      <!-- Formats -->
-      <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?></span><br/><br/>     
-      <div id="formatsLayer" style="clear:right; scrolling:auto;">
-        <div style="padding:0px 10px 10px 0px; float:left;">
-          <span class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggleCheckboxes('format_img[]', this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label></span><br/>
-          <?php
-          if (is_array ($mgmt_imageoptions) && sizeof ($mgmt_imageoptions) > 0)
+      <div id="additionalLayer" style="height:0px; overflow:hidden;">
+        <!-- Portal navigation -->
+        <span class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggleCheckboxes('navigation[]', this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?></label></span><br/><br/>
+        <?php
+        if (!empty ($mgmt_config[$site]['taxonomy'])) echo "
+        <input name=\"navigation[]\" type=\"checkbox\" value=\"taxonomy\" ".(in_array ("taxonomy", $navigation) ? "checked=\"checked\"" : "")." /> <img src=\"".getthemelocation()."img/folder_taxonomy.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['taxonomy'][$lang])."<br/>";
+        
+        $hierarchy = gethierarchy_definition ($site);
+
+        if (is_array ($hierarchy) && sizeof ($hierarchy) > 0)
+        {
+          foreach ($hierarchy as $name => $level_array)
           {
-            $i = 1;
+            $name = getescapedtext ($name);
+            echo "
+            <input name=\"navigation[]\" type=\"checkbox\" value=\"".$name."\" ".(in_array ($name, $navigation) ? "checked=\"checked\"" : "")." /> <img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".$name." (".getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang]).")<br/>";
+          }
+        }
 
-            if (!empty ($format_img) && is_array ($format_img) && in_array ("original", $format_img)) $checked = "checked=\"checked\"";
-            else $checked = "";
+        echo "
+        <input name=\"navigation[]\" type=\"checkbox\" value=\"assets\" ".(in_array ("assets", $navigation) ? "checked=\"checked\"" : "")." /> <img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['assets'][$lang])."<br/>";
+        ?>
+        <hr/><br/>
 
-            echo "<label><input name=\"format_img[]\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
-            $i++;
-
-            foreach ($mgmt_imageoptions as $ext => $imageconfig_array)
+        <!-- Formats -->
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?></span><br/><br/>     
+        <div id="formatsLayer" style="clear:right; scrolling:auto;">
+          <div style="padding:0px 10px 10px 0px; float:left;">
+            <span class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggleCheckboxes('format_img[]', this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label></span><br/>
+            <?php
+            if (is_array ($mgmt_imageoptions) && sizeof ($mgmt_imageoptions) > 0)
             {
-              if (is_array ($imageconfig_array))
+              $i = 1;
+
+              if (!empty ($format_img) && is_array ($format_img) && in_array ("original", $format_img)) $checked = "checked=\"checked\"";
+              else $checked = "";
+
+              echo "<label><input name=\"format_img[]\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
+              $i++;
+
+              foreach ($mgmt_imageoptions as $ext => $imageconfig_array)
               {
-                $ext_array = explode (".", trim ($ext, "."));
-                $image_type = $ext_array[0];
-
-                foreach ($imageconfig_array as $image_config => $value)
+                if (is_array ($imageconfig_array))
                 {
-                  if ($image_config != "original" && $image_config != "thumbnail")
+                  $ext_array = explode (".", trim ($ext, "."));
+                  $image_type = $ext_array[0];
+
+                  foreach ($imageconfig_array as $image_config => $value)
                   {
-                    $file_info = getfileinfo ($site, "file".$ext, "comp");
+                    if ($image_config != "original" && $image_config != "thumbnail")
+                    {
+                      $file_info = getfileinfo ($site, "file".$ext, "comp");
 
-                    if (!empty ($format_img) && is_array ($format_img) && in_array ($image_type."|".$image_config, $format_img)) $checked = "checked=\"checked\"";
-                    else $checked = "";
+                      if (!empty ($format_img) && is_array ($format_img) && in_array ($image_type."|".$image_config, $format_img)) $checked = "checked=\"checked\"";
+                      else $checked = "";
 
-                    echo "<label><input name=\"format_img[]\" type=\"checkbox\" value=\"".$image_type."|".$image_config."\" ".$checked." /> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".strtoupper($image_type)." ".$file_info['type']." ".$image_config."</label><br />\n";
+                      echo "<label><input name=\"format_img[]\" type=\"checkbox\" value=\"".$image_type."|".$image_config."\" ".$checked." /> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".strtoupper($image_type)." ".$file_info['type']." ".$image_config."</label><br />\n";
 
-                    $i++;
+                      $i++;
+                    }
                   }
                 }
               }
             }
-          }
-          ?>
-        </div>
-        <div style="padding:0px 10px 10px 0px; float:left;">
-          <span class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggleCheckboxes('format_vid[]', this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label></span><br/>
-          <?php
-          if (is_array ($mgmt_mediaoptions) && sizeof ($mgmt_mediaoptions) > 0)
-          {
-            $i = 1;
-
-            if (!empty ($format_vid) && is_array ($format_vid) && in_array ("original", $format_vid)) $checked = "checked=\"checked\"";
-            else $checked = "";
-
-            echo "
-            <label><input name=\"format_vid[]\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />";
-            $i++;
-
-            if (!empty ($format_vid) && is_array ($format_vid) && in_array ("origthumb", $format_vid)) $checked = "checked=\"checked\"";
-            else $checked = "";
-
-            echo "
-            <label><input name=\"format_vid[]\" type=\"checkbox\" value=\"origthumb\" ".$checked." /> <img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['preview'][$lang])."</label><br />";
-            $i++;
-
-            if (!empty ($format_vid) && is_array ($format_vid) && in_array ("jpg", $format_vid)) $checked = "checked=\"checked\"";
-            else $checked = "";
-
-            echo "
-            <label><input name=\"format_vid[]\" type=\"checkbox\" value=\"jpg\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (JPG)</label><br />";
-            $i++;
-
-            if (!empty ($format_vid) && is_array ($format_vid) && in_array ("png", $format_vid)) $checked = "checked=\"checked\"";
-            else $checked = "";
-
-            echo "
-            <label><input name=\"format_vid[]\" type=\"checkbox\" value=\"png\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (PNG)</label><br />";
-            $i++;
-          }
-          ?>
-        </div>
-        <div style="padding:0px 10px 10px 0px; float:left;">
-          <span class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggleCheckboxes('format_doc[]', this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label></span><br/>
-          <?php 
-          if (is_array ($mgmt_docoptions) && sizeof ($mgmt_docoptions) > 0)
-          {
-            $print_first = "";
-            $print_next = "";
-            $i = 1;
-
-            if (!empty ($format_doc) && is_array ($format_doc) && in_array ("original", $format_doc)) $checked = "checked=\"checked\"";
-            else $checked = "";
-                 
-            echo "<label><input name=\"format_doc[]\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_txt.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
-            $i++;
-
-            foreach ($mgmt_docoptions as $ext => $value)
+            ?>
+          </div>
+          <div style="padding:0px 10px 10px 0px; float:left;">
+            <span class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggleCheckboxes('format_vid[]', this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label></span><br/>
+            <?php
+            if (is_array ($mgmt_mediaoptions) && sizeof ($mgmt_mediaoptions) > 0)
             {
-              if ($ext != "" && !is_image ("_".$ext))
-              {
-                $ext_array = explode (".", trim ($ext, "."));
-                $doc_type = $ext_array[0];
+              $i = 1;
 
-                $file_info = getfileinfo ($site, "file".$ext, "comp");
+              if (!empty ($format_vid) && is_array ($format_vid) && in_array ("original", $format_vid)) $checked = "checked=\"checked\"";
+              else $checked = "";
 
-                if (!empty ($format_doc) && is_array ($format_doc) && in_array ($doc_type, $format_doc)) $checked = "checked=\"checked\"";
-                else $checked = "";
+              echo "
+              <label><input name=\"format_vid[]\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />";
+              $i++;
 
-                $temp = "<label><input name=\"format_doc[]\" type=\"checkbox\" value=\"".$doc_type."\" ".$checked." /> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$file_info['type']." (".strtoupper($doc_type).")</label><br />\n";
+              if (!empty ($format_vid) && is_array ($format_vid) && in_array ("origthumb", $format_vid)) $checked = "checked=\"checked\"";
+              else $checked = "";
 
-                if (strtolower ($ext) == ".pdf") $print_first .= $temp;
-                else $print_next .= $temp;
+              echo "
+              <label><input name=\"format_vid[]\" type=\"checkbox\" value=\"origthumb\" ".$checked." /> <img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['preview'][$lang])."</label><br />";
+              $i++;
 
-                $i++;
-              }
+              if (!empty ($format_vid) && is_array ($format_vid) && in_array ("jpg", $format_vid)) $checked = "checked=\"checked\"";
+              else $checked = "";
+
+              echo "
+              <label><input name=\"format_vid[]\" type=\"checkbox\" value=\"jpg\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (JPG)</label><br />";
+              $i++;
+
+              if (!empty ($format_vid) && is_array ($format_vid) && in_array ("png", $format_vid)) $checked = "checked=\"checked\"";
+              else $checked = "";
+
+              echo "
+              <label><input name=\"format_vid[]\" type=\"checkbox\" value=\"png\" ".$checked." /> <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (PNG)</label><br />";
+              $i++;
             }
+            ?>
+          </div>
+          <div style="padding:0px 10px 10px 0px; float:left;">
+            <span class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggleCheckboxes('format_doc[]', this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label></span><br/>
+            <?php 
+            if (is_array ($mgmt_docoptions) && sizeof ($mgmt_docoptions) > 0)
+            {
+              $print_first = "";
+              $print_next = "";
+              $i = 1;
 
-            echo $print_first.$print_next;
-          }
-          ?>
+              if (!empty ($format_doc) && is_array ($format_doc) && in_array ("original", $format_doc)) $checked = "checked=\"checked\"";
+              else $checked = "";
+                  
+              echo "<label><input name=\"format_doc[]\" type=\"checkbox\" value=\"original\" ".$checked." /> <img src=\"".getthemelocation()."img/file_txt.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</label><br />\n";
+              $i++;
+
+              foreach ($mgmt_docoptions as $ext => $value)
+              {
+                if ($ext != "" && !is_image ("_".$ext))
+                {
+                  $ext_array = explode (".", trim ($ext, "."));
+                  $doc_type = $ext_array[0];
+
+                  $file_info = getfileinfo ($site, "file".$ext, "comp");
+
+                  if (!empty ($format_doc) && is_array ($format_doc) && in_array ($doc_type, $format_doc)) $checked = "checked=\"checked\"";
+                  else $checked = "";
+
+                  $temp = "<label><input name=\"format_doc[]\" type=\"checkbox\" value=\"".$doc_type."\" ".$checked." /> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$file_info['type']." (".strtoupper($doc_type).")</label><br />\n";
+
+                  if (strtolower ($ext) == ".pdf") $print_first .= $temp;
+                  else $print_next .= $temp;
+
+                  $i++;
+                }
+              }
+
+              echo $print_first.$print_next;
+            }
+            ?>
+          </div>
+          <div style="clear:both;"></div>
         </div>
-        <div style="clear:both;"></div>
+        <hr/><br/>
+
+        <!-- Portal access link -->
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['access-link'][$lang]); ?></span><br/><br/>
+        <span class="hcmsHeadlineTiny"><?php echo createportallink ($site, $templatename); ?></span>
+        <hr/><br/>
       </div>
-      <hr/><br/>
 
-      <!-- Portal access link -->
-      <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['access-link'][$lang]); ?></span><br/><br/>
-      <span class="hcmsHeadlineTiny"><?php echo createportallink ($site, $templatename); ?></span>
-      <hr/><br/>
-
-      <?php if (empty ($preview)) { ?>
+      <?php if ($preview == "no") { ?>
       <?php echo getescapedtext ($hcms_lang['save-and-preview'][$lang]); ?>
       <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="savetemplate();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /><br/>
       <?php } ?>

@@ -242,7 +242,7 @@ ob_end_flush();
 </div>
 
 <!-- initalize -->
-<script>
+<script type="text/javascript">
 // load screen
 if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';
 </script>

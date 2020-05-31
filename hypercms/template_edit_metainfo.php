@@ -35,7 +35,7 @@ checkusersession ($user);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
 function applyconstraints ()
 {
   var constraint = document.forms['valid'].elements['metainfo'].value; 

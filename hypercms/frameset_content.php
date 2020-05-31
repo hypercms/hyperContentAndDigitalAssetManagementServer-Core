@@ -81,7 +81,7 @@ function openPopup (link)
   if (link != "")
   {
     document.getElementById('objectview').src = link;
-    hcms_showInfo('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer',0);
   }
 }
 
@@ -93,7 +93,7 @@ function openObjectView (location, object, view)
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 
     document.getElementById('objectview').src = 'explorer_objectview.php?location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(object) + '&width=' + width + '&height=' + height + '&view=' + encodeURIComponent(view);
-    hcms_showInfo('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer',0);
   }
 }
 
@@ -105,7 +105,7 @@ function openimageview (link)
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 
     document.getElementById('objectview').src = 'explorer_imageview.php?link=' + encodeURIComponent(link) + '&width=' + width + '&height=' + height;
-    hcms_showInfo('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer',0);
   }
 }
 
@@ -114,14 +114,14 @@ function opengeoview (ip)
   if (ip != "")
   {
     document.getElementById('objectview').src = 'page_info_ip.php?ip=' + encodeURIComponent(ip);
-    hcms_showInfo('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer',0);
   }
 }
 
 function closePopup ()
 {
   document.getElementById('objectview').src = '';
-  hcms_hideInfo('objectviewLayer');
+  hcms_hideFormLayer('objectviewLayer');
 }
 
 var popupwindow;

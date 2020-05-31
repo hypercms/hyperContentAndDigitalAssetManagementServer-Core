@@ -16,7 +16,6 @@ require ("function/hypercms_api.inc.php");
 
 
 // input parameters
-$site = getrequest_esc ("site"); // site can be *Null*
 $site_name = getrequest_esc ("site_name", "publicationname");
 $site_parents = getrequest_esc ("site_parents");
 $inherit_obj_new = getrequest ("inherit_obj_new");
@@ -25,9 +24,6 @@ $inherit_tpl_new = getrequest ("inherit_tpl_new");
 $save = getrequest ("save");
 $preview = getrequest ("preview");
 $token = getrequest ("token");
-
-// publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
 // ------------------------------ permission section --------------------------------
 
@@ -44,7 +40,7 @@ $show = "";
 // save inheritance settings
 if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save == "yes" && checktoken ($token, $user))
 {
-  if ($site != "" && $site_name != "")
+  if ($site_name != "")
   {
     $inherit_db = inherit_db_load ($user);
   
@@ -145,7 +141,8 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
+
 function selectAll ()
 {
   var assigned = "";
@@ -256,15 +253,14 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 
 <form name="siteform" action="<?php echo $action; ?>" method="post">
   <input type="hidden" name="save" value="yes" />
-  <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="site_name" value="<?php echo $site_name; ?>" />
   <input type="hidden" name="site_parents" value="" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
   <table class="hcmsTableStandard">
     <?php
-    if ($site == "*Null*" && checkrootpermission ('site') && checkrootpermission ('siteedit'))
-    {    
+    if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
+    {
       echo "
     <tr>
       <td>

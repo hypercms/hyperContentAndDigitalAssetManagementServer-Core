@@ -42,7 +42,7 @@ $token_new = createtoken ($user);
   <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
   <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
 
-  <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
+  <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
   <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
   <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
   <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
@@ -356,12 +356,12 @@ $token_new = createtoken ($user);
     var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 
-    hcms_showInfo('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer',0);
   }
   
   function closePopup ()
   {
-    hcms_hideInfo('objectviewLayer');
+    hcms_hideFormLayer('objectviewLayer');
   }
   
   $(document).ready(function()
@@ -600,13 +600,13 @@ $token_new = createtoken ($user);
       
       <div id="LayerMenu" class="hcmsTabContainer" style="position:absolute; z-index:10; left:0px; top:40px; min-width:380px;">
         <div id="tab1" class="hcmsTabActive">
-          <a id="menu-Recipient" href="#" onClick="hcms_ElementbyIdStyle('tab1','hcmsTabActive'); hcms_ElementbyIdStyle('tab2','hcmsTabPassive'); hcms_ElementbyIdStyle('tab3','hcmsTabPassive'); hcms_ElementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','show','LayerGroup','hide','LayerSettings','hide'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?></a>
+          <a id="menu-Recipient" href="#" onClick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','show','LayerGroup','hide','LayerSettings','hide'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?></a>
         </div>
         <div id="tab2" class="hcmsTabPassive">
-          <a id="menu-Group" href="#" onClick="hcms_ElementbyIdStyle('tab1','hcmsTabPassive'); hcms_ElementbyIdStyle('tab2','hcmsTabActive'); hcms_ElementbyIdStyle('tab3','hcmsTabPassive'); hcms_ElementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','hide','LayerGroup','show','LayerSettings','hide'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?></a>
+          <a id="menu-Group" href="#" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','hide','LayerGroup','show','LayerSettings','hide'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?></a>
         </div>
         <div id="tab3" class="hcmsTabPassive">
-          <a id="menu-Settings" href="#" onClick="hcms_ElementbyIdStyle('tab1','hcmsTabPassive'); hcms_ElementbyIdStyle('tab2','hcmsTabPassive'); hcms_ElementbyIdStyle('tab3','hcmsTabActive'); hcms_ElementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','hide','LayerGroup','hide','LayerSettings','show'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?><span id="attention_settings" style="color:red; font-weight:bold; visibility:hidden;">!</span></a>
+          <a id="menu-Settings" href="#" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabActive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','hide','LayerGroup','hide','LayerSettings','show'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?><span id="attention_settings" style="color:red; font-weight:bold; visibility:hidden;">!</span></a>
         </div>
       </div>
       
@@ -1035,11 +1035,11 @@ $token_new = createtoken ($user);
                 <table class="hcmsTableStandard" style="margin:0px 0px 0px 16px;">
                   <tr>
                     <td><?php echo getescapedtext ($hcms_lang['start'][$lang]); ?> </td>
-                    <td><input type="text" name="task_startdate" id="task_startdate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_startdate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_startdate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /></td>
+                    <td><input type="text" name="task_startdate" id="task_startdate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_startdate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_startdate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" style="vertical-align:top;" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /></td>
                   </tr>
                   <tr>
                     <td><?php echo getescapedtext ($hcms_lang['end'][$lang]); ?> </td>
-                    <td><input type="text" name="task_enddate" id="task_enddate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_enddate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_enddate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /></td>
+                    <td><input type="text" name="task_enddate" id="task_enddate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_enddate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_enddate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" style="vertical-align:top;" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /></td>
                     </td>
                   </tr>
               </table>

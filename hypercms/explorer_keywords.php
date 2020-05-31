@@ -79,7 +79,7 @@ checkusersession ($user, false);
         }
         
         echo "
-    <tr class=\"".$rowcolor."\"><td style=\"text-align:left;\" title=\"".$keyword."\"><label><input type=\"checkbox\" onclick=\"startSearch('auto')\" name=\"search_textnode[]\" value=\"%keyword%/".$keyword_id."\" />&nbsp;".getescapedtext (showshorttext ($keyword, 16))."</label></td><td style=\"text-align:right;\">".$count."&nbsp;</td></tr>";
+    <tr class=\"".$rowcolor."\"><td style=\"text-align:left;\" title=\"".$keyword."\"><label><input type=\"checkbox\" onclick=\"startSearch('auto')\" name=\"search_textnode[]\" value=\"%keyword%/".$keyword_id."\" />&nbsp;".getescapedtext (showshorttext ($keyword, 32))."</label></td><td style=\"text-align:right;\">".$count."&nbsp;</td></tr>";
       }
     }
   }

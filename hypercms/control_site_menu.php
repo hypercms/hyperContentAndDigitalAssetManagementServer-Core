@@ -19,12 +19,8 @@ require_once ("language/".getlanguagefile ($lang));
 
 // input parameters
 $action = getrequest_esc ("action");
-$site = getrequest_esc ("site"); // site can be *Null*
 $site_name = getrequest_esc ("site_name"); // site can include get parameters
 $token = getrequest ("token"); 
-
-// publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
 // ------------------------------ permission section --------------------------------
 
@@ -40,21 +36,20 @@ $show = "";
 $add_onload = "";
 
 // include scripts
-if (checkrootpermission ('site') && checkrootpermission ('sitecreate') && $action == "site_create" && checktoken ($token, $user))
+if ($action == "site_create" && checkrootpermission ('site') && checkrootpermission ('sitecreate') && checktoken ($token, $user))
 {
   $result = createpublication ($site_name, $user);
-    
+
   $add_onload =  $result['add_onload'];
   $show = $result['message'];  
 }
-elseif (checkrootpermission ('site') && checkrootpermission ('sitedelete') && $action == "site_delete" && checktoken ($token, $user))
+elseif ($action == "site_delete" && checkrootpermission ('site') && checkrootpermission ('sitedelete') && checktoken ($token, $user))
 {
   $result = deletepublication ($site_name, $user);
   
   $add_onload =  $result['add_onload'];
   $show = $result['message'];  
 }
-
 // security token
 $token_new = createtoken ($user);
 ?>
@@ -67,11 +62,28 @@ $token_new = createtoken ($user);
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
-function warning_delete ()
+
+function selectpublication (selObj)
+{
+  if (selObj.options[selObj.selectedIndex].value != "")
+  {
+    <?php if (checkrootpermission ('siteedit')) { ?>
+    parent.frames['mainFrame'].location.href = 'frameset_site_edit.php?site_name=' + selObj.options[selObj.selectedIndex].value;
+    <?php } else { ?>
+    parent.frames['mainFrame'].location.href = 'site_edit_form.php?site_name=' + selObj.options[selObj.selectedIndex].value;
+    <?php } ?>
+  }
+  else
+  {
+    parent.frames['mainFrame'].location.href = 'empty.php';
+  }
+}
+
+function deletepublication ()
 {
   var form = document.forms['site_delete'];
   
-  if (form.elements['site_name'].value == "empty.php")
+  if (form.elements['site_name'].value == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-select-an-option'][$lang]); ?>"));
     return false;
@@ -138,6 +150,8 @@ function checkForm ()
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
+<?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
+
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
@@ -154,27 +168,58 @@ function checkForm ()
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar">
+<div class="hcmsToolbar" style="<?php if ($is_mobile) echo "380px;"; else echo "620px;"; ?>;">
+  <div class="hcmsToolbarBlock" style="padding:2px;">
+    <form name="site_delete" action="" method="post">
+      <input type="hidden" name="action" value="site_delete" />
+      <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+      <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
+      <select name="site_name" onChange="selectpublication(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>">
+        <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
+        <?php
+        $inherit_db = inherit_db_read ();
+        $item_options = array();
+
+        if ($inherit_db != false && sizeof ($inherit_db) > 0)
+        {
+          foreach ($inherit_db as $inherit_db_record)
+          {
+            if (!empty ($inherit_db_record['parent']) && !empty ($siteaccess) && is_array ($siteaccess) && in_array ($inherit_db_record['parent'], $siteaccess))
+            {
+              $inherit_db_record['parent'] = trim ($inherit_db_record['parent']);
+              $item_options[] = $inherit_db_record['parent'];
+            }              
+          }
+        }
+        
+        if (is_array ($item_options) && sizeof ($item_options) > 0)
+        {
+          natcasesort ($item_options);
+          reset ($item_options);
+          
+          foreach ($item_options as $value)
+          {
+            echo "
+            <option value=\"".url_encode($value)."\" ".($site_name == $value ? "selected=\"selected\"" : "").">".$value."</option>";
+          }
+        }
+        ?>
+      </select>
+    </form>
+  </div>
   <div class="hcmsToolbarBlock">
     <?php
     if (checkrootpermission ('site')  && checkrootpermission ('sitecreate'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','show','deletesiteLayer','','hide','editsiteLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation()."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','show');\" name=\"media_new\" src=\"".getthemelocation()."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_site_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
     ?>
     <?php
     if (checkrootpermission ('site')  && checkrootpermission ('sitedelete'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','hide','deletesiteLayer','','show','editsiteLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_delete\" src=\"".getthemelocation()."img/button_site_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deletepublication();\" name=\"media_delete\" src=\"".getthemelocation()."img/button_site_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_site_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
     ?>
-    <?php
-    if (checkrootpermission ('site')  && checkrootpermission ('siteedit'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','hide','deletesiteLayer','','hide','editsiteLayer','','show','hcms_messageLayer','','hide')\" name=\"media_edit\" src=\"".getthemelocation()."img/button_site_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />";}
-    else
-    {echo "<img src=\"".getthemelocation()."img/button_site_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
-    ?>
-    
   </div>
   <div class="hcmsToolbarBlock">
     <?php
@@ -186,114 +231,22 @@ function checkForm ()
   </div>
 </div>
 
-<?php
-echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
-?>
-
 <div id="createsiteLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden;">
 <form name="site_create" action="" method="post">
-  <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="site_create" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
   <table class="hcmsTableStandard" style="width:100%; height:60px;">
     <tr>
       <td>
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang])." ".getescapedtext ($hcms_lang['publication'][$lang]); ?></span><br />
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
         <span style="white-space:nowrap;">
-          <input type="text" name="site_name" maxlength="100" style="width:160px;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>" />
+          <input type="text" name="site_name" maxlength="100" style="width:160px;" placeholder="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>" />
           <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
       <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('createsiteLayer','','hide');" />
-      </td>        
-    </tr>
-  </table>
-</form>
-</div>
-
-<div id="deletesiteLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden;">
-<form name="site_delete" action="" method="post">
-  <input type="hidden" name="site" value="<?php echo $site; ?>" />
-  <input type="hidden" name="action" value="site_delete" />
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
-  
-  <table class="hcmsTableStandard" style="width:100%; height:60px;">
-    <tr>
-      <td style="white-space:nowrap;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang])." ".getescapedtext ($hcms_lang['publication'][$lang]); ?></span><br />
-        <span style="white-space:nowrap;">
-          <select name="site_name" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" style="width:160px;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>">
-            <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
-          <?php
-            if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ();
-            
-            $item_option_delete = array();
-            $item_option_edit = array();
-  
-            if ($inherit_db != false && sizeof ($inherit_db) > 0)
-            {
-              foreach ($inherit_db as $inherit_db_record)
-              {
-                if (!empty ($inherit_db_record['parent']) && !empty ($siteaccess) && is_array ($siteaccess) && in_array ($inherit_db_record['parent'], $siteaccess))
-                {
-                  $inherit_db_record['parent'] = trim ($inherit_db_record['parent']);
-                  if ($inherit_db_record['parent'] != $site) $item_option_delete[] = $inherit_db_record['parent'];
-                  $item_option_edit[] = $inherit_db_record['parent'];
-                }              
-              }
-            }
-            
-            if (is_array ($item_option_delete) && sizeof ($item_option_delete) > 0)
-            {
-              natcasesort ($item_option_delete);
-              reset ($item_option_delete);
-              
-              foreach ($item_option_delete as $delete_option)
-              {
-                echo "<option value=\"site_edit_form.php?site=".url_encode($site)."&preview=yes&site_name=".url_encode($delete_option)."\">".$delete_option."</option>\n";
-              }
-            }
-          ?>
-          </select>
-          <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-        </span>
-      </td>
-      <td style="width:38px; text-align:right; vertical-align:top;">
-        <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('deletesiteLayer','','hide');" />
-      </td>        
-    </tr>
-  </table>
-</form>
-</div>
-
-<div id="editsiteLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden;">
-<form name="site_edit" action="" method="post">
-  <input type="hidden" name="site" value="<?php echo $site; ?>" />
-  
-  <table class="hcmsTableStandard" style="width:100%; height:60px;">
-    <tr>
-      <td style="white-space:nowrap;">
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['edit'][$lang])." ".getescapedtext ($hcms_lang['publication'][$lang]); ?></span><br />
-        <select name="site_name" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" style="width:180px;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>">
-          <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
-          <?php
-          if (is_array ($item_option_edit) && sizeof ($item_option_edit) > 0)
-          {
-            natcasesort ($item_option_edit);
-            reset ($item_option_edit);
-            
-            foreach ($item_option_edit as $edit_option)
-            {
-              echo "<option value=\"frameset_site_edit.php?site=".url_encode($site)."&preview=no&site_name=".url_encode($edit_option)."\">".$edit_option."</option>\n";
-            }
-          }
-          ?>
-        </select>
-      </td>
-      <td style="width:38px; text-align:right; vertical-align:top;">
-        <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('editsiteLayer','','hide');" />
       </td>        
     </tr>
   </table>

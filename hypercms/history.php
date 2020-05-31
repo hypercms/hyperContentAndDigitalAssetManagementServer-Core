@@ -47,7 +47,7 @@ $year_template = Null;
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
 function submitform ()
 {
   var contentdate = document.forms['history'].elements['content_year'].value + "-" + document.forms['history'].elements['content_month'].value + "-" + document.forms['history'].elements['content_day'].value;
@@ -107,7 +107,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
 <!-- top bar -->
 <?php echo showtopbar ($hcms_lang['travel-through-time'][$lang], $lang); ?>
 
-<div style="background: url('<?php echo getthemelocation(); ?>img/backgrd_history.png') no-repeat left top; width:450px; min-height:450px; border:0; margin:0; padding:4px;">
+<div style="background:url('<?php echo getthemelocation(); ?>img/backgrd_history.png') no-repeat left top; background-size:contain; max-width:420px; min-height:450px; padding:4px;">
 <p><?php echo getescapedtext ($hcms_lang['here-you-can-start-your-journey-into-the-past'][$lang]); ?></p>
 <form name="history" action="" method="post">
   <input type="hidden" name="action" value="">
@@ -117,9 +117,9 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
   <table class="hcmsTableStandard">
     <tr> 
       <td>&nbsp;</td>
-      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['year'][$lang]); ?> </td>
-      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['month'][$lang]); ?> </td>
-      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['day'][$lang]); ?> </td>
+      <td style="white-space:nowrap; text-align:center;"><?php echo getescapedtext ($hcms_lang['year'][$lang]); ?></td>
+      <td style="white-space:nowrap; text-align:center;"><?php echo getescapedtext ($hcms_lang['month'][$lang]); ?></td>
+      <td style="white-space:nowrap; text-align:center;"><?php echo getescapedtext ($hcms_lang['day'][$lang]); ?></td>
     </tr>
     <tr> 
       <td><?php echo getescapedtext ($hcms_lang['show-the-content-online-on'][$lang]); ?> </td>
@@ -148,7 +148,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
           ?>
         </select>
       </td>
-      <td style="width:60px;">
+      <td>
         <select name="content_day">
           <?php 
           for ($d=1; $d<=31; $d++)
@@ -188,7 +188,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
           ?>
         </select>
       </td>
-      <td style="width:60px;">
+      <td>
         <select name="template_day">
           <?php 
           for ($d=1; $d<=31; $d++)
@@ -201,15 +201,13 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
         </select>
       </td>
     </tr>
-    <tr> 
-      <td style="white-space:nowrap;">&nbsp;</td>
-      <td colspan="3"><button type="button" name="ButtonSet" class="hcmsButtonGreen" style="width:98%" onClick="submitform();"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?></button></td>
-    </tr>
-    <tr>
-      <td style="white-space:nowrap;">&nbsp;</td>
-      <td colspan="3"><button type="button" name="ButtonClean" class="hcmsButtonOrange" style="width:98%" onClick="cleandate();"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?></button></td>
-    </tr>
   </table>
+  
+  <div style="margin-top:12px;">
+    <button type="button" name="ButtonSet" class="hcmsButtonGreen" style="width:98%; margin:4px 0px;" onClick="submitform();"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?></button>
+    <button type="button" name="ButtonClean" class="hcmsButtonOrange" style="width:98%; margin:4px 0px;" onClick="cleandate();"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?></button>
+  </style>
+
 </form>
 </div>
 

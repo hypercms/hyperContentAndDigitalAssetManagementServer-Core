@@ -63,12 +63,14 @@ $token_new = createtoken ($user);
 <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 
-<!-- JQuery (for AJAX geolocation set request) -->
-<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
-
  <!-- main library -->
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
+
+<!-- Jquery and Jquery UI Autocomplete (used for search box) -->
+<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
 
 <style>
 video#videoScreen
@@ -102,26 +104,6 @@ video#videoScreen
 
 // default height for logo spacer
 var spacerheight = 32;
-
-// callback for hcms_geolocation
-function hcms_geoposition (position)
-{
-  if (position)
-  {
-    var latitude = position.coords.latitude;
-    var longitude = position.coords.longitude;
-  }
-  else return false;
-  
-  if (latitude != "" && longitude != "")
-  {
-    // AJAX request to set geo location
-    $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/setgeolocation.php", {latitude: latitude, longitude: longitude});
-
-    return true;
-  }
-  else return false;
-}
 
 function insertOption (newtext, newvalue)
 {
@@ -281,14 +263,41 @@ function switchInfo (id)
     }
   }
 }
+
+function openPopup (link, title)
+{
+  if (link != "")
+  {
+    document.getElementById('popupTitle').innerHTML = title;
+    document.getElementById('popupViewer').src = link;
+    hcms_minMaxLayer('popupLayer');
+  }
+}
+
+function closePopup ()
+{
+  document.getElementById('popupTitle').innerHTML = '';
+  document.getElementById('popupViewer').src = '<?php echo $mgmt_config['url_path_cms']; ?>loading.php';
+  hcms_minMaxLayer('popupLayer');
+}
 </script>
 </head>
 
-<body onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>setwallpaper();">
+<body onload="setwallpaper();">
+
+<!-- popup (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
+<div id="popupLayer" class="hcmsHomeBox" style="position:fixed; left:50%; bottom:0px; z-index:-1; overflow:hidden; width:0px; height:0px; visibility:hidden;">
+  <div style="display:block; padding-bottom:5px;">
+    <div id="popupTitle" class="hcmsHeadline" style="float:left; margin:6px;"></div>
+    <div style="float:right;"><img name="closedailystatsviewer" src="<?php echo getthemelocation(); ?>img/button_close.png" onClick="closePopup();" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closedailystatsviewer','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" /></div>
+  </div>
+  <div style="width:100%; height:calc(100% - 42px);">
+    <iframe id="popupViewer" src="<?php echo $mgmt_config['url_path_cms']; ?>loading.php" style="width:100%; height:100%; border:1px solid #000000;"></iframe>
+  </div>
+</div>
 
 <!-- image background -->
-<div id="startScreen" class="hcmsStartScreen" style="position:fixed; z-index:-200;">
-</div>
+<div id="startScreen" class="hcmsStartScreen" style="position:fixed; z-index:-200;"></div>
 
 <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
 <!-- video background -->
@@ -377,6 +386,10 @@ function switchInfo (id)
     }
   }
   ?>
+
+  <!-- spacer -->
+  <div style="clear:both; display:block; height:10px;"></div>
+
 </div>
 
 <?php include_once ("include/footer.inc.php"); ?>

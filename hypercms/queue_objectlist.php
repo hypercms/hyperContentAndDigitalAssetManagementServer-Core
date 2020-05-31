@@ -166,7 +166,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
     
         $listview .= "
               <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
-                <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
+                <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:180px;\">
                   <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject.">
                     <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
                       <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$temp_object_name."</span>&nbsp;
@@ -175,11 +175,11 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
                 </td>";
                 
           if (!$is_mobile) $listview .= "
-                <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
-                <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
-                <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_action."</span></td>
-                <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_user."</span></td>";
+                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"padding-left:3px; width:100px;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
+                <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:200px;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
+                <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px; width:60px;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_action."</span></td>
+                <td id=\"h".$items_row."_5\" class=\"hcmsCol6 hcmsCell\" style=\"padding-left:3px; \"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_user."</span></td>";
                 
           $listview .= "
               </tr>";
@@ -204,7 +204,15 @@ else $objects_counted = 0;
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" type="text/javascript"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
+<style type="text/css">
+.hcmsCell
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
 <script type="text/javascript">
 
 // select area
@@ -256,7 +264,7 @@ function resizecols()
 function initalize ()
 {
   // resize columns
-  $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
 
   // select area
   selectarea = document.getElementById('selectarea');
@@ -305,25 +313,25 @@ function initalize ()
 </div>
 
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:3; visibility:visible;">
-  <table id="objectlist_head" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
+  <table id="objectlist_head" cols="6" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:180px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
       <?php if (!$is_mobile) { ?>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:100px; white-space:nowrap;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:100px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:200px; white-space:nowrap;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:200px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>
       </td> 
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:140px; white-space:nowrap;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:140px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>
       </td>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="width:60px; white-space:nowrap;">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell" style="width:60px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>
       </td>
-      <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader" style="white-space:nowrap;">
+      <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader hcmsCell">
         &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
       </td>
       <?php } ?>
@@ -331,7 +339,7 @@ function initalize ()
   </table>
   
   <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
-    <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;" cols="6">
+    <table id="objectlist" name="objectlist" cols="6" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
     <?php 
     echo $listview;
     ?>
@@ -349,7 +357,7 @@ if (empty ($mgmt_config['explorer_paging']) && $objects_total >= $end)
 ?>
 <!-- status bar incl. more button -->
 <div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&queueuser=".url_encode($queueuser)."&start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['objects'][$lang]) : ""); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <?php
@@ -363,7 +371,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 ?>
 <!-- status bar incl. previous and next buttons -->
 <div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&queueuser=".url_encode($queueuser)."&start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['objects'][$lang]) : ""); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&queueuser=".url_encode($queueuser)."&start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
@@ -379,7 +387,7 @@ else
 ?>
 <!-- status bar -->
 <div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
-  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['objects'][$lang]) : ""); ?></div>
 </div>
 <?php
 }

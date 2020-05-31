@@ -39,7 +39,15 @@ else $logfile = "";
 <script type="text/javascript" src="../../../javascript/click.js"></script>
 <script type="text/javascript" src="../../../javascript/main.js"></script>
 <script type="text/javascript" src="../../../javascript/jquery/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="../../../javascript/jquery/plugins/colResizable-1.5.min.js"></script>
+<script type="text/javascript" src="../../../javascript/jquery/plugins/colResizable.min.js"></script>
+<style type="text/css">
+.hcmsCell
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
 <script type="text/javascript">
 function submitToWindow (url, description, windowname, features, width, height)
 {
@@ -74,6 +82,12 @@ function resizecols()
   $('.hcmsCol4').width(c4);
   $('.hcmsCol5').width(c5);
 }
+
+function initalize ()
+{
+  // resize columns
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
+}
 </script>
 </head>
 
@@ -81,22 +95,22 @@ function resizecols()
 
 <!-- Table Header -->
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; width:100%; z-index:1; visibility:visible;">
-  <table id="objectlist_head" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;">  
+  <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;">  
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:105px; white-space:nowrap;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:105px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>
       </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:120px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>
       </td>
       <?php if (!$is_mobile) { ?>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:180px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['source'][$lang]); ?>
       </td>
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:55px; white-space:nowrap;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:55px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['code'][$lang]); ?>
       </td>    
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="white-space:nowrap;">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell">
         &nbsp; <?php echo getescapedtext ($hcms_lang['description'][$lang]); ?>
       </td>
       <?php } ?>   
@@ -104,7 +118,7 @@ function resizecols()
   </table>
 
   <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:0px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
-    <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
+    <table id="objectlist" name="objectlist" cols="5" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
 <?php
 if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 {
@@ -157,12 +171,12 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 
       echo "
       <tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top;\">
-        <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:105px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', '600', '400');\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\" />&nbsp; ".$type_name."</a></td>
-        <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>\n";
+        <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:105px;\"><a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', '600', '400');\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\" />&nbsp;".$type_name."</a></td>
+        <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"padding-left:3px; width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>\n";
         if (!$is_mobile) echo "
-        <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$source."</td>
-        <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$errorcode."</td>
-        <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', 600, 400);\">".$description_short."</a></td>
+        <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:180px;\">".$source."</td>
+        <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:55px;\">".$errorcode."</td>
+        <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px;\"><a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', 600, 400);\">".$description_short."</a></td>
       </tr>"; 
 
       $items_row++;
@@ -183,7 +197,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 
 <!-- initalize -->
 <script type="text/javascript">
-$("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+initalize();
 </script>
 
 <?php include_once ($mgmt_config['abs_path_cms']."include/footer.inc.php"); ?>

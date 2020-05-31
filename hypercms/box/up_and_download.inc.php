@@ -71,6 +71,7 @@ if (isset ($siteaccess) && is_array ($siteaccess))
           // views
           $view_axis[$i]['value'] = 0;
           $view_axis[$i]['text'] = "";
+          $view_axis[$i]['onclick'] = "";
           
           if (isset ($result_view) && is_array ($result_view)) 
           {
@@ -84,12 +85,18 @@ if (isset ($siteaccess) && is_array ($siteaccess))
          
                 $view_axis[$i]['value'] = $view_axis[$i]['value'] + $row['count'];
                 if (strpos (" ".$view_axis[$i]['text'].",", " ".$row['user'].",") === false) $view_axis[$i]['text'] .= $delimiter.$row['user'];
+
+                // container ID for link
+                if (strpos ("|".$view_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($view_axis[$i]['onclick']) < 2000) $view_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
                 
                 // total
                 $view_total_count = $view_total_count + $row['count'];
               }
             }
-            
+
+            // link for popup
+            if (!empty ($view_axis[$i]['onclick'])) $view_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($view_axis[$i]['onclick'], "|"))."', '".getescapedtext ($date_year."-".$date_month."-".$day." ".$hcms_lang['views'][$lang])."');";
+
             // bar text
             $view_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$view_axis[$i]['value']." ".getescapedtext ($hcms_lang['views'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$view_axis[$i]['text'];
           }
@@ -97,6 +104,7 @@ if (isset ($siteaccess) && is_array ($siteaccess))
           // downloads
           $download_axis[$i]['value'] = 0;
           $download_axis[$i]['text'] = "";
+          $download_axis[$i]['onclick'] = "";
       
           if (is_array ($result_download)) 
           {
@@ -110,13 +118,19 @@ if (isset ($siteaccess) && is_array ($siteaccess))
          
                 $download_axis[$i]['value'] = $download_axis[$i]['value'] + $row['count'];
                 if (strpos (" ".$download_axis[$i]['text'].",", " ".$row['user'].",") === false) $download_axis[$i]['text'] .= $delimiter.$row['user'];
+
+                // container ID for link
+                if (strpos ("|".$download_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($download_axis[$i]['onclick']) < 2000) $download_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
                 
                 // total
                 $download_total_count = $download_total_count + $row['count'];
                 $download_total_filesize = $download_total_filesize + $row['totalsize'];
               }
             }
-            
+
+            // link for popup
+            if (!empty ($download_axis[$i]['onclick'])) $download_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($download_axis[$i]['onclick'], "|"))."', '".getescapedtext ($date_year."-".$date_month."-".$day." ".$hcms_lang['downloads'][$lang])."');";
+
             // bar text
             $download_axis[$i]['text'] = showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang])."   \n".$download_axis[$i]['value']." ".$hcms_lang['downloads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$download_axis[$i]['text'];
           }
@@ -124,6 +138,7 @@ if (isset ($siteaccess) && is_array ($siteaccess))
           // uploads
           $upload_axis[$i]['value'] = 0;
           $upload_axis[$i]['text'] = "";
+          $upload_axis[$i]['onclick'] = "";
             
           if (is_array ($result_upload)) 
           {
@@ -137,13 +152,19 @@ if (isset ($siteaccess) && is_array ($siteaccess))
                         
                 $upload_axis[$i]['value'] = $upload_axis[$i]['value'] + $row['count'];
                 if (strpos (" ".$upload_axis[$i]['text'].",", " ".$row['user'].",") === false) $upload_axis[$i]['text'] .= $delimiter.$row['user'];
-           
+
+                // container ID for link
+                if (strpos ("|".$upload_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($upload_axis[$i]['onclick']) < 2000) $upload_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+
                 // total
                 $upload_total_count = $upload_total_count + $row['count'];
                 $upload_total_filesize = $upload_total_filesize + $row['totalsize'];
               }
             }
-            
+
+            // link for popup
+            if (!empty ($upload_axis[$i]['onclick'])) $upload_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($upload_axis[$i]['onclick'], "|"))."', '".getescapedtext ($date_year."-".$date_month."-".$day." ".$hcms_lang['uploads'][$lang])."');";
+
             // bar text
             $upload_axis[$i]['text'] = showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang])."   \n".$upload_axis[$i]['value']." ".$hcms_lang['uploads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$upload_axis[$i]['text'];   
           }

@@ -460,7 +460,7 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
           <div id=\"message_text\">".$show."</div>
         </td>
         <td style=\"width:36px; text-align:right; vertical-align:top; padding:3px; margin:0;\">
-          <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"hcms_switchInfo('".$id."');\" />
+          <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"hcms_switchFormLayer('".$id."');\" />
         </td>
       <tr>
     </table>
@@ -526,14 +526,14 @@ function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
           ".$show."
         </td>
         <td style=\"width:36px; text-align:right; vertical-align:top; padding:0; margin:0;\">
-          <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"localStorage.setItem('".$id."','no'); hcms_switchInfo('".$id."');\" />
+          <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"localStorage.setItem('".$id."','no'); hcms_switchFormLayer('".$id."');\" />
         </td>
       <tr>
     </table>
   </div>
   <script type=\"text/javascript\">
-  var hcms_showinfobox = localStorage.getItem('".$id."') || 'yes';
-  if (hcms_showinfobox=='yes') document.getElementById('".$id."').style.display='inline';
+  var hcms_showFormLayerbox = localStorage.getItem('".$id."') || 'yes';
+  if (hcms_showFormLayerbox=='yes') document.getElementById('".$id."').style.display='inline';
   else document.getElementById('".$id."').style.display='none';
   </script>";
   }
@@ -831,6 +831,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
   // define flash media type (only executables)
   $swf_ext = ".swf.dcr";
+
+  // define media ratio (W/H > ratio) to switch from 360 degree to horizontal panoramic view (wider image => use horizontal degree view)
+  $switch_panoview = 3.5;
 
   // define document type extensions that are convertable into pdf or which the document viewer (google doc viewer) can display
   // use main config setting $mgmt_docconvert since version 8.0.5
@@ -1517,7 +1520,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       }
     }
 
-		$(document).ready(function(){
+    $(document).ready(function(){
       // set annotation image file name
       $('#medianame').val('".$annotation_page."');
 
@@ -1540,8 +1543,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           hcms_downloadURI (data, 'annotation.jpg');
         });
       });
-		});
-	</script>
+    });
+  </script>
   ";
           }
         }
@@ -1774,11 +1777,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               if ($width_diff <= 0) $width_diff = 0;
 
               if (!$is_mobile) $mediaview .= "
-              <div id=\"view360\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; margin-left:-2px; width:".intval($width_annotation + $width_diff + 4)."px; height:".intval($height_annotation + 42)."px;\">
+              <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; margin-left:-2px; width:".intval($width_annotation + $width_diff + 4)."px; height:".intval($height_annotation + 42)."px;\">
                 <div style=\"position:absolute; right:4px; top:4px; z-index:9011;\">
-                  <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchInfo ('view360');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
+                  <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer ('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
                 </div>
-                <iframe src=\"".$mgmt_config['url_path_cms']."media_360view.php?type=image&link=".url_encode($preview_image)."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
+                <iframe src=\"".$mgmt_config['url_path_cms']."media_360view.php?type=image&link=".url_encode($preview_image).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
               </div>";
               $mediaview .= "
               <div id=\"annotationFrame\" style=\"margin-top:40px; width:".intval($width_annotation + $width_diff)."px; height:".intval($height_annotation + 8)."px;\">
@@ -1788,17 +1791,17 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <div id=\"annotation\" style=\"position:relative;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, 'annotation');\" onmousedown=\"$('.hcmsFace').hide(); $('.hcmsFaceName').hide();\" onmouseup=\"$('.hcmsFace').show(); $('.hcmsFaceName').show();\"" : "")." class=\"".$class."\"></div>
               </div>";
             }
-            // image with makers only (no annotations) 
+            // image with face/object markers only (no annotations) 
             else
             {
               $preview_image = createviewlink ($site, $mediafile, $medianame, true);
 
               if (!$is_mobile) $mediaview .= "
-              <div id=\"view360\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; ".$style."\">
+              <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; ".$style."\">
                 <div style=\"position:absolute; right:4px; top:4px; z-index:9011;\">
-                  <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchInfo ('view360');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
+                  <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer ('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
                 </div>
-                <iframe src=\"".$mgmt_config['url_path_cms']."media_360view.php?type=image&link=".url_encode($preview_image)."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowfullscreen ></iframe>
+                <iframe src=\"".$mgmt_config['url_path_cms']."media_360view.php?type=image&link=".url_encode($preview_image).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowfullscreen ></iframe>
               </div>";
               $mediaview .= "
               <div id=\"annotation\" style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, '".$id."');\"" : "")."><img src=\"".$preview_image."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" style=\"".$style."\" /></div>";
@@ -1852,7 +1855,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             <td style=\"text-align:left; padding-top:10px;\">
               <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType === 'function') setSaveType('imagerendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>";
           if (!$is_mobile) $mediaview .= "
-              <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof hideFaceOnImage === 'function') hideFaceOnImage(); hcms_switchInfo ('view360');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> ".getescapedtext ("360 ".$hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>";
+              <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof hideFaceOnImage === 'function') hideFaceOnImage(); hcms_switchFormLayer ('hcms360View');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> 360° ".getescapedtext ($hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>";
           $mediaview .= "
               <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType === 'function') setSaveType('imageviewerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
             </td>
@@ -1874,7 +1877,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediaview .= "
           <tr>
             <td style=\"text-align:left; padding-top:10px;\">
-              <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof hideFaceOnImage === 'function') hideFaceOnImage(); hcms_switchInfo ('view360');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> ".getescapedtext ("360 ".$hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>
+              <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof hideFaceOnImage === 'function') hideFaceOnImage(); hcms_switchFormLayer ('hcms360View');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> 360° ".getescapedtext ($hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>
             </td>
           </tr>";
         }
@@ -1915,7 +1918,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
           $mediaview .= "
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
-	<script>
+	<script type=\"text/javascript\">
     // set annotation buttons
     function setAnnotationButtons ()
     {
@@ -1993,7 +1996,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       document.getElementById('zoomlayer').style.display='inline';
     }
 
-		$(document).ready(function(){
+    $(document).ready(function(){
 
       // set annotation image file name
       $('#medianame').val('".$annotation_file."');
@@ -2017,8 +2020,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           hcms_downloadURI (data, 'annotation.jpg');
         });
       });
-		});
-	</script>
+    });
+  </script>
   ";
         }
       }
@@ -2297,11 +2300,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $width_diff = 500 - intval($mediawidth);
         if ($width_diff <= 0) $width_diff = 0;
 
-        if (!empty ($mgmt_config['facedetection']) && $viewtype == "preview") $style = "width:".intval($mediawidth + $width_diff + 4)."px; height:".intval($mediaheight + 72)."px;";
+        if (!empty ($mgmt_config['facedetection']) && $viewtype == "preview") $style = "width:".intval($mediawidth + $width_diff + 4)."px; height:".intval($mediaheight + 42)."px;";
         else $style = "width:".intval($mediawidth)."px; height:".intval($mediaheight)."px;";
 
         // link for 360 view
-        $link360 = $mgmt_config['url_path_cms']."media_360view.php?type=video&link=".url_encode($preview_video);
+        $link360 = $mgmt_config['url_path_cms']."media_360view.php?type=video&link=".url_encode($preview_video).($mediaratio > $switch_panoview ? "&view=horizontal" : "");
 
         $mediaview .= "
         <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
@@ -2309,12 +2312,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             <td style=\"text-align:left;\">";
 
         if ((!empty ($video_file)) && !$is_mobile) $mediaview .= "
-            <div id=\"view360\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; margin-left:-2px; ".$style."\">
+            <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; margin-left:-2px; ".$style."\">
               <div style=\"position:absolute; right:4px; top:4px; z-index:9011;\">
-                <img name=\"hcms_mediaClose\" onClick=\"hcms_switchInfo ('view360'); document.getElementById('view360player').src='';\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
+                <img name=\"hcms_mediaClose\" onClick=\"hcms_switchFormLayer ('hcms360View'); document.getElementById('hcms360videoplayer').src='';\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
               </div>
-              <iframe id=\"view360player\" src=\"\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
-          </div>";
+              <iframe id=\"hcms360videoplayer\" src=\"\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
+            </div>";
 
         $mediaview .= "
             <!-- video player begin -->
@@ -2374,7 +2377,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $mediaview .= "
                 <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>";
             if (!$is_mobile) $mediaview .= "
-                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (document.getElementById('view360player').src!='".$link360."') document.getElementById('view360player').src='".$link360."'; else document.getElementById('view360player').src=''; hcms_switchInfo ('view360');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> ".getescapedtext ("360 ".$hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>";
+                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (document.getElementById('hcms360videoplayer').src!='".$link360."') document.getElementById('hcms360videoplayer').src='".$link360."'; else document.getElementById('hcms360videoplayer').src=''; hcms_switchFormLayer ('hcms360View');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> 360° ".getescapedtext ($hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>";
             $mediaview .= "
                 <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
               </div>";
@@ -2394,7 +2397,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             $mediaview .= "
               <div style=\"padding-top:10px;\">
-                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof hideFaceOnVideo === 'function') hideFaceOnVideo(); if (document.getElementById('view360player').src!='".$link360."') document.getElementById('view360player').src='".$link360."'; else document.getElementById('view360player').src=''; hcms_switchInfo ('view360');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> ".getescapedtext ("360 ".$hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>
+                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof hideFaceOnVideo === 'function') hideFaceOnVideo(); if (document.getElementById('hcms360videoplayer').src!='".$link360."') document.getElementById('hcms360videoplayer').src='".$link360."'; else document.getElementById('hcms360videoplayer').src=''; hcms_switchFormLayer ('hcms360View');\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsIconList\" /> 360° ".getescapedtext ($hcms_lang['preview'][$lang], $hcms_charset, $lang)."</button>
               </div>";
           }
         }
@@ -2990,7 +2993,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 // output: explorer with search / false on error
 
 // description:
-// Creates component explorer including the search form
+// Creates the component explorer including the search form and upload function
 
 function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="multi", $search_expression="", $search_format="", $mediatype="", $lang="en", $callback="", $scalingfactor="1", $view="list", $thumbsize=100)
 {
@@ -3147,7 +3150,7 @@ function submitForm ()
   if (document.forms['searchform_general'])
   {
     var form = document.forms['searchform_general'];
-    if (form.elements['search_expression'].value != '') form.submit();
+    form.submit();
   }
 }
 
@@ -3200,6 +3203,7 @@ $(document).ready(function()
     <div id=\"searchForm\" style=\"padding:2px; width:100%;\">
       <form name=\"searchform_general\" method=\"post\" action=\"\">
         <input type=\"hidden\" name=\"dir\" value=\"".$dir_esc."\" />
+        <input type=\"hidden\" name=\"view\" value=\"".$view."\" />
         <input type=\"hidden\" name=\"site\" value=\"".$site."\" />
         <input type=\"hidden\" name=\"location\" value=\"".$location_esc."\" />
         <input type=\"hidden\" name=\"page\" value=\"".$page."\" />
@@ -3208,11 +3212,11 @@ $(document).ready(function()
         <input type=\"hidden\" name=\"lang\" value=\"".$lang."\" />
         <input type=\"hidden\" name=\"callback\" value=\"".$callback."\" />
 
-        <input type=\"text\" name=\"search_expression\" id=\"search_expression\" placeholder=\"".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."\" value=\"".($search_expression != "" ? html_encode ($search_expression) : "")."\" 
-        style=\"width:184px;\" maxlength=\"200\" onclick=\"showOptions();\" /><img name=\"SearchButton\" src=\"".getthemelocation()."img/button_ok.png\" onClick=\"submitForm();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_ok_over.png',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"OK\" title=\"OK\" />";
+        <input type=\"text\" name=\"search_expression\" id=\"search_expression\" placeholder=\"".getescapedtext ($hcms_lang['search'][$lang], $hcms_charset, $lang)."\" value=\"".(!empty ($search_expression) ? html_encode ($search_expression) : "")."\" ".
+        "style=\"width:184px;\" maxlength=\"200\" onclick=\"showOptions();\" /><img name=\"SearchButton\" src=\"".getthemelocation()."img/button_ok.png\" onClick=\"submitForm();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_ok_over.png',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"OK\" title=\"OK\" />";
 
       // search options
-      if (($compcat == "media" && $mediatype == "") || $mgmt_config[$site]['dam']) $result .= "
+      if (($compcat == "media" && $mediatype == "") || !empty ($mgmt_config[$site]['dam'])) $result .= "
         <div id=\"searchOptions\" class=\"hcmsInfoBox\" style=\"width:184px; margin:2px 0px 8px 0px; display:none;\">
           &nbsp;<b>".$hcms_lang['search-for-file-type'][$lang]."</b><br />
           <input type=\"checkbox\" name=\"search_format[object]\" value=\"comp\" checked=\"checked\" />".$hcms_lang['components'][$lang]."<br />
@@ -3261,7 +3265,7 @@ $(document).ready(function()
     }
 
     // -------------------------------- search results ------------------------------------
-    if ($search_expression != "")
+    if (trim ($search_expression) != "")
     {
       if ($mediatype != "") $search_format = array ($mediatype);
 
@@ -3376,11 +3380,11 @@ $(document).ready(function()
             {
               if ($callback == "") $result .= "
             <tr>
-              <td style=\"".($view == "gallery" ? "text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\" title=\"".$location_name."\">".$thumbnail.showshorttext($folder_info['name'], 20)."</a></td>
+              <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\" title=\"".$location_name."\">".$thumbnail.showshorttext($folder_info['name'], 20)."</a></td>
             </tr>";
               else $result .= "
             <tr>
-              <td style=\"text-align:left; vertical-align:bottom; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\" title=\"".$location_name."\">".$thumbnail.showshorttext($folder_info['name'], 20)."</a></td>
+              <td style=\"width:28px; text-align:left; vertical-align:bottom; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\" title=\"".$location_name."\">".$thumbnail.showshorttext($folder_info['name'], 20)."</a></td>
             </tr>";
             }
           }
@@ -3427,8 +3431,9 @@ $(document).ready(function()
               else $alert = "test = true;";
 
               // thumbnail of media asset 
-              $objectinfo = getobjectinfo ($site, $dir, getobject ($object));
+              $objectinfo = getobjectinfo ($site, getlocation ($object), getobject ($object));
 
+              // gallery view
               if ($view == "gallery" && !empty ($objectinfo['media']))
               {
                 $mediafile = $objectinfo['media'];
@@ -3440,6 +3445,7 @@ $(document).ready(function()
                 // use thumbnail preview
                 if (is_file ($mediadir.$thumbnailfile))
                 {
+                  /* deprecated since version 8.1.3 due to performance issues when reading all thumbnail files in order to collect their dimensions
                   $imgsize = getimagesize ($mediadir.$thumbnailfile);
 
                   // calculate image ratio to define CSS for image container div-tag
@@ -3447,28 +3453,33 @@ $(document).ready(function()
                   {
                     $imgwidth = $imgsize[0];
                     $imgheight = $imgsize[1];
-                    $imgratio = $imgwidth / $imgheight; 
+                    $imgratio = $imgwidth / $imgheight;
 
-                    // image width >= height
-                    if ($imgratio >= 1) $ratio = "width:".$thumbsize."px;";
-                    // image width < height
-                    else $ratio = "height:".$thumbsize."px;";
+                    // if thumbnail is smaller than defined thumbnail size
+                    if ($imgwidth < $thumbsize && $imgheight < $thumbsize)
+                    {
+                      $style_size = "width:".$imgwidth."px; height:".$imgheight."px;";
+                    }
+                    else
+                    {
+                      // image width >= height
+                      if ($imgratio >= 1) $style_size = "width:".$thumbsize."px; height:".round(($imgheight / $imgratio), 0)."px;";
+                      // image width < height
+                      else $style_size = "width:".round(($imgwidth * $imgratio), 0)."px; height:".$thumbsize."px;";
+                    }
                   }
                   // default value
                   else
                   {
-                    $ratio = "width:".$thumbsize."px;";
+                    $style_size = "width:".$thumbsize."px;";
                   }
-
-                  // if thumbnail is smaller than defined thumbnail size
-                  if ($imgwidth < $thumbsize && $imgheight < $thumbsize) $style_size = "";
-                  else $style_size = $ratio;
+                  */
 
                   // listview - view option for un/published objects
                   if ($comp_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
                   else $class_image = "class=\"lazyload hcmsImageItem\"";
 
-                  $thumbnail = "<img data-src=\"".createviewlink ($site, $thumbnailfile, $objectinfo['name'])."\" ".$class_image." style=\"margin-top:10px; ".$style_size."\" /><br/>";
+                  $thumbnail = "<img data-src=\"".createviewlink ($site, $thumbnailfile, $objectinfo['name'])."\" ".$class_image." style=\"margin-top:10px;\" /><br/>";
                 }
                 // use standard file icon as thumbnail
                 else
@@ -3477,46 +3488,57 @@ $(document).ready(function()
                   if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
                   else $class_image = "";
 
-                  $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." style=\"margin-top:10px; width:".$thumbsize."px;\" /><br/>";
+                  $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." style=\"margin-top:10px; width:".$thumbsize."px; height:".$thumbsize."px;\" /><br/>";
                 }
               }
-              // use standard file icon as thumbnail for list view
+              // use standard file icon if it is not a media object 
               else
               {
-                // listview - view option for un/published objects
-                if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
-                else $class_image = "class=\"hcmsIconList\"";
+                // gallery view - view option for un/published objects
+                if ($view == "gallery")
+                {
+                  if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
+                  else $class_image = "";
 
-                $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." /> ";
+                  $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." style=\"margin-top:10px; width:".$thumbsize."px; height:".$thumbsize."px\" /><br/>";
+                }
+                // list view - view option for un/published objects
+                else
+                {
+                  if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+                  else $class_image = "class=\"hcmsIconList\"";
+
+                  $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." /> ";
+                }
               }
 
               if ($compcat == "single")
               {
                 $result .= "
               <tr>
-                <td style=\"".($view == "gallery" ? "text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
-                <td style=\"text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+                <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
+                <td style=\"width:28px; text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
               }
               elseif ($compcat == "multi")
               {
                 $result .= "
               <tr>
-                <td style=\"".($view == "gallery" ? "text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
-                <td style=\"text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+                <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
+                <td style=\"width:28px; text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
               }
               elseif ($compcat == "media")
               {
                 if ($callback == "") $result .= "
               <tr>
-                <td style=\"".($view == "gallery" ? "text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
-                <td style=\"text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+                <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
+                <td style=\"width:28px; text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
                 else $result .= "
               <tr>
-                <td style=\"".($view == "gallery" ? "text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap; width:90%;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
-                <td style=\"text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+                <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
+                <td style=\"width:28px; text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
               }
             }
@@ -4511,7 +4533,7 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
           }
         }
 
-        if (sizeof ($thumb_items) > 0) $thumb_bar .= "<script>
+        if (sizeof ($thumb_items) > 0) $thumb_bar .= "<script type=\"text/javascript\">
   // initialize video.js
   var video = videojs('".$id."');
   
@@ -4635,7 +4657,7 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
     $return = "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
   <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/videojs.thumbnails.css\" rel=\"stylesheet\">
   <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/video.js\"></script>
-  <script>
+  <script type=\"text/javascript\">
     videojs.options.flash.swf = \"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.swf\";
   </script>
   <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/videojs.thumbnails.js\"></script>\n";
@@ -4796,7 +4818,7 @@ function showaudioplayer_head ($secureHref=true)
   //return "<script src=\"".$mgmt_config['url_path_cms']."javascript/audio-js/audio.js\"></script>\n";
   return "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
   <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/video.js\"></script>
-  <script>
+  <script type=\"text/javascript\">
     videojs.options.flash.swf = \"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.swf\";
   </script>
   <style> .vjs-fullscreen-control { display: none; } .vjs-default-skin .vjs-volume-control { margin-right: 20px; } </style>";
@@ -4943,8 +4965,8 @@ function showAPIdocs ($file, $return="html", $html_hr=true, $html_description=tr
             $requires[$name] = $temp;
             $open = "requires";
           }
-          // next commented lines
-          elseif (strpos ("_".$line, "//") > 0 && !empty ($name))
+          // next commented lines (must be inside the first 10 digits of the line since //: is used in input parameters)
+          elseif (strpos ("_".$line, "//") > 0 && strpos ("_".$line, "//") < 10 && !empty ($name))
           {
             $temp = trim (substr (trim ($line), strlen ("//")));
             $temp = htmlentities ($temp)." ";
@@ -5697,7 +5719,8 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
   if (is_array ($multiobject) && $thumbsize > 0 && valid_objectname ($user))
   {
     $count = 0;
-    $galleryview = "";
+    $galleryview = "
+    <script src=\"".$mgmt_config['url_path_cms']."javascript/lazysizes/lazysizes.min.js\" type=\"text/javascript\" async=\"\"></script>";
 
     // create secure token
     $token = createtoken ($user);
@@ -5754,6 +5777,7 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
         // thumbnails preview
         if (is_file ($mediadir.$thumbnail))
         {
+          /* deprecated since version 8.1.3 due to performance issues when reading all thumbnail files in order to collect their dimensions
           $imgsize = getimagesize ($mediadir.$thumbnail);
 
           // calculate image ratio to define CSS for image container div-tag
@@ -5761,29 +5785,36 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
           {
         		$imgwidth = $imgsize[0];
         		$imgheight = $imgsize[1];
-            $imgratio = $imgwidth / $imgheight; 
+            $imgratio = $imgwidth / $imgheight;
 
-            // image width >= height
-            if ($imgratio >= 1) $ratio = "width:".$thumbsize."px;";
-            // image width < height
-            else $ratio = "height:".$thumbsize."px;";
+            // if thumbnail is smaller than defined thumbnail size
+            if ($imgwidth < $thumbsize && $imgheight < $thumbsize)
+            {
+              $style_size = "width:".$imgwidth."px; height:".$imgheight."px;";
+            }
+            else
+            {
+              // image width >= height
+              if ($imgratio >= 1) $style_size = "width:".$thumbsize."px; height:".round(($imgheight / $imgratio), 0)."px;";
+              // image width < height
+              else $style_size = "width:".round(($imgwidth * $imgratio), 0)."px; height:".$thumbsize."px;";
+            }
           }
           // default value
           else
           {
-            $ratio = "width:".$thumbsize."px;";
+            $style_size = "width:".$thumbsize."px;";
           }
+          */
 
-          // if thumbnail is smaller than defined thumbnail size
-          if ($imgwidth < $thumbsize && $imgheight < $thumbsize) $style_size = "";
-          else $style_size = $ratio;
-
-          $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
+          $galleryview .= "
+          <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img data-src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" class=\"lazyload hcmsImageItem\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
         }
         // no thumbnail available
         else
         { 
-          $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$mediainfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
+          $galleryview .= "
+          <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$mediainfo['icon']."\" style=\"border:0; width:".$thumbsize."px; height:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
         }
       }
       // object or folder
@@ -5791,7 +5822,8 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
       {
         $fileinfo = getfileinfo ($site, $location_esc.$page, $cat);
 
-        $galleryview .= "<div id=\"image".$count."\" style=\"margin:5px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" style=\"border:0; width:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
+        $galleryview .= "
+        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" style=\"border:0; width:".$thumbsize."px; height:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
       }
     }
 
@@ -5807,7 +5839,7 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
 // output: thumbnail view / false
 
 // description:
-// Presents the thumbnail of a single media file that is optionally base64 encoded an can embedded in HTML pages or e-mails.
+// Presents the thumbnail of a single media file that is optionally base64 encoded an can be embedded in HTML pages or e-mails.
 
 function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=false, $style="", $theme="standard")
 {
@@ -5832,22 +5864,26 @@ function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=fal
       {
         $imgwidth = $imgsize[0];
         $imgheight = $imgsize[1];
-        $imgratio = $imgwidth / $imgheight; 
+        $imgratio = $imgwidth / $imgheight;
 
-        // image width >= height
-        if ($imgratio >= 1) $ratio = "width:".$thumbsize."px;";
-        // image width < height
-        else $ratio = "height:".$thumbsize."px;";
+        // if thumbnail is smaller than defined thumbnail size
+        if ($imgwidth < $thumbsize && $imgheight < $thumbsize)
+        {
+          $style_size = "width:".$imgwidth."px; height:".$imgheight."px;";
+        }
+        else
+        {
+          // image width >= height
+          if ($imgratio >= 1) $style_size = "width:".$thumbsize."px; height:".round(($imgheight / $imgratio), 0)."px;";
+          // image width < height
+          else $style_size = "width:".round(($imgwidth * $imgratio), 0)."px; height:".$thumbsize."px;";
+        }
       }
       // default value
       else
       {
-        $ratio = "width:".$thumbsize."px;";
+        $style_size = "width:".$thumbsize."px;";
       }
-
-      // if thumbnail is smaller than defined thumbnail size
-      if ($imgwidth < $thumbsize && $imgheight < $thumbsize) $style_size = "";
-      else $style_size = $ratio;
 
       // base64 encode
       if ($base64 == true)
@@ -5865,8 +5901,17 @@ function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=fal
     // no thumbnail available
     else
     {
-      $mediadir = $mgmt_config['abs_path_cms']."theme/".$theme."/img/";
-      $mediaurl = $mgmt_config['url_path_cms']."theme/".$theme."/img/";
+      // get theme location for portal themes or system themes
+      if (valid_locationname ($theme) && strpos ($theme, "/") > 0 && is_dir ($mgmt_config['abs_path_rep']."portal/".$theme."/css"))
+      {
+        $mediadir = $mgmt_config['abs_path_rep']."portal/".$theme."/img/";
+        $mediaurl = $mgmt_config['url_path_rep']."portal/".$theme."/img/";
+      }
+      else
+      {
+        $mediadir = $mgmt_config['abs_path_cms']."theme/".$theme."/img/";
+        $mediaurl = $mgmt_config['url_path_cms']."theme/".$theme."/img/";
+      }
 
       // base64 encode
       if ($base64 == true)
@@ -5883,6 +5928,231 @@ function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=fal
     }
 
     return $view;
+  }
+  else return false;
+}
+
+// ------------------------- showtaxonomytree -----------------------------
+// function: showtaxonomytree()
+// input: publication name [string] (optional), container ID [integer][array], text ID [string], language code [string] (optional), 
+//        taxonomy ID or expression or taxonomy path in the form %taxonomy%/publication-name or 'default'/language-code/taxonomy-ID/taxonomy-child-levels [string], width in pixel [integer] (optional), height in pixel [integer] (optional)
+// output: taxonomy tree view / false
+
+// description:
+// Displays the requested taxonomy tree structure or sub branch with checkboxes for the keywords.
+
+function showtaxonomytree ($site="", $container_id, $text_id, $tagname="textk", $taxonomy_lang="en", $expression, $width=600, $height=500)
+{
+  global $mgmt_config, $hcms_lang, $lang, $taxonomy;
+
+  if (valid_publicationname ($site) && (is_numeric ($container_id) || is_array ($container_id)) && $lang != "" && is_array ($mgmt_config) && !empty ($mgmt_config[$site]['taxonomy']))
+  {
+    $view = "";
+    $tax_id_selected_array = array();
+    $childlevels = 10;
+
+    // extract taxonomy language from taxonomy path
+    if (strpos ("_".$expression, "%taxonomy%/") > 0)
+    {
+      $slice = explode ("/", $expression);
+
+      if (!empty ($slice[0])) $domain = $slice[0];
+      if (!empty ($slice[1])) $site = $slice[1];
+      if (!empty ($slice[2])) $taxonomy_lang = $slice[2];
+      if (isset ($slice[3])) $tax_id = $slice[3];
+      if (isset ($slice[4])) $childlevels = $slice[4];
+
+      if (empty ($taxonomy_lang) || strtolower ($taxonomy_lang) == "all") $taxonomy_lang = "";
+    }
+
+    // get the taxonomy tree with the full path as key
+    $taxonomy_array = gettaxonomy_childs ($site, $lang, $expression, $childlevels, true, true);
+ 
+    if (is_array ($taxonomy_array))
+    {
+      // get taxonomy data for the container
+      if (is_array ($container_id))
+      {
+        $container_id = array_unique ($container_id);
+
+        foreach ($container_id as $temp)
+        {
+          $taxdata = rdbms_gettaxonomy ($temp, $text_id);
+
+          // collect taxonomy IDs in array
+          if (is_array ($taxdata))
+          {
+            foreach ($taxdata as $temp2) $tax_id_selected_array[] = $temp2['taxonomy_id'];
+          }
+
+          if (is_array ($tax_id_selected_array)) $tax_id_selected_array = array_unique ($tax_id_selected_array);
+        }  
+      }
+      else
+      {
+        $taxdata = rdbms_gettaxonomy ($container_id, $text_id);
+
+        // collect taxonomy IDs in array
+        if (is_array ($taxdata))
+        {
+          foreach ($taxdata as $temp) $tax_id_selected_array[] = $temp['taxonomy_id'];
+        }
+      }
+
+      // check/uncheck all
+      $toogleid = uniqid();
+
+      $view .= "
+    <script type=\"text/javascript\">
+      var searchResults".$toogleid." = [];
+      var searchExpression".$toogleid." = '';
+      searchCurrent".$toogleid." = 0;
+
+      function toggle".$toogleid." (source)
+      {
+        var checkboxes = document.getElementsByName('".getescapedtext ($tagname)."[".getescapedtext ($text_id)."][]');
+        
+        for (var i=0; i<checkboxes.length; i++)
+        {
+          if (checkboxes[i].style.visibility != 'hidden') checkboxes[i].checked = source.checked;
+        }
+      }
+
+      function search".$toogleid." (expression)
+      {
+        var checkboxes = document.getElementsByName('".getescapedtext ($tagname)."[".getescapedtext ($text_id)."][]');
+        var layers = document.getElementsByClassName('hcmsLayer".$toogleid."');
+
+        // search
+        if (expression != '' && searchExpression".$toogleid." != expression)
+        {
+          searchResults".$toogleid." = [];
+          searchExpression".$toogleid." = expression;
+
+          expression = expression.toLowerCase();
+          
+          // search
+          for (var i=0; i<checkboxes.length; i++)
+          {
+            if (checkboxes[i].value.toLowerCase().indexOf (expression) > -1)
+            {
+              checkboxes[i].parentNode.className = 'hcmsPriorityHigh';
+              checkboxes[i].style.visibility = 'visible';
+              searchResults".$toogleid.".push (checkboxes[i]);
+            }
+            else
+            {
+              checkboxes[i].style.visibility = 'hidden';
+            }
+          }
+
+          // open layers
+          if (searchResults".$toogleid.".length > 0)
+          {
+            for (var i=0; i<layers.length; i++)
+            {
+              layers[i].style.height = 'auto';
+            }
+          }
+
+          // scroll to search result
+          searchResults".$toogleid."[0].scrollIntoView ({ block:'center', behavior:'smooth' });
+
+          // fix for MS IE and Edge
+          if (hcms_getBrowserName() == 'ie' || hcms_getBrowserName() == 'edge') window.scrollBy(0, -100);
+        }
+        // scroll to next search result
+        else if (expression != '' && searchResults".$toogleid.".length > 1)
+        {
+          if ((searchCurrent".$toogleid." + 1) < searchResults".$toogleid.".length)
+          {
+            searchCurrent".$toogleid."++;
+          }
+          else searchCurrent".$toogleid." = 0;
+
+          // scroll
+          searchResults".$toogleid."[searchCurrent".$toogleid."].scrollIntoView ({ block:'center', behavior:'smooth' });
+
+          // fix for MS IE and Edge
+          if (hcms_getBrowserName() == 'ie' || hcms_getBrowserName() == 'edge') window.scrollBy(0, -100);
+        }
+        // display all
+        else
+        {
+          searchResults".$toogleid." = [];
+
+          // reset checkboxes
+          for (var i=0; i<checkboxes.length; i++)
+          {
+            checkboxes[i].parentNode.className = '';
+            checkboxes[i].style.visibility = 'visible';
+          }
+
+          // close layers
+          for (var i=0; i<layers.length; i++)
+          {
+            layers[i].style.height = '18px';
+          }
+        }
+      }
+    </script>
+    <!-- Fix for font-size issue in Chrome for Android -->
+    <div style=\"max-height:999999px;\">
+      <div>
+        <input id=\"searchexpression".$toogleid."\" type=\"text\" onkeydown=\"if (hcms_enterKeyPressed(event)) search".$toogleid."(document.getElementById('searchexpression".$toogleid."').value);\" placeholder=\"".getescapedtext ($hcms_lang['search'][$lang])."\" style=\"width:280px; padding-right:30px;\" maxlength=\"100\" />
+        <img src=\"".getthemelocation()."img/button_search_dark.png\" style=\"cursor:pointer; width:22px; height:22px; margin-left:-30px;\" onClick=\"search".$toogleid."(document.getElementById('searchexpression".$toogleid."').value);\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />
+        <label style=\"margin-left:14px;\"><input type=\"checkbox\" style=\"font-size:13px !important;\" onclick=\"toggle".$toogleid."(this);\"> ".getescapedtext ($hcms_lang['select-all'][$lang])."</label>
+      </div>
+      <!-- needed if no checkbox is checked -->
+      <input type=\"hidden\" name=\"".getescapedtext ($tagname)."[".getescapedtext ($text_id)."]\" value=\"\" />
+      <!-- applied taxonomy language -->
+      <input type=\"hidden\" name=\"".getescapedtext ($tagname)."[".getescapedtext ($text_id)."][language]\" value=\"".$taxonomy_lang."\" />
+
+      <div style=\"width:".$width.(strpos ($width, "%") > 0 ? "" : "px")."; height:".($height - 40)."px; overflow:auto;\">\n";
+
+      $pre_level = 1;
+
+      foreach ($taxonomy_array as $path => $keyword)
+      {
+        $level = substr_count ($path, "/") - 1;
+
+        // close layers
+        if ($level < $pre_level)
+        {
+          $diff = $pre_level - $level;
+          $view .= str_repeat ("  </div>\n", $diff);
+        }
+
+        // create new layer
+        if ($level > $pre_level)
+        {
+          $layer_id = "hcmsLayer".uniqid();
+          $view .= str_repeat ("  ", $level)."<div id=\"".$layer_id."\" class=\"hcmsLayer".$toogleid."\" style=\"position:relative; z-index:10; display:block; margin:-18px 0px 0px 10px; padding:2px; height:18px; box-sizing:border-box; overflow:hidden;\">\n";
+          $view .= str_repeat ("  ", $level)."  <a style=\"margin:0; cursor:pointer; font-size:13px !important;\" onclick=\"hcms_slideDownLayer('".$layer_id."', '18');\">+</a><br/>\n";
+        }
+
+        // get taxonomy ID
+        $path_temp = substr ($path, 0, -1);
+        $tax_id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+
+        // entry
+        if (sizeof ($tax_id_selected_array) > 0 && in_array ($tax_id, $tax_id_selected_array)) $checked = "checked";
+        else $checked = "";
+
+        $view .= str_repeat ("  ", $level)."  <label style=\"position:relative; z-index:20; margin-left:28px; padding:2px; font-size:13px !important;\"><input type=\"checkbox\" name=\"".getescapedtext ($tagname)."[".getescapedtext ($text_id)."][]\" value=\"".getescapedtext ($keyword)."\" ".$checked."> ".getescapedtext ($keyword)."</label><br/>\n";
+
+        $pre_level = $level;
+      }
+
+      $diff = $pre_level - 1;
+      $view .= str_repeat ("  </div>\n", $diff);
+      $view .= "
+      </div>
+    </div>\n";
+
+      return $view;
+    }
+    else return false;
   }
   else return false;
 }

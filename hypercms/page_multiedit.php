@@ -16,7 +16,7 @@ require ("function/hypercms_api.inc.php");
 // template engine
 require ("function/hypercms_tplengine.inc.php");
 // file formats extensions
-require ("include/format_ext.inc.php");
+require_once ("include/format_ext.inc.php");
 
 // input parameters
 $location = getrequest_esc ("location", "locationname");
@@ -41,7 +41,7 @@ $token = createtoken ($user);
 // function to collect tag data
 function gettagdata ($tag_array)
 {
-  global $mgmt_config, $site;
+  global $mgmt_config, $site, $is_mobile;
   
   $return = array();
 
@@ -133,6 +133,8 @@ function gettagdata ($tag_array)
     $sizeheight = getattribute ($tagDefinition, "height");
 
     if ($sizeheight == false || $sizeheight <= 0) $sizeheight = "300";
+    elseif ($is_mobile && $sizeheight <= 30) $sizeheight = "34";
+    elseif ($sizeheight <= 28) $sizeheight = "30";
 
     $return[$id]->height = $sizeheight;
     
@@ -158,6 +160,9 @@ function gettagdata ($tag_array)
     
     // get onlylist setting for mandatory keywords list (if keywords)
     $return[$id]->onlylist = getattribute ($tagDefinition, "onlylist");
+
+    // get display entry (if keywords)
+    $return[$id]->display = getattribute ($tagDefinition, "display");
   }
   
   return $return;
@@ -180,6 +185,8 @@ $error = false;
 $groups = array();
 $count = 0;
 $allTexts = array();
+$container_id_array = array();
+$thumbnailsize = 160;
 
 // run through each object
 foreach ($multiobject_array as $object) 
@@ -287,34 +294,37 @@ foreach ($multiobject_array as $object)
         $imgratio = $imgwidth / $imgheight;   
         
         // image width >= height
-        if ($imgratio >= 1) $ratio = "width:100px;";
+        if ($imgratio >= 1) $ratio = "width:".$thumbnailsize."px;";
         // image width < height
-        else $ratio = "height:100px;";
+        else $ratio = "height:".$thumbnailsize."px;";
       }
       // default value
       else
       {
-        $ratio = "width:100px;";
+        $ratio = "width:".$thumbnailsize."px;";
       }
       
       // if thumbnail is smaller than defined thumbnail size
       if ($imgwidth < 100 && $imgheight < 100) $style_size = "";
       else $style_size = $ratio;
       
-      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo_item['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";;
+      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo_item['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";;
     }
     // no thumbnail available
     else
     {                 
-      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:100px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
+      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:".$thumbnailsize."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
     }
   }
   // standard thumbnail for non-multimedia objects
   else
   {                 
-    $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:100px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
+    $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:".$thumbnailsize."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
   }
-  
+
+  // collect container IDs
+  $container_id_array[] = $objectinfo_item['container_id'];
+
   // container
   $content = loadcontainer ($objectinfo_item['container_id'], "work", $user);
   
@@ -410,13 +420,13 @@ foreach ($multiobject_array as $object)
     // read content from content container         
     if ($db_connect_data == false) $textcontent = getcontent ($text, "<textcontent>");
     
-    // If we didn't find anything we stop
+    // stop here and continue if we didn't find anything
     if (!is_array ($id) || !is_array ($textcontent)) continue;
     
     $id = $id[0];
     $textcontent = trim ($textcontent[0]);
     
-    // We ignore comments
+    // ignore comments
     if (substr ($id, 0, strlen ('comment')) == "comment") continue;
     
     $newtext[$id] = $textcontent;
@@ -479,13 +489,13 @@ foreach ($tagdata_array as $id => $tagdata)
     }
   }
   
-  foreach ($allTexts as $object) 
+  foreach ($allTexts as $temp_text) 
   {
     // if the current element isn't ignored we continue
     if (isset ($tagdata->ignore) && $tagdata->ignore == true) continue;
     
-    // calculate the value we use
-    $value = (array_key_exists ($id, $object) ? $object[$id] : $tagdata->defaultvalue);
+    // set content or default value
+    $value = (array_key_exists ($id, $temp_text) ? $temp_text[$id] : $tagdata->defaultvalue);
     
     if (!isset ($tagdata->fieldvalue)) 
     {
@@ -500,36 +510,44 @@ foreach ($tagdata_array as $id => $tagdata)
       {
         // do not lock any field
         $tagdata->locked = false;
-        $tagdata->fieldvalue = "";
         $tagdata->constraint = "";
 
         // content is different
         if ($tagdata->fieldvalue != $value)
         {
           // do not ignore field
+          $tagdata->fieldvalue = "";
+          //$tagdata->fieldvalue = $tagdata->fieldvalue." &lt;=&gt; ".$value;
           $tagdata->ignore = true;
           $tagdata->samecontent = false;
         }
+        // content is the same
         else
         {
+          $tagdata->fieldvalue = "";
+          //$tagdata->fieldvalue = $value;
           $tagdata->ignore = false;
           $tagdata->samecontent = true;
         }
       }
-      // content will be edited/replaced or locked
+      // content will be edited/replaced or is locked
       else
       {
-        // content is different and unlocked
+        // content is different
         if ($tagdata->fieldvalue != $value)
         {
+          //$tagdata->fieldvalue = "";
+          if ($tagdata->type == "k") $tagdata->fieldvalue = $tagdata->fieldvalue.",".$value;
+          else $tagdata->fieldvalue = $tagdata->fieldvalue." ".$value;
           $tagdata->ignore = true;
           $tagdata->samecontent = false;
           $tagdata->locked = true;
           $tagdata->constraint = "";
         }
-        // content is the same and locked
+        // content is the same
         else
         {
+          $tagdata->fieldvalue = $value;
           $tagdata->ignore = false;
           $tagdata->samecontent = true;
           $tagdata->locked = false;
@@ -636,7 +654,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 
   <!-- CKEditor -->
   <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>editor/ckeditor/ckeditor.js"></script>
-  <script> CKEDITOR.disableAutoInline = true;</script>
+  <script type="text/javascript"> CKEDITOR.disableAutoInline = true;</script>
   
   <!-- Richcalendar -->
   <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.css" />
@@ -648,6 +666,37 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
   <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
   
   <style>
+  #preview
+  {
+    padding: 0px 20px 10px 0px;
+    min-width: 600px;
+    float: left;
+  }
+
+  #settings
+  {
+    padding :0px 20px 10px 0px;
+    scrolling: auto;
+    min-width: 620px;
+    float: left;
+  }
+
+  @media screen and (max-width: 1380px)
+  {
+    #preview
+    {
+      padding: 0;
+      width: 100%;
+
+    }
+
+    #settings
+    {
+      padding: 0;
+      width: 100%;
+    }
+  }
+
   .row
   {
     margin-top: 1px;
@@ -716,7 +765,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
       }
       
       // reload
-      setTimeout (function(){ location.reload(true); }, 500);
+      setTimeout (function(){ location.reload(true); }, 300);
     }
   }
   
@@ -889,7 +938,8 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
   	cal_obj = null;
   }
   
-  function save (reload)
+  // save content
+  function savecontent (reload)
   {
     var checkcontent = true;
     var checkimage = false;
@@ -907,11 +957,13 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
     {
       // update all CKEDitor instances
       for (var instanceName in CKEDITOR.instances)
+      {
         CKEDITOR.instances[instanceName].updateElement();
+      }
       
       // get objects from multiobject and content fields
-      var obj = $('#objs').val().split("|");
-      var fields = $('#fields').val().split("|");
+      var obj = document.getElementById('multiobject').value.split("|");
+      var fields = document.getElementById('text_ids').value.split("|");
 
       // init content post data
       var postdata_content = {
@@ -922,33 +974,68 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
         'appendcontent': '<?php if (getsession ("temp_appendcontent") == true) echo "yes"; ?>'
       };
       
-      for (var nr in fields)
+      for (var i = 0; i < fields.length; i++)
       {
-        var field = $('[id="'+fields[nr]+'"]');
-        
-        if (!field.prop) 
+        var field = document.getElementById(fields[i]);
+
+        // check for input element (must have a name)
+        if (field && field.name) 
         {
-          alert ('<?php echo getescapedtext ($hcms_lang['could-not-find-the-value-for-one-of-the-fields'][$lang], $charset, $lang); ?>');
+          var name = field.name;
+          var value = '';
+          
+          // for checkbox input type
+          if (field.tagName.toUpperCase() == 'INPUT' && field.type.toUpperCase() == 'CHECKBOX')
+          {
+            value = (field.checked == true ? field.value : '');
+          }
+          // formatted fields doesn't need to be encoded as this is already done by CKEDitor
+          // use direct value for selectboxes
+          else if (field.id.slice(0, 'textf_'.length) == 'textf_' || field.tagName.toUpperCase() == 'SELECT')
+          {
+            value = field.value;
+          }
+          // standard input text value
+          else if (field.value != "")
+          {
+            value = field.value;
+          }
+          
+          // data to be saved
+          if (name != "") postdata_content[name] = value;
         }
-        
-        var name = field.prop('name');
-        var value = '';
-        
-        // for input we get the type
-        if (field.prop('tagName').toUpperCase() == 'INPUT' && field.prop('type').toUpperCase() == 'CHECKBOX') 
-          value = (field.prop('checked') ? field.prop('value') : '');
-        // formatted fields doesn't need to be encoded as this is already done by CKEDitor
-        // use direct value for selectboxes
-        else if ( field.attr('id').slice(0, 'textf_'.length) == 'textf_' || field.prop('tagName').toUpperCase() == 'SELECT')
-          value = field.prop('value');
-        else if (field.prop('value') == "")
-          value = "";
-        else
-          value = field.prop('value');
-        
-        postdata_content[name] = value;
+        // no input element name (collect taxonomy tree checkboxes)
+        else if (field)
+        {
+          var name = '';
+          var value = '';
+
+          // get all input elements
+          var nestedfields = field.getElementsByTagName('input');
+          var checkedvalue;
+          
+          for (var j = 0; j < nestedfields.length; j++)
+          {
+            // for checkbox input type
+            if (nestedfields[j].type.toUpperCase() == 'CHECKBOX')
+            {
+              if (name == "") name = nestedfields[j].name;
+
+              checkedvalue = (nestedfields[j].checked == true ? nestedfields[j].value : '');
+
+              if (checkedvalue != "")
+              {
+                if (value != "") value = value + ',' + checkedvalue;
+                else value = checkedvalue;
+              }
+            }
+          }
+
+          // data to be saved
+          if (name != "") postdata_content[name] = value;
+        }
       }
-      
+
       // collect image form data
       if (checkimage == true)
       {
@@ -1189,7 +1276,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
             } 
           } 
         } 
-        else if (test.charAt(0) == 'R') errors += nm+' - <?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n'; 
+        else if (test.charAt(0) == 'R' &&  val.type && val.type.toLowerCase() != 'checkbox') errors += nm+' - <?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n'; 
       }
     } 
     
@@ -1975,7 +2062,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
       <table style="width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;">
         <tr>
           <td class="hcmsHeadline" style="text-align:left; vertical-align:middle; padding:0px 1px 0px 2px">
-            <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="save(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
+            <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="savecontent(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
             <?php if ($is_image || $is_video) { ?>
             <div class="hcmsButtonMenu" onclick="toggleDivAndButton(this, '#renderOptions');"><?php echo getescapedtext ($hcms_lang['options'][$lang], $charset, $lang); ?></div>
             <?php } ?>
@@ -2351,7 +2438,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
     else
     {
       // show media preview if available
-      if ($mediapreview != "") echo $mediapreview."<div style=\"clear:both;\"></div>\n";
+      if ($mediapreview != "") echo "<div id=\"preview\">".$mediapreview."</div>\n";
     ?>
     </div>
 
@@ -2368,12 +2455,14 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
     
     <div class="hcmsWorkplaceFrame">
     <form id="sendform">
-      <div style="display:block; margin-top:8px;">
-        <span class="hcmsHeadline">
-          <label><input type="checkbox" id="unlockform" value="1" <?php if (getsession ("temp_appendcontent") == false) echo "checked=\"checked\""; ?> onclick="unlockFormBy(this)" style="margin-left:4px;" /> <?php echo getescapedtext ($hcms_lang['only-fields-marked-with-*-hold-the-same-content-may-be-changed'][$lang], $charset, $lang); ?></label>
-        </span>
+      <div id="settings" style="display:block; margin-top:8px;">
+
+        <div class="hcmsPriorityHigh hcmsHeadline" style="padding:5px;">
+          <label><input type="checkbox" id="unlockform" value="1" <?php if (getsession ("temp_appendcontent") == false) echo "checked=\"checked\""; ?> onclick="unlockFormBy(this)" style="margin:2px 2px 8px 0px;" /> <?php echo getescapedtext ($hcms_lang['only-fields-marked-with-*-hold-the-same-content-may-be-changed'][$lang], $charset, $lang); ?></label>
+        </div>
+        
         <?php
-        $ids = array();
+        $text_ids = array();
         
         foreach ($tagdata_array as $key => $tagdata)
         {
@@ -2381,7 +2470,11 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
           $id = $tagdata->hypertagname.'_'.$key;
           $label = $tagdata->labelname;
           
-          if ($tagdata->locked == false) $ids[] = $id;
+          // add id to memory
+          if ($tagdata->locked == false)
+          {
+            $text_ids[] = $id;
+          }
           ?>
           <div class="hcmsFormRowLabel <?php echo $id; ?>">
             <label for="<?php echo $id; ?>"><b><?php if (trim ($label) != "") { echo $label; if ($tagdata->samecontent == true) echo " *"; } ?></b></label>
@@ -2391,18 +2484,35 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
           if ($tagdata->type == "u") 
           {
           ?>
-            <textarea id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> style="width:<?php echo $tagdata->width; ?>px; height:<?php echo $tagdata->height; ?>px;" <?php echo $disabled; ?>><?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?></textarea>
+            <textarea id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width:<?php echo $tagdata->width; ?>px; height:<?php echo $tagdata->height; ?>px;" <?php echo $disabled; ?>><?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?></textarea>
           <?php 
           } 
           elseif ($tagdata->type == "k") 
           {
             $list = "";
-            
-            if ($disabled == "")
+          
+            // extract text list
+            $list .= $tagdata->list;
+
+            // taxonomy tree view
+            if (strtolower($tagdata->display) == "taxonomy")
             {
-              // extract text list
-              $list .= $tagdata->list;
-              
+              // list_sourcefile must be a valid taxonomy path: %taxonomy%/site/language-code/taxonomy-ID/taxonomy-child-levels
+            ?>
+            <div id="<?php echo $id; ?>" style="position:relative; width:<?php echo $tagdata->width.(strpos ($tagdata->width, "%") > 0 ? "" : "px"); ?>; height:<?php echo $tagdata->height; ?>px; overflow:auto;">
+              <?php
+              $temp_array = explode (",", $tagdata->fieldvalue);
+              $temp_array = array_unique ($temp_array);
+
+              if ($tagdata->locked == false) echo showtaxonomytree ($site, $container_id_array, $key, $tagdata->hypertagname, $lang, $tagdata->file, ($tagdata->width - 24), ($tagdata->height - 24));
+              else echo "<textarea type=\"text\" id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:99%; height:".($tagdata->height - 24)."px;\" ".$disabled.">".implode (", ",$temp_array)."</textarea>";
+              ?>
+            </div>
+            <?php
+            }
+            // keyword list view (default)
+            else
+            {
               // extract source file (file path or URL) for text list
               if ($tagdata->file != "")
               {
@@ -2439,12 +2549,12 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
               
               $add_onload .= "
               $('#".$id."').tagit({".$keywords_tagit."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$id."')});";
-            }
-          ?>
+            ?>
             <div style="display:inline-block; width:<?php echo $tagdata->width; ?>px;">
-              <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> <?php echo $disabled; ?> value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" />
+              <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width:100%;" <?php echo $disabled; ?> value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" />
             </div>
-          <?php 
+          <?php
+            }
           } 
           elseif ($tagdata->type == "f")
           {
@@ -2454,7 +2564,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
             }
             else
             {
-              echo "<textarea id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" class=\"hcmsPriorityMedium\" style=\"width:".$tagdata->width."px; height:".$tagdata->height."px;\" ".$disabled."></textarea>";
+              echo "<textarea id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:".$tagdata->width."px; height:".$tagdata->height."px;\" ".$disabled.">".$tagdata->fieldvalue."</textarea>";
             }
           }
           elseif ($tagdata->type == "d")
@@ -2466,7 +2576,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
             if (empty ($disabled)) $showcalendar = "onclick=\"show_cal(this, '".$id."', '".$format."');\"";
             else $showcalendar = "";
             ?>
-            <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" readonly="readonly" <?php echo $disabled; ?> />
+            <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" readonly="readonly" <?php echo $disabled; ?> />
             <?php
             if ($tagdata->locked == false) 
             {
@@ -2497,7 +2607,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
             // get list entries
             $list_array = explode ("|", $list);
             ?>
-            <select name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" <?php if (!empty ($disabled)) echo "class=\"hcmsPriorityMedium\""; ?> <?php echo $disabled; ?>>
+            <select name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" <?php echo $disabled; ?>>
             <?php
             foreach ($list_array as $list_entry)
             {
@@ -2511,10 +2621,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
               } 
               else $list_value = $list_text = $list_entry;
               ?>
-              <option value="<?php echo $list_value; ?>"
-              <?php if ($tagdata->locked == false && $list_value == $tagdata->fieldvalue) echo " selected"; ?>>
-              <?php echo $list_text; ?>
-              </option>
+              <option value="<?php echo $list_value; ?>" <?php if ($tagdata->locked == false && $list_value == $tagdata->fieldvalue) echo " selected"; ?>><?php echo $list_text; ?></option>
               <?php
             }
 
@@ -2538,8 +2645,11 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
       }
       ?>
       </div>
-      <input type="hidden" id="objs" value="<?php echo $multiobject; ?>" />
-      <input type="hidden" id="fields" value="<?php echo implode('|', $ids); ?>" />
+
+      <!-- memory -->
+      <input type="hidden" id="multiobject" value="<?php echo $multiobject; ?>" />
+      <input type="hidden" id="text_ids" value="<?php echo implode('|', $text_ids); ?>" />
+
     </form>
     </div>
     <?php

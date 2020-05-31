@@ -44,7 +44,7 @@ $add_onload = "";
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
 function warning_media_delete ()
 {
   var form = document.forms['media'];

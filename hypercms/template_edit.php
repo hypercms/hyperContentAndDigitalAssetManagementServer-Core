@@ -33,7 +33,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if (!valid_publicationname ($site) || !checkglobalpermission ($site, 'template') || !checkglobalpermission ($site, 'tpl')) killsession ($user);
+if (!valid_publicationname ($site) || !checkglobalpermission ($site, 'template') || !checkglobalpermission ($site, 'tpl') || !checkglobalpermission ($site, 'tpledit')) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -98,12 +98,12 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
     }
     elseif ($result_save['result'] == false)
     {
-      $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['template-could-not-be-saved'][$lang], $charset, $lang)."</span>";
+      $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['template-could-not-be-saved'][$lang], $charset, $lang)."</span>";
     }
     else $add_onload = "";
   }
   // failed
-  else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['template-could-not-be-saved'][$lang], $charset, $lang)."</span><br />\n".getescapedtext ($hcms_lang['there-are-forbidden-functions-in-the-code'][$lang], $charset, $lang).": <span style=\"color:red;\">".$contentfield_check['found']."</span>";
+  else $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['template-could-not-be-saved'][$lang], $charset, $lang)."</span><br />\n".getescapedtext ($hcms_lang['there-are-forbidden-functions-in-the-code'][$lang], $charset, $lang).": <span style=\"color:red;\">".$contentfield_check['found']."</span>";
 }
 // load template file
 else
@@ -153,6 +153,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
+
 function openHelp()
 {
   hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help', 'resizable=yes,scrollbars=yes', 750, 680);
@@ -560,7 +561,7 @@ function savetemplate(mode)
         document.forms['template_edit'].elements['preview'].value = "yes";
       }
        
-      hcms_showInfo ('savelayer', 0); 
+      hcms_showFormLayer ('savelayer', 0); 
       document.forms['template_edit'].submit();
       return true;
     }
@@ -577,7 +578,7 @@ function savetemplate(mode)
       document.forms['template_edit'].elements['preview'].value = "yes";
     }
     
-    hcms_showInfo ('savelayer', 0);
+    hcms_showFormLayer ('savelayer', 0);
     document.forms['template_edit'].submit();
     return true;
   }
@@ -590,11 +591,9 @@ function savetemplate(mode)
 <!-- saving --> 
 <div id="savelayer" class="hcmsLoadScreen"></div>
 
-<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
+<?php echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"); ?>
 
-<?php
-echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;")
-?>
+<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <form name="template_edit" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -609,7 +608,7 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
   
   <table class="hcmsTableStandard">
     <tr>
-      <td class="hcmsHeadline" style="width:250px;"><?php echo getescapedtext ($pagecomp, $charset, $lang); ?> </td>
+      <td class="hcmsHeadline" style="width:245px;"><?php echo getescapedtext ($pagecomp, $charset, $lang); ?> </td>
       <td><input name="template" type="text" value="<?php echo getescapedtext ($templatename, $charset, $lang); ?>" style="width:220px;" disabled="disabled" /></td>
     </tr>
     <?php if ($cat == "page" || $cat == "comp") { ?>

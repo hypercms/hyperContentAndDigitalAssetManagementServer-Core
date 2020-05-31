@@ -110,8 +110,7 @@ function submitLink (url)
       <form name="searchform_general" method="post">
         <input type="hidden" name="site" value="<?php echo $site; ?>" />
         <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
-        <input type="text" name="search_expression" value="<?php if ($search_expression != "") echo html_encode ($search_expression); else echo $hcms_lang['search-expression'][$lang]; ?>" onblur="if (this.value=='') this.value='<?php echo $hcms_lang['search-expression'][$lang]; ?>';" onfocus="if (this.value=='<?php echo $hcms_lang['search-expression'][$lang]; ?>') this.value='';" 
-        style="width:174px;" maxlength="200" /><img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="document.forms['searchform_general'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" align="absmiddle" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+        <input type="text" name="search_expression" placeholder="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" value="<?php if (!empty ($search_expression)) echo html_encode ($search_expression); ?>" style="width:174px;" maxlength="2000" /><img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="document.forms['searchform_general'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" align="absmiddle" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
       </form>
     </div>
     <?php } ?>
@@ -133,7 +132,7 @@ function submitLink (url)
       }
       
       // search results
-      if ($search_expression != "")
+      if (trim ($search_expression) != "")
       {
         $object_array = rdbms_searchcontent ($dir_esc, "", array("page"), "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", 100);
         

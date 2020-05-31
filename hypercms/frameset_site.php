@@ -14,10 +14,6 @@ require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
 
-
-// input parameters
-$site = url_encode (getrequest ("site", "url")); // site can be *Null* which is not a valid name!
-
 // check session of user
 checkusersession ($user, false);
 ?>
@@ -32,9 +28,9 @@ checkusersession ($user, false);
 </head>
 
 <body>
-  <iframe id="controlFrame" name="controlFrame" src="control_site_menu.php?site=<?php echo $site; ?>" frameborder="0" scrolling="no" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
+  <iframe id="controlFrame" name="controlFrame" src="control_site_menu.php" frameborder="0" scrolling="no" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;">
-    <iframe id="mainFrame" name="mainFrame" src="empty.php?site=<?php echo $site; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
+    <iframe id="mainFrame" name="mainFrame" src="empty.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 </body>
 </html>

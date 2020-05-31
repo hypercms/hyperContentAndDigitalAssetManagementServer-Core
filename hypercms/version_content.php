@@ -109,7 +109,7 @@ $pagename = $file_info['name'];
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
 function warning_versions_update()
 {
   var form = document.forms['versionform'];

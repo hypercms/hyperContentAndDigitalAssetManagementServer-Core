@@ -84,9 +84,8 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
       // message file
       $mailfile = $message_time.".".$message_user.".mail";
       
-      // name
+      // file info
       $file_info = getfileinfo ("", $mailfile, "comp");
-      $object_name = $file_info['name'];
       
       // open on double click
       $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$message_time."', 'status=yes,scrollbars=no,resizable=yes', 600, 900);\"";
@@ -135,18 +134,17 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
 
         $listview .= "
             <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
-              <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
+              <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:160px;\">
                 <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." > 
                   <a data-objectpath=\"".$mailfile."\" data-href=\"javascript:void(0);\">
-                    <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$object_name."</span>
+                    <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$email_title."</span>
                   </a>
                 </div>
               </td>
-              <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$email_title."</span></td>
-              <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$recipients."</span></td>
-              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-              <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">sent</span></td>
-              <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$message_user."</span></td>
+              <td id=\"h".$items_row."_1\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:200px;\"><span ".$hcms_setObjectcontext.">".$recipients."</span></td>
+              <td id=\"h".$items_row."_2\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+              <td id=\"h".$items_row."_3\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px; width:60px;\"><span ".$hcms_setObjectcontext.">sent</span></td>
+              <td id=\"h".$items_row."_4\" class=\"hcmsCol6 hcmsCell\" style=\"padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$message_user."</span></td>
             </tr>"; 
       }
     }
@@ -169,7 +167,15 @@ else $objects_counted = 0;
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" type="text/javascript"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
+<style type="text/css">
+.hcmsCell
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
 <script type="text/javascript">
 
 // select area
@@ -207,7 +213,6 @@ function resizecols()
   var c3 = $('#c3').width() ;
   var c4 = $('#c4').width() ;
   var c5 = $('#c5').width();
-  var c6 = $('#c6').width();
 
   // set width for table columns
   $('.hcmsCol1').width(c1);
@@ -215,16 +220,18 @@ function resizecols()
   $('.hcmsCol3').width(c3);
   $('.hcmsCol4').width(c4);
   $('.hcmsCol5').width(c5);
-  $('.hcmsCol6').width(c6);
 }
 
 function initalize ()
 {
   // resize columns
-  $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
 
   // select area
   selectarea = document.getElementById('selectarea')
+
+  // parent load screen
+  if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='none';
 
   // load screen
   if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';
@@ -268,31 +275,28 @@ function initalize ()
 </div>
 
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:3; visibility:visible;">
-  <table id="objectlist_head" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
+  <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:100px; white-space:nowrap;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
-      </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
+      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:160px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['subject'][$lang]); ?>
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:200px; white-space:nowrap;">
+      <td id="c2" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:200px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?>
       </td> 
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
+      <td id="c3" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:120px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>
       </td>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="width:60px; white-space:nowrap;">
+      <td id="c4" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell" style="width:60px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>
       </td>
-      <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader" style="white-space:nowrap;">
+      <td id="c5" onClick="hcms_sortTable(5);" class="hcmsTableHeader hcmsCell">
         &nbsp; <?php echo getescapedtext ($hcms_lang['sender'][$lang]); ?>
       </td>
     </tr>
   </table>
   
   <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
-    <table id="objectlist" name="objectlist" cols="6" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
+    <table id="objectlist" name="objectlist" cols="5" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
     <?php 
     echo $listview;
     ?>
@@ -310,7 +314,7 @@ if (empty ($mgmt_config['explorer_paging']) && $objects_total >= $end)
 ?>
 <!-- status bar incl. more button -->
 <div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".(!$is_mobile ? getescapedtext ($hcms_lang['objects'][$lang]) : ""); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <?php
@@ -324,7 +328,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 ?>
 <!-- status bar incl. previous and next buttons -->
 <div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
-  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".$objects_total." ".(!$is_mobile ? getescapedtext ($hcms_lang['objects'][$lang]) : ""); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
@@ -340,7 +344,7 @@ else
 ?>
 <!-- status bar -->
 <div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
-  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".(!$is_mobile ? getescapedtext ($hcms_lang['objects'][$lang]) : ""); ?></div>
 </div>
 <?php
 }

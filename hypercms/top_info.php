@@ -27,7 +27,7 @@ checkusersession ($user, false);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script>
+<script type="text/javascript">
 function popupfocus ()
 {
   self.focus();

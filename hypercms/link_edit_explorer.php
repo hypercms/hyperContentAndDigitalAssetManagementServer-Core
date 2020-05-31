@@ -93,7 +93,7 @@ function submitForm ()
   if (document.forms['searchform_general'])
   {
     var form = document.forms['searchform_general'];  
-    if (form.elements['search_expression'].value != '') form.submit();
+    form.submit();
   }
 }
 
@@ -127,8 +127,8 @@ $(document).ready(function()
     <form name="searchform_general" action="" method="post">
       <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
-      <input type="text" name="search_expression" id="search_expression" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="<?php if ($search_expression != "") echo html_encode ($search_expression); ?>" 
-      style="width:174px;" maxlength="200" /><img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+      <input type="text" name="search_expression" id="search_expression" placeholder="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" value="<?php if (!empty ($search_expression)) echo html_encode ($search_expression); ?>" 
+      style="width:174px;" maxlength="2000" /><img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
     </form>
   </div>
   <?php } ?>
@@ -150,7 +150,7 @@ if (!empty ($dir) && !empty ($site))
   }
   
   // search results
-  if ($search_expression != "")
+  if (trim ($search_expression) != "")
   {
     $object_array = rdbms_searchcontent ($dir_esc, "", array("page"), "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", 100);
     

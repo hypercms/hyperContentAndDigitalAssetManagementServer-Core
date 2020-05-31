@@ -147,7 +147,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <meta charset="<?php echo $charset; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
 function replace (string,text,by)
 {
   // Replaces text with by in string
@@ -206,17 +206,14 @@ function geturl (type)
         
         location_page = theURL.substring (position1, position2+1);
         location_page = replace (location_page, '<?php echo "/".$site."/"; ?>', '<?php echo "%page%/".$site."/"; ?>');
-        location_page = escape (location_page);
         
         location_site = theURL.substring (position1+1, theURL.length);              
         location_site = location_site.substring(0, location_site.indexOf('/'));
-        location_site = escape (location_site);
         
         page = theURL.substring (position2 + 1, theURL.length);
         if (page.indexOf('?') > 0) page = page.substring (0, page.indexOf('?'));
         if (page.indexOf('#') > 0) page = page.substring (0, page.indexOf('#'));
-        page = escape (page);
-        
+ 
         return theURL = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_content.php?ctrlreload=yes&cat=page&site=' + encodeURIComponent(location_site) + '&location=' + encodeURIComponent(location_page) + '&page=' + encodeURIComponent(page) + '&user=<?php echo url_encode($user); ?>';
       }
       else

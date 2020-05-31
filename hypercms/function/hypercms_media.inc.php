@@ -692,7 +692,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           if ($container_contentnew != false)
           {
             // relational DB connectivity
-            if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);
+            if (!empty ($mgmt_config['db_connect_rdbms'])) rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);
 
             // date 
             $date = date ("Y-m-d H:i:s", time());
@@ -713,7 +713,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         else
         {
           // relational DB connectivity
-          if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, "", "", $user);
+          if (!empty ($mgmt_config['db_connect_rdbms'])) rdbms_setcontent ($site, $container_id, "", "", $user);
 
           // date 
           $date = date ("Y-m-d H:i:s", time());
@@ -1096,13 +1096,13 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
 
 // ---------------------- createthumbnail_video -----------------------------
 // function: createthumbnail_video()
-// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], frame of video in seconds or hh:mm:ss[.xxx], autorotate [boolean] (optional)
+// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], frame of video in seconds or hh:mm:ss[.xxx]
 // output: new file name / false on error
 
 // description:
 // Creates a thumbnail picture of a video frame.  Saves only the thumbnail media file in destination location. Only jpeg format is supported as output.
 
-function createthumbnail_video ($site, $location_source, $location_dest, $file, $frame, $autorotate=false)
+function createthumbnail_video ($site, $location_source, $location_dest, $file, $frame)
 {
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $user;
 
@@ -1124,7 +1124,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 
     // noautoroate option for input video file is only supported by later FFMPEG versions
     // since the auto rotation is also taking care by the system FFMPEG should not autorotate the video
-    if (!empty ($mgmt_mediaoptions['autorotate-video']) || !empty ($autorotate)) $noautorotate = "-noautorotate";
+    if (!empty ($mgmt_mediaoptions['autorotate-video'])) $noautorotate = "-noautorotate";
     else $noautorotate = "";
 
     // thumbnail file name
@@ -1164,8 +1164,8 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
       {
         $correct = "";
 
-        // rotate original video if rotation is used
-        if (!empty ($videoinfo['rotate']) && (!empty ($mgmt_mediaoptions['autorotate-video']) || !empty ($autorotate)))
+        // rotate original preview video if rotation is used
+        if (!empty ($videoinfo['rotate']) && !empty ($mgmt_mediaoptions['autorotate-video']))
         {
           // usage: transpose=1
           // for the transpose parameter you can pass:
@@ -1229,13 +1229,13 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 // ---------------------- createimages_video -----------------------------
 // function: createimages_video()
 // input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], name for image files [string] (optional), frames per second to create from the video [number] (optional), image format [jpg,png,bmp] (optional), 
-//        autorotate [boolean] (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional)
+//        image width in pixel [integer] (optional), image height in pixel [integer] (optional)
 // output: true / false on error
 
 // description:
 // Creates and saves images of video screen size from a video to a directory. 
 
-function createimages_video ($site, $location_source, $location_dest, $file, $name="", $fs=1, $format="jpg", $autorotate=false, $width="", $height="")
+function createimages_video ($site, $location_source, $location_dest, $file, $name="", $fs=1, $format="jpg", $width="", $height="")
 {
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $user;
 
@@ -1262,7 +1262,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
 
     // noautoroate option for input video file is only supported by later FFMPEG versions
     // since the auto rotation is also taking care by the system FFMPEG should not autorotate the video
-    if (!empty ($mgmt_mediaoptions['autorotate-video']) || !empty ($autorotate)) $noautorotate = "-noautorotate";
+    if (!empty ($mgmt_mediaoptions['autorotate-video'])) $noautorotate = "-noautorotate";
     else $noautorotate = "";
 
     // file name
@@ -1304,7 +1304,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
         $correct = "";
 
         // rotate original video if rotation is used
-        if (!empty ($videoinfo['rotate']) && (!empty ($mgmt_mediaoptions['autorotate-video']) || !empty ($autorotate)))
+        if (!empty ($videoinfo['rotate']) && !empty ($mgmt_mediaoptions['autorotate-video']))
         {
           // usage: transpose=1
           // for the transpose parameter you can pass:
@@ -2040,7 +2040,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // -gravity ... sets where in the image the watermark should be added
                     // -geometry ... Can be used to modify the size of the watermark being passed in, and also the positioning of the watermark (relative to the gravity placement). 
                     //               It is specified in the form width x height +/- horizontal offset +/- vertical offset (<width>x<height>{+-}<xoffset>{+-}<yoffset>).
-                    // -composite ... parameter, which tells ImageMagick to add the watermark image we�ve just specified to the image. 
+                    // -composite ... parameter, which tells ImageMagick to add the watermark image we ve just specified to the image. 
                     list ($watermark, $gravity, $geometry) = explode ("->", $watermarking);
 
                     if (!empty ($geometry)) $geometry = intval ($geometry);
@@ -3227,7 +3227,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // capture screen from video to use as thumbnail image
                 if (($type == "origthumb" || $type == "original") && is_video ($file_ext))
                 {
-                  $videothumbnail = createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01", (!empty ($noautorotate) ? true : false));
+                  $videothumbnail = createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
 
                   // get media information from thumbnail
                   $imagecolor = getimagecolors ($site, $videothumbnail);
@@ -3255,7 +3255,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
                     }
 
-                    createimages_video ($site, $location_dest, $location_dest.$container_id."/", $newfile, "thumbnail", 0.2, "jpg", (!empty ($noautorotate) ? true : false), $thumb_width, $thumb_height);
+                    createimages_video ($site, $location_dest, $location_dest.$container_id."/", $newfile, "thumbnail", 0.2, "jpg", $thumb_width, $thumb_height);
                   }
                 }
                 else
@@ -3296,6 +3296,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // write media information to DB
                   if (!empty ($container_id))
                   {
+                    // correct width and height for the database if autorotation has been applied (in order to provide the correct display size)
+                    if (!empty ($noautorotate) && !empty ($videoinfo['rotate']) && ($videoinfo['rotate'] == "90" || $videoinfo['rotate'] == "270" || $videoinfo['rotate'] == "-90"))
+                    {
+                      $temp = $mediawidth_orig;
+                      $mediawidth_orig = $mediaheight_orig;
+                      $mediaheight_orig = $temp;
+                    }
+
                     $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $mediawidth_orig, $mediaheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagetype_orig, $md5_hash);
                   }
 
@@ -4111,7 +4119,7 @@ function rgb2hex ($red, $green, $blue)
 
 function readmediaplayer_config ($location, $configfile)
 { 
-  global $mgmt_config, $user;
+  global $mgmt_config, $mgmt_mediaoptions, $user;
 
   if (valid_locationname ($location) && valid_objectname ($configfile))
   {
@@ -4193,6 +4201,14 @@ function readmediaplayer_config ($location, $configfile)
         elseif (strpos ("_".$value, "rotate=") > 0)
         {
           list ($name, $config['rotate']) = explode ("=", $value);
+
+          // if auto rotation is enabled and the dimensions need to be corrected
+          if (!empty ($mgmt_mediaoptions['autorotate-video']) && ($config['rotate'] == "90" || $config['rotate'] == "270" || $config['rotate'] == "-90"))
+          {
+            $temp = $config['width'];
+            $config['width'] = $config['height'];
+            $config['height'] = $temp;
+          }
         }
         // file size in kB
         elseif (strpos ("_".$value, "filesize=") > 0)

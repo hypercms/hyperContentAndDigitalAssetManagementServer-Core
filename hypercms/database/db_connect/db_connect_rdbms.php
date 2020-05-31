@@ -561,6 +561,8 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
     if ($user != "") $user = $db->rdbms_escape_string($user);
     
     $date = date ("Y-m-d H:i:s", time());
+
+    $object_id = 0;
     
     // update container
     $sql_attr = array();
@@ -638,13 +640,9 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
                 $text = substr ($text, strpos ($text, "|") + 1);
                 
                 // check and get object ID from object path
-                if ($object_id != "" && intval ($object_id) < 1) $object_id = rdbms_getobject_id ($object_id);
-                
-                // recheck
-                if ($object_id != "" && intval ($object_id) < 1) $object_id = 0;
+                if (intval ($object_id) < 1) $object_id = rdbms_getobject_id ($object_id);
               }
-              else $object_id = 0;
-              
+
               // clean text (includes HTML decode)
               if ($text != "")
               {
@@ -654,6 +652,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
               
               $num_rows = $db->rdbms_getnumrows ($i);          
             
+              // update exiting content
               if ($num_rows > 0)
               {
                 // query 
@@ -664,6 +663,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
                 $errcode = "50005";
                 $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], ++$i);
               }
+              // insert new content
               elseif ($num_rows == 0)
               {
                 // query    
@@ -676,15 +676,6 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
             }
           }
         }
-      }
-      
-      if ($update == true)
-      {
-        // set taxonomy
-        settaxonomy ($site, $container_id);
-      
-        // set keywords
-        rdbms_setkeywords ($site, $container_id);
       }
     }
 
@@ -912,7 +903,7 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
         {
           foreach ($tx_keyword_array as $taxonomy_id=>$taxonomy_keyword)
           {
-            if ($text_id != "" && intval ($taxonomy_id) >= 0 && $lang != "")
+            if ($text_id != "" && intval ($taxonomy_id) > 0 && $lang != "")
             {
               $text_id = $db->rdbms_escape_string($text_id);
               $taxonomy_id = intval ($taxonomy_id);
@@ -1037,6 +1028,53 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
     return true;
   }
   else return false;
+}
+
+// ----------------------------------------------- get taxonomy -------------------------------------------------
+
+// function: rdbms_gettaxonomy()
+// input: container ID [integer], text ID [string]
+// output: result array / false
+
+// description:
+// Returns the taxonomy data for a specific text ID of a container.
+
+function rdbms_gettaxonomy ($container_id, $text_id)
+{
+  global $mgmt_config;
+  
+  // taxonomy is enabled
+  if (intval ($container_id) > 0 && $text_id != "")
+  {
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    $container_id = intval ($container_id);
+    $text_id = $db->rdbms_escape_string ($text_id);
+    
+    $sql = 'SELECT * FROM taxonomy WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
+          
+    $errcode = "50203";
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'taxonomy');
+
+    $result = array();
+    $i = 0;
+
+    if ($done)
+    {
+      while ($row = $db->rdbms_getresultrow ('taxonomy'))
+      {
+        $result[$i] = $row;
+        $i++;
+      }
+    }
+
+    // save log
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
+  
+    return $result;
+  }
+  return false;
 }
 
 // ----------------------------------------------- set template -------------------------------------------------
@@ -2713,29 +2751,29 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
         }
       }
       else unset ($sql_where['format']);
-      
+
       // if object conditions still exist, use brackets
       if (!empty ($sql_where['object']))
       {
         $sql_where['object'] = '('.$sql_where['object'].')';
       }
-      
+
       // join media table
       if (!empty ($sql_where['format']) || !empty ($filesize)) $sql_table['media'] = 'LEFT JOIN media AS med ON obj.id=med.id';
     }  
-    
+
     // folder path
     $sql_where['filename'] = 'obj.objectpath LIKE _utf8"'.$folderpath.'%" COLLATE utf8_bin';
- 
+
     // dates
     if (!empty ($date_from)) $sql_where['datefrom'] = 'DATE(cnt.date)>="'.$date_from.'"';
     if (!empty ($date_to)) $sql_where['dateto'] = 'DATE(cnt.date)<="'.$date_to.'"'; 
-    
+
     // search expression
     if ($search_expression != "")
     {
       $expression = $search_expression;
-      
+
       $expression = html_decode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
       $expression = $db->rdbms_escape_string ($expression);
 
@@ -2755,7 +2793,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 
     $errcode = "50063";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "select");
-    
+
     $container_id_prev = "";
     $containerdata = "";
 
@@ -2764,24 +2802,24 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       // transform search expression
       $search_expression = str_replace ("*", "", $search_expression);
       $search_expression = str_replace ("?", "", $search_expression);
-      
+
       $search_expression_esc = html_encode ($search_expression, convert_dbcharset ($mgmt_config['dbcharset']));
       $search_expression = $db->rdbms_escape_string ($search_expression);
-      
+
       // transform replace expression
       $replace_expression_esc = html_encode ($replace_expression, convert_dbcharset ($mgmt_config['dbcharset']));
       $replace_expression = $db->rdbms_escape_string ($replace_expression);
-        
+
       $num_rows = $db->rdbms_getnumrows ("select");
- 
+
       if ($num_rows > 0)
       {
         for ($i = 0; $i < $num_rows; $i++)
         {
           $row = $db->rdbms_getresultrow ("select", $i);
-        
+
           $hash = $row['hash'];
-          
+
           $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
           $objectpath[$hash]['container_id']  = $id = sprintf ("%07d", $row['id']);
           $objectpath[$hash]['media'] =  $row['media'];
@@ -2789,7 +2827,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
           if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
           if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
-          
+
           $container_file = $row['container'];
           $text_id = $row['text_id'];
           $textcontent = $row['textcontent'];
@@ -2802,7 +2840,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 
             // replace expression in container
             $container_id = substr ($container_file, 0, strpos ($container_file, ".xml"));
-            
+
             // save container, execute query and load container if container ID changed
             if ($container_id != $container_id_prev)
             {
@@ -2815,7 +2853,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
                 {
                   $errcode = "10911";
                   $error[] = $mgmt_config['today']."|db_connect_rdbms.php|error|$errcode|container ".$container_id_prev." could not be saved\n";  
-                  
+
                   // save log
                   savelog ($error);                                    
                 }
@@ -2829,7 +2867,6 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
                     $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "update");
                   }
                 }
-                
               }
               
               // Emptying collected sql statements
@@ -2838,19 +2875,19 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
               // load container
               $containerdata = loadcontainer ($container_id, "work", $user);
             }
-            
+
             // set previous container ID
             $container_id_prev = $container_id;
-  
+
             // save content container
             if ($containerdata != "" && $containerdata != false)
             {       
               $xml_search_array = selectcontent ($containerdata, "<text>", "<text_id>", $text_id);
-       
+
               if ($xml_search_array != false)
               {
                 $xml_content = getxmlcontent ($xml_search_array[0], "<textcontent>");
-                
+
                 if ($xml_content != false && $xml_content[0] != "")
                 {
                   if (substr_count ($xml_content[0], $search_expression_esc) > 0 || substr_count ($xml_content[0], $search_expression) > 0)
@@ -2862,14 +2899,14 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
                     {
                       $xml_replace = str_replace ($search_expression_esc, $replace_expression_esc, $xml_replace);
                     }
-                    
+
                     // replace textcontent in text
                     $xml_replace = str_replace($xml_content[0], $xml_replace, $xml_search_array[0]);
 
                     // replace text in container
                     $containerdata = str_replace ($xml_search_array[0], $xml_replace, $containerdata);
                   }
-                  
+
                   // update content in database
                   $sql_array[] = 'UPDATE textnodes SET textcontent="'.$textcontent.'" WHERE id='.$id.' AND text_id="'.$text_id.'"';
                 }  
@@ -2882,12 +2919,12 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 
     // save last container
     $result_save = savecontainer ($container_id_prev, "work", $containerdata, $user);
-    
+
     if ($result_save == false)
     {
       $errcode = "10911";
       $error[] = $mgmt_config['today']."|db_connect_rdbms.php|error|$errcode|container ".$container_id_prev." could not be saved\n";  
-      
+
       // save log
       savelog ($error);                                    
     }
@@ -2895,17 +2932,17 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     {
       // update content in database
       $errcode = "50040";
-      
+
       foreach ($sql_array as $sql)
       {
         $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "update");
       }
     }
-    
+
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close(); 
-    
+
     if (isset ($objectpath) && is_array ($objectpath))
     {
       return $objectpath;
@@ -2931,15 +2968,15 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
   if ($user != "")
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     if ($site != "" && $site != "*Null*") $site = $db->rdbms_escape_string ($site);
     $user = $db->rdbms_escape_string ($user);
     $maxhits = intval ($maxhits);
-    
+
     $sql_add_attr = "";
     $sql_attr = array();
     $sql_table = array();
-    
+
     if (is_array ($return_text_id) && sizeof ($return_text_id) > 0)
     {
       // add object information to the result array
@@ -2947,7 +2984,7 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
       {
         $sql_attr[] = "cnt.date";
       }
-      
+
       if (in_array ("createdate", $return_text_id))
       {
         $sql_attr[] = "cnt.createdate";
@@ -2962,7 +2999,7 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
       {
         $sql_attr[] = "cnt.user";
       }
-      
+
       if (in_array ("filesize", $return_text_id))
       {
         $sql_attr[] = "med.filesize";
@@ -2979,7 +3016,7 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
           break;
         }
       }
-      
+
       // add join for textnodes table
       if (!empty ($sql_add_text_id))
       {
@@ -2988,11 +3025,11 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
         if (empty ($sql_table['textnodes'])) $sql_table['textnodes'] = "";
         if (strpos ($sql_table['textnodes'], " ON obj.id=tng.id ") < 1) $sql_table['textnodes']  .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id';
       }
-      
+
       // add attributes to search query
       if (sizeof ($sql_attr) > 0) $sql_add_attr = ", ".implode (", ", $sql_attr);
     }  
-    
+
     $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj INNER JOIN container AS cnt ON obj.id=cnt.id AND cnt.user="'.$user.'" ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
     if ($site != "" && $site != "*Null*") $sql .= 'WHERE (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin) ';
@@ -3001,9 +3038,9 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
 
     $errcode = "50025";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
-    
+
     $objectpath = array();
-    
+
     if ($done)
     {
       while ($row = $db->rdbms_getresultrow ())
@@ -3011,7 +3048,7 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
         if (!empty ($row['hash']) && !empty ($row['objectpath']))
         {
           $hash = $row['hash'];
-          
+
           $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
           $objectpath[$hash]['container_id'] =  sprintf ("%07d", $row['id']);
           $objectpath[$hash]['media'] =  $row['media'];
@@ -3024,14 +3061,14 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
         }
       }
     }
-    
+
     // count searchresults
     if (!empty ($count))
     {
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj JOIN container AS cnt ON obj.id=cnt.id AND cnt.user="'.$user.'" ';
       if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
       if ($site != "" && $site != "*Null*") $sql .= ' WHERE (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
-      
+
       $errcode = "50021";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
@@ -3044,7 +3081,7 @@ function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-      
+
     if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
     else return false;
   }
@@ -3067,31 +3104,31 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
   if ($site != "" || $from_user != "" || $to_user_email != "" || $date_from != "" || $date_to != "")
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     if ($site != "" && $site != "*Null*") $site = $db->rdbms_escape_string ($site);
-    
+
     if ($from_user != "")
     {
       // cut off additional information in brackets after the user name
       if (strpos ($from_user, "(") > 0) $from_user = trim (substr ($from_user, 0, strpos ($from_user, "(")));
       $from_user = $db->rdbms_escape_string ($from_user);
     }
-    
+
     if ($to_user_email != "")
     {
       // cut off additional information in brackets after the user name
       if (strpos ($to_user_email, "(") > 0) $to_user_email = trim (substr ($to_user_email, 0, strpos ($to_user_email, "(")));
       $to_user_email = $db->rdbms_escape_string ($to_user_email);
     }
-    
+
     if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
     if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
     $maxhits = intval ($maxhits);
-    
+
     $sql_add_attr = "";
     $sql_attr = array();
     $sql_table = array();
-    
+
     if (is_array ($return_text_id) && sizeof ($return_text_id) > 0)
     {
       // add object information to the result array
@@ -3101,7 +3138,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
         if (empty ($sql_table['container'])) $sql_table['container'] = "";
         if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
       }
-      
+  
       if (in_array ("createdate", $return_text_id))
       {
         $sql_attr[] = "cnt.createdate";
@@ -3115,14 +3152,14 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
         if (empty ($sql_table['container'])) $sql_table['container'] = "";
         if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
       }
-      
+
       if (in_array ("user", $return_text_id) || in_array ("owner", $return_text_id))
       {
         $sql_attr[] = "cnt.user";
         if (empty ($sql_table['container'])) $sql_table['container'] = "";
         if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
       }
-      
+
       if (in_array ("filesize", $return_text_id))
       {
         $sql_attr[] = "med.filesize";
@@ -3139,7 +3176,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
           break;
         }
       }
-      
+
       // add join for textnodes table
       if (!empty ($sql_add_text_id))
       {
@@ -3148,11 +3185,11 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
         if (empty ($sql_table['textnodes'])) $sql_table['textnodes'] = "";
         if (strpos ($sql_table['textnodes'], " ON obj.id=tng.id ") < 1) $sql_table['textnodes']  .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id';
       }
-      
+
       // add attributes to search query
       if (sizeof ($sql_attr) > 0) $sql_add_attr = ", ".implode (", ", $sql_attr);
     }  
-    
+
     $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj INNER JOIN recipient AS rec ON obj.object_id=rec.object_id ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
     $sql .= 'WHERE obj.objectpath!="" ';
@@ -3166,9 +3203,9 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
 
     $errcode = "50026";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
-    
+
     $objectpath = array();
-    
+
     if ($done)
     {
       while ($row = $db->rdbms_getresultrow ())
@@ -3176,7 +3213,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
         if (!empty ($row['hash']) && !empty ($row['objectpath']))
         {
           $hash = $row['hash'];
-          
+
           $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
           $objectpath[$hash]['container_id'] =  sprintf ("%07d", $row['id']);
           $objectpath[$hash]['media'] =  $row['media'];
@@ -3189,14 +3226,14 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
         } 
       }
     }
-    
+
     // count searchresults
     if (!empty ($count))
     {
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj JOIN container AS cnt ON obj.id=cnt.id AND cnt.user="'.$user.'" ';
       if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
       if ($site != "" && $site != "*Null*") $sql .= ' WHERE (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
-      
+ 
       $errcode = "50027";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
@@ -3209,7 +3246,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-      
+
     if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
     else return false;
   }
@@ -3512,7 +3549,7 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
 // ----------------------------------------------- get object_id ------------------------------------------------- 
 
 // function: rdbms_getobject_id()
-// input: location path of an object [string]
+// input: location path or hash of an object [string]
 // output: object ID / false
 
 // description:
@@ -3959,7 +3996,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
 // ------------------------------------------ get objects by container_id or temlpate name -------------------------------------------- 
 
 // function: rdbms_getobjects()
-// input: container ID [integer] (optional), template name [string] (optional), text IDs to be returned [array] (optional)
+// input: container ID supports multiple values if | is used as separator [integer] (optional), template name [string] (optional), text IDs to be returned [array] (optional)
 // output: 2 dimensional object path array / false
 
 // description:
@@ -3971,105 +4008,112 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
 
   if ($container_id != "" || $template != "")
   {
+    $objectpath = array();
+
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    // clean input
-    if ($container_id != "") $container_id = intval ($container_id);
-    if ($template != "") $template = $db->rdbms_escape_string ($template);
+    // split
+    if ($container_id != "") $container_id_array = link_db_getobject ($container_id);
+    else $container_id_array = array(0 => "");
 
-    $sql_add_attr = "";
-    $sql_attr = array();
-    $sql_table = array();
-    
-    if (is_array ($return_text_id) && sizeof ($return_text_id) > 0)
+    foreach ($container_id_array as $container_id)
     {
-      // add object information to the result array
-      if (in_array ("date", $return_text_id) || in_array ("modifieddate", $return_text_id))
-      {
-        $sql_attr[] = "cnt.date";
-        if (empty ($sql_table['container'])) $sql_table['container'] = "";
-        if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
-      }
-      
-      if (in_array ("createdate", $return_text_id))
-      {
-        $sql_attr[] = "cnt.createdate";
-        if (empty ($sql_table['container'])) $sql_table['container'] = "";
-        if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
-      }
+      // clean input
+      if (trim ($container_id) != "") $container_id = intval ($container_id);
+      if ($template != "") $template = $db->rdbms_escape_string ($template);
 
-      if (in_array ("publishdate", $return_text_id))
-      {
-        $sql_attr[] = "cnt.publishdate";
-        if (empty ($sql_table['container'])) $sql_table['container'] = "";
-        if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
-      }
+      $sql_add_attr = "";
+      $sql_attr = array();
+      $sql_table = array();
       
-      if (in_array ("user", $return_text_id) || in_array ("owner", $return_text_id))
+      if (is_array ($return_text_id) && sizeof ($return_text_id) > 0)
       {
-        $sql_attr[] = "cnt.user";
-        if (empty ($sql_table['container'])) $sql_table['container'] = "";
-        if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
-      }
-      
-      if (in_array ("filesize", $return_text_id))
-      {
-        $sql_attr[] = "med.filesize";
-        if (empty ($sql_table['media'])) $sql_table['media'] = "";
-        if (strpos ($sql_table['media'], " ON obj.id=med.id") < 1) $sql_table['media'] .= ' LEFT JOIN media AS med ON obj.id=med.id';
-      }
-
-      // add text IDs and content to the result array
-      foreach ($return_text_id as $text_id)
-      {
-        if (substr ($text_id, 0, 5) == "text:")
+        // add object information to the result array
+        if (in_array ("date", $return_text_id) || in_array ("modifieddate", $return_text_id))
         {
-          $sql_add_text_id = true;
-          break;
+          $sql_attr[] = "cnt.date";
+          if (empty ($sql_table['container'])) $sql_table['container'] = "";
+          if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
         }
-      }
-      
-      // add join for textnodes table
-      if (!empty ($sql_add_text_id))
-      {
-        $sql_attr[] = "tng.text_id";
-        $sql_attr[] = "tng.textcontent";
-        if (empty ($sql_table['textnodes'])) $sql_table['textnodes'] = "";
-        if (strpos ($sql_table['textnodes'], " ON obj.id=tng.id ") < 1) $sql_table['textnodes']  .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id';
-      }
-      
-      // add attributes to search query
-      if (sizeof ($sql_attr) > 0) $sql_add_attr = ", ".implode (", ", $sql_attr);
-    }
-    
-    $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj ';
-    if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
-    $sql .= 'WHERE obj.deleteuser="" ';
-    if ($container_id != "") $sql .= 'AND obj.id='.$container_id.' ';
-    if ($template != "") $sql .= 'AND obj.template="'.$template.'" ';
-    
-    $errcode = "50040";
-    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
-    
-    $objectpath = array();
-    
-    if ($done)  
-    {
-      while ($row = $db->rdbms_getresultrow ())
-      {
-        if (!empty ($row['hash']) && !empty ($row['objectpath']))
+        
+        if (in_array ("createdate", $return_text_id))
         {
-          $hash = $row['hash'];
-          
-          $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
-          $objectpath[$hash]['container_id'] = sprintf ("%07d", $row['id']);
-          $objectpath[$hash]['media'] = $row['media'];
-          if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
-          if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
-          if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
-          if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
-          if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
-          if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
+          $sql_attr[] = "cnt.createdate";
+          if (empty ($sql_table['container'])) $sql_table['container'] = "";
+          if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
+        }
+
+        if (in_array ("publishdate", $return_text_id))
+        {
+          $sql_attr[] = "cnt.publishdate";
+          if (empty ($sql_table['container'])) $sql_table['container'] = "";
+          if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
+        }
+        
+        if (in_array ("user", $return_text_id) || in_array ("owner", $return_text_id))
+        {
+          $sql_attr[] = "cnt.user";
+          if (empty ($sql_table['container'])) $sql_table['container'] = "";
+          if (strpos ($sql_table['container'], " ON obj.id=cnt.id") < 1) $sql_table['container'] .= ' LEFT JOIN container AS cnt ON obj.id=cnt.id';
+        }
+        
+        if (in_array ("filesize", $return_text_id))
+        {
+          $sql_attr[] = "med.filesize";
+          if (empty ($sql_table['media'])) $sql_table['media'] = "";
+          if (strpos ($sql_table['media'], " ON obj.id=med.id") < 1) $sql_table['media'] .= ' LEFT JOIN media AS med ON obj.id=med.id';
+        }
+
+        // add text IDs and content to the result array
+        foreach ($return_text_id as $text_id)
+        {
+          if (substr ($text_id, 0, 5) == "text:")
+          {
+            $sql_add_text_id = true;
+            break;
+          }
+        }
+        
+        // add join for textnodes table
+        if (!empty ($sql_add_text_id))
+        {
+          $sql_attr[] = "tng.text_id";
+          $sql_attr[] = "tng.textcontent";
+          if (empty ($sql_table['textnodes'])) $sql_table['textnodes'] = "";
+          if (strpos ($sql_table['textnodes'], " ON obj.id=tng.id ") < 1) $sql_table['textnodes']  .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id';
+        }
+        
+        // add attributes to search query
+        if (sizeof ($sql_attr) > 0) $sql_add_attr = ", ".implode (", ", $sql_attr);
+      }
+      
+      $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj ';
+      if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
+      $sql .= 'WHERE obj.deleteuser="" ';
+      if (trim ($container_id) != "") $sql .= 'AND obj.id='.$container_id.' ';
+      if ($template != "") $sql .= 'AND obj.template="'.$template.'" ';
+      
+      $errcode = "50040";
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+      
+      if ($done)  
+      {
+        while ($row = $db->rdbms_getresultrow ())
+        {
+          if (!empty ($row['hash']) && !empty ($row['objectpath']))
+          {
+            $hash = $row['hash'];
+            
+            $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+            $objectpath[$hash]['container_id'] = sprintf ("%07d", $row['id']);
+            $objectpath[$hash]['media'] = $row['media'];
+            if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
+            if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
+            if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
+            if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
+            if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
+            if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
+          }
         }
       }
     }
