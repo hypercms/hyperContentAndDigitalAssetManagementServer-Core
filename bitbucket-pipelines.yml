@@ -4,4 +4,4 @@ pipelines:
   default:
     - step:
         script:
-          - git push --mirror git@github.com:hypercms/mirror-repo.git
+          - git push --mirror git@github.com:hypercms/hyperContentAndDigitalAssetManagementServer-Core/mirror-repo.git
