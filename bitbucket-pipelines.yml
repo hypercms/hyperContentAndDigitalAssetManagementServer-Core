@@ -1,0 +1,7 @@
+# Sync with github
+
+pipelines:
+  default:
+    - step:
+        script:
+          - git push --mirror git@github.com:hypercms/mirror-repo.git
