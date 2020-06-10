@@ -37,12 +37,22 @@ checkusersession ($user, false);
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=1024, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?ts=<?php echo time(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?ts=<?php echo time(); ?>" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <!-- JQuery used for AJAX viewport set request -->
 <script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 
 <?php
+// invert button colors
+if ($hcms_themeinvertcolors)
+{
+  echo "<style>";
+  echo invertcolorCSS ("img.hcmsButtonTiny", 100);
+  echo invertcolorCSS ("img.hcmsButtonTiny:hover", 0);
+  echo "</style>";
+}
+
 // set time zone for user
 if (!empty ($_SESSION['hcms_timezone']) && $_SESSION['hcms_timezone'] != "standard")
 {
@@ -360,7 +370,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
 <!-- top/left bar -->
 <div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; bottom:0; width:<?php echo $width_top; ?>px;">
-  <img src="<?php if (!empty ($mgmt_config['logo_top'])) echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsButtonTiny hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
+  <img src="<?php if (!empty ($mgmt_config['logo_top'])) echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
   
   <?php if (empty ($hcms_assetbrowser)) { ?>
   <img src="<?php echo getthemelocation(); ?>img/home.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="showHome();" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />

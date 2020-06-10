@@ -311,11 +311,8 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle=array(), $arts
 
     reset ($artstatus);
 
-    for ($i = 1; $i <= sizeof ($artstatus); $i++)
+    foreach ($artstatus as $artid => $temp)
     {
-      // get key (position) of array item
-      $artid = key ($artstatus);
-
       if ($artid != "")
       {
         if (!isset ($arttitle[$artid])) $arttitle[$artid] = "";
@@ -345,7 +342,6 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle=array(), $arts
         if (!empty ($artuser[$artid])) $contentdatanew = setcontent ($contentdatanew, "<article>", "<articleuser>", $artuser[$artid], "<article_id>", $artid);
 
         $contentdata = $contentdatanew;
-        next ($artstatus);
       }
     }
 
@@ -408,11 +404,8 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
     $continued = false;
 
     // loop through all text nodes
-    for ($i = 1; $i <= sizeof ($text); $i++)
+    foreach ($text as $id => $temp)
     {
-      // get key (position) of array item
-      $id = key ($text); 
-
       if ($id != "")
       {
         // set array if input parameter is string
@@ -679,7 +672,6 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
         } 
 
         $contentdata = $contentdatanew;
-        next ($text);
       } 
     }
 
@@ -768,11 +760,8 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
 
     reset ($mediafile);
 
-    for ($i = 1; $i <= sizeof ($mediafile); $i++)
+    foreach ($mediafile as $id => $temp)
     {
-      // get key (position) of array item
-      $id = key ($mediafile); 
-
       if ($id != "")
       { 
         // set values if not set
@@ -888,7 +877,6 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
         $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $mediaobject_curr[$id], $mediaobject[$id], "unique");
 
         $contentdata = $contentdatanew;
-        next ($mediafile);
       }
     }
 
@@ -973,11 +961,8 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
 
     reset ($linkhref);
 
-    for ($i = 1; $i <= sizeof ($linkhref); $i++)
+    foreach ($linkhref as $id => $temp)
     {
-      // get key (position) of array item
-      $id = key ($linkhref);
-
       if ($id != "")
       {
         // set values if not set
@@ -1073,7 +1058,6 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
         $link_db = link_db_update ($site, $link_db, "link", $contentfile, "page", $linkhref_curr[$id], $linkhref[$id], "unique"); 
 
         $contentdata = $contentdatanew;
-        next ($linkhref);
       }
     }
 
@@ -1161,11 +1145,8 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
 
     reset ($component);
 
-    for ($i = 1; $i <= sizeof ($component); $i++)
+    foreach ($component as $id => $temp)
     {
-      // get key (position) of array item
-      $id = key ($component);
-
       if ($id != "")
       {
         // correct extension if object is unpublished
@@ -1250,7 +1231,6 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
         $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $component_curr[$id], $component[$id], "unique");
 
         if (!empty ($contentdatanew)) $contentdata = $contentdatanew;
-        next ($component);
       }
     }
 

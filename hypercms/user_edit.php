@@ -123,11 +123,43 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
     // change theme in session if user changed it and mobile edition is not used
     if (!empty ($theme) && $hcms_themename != $theme && !$is_mobile)
     {
+      $themeinvertcolors = false;
+
+      // get design theme and primary color if a portal theme is used
+      if (strpos ($theme, "/") > 0)
+      {
+        // load portal template if not loaded
+        list ($portal_site, $portal_theme) = explode ("/", $theme);
+
+        if (valid_objectname ($portal_theme))
+        {
+          $portal_template = $portal_theme.".portal.tpl";
+          $portal_template = loadtemplate ($portal_site, $portal_template);
+        }
+
+        // get design theme and primary color
+        if (!empty ($portal_template['content']))
+        {
+          $temp_portaltheme = getcontent ($portal_template['content'], "<designtheme>");
+          $temp_portalcolor = getcontent ($portal_template['content'], "<primarycolor>");
+
+          if (!empty ($temp_portaltheme[0]) && !empty ($temp_portalcolor[0]))
+          {
+            list ($portalsite, $portaltheme) = explode ("/", $temp_portaltheme[0]);
+            $brightness = getbrightness ($temp_portalcolor[0]);
+
+            if ($portaltheme == "day" && $brightness < 130) $themeinvertcolors = true;
+            elseif ($portaltheme == "night" && $brightness >= 130) $themeinvertcolors = true;
+          }
+        }
+      }
+
       setsession ('hcms_themename', $theme, true);
+      setsession ('hcms_themeinvertcolors', $themeinvertcolors, true);
       $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
     }
   }
-  
+
   // set time zone
   if (!empty ($timezone) && $timezone != getsession ("hcms_timezone"))
   {
@@ -142,7 +174,7 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
   if (!empty ($homeboxes)) setuserboxes ($homeboxes, $login);
 
   $show = $result['message'];
-  
+
   // save log
   savelog (@$error);
 }
@@ -157,6 +189,7 @@ $token_new = createtoken ($user);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=0.7, maximum-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 
@@ -740,7 +773,7 @@ if ($login != "" && $login != false)
             // get home boxes for selection
             if ($login_cat == "home" && $login == $user) $homebox_array = gethomeboxes ($siteaccess);
             elseif (!empty ($usersitearray)) $homebox_array = gethomeboxes ($usersitearray);
-            else $homebox_array = false;
+            else $homebox_array = gethomeboxes ();
   
             // get home boxes of user
             $userbox_array = getuserboxes ($login);

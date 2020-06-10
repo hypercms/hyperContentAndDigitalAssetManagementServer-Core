@@ -665,6 +665,8 @@ function is_emptyfolder ($dir)
 
 function is_supported ($preview_array, $file)
 {
+  global $mgmt_config;
+
   if (is_array ($preview_array) && $file != "")
   {
     // get file extension
@@ -769,6 +771,8 @@ function is_cloudobject ($file)
 
 function is_date ($date, $format="Y-m-d")
 {
+  global $mgmt_config;
+
   if ($date != "" && $format != "")
   {
     $date = strtotime ($date);
@@ -790,6 +794,8 @@ function is_date ($date, $format="Y-m-d")
 
 function is_tempfile ($path)
 {
+  global $mgmt_config;
+
   // patterns
   $tempfile_patterns = array (
     '/^.*\.recycle$/',    // object in recycle bin
@@ -801,7 +807,7 @@ function is_tempfile ($path)
     '/^Thumbs.db$/',   // Windows thumbnail cache
     '/^.(.*).swp$/',   // ViM temporary files
     '/^\.dat(.*)$/',   // Smultron seems to create these
-    '/^~lock.(.*)#$/', // Windows 7 lockfiles
+    '/^~lock.(.*)#$/' // Windows 7 lockfiles
   );
 
   if ($path != "" && is_array ($tempfile_patterns))
@@ -813,10 +819,9 @@ function is_tempfile ($path)
     {
       if (preg_match ($pattern, $object)) return true;
     }
-
-    return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // -------------------------------------- is_keyword -------------------------------------------
@@ -1893,8 +1898,8 @@ function mediapublicaccess ($mediafile)
 // output: URL for download of the multimedia file / false on error
 
 // description:
-// The view link is mainly used inside the system in order to reference and load a multimedia file. 
-// The database is not required since the object hash or ID is not needed to create the view link. 
+// The view link is mainly used inside the system as a reference to a multimedia file. 
+// The database is not required since the object hash or ID is not needed to create the view link.
 
 function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type="wrapper")
 {
@@ -2419,30 +2424,22 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
 
 // --------------------------------------- createmultidownloadlink -------------------------------------------
 // function: createmultidownloadlink ()
-// input: publication name [string], multiobject using | as seperator [string] or [array] (optional), media file name [string] (optional), location [string] (optional), presentation name [string] (optional), user name [string], conversion type example: jpg [string], 
+// input: publication name [string], multiobject using | as seperator [string] or [array] (optional), presentation name [string] (optional), user name [string], conversion type example: jpg [string], 
 //        media configuration used for conversion (e.g.: 1024x768px) [string], link type [wrapper,download] (optional), flat hierarchy means no directories [boolean] (optional) 
 // output: URL for download of the requested objects / false on error
 
 // description:
-// Generates a download link of a single media file, folder or multi objects.
-// Priority if multiple input parameters for media file, folder or multi objects are given:
-// 1st...multi object (min. 2 objects or object is a folder)
-// 2nd...multiobject with only one object (must not be a folder)
-// 3rd...media file
-// 4th...folder
+// Generates a download link of a selectio of media objects. Pages and components will be ignored.
+// There is a difference in the file conversion functionality: 
+// Case 1: multiobject (min. 2 objects or object is a folder) without the support of file conversion
+// Case 2: multiobject with only one object (must not be a folder) with support of file conversion
 
-function createmultidownloadlink ($site, $multiobject="", $media="", $location="", $name="", $user, $type="", $mediacfg="", $linktype="download", $flatzip=false)
+function createmultidownloadlink ($site, $multiobject, $name="", $user, $type="", $mediacfg="", $linktype="download", $flatzip=false)
 {
   global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
 
-  if (valid_publicationname ($site) && valid_objectname ($user) && (valid_locationname ($location) || valid_locationname ($multiobject) || valid_objectname ($media)))
+  if (valid_publicationname ($site) && valid_objectname ($user) && !empty ($multiobject))
   {
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/"; 
-
-    // deconvert path
-    $location = deconvertpath ($location, "file");
-
     // get multiobject array
     $multiobject_array = link_db_getobject ($multiobject);
 
@@ -2491,8 +2488,10 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
       // zip files
       $result_zip = zipfiles ($site, $multiobject_array, $mediadir, $zip_filename, $user, "", $flatzip);
 
-      if ($location == "") $location = $multiobject_array[0];
+      // set location (used for name)
+      $location = $multiobject_array[0];
 
+      // zip file name
       $media = $zip_filename.".zip";
 
       if ($location != "")
@@ -2515,65 +2514,14 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
       // get object info
       $objectinfo = getobjectinfo ($site, getlocation ($object), getobject ($object));
 
+      // media object
       if (!empty ($objectinfo['media']))
       {
         $result_zip = true;
+
         // multimedia file (publication/file)
         $media = $site."/".$objectinfo['media'];
       }
-    }
-    // CASE 3: for a single file
-    elseif (trim ($media) != "")
-    {
-      $result_zip = true;
-      // multimedia file (publication/file)
-      $media = $site."/".$media;
-    }
-    // CASE 4: download zip-file for single folder
-    elseif (is_dir ($location))
-    {
-      // check permissions (only if a publication and location has been provided)
-      if (!empty ($mgmt_config['api_checkpermission']))
-      {
-        $ownergroup = accesspermission ($site, $location, "");
-        $setlocalpermission = setlocalpermission ($site, $ownergroup, "");
-    
-        if (empty ($setlocalpermission['root']))
-        {
-          return false;
-        }
-      }
-
-      // get object id
-      $objectpath = convertpath ($site, $location, "");
-      $object_id = rdbms_getobject_id ($objectpath);
-
-      // get container id
-      $folderinfo = getobjectinfo ($site, $location, ".folder");
-
-      if (is_array ($folderinfo))
-      {
-        $container_id = $folderinfo['container_id'];
-      }
-
-      // unique name for zip-file to download
-      if (!empty ($object_id) && !empty ($container_id)) $zip_filename = $object_id."_hcm".$container_id;
-      else $zip_filename = uniqid ("tmp");
-
-      // temp directory holding the zip-file
-      $mediadir = $mgmt_config['abs_path_temp'];
-
-      // generate temp dir
-      if (!is_dir ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
-
-      // set multiobject array
-      $multiobject_array[0] = convertpath ($site, $location, "");
- 
-      $result_zip = zipfiles ($site, $multiobject_array, $mediadir, $zip_filename, $user, "", $flatzip);
-
-      $media = $zip_filename.".zip";
-      $media_info = getfileinfo ($site, getobject ($location).".zip", "comp");
-      $name = $media_info['name'];
     }
 
     // additional parameters for conversion
@@ -4378,7 +4326,7 @@ function substr_in_array ($search, $array)
 // output: stream of file content / false on error
 
 // description:
-// This functions provides an object via http for viewing, not suitable for multimedia objects!
+// This functions provides an object via http for viewing. Not suitable for multimedia objects!
 
 function downloadobject ($location, $object, $container="", $lang="en", $user="")
 {
@@ -8424,14 +8372,6 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
         $css_main = str_ireplace ($search, "#".$primarycolor, $css_main);
         if (!empty ($css_main)) savefile ($mgmt_config['abs_path_rep']."portal/".$site."/".$tpl_name."/css/", "main.css", $css_main);
       }
-
-      $css_navigator = loadfile ($mgmt_config['abs_path_rep']."portal/".$site."/".$tpl_name."/css/", "navigator.css");
-
-      if (!empty ($css_navigator) && !empty ($search))
-      {
-        $css_navigator = str_ireplace ($search, "#".$primarycolor, $css_navigator);
-        if (!empty ($css_navigator)) savefile ($mgmt_config['abs_path_rep']."portal/".$site."/".$tpl_name."/css/", "navigator.css", $css_navigator);
-      }
     }
 
     // copy uploaded media files
@@ -12423,13 +12363,9 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
       reset ($mgmt_uncompress);
  
-      for ($i = 1; $i <= sizeof ($mgmt_uncompress); $i++)
+      foreach ($mgmt_uncompress as $extension => $temp)
       {
-        // supported extension
-        $extension = key ($mgmt_uncompress);
-
         if (substr_count ($extension, $file_ext) > 0) $check_unzip = true;
-        next ($mgmt_uncompress);
       }
     }
 
@@ -14275,9 +14211,9 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               {
                 foreach ($langcode_array as $code => $language)
                 {
-                  if (is_file ($mgmt_config['abs_path_temp']."view/".$contentfile_id."_".trim($code).".vtt"))
+                  if (is_file ($mgmt_config['abs_path_view'].$contentfile_id."_".trim($code).".vtt"))
                   {
-                    deletefile ($mgmt_config['abs_path_temp']."view/", $contentfile_id."_".trim($code).".vtt", 0);
+                    deletefile ($mgmt_config['abs_path_view'], $contentfile_id."_".trim($code).".vtt", 0);
                   }
                 }
               }
@@ -16562,7 +16498,7 @@ function publishobject ($site, $location, $page, $user)
               list ($vtt, $vtt_langcode) = explode ("-", $vtt_id[0]);
               $vtt_string = getcontent ($vtt_textnode, "<textcontent>");
 
-              if (!empty ($vtt_string[0])) savefile ($mgmt_config['abs_path_temp']."view/", $container_id."_".trim($vtt_langcode).".vtt", $vtt_string[0]);
+              if (!empty ($vtt_string[0])) savefile ($mgmt_config['abs_path_view'], $container_id."_".trim($vtt_langcode).".vtt", $vtt_string[0]);
             }
           }
         }
@@ -16832,9 +16768,9 @@ function unpublishobject ($site, $location, $page, $user)
         {
           foreach ($langcode_array as $code => $language)
           {
-            if (is_file ($mgmt_config['abs_path_temp']."view/".$container_id."_".trim($code).".vtt"))
+            if (is_file ($mgmt_config['abs_path_view'].$container_id."_".trim($code).".vtt"))
             {
-              deletefile ($mgmt_config['abs_path_temp']."view/", $container_id."_".trim($code).".vtt", 0);
+              deletefile ($mgmt_config['abs_path_view'], $container_id."_".trim($code).".vtt", 0);
             }
           }
         }
@@ -17359,6 +17295,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       // on success
       if (!empty ($marked))
       {
+        // mark as deleted
         if ($action == "deletemark")
         {
           if (sizeof ($objectpath_array) > 0)
@@ -17370,6 +17307,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
           $errcode = "00315";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|objects have been moved to the recycle bin by user '".$user."' (".getuserip().")";
         }
+        // unmark / restore
         else
         {
           // log
@@ -17381,11 +17319,16 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
         $result['result'] = true;
         $result['maxcount'] = $result['count'] = sizeof ($objectpath_array);
       }
+      // on error
       else
       {
         // log
         $errcode = "20315";
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|failed to process objects of the recycle bin for user '".$user."' (".getuserip().")";
+
+        $result['result'] = false;
+        $result['maxcount'] = $result['count'] = sizeof ($objectpath_array);
+        $result['message'] = $hcms_lang['a-folder-with-the-same-name-exists-already'][$lang]." / ".$hcms_lang['the-object-exists-already'][$lang];
       }
 
       // save log
@@ -17763,14 +17706,12 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       // action = cut & paste
       elseif ($action == "paste" && $method == "cut")
       {
-        for ($i = 1; $i <= sizeof ($rootpathdelete_array); $i++)
+        foreach ($rootpathdelete_array as $temp_id => $temp_path)
         {
-          $temp_id = key ($rootpathdelete_array);
-
-          if ($rootpathdelete_array[$temp_id] != "")
+          if ($temp_path != "")
           {
-            $site = getpublication ($rootpathdelete_array[$temp_id]);
-            $location = deconvertpath ($rootpathdelete_array[$temp_id], "file");
+            $site = getpublication ($temp_path);
+            $location = deconvertpath ($temp_path, "file");
             $folder = getobject ($location); // could be a file or a folder 
             $location = getlocation ($location);  // location without folder
  
@@ -17805,8 +17746,6 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $folder, ""); 
             }
           }
-
-          next ($rootpathdelete_array);
         }
       }
     }
@@ -19085,15 +19024,10 @@ function sendresetpassword ($login, $link=false, $instance="")
   else
   {
     $email = getcontent ($usernode[0], "<email>");
-    $site = getcontent ($usernode[0], "<publication>");
   }
 
-  // if e-mail is empty
-  if (empty ($email[0]))
-  {
-    return str_replace ("%user%", $login, $hcms_lang['e-mail-address-of-user-s-is-missing'][$lang]);
-  }
-  elseif (!empty ($email[0]) && !empty ($site[0]))
+  // e-mail address available
+  if (!empty ($email[0]))
   {
     // change password
     $mgmt_config['strongpassword'] = false;
@@ -19121,6 +19055,11 @@ function sendresetpassword ($login, $link=false, $instance="")
 
     if ($mail == false) return $hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang]." ".$email[0];
     else return $hcms_lang['e-mail-was-sent-successfully-to-'][$lang]." ".$email[0];
+  }
+  // if e-mail is empty
+  else
+  {
+    return str_replace ("%user%", $login, $hcms_lang['e-mail-address-of-user-s-is-missing'][$lang]);
   }
 }
 

@@ -805,7 +805,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
 
-  if ($mgmt_config['db_connect_rdbms'] != "")
+  if (!empty ($mgmt_config['db_connect_rdbms']))
   {
     include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
   }
@@ -813,7 +813,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   // set default language
   if (empty ($lang)) $lang = "en";
 
-  // result array containing the following fields:
+  // result array definition
   $result = array(
       'hcms_linking' => array(),
       'globalpermission' => array(),
@@ -839,11 +839,14 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       'resetpassword' => false,
       'userexpired' => false,
       'portal' => false,
+      'themename' => '',
+      'themeinvertcolors' => false,
       'downloadformats' => array(),
       'objectlistcols' => array(),
       'labels' => array()
       );
 
+  // initalize
   $linking_auth = true;
   $ldap_auth = true;
   $auth = false;
@@ -860,7 +863,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     onlogon_pre ($user);
   }
 
-  // object linking
+  // --------------------- object linking --------------------- 
   if (!empty ($objref) && !empty ($objcode))
   {
     $passwd_crypted = urldecode ($passwd);
@@ -898,7 +901,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     $passwd_crypted = @crypt ($passwd, substr ($passwd, 1, 2));
   }
 
-  // include authentification connectivity (LDAP, AD, or others)
+  // --------------------- include authentification connectivity (LDAP, AD, or others) --------------------- 
   if (!empty ($mgmt_config['authconnect']) && is_file ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php"))
   {
     include ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php");
@@ -930,7 +933,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       }
     }
 
-    // user expiration due to inactivity
+    // ---------------------  user expiration due to inactivity --------------------- 
     if (!empty ($mgmt_config['userexpires']))
     {
       $log_array = loadlog ($user.".user", "array");
@@ -952,6 +955,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       }
     }
 
+    // --------------------- user data --------------------- 
     // please note: each user login name and user group name is unique
     // load user file
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
@@ -989,7 +993,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
 
     if ($userdata != false)
     {
-      // updates
+      // --------------------- updates --------------------- 
       updates_all ();
 
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
@@ -1079,9 +1083,10 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         if (!empty ($uservaliddateto[0])) $result['validdateto'] = $uservaliddateto[0];
         else $result['validdateto'] = "";
 
-        // set design theme of portal
+        // --------------------- portal --------------------- 
         if (!empty ($portal))
         {
+          // set design theme of portal for the user
           if (strpos ($portal, ".") > 0)
           {
             list ($portal_site, $portal_theme) = explode (".", $portal);
@@ -1091,39 +1096,33 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
           {
             $result['portal'] = $result['themename'] = $portal;
           }
-        }
 
-        // extract download formats if a portal theme is used
-        if (!empty ($result['themename']) && strpos ($result['themename'], "/") > 0)
-        {
-          list ($portal_site, $portal_theme) = explode ("/", $result['themename']);
-
-          if (valid_objectname ($portal_theme))
+          // extract download formats if a portal theme is used
+          if (!empty ($result['themename']) && strpos ($result['themename'], "/") > 0)
           {
-            $portal_template = $portal_theme.".portal.tpl";
+            list ($portal_site, $portal_theme) = explode ("/", $result['themename']);
 
-            $portal_template = loadtemplate ($portal_site, $portal_template);
-
-            // get download formats
-            if (!empty ($portal_template['content']))
+            if (valid_objectname ($portal_theme))
             {
-              $temp_array = getcontent ($portal_template['content'], "<downloadformats>");
+              $portal_template = $portal_theme.".portal.tpl";
+              $portal_template = loadtemplate ($portal_site, $portal_template);
 
-              if (!empty ($temp_array[0]))
+              // get download formats
+              if (!empty ($portal_template['content']))
               {
-                $result['downloadformats'] = json_decode ($temp_array[0], true);
+                $temp_array = getcontent ($portal_template['content'], "<downloadformats>");
+
+                if (!empty ($temp_array[0]))
+                {
+                  $result['downloadformats'] = json_decode ($temp_array[0], true);
+                }
               }
             }
           }
         }
 
-        // reset design theme if a mobile browser is used (force mobile design theme)
-        if (is_mobilebrowser ())
-        {
-          $result['themename'] = "mobile";
-        }
         // if design theme has not been set so far (no portal used or portal name is not valid)
-        elseif (empty ($result['themename']))
+        if (empty ($result['themename']))
         {
           $usertheme = getcontent ($usernode[0], "<theme>");
 
@@ -1131,9 +1130,42 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
           else $result['themename'] = "standard";
         }
 
+        // get design theme and primary color if a portal theme is used
+        if (!empty ($result['themename']) && strpos ($result['themename'], "/") > 0)
+        {
+          // load portal template if not loaded
+          if (empty ($portal_template['content']))
+          {
+            list ($portal_site, $portal_theme) = explode ("/", $result['themename']);
+
+            if (valid_objectname ($portal_theme))
+            {
+              $portal_template = $portal_theme.".portal.tpl";
+              $portal_template = loadtemplate ($portal_site, $portal_template);
+            }
+          }
+          
+          // get design theme and primary color
+          if (!empty ($portal_template['content']))
+          {
+            $temp_portaltheme = getcontent ($portal_template['content'], "<designtheme>");
+            $temp_portalcolor = getcontent ($portal_template['content'], "<primarycolor>");
+
+            if (!empty ($temp_portaltheme[0]) && !empty ($temp_portalcolor[0]))
+            {
+              list ($portalsite, $portaltheme) = explode ("/", $temp_portaltheme[0]);
+              $brightness = getbrightness ($temp_portalcolor[0]);
+
+              if ($portaltheme == "day" && $brightness < 130) $result['themeinvertcolors'] = true;
+              elseif ($portaltheme == "night" && $brightness >= 130) $result['themeinvertcolors'] = true;
+            }
+          }
+        }
+
         $memberofnode = getcontent ($usernode[0], "<memberof>");
       }
 
+      // --------------------- permissions --------------------- 
       // check valid dates
       $validdate = true;
 
@@ -1441,9 +1473,10 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     }
   }
 
-  // in case hash code has been provided
+  // in case a user hash code has been provided
   if (empty ($user)) $user = $fileuser;
 
+  // --------------------- verify key --------------------- 
   if (!empty ($auth))
   {
     // check disk key
@@ -1525,6 +1558,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     }
   }
 
+  // --------------------- security --------------------- 
   // count failed login attempts of same client IP address
   if ($locking == true && $result['auth'] == false)
   {
@@ -1566,6 +1600,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   // state of chat
   $result['chatstate'] = getchatstate (false);
 
+  // --------------------- GUI definitions (columns, views) --------------------- 
   // read colum defintions of user
   $columns = array();
 
@@ -1701,6 +1736,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|user '".$user."' with client IP ".$client_ip." failed to login";
   }
 
+  // --------------------- chat --------------------- 
   // clear user as host in chat relationships
   $chat_relations_log = $mgmt_config['abs_path_temp']."/chat_relations.php";
 
@@ -1721,12 +1757,14 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     }
   }
 
+  // --------------------- reset permissions for portal --------------------- 
   // if a portal access link is used we withdraw all permissions except for favorites, assets, and pages
   if (!empty ($result['portal']))
   {
     $result = setportalpermissions ($result);
   }
 
+  // --------------------- permission checksum --------------------- 
   // calculate checksum of permissions
   if (isset ($_SESSION['hcms_instance'])) $result['instance'] = $_SESSION['hcms_instance'];
   else $result['instance'] = false;
@@ -1876,7 +1914,6 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
     if (is_mobilebrowser () || $is_mobile == 1 || $is_mobile == "yes")
     {
       $login_result['mobile'] = true;
-      $login_result['themename'] = "mobile";
     }
     else $login_result['mobile'] = false;
 
@@ -1889,6 +1926,10 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
 
     // portal
     setsession ('hcms_portal', $login_result['portal']);
+    // register design theme settings
+    setsession ('hcms_themename', $login_result['themename']);
+    setsession ('hcms_themelocation', getthemelocation ($login_result['themename']));
+    setsession ('hcms_themeinvertcolors', $login_result['themeinvertcolors']);
     // register permanent view settings
     setsession ('hcms_mobile', $login_result['mobile']);
     setsession ('hcms_iphone', $login_result['iphone']);
@@ -1898,9 +1939,6 @@ function registeruser ($instance="", $login_result, $accesslink=false, $hcms_obj
     setsession ('hcms_temp_sidebar', $login_result['sidebar']);
     // register chat state after logon
     setsession ('hcms_temp_chatstate', $login_result['chatstate']);
-    // register theme settings
-    setsession ('hcms_themename', $login_result['themename']);
-    setsession ('hcms_themelocation', getthemelocation ($login_result['themename']));
     // register HTML5 file support in session
     setsession ('hcms_html5file', $html5support);
     // register server feedback

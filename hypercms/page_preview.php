@@ -77,6 +77,7 @@ if ($templatefile != false || $contentfile != false)
     echo "<title>hyperCMS</title>\n";
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
     echo "<script src=\"javascript/click.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
@@ -94,6 +95,8 @@ if ($templatefile != false || $contentfile != false)
     echo "<title>hyperCMS</title>\n";
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
+    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
     echo "<script src=\"javascript/click.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
@@ -112,6 +115,7 @@ if ($templatefile != false || $contentfile != false)
     echo "<title>hyperCMS</title>\n";
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
     echo "<script src=\"javascript/click.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
@@ -140,6 +144,7 @@ else
   echo "<meta http-equiv=\"refresh\" content=\"2; URL=".$fowardurl."\" />\n";
 
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
   echo "</head>\n";
 
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";

@@ -114,21 +114,27 @@ if ($multiobject != "")
   }
 }
 // if object
-elseif ($location != "" && $page != "")
+elseif ($location != "" && ($page != "" || $folder != ""))
 {
-  // folder
-  if ($folder != "")
+  // folder (page = .folder)
+  if ($folder != "" && is_dir ($location.$folder))
   {
     $page = ".folder";
     $file_info = getfileinfo ($site, $location.$folder, $cat);
     $pagename = $file_info['name'];
+
+    // define multiobject for download
+    $multiobject = $location_esc.$folder;
   }
   // object
-  else
+  elseif ($page != "")
   {
     $page = correctfile ($location, $page);
     $file_info = getfileinfo ($site, $page, $cat);
     $pagename = $file_info['name'];
+
+    // define multiobject for download
+    $multiobject = $location_esc.$page;
   } 
 }
 
@@ -188,19 +194,7 @@ if (checktoken ($token, $user))
   elseif ($action == "zip" && $setlocalpermission['root'] == 1)
   {
     $zipFolder = $mgmt_config['abs_path_temp'];
-   
-    if ($multiobject != "")
-    {
-      $multiobject_array = link_db_getobject ($multiobject);
-    }
-    elseif ($folder != "" && is_dir ($location.$folder))
-    {
-      $multiobject_array[0] = $location.$folder;
-    }
-    elseif ($page != "" && $page != ".folder" && is_file ($location.$page))
-    {
-      $multiobject_array[0] = $location.$page;
-    }
+    $multiobject_array = link_db_getobject ($multiobject);
   
     $result = zipfiles ($site, $multiobject_array, $zipFolder, $pagenew, $user);
   
@@ -225,18 +219,7 @@ if (checktoken ($token, $user))
   // add to favorites
   elseif (($action == "page_favorite_add" || $action == "page_favorite_delete") && $setlocalpermission['root'] == 1) 
   {
-    if ($multiobject != "")
-    {
-      $multiobject_array = link_db_getobject ($multiobject);
-    }
-    elseif ($folder != "" && is_dir ($location.$folder))
-    {
-      $multiobject_array[0] = $location.$folder;
-    }
-    elseif ($page != "" && $page != ".folder" && is_file ($location.$page))
-    {
-      $multiobject_array[0] = $location.$page;
-    }
+    $multiobject_array = link_db_getobject ($multiobject);
     
     foreach ($multiobject_array as $temp)
     {
@@ -262,18 +245,7 @@ if (checktoken ($token, $user))
   // export selected objects as CSV
   elseif ($action == "export" && $setlocalpermission['root'] == 1)
   {
-    if ($multiobject != "")
-    {
-      $multiobject_array = link_db_getobject ($multiobject);
-    }
-    elseif ($folder != "" && is_dir ($location.$folder))
-    {
-      $multiobject_array[0] = $location_esc.$folder;
-    }
-    elseif ($page != "" && $page != ".folder" && is_file ($location.$page))
-    {
-      $multiobject_array[0] = $location_esc.$page;
-    }
+    $multiobject_array = link_db_getobject ($multiobject);
   
     // get all text content/metadata as array
     $assoc_array = getmetadata_multiobjects ($multiobject_array, $user);
@@ -326,10 +298,25 @@ $token_new = createtoken ($user);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="javascript/click.js"></script>
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
+
+<?php
+// invert button colors
+if (!empty ($hcms_themeinvertcolors))
+{
+  echo "<style>";
+  // invert all buttons
+  echo invertcolorCSS ("div.hcmsToolbarBlock, .hcmsInvertColor", 100);
+  // revert on hover
+  echo invertcolorCSS (".hcmsButton:hover", 100);
+  echo "</style>";
+}
+?>
+
 <script type="text/javascript">
 
 var locklayer = false;
@@ -506,6 +493,9 @@ function checkForm_folder_create()
     form.elements['foldernew'].focus();
     return false;
   }
+
+  // load screen
+  if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
   
   form.submit();
   return true;
@@ -527,6 +517,9 @@ function checkForm_folder_rename()
     form.elements['foldernew'].focus();
     return false;
   }
+
+  // load screen
+  if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
   
   form.submit();
   return true;
@@ -549,6 +542,9 @@ function checkForm_page_rename()
     return false;
   }
   
+  // load screen
+  if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
+
   form.submit()
   return true;
 }
@@ -570,6 +566,9 @@ function checkForm_zip()
     return false;
   }
   
+  // load screen
+  if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
+
   form.submit();
   return true;
 }
@@ -767,6 +766,9 @@ function sendtochat (text)
 
 <body class="hcmsWorkplaceControlWallpaper" onload="<?php echo $add_onload; ?>">
 
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:none;"></div>
+
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
@@ -844,7 +846,7 @@ else
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar" <?php if (!$is_mobile) echo "style=\"white-space:nowrap; min-width:820px;\""; ?>>
+<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:820px;"; else echo "max-height:100px;"; ?>">
   <div class="hcmsToolbarBlock">
     <?php
     if (
@@ -1129,7 +1131,7 @@ else
   <div class="hcmsToolbarBlock">
     <?php
     // Upload Button (HTML5 file upload)
-    if ($from_page == "" && ($cat != "page" || !empty($mgmt_config[$site]['upload_pages'])) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)
+    if ($from_page == "" && ($cat != "page" || !empty ($mgmt_config[$site]['upload_pages'])) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)
     {
       echo "
       <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"";
@@ -1270,14 +1272,11 @@ else
         </div>
       </div>";
     }
-    // file download without options
-    elseif ($multiobject_count <= 1 && !empty ($page) && !empty ($media) && $perm_rendering && $lock_rendering)
-    {
-      echo "
-      <div class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"submitToSelf('download'); hcms_showHideLayers('downloadLayer','','show');\"><img class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_download.png\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /></div>";
-    }
-    // folder/file download without options
-    elseif (($multiobject_count > 1 || $page == ".folder") && ($from_page != "" || ($from_page == "" && $perm_rendering && $lock_rendering)))
+    // file and folder download without options
+    elseif (
+         ($multiobject_count <= 1 && !empty ($page) && !empty ($media) && $perm_rendering && $lock_rendering) || 
+         (($multiobject_count > 1 || $page == ".folder") && ($from_page != "" || ($from_page == "" && $perm_rendering && $lock_rendering)))
+       )
     {
       echo "
       <div class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"submitToSelf('download'); hcms_showHideLayers('downloadLayer','','show');\"><img class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_download.png\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /></div>";
@@ -1285,7 +1284,7 @@ else
     else
     {
       echo "
-        <div class=\"hcmsButtonOff hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/button_file_download.png\" class=\"hcmsButtonSizeSquare\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /></div>";
+      <div class=\"hcmsButtonOff hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/button_file_download.png\" class=\"hcmsButtonSizeSquare\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /></div>";
     }
     ?>    
   </div>
@@ -1559,7 +1558,7 @@ else
     ?>
   </div>
   
-  <div style="float:right; <?php if (!$is_mobile || $is_iphone) echo "margin:0px 8px 0px 0px"; elseif (!$is_iphone) echo "margin:0px -2px 0px 0px;"; ?>">
+  <div class="hcmsInvertColor" style="float:right; <?php if (!$is_mobile || $is_iphone) echo "margin:0px 8px 0px 0px"; elseif (!$is_iphone) echo "margin:0px -2px 0px 0px;"; ?>">
     <?php
     // object list views
     echo "
@@ -1608,13 +1607,13 @@ else
   <form name="filter_set" action="explorer_objectlist.php" target="mainFrame" method="get">
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
     <input type="hidden" name="virtual" value="<?php echo $virtual; ?>" />
-    <img src="<?php echo getthemelocation(); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
+    <img src="<?php echo getthemelocation(); ?>img/button_filter.png" class="hcmsIconList hcmsInvertColor" style="vertical-align:middle;" />
     <input type="hidden" name="filter[dummy]" value="1" />
-    <input type="checkbox" id="filter1" onclick="setfilter();" name="filter[comp]" value="1" <?php if (isset ($objectfilter['comp']) && $objectfilter['comp'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter1"><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter2" onclick="setfilter();" name="filter[image]" value="1" <?php if (isset ($objectfilter['image']) && $objectfilter['image'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter2"><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter3" onclick="setfilter();" name="filter[document]" value="1" <?php if (isset ($objectfilter['document']) && $objectfilter['document'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter3"><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter4" onclick="setfilter();" name="filter[video]" value="1" <?php if (isset ($objectfilter['video']) && $objectfilter['video'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter4"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter5" onclick="setfilter();" name="filter[audio]" value="1" <?php if (isset ($objectfilter['audio']) && $objectfilter['audio'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter5"><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter1" onclick="setfilter();" name="filter[comp]" value="1" <?php if (isset ($objectfilter['comp']) && $objectfilter['comp'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter1" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter2" onclick="setfilter();" name="filter[image]" value="1" <?php if (isset ($objectfilter['image']) && $objectfilter['image'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter2" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter3" onclick="setfilter();" name="filter[document]" value="1" <?php if (isset ($objectfilter['document']) && $objectfilter['document'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter3" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter4" onclick="setfilter();" name="filter[video]" value="1" <?php if (isset ($objectfilter['video']) && $objectfilter['video'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter4" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter5" onclick="setfilter();" name="filter[audio]" value="1" <?php if (isset ($objectfilter['audio']) && $objectfilter['audio'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter5" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label>&nbsp;&nbsp;
   </form>
 </div>
 <?php } ?>
@@ -1745,10 +1744,10 @@ else
       <td>
         <div style="width:100%; height:100%; overflow:auto;">
           <?php
-          // iPhone download
+          // iOS (iPhone, iPad) download
           if ($action == "download" && $is_iphone)
           { 
-            $downloadlink = createmultidownloadlink ($site, $multiobject, $media, $location.$folder, $pagename, $user, $convert_type, $convert_cfg, "wrapper");
+            $downloadlink = createmultidownloadlink ($site, $multiobject, $pagename, $user, $convert_type, $convert_cfg, "wrapper");
             
             echo "<a href=\"".$downloadlink."\" class=\"button hcmsButtonGreen\" target=\"_blank\">".getescapedtext ($hcms_lang['downloadview-file'][$lang])."</a>";
           }
@@ -1765,7 +1764,8 @@ else
     </tr>
   </table>
 </div>
-<?php 
+<?php
+// download for non iOS devices
 if ($action == "download" && !$is_iphone)
 {
   // for search (incl. favorites, checkedout items)
@@ -1776,7 +1776,7 @@ if ($action == "download" && !$is_iphone)
   }
   else $flatzip = false;
 
-  $downloadlink = createmultidownloadlink ($site, $multiobject, $media, $location.$folder, $pagename, $user, $convert_type, $convert_cfg, "download", $flatzip);
+  $downloadlink = createmultidownloadlink ($site, $multiobject, $pagename, $user, $convert_type, $convert_cfg, "download", $flatzip);
 
   if ($downloadlink != "")
   {

@@ -41,7 +41,7 @@ if ($action == "save" && checktoken ($token, $user))
 // wallpaper
 $wallpaper = "";
 
-if ($hcms_themename != "mobile")
+if (!$is_mobile)
 {
   $wallpaper = getwallpaper ();
 }
@@ -62,6 +62,7 @@ $token_new = createtoken ($user);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 
  <!-- main library -->
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -283,7 +284,7 @@ function closePopup ()
 </script>
 </head>
 
-<body onload="setwallpaper();">
+<body onload="<?php if (!$is_mobile) echo "setwallpaper();"; ?>">
 
 <!-- popup (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="popupLayer" class="hcmsHomeBox" style="position:fixed; left:50%; bottom:0px; z-index:-1; overflow:hidden; width:0px; height:0px; visibility:hidden;">
@@ -308,7 +309,7 @@ function closePopup ()
 
 <!-- logo -->
 <div id="logo" style="position:fixed; top:10px; left:10px; z-index:0">
-  <img id="logoimage" src="<?php echo getthemelocation(); ?>img/logo_server.png" style="max-width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>; max-height:100px;" />
+  <img id="logoimage" src="<?php echo getthemelocation(); ?>img/logo_server.png" style="max-width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>; max-height:80px;" />
 </div>
 
 <?php if (!$is_mobile && checkrootpermission ('desktop') && checkrootpermission ('desktopsetting')) { ?>

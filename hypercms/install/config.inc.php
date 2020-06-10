@@ -805,7 +805,7 @@ $mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
 $mgmt_imagepreview['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
 
 // If an image file is uploaded hyperCMS will try to generate a thumbnail file for preview:
-$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 220x220 -q 95 -f jpg";
+$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 260x220 -q 95 -f jpg";
 
 // Define the supported target formats for image editing:
 $mgmt_imageoptions['.bmp']['original'] = "-f bmp";
@@ -892,6 +892,17 @@ $mgmt_maxsizepreview['.xlsx'] = 50;
 // This seeting can be used to avoid recurring kernel problems with GhostScript if ImageMagick fails to create a thumbnail of a PDF file.
 $mgmt_config['recreate_preview'] = false;
 
+// Use WKHTMLTOPDF to convert HTML to PDF
+// The path to the executable is usually /usr/bin/wkhtmltopdf
+$mgmt_config['html2pdf'] = "%html2pdf%";
+
+// Use X11-Server (fot the WKHTMLTOPDF not patched QT version)
+// The path to the executable is usually /usr/bin/xvfb-run
+$mgmt_config['x11'] = "%x11%";
+
+// Use PDFTK to merge PDF files
+// The path to the executable is usually /usr/bin/pdftk
+$mgmt_config['mergepdf'] = "%mergepdf%";
 
 // -------------------------------- Relational Database Connectivity ----------------------------------
 

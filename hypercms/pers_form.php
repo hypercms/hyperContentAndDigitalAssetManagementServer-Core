@@ -176,6 +176,7 @@ else
 <title>hyperCMS</title>
 <meta charset="<?php echo $mgmt_config[$site]['default_codepage']; ?>" />
 <link href="<?php echo getthemelocation(); ?>css/main.css" rel="stylesheet" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
 function openHelp ()

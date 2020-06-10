@@ -57,12 +57,12 @@ $galleryview = "";
 $listview = "";
 $items_row = -1;
 $objects_total = 0;
-$thumbnailsize_small = 100;
+$thumbnailsize_small = 120;
 $thumbnailsize_medium = 160;
-$thumbnailsize_large = 220;
+$thumbnailsize_large = 180;
 
-// SQL limit (result does not conain unique objetpaths if content is returned!)
-$limit = 1000;
+// SQL limit (result does not contain unique objetpaths if content is returned!)
+$limit = 500;
 
 // search parameters as URL coded query string (exluding the limit parameter)
 unset ($_REQUEST['start']);
@@ -508,200 +508,208 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
           
           if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder))
           {
-            // count valid objects
-            $items_row++;
-
-            // skip rows for paging
-            if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
-
-            // read file
-            if (empty ($container_id))
+            // remove _gsdata_ directory created by Cyberduck
+            if ($folder == "_gsdata_")
             {
-              $objectdata = loadfile ($location.$folder."/", ".folder");
-              
-              if (!empty ($objectdata))
-              {
-                // get name of content file and load content container
-                $contentfile = getfilename ($objectdata, "content");
-                $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-              }
-            }
-
-            // create folder file if it does not exist
-            if (!is_file ($location.$folder."/.folder"))
-            {
-              createobject ($site, $location.$folder."/", ".folder", "default.meta.tpl", "sys");
-            }
-            
-            if (!empty ($container_id))
-            {
-              // read meta data of media file
-              $result = getcontainername ($container_id);             
-              if (!empty ($result['user'])) $usedby = $result['user'];
-              
-              // get metadata of container
-              if (!is_array ($object_item) && is_array ($objectlistcols_reduced) && sizeof ($objectlistcols_reduced) > 0)
-              {
-                $container_info = getmetadata_container ($container_id, @array_keys ($objectlistcols_reduced));
-                
-                if (!empty ($container_info) && is_array ($container_info))
-                {  
-                  if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
-                  if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
-                  if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
-                  if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
-                }
-              }
-            }
-
-            // link for copy & paste of download links (not if an access link is used)
-            if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
-            {
-              $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
-              $dlink_end = "</a>";
+              deletefolder ($site, $location, $folder, $user);
             }
             else
             {
-              $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"javascript:void(0);\">";
-              $dlink_end = "</a>";
-            }
-            
-            // fallback for modified date
-            if (empty ($file_modified))
-            {
-              // get file time
-              $file_modified = date ("Y-m-d H:i", @filemtime ($location.$folder));
-            }
-            
-            // listview - view option for locked multimedia objects
-            if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
-            else $class_image = "class=\"hcmsIconList\"";            
-            
-            // refresh sidebar
-            if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
-            else $sidebarclick = "";
-            
-            // onclick for marking objects
-            $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
-            
-            // open folder
-            if ($action != "recyclebin") $openFolder = "onDblClick=\"parent.location='frameset_objectlist.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc.$folder)."/&token=".$token."';\" ";
-            else $openFolder = "";
-            
-            // set context
-            $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
-  
-            // if linking is used display download buttons
-            $linking_buttons = "";
+              // count valid objects
+              $items_row++;
 
-            // if mobile edition is used display edit button
-            if ($is_mobile && $setlocalpermission['root'] == 1)
-            {   
-              $linking_buttons .= "
-              <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/';\">".getescapedtext ($hcms_lang['navigate'][$lang])."</button>";
-            }
+              // skip rows for paging
+              if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
 
-            if ($linking_buttons != "")
-            {
-              $linking_buttons = "
-              <div style=\"width:100%; margin:0 auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
-            }
-
-            // listview - view option for locked folders
-            if ($usedby != "")
-            {
-              $file_info['icon'] = "folder_lock.png";
-            }
-
-            // drag events
-            if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
-            {
-              $dragevent = "draggable=\"true\" ondragstart=\"hcms_drag(event)\"";
-            }
-            else $dragevent = "";
-
-            // metadata
-            $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
-  
-            $listview .= "
-                         <tr id=\"g".$items_row."\" style=\"cursor:pointer\" ".$selectclick.">
-                           <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
-                             <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">
-                               ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end."
-                             </div>
-                             ".$linking_buttons."
-                            </td>";
-  
-            if (!$is_mobile)
-            {
-              $listview .= "
-                            <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; \">".$item_location."</div></td>";
- 
-              if (is_array ($objectlistcols_reduced))
+              // read file
+              if (empty ($container_id))
               {
-                $i = 2;
-
-                foreach ($objectlistcols_reduced as $key => $active)
+                $objectdata = loadfile ($location.$folder."/", ".folder");
+                
+                if (!empty ($objectdata))
                 {
-                  if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:125px;";
-                  else $style_td = "";
+                  // get name of content file and load content container
+                  $contentfile = getfilename ($objectdata, "content");
+                  $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
+                }
+              }
+
+              // create folder file if it does not exist
+              if (!is_file ($location.$folder."/.folder"))
+              {
+                createobject ($site, $location.$folder."/", ".folder", "default.meta.tpl", "sys");
+              }
+              
+              if (!empty ($container_id))
+              {
+                // read meta data of media file
+                $result = getcontainername ($container_id);             
+                if (!empty ($result['user'])) $usedby = $result['user'];
+                
+                // get metadata of container
+                if (!is_array ($object_item) && is_array ($objectlistcols_reduced) && sizeof ($objectlistcols_reduced) > 0)
+                {
+                  $container_info = getmetadata_container ($container_id, @array_keys ($objectlistcols_reduced));
                   
-                  $style_div = "";
-                  
-                  if ($active == 1)
-                  {
-                    if ($key == 'createdate')
-                    {
-                      $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
-                    }
-                    elseif ($key == 'modifieddate' || $key == 'date')
-                    {
-                      $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_modified))."</span>".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang]);
-                    }
-                    elseif ($key == 'publishdate')
-                    {
-                      $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_published))."</span>".showdate ($file_published, "Y-m-d H:i", $hcms_lang_date[$lang]);
-                    }
-                    elseif ($key == 'filesize')
-                    {
-                      $title = "";
-                      $style_div = "text-align:right; padding-right:5px;";
-                    }
-                    elseif ($key == 'type')
-                    {
-                      $title = getescapedtext ($hcms_lang['folder'][$lang]);
-                    }
-                    elseif ($key == 'owner' || $key == 'user')
-                    {
-                      $title = $file_owner;
-                    }
-                    else
-                    {
-                      if (!empty ($container_info[$key])) $title = $container_info[$key];
-                      else $title = "";
-                    }
-                    
-                    $listview .= "
-                            <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"padding-left:3px; ".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
-                    
-                    $i++;
+                  if (!empty ($container_info) && is_array ($container_info))
+                  {  
+                    if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+                    if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+                    if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
+                    if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
                   }
                 }
               }
-            }
-            
-            $listview .= "
-                         </tr>";
 
-            $galleryview .= "
-                            <div id=\"t".$items_row."\" ".$selectclick." class=\"hcmsObjectUnselected\">
-                              <div class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
-                                $dlink_start."
-                                  <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"max-width:186px; max-height:186px;\" /></div>
-                                  ".showshorttext($folder_name, 18, true)."
-                                ".$dlink_end."
+              // link for copy & paste of download links (not if an access link is used)
+              if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
+              {
+                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
+                $dlink_end = "</a>";
+              }
+              else
+              {
+                $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"javascript:void(0);\">";
+                $dlink_end = "</a>";
+              }
+              
+              // fallback for modified date
+              if (empty ($file_modified))
+              {
+                // get file time
+                $file_modified = date ("Y-m-d H:i", @filemtime ($location.$folder));
+              }
+              
+              // listview - view option for locked multimedia objects
+              if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+              else $class_image = "class=\"hcmsIconList\"";            
+              
+              // refresh sidebar
+              if (!$is_mobile) $sidebarclick = "hcms_loadSidebar();";
+              else $sidebarclick = "";
+              
+              // onclick for marking objects
+              $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
+              
+              // open folder
+              if ($action != "recyclebin") $openFolder = "onDblClick=\"parent.location='frameset_objectlist.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc.$folder)."/&token=".$token."';\" ";
+              else $openFolder = "";
+              
+              // set context
+              $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
+    
+              // if linking is used display download buttons
+              $linking_buttons = "";
+
+              // if mobile edition is used display edit button
+              if ($is_mobile && $setlocalpermission['root'] == 1)
+              {   
+                $linking_buttons .= "
+                <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/';\">".getescapedtext ($hcms_lang['navigate'][$lang])."</button>";
+              }
+
+              if ($linking_buttons != "")
+              {
+                $linking_buttons = "
+                <div style=\"width:100%; margin:0 auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
+              }
+
+              // listview - view option for locked folders
+              if ($usedby != "")
+              {
+                $file_info['icon'] = "folder_lock.png";
+              }
+
+              // drag events
+              if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
+              {
+                $dragevent = "draggable=\"true\" ondragstart=\"hcms_drag(event)\"";
+              }
+              else $dragevent = "";
+
+              // metadata
+              $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
+    
+              $listview .= "
+                          <tr id=\"g".$items_row."\" style=\"cursor:pointer\" ".$selectclick.">
+                            <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
+                              <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">
+                                ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end."
                               </div>
-                            </div>";
+                              ".$linking_buttons."
+                              </td>";
+    
+              if (!$is_mobile)
+              {
+                $listview .= "
+                              <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; \">".$item_location."</div></td>";
+  
+                if (is_array ($objectlistcols_reduced))
+                {
+                  $i = 2;
+
+                  foreach ($objectlistcols_reduced as $key => $active)
+                  {
+                    if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:125px;";
+                    else $style_td = "";
+                    
+                    $style_div = "";
+                    
+                    if ($active == 1)
+                    {
+                      if ($key == 'createdate')
+                      {
+                        $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
+                      }
+                      elseif ($key == 'modifieddate' || $key == 'date')
+                      {
+                        $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_modified))."</span>".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang]);
+                      }
+                      elseif ($key == 'publishdate')
+                      {
+                        $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_published))."</span>".showdate ($file_published, "Y-m-d H:i", $hcms_lang_date[$lang]);
+                      }
+                      elseif ($key == 'filesize')
+                      {
+                        $title = "";
+                        $style_div = "text-align:right; padding-right:5px;";
+                      }
+                      elseif ($key == 'type')
+                      {
+                        $title = getescapedtext ($hcms_lang['folder'][$lang]);
+                      }
+                      elseif ($key == 'owner' || $key == 'user')
+                      {
+                        $title = $file_owner;
+                      }
+                      else
+                      {
+                        if (!empty ($container_info[$key])) $title = $container_info[$key];
+                        else $title = "";
+                      }
+                      
+                      $listview .= "
+                              <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"padding-left:3px; ".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
+                      
+                      $i++;
+                    }
+                  }
+                }
+              }
+              
+              $listview .= "
+                          </tr>";
+
+              $galleryview .= "
+                              <div id=\"t".$items_row."\" ".$selectclick." class=\"hcmsObjectUnselected\">
+                                <div class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
+                                  $dlink_start."
+                                    <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"max-width:186px; max-height:186px;\" /></div>
+                                    ".showshorttext($folder_name, 18, true)."
+                                  ".$dlink_end."
+                                </div>
+                              </div>";
+            }
           }
           // folder does not exist or user has no access permission 
           else $objects_total--;
@@ -849,7 +857,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             else $openObject = "";
             
             // refresh sidebar
-            if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
+            if (!$is_mobile) $sidebarclick = "hcms_loadSidebar();";
             else $sidebarclick = "";
             
             // onclick for marking objects
@@ -1088,7 +1096,8 @@ else $objects_counted = 0;
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" type="text/javascript"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
@@ -1132,6 +1141,8 @@ else $objects_counted = 0;
   display: table-cell;
   text-align: center;
   vertical-align: bottom;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hcmsCell
@@ -1143,7 +1154,7 @@ else $objects_counted = 0;
 
 .hcmsThumbnailWidthlarge img
 {
-  width: <?php echo $thumbnailsize_large; ?>px;
+  height: <?php echo $thumbnailsize_large; ?>px;
 }
 
 .hcmsThumbnailWidthmedium img
@@ -1208,7 +1219,7 @@ contextymove = true;
 var explorerview = "<?php echo getescapedtext ($temp_explorerview); ?>";
 
 // verify sidebar
-if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.display != 'none') var sidebar = true;
+if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.width > 0) var sidebar = true;
 else var sidebar = false;
 
 // define global variable for popup window name used in contextmenu.js
@@ -1224,7 +1235,7 @@ function checktype (type)
 
 function confirm_delete ()
 {
-  return confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>"));
+  return confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>"));
 }
 
 function toggleview (viewoption)
@@ -1238,9 +1249,9 @@ function toggleview (viewoption)
   var thumbnail;
 
   // thumbnail frame size definitions
-  if (viewoption == "large") style = "width:<?php echo ($thumbnailsize_large + 16); ?>px; height:<?php echo ($thumbnailsize_large + 56); ?>px;";
+  if (viewoption == "large") style = "max-width:<?php echo ceil ($thumbnailsize_large * 1.6); ?>px; height:<?php echo ($thumbnailsize_large + 56); ?>px;";
   else if (viewoption == "medium") style = "width:<?php echo ($thumbnailsize_medium + 16); ?>px; height:<?php echo ($thumbnailsize_medium + 56); ?>px;";
-  else if (viewoption == "small") style = "width:<?php echo ($thumbnailsize_small + 54); ?>px; height:<?php echo ($thumbnailsize_small + 56); ?>px;";
+  else if (viewoption == "small") style = "width:<?php echo ($thumbnailsize_small + 28); ?>px; height:<?php echo ($thumbnailsize_small + 56); ?>px;";
 
   frames = document.getElementsByClassName('hcmsObjectGalleryMarker');
 
@@ -1388,7 +1399,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 </form>
 
 <!-- context menu --> 
-<div id="contextLayer" style="position:absolute; width:150px; height:260px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
+<div id="contextLayer" style="position:absolute; min-width:150px; max-width:200px; height:320px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_object" action="" method="post" target="_blank">
     <input type="hidden" name="contextmenustatus" value="" />
     <input type="hidden" name="contextmenulocked" value="false" />
@@ -1412,7 +1423,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
     
-    <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
+    <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
       <tr>
         <td>
           <?php if ($action == "favorites" && linking_valid() == false) { ?>

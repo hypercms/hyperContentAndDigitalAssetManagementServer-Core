@@ -28,7 +28,8 @@ scriptend]
   <head>
     <title>hyperCMS.com</title>
     <meta charset='utf-8' />
-    <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("black"); scriptend]css/main.css" />
+    <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("night"); scriptend]css/main.css" />
+    <link rel="stylesheet" href="[hyperCMS:scriptbegin echo getthemelocation("night")."css/".($is_mobile ? "mobile.css" : "desktop.css"); scriptend]" />
   </head>
   <body class="hcmsWorkplaceGeneric">
     <div class="hcmsWorkplaceFrame">
@@ -199,8 +200,9 @@ if (!empty ($site) && !empty ($location)) createfolder ($site, $location_esc, $n
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=0.6, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css" type="text/css">
-<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/jquery-fileupload.css" type="text/css">
+<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css" />
+<link rel="stylesheet" href="[hyperCMS:scriptbegin echo getthemelocation($themename)."css/".($is_mobile ? "mobile.css" : "desktop.css"); scriptend]" />
+<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/jquery-fileupload.css" />
 
 <script src="%url_hypercms%/javascript/main.js" type="text/javascript"></script>
 
@@ -209,7 +211,7 @@ if (!empty ($site) && !empty ($location)) createfolder ($site, $location_esc, $n
 
 <!-- JQuery UI -->
 <script src="%url_hypercms%/javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css">
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
 
 <!-- JQuery File Upload -->
 <script src="%url_hypercms%/javascript/jquery/plugins/jquery.fileupload.js" type="text/javascript"></script>

@@ -255,7 +255,7 @@ class hcms_menupoint
     }
 
     // an element
-    $apart = '<a style="padding-left:0px;" id="a_'.$this->id.'" name="a_'.$this->id.'" ';
+    $apart = '<a class="hcmsNavigator" id="a_'.$this->id.'" name="a_'.$this->id.'" ';
 
     if ($this->onclick) $apart .= 'onclick="'.$this->onclick.'" ';
     if ($this->onmouseover) $apart .= 'onmouseover="'.$this->onmouseover.'" ';
@@ -343,10 +343,18 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
 
             if ($setlocalpermission['root'] == 1)
             {
-              $folder_array[] = $folder;
+              // remove _gsdata_ directory created by Cyberduck
+              if ($folder == "_gsdata_")
+              {
+                deletefolder ($site, $location, $folder, $user);
+              }
+              else
+              {
+                $folder_array[] = $folder;
 
-              // create folder object if it does not exist
-              if (!is_file ($location.$folder."/.folder")) createobject ($site, $location.$folder."/", ".folder", "default.meta.tpl", "sys");
+                // create folder object if it does not exist
+                if (!is_file ($location.$folder."/.folder")) createobject ($site, $location.$folder."/", ".folder", "default.meta.tpl", "sys");
+              }
             }
           }
         }
@@ -1331,7 +1339,8 @@ else
     <title>hyperCMS</title>
     <meta charset="<?php echo getcodepage ($lang); ?>" />
     <meta name="viewport" content="width=260, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css?ts=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+    <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 
     <!-- JQuery (for navigation tree and autocomplete) -->
     <script type="text/javascript" src="javascript/jquery/jquery-1.12.4.min.js"></script>

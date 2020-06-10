@@ -213,11 +213,9 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
     $media_root = $mgmt_config['abs_path_temp'];
     $media = getobject ($media);
   }
-  else $media_root = "";
-
-  $media_info_new = Null;
-
-  if ($media_root != "")
+  
+  // download media file
+  if (!empty ($media_root))
   {
     // provide thumbnail video file
     if (!empty ($type) && strtolower ($type) == "origthumb")

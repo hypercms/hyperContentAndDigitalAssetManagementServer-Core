@@ -45,6 +45,7 @@ $year_template = Null;
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -123,7 +124,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
     </tr>
     <tr> 
       <td><?php echo getescapedtext ($hcms_lang['show-the-content-online-on'][$lang]); ?> </td>
-      <td>
+      <td style="text-align:center;">
         <select name="content_year">
           <?php                
           $startyear = $year_setup;
@@ -136,7 +137,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
           ?>
         </select>
       </td>
-      <td>
+      <td style="text-align:center;">
         <select name="content_month">
           <?php 
           for ($m=1; $m<=12; $m++)
@@ -148,7 +149,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
           ?>
         </select>
       </td>
-      <td>
+      <td style="text-align:center;">
         <select name="content_day">
           <?php 
           for ($d=1; $d<=31; $d++)
@@ -163,7 +164,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
     </tr>
     <tr> 
       <td><?php echo getescapedtext ($hcms_lang['show-the-design-online-on'][$lang]); ?> </td>
-      <td>
+      <td style="text-align:center;">
         <select name="template_year">
           <?php 
           $year = 0;
@@ -176,7 +177,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
           ?>
         </select>
       </td>
-      <td>
+      <td style="text-align:center;">
         <select name="template_month">
           <?php 
           for ($m=1; $m<=12; $m++)
@@ -188,7 +189,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
           ?>
         </select>
       </td>
-      <td>
+      <td style="text-align:center;">
         <select name="template_day">
           <?php 
           for ($d=1; $d<=31; $d++)

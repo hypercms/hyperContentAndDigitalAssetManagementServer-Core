@@ -124,6 +124,7 @@ $arttextl = getrequest ("arttextl", "array");
 $textc = getrequest ("textc", "array");
 $arttextc = getrequest ("arttextc", "array");
 $textk = getrequest ("textk", "array");
+$arttextk = getrequest ("arttextk", "array");
 $value = getrequest_esc ("value");
 $textd = getrequest ("textd", "array");
 $arttextd = getrequest ("arttextd", "array");
@@ -213,11 +214,8 @@ if ($usedby == "" || $usedby == $user)
     // check if date-from is greater than date-to in article content
     if (is_array ($artstatus))
     {
-      for ($i = 1; $i <= sizeof ($artstatus); $i++)
+      foreach ($artstatus as $artid => $temp)
       {
-        // get key (position) of array item
-        $artid = key ($artstatus); 
-        
         if (isset ($artdatefrom[$artid]) && $artdatefrom[$artid] != "" && isset ($artdateto[$artid]) && $artdateto[$artid] != "")
         {
           $artdatefromcheck = str_replace ("-", "", $artdatefrom[$artid]);
@@ -236,9 +234,10 @@ if ($usedby == "" || $usedby == $user)
             echo "<title>hyperCMS</title>\n";
             echo "<meta charset=\"".getcodepage($lang)."\" />\n";
             echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
+            echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
             echo "</head>\n";
             echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-            echo "<p class=hcmsHeadline>".$hcms_lang['the-end-date-is-before-the-start-date-of-the-article'][$lang]."</p>\n";
+            echo "<p class=\"hcmsHeadline\">".$hcms_lang['the-end-date-is-before-the-start-date-of-the-article'][$lang]."</p>\n";
             echo $hcms_lang['please-go-back-and-correct-the-date-settings'][$lang]."\n";
             echo "<a href=\"#\" onlick=\"history.back();\">".$hcms_lang['back'][$lang]."</a><br />\n";
             echo "</body>\n</html>";
@@ -261,8 +260,6 @@ if ($usedby == "" || $usedby == $user)
             if (!empty ($datenew)) $artdateto[$artid] = $datenew;
           }
         }
-        
-        next ($artstatus);
       }
     }
   
@@ -280,7 +277,68 @@ if ($usedby == "" || $usedby == $user)
         // remove empty entries
         $textu['Faces-JSON'] = str_replace (", , ", ", ", $faces);
       }
-      
+
+      // taxonomy tree selector returns an array
+      $lang_taxonomy = array();
+
+      if (is_array ($textk))
+      {
+        foreach ($textk as $key => $value)
+        {
+          // get and set language for text ID
+          if (!empty ($value['language']))
+          {
+            $lang_taxonomy[$key] = $value['language'];
+            unset ($textk[$key]['language']);
+            $value = $textk[$key];
+          }
+
+          // create unique keywords and convert array to comma separated keyword list
+          if (is_array ($value))
+          {
+            $value = implode (",", $value);
+            $value = explode (",", $value);
+            $value = array_unique ($value);
+            $textk[$key] = implode (",", $value);
+          }
+          else
+          {
+            $value = explode (",", $value);
+            $value = array_unique ($value);
+            $textk[$key] = implode (",", $value);
+          }
+        }
+      }
+
+      if (is_array ($arttextk))
+      {
+        foreach ($arttextk as $key => $value)
+        {
+          // get and set language for text ID
+          if (!empty ($value['language']))
+          {
+            $lang_taxonomy[$key] = $value['language'];
+            unset ($arttextk[$key]['language']);
+            $value = $textk[$key];
+          }
+
+          // create unique keywords and convert array to comma separated keyword list
+          if (is_array ($value))
+          {
+            $value = implode (",", $value);
+            $value = explode (",", $value);
+            $value = array_unique ($value);
+            $arttextk[$key] = implode (",", $value);
+          }
+          else
+          {
+            $value = explode (",", $value);
+            $value = array_unique ($value);
+            $arttextk[$key] = implode (",", $value);
+          }
+        }
+      }
+
       // append content (only for textu, textf, textk)
       if (!empty ($appendcontent))
       {
@@ -289,6 +347,7 @@ if ($usedby == "" || $usedby == $user)
         $textu = appendcontent_helper ($contentdatanew, $textu);
         $arttextu = appendcontent_helper ($contentdatanew, $arttextu);
         $textk = appendcontent_helper ($contentdatanew, $textk, ",");
+        $arttextk = appendcontent_helper ($contentdatanew, $arttextk, ",");
       }
 
       // text content
@@ -302,8 +361,9 @@ if ($usedby == "" || $usedby == $user)
       if (isset ($arttextc) && is_array ($arttextc) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextc, "c", "yes", $user, $user, $charset);
       if (isset ($textd) && is_array ($textd) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textd, "d", "no", $user, $user, $charset);
       if (isset ($arttextd) && is_array ($arttextd) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextd, "d", "yes", $user, $user, $charset);
-      // keywords only apply for metadata templates (no support for articles)
+      // keywords usually only apply for metadata templates (support for articles added in version 8.1.3)
       if (isset ($textk) && is_array ($textk) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textk, "k", "no", $user, $user, $charset);
+      if (isset ($arttextk) && is_array ($arttextk) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextk, "k", "yes", $user, $user, $charset);
       // only if autosaving is not used
       if (isset ($commentu) && is_array ($commentu) && $contentdatanew != false && $auto == false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $commentu, "u", "no", $user, $user, $charset, true);
       if (isset ($commentf) && is_array ($commentf) && $contentdatanew != false && $auto == false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $commentf, "f", "no", $user, $user, $charset, true);
@@ -530,11 +590,17 @@ if ($usedby == "" || $usedby == $user)
         else
         {
   	      //define message to display
-      	  $message = "<p class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang]."</p>\n".$hcms_lang['without-write-permission-the-content-cant-be-edited'][$lang]."<br />\n";
+      	  $message = "<p class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang]."</p>\n".$hcms_lang['without-write-permission-the-content-cant-be-edited'][$lang]."<br />\n";
         }
       }
       else
       {
+        // set taxonomy
+        settaxonomy ($site, $container_id, $lang_taxonomy);
+
+        // set keywords
+        rdbms_setkeywords ($site, $container_id);
+
         // eventsystem
         if ($eventsystem['onsaveobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
         {

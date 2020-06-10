@@ -38,7 +38,8 @@ checkusersession ($user, false);
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script type="text/javascript">
 function sendOption(folder_name, folder_location)

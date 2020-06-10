@@ -34,6 +34,7 @@ checkusersession ($user, false);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.js"></script>
 <style>
 table td
@@ -342,6 +343,10 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     <tr> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['static-include-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">include='static'</td>
+    </tr>
+    <tr> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext (str_replace (", uri, download, wrapper, location", "", $hcms_lang['path-type-optional'][$lang])); ?></td>
+      <td class="hcmsRowData1">pathtype='...'</td>
     </tr>
     <tr> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['hide-icons-on-edit-optional'][$lang]); ?></td>

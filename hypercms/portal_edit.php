@@ -125,6 +125,7 @@ else
 {
   $templatedata = loadfile ($mgmt_config['abs_path_template'].$site."/", $template);
   
+  // initalize
   $primarycolor = "";
   $designtheme = "";
   $designuser = "";
@@ -207,9 +208,25 @@ $token_new = createtoken ($user);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation($site."/".$templatename); ?>css/main.css?ts=<?php echo time(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/jscolor/jscolor.js"></script>
+
+<?php
+// invert button colors
+if (($designtheme == "day" && getbrightness ($primarycolor) < 130 ) || ($designtheme == "night" && getbrightness ($primarycolor) >= 130 ))
+{
+  echo "<style>";
+  // invert all buttons
+  echo invertcolorCSS (".hcmsInvertColor", 100);
+  // revert on hover
+  echo invertcolorCSS (".hcmsInvertColor:hover", 0);
+  echo "</style>";
+}
+?>
+
 <script type="text/javascript">
+
 function toggleCheckboxes (name, source)
 {
   var checkboxes = document.getElementsByName(name);
@@ -266,36 +283,12 @@ function setwallpaper ()
   <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
   document.getElementById('homeScreen').style.backgroundImage = "url('<?php echo $wallpaper; ?>?ts=<?php echo time(); ?>')";
   return true;
-  <?php } elseif (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-  if (html5support())
-  {
-    document.getElementById('videoScreen').src = "<?php echo $wallpaper; ?>?ts=<?php echo time(); ?>";
-  }
-  return true;
   <?php } else { ?>
   return false;
   <?php } ?>
 }
 </script>
 <style>
-video#videoScreen
-{ 
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    z-index: -100;
-    -ms-transform: translateX(-50%) translateY(-50%);
-    -moz-transform: translateX(-50%) translateY(-50%);
-    -webkit-transform: translateX(-50%) translateY(-50%);
-    transform: translateX(-50%) translateY(-50%);
-    background: url('<?php echo getthemelocation($site."/".$templatename); ?>/img/backgrd_start.png') no-repeat;
-    background-size: cover; 
-}
-
 #settings
 {
   width: 24%;
@@ -311,11 +304,6 @@ video#videoScreen
 
 @media screen and (max-width: 1080px)
 {
-  #videoScreen
-  {
-    display: none;
-  }
-
   #settings
   {
     width: 100%;
@@ -449,7 +437,7 @@ table.TableNarrow th, table.TableNarrow td
         <span class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggleCheckboxes('navigation[]', this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?></label></span><br/><br/>
         <?php
         if (!empty ($mgmt_config[$site]['taxonomy'])) echo "
-        <input name=\"navigation[]\" type=\"checkbox\" value=\"taxonomy\" ".(in_array ("taxonomy", $navigation) ? "checked=\"checked\"" : "")." /> <img src=\"".getthemelocation()."img/folder_taxonomy.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['taxonomy'][$lang])."<br/>";
+        <input name=\"navigation[]\" type=\"checkbox\" value=\"taxonomy\" ".(is_array($navigation) && in_array ("taxonomy", $navigation) ? "checked=\"checked\"" : "")." /> <img src=\"".getthemelocation()."img/folder_taxonomy.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['taxonomy'][$lang])."<br/>";
         
         $hierarchy = gethierarchy_definition ($site);
 
@@ -459,12 +447,12 @@ table.TableNarrow th, table.TableNarrow td
           {
             $name = getescapedtext ($name);
             echo "
-            <input name=\"navigation[]\" type=\"checkbox\" value=\"".$name."\" ".(in_array ($name, $navigation) ? "checked=\"checked\"" : "")." /> <img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".$name." (".getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang]).")<br/>";
+            <input name=\"navigation[]\" type=\"checkbox\" value=\"".$name."\" ".(is_array($navigation) && in_array ($name, $navigation) ? "checked=\"checked\"" : "")." /> <img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".$name." (".getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang]).")<br/>";
           }
         }
 
         echo "
-        <input name=\"navigation[]\" type=\"checkbox\" value=\"assets\" ".(in_array ("assets", $navigation) ? "checked=\"checked\"" : "")." /> <img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['assets'][$lang])."<br/>";
+        <input name=\"navigation[]\" type=\"checkbox\" value=\"assets\" ".(is_array($navigation) && in_array ("assets", $navigation) ? "checked=\"checked\"" : "")." /> <img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['assets'][$lang])."<br/>";
         ?>
         <hr/><br/>
 
@@ -612,10 +600,10 @@ table.TableNarrow th, table.TableNarrow td
       <tr>
         <td class="hcmsWorkplaceTop" style="width:36px !important;">
           <!-- navigation items -->
-          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsLogoTop" />
-          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
-          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
-          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
+          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
+          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare hcmsInvertColor" style="padding:2px;" />
+          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare hcmsInvertColor" style="padding:2px;" />
+          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare hcmsInvertColor" style="padding:2px;" />
         </td>
         <td class="hcmsWorkplaceExplorer" style="width:260px !important;">
           <!-- explorer items -->
@@ -624,13 +612,6 @@ table.TableNarrow th, table.TableNarrow td
           <div style="padding:4px 0px 0px 42px;"><img src="<?php echo getthemelocation($site."/".$templatename); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?></a></div>
         </td>
         <td class="hcmsStartScreen" id="homeScreen" style="position:static; display:table-cell; background-attachment:scroll;">
-          <!-- video wallpaper -->
-          <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-          <video playsinline autoplay muted loop poster="<?php echo getthemelocation($site."/".$templatename); ?>/img/backgrd_start.png?ts=<?php echo time(); ?>" id="videoScreen">
-            <source src="<?php echo $wallpaper; ?>?ts=<?php echo time(); ?>" type="video/mp4">
-          </video>
-          <?php } ?>
-
           <!-- logo -->
           <div id="logo" style="margin:10px;">
             <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/logo_server.png?ts=<?php echo time(); ?>" style="max-width:420px; max-height:100px;" />

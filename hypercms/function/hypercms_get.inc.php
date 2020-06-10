@@ -1501,7 +1501,7 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
   					}
   				}
         }
-        // if labels were defined
+        // if labels were defined (labels are not unique)
         elseif (is_array ($labels) && sizeof ($labels) > 0)
         {
           foreach ($labels as $id => $label)
@@ -1531,7 +1531,7 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
             if (!empty ($position[$id])) $pos = $position[$id];
 
 						if (strtolower ($seperator) != "array") $metadata[$pos] = $label.": ".$text_str;
-            else $metadata[$label] = $text_str;
+            else $metadata["<!--".$pos."-->".$label] = $text_str;
           }
 
           if (strtolower ($seperator) != "array")
@@ -1564,7 +1564,7 @@ function getmetadata_multiobjects ($multiobject_array, $user)
   global $mgmt_config, $siteaccess, $pageaccess, $compaccess, $hiddenfolder, $adminpermission, $localpermission;
 
   // exclude attributes from result (always exclude 'id')
-  $exclude_attributes = array ("id", "object_id", "hash");
+  $exclude_attributes = array ("id", "object_id", "hash", "container", "deleteuser", "deletedate", "deathtime", "media");
 
   if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 0 && $user != "")
   {
@@ -1637,7 +1637,7 @@ function getmetadata_multiobjects ($multiobject_array, $user)
 
     if (is_array ($result) && sizeof ($result) > 0)
     {
-      // create new table with all text IDs for proper export
+      // create new array with all text IDs for proper export
       if (is_array ($intermediate) && sizeof ($intermediate) > 0)
       {
         foreach ($intermediate as $key => $textarray)
@@ -2015,17 +2015,17 @@ function getwallpaper ($theme="", $version="")
   if (!empty ($wallpaper_name))
   {
     // if file does not exist in temp view directory
-    if (!is_file ($mgmt_config['abs_path_temp']."view/".$wallpaper_name))
+    if (!is_file ($mgmt_config['abs_path_view'].$wallpaper_name))
     {
       // get wallpaper file
       $wallpaper_file = @file_get_contents ("http://cloud.hypercms.net/wallpaper/?action=get&name=".urlencode($wallpaper_name));
 
       if (!empty ($wallpaper_file))
       {
-        if (savefile ($mgmt_config['abs_path_temp']."view/", $wallpaper_name, $wallpaper_file)) return $mgmt_config['url_path_temp']."view/".$wallpaper_name;
+        if (savefile ($mgmt_config['abs_path_view'], $wallpaper_name, $wallpaper_file)) return $mgmt_config['url_path_view'].$wallpaper_name;
       }
     }
-    else return $mgmt_config['url_path_temp']."view/".$wallpaper_name;
+    else return $mgmt_config['url_path_view'].$wallpaper_name;
   }
 
   // default wallpaper
@@ -3240,6 +3240,12 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_icon = "file_indd.png";
           $file_type = "Adobe InDesign";
         }
+        // Adobe Photoshop
+        elseif ($file_ext == ".psd" || $file_ext == ".psb")
+        {
+          $file_icon = "file_psd.png";
+          $file_type = "Adobe Photoshop";
+        }
         // Open Office Text
         elseif ($file_ext == ".odt" || $file_ext == ".fodt")
         {
@@ -3257,6 +3263,24 @@ function getfileinfo ($site, $file, $cat="comp")
         {
           $file_icon = "file_odp.png";
           $file_type = "OO Presentation";
+        }
+        // HMTL
+        elseif ($file_ext == ".htm" || $file_ext == ".html")
+        {
+          $file_icon = "file_htm.png";
+          $file_type = "HTML";
+        }
+        // CSS
+        elseif ($file_ext == ".css")
+        {
+          $file_icon = "file_css.png";
+          $file_type = "CSS";
+        }
+        // JavaScript
+        elseif ($file_ext == ".js")
+        {
+          $file_icon = "file_js.png";
+          $file_type = "JavaScript";
         }
         // text based documents in proprietary format or clear text 
         elseif (@substr_count (strtolower ($hcms_ext['bintxt']).".", $file_ext.".") > 0 || @substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
@@ -4049,6 +4073,27 @@ function getimagecolors ($site, $file)
   else return false;
 }
 
+// --------------------------------------- getbrightness -------------------------------------------
+// function: getbrightness()
+// input: hex color code [string]
+// output: Brightness level (dark < 130 and light > 130) / false on error
+
+function getbrightness ($color)
+{
+  if (strlen ($color) >= 6)
+  {
+    if (strlen ($color) == 7) $color = substr ($color, 1);
+    
+    $r = hexdec (substr ($color, 0, 2));
+    $g = hexdec (substr ($color, 2, 2));
+    $b = hexdec (substr ($color, 4, 2));
+
+    // Background Brightness < 130 => Textcolor '#FFFFFF' else '#000000'
+    return sqrt ($r * $r * .241 + $g * $g * .691 + $b * $b * .068);
+  }
+  else return false;
+}
+
 // --------------------------------------- getmediasize -------------------------------------------
 // function: getmediasize()
 // input: path to media file [string]
@@ -4111,6 +4156,7 @@ function getmediasize ($filepath)
 
         if (strpos ($cmdresult, "x") > 0) list ($result["width"], $result["height"]) = explode ("x", $cmdresult);
       }
+      // extract from source
       else
       {
         $header = loadfile_header (getlocation ($filepath), getobject ($filepath));

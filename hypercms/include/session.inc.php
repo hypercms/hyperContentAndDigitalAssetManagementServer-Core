@@ -85,6 +85,7 @@ $temp_token = getsession ("hcms_temp_token");
 // hyperCMS theme
 $hcms_themename = getsession ("hcms_themename");
 $hcms_themelocation = getsession ("hcms_themelocation");
+$hcms_themeinvertcolors = getsession ("hcms_themeinvertcolors");
 
 // filter options for object list
 $objectfilter = getsession ("hcms_objectfilter");

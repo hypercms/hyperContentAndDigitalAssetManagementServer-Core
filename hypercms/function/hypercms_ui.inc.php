@@ -195,6 +195,34 @@ function objectfilter ($file)
   else return false;
 }
 
+// --------------------------------------- invertcolorCSS -------------------------------------------
+// function: invertcolorCSS ()
+// input: CSS selector for elements [string], percentage value [integer] [optional]
+// output: CSS style code / false on error
+
+// description:
+// Used for portals in order to invert the color of buttons.
+// MS IE does not support invert, MS Edge does.
+
+function invertcolorCSS ($css_selector, $percentage=100)
+{
+  if ($css_selector != "" && intval ($percentage) >= 0)
+  {
+    $result = "
+".$css_selector."
+{
+  -webkit-filter: invert(".intval ($percentage)."%);
+  -o-filter: invert(".intval ($percentage)."%);
+  -moz-filter: invert(".intval ($percentage)."%);
+  -ms-filter: invert(".intval ($percentage)."%);
+  filter: invert(".intval ($percentage)."%);
+}";
+
+    return $result;
+  }
+  else return false;
+}
+
 // --------------------------------------- showdate -------------------------------------------
 // function: showdate ()
 // input: date and time [string, date input format [string], date output format [string], correct time zone [boolean] (optional)
@@ -479,7 +507,7 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
 
 function showinfopage ($show, $lang="en", $onload="")
 {
-  global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
+  global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $is_mobile;
 
   if ($show != "" && strlen ($show) < 2400 && $lang != "")
   {
@@ -489,6 +517,7 @@ function showinfopage ($show, $lang="en", $onload="")
     <title>hyperCMS</title>
     <meta charset=\"".getcodepage ($lang)."\" />
     <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+    <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\" onload=\"".$onload."\">
     <div style=\"padding:20px;\">
@@ -2594,7 +2623,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if ($viewtype == "template") $mediaview .= "
         <table class=\"hcmsTableNarrow\" style=\"width:100%; border:1px solid #000000; margin:2px;\">";
           else $mediaview .= "
-        </table>";
+        <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">";
 
           // save button
           if ($viewtype == "template") $mediaview .= "
@@ -2604,14 +2633,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
           // disable text area
           if ($viewtype == "template") $disabled = "";
-          else $disabled = "disabled=\"disabled\"";
+          else $disabled = "readonly=\"readonly\"";
 
           $mediaview .= "
           <tr>
             <td style=\"text-align:left;\"><textarea name=\"content\" id=\"".$id."\" ".$style." ".$disabled.">".$content."</textarea></td>
-          </tr>";
-
-          $mediaview .= "
+          </tr>
           <tr>
             <td style=\"text-align:left;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td>
           </tr>
@@ -3282,7 +3309,7 @@ $(document).ready(function()
             $authorized = false;
 
             // if DAM
-            if ($mgmt_config[$site]['dam'])
+            if (!empty ($mgmt_config[$site]['dam']))
             {
               // local access permissions
               $ownergroup_entry = accesspermission ($site, $entry, "comp");
@@ -3301,10 +3328,20 @@ $(document).ready(function()
 
               if ($entry_object !== false)
               {
+                // folders
                 if ($entry_object == ".folder")
                 {
-                  $comp_entry_dir[] = $entry_location.$entry_object;
+                  // remove _gsdata_ directory created by Cyberduck
+                  if (getobject ($entry_location) == "_gsdata_")
+                  {
+                    deletefolder ($site, getlocation ($entry_location), getobject ($entry_location), $user);
+                  }
+                  else
+                  {
+                    $comp_entry_dir[] = $entry_location.$entry_object;
+                  }
                 }
+                // files
                 else
                 {
                   $comp_entry_file[] = $entry_location.$entry_object;
@@ -3330,10 +3367,20 @@ $(document).ready(function()
           {
             if ($dir != $mgmt_config['abs_path_comp'] || ($dir == $mgmt_config['abs_path_comp'] && ($mgmt_config[$site]['inherit_comp'] == true && is_array ($parent_array) && in_array ($comp_entry, $parent_array)) || $comp_entry == $site))
             {
+              // folders
               if (is_dir ($dir.$comp_entry))
               {
-                $comp_entry_dir[] = $dir_esc.$comp_entry."/.folder";
+                // remove _gsdata_ directory created by Cyberduck
+                if ($comp_entry == "_gsdata_")
+                {
+                  deletefolder ($site, $dir_esc, $comp_entry, $user);
+                }
+                else
+                {
+                  $comp_entry_dir[] = $dir_esc.$comp_entry."/.folder";
+                }
               }
+              // files
               elseif (is_file ($dir.$comp_entry))
               {
                 $comp_entry_file[] = $dir_esc.$comp_entry;
@@ -4605,7 +4652,7 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
         {
           foreach ($langcode_array as $code => $language)
           {
-            if (is_file ($mgmt_config['abs_path_temp']."view/".$vtt_filename."_".trim($code).".vtt"))
+            if (is_file ($mgmt_config['abs_path_view'].$vtt_filename."_".trim($code).".vtt"))
             {
               $return .= "    <track kind=\"captions\" src=\"".$mgmt_config['url_path_temp']."view/".$vtt_filename."_".trim($code).".vtt\" srclang=\"".trim($code)."\" label=\"".trim($language)."\" />\n";
             }
@@ -4897,13 +4944,15 @@ function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFuncti
 // ------------------------- showAPIdocs -----------------------------
 // function: showAPIdocs()
 // input: path to API file [string], return result as HTML or array [html,array] (optional), use horizontal rule as separator in HTML output [boolean] (optional)
-//        display description [boolean] (optional), display input parameters [boolean] (optional), display global variables [boolean] (optional), display output [boolean] (optional)
+//        display description [boolean] (optional), display input parameters [boolean] (optional), display global variables [boolean] (optional), display output [boolean] (optional), display only defined function names [array] (optional)
 // output: HTML output of documentation / false on error
 
 // description:
-// Generates the documentation of an API file
+// Generates the documentation of an API file.
+// If you only want toi display the main API functions that you would normally be interested in, please use this defintion:
+// $display_functions = array ("is_folder", "is_emptyfolder", "is_supported", "is_date", "is_document", "is_image", "is_rawimage", "is_video", "is_rawvideo", "is_audio", "is_keyword", "is_mobilebrowser", "is_iOS", "createviewlink", "createportallink", "createaccesslink", "createobjectaccesslink", "createwrapperlink", "createdownloadlink", "createmultiaccesslink", "createmultidownloadlink", "restoremediafile", "downloadobject", "downloadfile", "createpublication", "editpublication", "editpublicationsetting", "deletepublication", "createtemplate", "edittemplate", "deletetemplate, "createportal", "editportal", "deleteportal", "createuser", "edituser", "deleteuser", "creategroup", "editgroup", "deletegroup", "createfolder", "renamefolder", "deletefolder",  "createobject", "uploadfile", "createmediaobject", "createmediaobjects", "editmediaobject", "editobject", "renameobject", "deleteobject", "cutobject", "copyobject", "copyconnectedobject", "pasteobject", "lockobject", "unlockobject", "publishobject", "unpublishobject", "createqueueentry", "remoteclient", "savelog", "loadlog", "deletelog", "debuglog", "sendlicensenotification", "sendresetpassword", "createfavorite", "deletefavorite", "load_csv", "create_csv", "sendmessage", "savecontent", "hmtl2pdf", "mergepdf");
 
-function showAPIdocs ($file, $return="html", $html_hr=true, $html_description=true, $html_input=true, $html_globals=true, $html_output=true)
+function showAPIdocs ($file, $return="html", $html_hr=true, $html_description=true, $html_input=true, $html_globals=true, $html_output=true, $display_functions=array())
 {
   if (is_file ($file))
   {
@@ -4992,9 +5041,14 @@ function showAPIdocs ($file, $return="html", $html_hr=true, $html_description=tr
           elseif (strpos ("_".$line, "function ".$name) > 0 && !empty ($name))
           {
             $temp = trim (substr (trim ($line), strlen ("function ")));
-            $temp = htmlentities ($temp);
-            $function[$name] = $temp;
+            $temp = htmlentities ($temp);            
             $open = "none";
+            
+            // only display functions that have been defined in $display_functions array
+            if (empty ($display_function) || sizeof ($display_functions) < 1 || in_array ($name, $display_functions))
+            {
+              $function[$name] = $temp;
+            }
           }
           // global variables
           elseif (strpos ("_".$line, "global ") > 0 && !empty ($name))

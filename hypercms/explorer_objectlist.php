@@ -38,9 +38,9 @@ $object_array = array();
 $galleryview = "";
 $listview = "";
 $items_row = -1;
-$thumbnailsize_small = 100;
+$thumbnailsize_small = 120;
 $thumbnailsize_medium = 160;
-$thumbnailsize_large = 220;
+$thumbnailsize_large = 180;
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -166,8 +166,16 @@ if (valid_locationname ($location))
 
               if ($setlocalpermission['root'] == 1)
               {
-                $folder_array[] = $file;            
-                $objects_total++;
+                // remove _gsdata_ directory created by Cyberduck
+                if ($file == "_gsdata_")
+                {
+                  deletefolder ($site, $location, $file, $user);
+                }
+                else
+                {
+                  $folder_array[] = $file;            
+                  $objects_total++;
+                }
               }
             }
             elseif (is_file ($location.$file) && $file != ".folder")
@@ -295,7 +303,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         }
     
         // refresh sidebar
-        if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
+        if (!$is_mobile) $sidebarclick = "hcms_loadSidebar();";
         else $sidebarclick = "";
         
         // onclick for marking objects  
@@ -580,7 +588,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
 
         // refresh sidebar
-        if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
+        if (!$is_mobile) $sidebarclick = "hcms_loadSidebar();";
         else $sidebarclick = "";
 
         // onclick for marking objects      
@@ -815,7 +823,8 @@ else $objects_counted = 0;
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/contextmenu.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
@@ -859,6 +868,8 @@ else $objects_counted = 0;
   display: table-cell;
   text-align: center;
   vertical-align: bottom;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hcmsCell
@@ -868,14 +879,9 @@ else $objects_counted = 0;
   text-overflow: ellipsis;
 }
 
-.hcmsImage
-{
-  object-fit: contain;
-}
-
 .hcmsThumbnailWidthlarge img
 {
-  width: <?php echo $thumbnailsize_large; ?>px;
+  height: <?php echo $thumbnailsize_large; ?>px;
 }
 
 .hcmsThumbnailWidthmedium img
@@ -940,7 +946,7 @@ themelocation = '<?php echo getthemelocation(); ?>';
 var explorerview = "<?php echo $temp_explorerview; ?>";
 
 // verify sidebar
-if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.display != 'none') var sidebar = true;
+if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.width > 0) var sidebar = true;
 else var sidebar = false;
 
 // define global variable for popup window name used in contextmenu.js
@@ -970,9 +976,9 @@ function toggleview (viewoption)
   var thumbnail;
 
   // thumbnail frame size definitions
-  if (viewoption == "large") style = "width:<?php echo ($thumbnailsize_large + 16); ?>px; height:<?php echo ($thumbnailsize_large + 56); ?>px;";
-  else if (viewoption == "medium") style = "width:<?php echo ($thumbnailsize_medium + 16); ?>px; height:<?php echo ($thumbnailsize_medium + 56); ?>px;";
-  else if (viewoption == "small") style = "width:<?php echo ($thumbnailsize_small + 54); ?>px; height:<?php echo ($thumbnailsize_small + 56); ?>px;";
+  if (viewoption == "large") style = "max-width:<?php echo ceil ($thumbnailsize_large * 1.6); ?>px; height:<?php echo ($thumbnailsize_large + 56); ?>px;";
+  else if (viewoption == "medium") style = "width:<?php echo ($thumbnailsize_medium + 12); ?>px; height:<?php echo ($thumbnailsize_medium + 56); ?>px;";
+  else if (viewoption == "small") style = "width:<?php echo ($thumbnailsize_small + 28); ?>px; height:<?php echo ($thumbnailsize_small + 56); ?>px;";
 
   frames = document.getElementsByClassName('hcmsObjectGalleryMarker');
 
@@ -1112,11 +1118,11 @@ function initalize ()
   // reset column width on request
   <?php if (!empty ($resetcols)) echo "resetcols();"; ?>
 
-  // resize columns
-  $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
-
   // set columns width
   initsizecols ();
+  
+  // resize columns
+  $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
 }
 </script>
 </head>
@@ -1153,7 +1159,7 @@ function initalize ()
 </form>
 
 <!-- context menu --> 
-<div id="contextLayer" style="position:absolute; width:150px; height:300px; z-index:10; left:20px; top:20px; visibility:hidden;">
+<div id="contextLayer" style="position:absolute; min-width:150px; max-width:200px; height:320px; z-index:10; left:20px; top:20px; visibility:hidden;">
    <!-- context menu for objects -->
   <form name="contextmenu_object" action="" method="post" target="_blank" style="display:block;">
     <input type="hidden" name="contextmenustatus" value="" />
@@ -1178,7 +1184,7 @@ function initalize ()
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
     
-    <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
+    <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
       <tr>
         <td>
           <?php if (checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false) { ?>

@@ -39,6 +39,9 @@ if ($location != "")
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
+// field size definitions
+$width_searchfield = 380;
+
 // ------------------------------ permission section --------------------------------
 
 // check access permissions
@@ -56,7 +59,7 @@ $viewstore = false;
 if (valid_publicationname ($site) && valid_objectname ($template))
 {
   // call template engine
-  $viewstore = buildsearchform ($site, $template, "", $ownergroup, $css_display, "226px");
+  $viewstore = buildsearchform ($site, $template, "", $ownergroup, $css_display, $width_searchfield."px");
 }
 
 // show form
@@ -73,6 +76,7 @@ else
   echo "<title>hyperCMS</title>\n";
   echo "<meta charset=\"".$mgmt_config[$site]['default_codepage']."\" />\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
   echo "</head>\n";
   echo "<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" onload=\"parent.hcms_showPage('contentFrame', 'contentLayer');\">\n";
   echo "</body>\n";

@@ -137,7 +137,8 @@ $token_new = createtoken ("sys");
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=380, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
 
-<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css" type="text/css">
+<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 
 <!-- Standard icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/favicon.ico"> 

@@ -36,6 +36,7 @@ input, select, textarea, button, .hcmsTextArea
   background-color: #FFFFFF;
   margin: 1px 1px 1px 0px;
   padding: 6px 4px;
+  outline: none;
 }
 
 select
@@ -58,6 +59,11 @@ select::-ms-expand
   display: none;
 }
 
+input:focus, select:focus, textarea:focus, .hcmsTextArea:focus
+{
+  border: 1px solid #FC9300;
+}
+
 input:disabled, select:disabled, textarea:disabled, button:disabled
 {
   filter: alpha(opacity=35);
@@ -69,7 +75,7 @@ a
 {
   font-family: inherit;
   font-size: inherit;
-  font-weight: bold;
+  font-weight: inherit;
   text-decoration: none;
   color: #000000;
   outline: none;
@@ -111,6 +117,13 @@ hr
   border-width :0;
   color: #7DA5DD;
   background-color: #7DA5DD;
+}
+
+/* Main */
+
+a.hcmsLink
+{
+  text-decoration: underline;
 }
 
 .hcmsCenter
@@ -199,14 +212,12 @@ hr
 .hcmsWorkplaceTop
 {
   background-color: #429925;
-  background-image: url('../img/backgrd_top.png');
-  background-repeat: repeat;
 }
 
 .hcmsLogoTop
 {
-  width: 36px;
-  height: 36px;
+  max-width: 36px;
+  max-height: 36px;
   padding: 0;
   margin: 0;
   border: 0;
@@ -215,9 +226,8 @@ hr
 
 .hcmsWorkplaceBar
 {
-  background-color: #86B7FD;
+  background-color: #A6CBFF;
   border-left: 6px solid #EB6804;
-  border-bottom: 3px solid #009900;
   position: fixed;
   top: 0;
   left: 0;
@@ -231,7 +241,7 @@ hr
 .hcmsLocationBar
 {
   width: 100%;
-  background-color: #86B7FD;
+  background-color: #A6CBFF;
   margin: 0;
   padding: 0px 3px;
   border-left: 6px solid #EB6804;
@@ -262,6 +272,7 @@ hr
   object-fit: contain;
   max-width: 100%;
   max-height: 100%;
+  vertical-align: bottom;
   border: 0;
   margin-bottom: 4px;
 }
@@ -283,24 +294,13 @@ hr
 .hcmsToolbar
 {
   width: 100%;
-  height: 36px;
-  padding: 2px;
   display: block;
 }
 
 .hcmsToolbarBlock
 {
   float: left;
-  padding-right: 3px;
-  margin-right: 3px;
   border-right: 2px solid #6DA6F5; 
-}
-
-.hcmsWorkplaceExplorer
-{
-  margin: 0;
-  padding: 0;
-  background-color: #A2C5F9;
 }
 
 .hcmsWorkplaceObjectlist
@@ -683,18 +683,6 @@ hr
   top: 1px;
 }
 
-.hcmsMore
-{
-  border-top: 1px solid #C0C0C0;
-  background-color: #E2ECF5;
-  cursor: pointer; 
-}
-
-.hcmsMore:hover
-{
-  background-color: #C7DBED;
-}
-
 .hcmsSelector
 {
   margin: 0;
@@ -892,4 +880,159 @@ table.hcmsTableNarrow th, table.hcmsTableNarrow td
   padding: 0;
   text-align: left;
   vertical-align: middle;
+}
+
+/* Navigator */
+
+a.hcmsNavigator
+{
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 16px !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+  outline: none;
+  padding-left: 0px !important;
+}
+
+.hcmsWorkplaceExplorer
+{
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;;
+  background-color: #FBB51C;
+}
+
+.hcmsWorkplaceObjectlist
+{
+  background-color: #A5C9FE;
+}
+
+.hcmsWorkplaceObjectlistLinks
+{
+  background-color: #ADE6BA;
+}
+
+.hcmsButtonDownload
+{
+  min-width: 70px;
+  margin: 4px 2px;
+  padding: 1px;
+  float: left;
+  text-align: center;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 1px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #FFFFFF;
+  cursor: pointer;
+}
+
+.hcmsButtonDownload:hover
+{
+  background-color: #ECA03C;
+}
+
+.hcmsMore
+{
+  border-top: 1px solid #C0C0C0;
+  background-color: #E2ECF5;
+  cursor: pointer; 
+}
+
+.hcmsMore:hover
+{
+  background-color: #C7DBED;
+}
+
+.hcmsStatusbar
+{
+  border-top: 1px solid #C0C0C0;
+  background-color: #E2ECF5;
+}
+
+tr.hcmsObjectSelected
+{
+  background-color: #7BD181;
+}
+
+tr.hcmsObjectUnselected
+{
+  background-color: transparent;
+}
+
+div.hcmsObjectSelected
+{
+  margin: 2px;
+  background-color: #7BD181;
+  background-image: url("../img/button_textc.png");
+  background-repeat: no-repeat !important;
+  background-position: 2% 98% !important;
+  background-size: 22px 22px !important;
+}
+
+div.hcmsObjectUnselected
+{
+  margin: 2px;
+  background-color: transparent;
+}
+
+.hcmsIconTree
+{
+  background-repeat: no-repeat !important;
+  background-position: 0 !important;
+  background-size: 16px 16px !important;
+  height: 16px !important;
+  width: 16px !important;
+  line-height: 16px !important;
+}
+
+.hcmsIconOn
+{
+  border: 0;  
+  filter: alpha(opacity=100);
+  -moz-opacity: 1;
+  opacity: 1;
+}
+
+.hcmsIconOff
+{
+  border: 0;
+  filter: gray() alpha(opacity=30);
+  -moz-opacity: 0.3;
+  opacity: 0.3;
+}
+
+.hcmsTableHeader
+{
+  border-left: 3px solid #EB6804;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
+  cursor: pointer;
+}
+
+.hcmsTableHeader:hover
+{
+  background-color: #FB9C04;
+  border-left: 3px solid #EB6804;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
+  cursor: pointer;
+}
+
+.hcmsSelectArea
+{
+  display: none;
+  border: 1px solid #FB980C;
+  background-color: #FCB045;
+  position: absolute;
+  z-index: 5;
+  filter: gray() alpha(opacity=70);
+  -moz-opacity: 0.7;
+  opacity: 0.7;
 }

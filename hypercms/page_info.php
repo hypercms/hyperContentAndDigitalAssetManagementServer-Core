@@ -58,6 +58,7 @@ $filecount = 0;
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 </head>
 
@@ -236,28 +237,37 @@ if ($pagestore != false)
   
     if ($filesize > 0) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['file-size'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filesize."</td></tr>\n";
     if ($filecount > 0) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['number-of-files'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filecount."</td></tr>\n";
-  
-    // direct link
-    if (!empty ($media) && $mgmt_config[$site]['dam'] != true) $filedirectlink = getmedialocation ($site, $media, "url_path_media").$site."/".$media;
-  
-    // links
-    if (!empty ($mgmt_config['publicdownload']) && ($cat == "page" || $setlocalpermission['download'] == 1))
-    {
-      // wrapper link
-      if (!empty ($mgmt_config['db_connect_rdbms'])) $filewrapperlink = createwrapperlink ($site, $location, $page, $cat);
-      elseif ($media != "") $filewrapperlink = createviewlink ($site, $media, $page);
-      
-      // download link  
-      if (!empty ($mgmt_config['db_connect_rdbms']))$filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
-      elseif ($media != "") $filewrapperdownload = createviewlink ($site, $media, $page, false, "download");
-      
-      // object access link
-      if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config[$site]['accesslinkuser'])) $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
-    }
 
-    // file links
+    // file links (only if linking is not used)
     if (linking_valid() == false)
     {
+      // direct link
+      if (!empty ($media) && empty ($mgmt_config[$site]['dam'])) $filedirectlink = getmedialocation ($site, $media, "url_path_media").$site."/".$media;
+    
+      // links
+      if (!empty ($mgmt_config['publicdownload']))
+      {
+        // wrapper link
+        if ($cat == "page" || $setlocalpermission['download'] == 1)
+        {
+          if (!empty ($mgmt_config['db_connect_rdbms'])) $filewrapperlink = createwrapperlink ($site, $location, $page, $cat);
+          elseif (!empty ($media)) $filewrapperlink = createviewlink ($site, $media, $page);
+        }
+        
+        // download link
+        if ($cat == "comp" && $setlocalpermission['download'] == 1)
+        {
+          if (!empty ($mgmt_config['db_connect_rdbms']))$filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
+          elseif (!empty ($media)) $filewrapperdownload = createviewlink ($site, $media, $page, false, "download");
+        }
+        
+        // object access link
+        if ($cat == "page" || $setlocalpermission['download'] == 1)
+        {
+          if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config[$site]['accesslinkuser'])) $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
+        }
+      }
+
       if (!empty ($filedirectlink)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['direct-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filedirectlink."</td></tr>\n";
       if (!empty ($filewrapperlink)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['wrapper-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filewrapperlink."</td></tr>\n";
       if (!empty ($filewrapperdownload)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['download-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filewrapperdownload."</td></tr>\n";

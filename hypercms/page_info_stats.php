@@ -79,6 +79,7 @@ if ($pagedata != false)
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -161,9 +162,9 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 </form>
 
 <!-- content -->
-<div class="hcmsWorkplaceFrame">
+<div class="hcmsWorkplaceFrame" style="width:<?php echo ($chart_width + 80); ?>px;">
 
-  <div class="hcmsHeadline" style="width:240px; padding:8px 0px 0px 290px; text-align:center;">
+  <div class="hcmsHeadline" style="width:240px; margin:8px auto 0px auto; text-align:center;">
     <img src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" class="hcmsButton hcmsButtonSizeSquare" onclick="document.forms['previousform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" />
     <div style="float:left; width:140px; padding:2px;">&nbsp;<?php echo getescapedtext ($hcms_lang['time-frame'][$lang]).":<br />".$date_month."/".$date_year; ?>&nbsp;</div>
     <?php if ($date_month != date ("m", time()) || $date_year != date ("Y", time())) { ?>
@@ -245,7 +246,7 @@ if (!empty ($container_id))
       }
 
       // link for popup
-      if (!empty ($view_axis[$i]['onclick'])) $view_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($view_axis[$i]['onclick'], "|"))."', '".getescapedtext ($date_year."-".$date_month."-".$day." ".$hcms_lang['views'][$lang])."');";
+      if (!empty ($view_axis[$i]['onclick'])) $view_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($view_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['views'][$lang])."');";
 
       // bar text
       $view_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$view_axis[$i]['value']." ".getescapedtext ($hcms_lang['views'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$view_axis[$i]['text'];
@@ -282,7 +283,7 @@ if (!empty ($container_id))
       }
 
       // link for popup
-      if (!empty ($download_axis[$i]['onclick'])) $download_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($download_axis[$i]['onclick'], "|"))."', '".getescapedtext ($date_year."-".$date_month."-".$day." ".$hcms_lang['downloads'][$lang])."');";
+      if (!empty ($download_axis[$i]['onclick'])) $download_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($download_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['downloads'][$lang])."');";
 
       // bar text
       $download_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$download_axis[$i]['value']." ".getescapedtext ($hcms_lang['downloads'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$download_axis[$i]['text'];
@@ -319,7 +320,7 @@ if (!empty ($container_id))
       }
 
       // link for popup
-      if (!empty ($upload_axis[$i]['onclick'])) $upload_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($upload_axis[$i]['onclick'], "|"))."', '".getescapedtext ($date_year."-".$date_month."-".$day." ".$hcms_lang['uploads'][$lang])."');";
+      if (!empty ($upload_axis[$i]['onclick'])) $upload_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($upload_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['uploads'][$lang])."');";
 
       // bar text
       $upload_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$upload_axis[$i]['value']." ".getescapedtext ($hcms_lang['uploads'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$upload_axis[$i]['text'];   

@@ -85,6 +85,7 @@ if ($label == "") $label = $id;
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -177,7 +178,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['selected-component'][$lang]); ?> </td>
       <td style="white-space:nowrap;">
-        <input type="text" name="comp_name" style="width:220px;" value="<?php echo $component_name_short; ?>" title="<?php echo $component_name; ?>" disabled="disabled" />
+        <input type="text" name="comp_name" style="width:220px;" value="<?php echo $component_name_short; ?>" title="<?php echo $component_name; ?>" readonly="readonly" />
         <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" alt="<?php echo getescapedtext ($hcms_lang['select'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select'][$lang]); ?>" />                          
         <img onClick="deleteEntry(document.forms['component']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
         <img onclick="submitSingleComp(document.forms['component']);" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1);" alt="OK" title="OK" />    

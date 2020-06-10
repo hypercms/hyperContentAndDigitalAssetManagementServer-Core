@@ -124,6 +124,7 @@ elseif ($action == "delete" && checktoken ($token, $user) && is_array ($notify_i
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
@@ -226,10 +227,10 @@ if (is_array ($notify_array))
       <tr>
         <td style=\"width:22px; text-align:center;\"><input type=\"checkbox\" id=\"notify".$notify['notify_id']."\" name=\"notify_id[]\" value=\"".$notify['notify_id']."\" /></td>
         <td style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><div title=\"".$objectpath."\"><label for=\"notify".$notify['notify_id']."\"><img src=\"".getthemelocation()."img/".$objectinfo['icon']."\" class=\"hcmsIconList\" />&nbsp;".getobject($objectpath)."</label></div></td>
-        <td style=\"width:22px; text-align:center;\"><input type=\"checkbox\" disabled=\"disabled\" ",($notify['oncreate'] > 0 ? "checked=\"checked\"" : ""),"\" /></td>
-        <td style=\"width:22px; text-align:center;\"><input type=\"checkbox\" disabled=\"disabled\" ",($notify['onedit'] > 0 ? "checked=\"checked\"" : ""),"\" /></td>
-        <td style=\"width:22px; text-align:center;\"><input type=\"checkbox\" disabled=\"disabled\" ",($notify['onmove'] > 0 ? "checked=\"checked\"" : ""),"\" /></td>
-        <td style=\"width:22px; text-align:center;\"><input type=\"checkbox\" disabled=\"disabled\" ",($notify['ondelete'] > 0 ? "checked=\"checked\"" : ""),"\" /></td>
+        <td style=\"width:22px; text-align:center;\">".($notify['oncreate'] > 0 ? "<img src=\"".getthemelocation()."/img/button_textc.png\" class=\"hcmsIconList\" />" : "")."</td>
+        <td style=\"width:22px; text-align:center;\">".($notify['onedit'] > 0 ? "<img src=\"".getthemelocation()."/img/button_textc.png\" class=\"hcmsIconList\" />" : "")."</td>
+        <td style=\"width:22px; text-align:center;\">".($notify['onmove'] > 0 ? "<img src=\"".getthemelocation()."/img/button_textc.png\" class=\"hcmsIconList\" />" : "")."</td>
+        <td style=\"width:22px; text-align:center;\">".($notify['ondelete'] > 0 ? "<img src=\"".getthemelocation()."/img/button_textc.png\" class=\"hcmsIconList\" />" : "")."</td>
       </tr>";
     }
     

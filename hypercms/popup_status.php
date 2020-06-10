@@ -39,6 +39,7 @@ $token= getrequest_esc ("token");
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/click.js" type="text/javascript"></script>
 </head>
 
@@ -48,12 +49,13 @@ $token= getrequest_esc ("token");
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
 
 <?php
-// flush
-if ($force == "start")
+// flush in order to display load screen
+// do not use it for action "publish" since the output will interfere with the session_start used in the template engine
+if ($force == "start" && $action != "publish")
 {
   ob_implicit_flush (true);
   ob_end_flush ();
-  sleep (1);
+  //sleep (1);
 }
 
 // ==================================== stage 1 (only for cut, copy, linkcopy) ====================================
@@ -402,7 +404,7 @@ if ($maxcount > 0)
 ?>
 
 <div style="display:block; width:100%; text-align:center; vertical-align:middle;">
-  <p class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?> <?php echo $status; ?></p>
+  <p><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?></span> <span class="hcmsHeadlineTiny"><?php echo $status; ?></span></p>
   
   <?php if (!empty ($progress) && $progress >= 0) { ?>
   <div style="display:block; width:80%; height:16px; margin:10px auto; border:1px solid #000000;">

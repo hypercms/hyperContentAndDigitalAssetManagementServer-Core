@@ -18,6 +18,7 @@ require ("function/hypercms_api.inc.php");
 // input parameters
 $site = getrequest_esc ("site"); // site can be *Null* which is not a valid name!
 $group = getrequest_esc ("group");
+$search = getrequest ("search");
 $start = getrequest ("start", "numeric", 0);
 
 // publication management config
@@ -74,7 +75,7 @@ if ($userdata != false)
           $buffer_array = getcontent ($usernode, "<realname>"); 
           $object_array['name'][$i] = $buffer_array[0];
           $buffer_array = getcontent ($usernode, "<email>");
-          $object_array['email'][$i] = $buffer_array[0];  
+          $object_array['email'][$i] = $buffer_array[0];
           $i++;
         }
         elseif ($group != "")
@@ -98,7 +99,7 @@ if ($userdata != false)
                 $buffer_array = getcontent ($usernode, "<realname>");
                 $object_array['name'][$i] = $buffer_array[0]; 
                 $buffer_array = getcontent ($usernode, "<email>");
-                $object_array['email'][$i] = $buffer_array[0];                   
+                $object_array['email'][$i] = $buffer_array[0];              
                 $i++;
               }
             }
@@ -122,13 +123,13 @@ if ($userdata != false)
       else
       {
         $userrecord_big_array = array();
-        
+
         foreach ($siteaccess as $site_entry)
         {
           $userrecord_array = selectcontent ($userdata, "<user>", "<publication>", $site_entry);
           $userrecord_big_array = array_merge ($userrecord_big_array,  $userrecord_array);
         }
-        
+
         if ($userrecord_big_array != false)
         {
           foreach ($userrecord_big_array as $userrecord_big)
@@ -140,10 +141,10 @@ if ($userdata != false)
             $buffer_array = getcontent ($userrecord_big, "<realname>");
             $object_array['name'][$i] = $buffer_array[0];
             $buffer_array = getcontent ($userrecord_big, "<email>");
-            $object_array['email'][$i] = $buffer_array[0];                
+            $object_array['email'][$i] = $buffer_array[0];
             $i++;
           }
-          
+
           $object_array['login'] = array_unique ($object_array['login']);
         }        
       }
@@ -151,7 +152,7 @@ if ($userdata != false)
     elseif ($site == "*no_memberof*")
     {
       $userrecord_big_array = getcontent ($userdata, "<user>");
-      
+
       if ($userrecord_big_array != false)
       {
         foreach ($userrecord_big_array as $userrecord_big)
@@ -166,7 +167,7 @@ if ($userdata != false)
             $buffer_array = getcontent ($userrecord_big, "<realname>");
             $object_array['name'][$i] = $buffer_array[0];
             $buffer_array = getcontent ($userrecord_big, "<email>");
-            $object_array['email'][$i] = $buffer_array[0];                
+            $object_array['email'][$i] = $buffer_array[0];
             $i++;
           }
         }
@@ -175,7 +176,7 @@ if ($userdata != false)
     elseif (valid_publicationname ($site))
     {        
       $userrecord_big_array = selectcontent ($userdata, "<user>", "<publication>", $site);
-      
+
       if ($userrecord_big_array != false)
       {
         foreach ($userrecord_big_array as $userrecord_big)
@@ -206,62 +207,66 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
   natcasesort ($object_array['login']);
   reset ($object_array['login']);
-  
-  for ($i = 1; $i <= sizeof ($object_array['login']); $i++)
+
+  foreach ($object_array['login'] as $key => $loginname)
   {
     // break loop if maximum has been reached
     if (($items_row + 1) >= $end) break;
 
-    $key = key ($object_array['login']);
-    
-    if (!empty ($object_array['login'][$key]) && $object_array['login'][$key] != "admin" && $object_array['login'][$key] != "sys" && $object_array['login'][$key] != "hcms_download")
+    // skip hidden user accounts
+    if (!empty ($loginname) && $loginname != "admin" && $loginname != "sys" && $loginname != "hcms_download")
     {
-      // count valid objects 
-      $items_row++;
-  
-      // skip rows for paging
-      if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+      // search
+      if (trim ($search) != "" && stripos (" ".$loginname." ".$object_array['name'][$key]." ".$object_array['email'][$key]." ".$object_array['email'][$key], trim ($search)) > 0) $found = true;
+      else $found = false;
 
-      // user status
-      if (is_array ($user_online_array) && in_array ($object_array['login'][$key], $user_online_array)) $user_status = getescapedtext ($hcms_lang['active'][$lang]);
-      else $user_status = getescapedtext ($hcms_lang['logged-out'][$lang]);
-
-      // open on double click
-      if (checkrootpermission ('user') && checkrootpermission ('useredit') || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
+      if ($found == true || trim ($search) == "")
       {
-        $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 880);\"";
+        // count valid objects
+        $items_row++;
+
+        // skip rows for paging
+        if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+
+        // user status
+        if (is_array ($user_online_array) && in_array ($object_array['login'][$key], $user_online_array)) $user_status = getescapedtext ($hcms_lang['active'][$lang]);
+        else $user_status = getescapedtext ($hcms_lang['logged-out'][$lang]);
+
+        // open on double click
+        if (checkrootpermission ('user') && checkrootpermission ('useredit') || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
+        {
+          $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 880);\"";
+        }
+        else $openUser = "";
+
+        // onclick for marking objects
+        $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlUserMenu();\" ";
+        $setContext = "style=\"display:block;\" onMouseOver=\"hcms_setUsercontext('".$site."', '".$object_array['login'][$key]."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
+
+        $listview .= "
+              <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
+                <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:180px;\">
+                  <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">
+                    <a data-objectpath=\"".$object_array['login'][$key]."\" data-href=\"javascript:void(0);\">
+                      <img src=\"".getthemelocation()."img/user.png\" class=\"hcmsIconList\" /> ".$object_array['login'][$key]."
+                    </a>
+                  </div>
+                </td>
+                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"padding-left:3px; width:180px;\"><span ".$setContext."> ".$object_array['name'][$key]."</span></td>";
+
+        if (!$is_mobile) $listview .= "
+                <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:300px;\"><span ".$setContext."> ".$object_array['email'][$key]."</span></td>
+                <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:120px;\"><span ".$setContext."> <span style=\"display:none;\">".date ("Ymd", strtotime ($object_array['date'][$key]))."</span>".showdate ($object_array['date'][$key], "Y-m-d", $hcms_lang_date[$lang])."</span></td>";
+
+        $listview .= "
+                <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px;\"><span ".$setContext."> ".$user_status."</span></td>";
+
+        $listview .= "
+              </tr>";
       }
-      else $openUser = "";
-      
-      // onclick for marking objects
-      $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlUserMenu();\" ";
-      $setContext = "style=\"display:block;\" onMouseOver=\"hcms_setUsercontext('".$site."', '".$object_array['login'][$key]."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
- 
-      $listview .= "
-            <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
-              <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:180px;\">
-                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">
-                  <a data-objectpath=\"".$object_array['login'][$key]."\" data-href=\"javascript:void(0);\">
-                    <img src=\"".getthemelocation()."img/user.png\" class=\"hcmsIconList\" /> ".$object_array['login'][$key]."&nbsp;
-                  </a>
-                </div>
-              </td>
-              <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"padding-left:3px; width:180px;\"><span ".$setContext.">&nbsp;".$object_array['name'][$key]."</span></td>";
-
-      if (!$is_mobile) $listview .= "
-              <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:300px;\"><span ".$setContext.">&nbsp;".$object_array['email'][$key]."</span></td>
-              <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:120px;\"><span ".$setContext.">&nbsp;<span style=\"display:none;\">".date ("Ymd", strtotime ($object_array['date'][$key]))."</span>".showdate ($object_array['date'][$key], "Y-m-d", $hcms_lang_date[$lang])."</span></td>";
-      
-      $listview .= "
-              <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px;\"><span ".$setContext.">&nbsp;".$user_status."</span></td>";
-
-      $listview .= "
-            </tr>"; 
     }
     // subtract hidden user
     else $objects_total--;
-
-    next ($object_array['login']);
   }
 }
 
@@ -275,7 +280,8 @@ else $objects_counted = 0;
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/contextmenu.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
@@ -351,7 +357,7 @@ function initalize ()
 <div id="selectarea" class="hcmsSelectArea"></div>
 
 <!-- context menu -->
-<div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
+<div id="contextLayer" style="position:absolute; min-width:150px; max-width:200px; height:80px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_user" method="post" action="" target="">
     <input type="hidden" name="contextmenustatus" value="" />
     <input type="hidden" name="contextmenulocked" value="false" />
@@ -364,7 +370,7 @@ function initalize ()
     <input type="hidden" name="multiobject" value="" />
     <input type="hidden" name="token" value="" />
 
-    <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
+    <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
       <tr>
         <td>
           <?php $tblrow = 1;  
@@ -390,21 +396,21 @@ function initalize ()
   <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:180px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;
       </td>
       <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:180px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;
       </td>
       <?php if (!$is_mobile) { ?>
       <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:300px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>&nbsp;
       </td> 
       <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:120px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?>&nbsp;
       </td>
       <?php } ?>
       <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['status'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['status'][$lang]); ?>&nbsp;
       </td>
     </tr>
   </table>
@@ -426,7 +432,7 @@ if (empty ($mgmt_config['explorer_paging']) && $objects_total >= $end)
   $next_start = $objects_counted + 1;
 ?>
 <!-- status bar incl. more button -->
-<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
+<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($next_start)."&search=".url_encode($search); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
   <div style="padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['users'][$lang]) : ""); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
@@ -440,11 +446,11 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
   $next_start = $objects_counted + 1;
 ?>
 <!-- status bar incl. previous and next buttons -->
-<div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
+<div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($previous_start)."&search=".url_encode($search); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
   <div style="padding:8px; float:left;"><?php echo ($start + 1)."-".$next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['users'][$lang]) : ""); ?></div>
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
-<div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($next_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
+<div id="ButtonNext" class="hcmsMore" style="position:fixed; bottom:0; left:50%; right:0; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($objects_total > $end) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&group=".url_encode($group)."&start=".url_encode($next_start)."&search=".url_encode($search); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>">
   <div style="margin:0 auto; text-align:center;"><img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" class="hcmsButtonSizeSquare" style="border:0;" /></div>
 </div>
 <?php

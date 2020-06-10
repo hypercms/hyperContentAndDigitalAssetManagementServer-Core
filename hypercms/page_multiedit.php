@@ -664,6 +664,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
   <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/domready.js"></script>
   
   <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
   
   <style>
   #preview

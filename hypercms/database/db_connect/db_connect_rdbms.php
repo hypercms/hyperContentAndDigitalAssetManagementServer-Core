@@ -4293,6 +4293,8 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
 
   if (is_array ($objects) && sizeof ($objects) > 0 && $user != "" && (strtolower ($mark) == "set" || strtolower ($mark) == "unset"))
   {
+    $result = true;
+
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     $user = $db->rdbms_escape_string ($user);
@@ -4343,6 +4345,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             // remove previously deleted objects
             if (is_dir ($new_abs)) processobjects ("delete", $site, getlocation ($new_abs), getobject ($new_abs), "0", $user);
 
+            // if the same folder does not exist
             if (is_dir ($object_abs) && !is_dir ($new_abs))
             {
               // rename folder
@@ -4352,9 +4355,16 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
               {
                 $errcode = "10901";
                 $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|delete mark (rename) failed for folder $object";
+                $result = false;
               }
               // update query
               else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_folder.'.recycle/.folder" WHERE objectpath=_utf8"'.$object_folder.'/.folder" COLLATE utf8_bin';
+            }
+            else
+            {
+              $errcode = "10902";
+              $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|delete mark failed for folder $object since a folder with the same name exists already";
+              $result = false;
             }
           }
           // restore
@@ -4371,11 +4381,17 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             
               if (empty ($rename))
               {
-                $errcode = "10902";
+                $errcode = "10903";
                 $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|restore failed (rename) for folder $object in recycle bin";
               }
               // update query
               else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_folder, 0, -8).'/.folder" WHERE objectpath=_utf8"'.$object_folder.'/.folder" COLLATE utf8_bin';
+            }
+            else
+            {
+              $errcode = "10904";
+              $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|restore failed for folder $object since a folder with the same name exists already";
+              $result = false;
             }
           }
 
@@ -4426,8 +4442,9 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             
               if (empty ($rename))
               {
-                $errcode = "10903";
+                $errcode = "10905";
                 $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|delete mark (rename) failed for object $object";
+                $result = false;
               }
               // update query
               else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_file.'.recycle" WHERE objectpath=_utf8"'.$object_file.'" COLLATE utf8_bin';
@@ -4438,18 +4455,26 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             // new file name
             $new_abs = substr ($object_abs, 0, -8);
 
+            // if the same file name does not exist
             if (is_file ($object_corr) && !is_file ($new_abs))
             {
-              // rename folder file
+              // rename file
               $rename = rename ($object_corr, $new_abs);
             
               if (empty ($rename))
               {
-                $errcode = "10904";
+                $errcode = "10906";
                 $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|restore failed (rename) for object $object in recycle bin";
+                $result = false;
               }
               // update query
               else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_file, 0, -8).'" WHERE objectpath=_utf8"'.$object_file.'" COLLATE utf8_bin';
+            }
+            else
+            {
+              $errcode = "10907";
+              $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|restore failed for object $object in recycle bin since an object with the same name exists already";
+              $result = false;
             }
           }
 
@@ -4464,6 +4489,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
       {
         $errcode = "30901";
         $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|reference to object $object is not valid";
+        $result = false;
       }  
     }
 
@@ -4472,7 +4498,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
     savelog (@$error);
     $db->rdbms_close();
       
-    return true;
+    return $result;
   }
   else return false;
 }

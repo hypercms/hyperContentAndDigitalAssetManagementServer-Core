@@ -51,20 +51,28 @@ function hcms_clearSelection ()
 // sidebar
 function hcms_loadSidebar ()
 {
-  document.forms['contextmenu_object'].attributes['action'].value = 'explorer_preview.php';
-  document.forms['contextmenu_object'].attributes['target'].value = 'sidebarFrame';
-  document.forms['contextmenu_object'].elements['action'].value = '';
-  
-  if (allow_tr_submit)
+  // if sidebar is not hidden
+  if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.width != "0px" && document.forms['contextmenu_object'])
   {
-    document.forms['contextmenu_object'].submit();
+    // wait (due to issues with browsers like MS Edge, Chrome)
+    hcms_sleep (400);
+
+    document.forms['contextmenu_object'].attributes['action'].value = 'explorer_preview.php';
+    document.forms['contextmenu_object'].attributes['target'].value = 'sidebarFrame';
+    document.forms['contextmenu_object'].elements['action'].value = '';
+    
+    if (allow_tr_submit)
+    {
+      document.forms['contextmenu_object'].submit();
+    }
+    else
+    {
+      allow_tr_submit = true;
+    }
+    
+    return true;
   }
-  else
-  {
-    allow_tr_submit = true;
-  }
-  
-  return true;
+  else return false;
 }
 
 // reset context menu  

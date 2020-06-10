@@ -84,8 +84,23 @@ elseif ($action == "item_delete")
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
+
+<?php
+// invert button colors
+if (!empty ($hcms_themeinvertcolors))
+{
+  echo "<style>";
+  // invert all buttons
+  echo invertcolorCSS ("div.hcmsToolbarBlock", 100);
+  // revert on hover
+  echo invertcolorCSS (".hcmsButton:hover, div.hcmsToolbarBlock select", 100);
+  echo "</style>";
+}
+?>
+
 <script type="text/javascript">
 
 function selectpers (selObj)

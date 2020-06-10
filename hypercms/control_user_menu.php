@@ -148,9 +148,39 @@ $token_new = createtoken ($user);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
+
+<?php
+// invert button colors
+if (!empty ($hcms_themeinvertcolors))
+{
+  echo "<style>";
+  // invert all buttons
+  echo invertcolorCSS ("div.hcmsToolbarBlock", 100);
+  // revert on hover
+  echo invertcolorCSS (".hcmsButton:hover, div.hcmsToolbarBlock select, div.hcmsToolbarBlock form", 100);
+  echo "</style>";
+}
+?>
+
 <script type="text/javascript">
+
+function startSearch ()
+{
+  if (document.forms['searchform'])
+  {
+    var form = document.forms['searchform'];
+
+    // load screen
+    if (parent.frames['mainFrame'].document.getElementById('hcmsLoadScreen')) parent.frames['mainFrame'].document.getElementById('hcmsLoadScreen').style.display='inline';
+    
+    // submit form
+    form.submit();
+  }
+}
+
 function warning_delete()
 {
   check = confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-user'][$lang]); ?>"));
@@ -449,7 +479,7 @@ function goToURL()
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
       <img src="<?php echo getthemelocation(); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
-      <select name="group" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" title="<?php echo $item_name; ?>" style="width:180px;">
+      <select name="group" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" title="<?php echo $item_name; ?>" style="width:<?php if ($is_mobile) echo "130px"; else echo "180px"; ?>;">
         <?php
         // select users by group membership
         if (valid_publicationname ($site))
@@ -524,6 +554,16 @@ function goToURL()
         }      
         ?>
       </select>
+    </div>
+  </div>
+  <div class="hcmsToolbarBlock">
+    <div style="padding:3px; float:left;">
+      <form name="searchform" method="post" action="user_objectlist.php" target="mainFrame" style="margin:0; padding:0; border:0;">
+        <input type="hidden" name="site" value="<?php echo $site; ?>" />
+        <input type="hidden" name="group" value="<?php if (valid_publicationname ($site)) echo "*all*"; ?>" />
+        <input type="text" name="search" onkeydown="if (hcms_enterKeyPressed(event)) startSearch();" style="float:left; width:<?php if ($is_mobile) echo "130px"; else echo "180px"; ?>;" maxlength="400" placeholder="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" value="" />
+        <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" onclick="startSearch();" style="float:left; cursor:pointer; width:22px; height:22px; margin:5px 0px 3px -26px; " title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+      </form>
     </div>
   </div>
   <div class="hcmsToolbarBlock">

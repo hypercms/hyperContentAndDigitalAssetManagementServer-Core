@@ -15,7 +15,8 @@ scriptend]
   <head>
     <title>Standard Page</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("day"); scriptend]css/main.css" />
+    <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("night"); scriptend]css/main.css" />
+    <link rel="stylesheet" href="[hyperCMS:scriptbegin echo getthemelocation("night")."css/".($is_mobile ? "mobile.css" : "desktop.css"); scriptend]" />
   </head>
   
   <body class="hcmsWorkplaceGeneric">

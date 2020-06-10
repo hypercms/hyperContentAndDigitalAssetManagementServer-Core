@@ -16,7 +16,8 @@ scriptend]
   <head>
     <title>[hyperCMS:textu id='Title' height='30' infotype='meta']</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("day"); scriptend]css/main.css" />
+    <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("night"); scriptend]css/main.css" />
+    <link rel="stylesheet" href="[hyperCMS:scriptbegin echo getthemelocation("night")."css/".($is_mobile ? "mobile.css" : "desktop.css"); scriptend]" />
   </head>
   
   <body class="hcmsWorkplaceGeneric">
@@ -35,7 +36,7 @@ scriptend]
 }
 elseif ('%view%' != 'template')
 {
-  //include tcpdf lib and language files
+  // include tcpdf lib and language files
   require_once($mgmt_config['abs_path_cms']."function/hypercms_tcpdf.class.php");
 
   // create new PDF document 

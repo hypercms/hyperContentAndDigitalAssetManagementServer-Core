@@ -157,7 +157,8 @@ if ($config && is_array ($config))
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang);?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <?php
 if ($config && is_array ($config) && intval ($config['version']) >= 2)

@@ -15,13 +15,13 @@ require ("../function/hypercms_api.inc.php");
 $pass = getrequest ("pass");
 $logname = getrequest ("logname");
 
-// support passcode for support service access
-$mgmt_config['pass_support'] = "hypercms";
+// default support passcode for support service access
+if (empty ($mgmt_config['support_pass'])) $mgmt_config['support_pass'] = "hypercms";
 
 // ------------------------------ permission section --------------------------------
 
 // check session of user
-if (!empty ($mgmt_config['pass_support']) && $pass != $mgmt_config['pass_support']) exit;
+if (!empty ($mgmt_config['support_pass']) && $pass != $mgmt_config['support_pass']) exit;
 
 // --------------------------------- logic section ----------------------------------
 

@@ -62,6 +62,7 @@ $show = showgallery ($assets_array, 140, true, $user);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/click.js"></script>
 </head>

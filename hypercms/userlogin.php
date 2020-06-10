@@ -69,8 +69,9 @@ if (!empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlangu
 }
 
 // detect browser and set theme
-if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes") $themename = "mobile";
-elseif (!empty ($theme)) $themename = $theme;
+if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes") $is_mobile = 1;
+
+if (!empty ($theme)) $themename = $theme;
 else $themename = "";
 
 // -------------------- link types ---------------------
@@ -400,7 +401,7 @@ else
 // wallpaper
 $wallpaper = "";
 
-if ($themename != "mobile")
+if (!$is_mobile)
 {
   $wallpaper = getwallpaper ();
 }
@@ -416,7 +417,8 @@ savelog (@$error);
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=380, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
 
-<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css?ts=<?php echo time(); ?>" type="text/css">
+<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation($themename)."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 
 <!-- Standard icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/favicon.ico"> 
@@ -632,7 +634,7 @@ function blurbackground (blur)
 </script>
 </head>
 
-<body onload="focusform(); is_mobilebrowser(); is_iOS(); html5support(); setwallpaper();">
+<body onload="focusform(); is_mobilebrowser(); is_iOS(); html5support(); <?php if (!$is_mobile) echo "setwallpaper();"; ?>">
 
   <!-- load screen --> 
   <div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
@@ -646,7 +648,7 @@ function blurbackground (blur)
   </div>
 
   <div class="hcmsStartBar">
-    <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
+    <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; max-width:420px; max-height:42px;" alt="hyper Content & Digital Asset Management Server - hypercms.com" /></div>
     <div style="position:absolute; top:15px; right:15px; text-align:right;"></div>
   </div>
   

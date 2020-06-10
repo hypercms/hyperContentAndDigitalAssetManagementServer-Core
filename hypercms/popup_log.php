@@ -43,6 +43,7 @@ $description = str_replace ("\t", "<br />", $description);
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript">
 function popupfocus ()
 {
@@ -100,7 +101,7 @@ echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsBu
   // extract IP and replace by link
   if (preg_match ('/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $description, $ip_match))
   {
-    $description = str_replace ($ip_match[0], "<a href=\"page_info_ip.php?ip=".$ip_match[0]."\" target=_SELF>".$ip_match[0]."</a>", $description);
+    $description = str_replace ($ip_match[0], "<a href=\"page_info_ip.php?ip=".$ip_match[0]."\" class=\"hcmsLink\">".$ip_match[0]."</a>", $description);
   }
   
   echo $description;

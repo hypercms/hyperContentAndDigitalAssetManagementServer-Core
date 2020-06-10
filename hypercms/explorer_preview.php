@@ -51,7 +51,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   // ------------------------------ permission section --------------------------------
 
   // check access permissions (DAM)
-  if ($mgmt_config[$site]['dam'] == true)
+  if (!empty ($mgmt_config[$site]['dam']))
   {
     $ownergroup = accesspermission ($site, $location, $cat);
     $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
@@ -88,12 +88,33 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   // convert object name
   $name = convertchars ($file_info['name'], "UTF-8", $charset);
 
-  // media preview
+  // statistics
+  $container_id = $object_info['container_id'];
+
+  if (!empty ($container_id))
+  {
+    $views = rdbms_externalquery ('SELECT SUM(dailystat.count) AS count FROM dailystat WHERE id='.intval($container_id).' AND activity="view"');
+    $downloads = rdbms_externalquery ('SELECT SUM(dailystat.count) AS count FROM dailystat WHERE id='.intval($container_id).' AND activity="download"');
+    $uploads = rdbms_externalquery ('SELECT SUM(dailystat.count) AS count FROM dailystat WHERE id='.intval($container_id).' AND activity="upload"');
+
+    if (empty ($views[0]['count'])) $views[0]['count'] = 0;
+    if (empty ($downloads[0]['count'])) $downloads[0]['count'] = 0;
+    if (empty ($uploads[0]['count'])) $uploads[0]['count'] = 0;
+
+    $stats = "
+    <div class=\"hcmsTextSmall\" style=\"white-space:nowrap;\">
+      <img src=\"".getthemelocation()."img/button_file_liveview.png\" class=\"hcmsIconList\" /> ".$views[0]['count']." ".getescapedtext ($hcms_lang['views'][$lang], $charset, $lang)."
+      &nbsp;&nbsp;<img src=\"".getthemelocation()."img/button_file_download.png\" class=\"hcmsIconList\" /> ".$downloads[0]['count']." ".getescapedtext ($hcms_lang['downloads'][$lang], $charset, $lang)."
+      &nbsp;&nbsp;<img src=\"".getthemelocation()."img/button_file_upload.png\" class=\"hcmsIconList\" /> ".$uploads[0]['count']." ".getescapedtext ($hcms_lang['uploads'][$lang], $charset, $lang)."
+    </div>";
+  }
+
+  // --------------------------------- media preview --------------------------------- 
   if (is_array ($object_info) && !empty ($object_info['media']))
   {
     $mediaview = "preview_no_rendering";
-    $mediafile = $site."/".$object_info['media'];
-    $mediaview = showmedia ($mediafile, $name, $mediaview, "", 320);
+    $mediafile = $object_info['media'];
+    $mediaview = showmedia ($site."/".$mediafile, $name, $mediaview, "", 320);
   }
   // page or component preview (no multimedia file)
   else
@@ -103,7 +124,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 
   if ($mediaview != "") $mediaview = str_replace ("<td>", "<td style=\"width:20%; vertical-align:top;\">", $mediaview);
 
-  // meta data
+  //--------------------------------- meta data --------------------------------- 
   $metadata_array = getmetadata ($location, $page, $contentdata, "array", $site."/".$object_info['template']);
 
   if (is_array ($metadata_array))
@@ -114,14 +135,17 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     {
       $rows .= "
     <tr>
-      <td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".$value."</td>
+      <td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".showshorttext ($value, 280)."</td>
     </tr>";
     }
     
-    if ($rows != "") $metadata = "<hr /><table class=\"hcmsTableStandard\">\n".$rows."</table>\n";
+    if ($rows != "") $metadata = "
+    <hr />
+    <table class=\"hcmsTableStandard\">\n".$rows."</table>
+    ";
   }
 
-  // related assets (only childs)
+  //--------------------------------- related assets (only childs) --------------------------------- 
   if (!empty ($mgmt_config['relation_source_id']))
   {
     // read content from content container
@@ -152,6 +176,42 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
       }
     }
   }
+
+  //---------------------------------  file links (only if linking is not used and public download is enabled) --------------------------------- 
+  if (linking_valid() == false && !empty ($mgmt_config['publicdownload']))
+  {
+    // wrapper link
+    if ($cat == "page" || $setlocalpermission['download'] == 1)
+    {
+      if (!empty ($mgmt_config['db_connect_rdbms'])) $filewrapperlink = createwrapperlink ($site, $location, $page, $cat);
+      elseif (!empty ($mediafile)) $filewrapperlink = createviewlink ($site, $mediafile, $page);
+    }
+    
+    // download link
+    if ($cat == "comp" && $setlocalpermission['download'] == 1)
+    {
+      if (!empty ($mgmt_config['db_connect_rdbms']))$filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
+      elseif (!empty ($mediafile)) $filewrapperdownload = createviewlink ($site, $mediafile, $page, false, "download");
+    }
+    
+    // object access link
+    if ($cat == "page" || $setlocalpermission['download'] == 1)
+    {
+      if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config[$site]['accesslinkuser'])) $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
+    }
+
+    $linksview = "
+    <hr />
+    <table class=\"hcmsTableStandard\">";
+
+    if (!empty ($filedirectlink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['direct-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filedirectlink."</span></td></tr>\n";
+    if (!empty ($filewrapperlink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['wrapper-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filewrapperlink."</span></td></tr>\n";
+    if (!empty ($filewrapperdownload)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['download-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filewrapperdownload."</span></td></tr>\n";
+    if (!empty ($fileaccesslink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['access-link'][$lang])." </br><span class=\"hcmsHeadlineTiny\">".$fileaccesslink."</span></td></tr>\n";
+
+    $linksview .= "
+    </table>";
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -160,6 +220,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <title>hyperCMS</title>
 <meta charset="<?php echo $charset; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/click.js"></script>
 <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false); ?>
@@ -170,10 +231,12 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 
 <!-- content -->
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
+  <?php if (!empty ($stats)) echo $stats; ?>
   <div style="margin:16px auto 0px auto;">
   <?php
   if (!empty ($mediaview)) echo $mediaview;
   if (!empty ($metadata)) echo $metadata;
+  if (!empty ($linksview)) echo $linksview;
   if (!empty ($relatedview)) echo $relatedview;
   ?>
   </div>

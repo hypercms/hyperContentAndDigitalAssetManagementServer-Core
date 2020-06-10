@@ -1,0 +1,38 @@
+/* Desktop Edition */
+
+html, body
+{
+  font-size: 12px;
+}
+
+input, select, textarea, button, .hcmsTextArea
+{
+  font-size: 12px;
+}
+
+.hcmsHeadline 
+{  
+  font-size: 12px; 
+}
+
+.hcmsHeadlineTiny 
+{  
+  font-size: 12px; 
+}
+
+.hcmsTextSmall 
+{  
+  font-size: 9px; 
+}
+
+.hcmsToolbar
+{
+  height: 36px;
+  padding: 2px;
+}
+
+.hcmsToolbarBlock
+{
+  padding-right: 3px;
+  margin-right: 3px;
+}

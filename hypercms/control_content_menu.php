@@ -100,9 +100,17 @@ if (!empty ($template))
   }
 }
 
-// get object ID (required for favorites)
-if ($folder != "") $object_id = rdbms_getobject_id ($location_esc.$folder);
-else $object_id = rdbms_getobject_id ($location_esc.$page);
+// get object ID (required for favorites) and define multiobject for download
+if ($folder != "")
+{
+  $object_id = rdbms_getobject_id ($location_esc.$folder);
+  $multiobject = $location_esc.$folder;
+}
+else
+{
+  $object_id = rdbms_getobject_id ($location_esc.$page);
+  $multiobject = $location_esc.$page;
+}
 
 // define message if object is checked out by another user
 if (!empty ($contentfile))
@@ -227,9 +235,21 @@ $token_new = createtoken ($user);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<style>
-a {behavior: url(#default#AnchorClick);}
-</style>
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+
+<?php
+// invert button colors
+if (!empty ($hcms_themeinvertcolors))
+{
+  echo "<style>";
+  // invert all buttons
+  echo invertcolorCSS ("div.hcmsToolbarBlock", 100);
+  // revert on hover
+  echo invertcolorCSS (".hcmsButton:hover", 100);
+  echo "</style>";
+}
+?>
+
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -891,76 +911,79 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </div>
 
 <?php
+// tabs
 if ($page != "")
 {
   echo "
     <div id=\"tabLayer\" class=\"hcmsTabContainer\" style=\"position:absolute; z-index:10; visibility:visible; left:0px; top:77px; white-space:nowrap;\">
-        <div id=\"tab1\" class=\"hcmsTabActive\">
-          <a href=\"page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onClick=\"hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive');\" title=\"".$pagecomp."\">".$pagecomp."</a>
-        </div>
-        <div id=\"tab2\" class=\"hcmsTabPassive\">";
-          if (($usedby == "" || $usedby == $user) && ($wf_role >= 4 || $wf_role == 2) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) 
-            echo "
-            <a href=\"frameset_template_change.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&template=".url_encode($template)."&wf_token=".url_encode($wf_token)."\" target=\"objFrame\" onClick=\"hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive');\" title=\"".getescapedtext ($hcms_lang['template'][$lang])."\">".getescapedtext ($hcms_lang['template'][$lang])."</a>";
-           else echo "
-           <b class=\"hcmsButtonTinyOff\">".getescapedtext ($hcms_lang['template'][$lang])."</b>";
-        echo "
-        </div>
-        <div id=\"tab3\" class=\"hcmsTabPassive\">";
-          if (($usedby == "" || $usedby == $user) && ($wf_role >= 4 || $wf_role == 2) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
-            echo "<a href=\"version_content.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."\" target=\"objFrame\" onClick=\"hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle ('tab3','hcmsTabActive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive');\" title=\"".getescapedtext ($hcms_lang['version'][$lang])."\">".getescapedtext ($hcms_lang['version'][$lang])."</a>";
-          else echo "<b class=\"hcmsButtonTinyOff\">".getescapedtext ($hcms_lang['version'][$lang])."</b>";
-        echo "</div>
-        <div id=\"tab4\" class=\"hcmsTabPassive\">";
-          if ($wf_role >= 1 && $setlocalpermission['root'] == 1) 
-            echo "
-            <a href=\"page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."\" target=\"objFrame\" onClick=\"hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabActive');\" title=\"".getescapedtext ($hcms_lang['information'][$lang])."\">".getescapedtext ($hcms_lang['information'][$lang])."</a>";
-           else echo "
-           <b class=\"hcmsButtonTinyOff\">".getescapedtext ($hcms_lang['information'][$lang])."</b>";
-        echo "</div>
+      <div id=\"tab1\" class=\"hcmsTabActive\">
+        <a href=\"page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onClick=\"hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive');\" title=\"".$pagecomp."\">".$pagecomp."</a>
+      </div>
+      <div id=\"tab2\" class=\"hcmsTabPassive\">";
+        if (($usedby == "" || $usedby == $user) && ($wf_role >= 4 || $wf_role == 2) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) 
+          echo "
+          <a href=\"frameset_template_change.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&template=".url_encode($template)."&wf_token=".url_encode($wf_token)."\" target=\"objFrame\" onClick=\"hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive');\" title=\"".getescapedtext ($hcms_lang['template'][$lang])."\">".getescapedtext ($hcms_lang['template'][$lang])."</a>";
+          else echo "
+          <b class=\"hcmsButtonTinyOff\">".getescapedtext ($hcms_lang['template'][$lang])."</b>";
+      echo "
+      </div>
+      <div id=\"tab3\" class=\"hcmsTabPassive\">";
+        if (($usedby == "" || $usedby == $user) && ($wf_role >= 4 || $wf_role == 2) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+          echo "<a href=\"version_content.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."\" target=\"objFrame\" onClick=\"hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle ('tab3','hcmsTabActive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive');\" title=\"".getescapedtext ($hcms_lang['version'][$lang])."\">".getescapedtext ($hcms_lang['version'][$lang])."</a>";
+        else echo "<b class=\"hcmsButtonTinyOff\">".getescapedtext ($hcms_lang['version'][$lang])."</b>";
+      echo "</div>
+      <div id=\"tab4\" class=\"hcmsTabPassive\">";
+        if ($wf_role >= 1 && $setlocalpermission['root'] == 1) 
+          echo "
+          <a href=\"page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."\" target=\"objFrame\" onClick=\"hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabActive');\" title=\"".getescapedtext ($hcms_lang['information'][$lang])."\">".getescapedtext ($hcms_lang['information'][$lang])."</a>";
+          else echo "
+          <b class=\"hcmsButtonTinyOff\">".getescapedtext ($hcms_lang['information'][$lang])."</b>";
+      echo "</div>
   </div>";
 }
 ?>
 
 <div id="downloadLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; height:60px; z-index:5; left:15px; top:10px; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
-<form name="download" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-  <input type="hidden" name="action" value="download" />
-  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
-  <input type="hidden" name="page" value="<?php echo $page; ?>" />
-  <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>" />
-  <input type="hidden" name="convert_type" value="" />
-  <input type="hidden" name="convert_cfg" value="" />
+  <form name="download" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+    <input type="hidden" name="action" value="download" />
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="page" value="<?php echo $page; ?>" />
+    <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>" />
+    <input type="hidden" name="convert_type" value="" />
+    <input type="hidden" name="convert_cfg" value="" />
 
-  <table class="hcmsTableStandard" style="width:100%; height:60px;">
-    <tr>
-      <td>
-        <div style="overflow:auto;">
-          <?php
-          // iPhone download
-          if ($action == "download" && $is_iphone)
-          { 
-            $downloadlink = createmultidownloadlink ($site, "", $media, $location.$folder, $pagename, $user, $convert_type, $convert_cfg);
-            
-            echo "<a href=\"".$downloadlink."\" class=\"button hcmsButtonGreen\" target=\"_blank\">".getescapedtext ($hcms_lang['downloadview-file'][$lang])."</a>";
-          }
-          else
-          {
-            echo getescapedtext ($hcms_lang['please-wait-while-your-download-is-being-processed'][$lang]);
-          }
-          ?>
-        </div>
-      </td>
-      <td style="width:38px; text-align:right; vertical-align:top;">
-        <img name="hcms_mediaClose5" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose5','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('downloadLayer','','hide');" />
-      </td>        
-    </tr>
-  </table>
-</form>
+    <table class="hcmsTableStandard" style="width:100%; height:60px;">
+      <tr>
+        <td>
+          <div style="overflow:auto;">
+            <?php
+            // iOS (iPhone, iPad) download
+            if ($action == "download" && $is_iphone)
+            { 
+              $downloadlink = createmultidownloadlink ($site, $multiobject, $pagename, $user, $convert_type, $convert_cfg);
+              
+              echo "<a href=\"".$downloadlink."\" class=\"button hcmsButtonGreen\" target=\"_blank\">".getescapedtext ($hcms_lang['downloadview-file'][$lang])."</a>";
+            }
+            else
+            {
+              echo getescapedtext ($hcms_lang['please-wait-while-your-download-is-being-processed'][$lang]);
+            }
+            ?>
+          </div>
+        </td>
+        <td style="width:38px; text-align:right; vertical-align:top;">
+          <img name="hcms_mediaClose5" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose5','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('downloadLayer','','hide');" />
+        </td>        
+      </tr>
+    </table>
+  </form>
 </div>
-<?php 
+
+<?php
+// download for non iOS devices
 if ($action == "download" && !$is_iphone)
 {
-  $downloadlink = createmultidownloadlink ($site, "", $media, $location.$folder, $pagename, $user, $convert_type, $convert_cfg);
+  $downloadlink = createmultidownloadlink ($site, $multiobject, $pagename, $user, $convert_type, $convert_cfg);
 
   if ($downloadlink != "")
   {

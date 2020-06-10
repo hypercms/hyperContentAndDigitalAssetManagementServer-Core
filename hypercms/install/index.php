@@ -89,6 +89,7 @@ if (is_file ($mgmt_config['abs_path_data']."check.dat"))
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="../theme/standard/css/main.css" />
+<link rel="stylesheet" href="../theme/standard/css/<?php echo ($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 </head>
 <body class="hcmsWorkplaceGeneric">
 <div class="hcmsHeadline" style="width:380px; margin:20px auto;">
@@ -133,6 +134,9 @@ $ffmpeg = getrequest_esc ("ffmpeg");
 $yamdi = getrequest_esc ("yamdi");
 $exiftool = getrequest_esc ("exiftool");
 $tesseract = getrequest_esc ("tesseract");
+$html2pdf = getrequest_esc ("html2pdf");
+$x11 = getrequest_esc ("x11");
+$mergepdf = getrequest_esc ("mergepdf");
 
 $setup_publication = getrequest_esc ("setup_publication");
 
@@ -288,6 +292,9 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
         $config = str_replace ("%yamdi%", $yamdi, $config);
         $config = str_replace ("%exiftool%", $exiftool, $config);
         $config = str_replace ("%tesseract%", $tesseract, $config);
+        $config = str_replace ("%html2pdf%", $html2pdf, $config);
+        $config = str_replace ("%x11%", $x11, $config);
+        $config = str_replace ("%mergepdf%", $mergepdf, $config);
         
         $config = str_replace ("%dbhost%", $db_host, $config);
         $config = str_replace ("%dbuser%", $db_username, $config);
@@ -649,6 +656,7 @@ $token_new = createtoken ($user);
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="../theme/standard/css/main.css">
+<link rel="stylesheet" href="../theme/standard/css/<?php echo ($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="../javascript/main.js" type="text/javascript"></script>
 <style type="text/css">
 #error { color:red; display:none; }
@@ -713,12 +721,12 @@ $(document).ready(function(){
 <?php if (!empty ($mgmt_config['version'])) echo showtopbar ("Installation of ".$mgmt_config['version'], "en"); else echo showtopbar ("Version information is missing", "en"); ?>
 
 <!-- content area -->
-<div id="content" style="width:500px; margin:0 auto;">
+<div id="content" style="max-width:580px; margin:0 auto;">
 
 <div id="error" style="padding:4px; border:1px solid red; background:#ffdcd5;">There were errors on the form!</div>
 
 <div style="margin:10px 0px;">
-<img src="<?php echo $mgmt_config['url_path_cms']."theme/standard/img/logo.png"; ?>" style="width:466px; border:0; margin:10px 0px 20px 0px;" /><br />
+<img src="<?php echo $mgmt_config['url_path_cms']."theme/standard/img/logo.png"; ?>" style="max-width:420px; max-height:45px; border:0; margin:10px 0px 20px 0px;" /><br />
 Welcome to the one-step hyper Content &amp; Digital Asset Management Server installation. 
 You may want to read the <a href="<?php echo $mgmt_config['url_path_cms']; ?>help/installationguide_en.pdf" target="_blank">installation guide</a> or watch the <a href="https://youtu.be/qR_wZBSw9Ao" target="_blank">installation tutorial</a> at your leisure.<br/>
 Otherwise just provide the information below and install the most powerful Content and Digital Asset Management System.
@@ -731,7 +739,7 @@ Otherwise just provide the information below and install the most powerful Conte
   <input type="hidden" name="language" value="en" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table class="hcmsTableStandard"> 
+  <table class="hcmsTableStandard" style="width:100%;"> 
   
     <!-- Main Purpose of first Publication -->
     <tr>
@@ -759,32 +767,32 @@ Otherwise just provide the information below and install the most powerful Conte
     </tr>
     <tr>
       <td style="white-space:nowrap;">User name </td>
-      <td>
-        <input type="text" id="user" name="user" value="admin" style="width:200px;" readonly="readonly" />
+      <td style="width:280px;">
+        <input type="text" id="user" name="user" value="admin" style="width:280px;" readonly="readonly" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Password </td>
       <td>
-        <input type="password" id="password" name="password" value="<?php echo $password; ?>" style="width:200px;" />
+        <input type="password" id="password" name="password" value="<?php echo $password; ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Confirm password </td>
       <td>
-        <input type="password" id="confirm_password" name="confirm_password" value="<?php echo $confirm_password; ?>" style="width:200px;" />
+        <input type="password" id="confirm_password" name="confirm_password" value="<?php echo $confirm_password; ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Name </td>
       <td>
-        <input type="text" id="realname" name="realname" style="width:200px;" value="<?php echo $realname; ?>" />
+        <input type="text" id="realname" name="realname" style="width:280px;" value="<?php echo $realname; ?>" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">E-mail </td>
       <td>
-        <input type="text" id="email" name="email" style="width:200px;" value="<?php echo $email; ?>" />
+        <input type="text" id="email" name="email" style="width:280px;" value="<?php echo $email; ?>" />
       </td>
     </tr>
     <tr>
@@ -801,25 +809,25 @@ Otherwise just provide the information below and install the most powerful Conte
     <tr>
       <td style="white-space:nowrap;">Database host </td>
       <td>
-        <input type="text" id="db_host" name="db_host" value="<?php echo $db_host; ?>" style="width:200px;" />
+        <input type="text" id="db_host" name="db_host" value="<?php echo $db_host; ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Database user name </td>
       <td>
-        <input type="text" id="db_username" name="db_username" value="<?php echo $db_username; ?>" style="width:200px;" />
+        <input type="text" id="db_username" name="db_username" value="<?php echo $db_username; ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Database password </td>
       <td>
-        <input type="password" id="db_password" name="db_password" value="<?php echo $db_password; ?>" style="width:200px;" />
+        <input type="password" id="db_password" name="db_password" value="<?php echo $db_password; ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Database name </td>
       <td>
-        <input type="text" id="db_name" name="db_name" value="<?php echo $db_name; ?>" style="width:200px;" />
+        <input type="text" id="db_name" name="db_name" value="<?php echo $db_name; ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
@@ -837,31 +845,31 @@ Otherwise just provide the information below and install the most powerful Conte
     <tr>
       <td style="white-space:nowrap;">SMTP host </td>
       <td>
-        <input type="text" id="smtp_host" name="smtp_host" value="<?php echo $smtp_host; ?>" style="width:200px;" />
+        <input type="text" id="smtp_host" name="smtp_host" value="<?php echo $smtp_host; ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">SMTP user name </td>
       <td>
-        <input type="text" id="smtp_username" name="smtp_username" value="<?php echo $smtp_username; ?>" style="width:200px;" />
+        <input type="text" id="smtp_username" name="smtp_username" value="<?php echo $smtp_username; ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">SMTP password </td>
       <td>
-        <input type="password" id="smtp_password" name="smtp_password" value="<?php echo $smtp_password; ?>" style="width:200px;" />
+        <input type="password" id="smtp_password" name="smtp_password" value="<?php echo $smtp_password; ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">SMTP port </td>
       <td>
-        <input type="text" id="smtp_port" name="smtp_port" value="<?php if ($smtp_port != "") echo $smtp_port; else echo "25" ?>" style="width:200px;" />
+        <input type="text" id="smtp_port" name="smtp_port" value="<?php if ($smtp_port != "") echo $smtp_port; else echo "25" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">SMTP sender (e-mail address) </td>
       <td>
-        <input type="text" id="smtp_sender" name="smtp_sender" value="<?php echo $smtp_sender; ?>" style="width:200px;" />
+        <input type="text" id="smtp_sender" name="smtp_sender" value="<?php echo $smtp_sender; ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
@@ -906,69 +914,87 @@ Otherwise just provide the information below and install the most powerful Conte
     <tr>
       <td style="white-space:nowrap;">Define path to XPDF (pdftotext) </td>
       <td>
-        <input type="text" id="pdftotext" name="pdftotext" placeholder="/usr/bin/pdftotext" value="<?php if ($pdftotext != "") echo $pdftotext; elseif (@is_executable ("/usr/bin/pdftotext")) echo "/usr/bin/pdftotext" ?>" style="width:200px;" />
+        <input type="text" id="pdftotext" name="pdftotext" placeholder="autodetection failed for /usr/bin/pdftotext" value="<?php if ($pdftotext != "") echo $pdftotext; elseif (@is_executable ("/usr/bin/pdftotext")) echo "/usr/bin/pdftotext" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Define path to AntiWord (antiword) </td>
       <td>
-        <input type="text" id="antiword" name="antiword" placeholder="/usr/bin/antiword" value="<?php if ($antiword != "") echo $antiword; elseif (@is_executable ("/usr/bin/antiword")) echo "/usr/bin/antiword" ?>" style="width:200px;" />
+        <input type="text" id="antiword" name="antiword" placeholder="autodetection failed for  /usr/bin/antiword" value="<?php if ($antiword != "") echo $antiword; elseif (@is_executable ("/usr/bin/antiword")) echo "/usr/bin/antiword" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Define path to GUNZIP (gunzip) </td>
       <td>
-        <input type="text" id="gunzip" name="gunzip" placeholder="/usr/bin/gunzip" value="<?php if ($gunzip != "") echo $gunzip; elseif (@is_executable ("/usr/bin/gunzip")) echo "/usr/bin/gunzip" ?>" style="width:200px;" />
+        <input type="text" id="gunzip" name="gunzip" placeholder="autodetection failed for /usr/bin/gunzip" value="<?php if ($gunzip != "") echo $gunzip; elseif (@is_executable ("/usr/bin/gunzip")) echo "/usr/bin/gunzip" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Define path to UNZIP (unzip) </td>
       <td>
-        <input type="text" id="unzip" name="unzip" placeholder="/usr/bin/unzip" value="<?php if ($unzip != "") echo $unzip; elseif (@is_executable ("/usr/bin/unzip")) echo "/usr/bin/unzip" ?>" style="width:200px;" />
+        <input type="text" id="unzip" name="unzip" placeholder="autodetection failed for /usr/bin/unzip" value="<?php if ($unzip != "") echo $unzip; elseif (@is_executable ("/usr/bin/unzip")) echo "/usr/bin/unzip" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Define path to ZIP (zip) </td>
       <td>
-        <input type="text" id="zip" name="zip" placeholder="/usr/bin/zip" value="<?php if ($zip != "") echo $zip; elseif (@is_executable ("/usr/bin/zip")) echo "/usr/bin/zip" ?>" style="width:200px;" />
+        <input type="text" id="zip" name="zip" placeholder="autodetection failed for /usr/bin/zip" value="<?php if ($zip != "") echo $zip; elseif (@is_executable ("/usr/bin/zip")) echo "/usr/bin/zip" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Define path to UNOCONV (unoconv) </td>
       <td>
-        <input type="text" id="unoconv" name="unoconv" placeholder="/usr/bin/unoconv" value="<?php if ($unoconv != "") echo $unoconv; elseif (@is_executable ("/usr/bin/unoconv")) echo "/usr/bin/unoconv" ?>" style="width:200px;" />
+        <input type="text" id="unoconv" name="unoconv" placeholder="autodetection failed for /usr/bin/unoconv" value="<?php if ($unoconv != "") echo $unoconv; elseif (@is_executable ("/usr/bin/unoconv")) echo "/usr/bin/unoconv" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Define path to ImageMagick (convert) </td>
       <td>
-        <input type="text" id="convert" name="convert" placeholder="/usr/bin/convert" value="<?php if ($convert != "") echo $convert; elseif (@is_executable ("/usr/bin/convert")) echo "/usr/bin/convert" ?>" style="width:200px;" />
+        <input type="text" id="convert" name="convert" placeholder="autodetection failed for /usr/bin/convert" value="<?php if ($convert != "") echo $convert; elseif (@is_executable ("/usr/bin/convert")) echo "/usr/bin/convert" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Define path to FFMPEG (ffmpeg) </td>
       <td>
-        <input type="text" id="ffmpeg" name="ffmpeg" placeholder="/usr/bin/ffmpeg" value="<?php if ($ffmpeg != "") echo $ffmpeg; elseif (@is_executable ("/usr/bin/ffmpeg")) echo "/usr/bin/ffmpeg" ?>" style="width:200px;" />
+        <input type="text" id="ffmpeg" name="ffmpeg" placeholder="autodetection failed for /usr/bin/ffmpeg" value="<?php if ($ffmpeg != "") echo $ffmpeg; elseif (@is_executable ("/usr/bin/ffmpeg")) echo "/usr/bin/ffmpeg" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Define path to YAMDI (yamdi) </td>
       <td>
-        <input type="text" id="yamdi" name="yamdi" placeholder="/usr/bin/yamdi" value="<?php if ($yamdi != "") echo $yamdi; elseif (@is_executable ("/usr/bin/yamdi")) echo "/usr/bin/yamdi" ?>" style="width:200px;" />
+        <input type="text" id="yamdi" name="yamdi" placeholder="autodetection failed for /usr/bin/yamdi" value="<?php if ($yamdi != "") echo $yamdi; elseif (@is_executable ("/usr/bin/yamdi")) echo "/usr/bin/yamdi" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Define path to EXIFTOOL (exiftool) </td>
       <td>
-        <input type="text" id="exiftool" name="exiftool" placeholder="/usr/bin/exiftool" value="<?php if ($exiftool != "") echo $exiftool; elseif (@is_executable ("/usr/bin/exiftool"))  echo "/usr/bin/exiftool" ?>" style="width:200px;" />
+        <input type="text" id="exiftool" name="exiftool" placeholder="autodetection failed for /usr/bin/exiftool" value="<?php if ($exiftool != "") echo $exiftool; elseif (@is_executable ("/usr/bin/exiftool"))  echo "/usr/bin/exiftool" ?>" style="width:280px;" />
       </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Define path to Tesseract OCR (tesseract) </td>
       <td>
-        <input type="text" id="tesseract" name="tesseract" placeholder="/usr/bin/tesseract" value="<?php if ($yamdi != "") echo $yamdi; elseif (@is_executable ("/usr/bin/tesseract")) echo "/usr/bin/tesseract" ?>" style="width:200px;" />
+        <input type="text" id="tesseract" name="tesseract" placeholder="autodetection failed for /usr/bin/tesseract" value="<?php if ($tesseract != "") echo $tesseract; elseif (@is_executable ("/usr/bin/tesseract")) echo "/usr/bin/tesseract" ?>" style="width:280px;" />
       </td>
-    </tr> 
+    </tr>
+    <tr>
+      <td style="white-space:nowrap;">Define path to HTML2PDF (wkhtmltopdf) </td>
+      <td>
+        <input type="text" id="html2pdf" name="html2pdf" placeholder="autodetection failed for /usr/bin/wkhtmltopdf" value="<?php if ($html2pdf != "") echo $html2pdf; elseif (@is_executable ("/usr/bin/wkhtmltopdf")) echo "/usr/bin/wkhtmltopdf" ?>" style="width:280px;" />
+      </td>
+    </tr>
+    <tr>
+      <td style="white-space:nowrap;">Define path to X11-Server (xvfb) </td>
+      <td>
+        <input type="text" id="x11" name="x11" placeholder="autodetection failed for /usr/bin/xvfb" value="<?php if ($x11 != "") echo $x11; elseif (@is_executable ("/usr/bin/xvfb")) echo "/usr/bin/xvfb" ?>" style="width:280px;" />
+      </td>
+    </tr>
+    <tr>
+      <td style="white-space:nowrap;">Define path to PDF toolkit (pdftk) </td>
+      <td>
+        <input type="text" id="mergepdf" name="mergepdf" placeholder="autodetection failed for /usr/bin/pdftk" value="<?php if ($yamdi != "") echo $yamdi; elseif (@is_executable ("/usr/bin/pdftk")) echo "/usr/bin/pdftk" ?>" style="width:280px;" />
+      </td>
+    </tr>
     <tr>
       <td colspan="2" style="white-space:nowrap;"><hr /></td>
     </tr>

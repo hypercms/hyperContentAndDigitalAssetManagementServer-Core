@@ -1747,6 +1747,17 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
           $imagecolor = getimagecolors ($site, $newfile);
 
+          if ($imagewidth_orig < 1 || $imageheight_orig < 1)
+          {
+            $temp = getmediasize ($location_dest.$newfile);
+
+            if ($temp != false)
+            {
+              $imagewidth_orig = $temp['width'];
+              $imageheight_orig = $temp['height'];
+            }
+          }
+
           // write media information to container and DB
           if (!empty ($container_id))
           {
@@ -2336,15 +2347,23 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
 
                     // get media information from thumbnail
-                    if ($type == "thumbnail")
+                    if ($type == "thumbnail" && !empty ($container_id))
                     {
                       $imagecolor = getimagecolors ($site, $newfile);
 
-                      // write media information to container and DB
-                      if (!empty ($container_id))
+                      if ($imagewidth_orig < 1 || $imageheight_orig < 1)
                       {
-                        $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
+                        $temp = getmediasize ($location_dest.$newfile);
+            
+                        if ($temp != false)
+                        {
+                          $imagewidth_orig = $temp['width'];
+                          $imageheight_orig = $temp['height'];
+                        }
                       }
+
+                      // write media information to container and DB
+                      $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
                     }
 
                     // on success
@@ -2532,15 +2551,23 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
 
                     // get media information from thumbnail
-                    if ($type == "thumbnail")
+                    if ($type == "thumbnail" && !empty ($container_id))
                     {
                       $imagecolor = getimagecolors ($site, $newfile);
 
-                      // write media information to container and DB
-                      if (!empty ($container_id))
+                      if ($imagewidth_orig < 1 || $imageheight_orig < 1)
                       {
-                        $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
+                        $temp = getmediasize ($location_dest.$newfile);
+            
+                        if ($temp != false)
+                        {
+                          $imagewidth_orig = $temp['width'];
+                          $imageheight_orig = $temp['height'];
+                        }
                       }
+
+                      // write media information to container and DB
+                      $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
                     }
                   }
                 }
@@ -2552,6 +2579,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
               } 
             }
+          }
+
+          // remove existing thumbnail if image conversion is not supported
+          if (empty ($converted) && $type == "original" && is_file ($location_dest.$file_name.".thumb.jpg"))
+          {
+            unlink ($location_dest.$file_name.".thumb.jpg");
           }
         }
       }
@@ -3320,6 +3353,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             } 
           }
         }
+
+        // remove existing thumbnail if image conversion is not supported
+        if (is_file ($location_dest.$file_name.".thumb."))
+        {
+          unlink ($location_dest.$file_name.".thumb.jpg");
+        }
       }
     }
 
@@ -3333,13 +3372,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     }
 
     // no option was found for given format or no media conversion software defined
-    if (empty ($setmedia) && ($type == "thumbnail" || $type == "origthumb"))
+    if (empty ($setmedia) && ($type == "thumbnail" || $type == "origthumb") && !empty ($container_id))
     {
       // write media information to container and DB
-      if (!empty ($container_id))
-      {
-        $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, "", "", "", "", "", $md5_hash);
-      }
+      $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, "", "", "", "", "", $md5_hash);
     }
 
     // delete temp files
@@ -4689,6 +4725,12 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
             }
           }
         }
+
+        // remove existing thumbnail if document conversion is not supported
+        if (empty ($converted) && is_file ($location_dest.$file_name.".thumb.jpg"))
+        {
+          unlink ($location_dest.$file_name.".thumb.jpg");
+        }
       }
 
       // delete temp file
@@ -4753,18 +4795,15 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
 
     reset ($mgmt_uncompress);
 
-    for ($i = 1; $i <= sizeof ($mgmt_uncompress); $i++)
+    foreach ($mgmt_uncompress as $extension => $execpath)
     {
-      // supported extension
-      $extension = key ($mgmt_uncompress);
-
       if (substr_count ($extension.".", $file_ext.".") > 0)
       {
         if ($cat == "page")
         {
           // extract files directly to page location
           // this will overwrite existing page files!
-          $cmd = $mgmt_uncompress[$extension]." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($location)."\"";
+          $cmd = $execpath." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($location)."\"";
 
           @exec ($cmd, $error_array);
 
@@ -4804,7 +4843,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
           if ($result == true)
           {
             // extract files to temporary location for media assets 
-            $cmd = $mgmt_uncompress[$extension]." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($unzippath_temp)."\"";
+            $cmd = $execpath." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($unzippath_temp)."\"";
 
             @exec ($cmd, $error_array);
 
@@ -4844,8 +4883,6 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
           }
         }
       }
-
-      next ($mgmt_uncompress);
     }
   }
   else return false;
@@ -5436,6 +5473,195 @@ function vtt2array ($vtt)
   }
 
   if (sizeof ($result) > 0) return $result;
+  else return false;
+}
+
+// -------------------------------------- html2pdf -----------------------------------------
+// function: html2pdf ()
+// input: URLs or pathes to html source files [array], path of pdf destination output file [string], cover page html file [string] (optional), create TOC table of contents [boolean] (optional), 
+//        page orientation [Landscape,Portrait] (optional), page size like A4 or Letter [string] (optional), page margin in mm [integer] (optional), image DPI [integer] (optional), image quality 1-100 [integer] (optional), 
+//        use smart shrinking of the content so it can fit in the page [boolean] (optional), additional WKHMTLTOPDF options [string] (optional)
+// output: true / false on error
+
+// description:
+// Converts html to pdf using WKHTMLTOPDF and XSERVER. The CSS media print style will be applied.
+// For full support you might want to install the package provided from WKHTMLTOPDF directly (patched QT).
+// See the event log in case the function does not create a proper result since you are not using a patched QT version.
+// See also: https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
+
+function html2pdf ($source, $dest, $cover="", $toc=false, $page_orientation="Portrait", $page_size="A4", $page_margin=10, $image_dpi=144, $image_quality=95, $smart_shrinking=true, $options="")
+{
+  global $mgmt_config;
+
+  // correct source
+  $source = link_db_getobject ($source);
+         
+  if (is_array ($source) && sizeof ($source) > 0 && $dest != "" && !empty ($mgmt_config['html2pdf']))
+  {
+    // source pages
+    $source_pages = "";
+    $cover_page = "";
+    $temp_files = array();
+
+    // prepare source files
+    foreach ($source as $temp)
+    {
+      $temp = deconvertpath ($temp, "file");
+      $location = getlocation ($temp);
+      $object = getobject ($temp);
+      $file_ext = strrchr ($object, ".");
+      $temp_name = uniqid();
+
+      // temporary view file
+      $temp_files[] = $temp_file = $mgmt_config['abs_path_view'].$temp_name.$file_ext;
+
+      // session ID
+      if (!session_id()) $add = "?PHPSESSID=".session_id();
+      else $add = "";
+  
+      // copy to temp/view in order to access via https and be able to execute code
+      if (is_file ($location.$object))
+      {
+        copy ($location.$object, $temp_file);
+    
+        // URL in order to get content via HTTP
+        $source_url = $mgmt_config['url_path_view'].$temp_name.$file_ext.$add;
+
+        $source_pages .= "\"".str_replace ("\~", "~", shellcmd_encode ($source_url))."\" ";
+      }
+      else
+      {
+        $errcode = "10671";
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|PDF source page '".$object."' could not be created, path to source file is not correct";
+      }
+    }
+
+    // destination PDF file
+    $dest_page = "\"".str_replace ("\~", "~", shellcmd_encode ($dest))."\"";
+
+    // cover page
+    if (!empty ($cover))
+    {
+      $cover = deconvertpath ($cover, "file");
+      $location = getlocation ($cover);
+      $object = getobject ($cover);
+      $file_ext = strrchr ($object, ".");
+      $temp_name = uniqid();
+
+      // temporary view file
+      $temp_files[] = $temp_file = $mgmt_config['abs_path_view'].$temp_name.$file_ext;
+
+      // session ID
+      if (!session_id()) $add = "?PHPSESSID=".session_id();
+      else $add = "";
+  
+      // copy to temp/view in order to access via https and be able to execute code
+      if (is_file ($location.$object))
+      {
+        copy ($location.$object, $temp_file);
+  
+        // URL in order to get content via HTTP
+        $cover_url = $mgmt_config['url_path_view'].$temp_name.$file_ext.$add;
+
+        $cover_page = "cover ".shellcmd_encode($cover_url);
+      }
+      else
+      {
+        $errcode = "10672";
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|PDF cover source page '".$object."' could not be created, path to source file is not correct";
+      }
+    }
+
+    // TOC
+    if (!empty ($toc)) $toc = "toc";
+    else $toc = "";
+
+    // page orientation
+    if (!empty ($page_orientation)) $page_orientation = "--orientation ".shellcmd_encode ($page_orientation);
+    else $page_orientation = "";
+
+    // page margins
+    if (!empty ($page_margin)) $page_margin = "-B ".intval($page_margin)." -L ".intval($page_margin)." -R ".intval($page_margin)." -T ".intval($page_margin);
+    else $page_margin = "-B 0 -L 0 -R 0 -T 0";
+
+    // smart shrinking of the content so it can fit in the page
+    if (!empty ($smart_shrinking)) $smart_shrinking = "--enable-smart-shrinking";
+    else $smart_shrinking = "--disable-smart-shrinking";
+
+    // additional WKHMTLTOPDF options
+    if (!empty ($options)) $options = shellcmd_encode ($options);
+    else $options = "";
+
+    // use X11-Server for not patched QT version
+    if (!empty ($mgmt_config['x11'])) $x11 = $mgmt_config['x11']." --server-args=\"-screen 0, 1024x768x24\"";
+    else $x11 = "";
+
+    // command
+    $cmd = $x11." ".$mgmt_config['html2pdf']." --image-dpi ".intval($image_dpi)." --image-quality ".intval($image_quality)." --print-media-type --page-size ".shellcmd_encode($page_size)." ".$page_margin." ".$smart_shrinking." ".$page_orientation." ".$options." ".$cover_page." ".$toc." ".$source_pages." ".$dest_page;
+    
+    // execute
+    exec ($cmd, $error_array, $errorCode);
+
+    if ($errorCode)
+    {
+      $errcode = "10674";
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|PDF file could not be created. HTML2PDF error:$errorCode, Command:$cmd, Error:".implode (" ", $error_array);
+    }
+
+    // remove temp files
+    if (!empty ($temp_files) && is_array ($temp_files) && sizeof ($temp_files) > 0)
+    {
+      foreach ($temp_files as $temp)
+      {
+        if (is_file ($temp)) unlink ($temp);
+      }
+    }
+
+    // save log
+    savelog (@$error);
+
+    if (!is_file ($dest) || $errorCode) return false;
+    else return true;
+  }
+  else return false;
+}
+
+// -------------------------------------- mergepdf -----------------------------------------
+// function: mergepdf ()
+// input: pathes to pdf source files [array], path of pdf destination output file [string]
+// output: true / false on error
+
+// description:
+// Merges pdf files into one pdf file. Do NOT USE special characters in file names.
+// See also: https://www.pdflabs.com/docs/pdftk-man-page/
+
+function mergepdf ($source, $dest)
+{
+  global $mgmt_config;
+
+  // correct source
+  $source = link_db_getobject ($source);
+
+  if (is_array ($source) && sizeof ($source) > 0 && $dest != "" && !empty ($mgmt_config['mergepdf']))
+  {
+    // command
+    $cmd = $mgmt_config['mergepdf']." '".str_replace ("\~", "~", shellcmd_encode (implode ("' '", $source)))."' cat output '".str_replace ("\~", "~", shellcmd_encode ($dest))."'";
+    
+    // execute
+    exec ($cmd, $error_array, $errorCode);
+
+    if ($errorCode)
+    {
+      $errcode = "10675";
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|PDF files could not be merged. PDFTK error:$errorCode, Command:$cmd, Error:".implode (" ", $error_array);
+
+      // save log
+      savelog (@$error);
+    }
+
+    if (!is_file ($dest) || $errorCode) return false;
+    else return true;
+  }
   else return false;
 }
 ?>

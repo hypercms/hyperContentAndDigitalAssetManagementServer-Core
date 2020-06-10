@@ -1,6 +1,6 @@
 This file is part of
-hyper Content Management Server - http://www.hypercms.com
-Copyright (c) by hyper CMS Content Management Solutions GmbH
+hyper Content & Digital Asset Management Server - http://www.hypercms.com
+by hyper CMS Content Management Solutions GmbH
 You should have received a copy of the License along with hyperCMS.
 
 
@@ -23,6 +23,10 @@ Optionally required for full Digital Asset Management (DAM) support on server-si
 - EXIFTOOL (for reading meta data of files)
 - TESSERACT (for OCR)
 - OpenSSL (for encryption)
+- WKHTMLTOPDF (convert HTML to PDF)
+- X-Server (used for WKHTMLTOPDF)
+- PDFTK (merge PDF files)
+
 
 On client-side:
 - hyperCMS is 100% browser based, no additional software is required

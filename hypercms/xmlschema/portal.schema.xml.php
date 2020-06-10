@@ -5,5 +5,6 @@
 <designtheme></designtheme>
 <primarycolor></primarycolor>
 <downloadformats></downloadformats>
+<navigation>assets</navigation>
 <portaluser></portaluser>
 </template>

@@ -8,6 +8,8 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
   if (!empty ($is_mobile)) $width = "92%";
   else $width = "670px";
 
+  $button = uniqid();
+
   echo "
   <div id=\"reportviewer\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
     <div style=\"display:block; padding-bottom:5px;\">
@@ -40,7 +42,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
 
   echo"
         </select>
-        <img name=\"Button\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_ok.png\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" onClick=\"document.getElementById('report').src=document.getElementById('reportfile').value;\" />   
+        <img name=\"".$button."\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_ok.png\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('".$button."','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" onClick=\"document.getElementById('report').src=document.getElementById('reportfile').value;\" />   
       </div>
       <div style=\"float:right;\"><img class=\"hcmsButtonTiny\" style=\"width:43px; height:22px; margin:6px;\" onClick=\"hcms_minMaxLayer('reportviewer');\" src=\"".getthemelocation()."img/button_plusminus_light.png\" alt=\"+/-\" title=\"+/-\" /></div>
     </div>

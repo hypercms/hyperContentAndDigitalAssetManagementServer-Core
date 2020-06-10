@@ -1,3 +1,5 @@
+/* General */
+
 html, body
 {
   width: 100%;
@@ -36,6 +38,7 @@ input, select, textarea, button, .hcmsTextArea
   background-color: #FFFFFF;
   margin: 1px 1px 1px 0px;
   padding: 6px 4px;
+  outline: none;
 }
 
 select
@@ -58,6 +61,11 @@ select::-ms-expand
   display: none;
 }
 
+input:focus, select:focus, textarea:focus, .hcmsTextArea:focus
+{
+  border: 1px solid #FC9300;
+}
+
 input:disabled, select:disabled, textarea:disabled, button:disabled
 {
   filter: alpha(opacity=35);
@@ -69,7 +77,7 @@ a
 {
   font-family: inherit;
   font-size: inherit;
-  font-weight: bold;
+  font-weight: inherit;
   text-decoration: none;
   color: #000000;
   outline: none;
@@ -111,6 +119,13 @@ hr
   border-width :0;
   color: #7DA5DD;
   background-color: #7DA5DD;
+}
+
+/* Main */
+
+a.hcmsLink
+{
+  text-decoration: underline;
 }
 
 .hcmsCenter
@@ -198,8 +213,8 @@ hr
 
 .hcmsLogoTop
 {
-  width: 36px;
-  height: 36px;
+  max-width: 36px;
+  max-height: 36px;
   padding: 0;
   margin: 0;
   border: 0;
@@ -259,6 +274,7 @@ hr
   object-fit: contain;
   max-width: 100%;
   max-height: 100%;
+  vertical-align: bottom;
   border: 0;
   margin-bottom: 4px;
 }
@@ -280,29 +296,13 @@ hr
 .hcmsToolbar
 {
   width: 100%;
-  height: 36px;
-  padding: 2px;
   display: block;
 }
 
 .hcmsToolbarBlock
 {
   float: left;
-  padding-right: 3px;
-  margin-right: 3px;
   border-right: 2px solid #6DA6F5; 
-}
-
-.hcmsWorkplaceExplorer
-{
-  margin: 0;
-  padding: 0;
-  background-color: #A2C5F9;
-}
-
-.hcmsWorkplaceObjectlist
-{
-  background-color: #ECF3F9;
 }
 
 .hcmsWorkplaceWorkflow
@@ -440,7 +440,7 @@ hr
   -webkit-border-radius: 5px;
   border-radius: 5px;
   color: #FFFFFF;
-  font-size: 12px;
+  font-size: inherit;
   background-color: #292929;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
@@ -681,18 +681,6 @@ hr
   top: 1px;
 }
 
-.hcmsMore
-{
-  border-top: 1px solid #C0C0C0;
-  background-color: #E2ECF5;
-  cursor: pointer; 
-}
-
-.hcmsMore:hover
-{
-  background-color: #C7DBED;
-}
-
 .hcmsSelector
 {
   margin: 0;
@@ -710,7 +698,7 @@ hr
 
 .hcmsSelectorItem
 {
-  font-size: 12px;
+  font-size: inherit;
   cursor: pointer;
   margin: 0;
   padding: 0 20px 0 0;
@@ -890,4 +878,159 @@ table.hcmsTableNarrow th, table.hcmsTableNarrow td
   padding: 0;
   text-align: left;
   vertical-align: middle;
+}
+
+/* Navigator */
+
+a.hcmsNavigator
+{
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 16px !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+  outline: none;
+  padding-left: 0px !important;
+}
+
+.hcmsWorkplaceExplorer
+{
+  margin: 0;
+  padding: 0;
+  background-color: #E7EFFF;
+}
+
+.hcmsWorkplaceObjectlist
+{
+  background-color: #B8D2FC;
+}
+
+.hcmsWorkplaceObjectlistLinks
+{
+  background-color: #ADE6BA;
+}
+
+.hcmsButtonDownload
+{
+  min-width: 70px;
+  margin: 4px 2px;
+  padding: 1px;
+  float: left;
+  text-align: center;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 1px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #FFFFFF;
+  cursor: pointer;
+}
+
+.hcmsButtonDownload:hover
+{
+  background-color: #ECA03C;
+}
+
+.hcmsMore
+{
+  border-top: 1px solid #C0C0C0;
+  background-color: #E2ECF5;
+  cursor: pointer; 
+}
+
+.hcmsMore:hover
+{
+  background-color: #C7DBED;
+}
+
+.hcmsStatusbar
+{
+  border-top: 1px solid #C0C0C0;
+  background-color: #E2ECF5;
+}
+
+tr.hcmsObjectSelected
+{
+  background-color: #A3C5F9;
+}
+
+tr.hcmsObjectUnselected
+{
+  background-color: transparent;
+}
+
+div.hcmsObjectSelected
+{
+  margin: 2px;
+  background-color: #A3C5F9;
+  background-image: url("../img/button_textc.png");
+  background-repeat: no-repeat !important;
+  background-position: 2% 98% !important;
+  background-size: 22px 22px !important;
+}
+
+div.hcmsObjectUnselected
+{
+  margin: 2px;
+  background-color: transparent;
+}
+
+.hcmsIconTree
+{
+  background-repeat: no-repeat !important;
+  background-position: 0 !important;
+  background-size: 16px 16px !important;
+  height: 16px !important;
+  width: 16px !important;
+  line-height: 16px !important;
+}
+
+.hcmsIconOn
+{
+  border: 0;  
+  filter: alpha(opacity=100);
+  -moz-opacity: 1;
+  opacity: 1;
+}
+
+.hcmsIconOff
+{
+  border: 0;
+  filter: gray() alpha(opacity=30);
+  -moz-opacity: 0.3;
+  opacity: 0.3;
+}
+
+.hcmsTableHeader
+{
+  text-align: left;
+  font-weight: normal;
+  border-left: 3px solid #EB6804;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
+  cursor: pointer;
+}
+
+.hcmsTableHeader:hover
+{
+  background-color: #7BB5FF;
+  border-left: 3px solid #EB6804;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
+  cursor: pointer;
+}
+
+.hcmsSelectArea
+{
+	display: none;
+  border: 1px solid #359FFC;
+  background-color: #65B3FC;
+  position: absolute;
+  z-index: 5;
+  filter: gray() alpha(opacity=70);
+  -moz-opacity: 0.7;
+  opacity: 0.7;
 }

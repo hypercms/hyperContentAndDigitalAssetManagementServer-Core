@@ -35,6 +35,7 @@ toggleview ($view);
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0"></meta>
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?ts=<?php echo time(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?ts=<?php echo time(); ?>" />
 <!-- 57 x 57 Android and iPhone 3 icon -->
 <link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
 <!-- 114 x 114 iPhone 4 icon -->
@@ -198,7 +199,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
       <img src="<?php echo getthemelocation(); ?>img/button_logout.png" onclick="top.location='userlogout.php';" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
     <?php } ?>
     </div>
-    <div style="float:left; width:calc(100% - 144px); text-align:center;"><div class="hcmsHeadline" style="padding:8px;"><?php echo ucfirst ($hcms_themename); ?></div></div>
+    <div style="float:left; width:calc(100% - 144px); text-align:center;"><div class="hcmsHeadline" style="padding:8px;"></div></div>
     <div style="float:left; width:36px; text-align:right; margin-left:35px;"> 
     <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
       <img src="<?php echo getthemelocation(); ?>img/button_chat.png" onclick="openChat();" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />

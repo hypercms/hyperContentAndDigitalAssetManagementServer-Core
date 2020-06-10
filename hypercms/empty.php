@@ -26,13 +26,14 @@ checkusersession ($user, false);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 </head>
 
 <body class="hcmsWorkplaceGeneric">
   <table style="width:100%; height:100%;">
     <tr>
       <td style="text-align:center; vertical-align:middle;">
-        <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="max-width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>; max-height:100px;" alt="hypercms.com" />
+        <!-- no content -->
       </td>
     </tr>
   </table>

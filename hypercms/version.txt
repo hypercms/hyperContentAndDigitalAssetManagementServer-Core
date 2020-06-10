@@ -4284,3 +4284,85 @@ Release 05/2020
 - Bug fix: Function deletereport used wrong language text key for the success message
 - Bug fix: Removed deprecated JS function escape from component_edit_page_multi, component_edit_page_single, media_edit_page, and link_edit_page due to issues
 
+Version 9.0.1
+Release 06/2020
+- Modifications in control_content_menu and control_objectlist_menu in order to optimize the dowload feature
+- Modifications in function createmultidownloadlink in Main API in order to remove media and folder location as optional input parameters
+- Minor modifications in service mediadownload and mediawrapper
+- Modifications in function getmetadata_multiobjects in order to remove container, media, deletuser, and deletedate from the result
+- Modifications in the home box up_and_download in order to apply showdate for the correct date format based on the language setting of the user
+- Modifications in page_info_stats in order to apply showdate for the correct date format based on the language setting of the user
+- Design modifications in the header of all list views
+- Modifications in function unzipfile in Main API in order to replace for-next by foreach loop
+- Modifications in service savecontent in order to replace for-next by foreach loop
+- Modifications in function uploadfile in Main API in order to replace for-next by foreach loop
+- Modifications in function manipulateallobjects in Main API in order to replace for-next by foreach loop
+- Modifications in function setarticle in Set API in order to replace for-next by foreach loop
+- Modifications in function settext in Set API in order to replace for-next by foreach loop
+- Modifications in function setmedia in Set API in order to replace for-next by foreach loop
+- Modifications in function setpagelink in Set API in order to replace for-next by foreach loop
+- Modifications in function setcomplink in Set API in order to replace for-next by foreach loop
+- Implementation of the new search function for the user administration
+- Modifications in function createmedia in Media API in order to set media size in database based on the created thumbnail in case no media size coulkd be extracted form the source media file
+- Modifications in function manipulateallobjects in Main API in order to return a message if the marking or restore of deleted folders or objects failed
+- Design modifications in popup_status and popup_notify
+- Modifications in explorer_objectlist and search_objectlist for the new design of the large thumbnail view
+- Modifications in main configuration in order to set the thumbnail size frame to 260 x 220 pixels
+- Modifications in explorer, explorer_objectlist, and search_objectlist in order to remove _gsdata_ directory created by Cyberduck sync (using function deletefolder)
+- Modifications in function showcompexplorer in UI API in order to remove _gsdata_ directory created by Cyberduck sync (using function deletefolder)
+- Modifications in imexport_explorer in Im/Export Connector module in order to remove _gsdata_ directory created by Cyberduck sync (using function deletefolder)
+- Implementation of the new function html2pdf in Media API in order to convert HTML files to a single PDF file
+- Implementation of the new function mergepdf in Media API in order to merge PDF files to a single PDF file
+- Implementation of the new main configuration parameters $mgmt_config['html2pdf'] for WKHTMLTOPDF, $mgmt_config['x11'] for X11-Server, and $mgmt_config['mergepdf'] for PDFTK
+- Modifications in the installation script in order to support the new main configuration parameters
+- Modifications in the template engine in order to support the new pathtype attribute for components
+- Implementation of new Web2Print example templates in the install dirtectory that use the new function html2pdf
+- Modifications in the existing Web2Print example templates in the install dirtectory that use the TCPDF library
+- Modifications in the function showAPIdocs in UI API in order to display only defined function names (new optional input parameter)
+- Modifications in search_form_advanced in order to define the search field width
+- Merged main.css and navigator.css into one CSS file holding all classes for all design themes
+- Replaced navigator.css with main.css
+- Implementation of the new CSS desktop.css and mobile.css in the system in order to support all design themes for the Desktop and Mobile Edition
+- Design modifications in the context menu of the Workflow Management module
+- Modifications in function registeruser and userlogin in Security API in order to remove the mobile design theme
+- Design modifications in the Mobile Edition
+- Implementation of the new JS function hcms_getBrightness in main.js
+- Implementation of the new function getbrightness in Get API
+- Implementation of the new function invertcolorCSS in UI API
+- Modifications in the function userlogin in Security API in order to provide the invert setting for portals based on the design theme and primary color of the portal
+- Modifications in the function registeruser in Security API in order to set the new parameter 'hcms_themeinvertcolors'
+- Implementation of the new session variable 'hms_themeinvertcolors' in include/session.inc.php
+- Modifications in all controls in order to support the invert of the colors of buttons
+- Removed deprecated #default#AnchorClick behaviour from control_content_menu
+- Removed the video wallpaper in the design theme preview of portal_edit
+- Modifications in user_edit in order to calculate the invert setting for colors of portal design themes
+- Modifications in function createmedia and createdocument in Media API in order to remove the existing thumbnail if the media conversion of the new file is not possible
+- Design modifications in Project Management module
+- Design modifications in Task Management module
+- Modifications in function getfileinfo in order to support new file extensiond and icons
+- Modifications in function showmedia in UI API for the preview of plain text files
+- Modifications in function hcms_loadSidebar in contextmenu.js in order to verify if sidebar is visible
+- Modifications in explorer_objectlist and search_objectlist for the sidebar
+- Modifications in explorer_preview and page_info in order to display the links to objects and apply the permissions
+- Modifications in explorer_preview in order to shorten long text strings
+- Implementation of statistics in explorer_preview (sidebar preview)
+- Modifications in function getmetadata in Get API in order to add a comment to the key value if labels will be returned as result array keys (labels are not unique)
+- Modifications in function showobject in UI API
+- Design modifications in Workflow Management module
+- Modifications in Workflow Management module in order to display the task title in the workflow items
+- Modifications in JS function hcms_loadSidebar in contextmenu.js in order to delay the request due to browser issues (MS Edge, Chrome)
+- Modifications in JS function hcms_openWindow in main.js in order to delay the request
+- Design modifications in page_info_stats
+- Implementation of the loading screen in control_objectlist_menu for various actions (rename object and folder, compress assets)
+- Update of the installation guide
+- Bug fix: control_content_menu did not provide the folder name in the location for function createmultidownloadlink
+- Bug fix: Implementation of a new condition in popup_action for action "publish" since the output will interfere with the session_start used in the template engine
+- Bug fix: Implementation of a new condition in popup_status for action "publish" since the output will interfere with the session_start used in the template engine
+- Bug fix: Function sendresetpassword did not reset password if the user was not assigned to at least one publication
+- Bug fix: user_edit did not execute function gethomeboxes if no publications have been assigned to the user
+- Bug fix: user_objectlist did not move to next set of user account during paging (replaced for-next by foreach loop)
+- Bug fix: Function rdbms_setdeletedobjects in DB Connect did not log an error if a folder or object can't be restored since a folder or object with the same name exists already
+- Bug fix: component_edit_page_single and the template engine did disable the text field for single components instead of applying readonly (this is only a display error)
+- Bug fix: home box all_reports did not switch the OK button image
+- Bug fix: The display of the sidebar is based on its width and not the style display which caused the content to load even if the sidebar is hidden
+- Bug fix: control_template_menu did exclude the template default.meta.tpl from the selector

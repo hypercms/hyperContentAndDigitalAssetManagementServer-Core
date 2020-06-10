@@ -53,6 +53,7 @@ checkusersession ($user, false);
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/click.js" type="text/javascript"></script>
 </head>
 
@@ -64,10 +65,14 @@ checkusersession ($user, false);
 <?php
 // --------------------------------- logic section ----------------------------------
 
-// flush
-ob_implicit_flush (true);
-ob_end_flush ();
-sleep (1);
+// flush in order to display load screen
+// do not use it for action "publish" since the output will interfere with the session_start used in the template engine
+if ($action != "publish")
+{
+  ob_implicit_flush (true);
+  ob_end_flush ();
+  //sleep (1);
+}
 
 // initalize
 $show = "";

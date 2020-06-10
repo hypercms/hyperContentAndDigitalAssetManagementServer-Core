@@ -161,7 +161,7 @@ else
 }
 
 // get object from object ID
-if ($object_id != "" && $mgmt_config['db_connect_rdbms'] != "")
+if ($object_id != "" && !empty ($mgmt_config['db_connect_rdbms']))
 { 
   $media = "";
 	$objectpath_esc = rdbms_getobject ($object_id);
@@ -280,10 +280,10 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
   {
     $media_root = $mgmt_config['abs_path_temp'];
     $media = getobject ($media);
-  }  
-  else $media_root = "";
+  }
 
-  if ($media_root != "")
+  // download media file
+  if (!empty ($media_root))
   {
     // provide thumbnail video file
     if (!empty ($type) && strtolower ($type) == "origthumb")

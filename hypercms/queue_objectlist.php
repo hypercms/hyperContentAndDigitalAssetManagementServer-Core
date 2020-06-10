@@ -200,7 +200,8 @@ else $objects_counted = 0;
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" type="text/javascript"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
@@ -278,7 +279,7 @@ function initalize ()
 <div id="selectarea" class="hcmsSelectArea"></div>
 
 <!-- context menu --> 
-<div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
+<div id="contextLayer" style="position:absolute; min-width:150px; max-width:200px; height:80px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_queue" method="post" action="" target="">
     <input type="hidden" name="contextmenustatus" value="" />
     <input type="hidden" name="contextmenulocked" value="false" />
@@ -298,7 +299,7 @@ function initalize ()
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
     
-    <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
+    <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
       <tr>
         <td>
           <a href="javascript:void(0);" id="href_edit" onClick="if (buttonaction ('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_edit" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
@@ -312,27 +313,28 @@ function initalize ()
   </form>
 </div>
 
+<!-- Table Header -->
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:3; visibility:visible;">
   <table id="objectlist_head" cols="6" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:180px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;
       </td>
       <?php if (!$is_mobile) { ?>
       <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:100px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>&nbsp;
       </td>
       <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:200px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;
       </td> 
       <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:140px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>&nbsp;
       </td>
       <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell" style="width:60px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>&nbsp;
       </td>
       <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader hcmsCell">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;
       </td>
       <?php } ?>
     </tr>

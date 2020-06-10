@@ -31,6 +31,7 @@ checkusersession ($user, false);
 <title>hyperCMS Chat</title>
 <meta charset="utf-8" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <style type="text/css">
 #chat-area span
 {

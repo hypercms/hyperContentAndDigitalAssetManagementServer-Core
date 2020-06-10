@@ -51,7 +51,8 @@ else $logfile = "event";
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/click.js"></script>
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
@@ -118,21 +119,21 @@ function initalize ()
   <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:105px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>&nbsp;
       </td>
       <?php if (!$is_mobile) { ?>
       <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:120px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>&nbsp;
       </td>
       <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:180px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['source'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['source'][$lang]); ?>&nbsp;
       </td>
       <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:55px;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['code'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['code'][$lang]); ?>&nbsp;
       </td>
       <?php } ?>
       <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['description'][$lang]); ?>
+        &nbsp;<?php echo getescapedtext ($hcms_lang['description'][$lang]); ?>&nbsp;
       </td>
     </tr>
   </table>

@@ -497,6 +497,22 @@ function hcms_setViewportScale ()
   }
 }
 
+function hcms_getBrightness (color)
+{
+  if (color.length >= 6)
+  {
+    if (color.length == 7) color = color.substring(1);
+
+    var R = parseInt (color.substring(0,2), 16);
+    var G = parseInt (color.substring(2,4), 16);
+    var B = parseInt (color.substring(4,6), 16);
+
+    // Background Brightness < 130 => Textcolor '#FFFFFF' else '#000000'
+    return Math.sqrt (R * R * .241 + G * G * .691 + B * B * .068);
+  }
+  else return false;
+}
+
 function hcms_geolocation ()
 {
   if (navigator.geolocation)
@@ -582,6 +598,9 @@ function hcms_openWindow (theURL, winName, features, width, height)
   if (height < 1) height = 480;
   if (features == '') features = "location=0,menubar=0";
 
+  // wait
+  hcms_sleep (200);
+
   var popup = window.open(theURL, winName, features + ',width=' + width + ',height=' + height);
 
   // use different window positioning if width and height matches the size for object windows
@@ -620,7 +639,7 @@ function hcms_openChat ()
 
   if (chatsidebar)
   {
-    chatsidebar.style.transition = "0.3s";
+    if (hcms_transitioneffect == true) chatsidebar.style.transition = "0.3s";
     if (chatsidebar.style.right == "0px") chatsidebar.style.right = "-320px";
     else chatsidebar.style.right = "0px";
   }

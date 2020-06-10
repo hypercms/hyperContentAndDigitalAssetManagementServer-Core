@@ -1576,6 +1576,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <title>hyperCMS</title>
   <meta charset=\"".$charset."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
   <div class=\"hcmsWorkplaceFrame\">".$viewstore."</div>
@@ -2190,6 +2191,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 <title>hyperCMS</title>
 <meta charset=\"".getcodepage ($lang)."\" />
 <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
 </head>
 <body class=\"hcmsWorkplaceGeneric\">
   <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -2627,6 +2629,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 <title>hyperCMS</title>
 <meta charset=\"".getcodepage ($lang)."\" />
 <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
 </head>
 <body class=\"hcmsWorkplaceGeneric\">
   <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -2777,6 +2780,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <title>hyperCMS</title>
   <meta charset=\"".getcodepage ($lang)."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=hcmsHeadline>".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -2947,6 +2951,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <title>hyperCMS</title>
   <meta charset=\"".getcodepage ($lang)."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=\"hcmsHeadline\">".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."], [".$tagd."] ".$hcms_lang['and-or'][$lang]." [".$tagk."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
@@ -4125,6 +4130,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <title>hyperCMS</title>
   <meta charset=\"".getcodepage ($lang)."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=hcmsHeadline>".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -5035,6 +5041,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <title>hyperCMS</title>
   <meta charset=\"".getcodepage ($lang)."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=hcmsHeadline>".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -5674,6 +5681,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $onpublish = "";
       $onedit = "";
       $include = "";
+      $comppathtype = "";
       $icon = "";
       $add_submitcomp = "";
 
@@ -5721,6 +5729,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <title>hyperCMS</title>
   <meta charset=\"".getcodepage ($lang)."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -5788,6 +5797,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // get readonly attribute
             $readonly = getattribute ($hypertag, "readonly");
 
+            // get path type [file,url,abs]
+            $comppathtype = getattribute ($hypertag, "pathtype");
+
             if ($buildview != "formlock")
             {
               if ($readonly != false) $disabled = " disabled=\"disabled\"";
@@ -5854,9 +5866,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <title>hyperCMS</title>
   <meta charset=\"".$hcms_lang_codepage[$lang]."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
-    <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [$tags] ".$hcms_lang['and-or'][$lang]." [$tagm] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
+    <p class=\"hcmsHeadline\">".$hcms_lang['the-tags'][$lang]." [$tags] ".$hcms_lang['and-or'][$lang]." [$tagm] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
     ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
   </body>
   </html>";
@@ -6013,7 +6026,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $formitem[$key] .= "
                                 <td style=\"white-space:nowrap;\">
                                   <input type=\"hidden\" id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
-                                  <input type=\"text\" name=\"temp_".$hypertagname."_".$id."\" value=\"".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:".$fieldwidth."px;\" disabled=\"disabled\" />";
+                                  <input type=\"text\" name=\"temp_".$hypertagname."_".$id."\" value=\"".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:".$fieldwidth."px;\" readonly=\"readonly\" ".$disabled." />";
  
                         if (($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) && empty ($disabled)) $formitem[$key] .= "
                                   <div id=\"".$hypertagname."_".$id."_controls\" style=\"display:inline-block;\">
@@ -6093,7 +6106,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                 <td style=\"width:150px;\">".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang)." </td>
                                 <td style=\"white-space:nowrap;\">
                                   <input type=\"hidden\" id=\"".$hypertagname."_".$artid."_".$elementid."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
-                                  <input type=\"text\" name=\"temp_".$hypertagname."_".$artid."_".$elementid."\" value=\"".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:".$fieldwidth."px;\" disabled />";
+                                  <input type=\"text\" name=\"temp_".$hypertagname."_".$artid."_".$elementid."\" value=\"".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:".$fieldwidth."px;\" readonly=\"readonly\" ".$disabled." />";
 
                         if (($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) && empty ($disabled)) $formitem[$key] .= "
                                   <div id=\"".$hypertagname."_".$artid."_".$elementid."_controls\" style=\"display:inline-block;\">
@@ -6504,21 +6517,26 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // for use in applications, insert component links
                 elseif ($onedit == "hidden" && $onpublish != "hidden")
                 {
-                  // use publish settings
-                  if ($buildview == "publish")
+                  // path type (absolute file path)
+                  if ($comppathtype == "file" || $comppathtype == "abs")
                   {
-                    // replace the url_comp variables with the URL of the component root
-                    if ($mgmt_config['os_cms'] == "WIN") $contentbot = str_replace ("%comp%", substr ($publ_config['abs_publ_comp'], 0, strlen ($publ_config['abs_publ_comp'])-1), $contentbot);
-                    else $contentbot = str_replace ("%comp%", substr ($publ_config['url_publ_comp'], 0, strlen ($publ_config['url_publ_comp'])-1), $contentbot);
+                     // use publish settings
+                    if ($buildview == "publish") $temp_root = substr ($publ_config['abs_publ_comp'], 0, strlen ($publ_config['abs_publ_comp']) - 1);
+                    // use management settings
+                    else $temp_root = substr ($mgmt_config['abs_path_comp'], 0, strlen ($mgmt_config['abs_path_comp']) - 1);
                   }
-                  // use management settings
+                  // path type (URL)
                   else
                   {
-                    // replace the url_comp variables with the URL of the component root
-                    if ($mgmt_config['os_cms'] == "WIN") $contentbot = str_replace ("%comp%", substr ($mgmt_config['abs_path_comp'], 0, strlen ($mgmt_config['abs_path_comp'])-1), $contentbot);
-                    else $contentbot = str_replace ("%comp%", substr ($mgmt_config['url_path_comp'], 0, strlen ($mgmt_config['url_path_comp'])-1), $contentbot);
+                     // use publish settings
+                     if ($buildview == "publish") $temp_root = substr ($publ_config['url_publ_comp'], 0, strlen ($publ_config['url_publ_comp']) - 1);
+                     // use management settings
+                     else $temp_root = substr ($mgmt_config['url_path_comp'], 0, strlen ($mgmt_config['url_path_comp']) - 1);
                   }
- 
+
+                  // replace the comp variables with the component root
+                  $contentbot = str_replace ("%comp%", $temp_root, $contentbot);
+                  
                   $viewstore = str_replace ($hypertag, $contentbot, $viewstore);
                 }
                 else
@@ -6631,14 +6649,25 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 }
                 elseif ($onedit == "hidden" && $onpublish != "hidden")
                 {
-                  if ($buildview == "publish")
+                  // path type (absolute file path)
+                  if ($comppathtype == "file" || $comppathtype == "abs")
                   {
-                    $viewstore = str_replace ($hypertag, str_replace ("%comp%", substr ($publ_config['url_publ_comp'], 0, strlen ($publ_config['url_publ_comp'])-1), $contentbot), $viewstore);
+                     // use publish settings
+                    if ($buildview == "publish") $temp_root = substr ($publ_config['abs_publ_comp'], 0, strlen ($publ_config['abs_publ_comp']) - 1);
+                    // use management settings
+                    else $temp_root = substr ($mgmt_config['abs_path_comp'], 0, strlen ($mgmt_config['abs_path_comp']) - 1);
                   }
+                  // path type (URL)
                   else
                   {
-                    $viewstore = str_replace ($hypertag, str_replace ("%comp%", substr ($mgmt_config['url_path_comp'], 0, strlen ($mgmt_config['url_path_comp'])-1), $contentbot), $viewstore);
+                     // use publish settings
+                     if ($buildview == "publish") $temp_root = substr ($publ_config['url_publ_comp'], 0, strlen ($publ_config['url_publ_comp']) - 1);
+                     // use management settings
+                     else $temp_root = substr ($mgmt_config['url_path_comp'], 0, strlen ($mgmt_config['url_path_comp']) - 1);
                   }
+
+                  // replace the comp variables with the component root
+                  $viewstore = str_replace ($hypertag, str_replace ("%comp%", $temp_root, $contentbot) , $viewstore);
                 }
                 else
                 {
@@ -7536,6 +7565,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <meta name=\"robots\" content=\"noindex, nofollow\" />
   <!-- hyperCMS -->
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   <style>
   .hcmsMapsControls
   {
@@ -9519,7 +9549,9 @@ function unescapeview ($viewstore, $application="php")
 
 function buildsearchform ($site="", $template="", $report="", $ownergroup="", $css_display="inline-block", $css_width_field="90%", $empty_values=true, $title="")
 {
-  global $user, $siteaccess, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang;
+  global $user, $siteaccess, 
+         $mgmt_config, $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang,
+         $is_mobile;
 
   // ----------------------------------- build view of page -----------------------------------------
 
@@ -9582,6 +9614,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 <title>hyperCMS</title>
 <meta charset=\"".getcodepage ($lang)."\" />
 <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
 </head>
 <body class=\"hcmsWorkplaceGeneric\">
   <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -9750,6 +9783,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
   <meta charset=\"".getcodepage ($lang)."\" />
   <meta name=\"robots\" content=\"noindex, nofollow\" />
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/main.js\"></script>
   <link  rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\" />
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>

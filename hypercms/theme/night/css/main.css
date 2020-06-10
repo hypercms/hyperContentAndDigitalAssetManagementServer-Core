@@ -1,4 +1,7 @@
 /* background color of navigation controls: #636363 */
+
+/* General */
+
 html, body
 {
   width: 100%;
@@ -37,6 +40,7 @@ input, select, textarea, button, .hcmsTextArea
   background-color: #F3F3F3;
   margin: 1px 1px 1px 0px;
   padding: 6px 4px;
+  outline: none;
 }
 
 select
@@ -59,6 +63,11 @@ select::-ms-expand
   display: none;
 }
 
+input:focus, select:focus, textarea:focus, .hcmsTextArea:focus
+{
+  border: 1px solid #FC9300;
+}
+
 input:disabled, select:disabled, textarea:disabled, button:disabled
 {
   filter: alpha(opacity=35);
@@ -70,7 +79,7 @@ a
 {
   font-family: inherit;
   font-size: inherit;
-  font-weight: bold;
+  font-weight: inherit;
   text-decoration: none;
   color: #FFFFFF;
   outline: none;
@@ -107,6 +116,13 @@ hr
   border-width :0;
   color: #0ACA03;
   background-color: #C0C0C0;
+}
+
+/* Main */
+
+a.hcmsLink
+{
+  text-decoration: underline;
 }
 
 .hcmsCenter
@@ -199,8 +215,8 @@ hr
 
 .hcmsLogoTop
 {
-  width: 36px;
-  height: 36px;
+  max-width: 36px;
+  max-height: 36px;
   padding: 0;
   margin: 0;
   border: 0;
@@ -233,7 +249,7 @@ hr
 .hcmsContextMenu
 {
   border: 1px solid #000000;
-  background-color: #C0C0C0;
+  background-color: #6F6F6F;
   box-shadow: 3px 3px 10px #000000;
   -webkit-box-shadow: 3px 3px 10px #000000;
   -moz-box-shadow: 3px 3px 10px #000000;
@@ -254,6 +270,7 @@ hr
   object-fit: contain;
   max-width: 100%;
   max-height: 100%;
+  vertical-align: bottom;
   border: 0;
   margin-bottom: 4px;
 }
@@ -275,24 +292,13 @@ hr
 .hcmsToolbar
 {
   width: 100%;
-  height: 36px;
-  padding: 2px;
   display: block;
 }
 
 .hcmsToolbarBlock
 {
   float: left;
-  padding-right: 1px;
-  margin-right: 1px;
   border-right: 2px solid #FFFFFF; 
-}
-
-.hcmsWorkplaceExplorer
-{
-  margin: 0;
-  padding: 0;
-  background-color: #353535;
 }
 
 .hcmsWorkplaceObjectlist
@@ -867,4 +873,161 @@ table.hcmsTableNarrow th, table.hcmsTableNarrow td
   padding: 0;
   text-align: left;
   vertical-align: middle;
+}
+
+/* Navigator */
+
+a.hcmsNavigator
+{
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 16px !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+  outline: none;
+  padding-left: 0px !important;
+}
+
+.hcmsWorkplaceExplorer
+{
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #111111;
+}
+
+.hcmsWorkplaceObjectlist
+{
+  background-color: #313131;
+}
+
+.hcmsWorkplaceObjectlistLinks
+{
+  background-color: #3E6517
+}
+
+.hcmsButtonDownload
+{
+  min-width: 70px;
+  margin: 4px 2px;
+  padding: 1px;
+  float: left;
+  text-align: center;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 1px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #FFFFFF;
+  cursor: pointer;
+}
+
+.hcmsButtonDownload:hover
+{
+  background-color: #ECA03C;
+}
+
+.hcmsMore
+{
+  border-top: 1px solid #6F6F6F;
+  background-color: #7B7B7B;
+  cursor: pointer; 
+}
+
+.hcmsMore:hover
+{
+  background-color: #3E3E3E;
+}
+
+.hcmsStatusbar
+{
+  border-top: 1px solid #6F6F6F;
+  background-color: #7B7B7B;
+}
+
+tr.hcmsObjectSelected
+{
+  background-color: #7B7B7B;
+}
+
+tr.hcmsObjectUnselected
+{
+  background-color: transparent;
+}
+
+div.hcmsObjectSelected
+{
+  margin: 2px;
+  background-color: #7B7B7B;
+  background-image: url("../img/button_textc.png");
+  background-repeat: no-repeat !important;
+  background-position: 2% 98% !important;
+  background-size: 22px 22px !important;
+}
+
+div.hcmsObjectUnselected
+{
+  margin: 2px;
+  background-color: transparent;
+}
+
+.hcmsIconTree
+{
+  background-repeat:no-repeat !important;
+  background-position:0 !important;
+  background-size: 16px 16px !important;
+  height: 16px !important;
+  width: 16px !important;
+  line-height: 16px !important;
+}
+
+.hcmsIconOn
+{
+  border: 0;  
+  filter: alpha(opacity=100);
+  -moz-opacity: 1;
+  opacity: 1;
+}
+
+.hcmsIconOff
+{
+  border: 0;
+  filter: gray() alpha(opacity=30);
+  -moz-opacity: 0.3;
+  opacity: 0.3;
+}
+
+.hcmsTableHeader
+{
+  text-align: left;
+  font-weight: normal;
+  border-left: 3px solid #FFFFFF;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
+  cursor: pointer;
+}
+
+.hcmsTableHeader:hover
+{
+  background-color: #EB7B04;
+  border-left: 3px solid #FFFFFF;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
+  cursor: pointer;
+}
+
+.hcmsSelectArea
+{
+  display: none;
+  border: 1px solid #FB980C;
+  background-color: #FCB045;
+  position: absolute;
+  z-index: 5;
+  filter: gray() alpha(opacity=70);
+  -moz-opacity: 0.7;
+  opacity: 0.7;
 }

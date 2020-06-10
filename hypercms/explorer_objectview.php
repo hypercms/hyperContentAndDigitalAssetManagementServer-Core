@@ -127,6 +127,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/click.js"></script>
 <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false); ?>
