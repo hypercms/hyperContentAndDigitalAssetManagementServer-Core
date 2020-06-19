@@ -4354,6 +4354,8 @@ Release 06/2020
 - Modifications in JS function hcms_openWindow in main.js in order to delay the request
 - Design modifications in page_info_stats
 - Implementation of the loading screen in control_objectlist_menu for various actions (rename object and folder, compress assets)
+- Modifications in function createmedia in Media API in order to exclude conversion of MP3 files to reduced preview MP3 files
+- Modifications in frameset_template_edit in order to reload the template versions on click of the versions tab
 - Update of the installation guide
 - Bug fix: control_content_menu did not provide the folder name in the location for function createmultidownloadlink
 - Bug fix: Implementation of a new condition in popup_action for action "publish" since the output will interfere with the session_start used in the template engine

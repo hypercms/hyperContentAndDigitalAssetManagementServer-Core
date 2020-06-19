@@ -2590,7 +2590,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       }
 
       // --------------- if media conversion software is given ----------------
-      if (is_array ($mgmt_mediapreview) && sizeof ($mgmt_mediapreview) > 0)
+
+      // do not convert MP3 files to preview MP3 files
+      if (is_array ($mgmt_mediapreview) && sizeof ($mgmt_mediapreview) > 0 && ($file_ext != ".mp3" || ($file_ext == ".mp3" && $type != "origthumb" && $type != "thumbnail")))
       {
         // convert the media file with FFMPEG
         // Audio Options:
@@ -2629,7 +2631,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
         // noautoroate option for input video file is only supported by later FFMPEG versions
         // since the auto rotation is also taking care by the system FFMPEG should not autorotate the video
-        if (!empty ($mgmt_mediaoptions['autorotate-video'])) $noautorotate = "-noautorotate";
+        if (is_video ($file) && !empty ($mgmt_mediaoptions['autorotate-video'])) $noautorotate = "-noautorotate";
         else $noautorotate = "";
 
         // reset type to input value

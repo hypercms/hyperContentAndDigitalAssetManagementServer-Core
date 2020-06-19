@@ -696,15 +696,13 @@ function showobject ($site, $location, $page, $cat="", $name="")
     // get object info
     $object_info = getobjectinfo ($site, $location, $page, "sys");
 
-    if (!empty ($object_info['container_id']))
-    {
-      $container_id = $object_info['container_id'];
+    // container ID
+    if (!empty ($object_info['container_id'])) $container_id = $object_info['container_id'];
 
-      // define object name
-      if ($name == "") $name = $object_info['name'];
-    }
+    // define object name
+    if ($name == "" && !empty ($object_info['name'])) $name = $object_info['name'];
 
-    if (intval ($container_id) > 0)
+    if (!empty ($container_id) && intval ($container_id) > 0)
     {
       // get dates and owner
       $container_info = getmetadata_container ($container_id, array("date", "createdate", "publishdate", "user"));

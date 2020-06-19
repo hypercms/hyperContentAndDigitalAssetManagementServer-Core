@@ -50,7 +50,7 @@ else $css_iphone = "";
       <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_showHideLayers('editLayer','','show', 'versionLayer','','hide', 'infoLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['template'][$lang]); ?></a>
     </div>
     <div id="tab2" class="hcmsTabPassive">
-      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_showHideLayers('editLayer','','hide', 'versionLayer','','show', 'infoLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['version'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['version'][$lang]); ?></a>
+      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); document.getElementById('mainFrame2').src='version_template.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&template=<?php echo $template; ?>'; hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_showHideLayers('editLayer','','hide', 'versionLayer','','show', 'infoLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['version'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['version'][$lang]); ?></a>
     </div>
     <div id="tab3" class="hcmsTabPassive">
       <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabActive'); hcms_showHideLayers('editLayer','','hide', 'versionLayer','','hide', 'infoLayer','','show');" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['information'][$lang]); ?></a>
@@ -64,7 +64,7 @@ else $css_iphone = "";
 
   <!-- template versions -->
   <div id="versionLayer" style="position:fixed; top:24px; right:0; bottom:0; left:0; margin:0; padding:0; visibility:hidden; <?php echo $css_iphone; ?>">
-    <iframe name="mainFrame2" src="version_template.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&template=<?php echo $template; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
+    <iframe name="mainFrame2" id="mainFrame2" src="" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 
   <!-- template info -->
