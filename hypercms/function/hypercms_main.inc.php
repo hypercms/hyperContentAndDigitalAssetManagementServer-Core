@@ -340,18 +340,23 @@ function specialchr_encode ($expression, $remove="no")
       {
         // encode to UTF-8 if name is not utf-8 coded
         if (!is_utf8 ($expression)) $expression = utf8_encode (trim ($expression));
+
         // replace ~ since this is the identifier and replace invalid file name characters (symbols)
         $strip = array ("~", "%", "`", "!", "@", "#", "$", "^", "&", "*", "=", 
                         "\\", "|", ";", ":", "\"", "&quot;", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
                         "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", ",", "<", "&lt;", ">", "&gt;", "?");
  
         $expression = str_replace ($strip, "", strip_tags ($expression));
+
         // replace multiple spaces
         $expression = preg_replace ('/\s+/', " ", $expression);
+
         // replace all special characters
         if ($remove == "yes") $expression = preg_replace ("/[^a-zA-Z0-9_\\-]/", "", $expression);
+
         // url encoding for file name transformation (replace all special characters according to RFC 1738)
         $expression = rawurlencode ($expression);
+
         // replace % to avoid urldecoding 
         $expression = str_replace ("%", "~", $expression);
       }
@@ -378,7 +383,7 @@ function specialchr_decode ($expression)
   global $user, $mgmt_config, $hcms_lang, $lang;
 
   if (is_string ($expression))
-  { 
+  {
     // replace % to avoid urldecoding 
     $expression = str_replace ("~", "%", $expression);
 
