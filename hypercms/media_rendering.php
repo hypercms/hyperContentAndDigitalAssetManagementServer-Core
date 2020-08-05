@@ -124,8 +124,20 @@ else $videosize = "";
 if ($hcms_ext['video'] != "" && $hcms_ext['audio'] != "")
 {
   // set default width for video preview
-  $mediawidth = 576;
+  $mediawidth = 854;
   $mediaheight = 0;
+
+  // check viewport width
+  if ($is_mobile && $viewportwidth > 0) $maxwidth = $viewportwidth * 1.6;
+  else $maxwidth = 0;
+  
+  // set the default width for different media types for the preview and annotations
+  // keep in mind that the video width must match with the rendering setting in the main config
+  $default_width = getpreviewwidth ($site, $mediafile);
+
+  // correct media width for mobile devices (if viewport width is smaller than the default width)
+  if ($maxwidth > 0 && $maxwidth < $default_width) $mediawidth = $maxwidth;
+  else $mediawidth = $default_width;
 
   // generate player code
   $playercode = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_download", "hcms_mediaplayer_edit", $mediawidth, $mediaheight, "");
@@ -156,7 +168,7 @@ else echo showvideoplayer_head (false);
 <style>
 .row
 {
-  margin-top: 1px;
+  margin-top: 10px;
 }
 
 .row *
@@ -175,8 +187,9 @@ else echo showvideoplayer_head (false);
   vertical-align: top;
   display: inline-block;
   margin-left: 10px;
-  margin-top: 10px;
-  width: 210px;
+  margin-top: 0px;
+  width: 240px;
+  white-space: nowrap;
 }
 
 .cellButton
@@ -190,9 +203,18 @@ else echo showvideoplayer_head (false);
   font-size: 11px;
 }
 
-#renderOptions input[type=text], #renderOptions select
+.inputField
 {
-  padding: 3px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+@media screen and (max-width: 420px)
+{
+  .cell
+  {
+    width: 100%;
+  }
 }
 </style>
 <script type="text/javascript">
@@ -226,7 +248,7 @@ function checkThumb()
 }
 <?php } ?>
 
-function submitform ()
+function submitMediaConfig ()
 {
   var errors = '';
   
@@ -234,11 +256,6 @@ function submitform ()
   {
     if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
     if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
-  }
-  
-  if (document.getElementById('thumb_yes') && document.getElementById('thumb_yes').checked == true)
-  {
-    if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
   }
   
   if (document.getElementById('videosize_i') && document.getElementById('videosize_i').checked == true)
@@ -249,7 +266,7 @@ function submitform ()
   
   if (errors) 
   { 
-    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>\n ' + errors));
+    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>\n ' + errors));
     return false;
   }
   else
@@ -258,13 +275,35 @@ function submitform ()
     
     if (filetype.options[filetype.selectedIndex].value == "original")
     {
-      if (!confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang]); ?>"))) return false;
+      if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang]); ?>"))) return false;
     }
   
     hcms_showHideLayers('savelayer','','show');
     document.forms['mediaconfig'].submit();
   }
 }
+
+function submitThumbConfig ()
+{
+  var errors = '';
+
+  if (document.getElementById('thumb_yes') && document.getElementById('thumb_yes').checked == true)
+  {
+    if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
+  }
+
+  if (errors) 
+  { 
+    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>\n ' + errors));
+    return false;
+  }
+  else
+  {  
+    hcms_showHideLayers('savelayer','','show');
+    document.forms['thumbconfig'].submit();
+  }
+}
+
 
 function openerReload ()
 {
@@ -403,7 +442,7 @@ function toggle_flip ()
   }
 }
 
-function toggle_options (caller, element)
+function toggleOptions (caller, element)
 {
   var options = $(element);
   caller = $(caller);
@@ -683,7 +722,7 @@ function keepsegment (id)
 
 $(window).load( function()
 {
-  var spinner_config = { step: 1, min: -100, max: 100}
+  var spinner_config = { step: 1, min: -100, max: 100, classes: {"ui-spinner": ""} }
   
   $('#sharpen').spinner(spinner_config);
   $('#gamma').spinner(spinner_config);
@@ -713,15 +752,8 @@ $().ready(function() {
 
 <body class="hcmsWorkplaceGeneric">
 
-<!-- saving --> 
-<div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height:100%; margin:0; padding:0; left:0px; top:0px; visibility:hidden; z-index:10;">
-	<span style="position:absolute; top:50%; height:150px; margin-top:-75px; width:200px; left:50%; margin-left:-100px;">
-		<b><?php echo getescapedtext ($hcms_lang['the-file-is-being-processed'][$lang]);?></b>
-		<br />
-		<br />
-		<img src="<?php echo getthemelocation(); ?>img/loading.gif" />
-	</span>
-</div>
+<!-- save overlay --> 
+<div id="savelayer" class="hcmsLoadScreen" style="display:none;"></div>
 
 <?php
 echo showinfobox ($hcms_lang['use-options-to-edit-the-video'][$lang], $lang, "position:fixed; top:40px; left:10px; width:760px;", "hcms_infoLayer");
@@ -730,11 +762,11 @@ echo showmessage ($show, 600 , 80, $lang, "position:fixed; left:50px; top:150px;
 
 <!-- top bar -->
 <?php
-echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$lang] => 'onclick="toggle_options(this, \'#renderOptions\'); hcms_hideFormLayer(\'hcms_infoLayer\')"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
+echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$lang] => 'onclick="toggleOptions(this, \'#renderOptions\'); hcms_hideFormLayer(\'hcms_infoLayer\')"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; vertical-align:top; z-index:1; display:none; margin:-4px 10px 0px 10px;" class="hcmsMediaRendering">
+<div id="renderOptions" style="padding:0px 5px 10px 5px; width:94%; vertical-align:top; z-index:1; display:none; margin:0px 10px 0px 10px;" class="hcmsMediaRendering">
   <form name="mediaconfig" action="service/rendervideo.php" method="post">
   	<input type="hidden" name="action" value="rendermedia" />
     <input type="hidden" name="savetype" value="editor_so">
@@ -752,7 +784,7 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
       <div class="row">
     		<strong><?php echo getescapedtext ($hcms_lang['formats'][$lang]); ?></strong>
   		<?php foreach ($available_formats as $format => $data) { ?>
-        <div class="row">
+        <div>
           <input type="radio" id="format_<?php echo $format; ?>" name="format" value="<?php echo $format; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> />
           <label for="format_<?php echo $format; ?>"><?php echo $data['name']; ?></label>
         </div>
@@ -764,10 +796,10 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
     		<strong><?php echo getescapedtext ($hcms_lang['video-size'][$lang]); ?></strong>
       </div>
   		<?php foreach ($available_videosizes as $videosize => $data) { ?>
-      <div class="row">
+      <div>
   			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>" <?php if ($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo $data['name']; ?></label>
   			<?php if ($data['individual']) { ?>
-  		  <input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize;?>" value="" /><span> px</span>
+  		  <input type="text" name="width" class="inputField" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" class="inputField" size="4" maxlength=4 id="height_<?php echo $videosize;?>" value="" /><span> px</span>
   			<?php }	?>
   		</div>
   		<?php }	?>
@@ -805,27 +837,12 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
         <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo getescapedtext ($hcms_lang['saturation'][$lang]); ?></label>
         <input name="saturation" type="text" id="saturation" size="4" value="0" />
       </div>
-    </div>
-    <?php }	?>
- 
-    <?php if (!$is_audio) { ?>
-    <div class="cell">      
-      <!-- video thumbnail -->
-      <div class="row"> 
-        <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1" />
-        <strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo getescapedtext ($hcms_lang['pick-preview-image'][$lang]); ?></label></strong>
-      </div>
-      <div id="thumb_area" style="display:none;">
-          <label for="thumb_frame_select" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['frame'][$lang]); ?></label>
-          <input id="thumb_frame_select" type="button" value="<?php echo getescapedtext ($hcms_lang['set'][$lang]); ?>" onclick="updateField(document.getElementById('thumb_frame'));" class="cellButton" />
-          <input type="text" name="thumb_frame" id="thumb_frame" READONLY style="width:70px; text-align:center; vertical-align:middle;" />
-      </div>
-       
+
       <!-- rotate -->
-      <div class="row">
+      <div>
         <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-        <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang]); ?></label></strong>
-        <select name="degree" id="degree" style="margin-left:20px">
+        <label for="rotate" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang]); ?></label>
+        <select name="degree" id="degree" class="inputField">
           <option value="90" selected="selected" >90&deg;</option>
           <option value="180" >180&deg;</option>
           <option value="-90" title="-90&deg;">270&deg;</option>
@@ -833,10 +850,10 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
       </div>
 
       <!-- vflip hflip -->
-      <div class="row">
+      <div>
         <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-        <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang]); ?></label></strong>
-        <select name="flip" id="flip" style="margin-left:20px">
+        <label for="chbx_flip" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang]); ?></label>
+        <select name="flip" id="flip" class="inputField">
           <?php 
             foreach ($available_flip as $value => $name)
             {
@@ -847,41 +864,42 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
           ?>
         </select>
       </div>
+
     </div>
-    <?php } ?>
-    
-    <?php if (!$is_audio) { ?>    
-    <!-- video bitrate -->
-  	<div class="cell" style="width:260px;">
+    <?php }	?>
+
+ 
+    <div class="cell" style="width:240px;">
+
+      <?php if (!$is_audio) { ?>    
+      <!-- video bitrate -->
       <div class="row">
   		  <strong><?php echo getescapedtext ($hcms_lang['video-quality'][$lang]); ?></strong>
       </div>
   		<?php foreach ($available_bitrates as $bitrate => $data) { ?>
-      <div class="row">
+      <div>
   			<input type="radio" id="bitrate_<?php echo $bitrate; ?>" name="bitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="bitrate_<?php echo $bitrate; ?>"><?php echo $data['name']; ?></label><br />
       </div>
   		<?php } ?>
-  	</div>
-    <?php } ?>
+      <?php } ?>
     
-    <!-- audio bitrate -->
-    <div class="cell">
+      <!-- audio bitrate -->
       <div class="row">
   		  <strong><?php echo getescapedtext ($hcms_lang['audio-quality'][$lang]); ?></strong>
       </div>
   		<?php foreach ($available_audiobitrates as $bitrate => $data) { ?>
-      <div class="row">
+      <div>
   			<input type="radio" id="audiobitrate_<?php echo $bitrate; ?>" name="audiobitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="audiobitrate_<?php echo $bitrate; ?>"><?php echo $data['name']; ?></label><br />
       </div>
   		<?php } ?>
-  	</div>
 
-    <div class="cell">
       <!-- save as video format -->
       <div class="row">
-    		<strong><?php echo getescapedtext ($hcms_lang['save-as'][$lang]);?></strong><br />
-    		<label for="filetype"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]);?></label>
-    		<select id="filetype" name="filetype">
+        <strong><?php echo getescapedtext ($hcms_lang['save-as'][$lang]);?></strong>
+      </div>
+      <div>
+        <label for="filetype"><?php echo getescapedtext ($hcms_lang['type'][$lang]);?></label>
+        <select id="filetype" name="filetype" style="width:120px;">
           <?php
           // check supported extensions to render and overwrite original media file
           if (is_array ($mgmt_mediaoptions))
@@ -902,7 +920,7 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
           {
           ?>
           <option value="videoplayer" ><?php echo getescapedtext ($hcms_lang['for-videoplayer'][$lang]); ?></option>
-    			<?php
+          <?php
           }
           
           foreach ($available_extensions as $ext => $name)
@@ -910,21 +928,47 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
             if (!$is_audio || is_audio (strtolower($name)))
             { 
             ?>
-    				<option value="<?php echo $ext; ?>"><?php echo $name; ?></option>
+            <option value="<?php echo $ext; ?>"><?php echo $name; ?></option>
             <?php  
             } 
           }
           ?>
-    		</select>
+        </select>
+        <button type="button" class="hcmsButtonGreen" name="save" onclick="submitMediaConfig();"><img src="<?php echo getthemelocation()."img/button_save.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['save'][$lang]);?></button>
       </div>
-      
-      <!-- save button -->
-      <div class="row" style="margin-top:6px;">
-  		  <button type="button" class="hcmsButtonGreen" name="save" onclick="submitform();"><img src="<?php echo getthemelocation()."img/button_save.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['save'][$lang]);?></button>
-      </div>
-  	</div>
+    </div>
     
   </form>
+
+  <?php if (!$is_audio) { ?>
+  <hr/>
+  <form name="thumbconfig" action="service/rendervideo.php" method="post">
+  	<input type="hidden" name="action" value="rendermedia" />
+    <input type="hidden" name="savetype" value="editor_so">
+  	<input type="hidden" name="site" value="<?php echo $site; ?>" />
+  	<input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+  	<input type="hidden" name="cat" value="<?php echo $cat; ?>" />
+  	<input type="hidden" name="page" value="<?php echo $page; ?>" />
+  	<input type="hidden" name="media" value="<?php echo $mediafile; ?>" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+
+    <div class="cell" style="width:100%;">
+      <!-- video thumbnail -->
+      <div> 
+        <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1" />
+        <strong><label for="thumb_yes" onclick="checkThumb();"><?php echo getescapedtext ($hcms_lang['pick-preview-image'][$lang]); ?></label></strong>
+      </div>
+      <div id="thumb_area" style="display:none;">
+        <label for="thumb_frame_select" style="display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['frame'][$lang]); ?></label>
+        <input type="text" name="thumb_frame" id="thumb_frame" style="width:90px;" readonly />
+        <button id="thumb_frame_select" type="button" class="hcmsButtonBlue" onclick="updateField(document.getElementById('thumb_frame'));"><img src="<?php echo getthemelocation()."img/button_time.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['set'][$lang]);?></button>
+        <button type="button" class="hcmsButtonGreen" onclick="submitThumbConfig();"><img src="<?php echo getthemelocation()."img/button_media.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['create'][$lang]);?></button>
+      </div>
+    </div>
+
+  </form>
+  <?php } ?>
+
 </div>
 
 <!-- media view -->

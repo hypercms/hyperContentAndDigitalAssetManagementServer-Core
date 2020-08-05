@@ -218,13 +218,16 @@ function html5support()
   else return 0;
 }
 
-function setwallpaper ()
+function setlogospacer ()
 {
   // set logo spacer height
   var img = document.getElementById('logoimage');
   var spacerheight = img.clientHeight;
   if (spacerheight > 0) document.getElementById('homespacer').style.height = spacerheight + 10 + "px";
+}
 
+function setwallpaper ()
+{
   // set background image
   <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
   document.getElementById('startScreen').style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
@@ -284,7 +287,7 @@ function closePopup ()
 </script>
 </head>
 
-<body onload="<?php if (!$is_mobile) echo "setwallpaper();"; ?>">
+<body onload="setlogospacer(); <?php if (!$is_mobile) echo "setwallpaper();"; ?>">
 
 <!-- popup (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="popupLayer" class="hcmsHomeBox" style="position:fixed; left:50%; bottom:0px; z-index:-1; overflow:hidden; width:0px; height:0px; visibility:hidden;">

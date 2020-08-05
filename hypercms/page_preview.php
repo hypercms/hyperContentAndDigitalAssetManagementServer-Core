@@ -57,7 +57,7 @@ $location_esc = convertpath ($site, $location, $cat);
 // script to build the view of the page 
 $buildview = "preview";
 
-$result = buildview ($site, $location, $page, $user, $buildview, "no", "", $container);
+$result = buildview ($site, $location, $page, $user, $buildview, "yes", "", $container);
 
 $viewstore = $result['view'];
 $contentfile = $result['container'];

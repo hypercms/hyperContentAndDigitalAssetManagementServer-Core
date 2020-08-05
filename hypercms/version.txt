@@ -176,7 +176,7 @@ Release 07/2012 - 02/2013
 - Meta data keyword and description generator in API
 - Secure token used to save content
 - Modernized JS code for form and elements access
-- Document viewer based on google service
+- Document viewer based on Google service
 - Language settings support, new hypercms-tag for language
 - Link management database will not be managed if link management is disabled
 - Improved security by killing the users session if a permission is missing
@@ -287,7 +287,7 @@ Version 5.6.0
 Release 07/2013
 - Themes for hyperCMS GUI
 - Video screen capture (thumbnail jpeg)
-- Document preview based on PDF reader plugin of browsers (google docs service for older browser still in use)
+- Document preview based on PDF reader plugin of browsers (Google docs service for older browser still in use)
 - Several changes in CSS classes
 - Mobile client for content editing
 - Bug fix: Infotype=meta was not set if used in hyperCMS Tag Wizard
@@ -356,7 +356,7 @@ Release 08/2013
 - Use alt-key to switch to download links in object lists
 - New windows have the container id of their object
 - New info box for hints regarding the system usage, see function showinfobox
-- Generate google sitemap with function getgooglesitemap
+- Generate Google sitemap with function getgooglesitemap
 - OpenSEARCH implementation
 - Bug fix for audio-files
 - Bug fix: zipfiles didn't check access permissions of user
@@ -4108,7 +4108,7 @@ Release 04/2020
 - Bug fix: Function showAPIdocs in UI API was not able to resolve the input of functions if a '//' occured in the default input values
 
 Version 9.0.0
-Release 05/2020
+Release 06/2020
 - Implementation of the new system GUI version 9 (Redesign of various toolbars, Redesign of the search and search & replace form)
 - Implementation of connections between the workflow items of the Workflow Management module
 - Implementation of the new domarrow JS library (does not support IE < 10)
@@ -4190,7 +4190,7 @@ Release 05/2020
 - Modifications in explorer in order to preload framseset_objectlist if it has not been loaded
 - Modifications in function buildbarchart in template engine in order to support onclick events (links) for the chart bars (use 'onclick' as key name)
 - Modifications in function rdbms_getobjects in DB Connect in order to support multiple values separated by | as input for the container ID
-- Modifications in up- and down load statistics home screen box in order to support links in the chart bars which will lead to a list of all the daily viewed, downloaded, and uploaded objects (search by container ID)
+- Modifications in up- and download statistics home screen box in order to support links in the chart bars which will lead to a list of all the daily viewed, downloaded, and uploaded objects (search by container ID)
 - Modifications in page_info_stats for folders in order to support links in the chart bars which will lead to a list of all the daily viewed, downloaded, and uploaded objects (search by container ID)
 - Modifications in frameset_objectlist in order to support the container_id parameter
 - Modifications in home screen in order to support popup layers for detailed information and view
@@ -4275,7 +4275,7 @@ Release 05/2020
 - Bug fix: Function showcompexplorer in UI API used the current location instead of the location of the search result objects and therefore was not able to find the object and provide the thumbnail
 - Bug fix: Function showcompexplorer in UI API did not provide the CSS class for the gallery view for non-media components/assets
 - Bug fix: MS IE did not hide the nested child elements of the div-layers in task_list, using opacity:inherit and z-index:inherit on the child elements to fix the MS IE bug
-- Bug fix: Login form userlogin displayed loading screen if not input has been provided
+- Bug fix: Login form userlogin displayed loading screen if no input has been provided
 - Bug fix: French language file did not properly end the line of $hcms_lang['please-wait-for-the-approval']
 - Bug fix: Function getvideoinfo in Get API did not properly extract the video rotation if the word "rotate" was part of the video file name
 - Bug fix: Function getmetadata_multiobjects in Get API did not export the defined columns/content for pages and components
@@ -4285,7 +4285,7 @@ Release 05/2020
 - Bug fix: Removed deprecated JS function escape from component_edit_page_multi, component_edit_page_single, media_edit_page, and link_edit_page due to issues
 
 Version 9.0.1
-Release 06/2020
+Release 07/2020
 - Modifications in control_content_menu and control_objectlist_menu in order to optimize the dowload feature
 - Modifications in function createmultidownloadlink in Main API in order to remove media and folder location as optional input parameters
 - Minor modifications in service mediadownload and mediawrapper
@@ -4368,3 +4368,84 @@ Release 06/2020
 - Bug fix: home box all_reports did not switch the OK button image
 - Bug fix: The display of the sidebar is based on its width and not the style display which caused the content to load even if the sidebar is hidden
 - Bug fix: control_template_menu did exclude the template default.meta.tpl from the selector
+
+Version 9.0.2
+Release 08/2020
+- Design modifications in all_reports and news home screen boxes
+- Modifications in function showmedia in UI API in order to remove border from plain/clear text editor
+- Design modifications in the workflow script editor
+- Design modifications in the template editor
+- Design modifications in the personalization editor
+- Design modifications in media_preview and media_edit_page
+- Implemenentation of the four new Brand Guidline templates in xmlschema
+- Implemenentation of the new CSS for the brand guideline templates in theme/brandguide.css 
+- Implemenentation of the new JS function hcms_Hex2Rgb in main.js
+- Implemenentation of the new JS function hcms_Rgb2Cmyk in main.js
+- Implemenentation of the new function rgb2cmyk in Media API
+- Modifications in function rgb2hex in Media API in order to support RGB values as input array
+- Modifications in function showcompexplorer in UI API in order to enable components for DAM configuration
+- Modifications in function createwrapperlink in Main API in order to verify object hash does exist
+- Modifications in template engine and template_help in order to support the location pathtype for component hcms_stripTags
+- Modifications in template engine in order to add CSS styles to the edit buttons of components
+- Modifications in template engine in order use system CSS if no CSS has been defined in the compsylesheet tag 
+- Modifications in template_homebox schema in order to support a single component link as alternative link to a single component or asset for home boxes
+- Modifications in function gettemplate in Get API in order to support the new brand guideline templates
+- Modifications in function loadtemplate in Main API in order to support the new brand guideline templates
+- Modifications in media_select of the rich text editor in order to return a wrapperlink instead of a direct link for DAM configurations
+- Modifications in page_preview in order to enable the control-reload in the buildview function call
+- Modifications in xmlschema template_homebox in order to remove HTML, HEAD and BODY tags from the component template
+- Modifications in function followlink in template engine in order to verify if $publ_config['url_publ_page'] includes the :// marker
+- Implementation of the new service mediadownload and mediawrapper in order to support PDF printing of HTML files
+- Implemenentation of the new JS function hcms_createTOC in main.js in order to create a table of content based on the HTML headlines
+- Modifications in the template engine in order to replace lockonload by adding the system onload events to the ones defined in the template
+- Modifications in site_edit_form in order to include MS AD settings (Connector module required)
+- Modifications in function editpublication in Main API in order to support the new MS AD settings (Connector module required)
+- Modifications in function authconnect in ad_connect and ldap_connect of the Connector module in order to support publication specific AD settings
+- Modifications in function userlogin in Security API in order to support publication specific AD settings
+- Implementation of the new main configuration setting $mgmt_config['authconnect_all']
+- Modifications in explorer_preview in order to verify if the object is in the rcycle bin (marked as deleted) and to verify the local permissions array for the links
+- Modifications in Import/Export module in order to verify if there is a buffer for output using PHP function ob_get_length()
+- Implementation of the new JS function setlogospacer in the home screen
+- Implementation of the new function is_hiddenfile in Main API
+- Modifications in explorer_objectlist, link_edit_explorer, and editor/link_explorer in order to exclude the files .htaccess and web.config from the listing
+- Modifications in JS function detectFaceOnVideo, detectFaceOnImage, and initFaceOnVideo in the template engine in order to position the face markers correctly if not displayed in it's original size
+- Modifications in JS function createFaceOnVideo and createFaceOnImage in the template engine in order to use unscaled values due to the displayed media size is used when markers are lpaced by mouse click or touch
+- Implementation of new video thumbnail gallery for videos with focal point support based on markers/faces in videos
+- Modifications in function showvideoplayer in UI API in order to support the new video thumbnail galleries with jump-to-playbacktime feature
+- Modifications in service savecontent in order to create and save the video thumbnail gallery and set the focal point for each image in the gallery based on the marker/face definitions 
+- Modifications in function createthumbnail_video in Media API in order to support individual width and height of the created image and and individual file name for the created image as input
+- Modifications in function createthumbnail_video and createimages_video in order to support negative integer values for width and height in order to keep the aspect ratio
+- Modifications in service mediastream in order to support all media files including media files without a container identifier in their file name
+- Modifications in CSS class hcmsLoadScreen in main.css of all deisgn themes
+- Modifications in videoplayer in order to use the night design theme
+- Modifications in JS function collectFaces in temlpate engine in order to implement JSON.stringify for face names (escape double quotes)
+- Videoplayer PROJEKKTOR is deprecated but will be kept in order to support installations using PROJEKKTOR
+- Modifications in media_rendering in order to set media player dimension based on the viewportwidth and main config setting $mgmt_config['preview_video_width']
+- Design modifications in media_rendering, page_multiedit, and image_rendering
+- Modifications in the menu options for audio/video and image rendering settings in media_rendering, page_multiedit, and image_rendering
+- Implementation of the responsive design for the menu options for audio/video and image rendering settings in media_rendering, page_multiedit, and image_rendering
+- Modifications in service rendervideo in order to separate the thumbnail image creation from the video rendering
+- Replaced the individual load screen with the default load screen in media_rendering
+- Removed "-f image2" option from FFMPEG command in function createthumbnail_video in Media API
+- Modifications in function showmedia in UI API in order to insert hidden duration input after the end of the video information table
+- Modifications in function showmedia in UI API in order to remove &nbsp; in video information values
+- Modifications in version_content and version_template in order to disable the delete feature if the user has no delete permission for the object or template
+- Modifications in hypercms index in order to forward to install routine if the main configuration file is missing
+- Modifications in DB connect constructor in order to set sql_mode to TRADITIONAL
+- Modifications in DB connect in order to apply function intval for all object_id attributes
+- Changes in language files
+- Bug fix: The search frame did not switch to the navigation tree if the search frame has been opened by search icon in the right side of the task bar
+- Bug fix: Sort of table rows did not work in log_list due to the missing data-attribute in all links. Modifications in JS function hcms_sortTable in main.js in order to verify the link result.
+- Bug fix: The status bar tried to close a non existing contextmenu on mouse over in log_list
+- Bug fix: Function showvideoplayer in UI API used view link for video thumbnails that will only be resolved when a valid user session exists
+- Bug fix: JS function collectFaces in temlpate engine could not handle double quotes in face names
+- Bug fix: The display of the VTT records in function showmnedia caused a line break in a single record
+- Bug fix: The margin for the VTT editor has not properly applied to the language select box
+- Bug fix: page_multiedit did not verify if the selected media files are of mixed file-types (image, audio, video) in order to lock the rendering options for mixed file-types
+- Bug fix: Rich text editor media_select did not provide the mediafile and medialink values in case of a selected video file and caused a JS error
+- Bug fix: Rich text editor video plugin.js did not set the controls parameter in the video URL and did not provide the controls input parameter in the generate_videoplayer_iframe function call
+- Bug fix: version_template did not verify the token before deleting the selected template versions
+- Bug fix: Function xmp_writefile in Meta API diud not verity if the executable exists
+- Bug fix: Function iptc_writefile in Meta API diud not verity if the executable exists
+- Bug fix: Function extractmetadata in Meta API diud not verity if the executable exists
+- Bug fix: DB Connect used same error code 50039 multiple times

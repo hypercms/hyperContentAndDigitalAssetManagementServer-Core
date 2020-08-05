@@ -631,1603 +631,1656 @@ elseif ($is_video || $is_audio)
   require ($mgmt_config['abs_path_cms']."include/mediaoptions.inc.php");
 }
 
+// check if mixed media files have been selected
+if ($is_image == true && ($is_audio == true || $is_video == true)) $mixedmedia = true;
+else $mixedmedia = false;
+
 // set character set in header
 if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-  <title>hyperCMS</title>
-  <meta charset="<?php echo $charset; ?>" />
-  <meta name="viewport" content="width=580, initial-scale=0.9, maximum-scale=1.0, user-scalable=1" />
-  
-  <!-- JQuery and JQuery UI -->
-  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-1.12.4.min.js"></script>
-  <script type="text/javascript" src="javascript/jquery/plugins/jquery.color.js"></script>
-  <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
-  <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
-  
-  <!-- Tag it script -->
-  <script src="javascript/tag-it/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
-  <link href="javascript/tag-it/jquery.tagit.css" rel="stylesheet" type="text/css" />
-  <link href="javascript/tag-it/tagit.ui-zendesk.css" rel="stylesheet" type="text/css" />
+<title>hyperCMS</title>
+<meta charset="<?php echo $charset; ?>" />
+<meta name="viewport" content="width=580, initial-scale=0.9, maximum-scale=1.0, user-scalable=1" />
 
-  <!-- CKEditor -->
-  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>editor/ckeditor/ckeditor.js"></script>
-  <script type="text/javascript"> CKEDITOR.disableAutoInline = true;</script>
-  
-  <!-- Richcalendar -->
-  <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.css" />
-  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.js"></script>
-  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_en.js"></script>
-  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_de.js"></script>
-  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/domready.js"></script>
-  
-  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-  
-  <style>
+<!-- JQuery and JQuery UI -->
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/jquery.color.js"></script>
+<script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
+
+<!-- Tag it script -->
+<script src="javascript/tag-it/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="javascript/tag-it/jquery.tagit.css" rel="stylesheet" type="text/css" />
+<link href="javascript/tag-it/tagit.ui-zendesk.css" rel="stylesheet" type="text/css" />
+
+<!-- CKEditor -->
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>editor/ckeditor/ckeditor.js"></script>
+<script type="text/javascript"> CKEDITOR.disableAutoInline = true;</script>
+
+<!-- Richcalendar -->
+<link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.css" />
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.js"></script>
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_en.js"></script>
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_de.js"></script>
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/domready.js"></script>
+
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+
+<style>
+#preview
+{
+  padding: 0px 20px 10px 0px;
+  min-width: 600px;
+  float: left;
+}
+
+#settings
+{
+  padding :0px 20px 10px 0px;
+  scrolling: auto;
+  min-width: 620px;
+  float: left;
+}
+
+@media screen and (max-width: 1380px)
+{
   #preview
   {
-    padding: 0px 20px 10px 0px;
-    min-width: 600px;
-    float: left;
+    padding: 0;
+    width: 100%;
+
   }
 
   #settings
   {
-    padding :0px 20px 10px 0px;
-    scrolling: auto;
-    min-width: 620px;
-    float: left;
+    padding: 0;
+    width: 100%;
   }
+}
 
-  @media screen and (max-width: 1380px)
-  {
-    #preview
-    {
-      padding: 0;
-      width: 100%;
+.row
+{
+  margin-top: 10px;
+}
 
-    }
+.row *
+{
+  vertical-align: middle;
+}
 
-    #settings
-    {
-      padding: 0;
-      width: 100%;
-    }
-  }
+.row input[type="radio"]
+{
+  margin: 0px;
+  padding: 0px;
+}
 
-  .row
-  {
-    margin-top: 1px;
-  }
-  
-  .row *
-  {
-    vertical-align: middle;
-  }
-  
-  .row input[type="radio"]
-  {
-    margin: 0px;
-    padding: 0px;
-  }
-  
+.cell
+{
+  vertical-align: top;
+  display: inline-block;
+  margin-left: 10px;
+  margin-top: 0px;
+  <?php if ($is_image) { ?>width: 230px;<?php } else { ?>width: 210px;<?php } ?>
+  white-space: nowrap;
+}
+
+.cellButton
+{
+  vertical-align: middle;
+  padding: 0px 2px;
+}
+
+.cell *
+{
+  font-size: 11px;
+}
+
+#renderOptions input[type=text], #renderOptions select
+{
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+@media screen and (max-width: 420px)
+{
   .cell
   {
-    vertical-align: top;
-    display: inline-block;
-    margin-left: 3px;
-    margin-top: 3px;
-    <?php if ($is_image) { ?>width: 230px;<?php } else { ?>width: 210px;<?php } ?>
+    width: 100%;
   }
-  
-  .cellButton
-  {
-    vertical-align: middle;
-    padding: 0px 2px;
-  }
-  
-  .cell *
-  {
-    font-size: 11px;
-  }
-  
-  #renderOptions input[type=text], #renderOptions select
-  {
-    padding: 3px;
-  }
-  </style>
- 
-  <script type="text/javascript" src="javascript/main.js"></script>
+}
+</style>
 
-  <script type="text/javascript">
-  
-  var image_checked = false;
-  var video_checked = false;
-  
-  // ----- Form view lock and unlock -----
-  function unlockFormBy (element)
+<script type="text/javascript" src="javascript/main.js"></script>
+
+<script type="text/javascript">
+
+var image_checked = false;
+var video_checked = false;
+
+// ----- Form view lock and unlock -----
+function unlockFormBy (element)
+{
+  if (element)
   {
-    if (element)
+    // form locked
+    if (element.checked == true)
     {
-      // form locked
-      if (element.checked == true)
-      {
-        // AJAX request to set appendcontent
-        $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/setappendcontent.php", {appendcontent: false});
-      }
-      // form unlocked
-      else
-      {
-        // AJAX request to set appendcontent
-        $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/setappendcontent.php", {appendcontent: true});
-      }
-      
-      // reload
-      setTimeout (function(){ location.reload(true); }, 300);
+      // AJAX request to set appendcontent
+      $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/setappendcontent.php", {appendcontent: false});
     }
-  }
-  
-  // ----- Field controls for form views -----
-  
-  // Alisa for checkFieldValue
-  function checkValue (id, value)
-  {
-    return checkFieldValue (id, value);
-  }
-  
-  function checkFieldValue (id, value)
-  {
-    if (document.getElementById(id).type === 'checkbox')
+    // form unlocked
+    else
     {
-      if (document.getElementById(id).checked == true && document.getElementById(id).value == value) return true;
-    }
-    else if (document.getElementById(id).value)
-    {
-      if (document.getElementById(id).value == value || document.getElementById(id).value.indexOf(value) > -1) return true;
+      // AJAX request to set appendcontent
+      $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/setappendcontent.php", {appendcontent: true});
     }
     
-    return false;
+    // reload
+    setTimeout (function(){ location.reload(true); }, 300);
+  }
+}
+
+// ----- Field controls for form views -----
+
+// Alisa for checkFieldValue
+function checkValue (id, value)
+{
+  return checkFieldValue (id, value);
+}
+
+function checkFieldValue (id, value)
+{
+  if (document.getElementById(id).type === 'checkbox')
+  {
+    if (document.getElementById(id).checked == true && document.getElementById(id).value == value) return true;
+  }
+  else if (document.getElementById(id).value)
+  {
+    if (document.getElementById(id).value == value || document.getElementById(id).value.indexOf(value) > -1) return true;
+  }
+  
+  return false;
+}
+
+// Alias for lockField
+function lockEdit (id)
+{
+  lockField (id);
+}
+
+function lockField (id)
+{
+  if (document.getElementById(id))
+  {
+    document.getElementById(id).disabled = true;
+  }
+  
+  if (document.getElementById(id+'_controls'))
+  {
+    document.getElementById(id+'_controls').style.display = 'none';
+  }
+  
+  var elements = document.getElementsByClassName(id);
+  
+  if (elements.length > 0)
+  {
+    for (var i = 0; i < elements.length; i++)
+    {
+      elements[i].disabled = true;
+    }
+  }
+  
+  if (document.getElementById(id+'_protect'))
+  {
+    document.getElementById(id+'_protect').style.display = 'inline';
+  }
+}
+
+// Alias for unlockField
+function unlockEdit (id)
+{
+  unlockField (id);
+}
+
+function unlockField (id)
+{
+  if (document.getElementById(id))
+  {
+    document.getElementById(id).disabled = false;
+  }
+  
+  if (document.getElementById(id+'_controls'))
+  {
+    document.getElementById(id+'_controls').style.display = 'inline-block';
   }
 
-  // Alias for lockField
-  function lockEdit (id)
+  var elements = document.getElementsByClassName(id);
+  
+  if (elements.length > 0)
   {
-    lockField (id);
+    for (var i = 0; i < elements.length; i++)
+    {
+      elements[i].disabled = false;
+    }
+  }
+
+  if (document.getElementById(id+'_protect'))
+  {
+    document.getElementById(id+'_protect').style.display = 'none';
+  }
+}
+
+function hideField (id)
+{   
+  var elements = document.getElementsByClassName(id);
+  
+  if (elements.length > 0)
+  {
+    for (var i = 0; i < elements.length; i++)
+    {
+      elements[i].style.display = 'none';
+    }
   }
   
-  function lockField (id)
+  lockEdit (id);
+}
+
+function showField (id)
+{   
+  var elements = document.getElementsByClassName(id);
+  
+  if (elements.length > 0)
   {
-    if (document.getElementById(id))
+    for (var i = 0; i < elements.length; i++)
     {
-      document.getElementById(id).disabled = true;
+      elements[i].style.display = '';
+    }
+  }
+  
+  unlockEdit (id);
+} 
+
+// ----- Rich Calendar -----
+
+var cal_obj = null;
+var cal_format = null;
+var cal_field = null;
+
+function show_cal (el, field_id, format)
+{
+  if (cal_obj) return;
+  
+  cal_field = field_id;
+  cal_format = format;
+  var datefield = document.getElementById(field_id);
+  
+  cal_obj = new RichCalendar();
+  cal_obj.start_week_day = 1;
+  cal_obj.show_time = false;
+  cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
+  cal_obj.user_onchange_handler = cal_on_change;
+  cal_obj.user_onclose_handler = cal_on_close;
+  cal_obj.user_onautoclose_handler = cal_on_autoclose;
+  cal_obj.parse_date(datefield.value, cal_format);
+  cal_obj.show_at_element(datefield, 'adj_left-bottom');
+}
+
+// onchange handler
+function cal_on_change (cal, object_code)
+{
+  if (object_code == 'day')
+  {
+    document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
+    cal.hide();
+    cal_obj = null;
+  }
+}
+
+// user defined onclose handler (used in pop-up mode - when auto_close is true)
+function cal_on_close (cal)
+{
+  cal.hide();
+  cal_obj = null;
+}
+
+// user defined onautoclose handler
+function cal_on_autoclose (cal)
+{
+  cal_obj = null;
+}
+
+// save content
+function savecontent (reload)
+{
+  var checkcontent = true;
+  var checkimage = false;
+  var checkvideo = false;
+  
+  <?php echo $add_constraint; ?>
+  
+  <?php if (!$mixedmedia) { ?>
+  <?php if ($is_image) { ?>
+  if (checkcontent == true) checkcontent = checkimage = checkImageForm();
+  <?php } elseif ($is_video) { ?>     
+  if (checkcontent == true) checkcontent = checkvideo = checkVideoForm();
+  <?php } ?>
+  <?php } ?>
+
+  if (checkcontent == true)
+  {
+    // update all CKEDitor instances
+    for (var instanceName in CKEDITOR.instances)
+    {
+      CKEDITOR.instances[instanceName].updateElement();
     }
     
-    if (document.getElementById(id+'_controls'))
-    {
-      document.getElementById(id+'_controls').style.display = 'none';
-    }
+    // get objects from multiobject and content fields
+    var obj = document.getElementById('multiobject').value.split("|");
+    var fields = document.getElementById('text_ids').value.split("|");
+
+    // init content post data
+    var postdata_content = {
+      'savetype' : 'auto',
+      'db_connect': '<?php echo $db_connect; ?>',
+      'contenttype': '<?php echo $contenttype; ?>',
+      'token': '<?php echo $token; ?>',
+      'appendcontent': '<?php if (getsession ("temp_appendcontent") == true) echo "yes"; ?>'
+    };
     
-    var elements = document.getElementsByClassName(id);
-    
-    if (elements.length > 0)
+    for (var i = 0; i < fields.length; i++)
     {
-      for (var i = 0; i < elements.length; i++)
+      var field = document.getElementById(fields[i]);
+
+      // check for input element (must have a name)
+      if (field && field.name) 
       {
-        elements[i].disabled = true;
+        var name = field.name;
+        var value = '';
+        
+        // for checkbox input type
+        if (field.tagName.toUpperCase() == 'INPUT' && field.type.toUpperCase() == 'CHECKBOX')
+        {
+          value = (field.checked == true ? field.value : '');
+        }
+        // formatted fields doesn't need to be encoded as this is already done by CKEDitor
+        // use direct value for selectboxes
+        else if (field.id.slice(0, 'textf_'.length) == 'textf_' || field.tagName.toUpperCase() == 'SELECT')
+        {
+          value = field.value;
+        }
+        // standard input text value
+        else if (field.value != "")
+        {
+          value = field.value;
+        }
+        
+        // data to be saved
+        if (name != "") postdata_content[name] = value;
       }
-    }
-    
-    if (document.getElementById(id+'_protect'))
-    {
-      document.getElementById(id+'_protect').style.display = 'inline';
-    }
-  }
-  
-  // Alias for unlockField
-  function unlockEdit (id)
-  {
-    unlockField (id);
-  }
-  
-  function unlockField (id)
-  {
-    if (document.getElementById(id))
-    {
-      document.getElementById(id).disabled = false;
-    }
-    
-    if (document.getElementById(id+'_controls'))
-    {
-      document.getElementById(id+'_controls').style.display = 'inline-block';
+      // no input element name (collect taxonomy tree checkboxes)
+      else if (field)
+      {
+        var name = '';
+        var value = '';
+
+        // get all input elements
+        var nestedfields = field.getElementsByTagName('input');
+        var checkedvalue;
+        
+        for (var j = 0; j < nestedfields.length; j++)
+        {
+          // for checkbox input type
+          if (nestedfields[j].type.toUpperCase() == 'CHECKBOX')
+          {
+            if (name == "") name = nestedfields[j].name;
+
+            checkedvalue = (nestedfields[j].checked == true ? nestedfields[j].value : '');
+
+            if (checkedvalue != "")
+            {
+              if (value != "") value = value + ',' + checkedvalue;
+              else value = checkedvalue;
+            }
+          }
+        }
+
+        // data to be saved
+        if (name != "") postdata_content[name] = value;
+      }
     }
 
-    var elements = document.getElementsByClassName(id);
-    
-    if (elements.length > 0)
+    // collect image form data
+    if (checkimage == true)
     {
-      for (var i = 0; i < elements.length; i++)
-      {
-        elements[i].disabled = false;
-      }
-    }
-
-    if (document.getElementById(id+'_protect'))
-    {
-      document.getElementById(id+'_protect').style.display = 'none';
-    }
-  }
-  
-  function hideField (id)
-  {   
-    var elements = document.getElementsByClassName(id);
-    
-    if (elements.length > 0)
-    {
-      for (var i = 0; i < elements.length; i++)
-      {
-        elements[i].style.display = 'none';
-      }
-    }
-    
-    lockEdit (id);
-  }
-  
-  function showField (id)
-  {   
-    var elements = document.getElementsByClassName(id);
-    
-    if (elements.length > 0)
-    {
-      for (var i = 0; i < elements.length; i++)
-      {
-        elements[i].style.display = '';
-      }
-    }
-    
-    unlockEdit (id);
-  } 
-
-  // ----- Rich Calendar -----
-  
-  var cal_obj = null;
-  var cal_format = null;
-  var cal_field = null;
-  
-  function show_cal (el, field_id, format)
-  {
-    if (cal_obj) return;
-    
-    cal_field = field_id;
-    cal_format = format;
-    var datefield = document.getElementById(field_id);
-    
-    cal_obj = new RichCalendar();
-    cal_obj.start_week_day = 1;
-    cal_obj.show_time = false;
-    cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
-    cal_obj.user_onchange_handler = cal_on_change;
-    cal_obj.user_onclose_handler = cal_on_close;
-    cal_obj.user_onautoclose_handler = cal_on_autoclose;
-    cal_obj.parse_date(datefield.value, cal_format);
-    cal_obj.show_at_element(datefield, 'adj_left-bottom');
-  }
-  
-  // onchange handler
-  function cal_on_change (cal, object_code)
-  {
-    if (object_code == 'day')
-    {
-      document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
-      cal.hide();
-      cal_obj = null;
-    }
-  }
-  
-  // user defined onclose handler (used in pop-up mode - when auto_close is true)
-  function cal_on_close (cal)
-  {
-  	cal.hide();
-  	cal_obj = null;
-  }
-  
-  // user defined onautoclose handler
-  function cal_on_autoclose (cal)
-  {
-  	cal_obj = null;
-  }
-  
-  // save content
-  function savecontent (reload)
-  {
-    var checkcontent = true;
-    var checkimage = false;
-    var checkvideo = false;
-    
-    <?php echo $add_constraint; ?>
-    
-    <?php if ($is_image) { ?>
-    if (checkcontent == true) checkcontent = checkimage = checkImageForm();
-    <?php } elseif ($is_video) { ?>     
-    if (checkcontent == true) checkcontent = checkvideo = checkVideoForm();
-    <?php } ?>
-  
-    if (checkcontent == true)
-    {
-      // update all CKEDitor instances
-      for (var instanceName in CKEDITOR.instances)
-      {
-        CKEDITOR.instances[instanceName].updateElement();
-      }
-      
-      // get objects from multiobject and content fields
-      var obj = document.getElementById('multiobject').value.split("|");
-      var fields = document.getElementById('text_ids').value.split("|");
-
-      // init content post data
-      var postdata_content = {
+      // init image post data
+      var postdata_image = {
         'savetype' : 'auto',
-        'db_connect': '<?php echo $db_connect; ?>',
-        'contenttype': '<?php echo $contenttype; ?>',
-        'token': '<?php echo $token; ?>',
-        'appendcontent': '<?php if (getsession ("temp_appendcontent") == true) echo "yes"; ?>'
+        'token': '<?php echo $token; ?>'
       };
       
-      for (var i = 0; i < fields.length; i++)
+      // get all image form elements
+      var imageoptions = document.forms['imageoptions'].elements;
+      
+      if (imageoptions)
       {
-        var field = document.getElementById(fields[i]);
-
-        // check for input element (must have a name)
-        if (field && field.name) 
-        {
-          var name = field.name;
-          var value = '';
-          
-          // for checkbox input type
-          if (field.tagName.toUpperCase() == 'INPUT' && field.type.toUpperCase() == 'CHECKBOX')
-          {
-            value = (field.checked == true ? field.value : '');
-          }
-          // formatted fields doesn't need to be encoded as this is already done by CKEDitor
-          // use direct value for selectboxes
-          else if (field.id.slice(0, 'textf_'.length) == 'textf_' || field.tagName.toUpperCase() == 'SELECT')
-          {
-            value = field.value;
-          }
-          // standard input text value
-          else if (field.value != "")
-          {
-            value = field.value;
-          }
-          
-          // data to be saved
-          if (name != "") postdata_content[name] = value;
-        }
-        // no input element name (collect taxonomy tree checkboxes)
-        else if (field)
-        {
-          var name = '';
-          var value = '';
-
-          // get all input elements
-          var nestedfields = field.getElementsByTagName('input');
-          var checkedvalue;
-          
-          for (var j = 0; j < nestedfields.length; j++)
-          {
-            // for checkbox input type
-            if (nestedfields[j].type.toUpperCase() == 'CHECKBOX')
-            {
-              if (name == "") name = nestedfields[j].name;
-
-              checkedvalue = (nestedfields[j].checked == true ? nestedfields[j].value : '');
-
-              if (checkedvalue != "")
-              {
-                if (value != "") value = value + ',' + checkedvalue;
-                else value = checkedvalue;
-              }
-            }
-          }
-
-          // data to be saved
-          if (name != "") postdata_content[name] = value;
-        }
-      }
-
-      // collect image form data
-      if (checkimage == true)
-      {
-        // init image post data
-        var postdata_image = {
-          'savetype' : 'auto',
-          'token': '<?php echo $token; ?>'
-        };
+        var name;
         
-        // get all image form elements
-        var imageoptions = document.forms['imageoptions'].elements;
-        
-        if (imageoptions)
+        for (var i=0; i < imageoptions.length; i+=1) 
         {
-          var name;
-          
-          for (var i=0; i < imageoptions.length; i+=1) 
+          if (imageoptions[i].disabled == false)
           {
-            if (imageoptions[i].disabled == false)
-            {
-              name = imageoptions[i].name;
-              
-              // checkbox
-              if (imageoptions[i].type == "checkbox" && imageoptions[i].checked == true) postdata_image[name] = imageoptions[i].value;
-              // select box
-              else if (imageoptions[i].type == "select-one") postdata_image[name] = imageoptions[i].options[imageoptions[i].selectedIndex].value;
-              // text or hidden input
-              else if (imageoptions[i].type == "text" || imageoptions[i].type == "hidden") postdata_image[name] = imageoptions[i].value;
-            }
+            name = imageoptions[i].name;
+            
+            // checkbox
+            if (imageoptions[i].type == "checkbox" && imageoptions[i].checked == true) postdata_image[name] = imageoptions[i].value;
+            // select box
+            else if (imageoptions[i].type == "select-one") postdata_image[name] = imageoptions[i].options[imageoptions[i].selectedIndex].value;
+            // text or hidden input
+            else if (imageoptions[i].type == "text" || imageoptions[i].type == "hidden") postdata_image[name] = imageoptions[i].value;
           }
         }
       }
+    }
+    
+    // collect video/audio form data
+    if (checkvideo == true)
+    {
+      // init video post data
+      var postdata_video = {
+        'savetype' : 'auto',
+        'token': '<?php echo $token; ?>'
+      };
       
-      // collect video/audio form data
-      if (checkvideo == true)
+      // get all video form elements
+      var videooptions = document.forms['videooptions'].elements;
+      
+      if (videooptions)
       {
-        // init video post data
-        var postdata_video = {
-          'savetype' : 'auto',
-          'token': '<?php echo $token; ?>'
-        };
+        var name;
         
-        // get all video form elements
-        var videooptions = document.forms['videooptions'].elements;
-        
-        if (videooptions)
+        for (var i=0; i < videooptions.length; i+=1) 
         {
-          var name;
-          
-          for (var i=0; i < videooptions.length; i+=1) 
+          if (videooptions[i].disabled == false)
           {
-            if (videooptions[i].disabled == false)
-            {
-              name = videooptions[i].name;
-              
-              // checkbox
-              if (videooptions[i].type == "checkbox" && videooptions[i].checked == true) postdata_video[name] = videooptions[i].value;
-              // radio
-              else if (videooptions[i].type == "radio" && videooptions[i].checked == true) postdata_video[name] = videooptions[i].value;
-              // select box
-              else if (videooptions[i].type == "select-one") postdata_video[name] = videooptions[i].options[videooptions[i].selectedIndex].value;
-              // text or hidden input
-              else if (videooptions[i].type == "text" || videooptions[i].type == "hidden") postdata_video[name] = videooptions[i].value;
-            }
+            name = videooptions[i].name;
+            
+            // checkbox
+            if (videooptions[i].type == "checkbox" && videooptions[i].checked == true) postdata_video[name] = videooptions[i].value;
+            // radio
+            else if (videooptions[i].type == "radio" && videooptions[i].checked == true) postdata_video[name] = videooptions[i].value;
+            // select box
+            else if (videooptions[i].type == "select-one") postdata_video[name] = videooptions[i].options[videooptions[i].selectedIndex].value;
+            // text or hidden input
+            else if (videooptions[i].type == "text" || videooptions[i].type == "hidden") postdata_video[name] = videooptions[i].value;
           }
         }
       }
+    }
+    
+    // show savelayer across the whole page
+    $('#savelayer').show();
+    
+    // save each object
+    for (nr in obj) 
+    {
+      file = obj[nr];
       
-      // show savelayer across the whole page
-      $('#savelayer').show();
+      // ignore empty values
+      if($.trim(file) == "") continue;
       
-      // save each object
-      for (nr in obj) 
-      {
-        file = obj[nr];
-        
-        // ignore empty values
-        if($.trim(file) == "") continue;
-        
-        // for each selected object the location and object name must be provided
-        var len = file.lastIndexOf('/')+1;
-        
-        postdata_content['page'] = file.slice(len);
-        postdata_content['location'] = file.slice(0, len);
+      // for each selected object the location and object name must be provided
+      var len = file.lastIndexOf('/')+1;
+      
+      postdata_content['page'] = file.slice(len);
+      postdata_content['location'] = file.slice(0, len);
 
-        // save content
+      // save content
+      $.ajax({
+          'type': "POST",
+          'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php",
+          'data': postdata_content,
+          'async': false,
+          'dataType': 'json'
+        }).error(function(data) {
+          // server message
+          if (data.message && data.message.length !== 0)
+          {
+            alert (hcms_entity_decode(data.message));
+          }
+          else
+          {
+            alert ('Internal Server Error');
+          }
+        }).success(function(data) {
+          // server message
+          if (data.message && data.message.length !== 0)
+          {
+            alert (hcms_entity_decode(data.message));
+          }
+      });
+      
+      // render and save image
+      if (image_checked == true)
+      {
+        var multiobject = document.forms['reloadform'].elements['multiobject'];
+        postdata_image['page'] = postdata_content['page'];
+        postdata_image['location'] = postdata_content['location'];
+        
         $.ajax({
             'type': "POST",
-            'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php",
-            'data': postdata_content,
+            'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/renderimage.php",
+            'data': postdata_image,
             'async': false,
             'dataType': 'json'
           }).error(function(data) {
             // server message
             if (data.message && data.message.length !== 0)
             {
-              alert(hcms_entity_decode(data.message));
+              alert (hcms_entity_decode(data.message));
             }
             else
             {
-              alert('Internal Error');
+              alert ('Internal Server Error');
             }
           }).success(function(data) {
+            // object name after rendering
+            if (data.object && data.object.length !== 0)
+            {
+              var multiobject_new = multiobject.value.replace(file, data.object);
+
+              // update multiobjects
+              if (multiobject_new != multiobject.value) multiobject.value = multiobject_new;
+            }
+          
+            // server message
+            if (data.success == false && data.message && data.message.length !== 0)
+            {
+              alert (hcms_entity_decode(data.message));
+            }
+        });
+      }
+
+      // render and save video/audio
+      if (video_checked == true)
+      {
+        postdata_video['page'] = postdata_content['page'];
+        postdata_video['location'] = postdata_content['location'];
+
+        $.ajax({
+            'type': "POST",
+            'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/rendervideo.php",
+            'data': postdata_video,
+            'async': false,
+            'dataType': 'json'
+          }).error(function(data) {
             // server message
             if (data.message && data.message.length !== 0)
             {
-              alert(hcms_entity_decode(data.message));
+              alert (hcms_entity_decode(data.message));
+            }
+            else
+            {
+              alert ('Internal Server Error');
+            }
+          }).success(function(data) {
+            // server message
+            if (data.success == false && data.message && data.message.length !== 0)
+            {
+              alert (hcms_entity_decode(data.message));
             }
         });
-        
-        // render and save image
-        if (image_checked == true)
-        {
-          var multiobject = document.forms['reloadform'].elements['multiobject'];
-          postdata_image['page'] = postdata_content['page'];
-          postdata_image['location'] = postdata_content['location'];
-          
-          $.ajax({
-              'type': "POST",
-              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/renderimage.php",
-              'data': postdata_image,
-              'async': false,
-              'dataType': 'json'
-            }).error(function(data) {
-              // server message
-              if (data.message && data.message.length !== 0)
-              {
-                alert(hcms_entity_decode(data.message));
-              }
-              else
-              {
-                alert('Internal Error');
-              }
-            }).success(function(data) {
-              // object name after rendering
-              if (data.object && data.object.length !== 0)
-              {
-                var multiobject_new = multiobject.value.replace(file, data.object);
-
-                // update multiobjects
-                if (multiobject_new != multiobject.value) multiobject.value = multiobject_new;
-              }
-            
-              // server message
-              if (data.success == false && data.message && data.message.length !== 0)
-              {
-                alert(hcms_entity_decode(data.message));
-              }
-          });
-        }
-        
-        // render and save video/audio
-        if (video_checked == true)
-        {
-          postdata_video['page'] = postdata_content['page'];
-          postdata_video['location'] = postdata_content['location'];
-
-          $.ajax({
-              'type': "POST",
-              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/rendervideo.php",
-              'data': postdata_video,
-              'async': false,
-              'dataType': 'json'
-            }).error(function(data) {
-              // server message
-              if (data.message && data.message.length !== 0)
-              {
-                alert(hcms_entity_decode(data.message));
-              }
-              else
-              {
-                alert('Internal Error');
-              }
-            }).success(function(data) {
-              // server message
-              if (data.success == false && data.message && data.message.length !== 0)
-              {
-                alert(hcms_entity_decode(data.message));
-              }
-          });
-        }
       }
-      
-      if (reload == true) $('#reloadform').submit();
-      return true;
-    }
-    else return false;
-  }
-    
-  function validateForm() 
-  {
-    var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
-    
-    for (i=0; i<(args.length-2); i+=3) 
-    { 
-      test = args[i+2];
-      contentname = args[i+1];
-      val = hcms_findObj(args[i]);
-      
-      if (val) 
-      { 
-        if (contentname != '')
-        {
-          nm = contentname;
-        }
-        else
-        {
-          nm = val.name;
-          nm = nm.substring(nm.indexOf('_')+1, nm.length);
-        }
-        
-        if ((val=val.value) != '' && test != '') 
-        {
-          if (test == 'audio' || test == 'compressed' || test == 'flash' || test == 'image' || test == 'text' || test == 'video') 
-          { 
-            errors += checkMediaType(val, contentname, test);
-          } 
-          else if (test.indexOf('isEmail')!=-1) 
-          { 
-            p=val.indexOf('@');
-            if (p<1 || p==(val.length-1)) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>\n';
-          } 
-          else if (test!='R') 
-          { 
-            num = parseFloat(val);
-            if (isNaN(val)) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>\n';
-            if (test.indexOf('inRange') != -1) 
-            { 
-              p=test.indexOf(':');
-              if(test.substring(0,1) == 'R')
-              {
-                min=test.substring(8,p); 
-              } else {
-                min=test.substring(7,p); 
-              }
-              max=test.substring(p+1);
-              if (num<min || max<num) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
-            } 
-          } 
-        } 
-        else if (test.charAt(0) == 'R' &&  val.type && val.type.toLowerCase() != 'checkbox') errors += nm+' - <?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n'; 
-      }
-    } 
-    
-    if (errors) 
-    {
-      alert (hcms_entity_decode ('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
-      return false;
-    }  
-    else return true;
-  }
-  
-  function toggleDivAndButton (caller, element)
-  {
-    var options = $(element);
-    caller = $(caller);  
-    var time = 500;
-      
-    if (options.css('display') == 'none')
-    {
-      caller.addClass('hcmsButtonActive');
-      activate();
-      options.fadeIn(time);
-    }
-    else
-    {
-      caller.removeClass('hcmsButtonActive');
-      options.fadeOut(time);
-    }
-  }
-  
-  function openerReload ()
-  {
-    // reload main frame
-    if (opener && opener.parent.frames['mainFrame'])
-    {
-      opener.parent.frames['mainFrame'].location.reload();
     }
     
+    if (reload == true) $('#reloadform').submit();
     return true;
-  } 
-
-<?php if ($is_image) { ?>
-  <!-- image -->
+  }
+  else return false;
+}
   
-  function validateImageForm() 
-  {
-    var i,p,q,nm,test,num,min,max,errors='',args=validateImageForm.arguments;
+function validateForm() 
+{
+  var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
+  
+  for (i=0; i<(args.length-2); i+=3) 
+  { 
+    test = args[i+2];
+    contentname = args[i+1];
+    val = hcms_findObj(args[i]);
     
-    for (i=0; i<(args.length-2); i+=3) 
+    if (val) 
     { 
-      test=args[i+2]; val=hcms_findObj(args[i]);
+      if (contentname != '')
+      {
+        nm = contentname;
+      }
+      else
+      {
+        nm = val.name;
+        nm = nm.substring(nm.indexOf('_')+1, nm.length);
+      }
       
-      if (val) 
-      { 
-        nm=val.name;
-        nm=nm.substring(nm.indexOf('_')+1, nm.length);
-        
-        if ((val=val.value)!='') 
-        {
-          if (test.indexOf('isEmail')!=-1) 
+      if ((val=val.value) != '' && test != '') 
+      {
+        if (test == 'audio' || test == 'compressed' || test == 'flash' || test == 'image' || test == 'text' || test == 'video') 
+        { 
+          errors += checkMediaType(val, contentname, test);
+        } 
+        else if (test.indexOf('isEmail')!=-1) 
+        { 
+          p=val.indexOf('@');
+          if (p<1 || p==(val.length-1)) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>\n';
+        } 
+        else if (test!='R') 
+        { 
+          num = parseFloat(val);
+          if (isNaN(val)) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>\n';
+          if (test.indexOf('inRange') != -1) 
           { 
-            p=val.indexOf('@');
-            if (p<1 || p==(val.length-1)) errors += nm+'-<?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>.\n';
-          } 
-          else if (test!='R') 
-          { 
-            num = parseFloat(val);
-            if (isNaN(val)) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>.\n';
-            if (test.indexOf('inRange') != -1) 
-            { 
-              p=test.indexOf(':');
+            p=test.indexOf(':');
+            if(test.substring(0,1) == 'R')
+            {
               min=test.substring(8,p); 
-              max=test.substring(p+1);
-              if (num<min || max<num) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
-            } 
+            } else {
+              min=test.substring(7,p); 
+            }
+            max=test.substring(p+1);
+            if (num<min || max<num) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
           } 
         } 
-        else if (test.charAt(0) == 'R') errors += '-<?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>.\n'; 
-      }
-    } 
-    
-    if (errors) 
-    {
-      alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
-      return false;
-    }  
-    else return true;
-  }
+      } 
+      else if (test.charAt(0) == 'R' &&  val.type && val.type.toLowerCase() != 'checkbox') errors += nm+' - <?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n'; 
+    }
+  } 
   
-  function checkImageForm()
+  if (errors) 
   {
-    var result = true;
+    alert (hcms_entity_decode ('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
+    return false;
+  }  
+  else return true;
+}
 
-    if ($('#percentage').prop('checked'))
-    {
-      image_checked = true;
-      result = validateImageForm ('imagepercentage','','RinRange1:200');
-    }
+function toggleOptions (caller, element)
+{
+  var options = $(element);
+  caller = $(caller);  
+  var time = 500;
     
-    if (result && $('#width').prop('checked'))
-    {
-      image_checked = true;
-      result = validateImageForm ('imagewidth','','RisNum');
-    }
-    
-    if (result && $('#height').prop('checked'))
-    {
-      image_checked = true;
-      result = validateImageForm ('imageheight','','RisNum');
-    }
-    
-    if (result && $('#rotate').prop('checked'))
-    {
-      image_checked = true;
-      result = true;
-    }
-    
-    if (result && $('#chbx_brightness').prop('checked'))
-    {
-      image_checked = true;
-      result = validateImageForm('brightness', '', 'RinRange-100:100');
-    } 
-    
-    if (result && $('#chbx_contrast').prop('checked'))
-    {
-      image_checked = true;
-      result = validateImageForm('contrast', '', 'RinRange-100:100');
-    } 
-    
-    if (result && $('#chbx_colorspace').prop('checked'))
-    {
-      image_checked = true;
-      result = true;
-    }
-    
-    if (result && $('#chbx_flip').prop('checked'))
-    {
-      image_checked = true;
-      result = true;
-    }
-    
-    if (result && $('#sepia').prop('checked'))
-    {
-      image_checked = true;
-      result = validateImageForm('sepia_treshold', '', 'RinRange0:99.9');
-    }
-    
-    if (result && $('#blur').prop('checked')) 
-    {
-      image_checked = true;
-      result = validateImageForm('blur_radius', '', 'RisNum', 'blur_sigma', '', 'RinRange0.1:3');
-    }
-    
-    if (result && $('#sharpen').prop('checked')) 
-    {
-      image_checked = true;
-      result = validateImageForm('sharpen_radius', '', 'RisNum', 'sharpen_sigma', '', 'RinRange0.1:3');
-    }
-    
-    if (result && $('#sketch').prop('checked')) 
-    {
-      image_checked = true;
-      result = validateImageForm('sketch_radius', '', 'RisNum', 'sketch_sigma', '', 'RisNum', 'sketch_angle', '', 'RisNum');
-    }
-    
-    if (result && $('#paint').prop('checked')) 
-    {
-      image_checked = true;
-      result = validateImageForm('paint_value', '', 'RisNum');
-    }
-    
-    if (result && image_checked && $('#renderimage').prop('checked'))
-    {
-      image_checked = true;
-    }
-    else image_checked = false;
-    
-    // display warning if any image option is checked
-    if (image_checked)
-    {
-      if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang], $charset, $lang); ?>"))) return false;
-    }
-    // set image checked to enable rendering
-    else image_checked = true;
-    
-    return result;
+  if (options.css('display') == 'none')
+  {
+    caller.addClass('hcmsButtonActive');
+    activate();
+    options.slideDown(time);
+    window.scrollTo(0,0);
+  }
+  else
+  {
+    caller.removeClass('hcmsButtonActive');
+    options.slideUp(time);
+  }
+}
+
+function openerReload ()
+{
+  // reload main frame
+  if (opener && opener.parent.frames['mainFrame'])
+  {
+    opener.parent.frames['mainFrame'].location.reload();
   }
   
-  function toggle_percentage () 
-  {
-    var percentage = $('#percentage');
-    var width = $('#width');
-    var height = $('#height');
-    var percent = $('#imagepercentage');
+  return true;
+} 
+
+<?php if (!$mixedmedia && $is_image) { ?>
+// image
+
+function validateImageForm() 
+{
+  var i,p,q,nm,test,num,min,max,errors='',args=validateImageForm.arguments;
+  
+  for (i=0; i<(args.length-2); i+=3) 
+  { 
+    test=args[i+2]; val=hcms_findObj(args[i]);
     
-    if (percentage.prop('checked')) 
-    {
-      percent.prop('disabled', false);
-      width.prop('checked', false);
-      height.prop('checked', false);
+    if (val) 
+    { 
+      nm=val.name;
+      nm=nm.substring(nm.indexOf('_')+1, nm.length);
       
-      toggle_size_height();
-      toggle_size_width();
+      if ((val=val.value)!='') 
+      {
+        if (test.indexOf('isEmail')!=-1) 
+        { 
+          p=val.indexOf('@');
+          if (p<1 || p==(val.length-1)) errors += nm+'-<?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>.\n';
+        } 
+        else if (test!='R') 
+        { 
+          num = parseFloat(val);
+          if (isNaN(val)) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>.\n';
+          if (test.indexOf('inRange') != -1) 
+          { 
+            p=test.indexOf(':');
+            min=test.substring(8,p); 
+            max=test.substring(p+1);
+            if (num<min || max<num) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
+          } 
+        } 
+      } 
+      else if (test.charAt(0) == 'R') errors += '-<?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>.\n'; 
     }
-    else 
-    {
-      percent.prop('disabled', true);
-    }
+  } 
+  
+  if (errors) 
+  {
+    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
+    return false;
+  }  
+  else return true;
+}
+
+function checkImageForm()
+{
+  var result = true;
+
+  if ($('#percentage').prop('checked'))
+  {
+    image_checked = true;
+    result = validateImageForm ('imagepercentage','','RinRange1:200');
   }
   
-  function toggle_size_width () 
+  if (result && $('#width').prop('checked'))
   {
-    var percentage = $('#percentage');
-    var width = $('#width');
-    var height = $('#height');
-    var imagewidth = $('#imagewidth');
-    
-    if (width.prop('checked')) 
-    {
-      imagewidth.prop('disabled', false);
-      percentage.prop('checked', false);
-      height.prop('checked', false);
-      
-      toggle_size_height();
-      toggle_percentage();
-    }
-    else
-    {
-      imagewidth.prop('disabled', true);
-    }
+    image_checked = true;
+    result = validateImageForm ('imagewidth','','RisNum');
   }
   
-  function toggle_size_height () 
+  if (result && $('#height').prop('checked'))
   {
-    var percentage = $('#percentage');
-    var width = $('#width');
-    var height = $('#height');
-    var imageheight = $('#imageheight');
-    
-    if (height.prop('checked')) 
-    {
-      imageheight.prop('disabled', false);
-      width.prop('checked', false);
-      percentage.prop('checked', false);
-      
-      toggle_size_width();
-      toggle_percentage();
-    }
-    else
-    {
-      imageheight.prop('disabled', true);
-    }
+    image_checked = true;
+    result = validateImageForm ('imageheight','','RisNum');
   }
   
-  function toggle_rotate () 
+  if (result && $('#rotate').prop('checked'))
   {
-    var rotate = $('#rotate');
-    var chbxflip = $('#chbx_flip');
-    var degree = $('#degree');
-    
-    if(rotate.prop('checked')) 
-    {
-      chbxflip.prop('checked', false);
-      degree.prop('disabled', false);
-      
-      toggle_flip();   
-    }
-    else
-    {
-      degree.prop('disabled', true);
-    }
+    image_checked = true;
+    result = true;
   }
   
-  function toggle_brightness () 
+  if (result && $('#chbx_brightness').prop('checked'))
   {
-    var chbx = $('#chbx_brightness');
-    var brightness = $('#brightness');
-    
-    if (chbx.prop('checked')) 
-    {
-      brightness.prop('disabled', false);
-      brightness.spinner("option", "disabled", false);
-    }
-    else 
-    {
-      brightness.prop('disabled', true);
-      brightness.spinner("option", "disabled", true);
-    }
+    image_checked = true;
+    result = validateImageForm('brightness', '', 'RinRange-100:100');
+  } 
+  
+  if (result && $('#chbx_contrast').prop('checked'))
+  {
+    image_checked = true;
+    result = validateImageForm('contrast', '', 'RinRange-100:100');
+  } 
+  
+  if (result && $('#chbx_colorspace').prop('checked'))
+  {
+    image_checked = true;
+    result = true;
   }
   
-  function toggle_contrast () 
+  if (result && $('#chbx_flip').prop('checked'))
   {
-    var chbx = $('#chbx_contrast');
-    var contrast = $('#contrast');
-    
-    if (chbx.prop('checked')) 
-    {
-      contrast.prop('disabled', false);
-      contrast.spinner("option", "disabled", false);
-    }
-    else 
-    {
-      contrast.prop('disabled', true);
-      contrast.spinner("option", "disabled", true);
-    }
+    image_checked = true;
+    result = true;
   }
   
-  function toggle_colorspace () 
+  if (result && $('#sepia').prop('checked'))
   {
-    var chbx = $('#chbx_colorspace');
-    var space = $('#colorspace');
-    
-    if (chbx.prop('checked'))
-    {
-      space.prop('disabled', false);
-    }
-    else
-    {
-      space.prop('disabled', true);
-    }
+    image_checked = true;
+    result = validateImageForm('sepia_treshold', '', 'RinRange0:99.9');
   }
   
-  function toggle_flip () 
+  if (result && $('#blur').prop('checked')) 
   {
-    var rotate = $('#rotate');
-    var chbxflip = $('#chbx_flip');
-    var flip = $('#flip');
-    
-    if (chbxflip.prop('checked')) 
-    {
-      rotate.prop('checked', false);
-      flip.prop('disabled', false);
-      
-      toggle_rotate();
-    }
-    else
-    {
-      flip.prop('disabled', true);
-    }
+    image_checked = true;
+    result = validateImageForm('blur_radius', '', 'RisNum', 'blur_sigma', '', 'RinRange0.1:3');
   }
   
-  function toggle_sepia () 
+  if (result && $('#sharpen').prop('checked')) 
   {
-    var sepia = $('#sepia');
-    var treshold = $('#sepia_treshold');
-    var blur = $('#blur');
-    var sharpen = $('#sharpen');
-    var sketch = $('#sketch');
-    var paint = $('#paint');
-    
-    if (sepia.prop('checked')) 
-    {
-      treshold.prop('disabled', false);
-      blur.prop('checked', false);
-      sharpen.prop('checked', false);
-      sketch.prop('checked', false);
-      paint.prop('checked', false);
-      
-      treshold.spinner("option", "disabled", false);
-      
-      toggle_blur();
-      toggle_sharpen();
-      toggle_sketch();
-      toggle_paint();
-    }
-    else
-    {
-      treshold.prop('disabled', true);
-      
-      treshold.spinner("option", "disabled", true);
-    }
+    image_checked = true;
+    result = validateImageForm('sharpen_radius', '', 'RisNum', 'sharpen_sigma', '', 'RinRange0.1:3');
   }
   
-  function toggle_blur () 
+  if (result && $('#sketch').prop('checked')) 
   {
-    var sepia = $('#sepia');
-    var radius = $('#blur_radius');
-    var sigma = $('#blur_sigma');
-    var blur = $('#blur');
-    var sharpen = $('#sharpen');
-    var sketch = $('#sketch');
-    var paint = $('#paint');
-    
-    if (blur.prop('checked'))
-    {
-      radius.prop('disabled', false);
-      sigma.prop('disabled', false);
-      sepia.prop('checked', false);
-      sharpen.prop('checked', false);
-      sketch.prop('checked', false);
-      paint.prop('checked', false);
-      
-      sigma.spinner("option", "disabled", false);
-      
-      toggle_sepia();
-      toggle_sharpen();
-      toggle_sketch();
-      toggle_paint();
-    }
-    else
-    {
-      sigma.prop('disabled', true);
-      radius.prop('disabled', true);
-      
-     sigma.spinner("option", "disabled", true);
-    }
+    image_checked = true;
+    result = validateImageForm('sketch_radius', '', 'RisNum', 'sketch_sigma', '', 'RisNum', 'sketch_angle', '', 'RisNum');
   }
   
-  function toggle_sharpen ()
+  if (result && $('#paint').prop('checked')) 
   {
-    var sepia = $('#sepia');
-    var radius = $('#sharpen_radius');
-    var sigma = $('#sharpen_sigma');
-    var blur = $('#blur');
-    var sharpen = $('#sharpen');
-    var sketch = $('#sketch');
-    var paint = $('#paint');
-    
-    if (sharpen.prop('checked'))
-    {
-      radius.prop('disabled', false);
-      sigma.prop('disabled', false);
-      sepia.prop('checked', false);
-      blur.prop('checked', false);
-      sketch.prop('checked', false);
-      paint.prop('checked', false);
-      
-      sigma.spinner("option", "disabled", false);
-      
-      toggle_sepia();
-      toggle_blur();
-      toggle_sketch();
-      toggle_paint();
-    }
-    else
-    {
-      sigma.prop('disabled', true);
-      radius.prop('disabled', true);
-      
-     sigma.spinner("option", "disabled", true);
-    }
+    image_checked = true;
+    result = validateImageForm('paint_value', '', 'RisNum');
   }
   
-  function toggle_sketch ()
+  if (result && image_checked && $('#renderimage').prop('checked'))
   {
-    var sepia = $('#sepia');
-    var radius = $('#sketch_radius');
-    var sigma = $('#sketch_sigma');
-    var angle = $('#sketch_angle');
-    var blur = $('#blur');
-    var sharpen = $('#sharpen');
-    var sketch = $('#sketch');
-    var paint = $('#paint');
-    
-    if (sketch.prop('checked'))
-    {
-      radius.prop('disabled', false);
-      sigma.prop('disabled', false);
-      angle.prop('disabled', false);
-      sepia.prop('checked', false);
-      blur.prop('checked', false);
-      sharpen.prop('checked', false);
-      paint.prop('checked', false);
-          
-      toggle_sepia();
-      toggle_blur();
-      toggle_sharpen();
-      toggle_paint();
-    }
-    else
-    {
-      sigma.prop('disabled', true);
-      radius.prop('disabled', true);
-      angle.prop('disabled', true);
-    }
+    image_checked = true;
   }
+  else image_checked = false;
   
-  function toggle_paint () 
+  // display warning if any image option is checked
+  if (image_checked)
   {
-    var sepia = $('#sepia');
-    var value = $('#paint_value');
-    var blur = $('#blur');
-    var sharpen = $('#sharpen');
-    var sketch = $('#sketch');
-    var paint = $('#paint');
-    
-    if (paint.prop('checked'))
-    {
-      value.prop('disabled', false);
-      sepia.prop('checked', false);
-      blur.prop('checked', false);
-      sketch.prop('checked', false);
-      sharpen.prop('checked', false);
-          
-      toggle_sepia();
-      toggle_blur();
-      toggle_sharpen();
-      toggle_sketch();
-    }
-    else
-    {
-      value.prop('disabled', true);
-    }
+    if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang], $charset, $lang); ?>"))) return false;
   }
+  // set image checked to enable rendering
+  else image_checked = true;
   
-  function activate ()
+  return result;
+}
+
+function toggle_percentage () 
+{
+  var percentage = $('#percentage');
+  var width = $('#width');
+  var height = $('#height');
+  var percent = $('#imagepercentage');
+  
+  if (percentage.prop('checked')) 
   {
-    toggle_percentage();
-    toggle_size_width();
+    percent.prop('disabled', false);
+    width.prop('checked', false);
+    height.prop('checked', false);
+    
     toggle_size_height();
-    toggle_sepia();
+    toggle_size_width();
+  }
+  else 
+  {
+    percent.prop('disabled', true);
+  }
+}
+
+function toggle_size_width () 
+{
+  var percentage = $('#percentage');
+  var width = $('#width');
+  var height = $('#height');
+  var imagewidth = $('#imagewidth');
+  
+  if (width.prop('checked')) 
+  {
+    imagewidth.prop('disabled', false);
+    percentage.prop('checked', false);
+    height.prop('checked', false);
+    
+    toggle_size_height();
+    toggle_percentage();
+  }
+  else
+  {
+    imagewidth.prop('disabled', true);
+  }
+}
+
+function toggle_size_height () 
+{
+  var percentage = $('#percentage');
+  var width = $('#width');
+  var height = $('#height');
+  var imageheight = $('#imageheight');
+  
+  if (height.prop('checked')) 
+  {
+    imageheight.prop('disabled', false);
+    width.prop('checked', false);
+    percentage.prop('checked', false);
+    
+    toggle_size_width();
+    toggle_percentage();
+  }
+  else
+  {
+    imageheight.prop('disabled', true);
+  }
+}
+
+function toggle_rotate () 
+{
+  var rotate = $('#rotate');
+  var chbxflip = $('#chbx_flip');
+  var degree = $('#degree');
+  
+  if(rotate.prop('checked')) 
+  {
+    chbxflip.prop('checked', false);
+    degree.prop('disabled', false);
+    
+    toggle_flip();   
+  }
+  else
+  {
+    degree.prop('disabled', true);
+  }
+}
+
+function toggle_brightness () 
+{
+  var chbx = $('#chbx_brightness');
+  var brightness = $('#brightness');
+  
+  if (chbx.prop('checked')) 
+  {
+    brightness.prop('disabled', false);
+    brightness.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    brightness.prop('disabled', true);
+    brightness.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_contrast () 
+{
+  var chbx = $('#chbx_contrast');
+  var contrast = $('#contrast');
+  
+  if (chbx.prop('checked')) 
+  {
+    contrast.prop('disabled', false);
+    contrast.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    contrast.prop('disabled', true);
+    contrast.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_colorspace () 
+{
+  var chbx = $('#chbx_colorspace');
+  var space = $('#colorspace');
+  
+  if (chbx.prop('checked'))
+  {
+    space.prop('disabled', false);
+  }
+  else
+  {
+    space.prop('disabled', true);
+  }
+}
+
+function toggle_flip () 
+{
+  var rotate = $('#rotate');
+  var chbxflip = $('#chbx_flip');
+  var flip = $('#flip');
+  
+  if (chbxflip.prop('checked')) 
+  {
+    rotate.prop('checked', false);
+    flip.prop('disabled', false);
+    
+    toggle_rotate();
+  }
+  else
+  {
+    flip.prop('disabled', true);
+  }
+}
+
+function toggle_sepia () 
+{
+  var sepia = $('#sepia');
+  var treshold = $('#sepia_treshold');
+  var blur = $('#blur');
+  var sharpen = $('#sharpen');
+  var sketch = $('#sketch');
+  var paint = $('#paint');
+  
+  if (sepia.prop('checked')) 
+  {
+    treshold.prop('disabled', false);
+    blur.prop('checked', false);
+    sharpen.prop('checked', false);
+    sketch.prop('checked', false);
+    paint.prop('checked', false);
+    
+    treshold.spinner("option", "disabled", false);
+    
     toggle_blur();
     toggle_sharpen();
     toggle_sketch();
     toggle_paint();
-    toggle_flip();
-    toggle_rotate();
-    toggle_brightness();
-    toggle_contrast();
-    toggle_colorspace();
   }
-  
-  $(window).load( function()
+  else
   {
-    var spinner_config_bc = { step: 1, min: -100, max: 100}
-    var spinner_config_sep = { step: 0.1, min: 0, max: 99.9}
-    var spinner_config_sigma = { step: 0.1, min: 0.1, max: 3}
-    $('#brightness').spinner(spinner_config_bc);
-    $('#contrast').spinner(spinner_config_bc);
-    $('#sepia_treshold').spinner(spinner_config_sep);
-    $('#blur_sigma').spinner(spinner_config_sigma);
-    $('#sharpen_sigma').spinner(spinner_config_sigma);
+    treshold.prop('disabled', true);
     
-    // Add our special function
-    $.fn.getGeneratorParameter = function() {
-      return this.prop('name')+'='+this.val();
-    } 
-  });
+    treshold.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_blur () 
+{
+  var sepia = $('#sepia');
+  var radius = $('#blur_radius');
+  var sigma = $('#blur_sigma');
+  var blur = $('#blur');
+  var sharpen = $('#sharpen');
+  var sketch = $('#sketch');
+  var paint = $('#paint');
   
-  <?php } elseif ($is_video || $is_audio) { ?>
-  <!-- video/audio -->
-  
-  function checkVideoForm()
+  if (blur.prop('checked'))
   {
-    var result = true;
+    radius.prop('disabled', false);
+    sigma.prop('disabled', false);
+    sepia.prop('checked', false);
+    sharpen.prop('checked', false);
+    sketch.prop('checked', false);
+    paint.prop('checked', false);
     
-    if ($('#rendervideo').prop('checked'))
-    {
-      var errors = '';
-            
-      if (document.getElementById('cut_yes').checked == true)
-      {
-        if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-        if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-      }
-      
-      if (document.getElementById('thumb_yes').checked == true)
-      {
-        if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-      }
-      
-      if (document.getElementById('videosize_i').checked == true)
-      {
-        if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-        if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-      }
-      
-      if (errors) 
-      { 
-        alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>\n ' + errors));
+    sigma.spinner("option", "disabled", false);
+    
+    toggle_sepia();
+    toggle_sharpen();
+    toggle_sketch();
+    toggle_paint();
+  }
+  else
+  {
+    sigma.prop('disabled', true);
+    radius.prop('disabled', true);
+    
+    sigma.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_sharpen ()
+{
+  var sepia = $('#sepia');
+  var radius = $('#sharpen_radius');
+  var sigma = $('#sharpen_sigma');
+  var blur = $('#blur');
+  var sharpen = $('#sharpen');
+  var sketch = $('#sketch');
+  var paint = $('#paint');
+  
+  if (sharpen.prop('checked'))
+  {
+    radius.prop('disabled', false);
+    sigma.prop('disabled', false);
+    sepia.prop('checked', false);
+    blur.prop('checked', false);
+    sketch.prop('checked', false);
+    paint.prop('checked', false);
+    
+    sigma.spinner("option", "disabled", false);
+    
+    toggle_sepia();
+    toggle_blur();
+    toggle_sketch();
+    toggle_paint();
+  }
+  else
+  {
+    sigma.prop('disabled', true);
+    radius.prop('disabled', true);
+    
+    sigma.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_sketch ()
+{
+  var sepia = $('#sepia');
+  var radius = $('#sketch_radius');
+  var sigma = $('#sketch_sigma');
+  var angle = $('#sketch_angle');
+  var blur = $('#blur');
+  var sharpen = $('#sharpen');
+  var sketch = $('#sketch');
+  var paint = $('#paint');
+  
+  if (sketch.prop('checked'))
+  {
+    radius.prop('disabled', false);
+    sigma.prop('disabled', false);
+    angle.prop('disabled', false);
+    sepia.prop('checked', false);
+    blur.prop('checked', false);
+    sharpen.prop('checked', false);
+    paint.prop('checked', false);
         
-        result = false;
-      }
-      
-      video_checked = true;
-    }
-    
-    return result;
+    toggle_sepia();
+    toggle_blur();
+    toggle_sharpen();
+    toggle_paint();
   }
-  
-  function checkCut()
+  else
   {
-    var area1 = $('#cut_area');
-    
+    sigma.prop('disabled', true);
+    radius.prop('disabled', true);
+    angle.prop('disabled', true);
+  }
+}
+
+function toggle_paint () 
+{
+  var sepia = $('#sepia');
+  var value = $('#paint_value');
+  var blur = $('#blur');
+  var sharpen = $('#sharpen');
+  var sketch = $('#sketch');
+  var paint = $('#paint');
+  
+  if (paint.prop('checked'))
+  {
+    value.prop('disabled', false);
+    sepia.prop('checked', false);
+    blur.prop('checked', false);
+    sketch.prop('checked', false);
+    sharpen.prop('checked', false);
+        
+    toggle_sepia();
+    toggle_blur();
+    toggle_sharpen();
+    toggle_sketch();
+  }
+  else
+  {
+    value.prop('disabled', true);
+  }
+}
+
+function toggle_saveimage ()
+{
+  var save = $('#renderimage');
+  var imageformat = $('#imageformat');
+
+  if (save.prop('checked')) 
+  {
+    imageformat.prop('disabled', false);
+  }
+  else
+  {
+    imageformat.prop('disabled', true);
+  }
+}
+
+function activate ()
+{
+  toggle_percentage();
+  toggle_size_width();
+  toggle_size_height();
+  toggle_sepia();
+  toggle_blur();
+  toggle_sharpen();
+  toggle_sketch();
+  toggle_paint();
+  toggle_flip();
+  toggle_rotate();
+  toggle_brightness();
+  toggle_contrast();
+  toggle_colorspace();
+}
+
+$(window).load( function()
+{
+  var spinner_config_bc = { step: 1, min: -100, max: 100, classes: {"ui-spinner": ""} }
+  var spinner_config_sep = { step: 0.1, min: 0, max: 99.9, classes: {"ui-spinner": ""} }
+  var spinner_config_sigma = { step: 0.1, min: 0.1, max: 3, classes: {"ui-spinner": ""} }
+
+  $('#brightness').spinner(spinner_config_bc);
+  $('#contrast').spinner(spinner_config_bc);
+  $('#sepia_treshold').spinner(spinner_config_sep);
+  $('#blur_sigma').spinner(spinner_config_sigma);
+  $('#sharpen_sigma').spinner(spinner_config_sigma);
+  
+  // Add our special function
+  $.fn.getGeneratorParameter = function() {
+    return this.prop('name')+'='+this.val();
+  } 
+});
+
+<?php } elseif ($is_video || $is_audio) { ?>
+<!-- video/audio -->
+
+function checkVideoForm()
+{
+  var result = true;
+  
+  // video rendering
+  if (document.getElementById('rendervideo').checked == true)
+  {
+    var errors = '';
+          
     if (document.getElementById('cut_yes').checked == true)
     {
-      area1.show();
+      if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+      if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
     }
-    else
-    {
-      area1.hide();
-    }
-  }
-  
-  <?php if (!$is_audio) { ?>
-  function checkThumb()
-  {
-    var area1 = $('#thumb_area');
     
-    if (document.getElementById('thumb_yes').checked == true)
+    if (document.getElementById('videosize_i').checked == true)
     {
-      area1.show();
+      if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+      if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
     }
-    else
-    {
-      area1.hide();
+    
+    if (errors) 
+    { 
+      alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>\n ' + errors));
+      
+      result = false;
     }
+    
+    // global
+    video_checked = true;
   }
-  <?php } ?>
 
-  function toggle_sharpen () 
+  // video thumbnail image
+  if (document.getElementById('thumb_yes').checked == true)
   {
-    var chbx = $('#chbx_sharpen');
-    var sharpen = $('#sharpen');
-    
-    if (chbx.prop('checked')) 
-    {
-      sharpen.prop('disabled', false);
-      sharpen.spinner("option", "disabled", false);
-    }
-    else 
-    {
-      sharpen.prop('disabled', true);
-      sharpen.spinner("option", "disabled", true);
-    }
+    if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+
+    // global
+    video_checked = true;
   }
   
-  function toggle_gamma () 
-  {
-    var chbx = $('#chbx_gamma');
-    var gamma = $('#gamma');
-    
-    if (chbx.prop('checked')) 
-    {
-      gamma.prop('disabled', false);
-      gamma.spinner("option", "disabled", false);
-    }
-    else 
-    {
-      gamma.prop('disabled', true);
-      gamma.spinner("option", "disabled", true);
-    }
-  }
+  return result;
+}
+
+function checkCut()
+{
+  var area1 = $('#cut_area');
   
-  function toggle_brightness () 
+  if (document.getElementById('cut_yes').checked == true)
   {
-    var chbx = $('#chbx_brightness');
-    var brightness = $('#brightness');
-    
-    if (chbx.prop('checked')) 
-    {
-      brightness.prop('disabled', false);
-      brightness.spinner("option", "disabled", false);
-    }
-    else 
-    {
-      brightness.prop('disabled', true);
-      brightness.spinner("option", "disabled", true);
-    }
+    area1.show();
   }
-  
-  function toggle_contrast () 
+  else
   {
-    var chbx = $('#chbx_contrast');
-    var contrast = $('#contrast');
-    
-    if (chbx.prop('checked')) 
-    {
-      contrast.prop('disabled', false);
-      contrast.spinner("option", "disabled", false);
-    }
-    else 
-    {
-      contrast.prop('disabled', true);
-      contrast.spinner("option", "disabled", true);
-    }
+    area1.hide();
   }
+}
+
+<?php if (!$is_audio) { ?>
+function checkThumb()
+{
+  var area1 = $('#thumb_area');
   
-  function toggle_saturation () 
+  if (document.getElementById('thumb_yes').checked == true)
   {
-    var chbx = $('#chbx_saturation');
-    var saturation = $('#saturation');
-    
-    if (chbx.prop('checked')) 
-    {
-      saturation.prop('disabled', false);
-      saturation.spinner("option", "disabled", false);
-    }
-    else 
-    {
-      saturation.prop('disabled', true);
-      saturation.spinner("option", "disabled", true);
-    }
+    area1.show();
   }
-  
-  function toggle_rotate () 
+  else
   {
-    var rotate = $('#rotate');
-    var chbxflip = $('#chbx_flip');
-    var degree = $('#degree');
-    
-    if(rotate.prop('checked')) 
-    {
-      chbxflip.prop('checked', false);
-      degree.prop('disabled', false);
-      
-      toggle_flip();   
-    }
-    else
-    {
-      degree.prop('disabled', true);
-    }
+    area1.hide();
   }
+}
+<?php } ?>
+
+function toggle_sharpen () 
+{
+  var chbx = $('#chbx_sharpen');
+  var sharpen = $('#sharpen');
   
-  function toggle_flip () 
+  if (chbx.prop('checked')) 
   {
-    var rotate = $('#rotate');
-    var chbxflip = $('#chbx_flip');
-    var flip = $('#flip');
-    var crop = $('#crop');
-    
-    if (chbxflip.prop('checked')) 
-    {
-      rotate.prop('checked', false);
-      flip.prop('disabled', false);
-      crop.prop('checked', false);
-      
-      toggle_rotate();
-      toggle_crop();
-    }
-    else
-    {
-      flip.prop('disabled', true);
-    }
+    sharpen.prop('disabled', false);
+    sharpen.spinner("option", "disabled", false);
   }
-  
-  function activate ()
+  else 
   {
-    toggle_sharpen();
-    toggle_gamma();
-    toggle_brightness();
-    toggle_contrast();
-    toggle_saturation();
-    toggle_flip();
+    sharpen.prop('disabled', true);
+    sharpen.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_gamma () 
+{
+  var chbx = $('#chbx_gamma');
+  var gamma = $('#gamma');
+  
+  if (chbx.prop('checked')) 
+  {
+    gamma.prop('disabled', false);
+    gamma.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    gamma.prop('disabled', true);
+    gamma.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_brightness () 
+{
+  var chbx = $('#chbx_brightness');
+  var brightness = $('#brightness');
+  
+  if (chbx.prop('checked')) 
+  {
+    brightness.prop('disabled', false);
+    brightness.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    brightness.prop('disabled', true);
+    brightness.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_contrast () 
+{
+  var chbx = $('#chbx_contrast');
+  var contrast = $('#contrast');
+  
+  if (chbx.prop('checked')) 
+  {
+    contrast.prop('disabled', false);
+    contrast.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    contrast.prop('disabled', true);
+    contrast.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_saturation () 
+{
+  var chbx = $('#chbx_saturation');
+  var saturation = $('#saturation');
+  
+  if (chbx.prop('checked')) 
+  {
+    saturation.prop('disabled', false);
+    saturation.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    saturation.prop('disabled', true);
+    saturation.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_rotate () 
+{
+  var rotate = $('#rotate');
+  var chbxflip = $('#chbx_flip');
+  var degree = $('#degree');
+  
+  if (rotate.prop('checked')) 
+  {
+    chbxflip.prop('checked', false);
+    degree.prop('disabled', false);
+    
+    toggle_flip();   
+  }
+  else
+  {
+    degree.prop('disabled', true);
+  }
+}
+
+function toggle_flip () 
+{
+  var rotate = $('#rotate');
+  var chbxflip = $('#chbx_flip');
+  var flip = $('#flip');
+  var crop = $('#crop');
+  
+  if (chbxflip.prop('checked')) 
+  {
+    rotate.prop('checked', false);
+    flip.prop('disabled', false);
+    crop.prop('checked', false);
+    
     toggle_rotate();
+    toggle_crop();
   }
-
-  // ----- onload -----
-  
-  $(window).load( function()
+  else
   {
-    var spinner_config = { step: 1, min: -100, max: 100}
-    
-    $('#sharpen').spinner(spinner_config);
-    $('#gamma').spinner(spinner_config);
-    $('#brightness').spinner(spinner_config);
-    $('#contrast').spinner(spinner_config);
-    $('#saturation').spinner(spinner_config);
-    
-    // add special function
-    $.fn.getGeneratorParameter = function() {
-      return this.prop('name')+'='+this.val();
-    } 
-  });
-      
-  <?php if (!$is_audio) { ?>
-  $().ready(function() {
-    checkCut();
-    checkThumb();
-  });
-  <?php } ?>
-  <?php } ?>
-  </script>
-</head>
+    flip.prop('disabled', true);
+  }
+}
+
+function toggle_savevideo ()
+{
+  var save = $('#rendervideo');
+  var filetype = $('#filetype');
+
+  if (save.prop('checked')) 
+  {
+    filetype.prop('disabled', false);
+  }
+  else
+  {
+    filetype.prop('disabled', true);
+  }
+}
+
+function activate ()
+{
+  toggle_sharpen();
+  toggle_gamma();
+  toggle_brightness();
+  toggle_contrast();
+  toggle_saturation();
+  toggle_flip();
+  toggle_rotate();
+}
+
+// ----- onload -----
+
+$(window).load( function()
+{
+  var spinner_config = { step: 1, min: -100, max: 100}
   
+  $('#sharpen').spinner(spinner_config);
+  $('#gamma').spinner(spinner_config);
+  $('#brightness').spinner(spinner_config);
+  $('#contrast').spinner(spinner_config);
+  $('#saturation').spinner(spinner_config);
+  
+  // add special function
+  $.fn.getGeneratorParameter = function() {
+    return this.prop('name')+'='+this.val();
+  } 
+});
+    
+<?php if (!$is_audio) { ?>
+$().ready(function() {
+  checkCut();
+  checkThumb();
+});
+<?php } ?>
+<?php } ?>
+</script>
+</head>
+
 <body class="hcmsWorkplaceGeneric" style="height:auto;">
   
-    <!-- save layer --> 
-    <div id="savelayer" class="hcmsLoadScreen"></div>
+  <!-- save overlay -->  
+  <div id="savelayer" class="hcmsLoadScreen"></div>
+  
+  <!-- top bar -->
+  <div id="bar" class="hcmsWorkplaceBar">
+    <table style="width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;">
+      <tr>
+        <td class="hcmsHeadline" style="text-align:left; vertical-align:middle; padding:0px 1px 0px 2px">
+          <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="savecontent(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
+          <?php if (!$mixedmedia && ($is_image || $is_audio || $is_video)) { ?>
+          <div class="hcmsButtonMenu" onclick="toggleOptions(this, '#renderOptions');"><?php echo getescapedtext ($hcms_lang['options'][$lang], $charset, $lang); ?></div>
+          <?php } ?>
+        </td>
+        <td style="width:26px; text-align:right; vertical-align:middle;">
+          &nbsp;
+        </td>
+      </tr>
+    </table>
+  </div>
     
-    <!-- top bar -->
-    <div id="bar" class="hcmsWorkplaceBar">
-      <table style="width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;">
-        <tr>
-          <td class="hcmsHeadline" style="text-align:left; vertical-align:middle; padding:0px 1px 0px 2px">
-            <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="savecontent(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
-            <?php if ($is_image || $is_video) { ?>
-            <div class="hcmsButtonMenu" onclick="toggleDivAndButton(this, '#renderOptions');"><?php echo getescapedtext ($hcms_lang['options'][$lang], $charset, $lang); ?></div>
-            <?php } ?>
-          </td>
-          <td style="width:26px; text-align:right; vertical-align:middle;">
-            &nbsp;
-          </td>
-        </tr>
-      </table>
-    </div>
     
-    
-    <!-- rendering settings -->
-    <div id="renderOptions" style="padding:2px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin:36px 10px 0px 10px;" class="hcmsMediaRendering">
-    
-      <?php if ($is_image) { ?>
-      <!-- start edit image -->
-      <form name="imageoptions" id="imageoptions" action="" method="post">
-        <input type="hidden" id="action" name="action" value="rendermedia">
-          
-        <!-- width or height -->
-        <div class="cell">
-          <div class="row" style="margin-left:20px;">
-            <strong><?php echo getescapedtext ($hcms_lang['pixel-size'][$lang], $charset, $lang); ?></strong>
-          </div>
-          <div class="row">
-            <input type="checkbox" id="percentage" name="imageresize" value="percentage" onclick="toggle_percentage();" />
-            <label style="width:80px; display:inline-block;" for="percentage"><?php echo getescapedtext ($hcms_lang['percentage'][$lang], $charset, $lang); ?></label>
-            <input name="imagepercentage" type="text" id="imagepercentage" size="5" maxlength="3" value="100" /> %
-          </div>
-          <div class="row">
-            <input type="checkbox" id="width" name="imageresize" value="imagewidth" onclick="toggle_size_width();" />
-            <label style="width:80px; display:inline-block;" for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang); ?></label>
-            <input name="imagewidth" type="text" id="imagewidth" size="5" maxlength="5" value="" /> px
-          </div>
-          <div class="row">
-            <input type="checkbox" id="height" name="imageresize" value="imageheight" onclick="toggle_size_height();" />
-            <label style="width:80px; display:inline-block;" for="height"><?php echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang); ?></label>
-            <input name="imageheight" type="text" id="imageheight" size="5" maxlength="5" value="" /> px
-          </div>
-        </div>
+  <!-- rendering settings -->
+  <div id="renderOptions" style="padding:0px 5px 10px 5px; width:94%; display:none; vertical-align:top; z-index:1; margin:36px 10px 0px 10px;" class="hcmsMediaRendering">
+  
+    <?php if (!$mixedmedia && $is_image) { ?>
+    <!-- start edit image -->
+    <form name="imageoptions" id="imageoptions" action="" method="post">
+      <input type="hidden" id="action" name="action" value="rendermedia" />
         
-        <?php if (getimagelib () != "GD") { ?>
-        <!-- Effects -->
-        <div class="cell">
-          <div class="row" style="margin-left:20px;">
-            <strong><?php echo getescapedtext ($hcms_lang['effects'][$lang], $charset, $lang); ?></strong>
-          </div>
-          <div class="row">
-            <input type="checkbox" id="sepia" name="effect" value="sepia" onclick="toggle_sepia();" />
-            <label style="width:60px; display:inline-block;" for="sepia"><?php echo getescapedtext ($hcms_lang['sepia'][$lang], $charset, $lang); ?></label>
-            <input name="sepia_treshold" type="text" id="sepia_treshold" size="2" maxlength="2" value="80" /> %
-          </div>
-          <div class="row">
-            <input type="checkbox" id="blur" name="effect" value="blur" onclick="toggle_blur();" />
-            <label style="width:60px; display:inline-block;" for="blur"><?php echo getescapedtext ($hcms_lang['blur'][$lang], $charset, $lang); ?></label>
-            <input name="blur_radius" type="text" id="blur_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang], $charset, $lang); ?>" />
-            <label style="width:6px; display:inline-block;" for="blur_sigma">x</label>
-            <input name="blur_sigma" type="text" id="blur_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang], $charset, $lang); ?>" />
-          </div>
-          <div class="row">
-            <input type="checkbox" id="sharpen" name="effect" value="sharpen" onclick="toggle_sharpen();" />
-            <label style="width:60px; display:inline-block;" for="sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang], $charset, $lang); ?></label>
-            <input name="sharpen_radius" type="text" id="sharpen_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang], $charset, $lang); ?>" />
-            <label style="width:6px; display:inline-block;" for="sharpen_sigma">x</label>
-            <input name="sharpen_sigma" type="text" id="sharpen_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang], $charset, $lang); ?>" />
-          </div>
-          <div class="row">
-            <input type="checkbox" id="sketch" name="effect" value="sketch" onclick="toggle_sketch();" />
-            <label style="width:60px; display:inline-block;" for="sketch"><?php echo getescapedtext ($hcms_lang['sketch'][$lang], $charset, $lang); ?></label>
-            <input name="sketch_radius" type="text" id="sketch_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang], $charset, $lang); ?> "/>
-            <label style="width:6px; display:inline-block;" for="sketch_sigma">x</label>
-            <input name="sketch_sigma" type="text" id="sketch_sigma" size="2" maxlength="2" value="0" title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang], $charset, $lang); ?>" />
-            <input name="sketch_angle" type="text" id="sketch_angle" size="3" maxlength="3" value="0" title="<?php echo getescapedtext ($hcms_lang['angle'][$lang], $charset, $lang); ?>" />
-          </div>
-          <div class="row">
-            <input type="checkbox" id="paint" name="effect" value="paint" onclick="toggle_paint();" />
-            <label style="width:60px; display:inline-block;" for="paint"><?php echo getescapedtext ($hcms_lang['oil'][$lang], $charset, $lang); ?></label>
-            <input name="paint_value" type="text" id="paint_value" size="2" maxlength="3" value="0" />
-          </div>
+      <!-- width or height -->
+      <div class="cell">
+        <div class="row">
+          <strong><?php echo getescapedtext ($hcms_lang['image-size'][$lang], $charset, $lang); ?></strong>
         </div>
-        <?php } ?>
-        
-        <div class="cell">    
-          <!-- rotate -->
-          <div class="row">
-            <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-            <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label></strong>
-            <select name="degree" id="degree" style="margin-left:20px">
-              <option value="90" selected="selected" >90&deg;</option>
-              <option value="180" >180&deg;</option>
-              <option value="-90" title="-90&deg;">270&deg;</option>
-            </select>
-          </div>
-          
-          <?php if (getimagelib () != "GD") { ?>
-          <!-- flip flop -->
-          <div class="row">
-            <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-            <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label></strong>
-            <select name="flip" id="flip" style="margin-left:20px">
-              <?php 
-                foreach ($available_flip as $value => $name)
-                {
-                ?>
-                <option value="<?php echo getescapedtext ($value, $charset, $lang); ?>"><?php echo getescapedtext ($name, $charset, $lang); ?></option>
-                <?php
-                }
-              ?>
-            </select>
-          </div>
-          <?php } ?>      
+        <div>
+          <input type="checkbox" id="percentage" name="imageresize" value="percentage" onclick="toggle_percentage();" />
+          <label style="width:80px; display:inline-block;" for="percentage"><?php echo getescapedtext ($hcms_lang['percentage'][$lang], $charset, $lang); ?></label>
+          <input name="imagepercentage" type="text" id="imagepercentage" size="5" maxlength="3" value="100" /> %
         </div>
-        
+        <div>
+          <input type="checkbox" id="width" name="imageresize" value="imagewidth" onclick="toggle_size_width();" />
+          <label style="width:80px; display:inline-block;" for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang); ?></label>
+          <input name="imagewidth" type="text" id="imagewidth" size="5" maxlength="5" value="" /> px
+        </div>
+        <div>
+          <input type="checkbox" id="height" name="imageresize" value="imageheight" onclick="toggle_size_height();" />
+          <label style="width:80px; display:inline-block;" for="height"><?php echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang); ?></label>
+          <input name="imageheight" type="text" id="imageheight" size="5" maxlength="5" value="" /> px
+        </div>
+
         <?php if (getimagelib () != "GD") { ?>
         <!-- brigthness / contrast -->
-        <div class="cell">
-          <div style="margin-left:20px" class="row">
-            <strong><?php echo getescapedtext ($hcms_lang['adjust'][$lang], $charset, $lang); ?></strong>
-          </div>
-          <div>
-            <input type="checkbox" id="chbx_brightness" name="use_brightness" value="1" onclick="toggle_brightness();" />
-            <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang], $charset, $lang); ?></label>
-            <input name="brightness" type="text" id="brightness" size="4" value="0" />
-          </div>
-          <div>
-             <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
-            <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang], $charset, $lang); ?></label>
-            <input name="contrast" type="text" id="contrast" size="4" value="0" />
-          </div>
+        <div class="row">
+          <strong><?php echo getescapedtext ($hcms_lang['adjust'][$lang], $charset, $lang); ?></strong>
+        </div>
+        <div>
+          <input type="checkbox" id="chbx_brightness" name="use_brightness" value="1" onclick="toggle_brightness();" />
+          <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang], $charset, $lang); ?></label>
+          <input name="brightness" type="text" id="brightness" size="4" value="0" />
+        </div>
+        <div>
+          <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
+          <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang], $charset, $lang); ?></label>
+          <input name="contrast" type="text" id="contrast" size="4" value="0" />
+        </div>
+
+        <!-- rotate -->
+        <div>
+          <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
+          <label for="rotate" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label>
+          <select name="degree" id="degree">
+            <option value="90" selected="selected" >90&deg;</option>
+            <option value="180" >180&deg;</option>
+            <option value="-90" title="-90&deg;">270&deg;</option>
+          </select>
+        </div>
+        
+        <?php if (getimagelib() != "GD") { ?>
+        <!-- flip flop -->
+        <div>
+          <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
+          <label for="chbx_flip" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label>
+          <select name="flip" id="flip">
+            <?php 
+              foreach ($available_flip as $value => $name)
+              {
+              ?>
+              <option value="<?php echo getescapedtext ($value, $charset, $lang); ?>"><?php echo getescapedtext ($name, $charset, $lang); ?></option>
+              <?php
+              }
+            ?>
+          </select>
+        </div>
+        <?php } ?>
+
+      </div>
+      <?php } ?>
+      
+      <?php if (getimagelib () != "GD") { ?>
+      <!-- Effects -->
+      <div class="cell">
+        <div class="row">
+          <strong><?php echo getescapedtext ($hcms_lang['effects'][$lang], $charset, $lang); ?></strong>
+        </div>
+        <div>
+          <input type="checkbox" id="sepia" name="effect" value="sepia" onclick="toggle_sepia();" />
+          <label style="width:60px; display:inline-block;" for="sepia"><?php echo getescapedtext ($hcms_lang['sepia'][$lang], $charset, $lang); ?></label>
+          <input name="sepia_treshold" type="text" id="sepia_treshold" size="2" maxlength="2" value="80" /> %
+        </div>
+        <div>
+          <input type="checkbox" id="blur" name="effect" value="blur" onclick="toggle_blur();" />
+          <label style="width:60px; display:inline-block;" for="blur"><?php echo getescapedtext ($hcms_lang['blur'][$lang], $charset, $lang); ?></label>
+          <input name="blur_radius" type="text" id="blur_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang], $charset, $lang); ?>" />
+          <label style="width:6px; display:inline-block;" for="blur_sigma">x</label>
+          <input name="blur_sigma" type="text" id="blur_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang], $charset, $lang); ?>" />
+        </div>
+        <div>
+          <input type="checkbox" id="sharpen" name="effect" value="sharpen" onclick="toggle_sharpen();" />
+          <label style="width:60px; display:inline-block;" for="sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang], $charset, $lang); ?></label>
+          <input name="sharpen_radius" type="text" id="sharpen_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang], $charset, $lang); ?>" />
+          <label style="width:6px; display:inline-block;" for="sharpen_sigma">x</label>
+          <input name="sharpen_sigma" type="text" id="sharpen_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang], $charset, $lang); ?>" />
+        </div>
+        <div>
+          <input type="checkbox" id="sketch" name="effect" value="sketch" onclick="toggle_sketch();" />
+          <label style="width:60px; display:inline-block;" for="sketch"><?php echo getescapedtext ($hcms_lang['sketch'][$lang], $charset, $lang); ?></label>
+          <input name="sketch_radius" type="text" id="sketch_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang], $charset, $lang); ?> "/>
+          <label style="width:6px; display:inline-block;" for="sketch_sigma">x</label>
+          <input name="sketch_sigma" type="text" id="sketch_sigma" size="2" maxlength="2" value="0" title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang], $charset, $lang); ?>" />
+          <input name="sketch_angle" type="text" id="sketch_angle" size="3" maxlength="3" value="0" title="<?php echo getescapedtext ($hcms_lang['angle'][$lang], $charset, $lang); ?>" />
+        </div>
+        <div>
+          <input type="checkbox" id="paint" name="effect" value="paint" onclick="toggle_paint();" />
+          <label style="width:60px; display:inline-block;" for="paint"><?php echo getescapedtext ($hcms_lang['oil'][$lang], $charset, $lang); ?></label>
+          <input name="paint_value" type="text" id="paint_value" size="2" maxlength="3" value="0" />
+        </div>
+      </div>
+      <?php } ?>
+      
+      
+      <div class="cell">
+        <?php if (getimagelib () != "GD") { ?>
+        <!-- colorspace -->
+        <div class="row">
+          <input type="checkbox" id="chbx_colorspace" name="colorspace" value="1" onclick="toggle_colorspace();" />
+          <strong><label for="chbx_colorspace"><?php echo getescapedtext ($hcms_lang['change-colorspace'][$lang], $charset, $lang); ?></label></strong>
+        </div>
+        <div>
+          <select name="imagecolorspace" id="colorspace">
+            <?php 
+              foreach ($available_colorspaces as $value => $name)
+              {
+              ?>
+              <option value="<?php echo getescapedtext ($value, $charset, $lang); ?>"><?php echo getescapedtext ($name, $charset, $lang) ?></option>
+              <?php
+              }
+            ?>
+            </select>
         </div>
         <?php } ?>
         
-        <?php if (getimagelib () != "GD") { ?>
-        <!-- colorspace -->
-        <div class="cell">
-          <div class="row">
-            <input type="checkbox" id="chbx_colorspace" name="colorspace" value="1" onclick="toggle_colorspace();" />
-            <strong><label for="chbx_colorspace"><?php echo getescapedtext ($hcms_lang['change-colorspace'][$lang], $charset, $lang); ?></label></strong>
-          </div>
-          <div style="margin-left:20px">
-            <select name="imagecolorspace" id="colorspace">
-              <?php 
-                foreach ($available_colorspaces as $value => $name)
-                {
-                ?>
-                <option value="<?php echo getescapedtext ($value, $charset, $lang); ?>"><?php echo getescapedtext ($name, $charset, $lang) ?></option>
-                <?php
-                }
-              ?>
-              </select>
-          </div>
-        </div>
-          <?php } ?>
-          
         <!-- format -->
-        <div class="cell" style="width:200px;">
+        <div class="row hcmsButtonGreen">
           <div>
-            <input type="checkbox" id="renderimage" name="renderimage" value="1" />
-            <strong><label for="imageformat"><?php echo getescapedtext ($hcms_lang['save-as'][$lang], $charset, $lang); ?></label></strong>
+            <label>
+              <input type="checkbox" id="renderimage" name="renderimage" value="1" onclick="toggle_saveimage();" />
+              <strong><label for="imageformat"><?php echo getescapedtext ($hcms_lang['save-as'][$lang], $charset, $lang); ?></label></strong>
+            </label>
           </div>
-          <div style="margin-left:20px">
-            <label for="imageformat"><?php echo getescapedtext ($hcms_lang['file-type'][$lang], $charset, $lang); ?></label>
-            <select name="imageformat" id="imageformat">
+          <div>
+            <label for="imageformat"><?php echo getescapedtext ($hcms_lang['type'][$lang], $charset, $lang); ?></label>
+            <select id="imageformat" name="imageformat" disabled="disabled">
               <?php
               foreach ($convert_formats as $format)
               {
@@ -2236,425 +2289,434 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
               <?php
               }
               ?>
-              </select>
+            </select>
           </div>
         </div>
-        
-      </form>
-      <!-- end edit image -->
+
+      </div>
       
-      <?php } elseif ($is_video || $is_audio) { ?>
-      
-      <!-- start edit video/audio -->
-      <form name="videooptions" action="" method="post">
-      	<input type="hidden" id="action" name="action" value="rendermedia">
-            
-        <?php if (!$is_audio) { ?>
-        <div class="cell" style="width:260px;">
-          <!-- video screen format -->
-          <div class="row">
-        		<strong><?php echo getescapedtext ($hcms_lang['formats'][$lang], $charset, $lang); ?></strong>
-          </row>
-      		<?php foreach ($available_formats as $format => $data) { ?>
-            <div class="row">
-              <input type="radio" id="format_<?php echo $format; ?>" name="format" value="<?php echo $format; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> />
-              <label for="format_<?php echo $format; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
-            </div>
-      		<?php } ?>
-      	  </div>
-        
-          <!-- video size -->
-        	<div class="row">
-        		<strong><?php echo getescapedtext ($hcms_lang['video-size'][$lang], $charset, $lang); ?></strong>
-          </div>
-      		<?php foreach ($available_videosizes as $videosize => $data) { ?>
-          <div class="row">
-      			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if ($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
-      			<?php if ($data['individual']) { ?>
-      		  <input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize; ?>" value="" /><span> px</span>
-      			<?php }	?>
-      		</div>
-      		<?php }	?>
-      	</div>
-        <?php } ?>
+    </form>
+    <!-- end edit image -->
     
-        <?php if (!$is_audio) { ?>
-        <!-- sharpness / gamma / brigthness / contrast / saturation -->
-        <div class="cell">
-          <div class="row">
-            <strong><?php echo getescapedtext ($hcms_lang['adjust'][$lang]); ?></strong>
-          </div>
+    <?php } elseif (!$mixedmedia && ($is_video || $is_audio)) { ?>
+    
+    <!-- start edit video/audio -->
+    <form name="videooptions" action="" method="post">
+      <input type="hidden" id="action" name="action" value="rendermedia">
+          
+      <?php if (!$is_audio) { ?>
+      <div class="cell" style="width:260px;">
+        <!-- video screen format -->
+        <div class="row">
+          <strong><?php echo getescapedtext ($hcms_lang['formats'][$lang], $charset, $lang); ?></strong>
+        </row>
+        <?php foreach ($available_formats as $format => $data) { ?>
           <div>
-            <input type="checkbox" id="chbx_sharpen" name="use_sharpen" value="1" onclick="toggle_sharpen();" />
-            <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang], $charset, $lang); ?></label>
-            <input name="sharpen" type="text" id="sharpen" size="4" value="0" />
+            <input type="radio" id="format_<?php echo $format; ?>" name="format" value="<?php echo $format; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> />
+            <label for="format_<?php echo $format; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
           </div>
-          <div>
-            <input type="checkbox" id="chbx_gamma" name="use_gamma" value="1" onclick="toggle_gamma();" />
-            <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo getescapedtext ($hcms_lang['gamma'][$lang], $charset, $lang); ?></label>
-            <input name="gamma" type="text" id="gamma" size="4" value="0" />
-          </div>
-          <div>
-            <input type="checkbox" id="chbx_brightness" name="use_brightness" value="0" onclick="toggle_brightness();" />
-            <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang], $charset, $lang); ?></label>
-            <input name="brightness" type="text" id="brightness" size="4" value="0" />
-          </div>
-          <div>
-             <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
-            <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang], $charset, $lang); ?></label>
-            <input name="contrast" type="text" id="contrast" size="4" value="0" />
-          </div>
-          <div>
-            <input type="checkbox" id="chbx_saturation" name="use_saturation" value="1" onclick="toggle_saturation();" />
-            <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo getescapedtext ($hcms_lang['saturation'][$lang], $charset, $lang); ?></label>
-            <input name="saturation" type="text" id="saturation" size="4" value="0" />
-          </div>
+        <?php } ?>
+        </div>
+      
+        <!-- video size -->
+        <div class="row">
+          <strong><?php echo getescapedtext ($hcms_lang['video-size'][$lang], $charset, $lang); ?></strong>
+        </div>
+        <?php foreach ($available_videosizes as $videosize => $data) { ?>
+        <div>
+          <input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if ($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
+          <?php if ($data['individual']) { ?>
+          <input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize; ?>" value="" /><span> px</span>
+          <?php }	?>
         </div>
         <?php }	?>
-        
-        <div class="cell">
-          <!-- video cut -->
-          <div class="row">
-            <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1" />
-            <strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($is_audio) ? getescapedtext ($hcms_lang['audio-montage'][$lang], $charset, $lang) : getescapedtext ($hcms_lang['video-montage'][$lang], $charset, $lang); ?></label></strong>
-          </div>
-          <div id="cut_area" style="display:none;">
-            <div class="row">
-              <label for="cut_begin" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang); ?></label>
-              <input type="text" name="cut_begin" id="cut_begin" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
-            </div>
-            <div class="row">
-              <label for="cut_end" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang); ?></label>
-              <input type="text" name="cut_end" id="cut_end" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
-            </div>
-          </div>
-          
-          <?php if (!$is_audio) { ?>
-          <!-- video thumbnail -->
-          <div class="row"> 
-            <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1" />
-            <strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo getescapedtext ($hcms_lang['pick-preview-image'][$lang], $charset, $lang); ?></label></strong>
-          </div>
-          <div id="thumb_area" style="display:none;">
-              <label for="thumb_frame" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang); ?></label>
-              <input type="text" name="thumb_frame" id="thumb_frame" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
-          </div>
-           
-          <!-- rotate -->
-          <div class="row">
-            <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-            <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label></strong>
-            <select name="degree" id="degree" style="margin-left:20px">
-              <option value="90" selected="selected" >90&deg;</option>
-              <option value="180" >180&deg;</option>
-              <option value="-90" title="-90&deg;">270&deg;</option>
-            </select>
-          </div>
-    
-          <!-- vflip hflip -->
-          <div class="row">
-            <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-            <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label></strong>
-            <select name="flip" id="flip" style="margin-left:20px">
-              <?php 
-                foreach ($available_flip as $value => $name)
-                {
-                ?>
-                <option value="<?php echo $value; ?>"><?php echo getescapedtext ($name, $charset, $lang); ?></option>
-                <?php
-                }
-              ?>
-            </select>
-          </div>
-          <?php } ?>
+      </div>
+      <?php } ?>
+  
+      <?php if (!$is_audio) { ?>
+      <!-- sharpness / gamma / brigthness / contrast / saturation -->
+      <div class="cell">
+        <div class="row">
+          <strong><?php echo getescapedtext ($hcms_lang['adjust'][$lang]); ?></strong>
         </div>
-        
+        <div>
+          <input type="checkbox" id="chbx_sharpen" name="use_sharpen" value="1" onclick="toggle_sharpen();" />
+          <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang], $charset, $lang); ?></label>
+          <input name="sharpen" type="text" id="sharpen" size="4" value="0" />
+        </div>
+        <div>
+          <input type="checkbox" id="chbx_gamma" name="use_gamma" value="1" onclick="toggle_gamma();" />
+          <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo getescapedtext ($hcms_lang['gamma'][$lang], $charset, $lang); ?></label>
+          <input name="gamma" type="text" id="gamma" size="4" value="0" />
+        </div>
+        <div>
+          <input type="checkbox" id="chbx_brightness" name="use_brightness" value="0" onclick="toggle_brightness();" />
+          <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang], $charset, $lang); ?></label>
+          <input name="brightness" type="text" id="brightness" size="4" value="0" />
+        </div>
+        <div>
+            <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
+          <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang], $charset, $lang); ?></label>
+          <input name="contrast" type="text" id="contrast" size="4" value="0" />
+        </div>
+        <div>
+          <input type="checkbox" id="chbx_saturation" name="use_saturation" value="1" onclick="toggle_saturation();" />
+          <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo getescapedtext ($hcms_lang['saturation'][$lang], $charset, $lang); ?></label>
+          <input name="saturation" type="text" id="saturation" size="4" value="0" />
+        </div>
+
+        <?php if (!$is_audio) { ?>
+        <!-- rotate -->
+        <div>
+          <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
+          <label for="rotate" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label>
+          <select name="degree" id="degree">
+            <option value="90" selected="selected" >90&deg;</option>
+            <option value="180" >180&deg;</option>
+            <option value="-90" title="-90&deg;">270&deg;</option>
+          </select>
+        </div>
+  
+        <!-- vflip hflip -->
+        <div>
+          <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
+          <label for="chbx_flip" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label>
+          <select name="flip" id="flip">
+            <?php 
+              foreach ($available_flip as $value => $name)
+              {
+              ?>
+              <option value="<?php echo $value; ?>"><?php echo getescapedtext ($name, $charset, $lang); ?></option>
+              <?php
+              }
+            ?>
+          </select>
+        </div>
+        <?php } ?>
+      </div>
+      <?php }	?>
+      
+      <div class="cell">
         <?php if (!$is_audio) { ?>    
         <!-- video bitrate -->
-      	<div class="cell" style="width:260px;">
-          <div class="row">
-      		  <strong><?php echo getescapedtext ($hcms_lang['video-quality'][$lang], $charset, $lang); ?></strong>
-          </div>
-      		<?php foreach ($available_bitrates as $bitrate => $data) { ?>
-          <div class="row">
-      			<input type="radio" id="bitrate_<?php echo $bitrate; ?>" name="bitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="bitrate_<?php echo $bitrate; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label><br />
-          </div>
-      		<?php } ?>
-      	</div>
-        
-        <!-- audio bitrate -->
-        <div class="cell">
-          <div class="row">
-      		  <strong><?php echo getescapedtext ($hcms_lang['audio-quality'][$lang], $charset, $lang); ?></strong>
-          </div>
-      		<?php foreach ($available_audiobitrates as $bitrate => $data) { ?>
-          <div class="row">
-      			<input type="radio" id="audiobitrate_<?php echo $bitrate; ?>" name="audiobitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="audiobitrate_<?php echo $bitrate; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label><br />
-          </div>
-      		<?php } ?>
-      	</div>
-        <?php } ?>
-        
-        <!-- save as video format -->
-        <div class="cell" style="witth:200px;">
-      		<input type="checkbox" id="rendervideo" name="rendervideo" value="1" />
-          <strong><?php echo getescapedtext ($hcms_lang['save-as'][$lang], $charset, $lang); ?></strong><br />
-      		<label for="filetype"><?php echo getescapedtext ($hcms_lang['file-type'][$lang], $charset, $lang); ?></label>
-      		<select name="filetype">
-            <?php
-            if (!$is_audio)
-            {
-            ?>
-            <option value="videoplayer" ><?php echo getescapedtext ($hcms_lang['for-videoplayer'][$lang], $charset, $lang); ?></option>
-      			<?php
-            }
-            
-            foreach ($available_extensions as $ext => $name)
-            { 
-              if (!$is_audio || is_audio (strtolower($name)))
-              { 
-              ?>
-      				<option value="<?php echo $ext; ?>"><?php echo getescapedtext ($name, $charset, $lang); ?></option>
-              <?php  
-              } 
-            }
-            ?>
-      		</select>
-      	</div>
-        
-      </form>
-      <!-- end edit video/audio -->
-      <?php } ?>
-      
-    </div>
-    
-    
-    <!-- message or gallery -->
-    <div style="margin:42px 4px 4px 4px;">
-    <?php
-    if ($error != "")
-    {
-      echo showmessage (getescapedtext ($error, $charset, $lang));
-    }
-    else
-    {
-      // show media preview if available
-      if ($mediapreview != "") echo "<div id=\"preview\">".$mediapreview."</div>\n";
-    ?>
-    </div>
-
-    <form id="reloadform" style="display:none" method="POST" action="<?php echo $mgmt_config['url_path_cms']; ?>page_multiedit.php">
-      <?php
-      foreach ($_POST as $pkey => $pvalue)
-      {
-        ?>
-        <input type="hidden" name="<?php echo $pkey; ?>" value="<?php echo $pvalue; ?>" />
-        <?php
-      }
-      ?>
-    </form>
-    
-    <div class="hcmsWorkplaceFrame">
-    <form id="sendform">
-      <div id="settings" style="display:block; margin-top:8px;">
-
-        <div class="hcmsPriorityHigh hcmsHeadline" style="padding:5px;">
-          <label><input type="checkbox" id="unlockform" value="1" <?php if (getsession ("temp_appendcontent") == false) echo "checked=\"checked\""; ?> onclick="unlockFormBy(this)" style="margin:2px 2px 8px 0px;" /> <?php echo getescapedtext ($hcms_lang['only-fields-marked-with-*-hold-the-same-content-may-be-changed'][$lang], $charset, $lang); ?></label>
+        <div class="row">
+          <strong><?php echo getescapedtext ($hcms_lang['video-quality'][$lang], $charset, $lang); ?></strong>
         </div>
-        
-        <?php
-        $text_ids = array();
-        
-        foreach ($tagdata_array as $key => $tagdata)
-        {
-          $disabled = ($tagdata->locked == true ? 'DISABLED="DISABLED" READONLY="READONLY"' : "");
-          $id = $tagdata->hypertagname.'_'.$key;
-          $label = $tagdata->labelname;
-          
-          // add id to memory
-          if ($tagdata->locked == false)
-          {
-            $text_ids[] = $id;
-          }
-          ?>
-          <div class="hcmsFormRowLabel <?php echo $id; ?>">
-            <label for="<?php echo $id; ?>"><b><?php if (trim ($label) != "") { echo $label; if ($tagdata->samecontent == true) echo " *"; } ?></b></label>
+        <?php foreach ($available_bitrates as $bitrate => $data) { ?>
+        <div>
+          <input type="radio" id="bitrate_<?php echo $bitrate; ?>" name="bitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="bitrate_<?php echo $bitrate; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label><br />
+        </div>
+        <?php } ?>
+      
+        <!-- audio bitrate -->
+        <div class="row">
+          <strong><?php echo getescapedtext ($hcms_lang['audio-quality'][$lang], $charset, $lang); ?></strong>
+        </div>
+        <?php foreach ($available_audiobitrates as $bitrate => $data) { ?>
+        <div>
+          <input type="radio" id="audiobitrate_<?php echo $bitrate; ?>" name="audiobitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="audiobitrate_<?php echo $bitrate; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label><br />
+        </div>
+        <?php } ?>
+        <?php } ?>
+
+        <!-- video cut -->
+        <div class="row">
+          <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1" />
+          <strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($is_audio) ? getescapedtext ($hcms_lang['audio-montage'][$lang], $charset, $lang) : getescapedtext ($hcms_lang['video-montage'][$lang], $charset, $lang); ?></label></strong>
+        </div>
+        <div id="cut_area" style="display:none;">
+          <div>
+            <label for="cut_begin" style="width:80px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang); ?></label>
+            <input type="text" name="cut_begin" id="cut_begin" value="" placeholder="00:00:00.00" style="width:90px;" />
           </div>
-          <div class="hcmsFormRowContent <?php echo $id; ?>">
-          <?php
-          if ($tagdata->type == "u") 
-          {
-          ?>
-            <textarea id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width:<?php echo $tagdata->width; ?>px; height:<?php echo $tagdata->height; ?>px;" <?php echo $disabled; ?>><?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?></textarea>
-          <?php 
-          } 
-          elseif ($tagdata->type == "k") 
-          {
-            $list = "";
-          
-            // extract text list
-            $list .= $tagdata->list;
+          <div>
+            <label for="cut_end" style="width:80px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang); ?></label>
+            <input type="text" name="cut_end" id="cut_end" value="" placeholder="00:00:00.00" style="width:90px;" />
+          </div>
+        </div>
 
-            // taxonomy tree view
-            if (strtolower($tagdata->display) == "taxonomy")
-            {
-              // list_sourcefile must be a valid taxonomy path: %taxonomy%/site/language-code/taxonomy-ID/taxonomy-child-levels
-            ?>
-            <div id="<?php echo $id; ?>" style="position:relative; width:<?php echo $tagdata->width.(strpos ($tagdata->width, "%") > 0 ? "" : "px"); ?>; height:<?php echo $tagdata->height; ?>px; overflow:auto;">
+        <!-- save as video format -->
+        <div class="row hcmsButtonGreen">
+          <div>
+            <label>
+              <input type="checkbox" id="rendervideo" name="rendervideo" value="1" onclick="toggle_savevideo();" />
+              <strong><?php echo getescapedtext ($hcms_lang['save-as'][$lang], $charset, $lang); ?></strong>
+            </label>
+          </div>
+          <div>
+            <label for="filetype"><?php echo getescapedtext ($hcms_lang['type'][$lang], $charset, $lang); ?></label>
+            <select id="filetype" name="filetype" style="width:120px;" disabled="disabled">
               <?php
-              $temp_array = explode (",", $tagdata->fieldvalue);
-              $temp_array = array_unique ($temp_array);
-
-              if ($tagdata->locked == false) echo showtaxonomytree ($site, $container_id_array, $key, $tagdata->hypertagname, $lang, $tagdata->file, ($tagdata->width - 24), ($tagdata->height - 24));
-              else echo "<textarea type=\"text\" id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:99%; height:".($tagdata->height - 24)."px;\" ".$disabled.">".implode (", ",$temp_array)."</textarea>";
+              if (!$is_audio)
+              {
               ?>
-            </div>
-            <?php
-            }
-            // keyword list view (default)
-            else
-            {
-              // extract source file (file path or URL) for text list
-              if ($tagdata->file != "")
-              {
-                $list_add = getlistelements ($tagdata->file);
-                
-                if ($list_add != "") $list .= ",".$list_add;
+              <option value="videoplayer" ><?php echo getescapedtext ($hcms_lang['for-videoplayer'][$lang], $charset, $lang); ?></option>
+              <?php
               }
-  
-              // extract text list
-              $onlylist = strtolower ($tagdata->onlylist);
               
-              // get list entries
-              if ($list != "")
-              {
-                // replace line breaks
-                $list = str_replace ("\r\n", ",", $list);
-                $list = str_replace ("\n", ",", $list);
-                $list = str_replace ("\r", ",", $list);
-                // escape single quotes
-                $list = str_replace ("'", "\\'", $list);
-                // create array
-                $list_array = explode (",", $list);
-                // create keyword string for Javascript
-                $keywords = "['".implode ("', '", $list_array)."']";
-                
-                $keywords_tagit = "availableTags:".$keywords.", ";
-  
-                if ($onlylist == "true" || $onlylist == "yes" || $onlylist == "1")
-                {
-                  $keywords_tagit .= "beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$keywords.") == -1) { return false; } }, ";
-                }
+              foreach ($available_extensions as $ext => $name)
+              { 
+                if (!$is_audio || is_audio (strtolower($name)))
+                { 
+                ?>
+                <option value="<?php echo $ext; ?>"><?php echo getescapedtext ($name, $charset, $lang); ?></option>
+                <?php  
+                } 
               }
-              else $keywords_tagit = "";
-              
-              $add_onload .= "
-              $('#".$id."').tagit({".$keywords_tagit."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$id."')});";
-            ?>
-            <div style="display:inline-block; width:<?php echo $tagdata->width; ?>px;">
-              <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width:100%;" <?php echo $disabled; ?> value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" />
-            </div>
-          <?php
-            }
-          } 
-          elseif ($tagdata->type == "f")
+              ?>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <?php if (!$is_audio) { ?>
+      <hr/>
+      <!-- video thumbnail -->
+      <div class="cell" style="width:100%;">
+        <div>
+          <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1" />
+          <strong><label for="thumb_yes" onclick="checkThumb();"><?php echo getescapedtext ($hcms_lang['pick-preview-image'][$lang], $charset, $lang); ?></label></strong>
+        </div>
+        <div id="thumb_area" style="display:none;">
+          <label for="thumb_frame" style="width:80px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang); ?></label>
+          <input type="text" name="thumb_frame" id="thumb_frame" value="" placeholder="00:00:00.00" placeholder="" style="width:90px;" />
+        </div>
+      </div>
+      <?php } ?>
+
+    </form>
+    <!-- end edit video/audio -->
+    <?php } ?>
+    
+  </div>
+  
+  
+  <!-- message or gallery -->
+  <div style="margin:42px 4px 4px 4px;">
+  <?php
+  if ($error != "")
+  {
+    echo showmessage (getescapedtext ($error, $charset, $lang));
+  }
+  else
+  {
+    // show media preview if available
+    if ($mediapreview != "") echo "<div id=\"preview\">".$mediapreview."</div>\n";
+  ?>
+  </div>
+
+  <form id="reloadform" style="display:none" method="POST" action="<?php echo $mgmt_config['url_path_cms']; ?>page_multiedit.php">
+    <?php
+    foreach ($_POST as $pkey => $pvalue)
+    {
+      ?>
+      <input type="hidden" name="<?php echo $pkey; ?>" value="<?php echo $pvalue; ?>" />
+      <?php
+    }
+    ?>
+  </form>
+  
+  <div class="hcmsWorkplaceFrame">
+  <form id="sendform">
+    <div id="settings" style="display:block; margin-top:8px;">
+
+      <div class="hcmsPriorityHigh hcmsHeadline" style="padding:5px;">
+        <label><input type="checkbox" id="unlockform" value="1" <?php if (getsession ("temp_appendcontent") == false) echo "checked=\"checked\""; ?> onclick="unlockFormBy(this)" style="margin:2px 2px 8px 0px;" /> <?php echo getescapedtext ($hcms_lang['only-fields-marked-with-*-hold-the-same-content-may-be-changed'][$lang], $charset, $lang); ?></label>
+      </div>
+      
+      <?php
+      $text_ids = array();
+      
+      foreach ($tagdata_array as $key => $tagdata)
+      {
+        $disabled = ($tagdata->locked == true ? 'DISABLED="DISABLED" READONLY="READONLY"' : "");
+        $id = $tagdata->hypertagname.'_'.$key;
+        $label = $tagdata->labelname;
+        
+        // add id to memory
+        if ($tagdata->locked == false)
+        {
+          $text_ids[] = $id;
+        }
+        ?>
+        <div class="hcmsFormRowLabel <?php echo $id; ?>">
+          <label for="<?php echo $id; ?>"><b><?php if (trim ($label) != "") { echo $label; if ($tagdata->samecontent == true) echo " *"; } ?></b></label>
+        </div>
+        <div class="hcmsFormRowContent <?php echo $id; ?>">
+        <?php
+        if ($tagdata->type == "u") 
+        {
+        ?>
+          <textarea id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width:<?php echo $tagdata->width; ?>px; height:<?php echo $tagdata->height; ?>px;" <?php echo $disabled; ?>><?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?></textarea>
+        <?php 
+        } 
+        elseif ($tagdata->type == "k") 
+        {
+          $list = "";
+        
+          // extract text list
+          $list .= $tagdata->list;
+
+          // taxonomy tree view
+          if (strtolower($tagdata->display) == "taxonomy")
           {
-            if ($tagdata->locked == false)
-            {
-              echo showeditor ($site, $tagdata->hypertagname, $key, $tagdata->fieldvalue, $tagdata->width, $tagdata->height, $tagdata->toolbar, $lang, $tagdata->dpi);
-            }
-            else
-            {
-              echo "<textarea id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:".$tagdata->width."px; height:".$tagdata->height."px;\" ".$disabled.">".$tagdata->fieldvalue."</textarea>";
-            }
+            // list_sourcefile must be a valid taxonomy path: %taxonomy%/site/language-code/taxonomy-ID/taxonomy-child-levels
+          ?>
+          <div id="<?php echo $id; ?>" style="position:relative; width:<?php echo $tagdata->width.(strpos ($tagdata->width, "%") > 0 ? "" : "px"); ?>; height:<?php echo $tagdata->height; ?>px; overflow:auto;">
+            <?php
+            $temp_array = explode (",", $tagdata->fieldvalue);
+            $temp_array = array_unique ($temp_array);
+
+            if ($tagdata->locked == false) echo showtaxonomytree ($site, $container_id_array, $key, $tagdata->hypertagname, $lang, $tagdata->file, ($tagdata->width - 24), ($tagdata->height - 24));
+            else echo "<textarea type=\"text\" id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:99%; height:".($tagdata->height - 24)."px;\" ".$disabled.">".implode (", ",$temp_array)."</textarea>";
+            ?>
+          </div>
+          <?php
           }
-          elseif ($tagdata->type == "d")
+          // keyword list view (default)
+          else
           {
-            // get date format
-            $format = $tagdata->format;
-            if ($format == "") $format = "%Y-%m-%d";
-          
-            if (empty ($disabled)) $showcalendar = "onclick=\"show_cal(this, '".$id."', '".$format."');\"";
-            else $showcalendar = "";
-            ?>
-            <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" readonly="readonly" <?php echo $disabled; ?> />
-            <?php
-            if ($tagdata->locked == false) 
-            {
-            ?>
-            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" <?php echo $showcalendar; ?> class="hcmsButtonTiny hcmsButtonSizeSquare" style="z-index:9999999;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" <?php echo $disabled; ?> />
-          <?php
-            }
-          } 
-          elseif ($tagdata->type == "l")
-          {
-            $list = "";
-            
-            // extract text list
-            $list .= $tagdata->list;
-            
             // extract source file (file path or URL) for text list
             if ($tagdata->file != "")
             {
               $list_add = getlistelements ($tagdata->file);
               
-              if ($list_add != "")
-              {
-                $list_add = str_replace (",", "|", $list_add);
-                $list .= "|".$list_add;
-              }
-            }
-            
-            // get list entries
-            $list_array = explode ("|", $list);
-            ?>
-            <select name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" <?php echo $disabled; ?>>
-            <?php
-            foreach ($list_array as $list_entry)
-            {
-              $end_val = strlen ($list_entry)-1;
-              
-              if (($start_val = strpos ($list_entry, "{")) > 0 && strpos ($list_entry, "}") == $end_val)
-              {
-                $diff_val = $end_val-$start_val-1;
-                $list_value = substr ($list_entry, $start_val+1, $diff_val);
-                $list_text = substr ($list_entry, 0, $start_val);
-              } 
-              else $list_value = $list_text = $list_entry;
-              ?>
-              <option value="<?php echo $list_value; ?>" <?php if ($tagdata->locked == false && $list_value == $tagdata->fieldvalue) echo " selected"; ?>><?php echo $list_text; ?></option>
-              <?php
+              if ($list_add != "") $list .= ",".$list_add;
             }
 
-            ?>
-            </select>
-          <?php
-          } 
-          elseif ($tagdata->type == "c")
+            // extract text list
+            $onlylist = strtolower ($tagdata->onlylist);
+            
+            // get list entries
+            if ($list != "")
+            {
+              // replace line breaks
+              $list = str_replace ("\r\n", ",", $list);
+              $list = str_replace ("\n", ",", $list);
+              $list = str_replace ("\r", ",", $list);
+              // escape single quotes
+              $list = str_replace ("'", "\\'", $list);
+              // create array
+              $list_array = explode (",", $list);
+              // create keyword string for Javascript
+              $keywords = "['".implode ("', '", $list_array)."']";
+              
+              $keywords_tagit = "availableTags:".$keywords.", ";
+
+              if ($onlylist == "true" || $onlylist == "yes" || $onlylist == "1")
+              {
+                $keywords_tagit .= "beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$keywords.") == -1) { return false; } }, ";
+              }
+            }
+            else $keywords_tagit = "";
+            
+            $add_onload .= "
+            $('#".$id."').tagit({".$keywords_tagit."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$id."')});";
+          ?>
+          <div style="display:inline-block; width:<?php echo $tagdata->width; ?>px;">
+            <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width:100%;" <?php echo $disabled; ?> value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" />
+          </div>
+        <?php
+          }
+        } 
+        elseif ($tagdata->type == "f")
+        {
+          if ($tagdata->locked == false)
           {
-            ?>
-            <input type="checkbox" name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" value="<?php echo $tagdata->value; ?>" <?php if ($tagdata->locked == false && $tagdata->value == $tagdata->fieldvalue) echo "checked"; echo $disabled; ?> /> <?php echo $tagdata->value; ?>
-            <?php
+            echo showeditor ($site, $tagdata->hypertagname, $key, $tagdata->fieldvalue, $tagdata->width, $tagdata->height, $tagdata->toolbar, $lang, $tagdata->dpi);
           }
           else
           {
-            echo "UNKNOWN TYPE: ".var_export ($tagdata->type, true)." for ".var_export ($tagdata->hypertagname, true)."<br>\n";
+            echo "<textarea id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:".$tagdata->width."px; height:".$tagdata->height."px;\" ".$disabled.">".$tagdata->fieldvalue."</textarea>";
           }
+        }
+        elseif ($tagdata->type == "d")
+        {
+          // get date format
+          $format = $tagdata->format;
+          if ($format == "") $format = "%Y-%m-%d";
+        
+          if (empty ($disabled)) $showcalendar = "onclick=\"show_cal(this, '".$id."', '".$format."');\"";
+          else $showcalendar = "";
           ?>
-        </div>
-      <?php
-      }
-      ?>
+          <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" readonly="readonly" <?php echo $disabled; ?> />
+          <?php
+          if ($tagdata->locked == false) 
+          {
+          ?>
+          <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" <?php echo $showcalendar; ?> class="hcmsButtonTiny hcmsButtonSizeSquare" style="z-index:9999999;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" <?php echo $disabled; ?> />
+        <?php
+          }
+        } 
+        elseif ($tagdata->type == "l")
+        {
+          $list = "";
+          
+          // extract text list
+          $list .= $tagdata->list;
+          
+          // extract source file (file path or URL) for text list
+          if ($tagdata->file != "")
+          {
+            $list_add = getlistelements ($tagdata->file);
+            
+            if ($list_add != "")
+            {
+              $list_add = str_replace (",", "|", $list_add);
+              $list .= "|".$list_add;
+            }
+          }
+          
+          // get list entries
+          $list_array = explode ("|", $list);
+          ?>
+          <select name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" <?php echo $disabled; ?>>
+          <?php
+          foreach ($list_array as $list_entry)
+          {
+            $end_val = strlen ($list_entry)-1;
+            
+            if (($start_val = strpos ($list_entry, "{")) > 0 && strpos ($list_entry, "}") == $end_val)
+            {
+              $diff_val = $end_val-$start_val-1;
+              $list_value = substr ($list_entry, $start_val+1, $diff_val);
+              $list_text = substr ($list_entry, 0, $start_val);
+            } 
+            else $list_value = $list_text = $list_entry;
+            ?>
+            <option value="<?php echo $list_value; ?>" <?php if ($tagdata->locked == false && $list_value == $tagdata->fieldvalue) echo " selected"; ?>><?php echo $list_text; ?></option>
+            <?php
+          }
+
+          ?>
+          </select>
+        <?php
+        } 
+        elseif ($tagdata->type == "c")
+        {
+          ?>
+          <input type="checkbox" name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" value="<?php echo $tagdata->value; ?>" <?php if ($tagdata->locked == false && $tagdata->value == $tagdata->fieldvalue) echo "checked"; echo $disabled; ?> /> <?php echo $tagdata->value; ?>
+          <?php
+        }
+        else
+        {
+          echo "UNKNOWN TYPE: ".var_export ($tagdata->type, true)." for ".var_export ($tagdata->hypertagname, true)."<br>\n";
+        }
+        ?>
       </div>
-
-      <!-- memory -->
-      <input type="hidden" id="multiobject" value="<?php echo $multiobject; ?>" />
-      <input type="hidden" id="text_ids" value="<?php echo implode('|', $text_ids); ?>" />
-
-    </form>
-    </div>
     <?php
     }
+    ?>
+    </div>
+
+    <!-- memory -->
+    <input type="hidden" id="multiobject" value="<?php echo $multiobject; ?>" />
+    <input type="hidden" id="text_ids" value="<?php echo implode('|', $text_ids); ?>" />
+
+  </form>
+  </div>
+  <?php
+  }
 
   // onload event / document ready
   if ($add_onload != "") echo "
@@ -2676,7 +2738,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
   });
   </script>
   ";
-    ?>
+  ?>
 </body>
 
 <?php include_once ("include/footer.inc.php"); ?>

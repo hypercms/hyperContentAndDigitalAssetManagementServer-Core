@@ -178,7 +178,7 @@ if (valid_locationname ($location))
                 }
               }
             }
-            elseif (is_file ($location.$file) && $file != ".folder")
+            elseif (is_file ($location.$file) && !is_hiddenfile ($file))
             {
               $object_array[] = $file;            
               $objects_total++;     

@@ -35,6 +35,9 @@ class hcms_db
         $offset = offsettime();
         $this->_db->query ("SET time_zone='".$offset."'");
 
+        // set sql_mode to TRADITIONAL
+        $this->_db->query ("SET SESSION sql_mode = 'TRADITIONAL'");
+
         break;
       case 'odbc':
         $this->_db = odbc_connect ($db, $user, $pass, SQL_CUR_USE_ODBC);
@@ -643,6 +646,8 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
                 if (intval ($object_id) < 1) $object_id = rdbms_getobject_id ($object_id);
               }
 
+              $object_id = intval ($object_id);
+
               // clean text (includes HTML decode)
               if ($text != "")
               {
@@ -656,9 +661,9 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
               if ($num_rows > 0)
               {
                 // query 
-                $sql = 'UPDATE textnodes SET textcontent="'.$text.'", object_id="'.$object_id.'", user="'.$user.'" ';
+                $sql = 'UPDATE textnodes SET textcontent="'.$text.'", object_id='.$object_id.', user="'.$user.'" ';
                 if ($type != "") $sql .= ', type="'.$type.'" ';
-                $sql .= 'WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
+                $sql .= 'WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
   
                 $errcode = "50005";
                 $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], ++$i);
@@ -668,7 +673,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
               {
                 // query    
                 $sql = 'INSERT INTO textnodes (id, text_id, textcontent, object_id'.($type != "" ? ', type' : '').', user) ';
-                $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", "'.$text.'", "'.$object_id.'"'.($type != "" ? ', "'.$type.'"' : '').', "'.$user.'")';
+                $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", "'.$text.'", '.$object_id.''.($type != "" ? ', "'.$type.'"' : '').', "'.$user.'")';
   
                 $errcode = "50006";
                 $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], ++$i);
@@ -1372,7 +1377,7 @@ function rdbms_renameobject ($object_old, $object_new)
       {
         if (!empty ($row['object_id']))
         {
-          $object_id = $row['object_id'];
+          $object_id = intval ($row['object_id']);
           $container_id = $row['id'];
           $object = $row['objectpath'];
           $object = str_replace ($object_old, $object_new, $object);
@@ -1380,7 +1385,7 @@ function rdbms_renameobject ($object_old, $object_new)
           $filetype = getfiletype ($fileext);
   
           // update object 
-          $sql = 'UPDATE object SET objectpath="'.$object.'" WHERE object_id="'.$object_id.'"';
+          $sql = 'UPDATE object SET objectpath="'.$object.'" WHERE object_id='.$object_id.'';
           
           $errcode = "50011";
           $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);        
@@ -1388,7 +1393,7 @@ function rdbms_renameobject ($object_old, $object_new)
           // update media file-type
           if ($filetype != "")
           {
-            $sql = 'UPDATE media SET filetype="'.$filetype.'" WHERE id="'.$container_id.'"';
+            $sql = 'UPDATE media SET filetype="'.$filetype.'" WHERE id='.$container_id.'';
     
             $errcode = "50012";
             $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);
@@ -3773,7 +3778,7 @@ function rdbms_getobject ($object_identifier)
           {
             $sql = 'DELETE FROM accesslink WHERE hash="'.$object_identifier.'"';
              
-            $errcode = "50039";
+            $errcode = "50739";
             $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "delete");
           }
           elseif ($row['objectpath'] != "") $objectpath = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
@@ -3948,7 +3953,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
           {
             $sql = 'DELETE FROM accesslink WHERE hash="'.$object_identifier.'"';
              
-            $errcode = "50039";
+            $errcode = "50749";
             $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "delete");
           }
           elseif ($row['objectpath'] != "") 
@@ -5320,7 +5325,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
     {
       $sql = 'SELECT objectpath FROM object WHERE id='.$container_id;
 
-      $errcode = "50039";
+      $errcode = "50759";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'objectpath');
 
       if ($done)

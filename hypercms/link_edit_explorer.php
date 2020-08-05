@@ -193,13 +193,13 @@ if (!empty ($dir) && !empty ($site))
     {
       while ($entry = $outdir->read())
       {
-        if ($entry != "" && $entry != "." && $entry != ".." && $entry != ".folder" && accessgeneral ($site, $dir.$entry, "page"))
+        if ($entry != "" && $entry != "." && $entry != ".." && accessgeneral ($site, $dir.$entry, "page"))
         {        
           if (is_dir ($dir.$entry))
           {
             $entry_dir[] = $dir_esc.$entry."/.folder";
           }
-          elseif (is_file ($dir.$entry))
+          elseif (is_file ($dir.$entry) && !is_hiddenfile ($entry))
           {
             $entry_file[] = $dir_esc.$entry;
           }

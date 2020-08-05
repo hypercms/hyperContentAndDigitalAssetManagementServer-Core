@@ -795,7 +795,7 @@ function is_date ($date, $format="Y-m-d")
 // output: if file is a temp file true / false on error
 
 // description:
-// This function checks if the provided file name is a temporary file
+// This function checks if the provided file name is a temporary file that should not be uploaded in the system
 
 function is_tempfile ($path)
 {
@@ -821,6 +821,39 @@ function is_tempfile ($path)
     $object = getobject ($path);
 
     foreach ($tempfile_patterns as $pattern)
+    {
+      if (preg_match ($pattern, $object)) return true;
+    }
+  }
+  
+  return false;
+}
+
+// -------------------------------------- is_hiddenfile -------------------------------------------
+// function: is_hiddenfile()
+// input: file name or path [string]
+// output: if file is a hidden file true / false on error
+
+// description:
+// This function checks if the provided file name is a hidden file that should not be displayed
+
+function is_hiddenfile ($path)
+{
+  global $mgmt_config;
+
+  // patterns
+  $hiddenfile_patterns = array (
+    '/^.folder$/', // folder file
+    '/^.htaccess$/', // Apache htaccess file
+    '/^web.config$/' // MS IIS web.config file
+  );
+
+  if ($path != "" && is_array ($hiddenfile_patterns))
+  {
+    // extract the file name
+    $object = getobject ($path);
+
+    foreach ($hiddenfile_patterns as $pattern)
     {
       if (preg_match ($pattern, $object)) return true;
     }
@@ -2214,12 +2247,12 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     }
 
     // object has been marked as deleted
-    if ($object_hash == "hcms:deleted") 
+    if (!empty ($object_hash) && $object_hash == "hcms:deleted") 
     {
       return false;
     }
     // object wrapper link
-    elseif ($object_hash != false)
+    elseif (!empty ($object_hash))
     {
       // add media type and configuration without verification of the values (see main config for conversion settings)
       if ($type != "" || $mediaconfig != "")
@@ -6538,6 +6571,14 @@ function createpublication ($site_name, $user="sys")
 // abs_publ_app ... absolute path to application root on publication server [string]
 // publ_os ... operating system used (UNIX or WIN) [string]
 // remoteclient ... URL to remote client on remote webserver [string]
+// ldap_servers ... The domain controllers option is an array of servers located on your network that serve Active Directory [string]
+// ldap_base_dn ... The base distinguished name is the base distinguished name you'd like to perform operations on. An example base DN would be `DC=corp,DC=acme,DC=org`. [string]
+// ldap_userdomain ... The user domain is the suffix of your user accounts in AD [string]
+// ldap_version ... LDAP protocol version [2,3]
+// ldap_port ... The port option is used for authenticating and binding to your AD server. The default ports are already used for non SSL and SSL connections (389 and 636). Only insert a port if your AD server uses a unique port. [integer]
+// ldap_follow_referrals ... The follow referrals option is a boolean to tell active directory to follow a referral to another server on your network if the server queried knows the information you are asking for exists, but does not yet contain a copy of it locally. This option is defaulted to false. [boolean]
+// ldap_use_ssl ... If you need to be able to change user passwords on your server, then an SSL or TLS connection is required [boolean]
+// ldap_use_tls ... If you need to be able to change user passwords on your server, then an SSL or TLS connection is required [boolean]
 
 function editpublication ($site_name, $setting, $user="sys")
 {
@@ -6639,6 +6680,18 @@ function editpublication ($site_name, $setting, $user="sys")
 
     if (array_key_exists ('gs_speech2text', $setting) && $setting['gs_speech2text'] == true) $gs_speech2text_new = "true";
     else $gs_speech2text_new = "false";
+
+    if (array_key_exists ('ldap_follow_referrals', $setting) && $setting['ldap_follow_referrals'] == true) $ldap_follow_referrals_new = "true";
+    else $ldap_follow_referrals_new = "false";
+
+    if (array_key_exists ('ldap_use_ssl', $setting) && $setting['ldap_use_ssl'] == true) $ldap_use_ssl_new = "true";
+    else $ldap_use_ssl_new = "false";
+
+    if (array_key_exists ('ldap_use_tls', $setting) && $setting['ldap_use_tls'] == true) $ldap_use_tls_new = "true";
+    else $ldap_use_tls_new = "false";
+
+    if (array_key_exists ('ldap_sync', $setting) && $setting['ldap_sync'] == true) $ldap_sync_new = "true";
+    else $ldap_sync_new = "false";
 
     // create htaccess and web.config files for DAM usage
     if ($dam_new == "true")
@@ -6749,15 +6802,15 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists('ocr', $setting)) $ocr_new = $setting['ocr'];
     else $ocr_new = "";
 
-     // set registration of new users
+    // set registration of new users
     if (array_key_exists('registration', $setting) && $setting['registration'] == true) $registration_new = "true";
     else $registration_new = "false";
 
-     // set user group assignment for newly registered users
+    // set user group assignment for newly registered users
     if (array_key_exists('registration_group', $setting)) $registrationgroup_new = $setting['registration_group'];
     else $registrationgroup_new = "";
 
-     // set user notification if a new user has been registered
+    // set user notification if a new user has been registered
     if (array_key_exists('registration_notify', $setting)) $registrationnotify_new = $setting['registration_notify'];
     else $registrationnotify_new = "";
 
@@ -6765,18 +6818,43 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists('eventlog_notify', $setting)) $eventlognotify_new = $setting['eventlog_notify'];
     else $eventlognotify_new = "";
 
-     // set and save Google Cloud API Key file (JSON string)
-     if (array_key_exists('gs_access_json', $setting)) $gs_access_json_new = $setting['gs_access_json'];
-     else $gs_access_json_new = "";
+    // set and save Google Cloud API Key file (JSON string)
+    if (array_key_exists('gs_access_json', $setting)) $gs_access_json_new = $setting['gs_access_json'];
+    else $gs_access_json_new = "";
 
-     savefile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json", $gs_access_json_new);
+    savefile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json", $gs_access_json_new);
 
-     if (trim ($gs_access_json_new) != "") $gs_access_json_file_new = $mgmt_config['abs_path_data']."config/".$site_name.".google_cloud_key.json";
-     else $gs_access_json_file_new = "";
+    if (trim ($gs_access_json_new) != "") $gs_access_json_file_new = $mgmt_config['abs_path_data']."config/".$site_name.".google_cloud_key.json";
+    else $gs_access_json_file_new = "";
 
-     // set Google Speech-to-Text language code
-     if (array_key_exists('gs_speech2text_langcode', $setting)) $gs_speech2text_langcode_new = $setting['gs_speech2text_langcode'];
-     else $gs_speech2text_langcode_new = "";
+    // set Google Speech-to-Text language code
+    if (array_key_exists('gs_speech2text_langcode', $setting)) $gs_speech2text_langcode_new = $setting['gs_speech2text_langcode'];
+    else $gs_speech2text_langcode_new = "";
+
+    // AD Domain controllers
+    if (is_array ($setting) && array_key_exists ('ldap_servers', $setting) && $setting['ldap_servers'] != "")
+    {
+      $ldap_servers_new = splitstring ($setting['ldap_servers']);
+      $ldap_servers_new = implode (", ", $ldap_servers_new);
+    }
+    else $ldap_servers_new = "";
+
+    // LDAP base DN
+    if (array_key_exists('ldap_base_dn', $setting)) $ldap_base_dn_new = $setting['ldap_base_dn'];
+    else $ldap_base_dn_new = "";
+
+    // LDAP user domain
+    if (array_key_exists('ldap_userdomain', $setting)) $ldap_userdomain_new = $setting['ldap_userdomain'];
+    else $ldap_userdomain_new = "";
+
+    // LDAP version
+    if (array_key_exists('ldap_version', $setting)) $ldap_version_new = $setting['ldap_version'];
+    else $ldap_version_new = "";
+
+    // LDAP port
+    if (array_key_exists('ldap_port', $setting)) $ldap_port_new = $setting['ldap_port'];
+    else $ldap_port_new = "";
+    
 
     // config file of management system
     $site_mgmt_config = "<?php
@@ -6886,7 +6964,7 @@ function editpublication ($site_name, $setting, $user="sys")
 
 ";
 
-// only if the connector module is installed
+  // only if the connector module is installed
   if (is_dir ($mgmt_config['abs_path_cms']."connector/")) $site_mgmt_config .= "
 // Allow sharing of social media links
 // Enable (false) or disable (true) restricted system usage of social media link sharing. 
@@ -6951,6 +7029,41 @@ function editpublication ($site_name, $setting, $user="sys")
 \$mgmt_config['".$site_name."']['gs_speech2text'] = ".$gs_speech2text_new.";
 // Google Speech-to-Text language code
 \$mgmt_config['".$site_name."']['gs_speech2text_langcode'] = \"".$gs_speech2text_langcode_new."\";
+";
+
+  // only if the a auth connector has been defined and the connector file does exist
+  if (!empty ($mgmt_config['authconnect']) && empty ($mgmt_config['authconnect_all']) && is_file ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php")) $site_mgmt_config .= "
+// LDAP/AD Domain controllers (required)
+\$mgmt_config['".$site_name."']['ldap_servers'] = \"".$ldap_servers_new."\";
+
+// LDAP/AD Base DN (required)
+\$mgmt_config['".$site_name."']['ldap_base_dn'] = \"".$ldap_base_dn_new."\";
+
+// LDAP/AD User domain (required)
+\$mgmt_config['".$site_name."']['ldap_userdomain'] = \"".$ldap_userdomain_new."\";
+
+// LDAP/AD Version (required)
+\$mgmt_config['".$site_name."']['ldap_version'] = \"".$ldap_version_new."\";
+
+// LDAP/AD Port (optional)
+\$mgmt_config['".$site_name."']['ldap_port'] = \"".$ldap_port_new."\";
+
+// LDAP/AD Follow referrals (optional)
+// Enable (true) or disable (false)
+\$mgmt_config['".$site_name."']['ldap_follow_referrals'] = ".$ldap_follow_referrals_new.";
+
+// LDAP/AD Use SSL (optional)
+// Enable (true) or disable (false)
+\$mgmt_config['".$site_name."']['ldap_use_ssl'] = ".$ldap_use_ssl_new.";
+
+// LDAP/AD Use TLS (optional)
+// Enable (true) or disable (false)
+\$mgmt_config['".$site_name."']['ldap_use_tls'] = ".$ldap_use_tls_new.";
+
+// LDAP/AD Sync users (optional)
+// Enable (true) or disable (false) the sync of LDAP users with the system users
+\$mgmt_config['".$site_name."']['ldap_sync'] = ".$ldap_sync_new.";
+
 ";
 
   // publication management config
@@ -7884,8 +7997,39 @@ function loadtemplate ($site, $template)
         return $result; 
       }
     }
+
+    // 4. brand guideline templates
+    if (!empty ($mgmt_config[$site]['dam']))
+    {
+      if ($template == "System-BrandGuidelines.comp.tpl" && is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_brandguidelines.schema.xml.php"))
+      {
+        $data = loadfile ($mgmt_config['abs_path_cms']."/xmlschema/", "template_brandguidelines.schema.xml.php");
+      }
+      elseif ($template == "System-BrandGuidePage.comp.tpl" && is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_brandguidepage.schema.xml.php"))
+      {
+        $data = loadfile ($mgmt_config['abs_path_cms']."/xmlschema/", "template_brandguidepage.schema.xml.php");
+      }
+      elseif ($template == "System-BrandColor.comp.tpl" && is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_brandcolor.schema.xml.php"))
+      {
+        $data = loadfile ($mgmt_config['abs_path_cms']."/xmlschema/", "template_brandcolor.schema.xml.php");
+      }
+      elseif ($template == "System-BrandGuideDownload.comp.tpl" && is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_brandguidedownload.schema.xml.php"))
+      {
+        $data = loadfile ($mgmt_config['abs_path_cms']."/xmlschema/", "template_brandguidedownload.schema.xml.php");
+      }
+      else $data = "";
+        
+      $result['content'] = $data;
+      $result['publication'] = $site;
+
+      if ($data != false) $result['result'] = true;
+      else $result['result'] = false; 
+
+      return $result; 
+    }
   }
-  else return false;
+
+  return false; 
 }
 
 // ----------------------------------------- createtemplate ---------------------------------------------
@@ -8806,7 +8950,7 @@ function edituser ($site="", $login, $old_password="", $password="", $confirm_pa
           $usersuperadmin = getcontent ($usernode[0], "<admin>");
         }
 
-        // check old password (only forlogged in user)
+        // check old password (only for logged in user)
         if ($login == $user && !empty ($userpasswd[0]) && !password_verify ($old_password, $userpasswd[0]) && crypt ($old_password, substr ($old_password, 1, 2)) != $userpasswd[0])
         {
           //unlock file

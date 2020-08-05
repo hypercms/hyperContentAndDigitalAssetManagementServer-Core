@@ -1255,7 +1255,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             // using PDF.JS with orig. file via iframe
             $doc_link = cleandomain (createviewlink ($site, $mediafile_orig, $medianame, true))."&saveName=".$medianame.".pdf";
-            $mediaview_doc = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
+            $mediaview_doc = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." id=\"".$id."\" style=\"border:0;\"></iframe><br />\n";
           }
           else
           {
@@ -1296,7 +1296,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {
               // using pdfjs with thumbnail file via iframe
               $doc_link = cleandomain (createviewlink ($site, $mediafile_thumb, $medianame_thumb, true))."&saveName=".$medianame.".pdf";
-              $mediaview_doc = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
+              $mediaview_doc = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." id=\"".$id."\" style=\"border:0;\"></iframe><br />\n";
             }
             // thumb pdf does not exist but can be created
             elseif (empty ($thumb_pdf_exists) && is_supported ($mgmt_docpreview, $file_info['orig_ext']) && (empty ($mgmt_maxsizepreview[$file_info['orig_ext']]) || ($mediafilesize/1024) <= $mgmt_maxsizepreview[$file_info['orig_ext']]))
@@ -2445,7 +2445,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             if ($langcode_array != false)
             {
               $lang_select = "
-                 <select id=\"vtt_language\" name=\"vtt_language\" style=\"width:298px;\" onchange=\"hcms_changeVTTlanguage()\">
+                 <select id=\"vtt_language\" name=\"vtt_language\" style=\"margin:2px 2px 0px 0px; width:298px;\" onchange=\"hcms_changeVTTlanguage()\">
                    <option value=\"\">".getescapedtext ($hcms_lang['language'][$lang], $hcms_charset, $lang)."</option>";
 
               foreach ($langcode_array as $code => $language)
@@ -2464,11 +2464,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <tr>
           <td style=\"text-align:left;\">
 
-            <div id=\"vtt_container\" style=\"display:none; width:592px;\">
+            <div id=\"vtt_container\" style=\"display:none; width:600px;\">
               <!-- VTT editor -->
               <div id=\"vtt_create\" class=\"hcmsInfoBox\" style=\"width:100%;\">
                 <b>".getescapedtext ($hcms_lang['video-text-track'][$lang], $hcms_charset, $lang)."</b><br />
-                <div style=\"float:left; margin:2px 2px 0px 0px;\">".$lang_select."</div>
+                <div style=\"float:left; padding:0; margin:0;\">".$lang_select."</div>
                 <input type=\"hidden\" id=\"vtt_langcode\" name=\"vtt_langcode\" value=\"\" />
                 <input type=\"text\" id=\"vtt_start\" name=\"start\" value=\"\" placeholder=\"".getescapedtext ($hcms_lang['start'][$lang], $hcms_charset, $lang)."\" maxlength=\"12\" style=\"float:left; margin:2px 2px 0px 0px; width:100px;\" readonly=\"readonly\" />
                 <img src=\"".getthemelocation()."img/button_time.png\" onclick=\"setPlayerTime('vtt_start');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"float:left;\" alt=\"".getescapedtext ($hcms_lang['set'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set'][$lang], $hcms_charset, $lang)."\" />
@@ -2478,7 +2478,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <img src=\"".getthemelocation()."img/button_save.png\" onclick=\"createVTTrecord()\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"float:left;\" alt=\"".getescapedtext ($hcms_lang['save'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['save'][$lang], $hcms_charset, $lang)."\" />
                 <div style=\"clear:both;\"></div>
               </div>
-              <div id=\"vtt_records_container\" class=\"hcmsInfoBox\" style=\"margin-top:10px; width:100%; height:200px; overflow:auto;\">
+              <div id=\"vtt_records_container\" class=\"hcmsInfoBox\" style=\"margin-top:10px; width:100%; height:200px; overflow:auto; white-space:nowrap;\">
                 <div id=\"vtt_header\">
                   <div style=\"float:left; margin:2px 2px 0px 0px; width:98px;\"><b>".getescapedtext ($hcms_lang['start'][$lang], $hcms_charset, $lang)."</b></div>
                   <div style=\"float:left; margin:2px 2px 0px 0px; width:98px;\"><b>".getescapedtext ($hcms_lang['end'][$lang], $hcms_charset, $lang)."</b></div>
@@ -2619,7 +2619,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           <input type=\"hidden\" name=\"token\" value=\"".createtoken ($user)."\" />";
 
           if ($viewtype == "template") $mediaview .= "
-        <table class=\"hcmsTableNarrow\" style=\"width:100%; border:1px solid #000000; margin:2px;\">";
+        <table class=\"hcmsTableNarrow\" style=\"width:100%; margin:2px;\">";
           else $mediaview .= "
         <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">";
 
@@ -2826,18 +2826,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // show the values
         if (is_array ($videoinfo))
         {
-          // save duration of original media file in hidden field so it can be accessed for video editing
-          $mediaview .= "<input type=\"hidden\" id=\"mediaplayer_duration\" name=\"mediaplayer_duration\" value=\"".$videoinfo['duration']."\" />";
-          $filesizes['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';
-          $dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';
-          $rotations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['rotate'].' '.getescapedtext ($hcms_lang['degree'][$lang], $hcms_charset, $lang).'&nbsp;&nbsp;&nbsp;</td>';
-          $durations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>'; 
-          $video_codecs['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videocodec'].'&nbsp;&nbsp;&nbsp;</td>';
-          $audio_codecs['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiocodec'].'&nbsp;&nbsp;&nbsp;</td>';
-          $bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-          $audio_bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-          $audio_frequenzies['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
-          $audio_channels['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
+          $filesizes['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'</td>';
+          $dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].'</td>';
+          $rotations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['rotate'].' '.getescapedtext ($hcms_lang['degree'][$lang], $hcms_charset, $lang).'</td>';
+          $durations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration_no_ms'].'</td>'; 
+          $video_codecs['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videocodec'].'</td>';
+          $audio_codecs['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiocodec'].'</td>';
+          $bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videobitrate'].'</td>';
+          $audio_bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'</td>';
+          $audio_frequenzies['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'</td>';
+          $audio_channels['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'</td>';
 
           $download_link = "top.location.href='".createviewlink ($site, $mediafile_orig, $medianame, false, "download")."'; return false;";
  
@@ -2931,16 +2929,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   // define video file name
                   $video_filename = substr ($medianame, 0, strrpos ($medianame, ".")).".".$media_extension;
 
-                  $filesizes[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $rotations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['rotate'].' '.getescapedtext ($hcms_lang['degree'][$lang], $hcms_charset, $lang).'&nbsp;&nbsp;</td>';
-                  $durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $video_codecs[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videocodec'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $audio_codecs[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiocodec'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $audio_bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $audio_frequenzies[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $audio_channels[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
+                  $filesizes[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'</td>';
+                  $dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['dimension'].'</td>';
+                  $rotations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['rotate'].' '.getescapedtext ($hcms_lang['degree'][$lang], $hcms_charset, $lang).'</td>';
+                  $durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['duration_no_ms'].'</td>';
+                  $video_codecs[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videocodec'].'</td>';
+                  $audio_codecs[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiocodec'].'</td>';
+                  $bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videobitrate'].'</td>';
+                  $audio_bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiobitrate'].'</td>';
+                  $audio_frequenzies[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiofrequenzy'].'</td>';
+                  $audio_channels[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiochannels'].'</td>';
 
                   $download_link = "top.location.href='".createviewlink ($site, $video_thumbfile, $video_filename, false, "download")."'; return false;";
  
@@ -2970,38 +2968,55 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // generate output	
-        if (is_array ($videos) && !$is_version && ($viewtype == "preview" || $viewtype == "preview_download")) $mediaview .= '<tr><th>&nbsp;</th>'.implode("", $videos).'</tr>';		
+        if (is_array ($videos) && !$is_version && ($viewtype == "preview" || $viewtype == "preview_download")) $mediaview .= '
+        <tr><th>&nbsp;</th>'.implode ("", $videos).'</tr>';		
         // Filesize
-        if (is_array ($filesizes)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $filesizes).'</tr>';
+        if (is_array ($filesizes)) $mediaview .= '
+        <tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $filesizes).'</tr>';
         // Dimension
-        if ($is_video && is_array ($dimensions)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['width-x-height'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $dimensions).'</tr>';
+        if ($is_video && is_array ($dimensions)) $mediaview .= '
+        <tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['width-x-height'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $dimensions).'</tr>';
         // Rotations
-        if (is_array ($rotations)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['rotate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $rotations).'</tr>';		
+        if (is_array ($rotations)) $mediaview .= '
+        <tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['rotate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $rotations).'</tr>';		
         // Durations
-        if (is_array ($durations)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext (substr ($hcms_lang['duration-hhmmss'][$lang], 0, strpos ($hcms_lang['duration-hhmmss'][$lang], "(")), $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $durations).'</tr>';		
+        if (is_array ($durations)) $mediaview .= '
+        <tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext (substr ($hcms_lang['duration-hhmmss'][$lang], 0, strpos ($hcms_lang['duration-hhmmss'][$lang], "(")), $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $durations).'</tr>';		
         // Video codec
-        if ($is_video && !empty ($video_codecs) && is_array ($video_codecs)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['video-codec'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $video_codecs).'</tr>';
+        if ($is_video && !empty ($video_codecs) && is_array ($video_codecs)) $mediaview .= '
+        <tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['video-codec'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $video_codecs).'</tr>';
         // Audio codec
-        if (!empty ($audio_codecs) && is_array ($audio_codecs)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-codec'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_codecs).'</tr>';
+        if (!empty ($audio_codecs) && is_array ($audio_codecs)) $mediaview .= '
+        <tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-codec'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_codecs).'</tr>';
         // Bitrate
-        if ($is_video && is_array ($bitrates)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['video-bitrate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $bitrates).'</tr>';
+        if ($is_video && is_array ($bitrates)) $mediaview .= '
+        <tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['video-bitrate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $bitrates).'</tr>';
         // Audio bitrate
-        if (is_array ($audio_bitrates)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-bitrate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_bitrates).'</tr>';
+        if (is_array ($audio_bitrates)) $mediaview .= '
+        <tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-bitrate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_bitrates).'</tr>';
         // Audio frequenzy
-        if (is_array ($audio_frequenzies)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-frequenzy'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_frequenzies).'</tr>';
+        if (is_array ($audio_frequenzies)) $mediaview .= '
+        <tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-frequenzy'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_frequenzies).'</tr>';
         // Audio frequenzy
-        if (is_array ($audio_channels)) $mediaview .= '<tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-channels'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_channels).'</tr>';
+        if (is_array ($audio_channels)) $mediaview .= '
+        <tr><td style="'.$col_width.'text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-channels'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_channels).'</tr>';
         // Download
-        if (is_array ($downloads) && sizeof ($downloads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $downloads).'</tr>';
+        if (is_array ($downloads) && sizeof ($downloads) > 0) $mediaview .= '
+        <tr><td>&nbsp;</td>'.implode ("", $downloads).'</tr>';
         // Youtube
         if (!empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
         {
-          if (is_array ($youtube_uploads) && sizeof ($youtube_uploads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $youtube_uploads).'</tr>';
+          if (is_array ($youtube_uploads) && sizeof ($youtube_uploads) > 0) $mediaview .= '
+        <tr><td>&nbsp;</td>'.implode ("", $youtube_uploads).'</tr>';
         }
       }
 
       $mediaview .= "
-    </table>";
+      </table>";
+
+      // save duration of original media file in hidden field so it can be accessed for video editing
+      if (!empty ($videoinfo['duration'])) $mediaview .= "
+      <input type=\"hidden\" id=\"mediaplayer_duration\" name=\"mediaplayer_duration\" value=\"".$videoinfo['duration']."\" />";
     }
 
     return $mediaview;
@@ -3222,7 +3237,7 @@ $(document).ready(function()
     }
 
     // search form
-    if ($mgmt_config['db_connect_rdbms'] != "")
+    if (!empty ($mgmt_config['db_connect_rdbms']))
     {
       $result .= "
     <div id=\"searchForm\" style=\"padding:2px; width:100%;\">
@@ -4420,18 +4435,18 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // ------------------------- showvideoplayer -----------------------------
 // function: showvideoplayer()
 // input:
-// video array containing the different html sources [array],
-// width of the video in pixel [integer],
-// height of the video in pixel [integer],
-// link to the logo which is displayed before you click on play (If the value is null the default logo will be used) [string],
-// ID of the video (will be generated when empty) [string],
-// title for this video [string],
-// autoplay video on load (true), default is false [boolean],
-// view the video in full screen [boolean],
-// play loop [boolean] (optional),
-// muted/no sound [boolean] (optional),
-// player controls [boolean] (optional),
-// use video in iframe [boolean] (optional),
+// video array containing the different video sources [array], 
+// width of the video in pixel [integer], 
+// height of the video in pixel [integer], 
+// link to the logo which is displayed before you click on play (If the value is null the default logo will be used) [string], 
+// ID of the video (will be generated when empty) [string], 
+// title for this video [string], 
+// autoplay video on load (true), default is false [boolean], 
+// view the video in full screen [boolean], 
+// play loop [boolean] (optional), 
+// muted/no sound [boolean] (optional), 
+// player controls and selectable marker/faces gallery [boolean] (optional), 
+// use video in iframe [boolean] (optional), 
 // reload video sources to prevent the browser cache to show the same video even if it has been changed [boolean] (optional)
 
 // output: HTML code of the video player / false on error
@@ -4573,19 +4588,190 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
         {
           if ($temp != "." && $temp != ".." && substr ($temp, 0, 9) == "thumbnail" && is_file ($media_dir.$site."/".$container_id."/".$temp))
           {
-            if ($sec >= 0) $thumb_items[] = "    ".$sec.": { src: '".createviewlink ($site, $container_id."/".$temp)."', width: '120px' }";
+            if ($sec >= 0) $thumb_items[] = "    ".$sec.": { src: '".$mgmt_config['url_path_cms']."?wm=".hcms_encrypt($site."/".$container_id."/".$temp)."', width: '120px' }";
             $sec = $sec + 5;
           }
         }
 
-        if (sizeof ($thumb_items) > 0) $thumb_bar .= "<script type=\"text/javascript\">
-  // initialize video.js
-  var video = videojs('".$id."');
-  
-  video.thumbnails({\n".implode (",\n", $thumb_items)."});
-</script>\n";
+        if (sizeof ($thumb_items) > 0) $thumb_bar .= "
+      <script type=\"text/javascript\">
+      // initialize video.js
+      var video = videojs('".$id."');        
+      video.thumbnails({\n".implode (",\n", $thumb_items)."});
+      </script>\n";
       }
     }
+
+    // video overlay for gallery (requires controls to be)
+    $overlay_height = 144;
+    $overlay = "";
+    $thumb_items = array();
+
+    if (!empty ($controls) && is_file ($media_dir.$site."/".$container_id."/faces.json"))
+    {
+      // load JSON file with face definitions
+      $faces_json = loadfile ($media_dir.$site."/".$container_id."/", "faces.json");
+
+      if (!empty ($faces_json))
+      {
+        // decode JSON string
+        $faces = json_decode ($faces_json, true);
+
+        // collect face images
+        if (is_array ($faces))
+        {
+          $i = 0;
+
+          foreach ($faces as $face)
+          {
+            if (!empty ($face['time']) && is_file ($media_dir.$site."/".$container_id."/face-".$face['time'].".jpg"))
+            {
+              $time = $face['time'];
+              $name = $face['name'];
+              if (!empty ($face['link'])) $name = "<a href=\"".$face['link']."\">".$name."</a>";
+
+              // focal point
+              if (intval ($face['x']) > 0 && intval ($face['y']) > 0)
+              {
+                // width and height position of the face [%]
+                $background_x = ($face['x'] + $face['width'] / 2) / $face['videowidth'] * 100;
+                $background_y = ($face['y'] + $face['height'] / 2) / $face['videoheight'] * 100;
+
+                // the background-image is z times as wide as its bounding box
+                $z = 240 / 120;
+
+                // focus point [%] = (c − 50%) × z/(z − 1) + 50%
+                // c ... expressed as a percentage of the width of the image
+                // z ... the background-image is z times as wide as its bounding box
+                $background_x = ($background_x - 50) * $z / ($z - 1) + 50;
+                $background_y = ($background_y - 50) * $z / ($z - 1) + 50;
+
+                if ($background_x < 0) $background_x = 0;
+                if ($background_y < 0) $background_y = 0;
+
+                $background_pos = round ($background_x)."% ".round ($background_y)."%";
+              }
+              else $background_pos = "50% 50%";
+
+              $thumb_items[$time."-".$i] = "<div onclick=\"hcms_jumpToVideoTime(".$time.");\" class=\"hcmsVideoThumbFrame\" style=\"background-position:".$background_pos."; background-image:url('".$mgmt_config['url_path_cms']."?wm=".hcms_encrypt($site."/".$container_id."/face-".$time.".jpg")."');\"><div class=\"hcmsVideoThumbnail\">".$name."</div></div>";
+              $i++;
+            }
+          }
+
+          ksort ($thumb_items);
+        }
+      }
+
+      $overlay = "
+      <script type=\"text/javascript\">
+      function hcms_minOverlay ()
+      {
+        if (document.getElementById('hcms_overlay_".$id."'))
+        {
+          document.getElementById('hcms_overlay_".$id."').style.transition = '0.3s';
+          document.getElementById('hcms_overlay_".$id."').style.height = '22px';
+          document.getElementById('hcms_gallery_".$id."').style.display = 'none';
+          document.getElementById('hcms_collapse_".$id."').style.display = 'none';
+          document.getElementById('hcms_expand_".$id."').style.display = 'inline';
+        }
+      }
+      
+      function hcms_maxOverlay ()
+      {
+        if (document.getElementById('hcms_overlay_".$id."'))
+        {
+          document.getElementById('hcms_overlay_".$id."').style.transition = '0.3s';
+          document.getElementById('hcms_overlay_".$id."').style.height = '".$overlay_height."px';
+          document.getElementById('hcms_gallery_".$id."').style.display = 'inline';
+          document.getElementById('hcms_collapse_".$id."').style.display = 'inline';
+          document.getElementById('hcms_expand_".$id."').style.display = 'none';
+        }
+      }
+
+      function hcms_jumpToVideoTime (time)
+      {
+        // find video tag ID (add suffix _html5_api for HTML5 or _flash_api for Flash)
+        if (document.getElementById('".$id."_html5_api')) var videoobject = document.getElementById('".$id."_html5_api');
+        else if (document.getElementById('".$id."_flash_api')) var videoobject = document.getElementById('".$id."_flash_api');
+        else var videoobject = false;
+
+        if (videoobject)
+        {
+          // play video
+          videoobject.play();
+
+          // set video time
+          setTimeout(function() { videoobject.currentTime = time; }, 300);
+        }
+        else alert ('video object missing');
+
+        // play video using the existing video object created by video.js API (not working)
+        // video.play();
+        // video.on('timeupdate', function() { video.currentTime(time); });
+      }
+      </script>
+      <style>
+      .hcmsVideoOverlay
+      {
+        position: absolute; 
+        top: 0;
+        left: 0;
+        text-align: center;
+        background-color: rgba(7, 20, 30, 0.5);
+        width: ".intval($width)."px;
+        height: 22px;
+        padding: 0;
+        z-index: 99000;
+      }
+
+      .hcmsVideoThumbFrame
+      {
+        display: inline-block;
+        cursor: pointer;
+        width: 212px;
+        height: 119px;
+        margin: 1px 0.5px 1px 0.5px;
+      }
+
+      .hcmsVideoThumbnail
+      {
+        box-sizing: border-box;
+        color: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 300;
+        text-align: left;
+        background-color: transparent;
+        width: 100%;
+        height: 100%;
+        padding: 5px;
+      }
+
+      .hcmsVideoThumbnail:hover
+      {
+        color: #FFF;
+        background-color: rgba(7, 20, 30, 0.8);
+      }
+
+      .hcmsOverlayIcon
+      {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+      }
+      </style>
+      <div id=\"hcms_overlay_".$id."\" class=\"hcmsVideoOverlay\">
+        <div id=\"hcms_gallery_".$id."\" style=\"display:none; position:absolute; left:0; top:0; width:".intval($width)."px; height:".($overlay_height - 22)."px; overflow-x:auto; overflow-y:hidden; white-space:nowrap;\">
+          ".implode ("", $thumb_items)."
+        </div>
+        <div style=\"position:absolute; left:0; bottom:0; display:block; width:".intval($width)."px; height:22px; text-align:center;\">
+          <img id=\"hcms_collapse_".$id."\" onclick=\"hcms_minOverlay();\" class=\"hcmsOverlayIcon\" style=\"display:none;\" src=\"".getthemelocation("night")."img/button_arrow_up.png\" />
+          <img id=\"hcms_expand_".$id."\" onclick=\"hcms_maxOverlay();\" class=\"hcmsOverlayIcon\" src=\"".getthemelocation("night")."img/button_arrow_down.png\" /> 
+        </div>
+      </div>
+      ";
+    }
+
 
     // if no logo is defined set default logo
     if (empty ($logo_url)) $logo_url = getthemelocation()."img/logo_player.jpg";
@@ -4636,7 +4822,7 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
       if (isset ($user_client['msie']) && $user_client['msie'] > 0) $fallback = ", \"playerFallbackOrder\":[\"flash\", \"html5\", \"links\"]";
       else $fallback = "";
 
-      $return = "  <video id=\"".$id."\" class=\"video-js vjs-default-skin\" ".(($controls) ? " controls" : "").(($loop) ? " loop" : "").(($muted) ? " muted" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" width=\"".intval($width)."\" height=\"".intval($height)."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "")." data-setup='{\"loop\":".(($loop) ? "true" : "false").$fallback."}' title=\"".$title."\"".($fullscreen ? " allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "")." onplay=\"if (typeof hideFaceOnVideo === 'function') hideFaceOnVideo();\">\n";
+      $return = $overlay."  <video id=\"".$id."\" class=\"video-js vjs-default-skin\" ".(($controls) ? " controls" : "").(($loop) ? " loop" : "").(($muted) ? " muted" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" width=\"".intval($width)."\" height=\"".intval($height)."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "")." data-setup='{\"loop\":".(($loop) ? "true" : "false").$fallback."}' title=\"".$title."\"".($fullscreen ? " allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "")." onplay=\"if (typeof hideFaceOnVideo === 'function') hideFaceOnVideo();\">\n";
 
       $return .= $sources;
 

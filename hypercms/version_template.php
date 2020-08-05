@@ -67,6 +67,41 @@ $file_info = getfileinfo ($site, $template, "tpl");
 
 // create secure token
 $token_new = createtoken ($user);
+
+// change to version
+if ($versiondir != "" && $actual != "" && checktoken ($token, $user))
+{
+  // make version of actual template file
+  $template_v = fileversion ($template);
+  $rename_1 = rename ($versiondir.$template_recent, $versiondir.$template_v);
+
+  // make version actual
+  if ($rename_1 != false)
+  {
+    $rename_2 = rename ($versiondir.$actual, $versiondir.$template_recent);
+
+    if ($rename_2 == false) echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
+  }
+  else echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
+}
+
+// delete versions
+if (checkglobalpermission ($site, 'tpldelete') == 1 && is_array ($delete) && sizeof ($delete) > 0 && checktoken ($token, $user))
+{
+  foreach ($delete as $file_v_del)
+  {
+    if (valid_objectname ($file_v_del))
+    {
+      $test = deletefile ($versiondir, $file_v_del, 0);
+    
+      if ($test == false)
+      {
+        $errcode = "10200";
+        $error[] = $mgmt_config['today']."|version_template.php|error|$errcode|deletefile failed for ".$versiondir.$file_v_del;           
+      }
+    }
+  }     
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -174,41 +209,6 @@ function toggledelete (source)
       <td style="white-space:nowrap; width:60px; text-align:center;" class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggledelete(this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></label></td>
     </tr>
     <?php
-    // change to version
-    if ($versiondir != "" && $actual != "" && checktoken ($token, $user))
-    {
-      // make version of actual template file
-      $template_v = fileversion ($template);
-      $rename_1 = rename ($versiondir.$template_recent, $versiondir.$template_v);
-
-      // make version actual
-      if ($rename_1 != false)
-      {
-        $rename_2 = rename ($versiondir.$actual, $versiondir.$template_recent);
-
-        if ($rename_2 == false) echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
-      }
-      else echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
-    }
-
-    // delete versions
-    if (is_array ($delete) && sizeof ($delete) > 0)
-    {
-      foreach ($delete as $file_v_del)
-      {
-        if (valid_objectname ($file_v_del))
-        {
-          $test = deletefile ($versiondir, $file_v_del, 0);
-        
-          if ($test == false)
-          {
-            $errcode = "10200";
-            $error[] = $mgmt_config['today']."|version_template.php|error|$errcode|deletefile failed for ".$versiondir.$file_v_del;           
-          }
-        }
-      }     
-    }
-
     // select all template version files in directory sorted by date
     $files_v = gettemplateversions ($site, $template);
 
@@ -230,7 +230,7 @@ function toggledelete (source)
           <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($file_v)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$tpl_name."</a> <a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_source.php?site=".url_encode($site)."&template=".url_encode($file_v)."', '', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><span class=\"hcmsTextSmall\">(Source Code)</span</a></td>
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"dummy\" value=\"".$file_v."\" onclick=\"if (compare_select('".$file_v."')) this.checked=true; else this.checked=false;\" /></td>
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"radio\" name=\"actual\" value=\"".$file_v."\" /></td>
-          <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" class=\"delete\" /></td>
+          <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" class=\"delete\" ".(checkglobalpermission ($site, 'tpldelete') != 1 ? "disabled=\"disabled\"" : "")."/></td>
         </tr>";
       }
     }

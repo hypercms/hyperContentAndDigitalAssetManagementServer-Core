@@ -79,6 +79,7 @@ if ($mediaobject != "")
   }
 }
 
+// prepare media preview, link and media dimensions
 if (!empty ($mediafile) && $mediafile != "Null_media.png")
 {
   $file_info = getfileinfo ($site, $mediafile, "comp");
@@ -88,6 +89,18 @@ if (!empty ($mediafile) && $mediafile != "Null_media.png")
   {
     $mediadir = getmedialocation ($site, $mediafile, "abs_path_media");
     $mediaurl = getmedialocation ($site, $mediafile, "url_path_media");
+  }
+
+  // media link
+  if (!empty ($mgmt_config[$site]['dam']))
+  {
+    // use wrapper link for DAM configuration
+    $medialink = createwrapperlink ("", "", "", "", "", getmediacontainerid ($mediafile));
+  }
+  else
+  {
+    // use direct URL
+    $medialink = $mediaurl.$mediafile;
   }
   
   // show media
@@ -166,7 +179,7 @@ function submitMedia ()
 
   if (test != false)
   {
-    var url = document.forms['media'].mediafile.value;
+    var url = document.forms['media'].medialink.value;
     var width = document.forms['media'].mediawidth.value;
     var height = document.forms['media'].mediaheight.value;
     <?php if ($mediatype == "video" || $mediatype == "image") : ?>
@@ -195,15 +208,17 @@ if (!empty ($file_info['ext']))
   <?php echo showtopbar ($hcms_lang['selected-file'][$lang], $lang); ?>
   
   <?php
-  if (!empty ($mediafile))
+  if (!empty ($medialink))
   {
     // output information
     echo "
-  <form name=\"media\" target=\"_parent\" method=\"post\">\n";
+  <form name=\"media\" target=\"_parent\" method=\"post\">";
     if ($mediatype == "video") echo "
-    <input type=\"hidden\" name=\"mediafile\" value=\"".$mediafile."\" />\n";
+    <input type=\"hidden\" name=\"mediafile\" value=\"".$mediafile."\" />
+    <input type=\"hidden\" name=\"medialink\" value=\"".$mediafile."\" />";
     else echo "
-    <input type=\"hidden\" name=\"mediafile\" value=\"".$mediaurl.$mediafile."\" />\n";
+    <input type=\"hidden\" name=\"mediafile\" value=\"".$mediaurl.$mediafile."\" />
+    <input type=\"hidden\" name=\"medialink\" value=\"".$medialink."\" />";
     echo "
     <input type=\"hidden\" name=\"mediawidth\" value=\"".$mediawidth."\" />
     <input type=\"hidden\" name=\"mediaheight\" value=\"".$mediaheight."\" />

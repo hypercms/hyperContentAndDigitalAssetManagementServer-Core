@@ -92,7 +92,7 @@ if (checktoken ($token, $user)) loadbalancer ("rendervideo");
 
 // --------------------------------- logic section ----------------------------------
 
-function startConversion ($videotype) 
+function startConversion ($videotype)
 {
   // Needed for createmedia
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata;
@@ -101,42 +101,59 @@ function startConversion ($videotype)
   // Used for createmedia
   global $site, $media_root, $file_info;
   // Used for createthumbnail_video
-  global $thumb_frame, $thumb;
+  global $thumb, $thumb_frame;
    // Used for Output
   global $hcms_lang, $lang;
   
   $success = false;
 
-  // set media type
-  if ($videotype == "videoplayer") $videotype = "thumbnail";
-  // set format if type is "original"
-  if ($videotype == "original") $filetype = strtolower (substr ($file_info['ext'], 1));
+  $show = "";
 
-  // define FFMPEG options
-  if ($bitrate == "" || $bitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:v %videobitrate%", "-q:v 5", $mgmt_mediaoptions['.'.$filetype]);
-  if ($audiobitrate == "" || $audiobitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:a %audiobitrate%", "", $mgmt_mediaoptions['.'.$filetype]);
-  if ($width < 1 || $height < 1) $mgmt_mediaoptions['.'.$filetype] = str_replace ("-s:v %width%x%height%", "", $mgmt_mediaoptions['.'.$filetype]);
-
-  $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$rotate_add.$gbcs_add.str_replace (array('%videobitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $mgmt_mediaoptions['.'.$filetype]);
-
-  // create video
-  $createmedia = createmedia ($site, $media_root, $media_root, $file_info['file'], $filetype, $videotype);
-
-  if ($createmedia == false)
+  // render video (filetype must be set)
+  if ($videotype != "")
   {
-    $show = str_replace ('%filetype%', $filetype, $hcms_lang['the-file-could-not-be-converted-to-filetype'][$lang]);
-  }
-  else
-  {
-    if ($thumb == 0 || ($match1 = preg_match ("/\d{1,2}:\d{1,2}:\d{1,2}(.\d){0,3}/", $thumb_frame)) && ($match2 = createthumbnail_video ($site, $media_root, $media_root, $file_info['file'], $thumb_frame)))
+    // set media type
+    if ($videotype == "videoplayer") $videotype = "thumbnail";
+
+    // set format if type is "original"
+    if ($videotype == "original") $filetype = strtolower (substr ($file_info['ext'], 1));
+
+    // define FFMPEG options
+    if ($bitrate == "" || $bitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:v %videobitrate%", "-q:v 5", $mgmt_mediaoptions['.'.$filetype]);
+    if ($audiobitrate == "" || $audiobitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:a %audiobitrate%", "", $mgmt_mediaoptions['.'.$filetype]);
+    if ($width < 1 || $height < 1) $mgmt_mediaoptions['.'.$filetype] = str_replace ("-s:v %width%x%height%", "", $mgmt_mediaoptions['.'.$filetype]);
+
+    $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$rotate_add.$gbcs_add.str_replace (array('%videobitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $mgmt_mediaoptions['.'.$filetype]);
+
+    // create video
+    $createmedia = createmedia ($site, $media_root, $media_root, $file_info['file'], $filetype, $videotype);
+
+    if ($createmedia == false)
     {
-      $success = true;
-      $show = str_replace ('%filetype%', $filetype, $hcms_lang['the-file-was-converted-successfully-to-filetype'][$lang]);
-    } 
+      $show .= str_replace ('%filetype%', $filetype, $hcms_lang['the-file-could-not-be-converted-to-filetype'][$lang])."\n";
+    }
+  }
+
+  // create thumbnail image
+  if ($thumb == 1)
+  {
+    if (preg_match ("/\d{1,2}:\d{1,2}:\d{1,2}(.\d){0,3}/", $thumb_frame))
+    {
+      $createthumbnail = createthumbnail_video ($site, $media_root, $media_root, $file_info['file'], $thumb_frame);
+
+      if (!empty ($createthumbnail))
+      {
+        $success = true;
+        $show .= str_replace ('%filetype%', $filetype, $hcms_lang['the-file-was-converted-successfully-to-filetype'][$lang])."\n";
+      }
+      else
+      {
+        $show .= $hcms_lang['could-not-extract-the-preview-image'][$lang]."\n";
+      }
+    }
     else
     {
-      if (!$match1) $show = $hcms_lang['could-not-determine-the-frame-for-the-preview-image'][$lang];
-      else $show = $hcms_lang['could-not-extract-the-preview-image'][$lang];
+      $show .= $hcms_lang['could-not-determine-the-frame-for-the-preview-image'][$lang]."\n";
     }
   }
   
@@ -214,7 +231,6 @@ $file_info = getfileinfo ($site, $mediafile, $cat);
 // define filetype
 if ($filetype != "" && array_key_exists ($filetype, $available_extensions)) $filetype = strtolower ($filetype);
 elseif (strtolower ($filetype) == 'videoplayer' || strtolower ($filetype) == 'original') $filetype = strtolower ($filetype);
-else $filetype = "videoplayer";
 
 // render media
 if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
@@ -279,34 +295,37 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
     $starttime = DateTime::createFromFormat ('H:i:s.u', $cut_begin);
     $endtime = DateTime::createFromFormat ('H:i:s.u', $cut_end);
     
-    $duration = $starttime->diff($endtime);
-    
-    // get msec
-    list ($rest, $startmsec) = explode (".", $cut_begin);
-    list ($rest, $endmsec) = explode (".", $cut_end);
-    
-    $durationmsec = $endmsec - $startmsec;
-    
-    if ($durationmsec < 0)
+    if ($starttime && $endtime)
     {
-      $durationmsec = 1000 + $durationmsec;
-      $duration->s -=1;
+      $duration = $starttime->diff($endtime);
+    
+      // get msec
+      list ($rest, $startmsec) = explode (".", $cut_begin);
+      list ($rest, $endmsec) = explode (".", $cut_end);
       
-      if ($duration->s < 0)
+      $durationmsec = $endmsec - $startmsec;
+      
+      if ($durationmsec < 0)
       {
-        $duration->i -=1;
+        $durationmsec = 1000 + $durationmsec;
+        $duration->s -=1;
         
-        if ($duration->i < 0)
+        if ($duration->s < 0)
         {
-          $duration->h -=1;
+          $duration->i -=1;
+          
+          if ($duration->i < 0)
+          {
+            $duration->h -=1;
+          }
         }
       }
+      
+      if ($startmsec < 100) $startmsec = "0".$startmsec;
+      if ($durationmsec < 100) $durationmsec = "0".$durationmsec;
+          
+      $cut_add = '-ss '.$starttime->format('H:i:s').'.'.$startmsec.' -t '.$duration->format('%H:%I:%S').'.'.$durationmsec.' ';
     }
-    
-    if ($startmsec < 100) $startmsec = "0".$startmsec;
-    if ($durationmsec < 100) $durationmsec = "0".$durationmsec;
-        
-    $cut_add = '-ss '.$starttime->format('H:i:s').'.'.$startmsec.' -t '.$duration->format('%H:%I:%S').'.'.$durationmsec.' '; 
   }
   
   // rotate
@@ -369,7 +388,7 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
         $result = startConversion ("videoplayer");
         
         $success = $result['success'];
-        $show .= $result['message']."<br />\n";
+        $show .= $result['message']."\n";
         
         $run = 1;
       }
@@ -381,7 +400,7 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
     $result = startConversion ($filetype);
     
     $success = $result['success'];
-    $show = $result['message']."<br />\n";
+    $show .= $result['message']."\n";
   }
 }
 
@@ -390,7 +409,7 @@ if ($savetype == "auto" || $savetype == "")
 { 
   $output = array();
   $output['success'] = $success;
-  $output['message'] = $show;
+  $output['message'] = trim ($show);
   
   header ('Content-Type: application/json; charset=utf-8');
   echo json_encode ($output);
@@ -415,7 +434,7 @@ elseif ($savetype == "editor_so")
 </head>
 <body class="hcmsWorkplaceGeneric">
 <div style="padding:4px;">
-  <?php echo $show; ?>
+  <?php echo nl2br ($show); ?>
 </div>
 </body>
 </html>

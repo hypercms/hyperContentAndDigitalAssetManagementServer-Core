@@ -69,7 +69,7 @@ if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
     }
     
     echo "
-    </div>\n";
+    </div>";
   }
 }
 ?>

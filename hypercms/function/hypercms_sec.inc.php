@@ -794,9 +794,9 @@ function checkgroupaccess ($groupaccess, $usergroup_array)
 // requires: config.inc.php to be loaded before
 
 // description:
-// Login of user by sending user and password using the variables: $sentuser, $sentpasswd
-// This procedure will register the user in the hypercms session and in the php session.
-// The procedure will return true or false using the variable $result.
+// Login of a user by his credentials (user and password, or user hash code).
+// The function reads and provides all permissions of the user and authenticated against other user directories, e.g. LDAP/AD if defined in the main configuration, see $mgmt_config['authconnect'].
+// The function provides a result array but does not register the user in the session.
 
 function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ignore_password=false, $locking=true, $portal="")
 {
@@ -902,11 +902,12 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   }
 
   // --------------------- include authentification connectivity (LDAP, AD, or others) --------------------- 
-  if (!empty ($mgmt_config['authconnect']) && is_file ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php"))
+  // new main configuration parameter $mgmt_config['authconnect_all'] has been introduced in version 9.0.2
+  if (!empty ($mgmt_config['authconnect']) && !empty ($mgmt_config['authconnect_all']) && is_file ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php"))
   {
     include ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php");
  
-    $ldap_auth = authconnect ($sentuser, $sentpasswd);
+    $ldap_auth = authconnect ($user, $passwd);
   }
 
   if ($ldap_auth && $linking_auth)
@@ -1473,6 +1474,33 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     }
   }
 
+  // --------------------- if AD has been defined for a publication --------------------- 
+  if (!empty ($auth) && !empty ($mgmt_config['authconnect']) && is_file ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php"))
+  {
+    include ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php");
+
+    if (!empty ($result['siteaccess']) && is_array ($result['siteaccess']))
+    {
+      foreach ($result['siteaccess'] as $temp)
+      {
+        // verify mandatory settings
+        if (!empty ($mgmt_config[$temp]['ldap_servers']) && !empty ($mgmt_config[$temp]['ldap_base_dn']) && !empty ($mgmt_config[$temp]['ldap_userdomain']))
+        {
+          $auth = authconnect ($user, $passwd, $temp);
+
+          if ($auth == false)
+          {
+            // warning
+            $errcode = "00723";
+            $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|LDAP/AD authentication failed for LDAP servers: ".$mgmt_config[$temp]['ldap_servers'].", base DN: ".$mgmt_config[$temp]['ldap_base_dn'].", user domain: ".$mgmt_config[$temp]['ldap_userdomain'];
+
+            break;
+          }
+        }
+      }
+    }
+  }
+
   // in case a user hash code has been provided
   if (empty ($user)) $user = $fileuser;
 
@@ -1558,15 +1586,19 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     }
   }
 
-  // --------------------- security --------------------- 
+  // --------------------- auth. result --------------------- 
+  // combined results
+  $result['auth'] = ($ldap_auth && $linking_auth && $auth && $checkresult);
+
+  // --------------------- security ---------------------
+  // get client IP address
+  $client_ip = getuserip();
+
   // count failed login attempts of same client IP address
   if ($locking == true && $result['auth'] == false)
   {
     // reset session array
     if (!isset ($_SESSION['temp_ip_counter']) || !is_array ($_SESSION['temp_ip_counter'])) $_SESSION['temp_ip_counter'] = array();
-
-    // get client IP address
-    $client_ip = getuserip();
 
     // if ip/user is not already locked
     if (checkuserip ($client_ip, $user))
@@ -1591,92 +1623,86 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     else $result['message'] = $hcms_lang['you-have-been-banned'][$lang];
   }
 
-  // auth. result
-  $result['auth'] = ($ldap_auth && $linking_auth && $auth && $checkresult);
-
-  // detect mobile browsers
-  $result['mobile'] = is_mobilebrowser ();
-
-  // state of chat
-  $result['chatstate'] = getchatstate (false);
-
-  // --------------------- GUI definitions (columns, views) --------------------- 
-  // read colum defintions of user
-  $columns = array();
-
-  // read labels of templates
-  $labels = array();
-
-  if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".objectlistcols.json"))
+  // --------------------- GUI definitions (chat, columns, views) ---------------------
+  if ($result['auth'] == true)
   {
-    // load objectlist definition file
-    $temp_json = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json");
+    // read colum defintions of user
+    $columns = array();
 
-    // JSON decode the string
-    if ($temp_json != "") $columns = json_decode ($temp_json, true);
-  }
+    // read labels of templates
+    $labels = array();
 
-  if (is_array ($result['siteaccess']) && sizeof ($result['siteaccess']) > 0)
-  {
-    foreach ($result['siteaccess'] as $temp_site)
+    if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".objectlistcols.json"))
     {
-      // set default values
-      if (!isset ($columns[$temp_site]))
+      // load objectlist definition file
+      $temp_json = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json");
+
+      // JSON decode the string
+      if ($temp_json != "") $columns = json_decode ($temp_json, true);
+    }
+
+    if (is_array ($result['siteaccess']) && sizeof ($result['siteaccess']) > 0)
+    {
+      foreach ($result['siteaccess'] as $temp_site)
       {
-        $columns[$temp_site]['page'] = array('modifieddate'=>1, 'filesize'=>1, 'type'=>1);
-        $columns[$temp_site]['comp'] = array('modifieddate'=>1, 'filesize'=>1, 'type'=>1);
-        $update_columns = true;
-      }
-
-      // read and set labels in templates for objectlist and metadata views
-      $labels[$temp_site] = array();
-
-      // get all templates excluding template includes
-      $template_array = gettemplates ($temp_site, "all");
-
-      if (is_array ($template_array) && sizeof ($template_array) > 0)
-      {
-        foreach ($template_array as $template)
+        // set default values
+        if (!isset ($columns[$temp_site]))
         {
-          // load template and define labels
-          if ($template != "")
+          $columns[$temp_site]['page'] = array('modifieddate'=>1, 'filesize'=>1, 'type'=>1);
+          $columns[$temp_site]['comp'] = array('modifieddate'=>1, 'filesize'=>1, 'type'=>1);
+          $update_columns = true;
+        }
+
+        // read and set labels in templates for objectlist and metadata views
+        $labels[$temp_site] = array();
+
+        // get all templates excluding template includes
+        $template_array = gettemplates ($temp_site, "all");
+
+        if (is_array ($template_array) && sizeof ($template_array) > 0)
+        {
+          foreach ($template_array as $template)
           {
-            if ($temp_site != "" && $template != "")
+            // load template and define labels
+            if ($template != "")
             {
-              // get category
-              if (strpos ($template, ".page.tpl") > 0) $temp_cat = "page";
-              else $temp_cat = "comp";
-
-              $temp_template = loadtemplate ($temp_site, $template);
-
-              if ($temp_template['content'] != "")
+              if ($temp_site != "" && $template != "")
               {
-                $hypertag_array = gethypertag ($temp_template['content'], "text", 0);
+                // get category
+                if (strpos ($template, ".page.tpl") > 0) $temp_cat = "page";
+                else $temp_cat = "comp";
 
-                if (is_array ($hypertag_array) && sizeof ($hypertag_array) > 0)
+                $temp_template = loadtemplate ($temp_site, $template);
+
+                if ($temp_template['content'] != "")
                 {
-                  foreach ($hypertag_array as $tag)
-                  {
-                    $temp_id = getattribute ($tag, "id");
-                    $temp_label = getattribute ($tag, "label");
-                    $temp_groups = getattribute ($tag, "groups");
+                  $hypertag_array = gethypertag ($temp_template['content'], "text", 0);
 
-                    // user has access to the content
-                    if (empty ($temp_groups) || checkgroupaccess ($temp_groups, $usergroups[$temp_site]))
+                  if (is_array ($hypertag_array) && sizeof ($hypertag_array) > 0)
+                  {
+                    foreach ($hypertag_array as $tag)
                     {
-                      // define label name based on label of tag
-                      if ($temp_id != "" && trim ($temp_label) != "") $labels[$temp_site][$temp_cat]['text:'.$temp_id] = $temp_label;
-                      // or use text ID
-                      elseif ($temp_id != "") $labels[$temp_site][$temp_cat]['text:'.$temp_id] = ucfirst (str_replace ("_", " ", $temp_id));
-                    }
-                    // user has no access to the content
-                    else
-                    {
-                      // remove column
-                      if (!empty ($columns[$temp_site][$temp_cat]['text:'.$temp_id]))
+                      $temp_id = getattribute ($tag, "id");
+                      $temp_label = getattribute ($tag, "label");
+                      $temp_groups = getattribute ($tag, "groups");
+
+                      // user has access to the content
+                      if (empty ($temp_groups) || checkgroupaccess ($temp_groups, $usergroups[$temp_site]))
                       {
-                        unset ($columns[$temp_site][$temp_cat]['text:'.$temp_id]);
-                        $update_columns = true;
+                        // define label name based on label of tag
+                        if ($temp_id != "" && trim ($temp_label) != "") $labels[$temp_site][$temp_cat]['text:'.$temp_id] = $temp_label;
+                        // or use text ID
+                        elseif ($temp_id != "") $labels[$temp_site][$temp_cat]['text:'.$temp_id] = ucfirst (str_replace ("_", " ", $temp_id));
+                      }
+                      // user has no access to the content
+                      else
+                      {
+                        // remove column
+                        if (!empty ($columns[$temp_site][$temp_cat]['text:'.$temp_id]))
+                        {
+                          unset ($columns[$temp_site][$temp_cat]['text:'.$temp_id]);
+                          $update_columns = true;
+                        }
                       }
                     }
                   }
@@ -1686,34 +1712,37 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
           }
         }
       }
+
+      // save objectlist definition file with new default values
+      if (is_array ($columns) && !empty ($update_columns))
+      {
+        savefile ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json", json_encode ($columns));
+      }
     }
 
-    // save objectlist definition file with new default values
-    if (is_array ($columns) && !empty ($update_columns))
+    // set columns definitions for result
+    $result['objectlistcols'] = $columns;
+
+    // set labels definitions for result
+    $result['labels'] = $labels;
+
+    // get default GUI settings
+    $result['objectview'] = $mgmt_config['objectview'];
+    $result['explorerview'] = $mgmt_config['explorerview'];
+    $result['sidebar'] = $mgmt_config['sidebar'];
+
+    // get users GUI settings
+    if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".gui.dat"))
     {
-      savefile ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json", json_encode ($columns));
+      // load gui definition file
+      $temp_dat = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".gui.dat");
+
+      if (!empty ($temp_dat)) list ($result['objectview'], $result['explorerview'], $result['sidebar']) = explode ("|", $temp_dat);
     }
   }
 
-  // set columns definitions for result
-  $result['objectlistcols'] = $columns;
-
-  // set labels definitions for result
-  $result['labels'] = $labels;
-
-  // get default GUI settings
-  $result['objectview'] = $mgmt_config['objectview'];
-  $result['explorerview'] = $mgmt_config['explorerview'];
-  $result['sidebar'] = $mgmt_config['sidebar'];
-
-  // get users GUI settings
-  if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".gui.dat"))
-  {
-    // load gui definition file
-    $temp_dat = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".gui.dat");
-
-    if (!empty ($temp_dat)) list ($result['objectview'], $result['explorerview'], $result['sidebar']) = explode ("|", $temp_dat);
-  }
+  // detect mobile browsers
+  $result['mobile'] = is_mobilebrowser ();
 
   // message
   if (!$result['message'])
@@ -1723,7 +1752,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   }
 
   // log
-  if (!empty ($result['auth']))
+  if ($result['auth'] == true)
   { 
     // information
     $errcode = "00102";
@@ -1737,22 +1766,30 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   }
 
   // --------------------- chat --------------------- 
-  // clear user as host in chat relationships
+  // chat relations file
   $chat_relations_log = $mgmt_config['abs_path_temp']."/chat_relations.php";
 
-  if ($result['auth'] == true && is_file ($chat_relations_log))
+  if ($result['auth'] == true)
   {
-    $chat_relations = file_get_contents ($chat_relations_log);
+    // state of chat
+    $result['chatstate'] = getchatstate (false);
 
-    if (!empty ($chat_relations))
+    // clear user as host in chat relationships
+    if (is_file ($chat_relations_log))
     {
-      $chat_relations_array = unserialize ($chat_relations);
+      // load chat relations
+      $chat_relations = file_get_contents ($chat_relations_log);
 
-      if (!empty ($chat_relations_array[$user]))
+      if (!empty ($chat_relations))
       {
-        unset ($chat_relations_array[$user]);
-        $chat_relations = serialize ($chat_relations_array);
-        if (!empty ($chat_relations)) file_put_contents ($chat_relations_log, $chat_relations);
+        $chat_relations_array = unserialize ($chat_relations);
+
+        if (!empty ($chat_relations_array[$user]))
+        {
+          unset ($chat_relations_array[$user]);
+          $chat_relations = serialize ($chat_relations_array);
+          if (!empty ($chat_relations)) file_put_contents ($chat_relations_log, $chat_relations);
+        }
       }
     }
   }

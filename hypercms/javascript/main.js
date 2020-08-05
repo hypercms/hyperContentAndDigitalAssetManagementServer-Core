@@ -359,6 +359,119 @@ function hcms_translateTextField (textarea_id, sourcelang_id, targetlang_id)
   return false;
 }
 
+// ---------------------------------------- table of content ---------------------------------------
+
+function hcms_createTOC (content_id, toc_id, maxLevel)
+{
+  if (content_id != '' && toc_id != '' && maxLevel > 0)
+  {
+    var toc = "";
+    var level = 0;
+
+    document.getElementById(content_id).innerHTML =
+      document.getElementById(content_id).innerHTML.replace(
+        /<h([\d])>([^<]+)<\/h([\d])>/gi,
+        function (str, openLevel, titleText, closeLevel)
+        {
+          if (openLevel > maxLevel) return "<h" + openLevel + ">" + titleText + "</h" + closeLevel + ">";
+
+          if (openLevel != closeLevel)
+          {
+            return str + ' - ' + openLevel;
+          }
+
+          if (openLevel > level)
+          {
+            toc += (new Array(openLevel - level + 1)).join("<ul>");
+          }
+          else if (openLevel < level)
+          {
+            toc += (new Array(level - openLevel + 1)).join("</ul>");
+          }
+
+          level = parseInt(openLevel);
+
+          var anchor = titleText.replace(/ /g, "_");
+          toc += "<li><a href=\"#" + anchor + "\">" + titleText + "</a></li>";
+
+          return "<h" + openLevel + "><a name=\"" + anchor + "\">" + titleText + "</a></h" + closeLevel + ">";
+        }
+      );
+
+    if (level)
+    {
+      toc += (new Array(level + 1)).join("</ul>");
+    }
+
+    document.getElementById(toc_id).innerHTML += toc;
+  }
+  else return false;
+}
+
+// ---------------------------------------- color conversion ---------------------------------------
+
+function hcms_Hex2Rgb (hex)
+{
+  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+
+  hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+    return r + r + g + g + b + b;
+  });
+
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
+
+function hcms_Rgb2Cmyk (r, g, b)
+{
+  var computedC = 0;
+  var computedM = 0;
+  var computedY = 0;
+  var computedK = 0;
+ 
+  //remove spaces from input RGB values, convert to int
+  var r = parseInt ((''+r).replace(/\s/g,''), 10); 
+  var g = parseInt ((''+g).replace(/\s/g,''), 10); 
+  var b = parseInt ((''+b).replace(/\s/g,''), 10); 
+ 
+  if (r==null || g==null || b==null || isNaN(r) || isNaN(g)|| isNaN(b))
+  {
+    console.log ('Please enter numeric RGB values!');
+    return;
+  }
+
+  if (r<0 || g<0 || b<0 || r>255 || g>255 || b>255)
+  {
+    console.log ('RGB values must be in the range 0 to 255.');
+    return;
+  }
+ 
+  // BLACK
+  if (r==0 && g==0 && b==0)
+  {
+   computedK = 1;
+   return [0,0,0,1];
+  }
+ 
+  computedC = 1 - (r/255);
+  computedM = 1 - (g/255);
+  computedY = 1 - (b/255);
+ 
+  var minCMY = Math.min(computedC, Math.min(computedM,computedY));
+  computedC = Math.round((computedC - minCMY) / (1 - minCMY) * 100) ;
+  computedM = Math.round((computedM - minCMY) / (1 - minCMY) * 100) ;
+  computedY = Math.round((computedY - minCMY) / (1 - minCMY) * 100 );
+  computedK = Math.round(minCMY * 100);
+ 
+  return {c: computedC, m: computedM, y: computedY, k: computedK};
+}
+
 // ---------------------------------------- standard functions ---------------------------------------
 
 function hcms_sleep (milliseconds)
@@ -1531,7 +1644,7 @@ function hcms_sortTable (_c, _isNumber)
       if (c == 0 && document.getElementById("h"+b+"_"+c).getElementsByTagName("A")) 
       {
         var link = document.getElementById("h"+b+"_"+c).getElementsByTagName("A");
-        if (link[0].getAttribute("data-objectpath")) hcms_objectpath[b] = link[0].getAttribute("data-objectpath");
+        if (link[0] && link[0].getAttribute("data-objectpath")) hcms_objectpath[b] = link[0].getAttribute("data-objectpath");
       }
     }
   }

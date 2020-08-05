@@ -38,7 +38,7 @@
    
     if (isEmpty(id)) id = generateID(100000);
 
-    return '<iframe scrolling="no" frameBorder="0" style="border:0" '+((!isEmpty(title)) ? 'title="'+title+' "' : '')+'id="'+iframePreFix+id+'" width="'+width+'" height="'+height+'" src="'+cmsLink+'videoplayer.php?media='+video+'&width='+width+'&height='+height+'&autoplay='+((autoplay) ? "true" : "false")+'&fullscreen='+((enableFullScreen) ? "true" : "false")+'&keyboard='+((enableKeyBoard) ? "true" : "false")+((!isEmpty(title)) ? '&title='+encodeURIComponent(title) : '')+'&logo='+(!isEmpty(logo) ? encodeURIComponent(logo) : '')+'&loop='+((enableLoop) ? "true" : "false")+'&muted='+((enableMuted) ? "true" : "false")+((enableControls) ? "true" : "false")+'" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true">';
+    return '<iframe scrolling="no" frameBorder="0" style="border:0" '+((!isEmpty(title)) ? 'title="'+title+' "' : '')+'id="'+iframePreFix+id+'" width="'+width+'" height="'+height+'" src="'+cmsLink+'videoplayer.php?media='+video+'&width='+width+'&height='+height+'&autoplay='+((autoplay) ? "true" : "false")+'&fullscreen='+((enableFullScreen) ? "true" : "false")+'&keyboard='+((enableKeyBoard) ? "true" : "false")+((!isEmpty(title)) ? '&title='+encodeURIComponent(title) : '')+'&logo='+(!isEmpty(logo) ? encodeURIComponent(logo) : '')+'&loop='+((enableLoop) ? "true" : "false")+'&muted='+((enableMuted) ? "true" : "false")+'&controls='+((enableControls) ? "true" : "false")+'" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true">';
   }
   
   function generate_videoplayer_span(cmsLink, video, width, height, logo, id, title, autoplay, enableFullScreen, enableKeyBoard) {
@@ -486,7 +486,7 @@
               config = { };
               this.commitContent( config );
               
-              var html = generate_videoplayer_iframe(editor.config.cmsLink, config.link, config.width, config.height, config.poster, config.id, config.title, config.autoplay, config.enablefullscreen, config.enablekeyboard, config.enableloop, config.enablemuted);
+              var html = generate_videoplayer_iframe(editor.config.cmsLink, config.link, config.width, config.height, config.poster, config.id, config.title, config.autoplay, config.enablefullscreen, config.enablekeyboard, config.enableloop, config.enablemuted, config.enablecontrols);
               var fakeName = fakeName_iframe;
               videoNode = CKEDITOR.dom.element.createFromHtml(html);
               var extraStyles = { width: config.width+'px', height: config.height+'px' };

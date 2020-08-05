@@ -2980,6 +2980,15 @@ function gettemplates ($site, $cat="all")
         }
       }
 
+      // brand guidelines component templates
+      if (!empty ($mgmt_config[$site]['dam']) && $cat == "comp")
+      {
+        if (is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_brandguidelines.schema.xml.php")) $template_array[] = "System-BrandGuidelines.comp.tpl";
+        if (is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_brandguidepage.schema.xml.php")) $template_array[] = "System-BrandGuidePage.comp.tpl";
+        if (is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_brandcolor.schema.xml.php")) $template_array[] = "System-BrandColor.comp.tpl";
+        if (is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_brandguidedownload.schema.xml.php")) $template_array[] = "System-BrandGuideDownload.comp.tpl";
+      }
+
       // standard templates
       $scandir = scandir ($mgmt_config['abs_path_template'].$site_source."/");
 
@@ -4773,6 +4782,7 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 // Gets the media repsitory location from $mgmt_config array. The function supports up to 10 media repositories.
 // Any other rules for splitting the media files on multiple devices can be implemented as well by the function getmedialocation_rule.
 // If the file resides outside the repository (symbolic link is used in the repository), the full path including the file name can be returned.
+// Use the prefix .hcms. for the media file name if you want to media location withour verification of the media file.
 
 function getmedialocation ($site, $file, $type, $resolve_symlink=false)
 {

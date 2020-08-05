@@ -7,6 +7,13 @@
  * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
 
+// forward to install directory if main config file is missing
+if (!is_file (getcwd()."/config/config.inc.php") && is_dir (getcwd()."/install"))
+{
+  header ("Location: install/index.php");
+  exit;
+}
+
 // session
 define ("SESSION", "create");
 // management configuration

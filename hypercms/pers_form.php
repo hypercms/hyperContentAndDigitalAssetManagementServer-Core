@@ -198,6 +198,7 @@ function openHelp ()
 <?php echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"); ?>
 
 <p class="hcmsHeadline"><?php echo $regpro; ?>: <?php echo getescapedtext ($pers_name); ?></p>
+<hr />
 
 <form id="editor" name="editor" method="post" action="<?php echo $action; ?>">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -207,7 +208,7 @@ function openHelp ()
   <input type="hidden" name="preview" value="no" />
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
   
-  <table class="hcmsTableNarrow" style="width:100%; border:1px solid #000000; margin:2px;">
+  <table class="hcmsTableNarrow" style="width:100%; margin:2px;">
     <tr>
       <td style="text-align:left;">
         <?php if ($preview == "no") echo "<img onclick=\"hcms_showFormLayer ('savelayer', 0); document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>

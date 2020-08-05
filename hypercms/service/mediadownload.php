@@ -231,14 +231,15 @@ elseif ($objectpath_esc != "")
   	$object = getobject ($objectpath);
  
     // get media file from object file
-		if (@is_file ($location.$object))
+		if (is_file ($location.$object))
     {
 			$objectdata = loadfile ($location, $object);
             
 			if ($objectdata != false)
       {
         // add publication name since this file is located in the content media repository
-				$media = getfilename ($objectdata, "media");
+        $media = getfilename ($objectdata, "media");
+        $container = getfilename ($objectdata, "content");
         if ($media != "") $media = $site."/".$media;
         $media_approved = true;
       }
@@ -370,6 +371,47 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
     echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
   }
 }
+// page or component
+elseif ($objectpath_esc != "" && is_file ($location.$object))
+{
+  // reset user if a user ID has been provided by the request
+  if (!empty ($extuser)) $user = $extuser;
+
+  // convert HTML to PDF
+  if (strtolower ($type) == "pdf")
+  {
+    // if no name has been provided
+    if ($name == "")
+    {
+      if ($objectpath_esc != "") $media_info = getfileinfo ($site, $objectpath_esc, "comp");
+      else $media_info = getfileinfo ($site, getobject ($media), "comp");
+      
+      $name = $media_info['name'];
+    }
+
+    // temp pdf file
+    $pdf_file = $mgmt_config['abs_path_temp'].$name.".pdf";
+
+    // create PDF
+    $pdf_result = html2pdf ($location.$object, $pdf_file);
+
+    if ($pdf_result)
+    {
+      downloadfile ($pdf_file, $name.".pdf", "download", $user);
+    }
+    else
+    {
+      header ("HTTP/1.1 400 Invalid Request", true, 400);
+      echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
+    }
+  }
+  // provide HTML
+  else
+  {
+    downloadobject ($location, $object, $container, $lang, $user);
+  }
+}
+// no content available
 else
 {
   header ("HTTP/1.1 400 Invalid Request", true, 400);

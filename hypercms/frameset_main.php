@@ -331,7 +331,9 @@ function setSearchLocation (location, name)
 {
   if (document.getElementById('navFrame'))
   {
+    search = true;
     document.getElementById('navFrame').contentWindow.setSearchLocation (location, name);
+    maxSearchFrame();
   }
 }
 

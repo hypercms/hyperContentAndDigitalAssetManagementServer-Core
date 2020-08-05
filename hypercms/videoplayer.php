@@ -156,6 +156,8 @@ if ($playercode != "")
   <head>
     <title>hyperCMS Videoplayer</title>
     <meta charset="UTF-8" />
+    <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>theme/night/css/main.css" />
+    <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']."theme/night/css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
     <?php
     if ($audio) echo showaudioplayer_head (false);
     else echo showvideoplayer_head (false);

@@ -261,9 +261,11 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   <table class="hcmsTableStandard" style="width:100%;">
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;" colspan="2"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['configuration-of-publication'][$lang]); ?> <?php echo $site_name; ?></span><hr /></td>
-    </tr>    
+    </tr>
+
+    <!-- management configuration -->
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['management-system-configuration'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><div style="padding:10px 0px;"><?php echo getescapedtext ($hcms_lang['management-system-configuration'][$lang]); ?></div> </td>
     </tr>
     <tr> 
       <td style="width:20%; white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['grant-publication-management'][$lang]); ?> </td>
@@ -576,7 +578,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 
     <tr> 
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['storage-limit-in-mb'][$lang]); ?> </td>
-      <td style="white-space:nowrap;"> <input type="text" name="setting[storage_limit]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['storage_limit']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap;"> <input type="number" name="setting[storage_limit]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['storage_limit']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
 
     <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/") && is_cloudstorage()) {	?>
@@ -655,11 +657,12 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <?php } ?>
 
+    <!-- publication target -->
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;" colspan="2"><hr /></td>
     </tr>      
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['publication-target-configuration'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><div style="padding:10px 0px;"><?php echo getescapedtext ($hcms_lang['publication-target-configuration'][$lang]); ?></div> </td>
     </tr>  
   <?php
   // load site config file of publication system
@@ -692,14 +695,14 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['directory-path-of-the-application-for-jsp-asp'][$lang]); ?> </td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="abs_publ_app"  name="setting[abs_publ_app]" style="width:350px;" value="<?php echo $publ_config['abs_publ_app']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
-    <tr> 
+    <tr>
       <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['os-on-publication-server'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <select name="setting[publ_os]" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>>
+      <td style="white-space:nowrap; vertical-align:top;"> <select name="setting[publ_os]" style="width:350px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>>
           <option value="UNIX" <?php if ($publ_config['publ_os'] == "UNIX") echo "selected=\"selected\""; ?>>UNIX/Linux</option>
           <option value="WIN" <?php if ($publ_config['publ_os'] == "WIN") echo "selected=\"selected\""; ?>>WINDOWS</option>
         </select></td>
     </tr>      
-    <tr> 
+    <tr>
       <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['inclusion-of-components-via-http'][$lang]); ?><br />
         <span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['for-jsp-or-asp-only-http-method-is-supported'][$lang]); ?></span></td>
       <td style="white-space:nowrap; vertical-align:top;">
@@ -711,13 +714,79 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="vertical-align:top;"><?php echo getescapedtext ($hcms_lang['remote-client'][$lang]); ?><br />
       <span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['for-http-transport-use-urlremoteclientphp-configuration-ini-file-must-be-at-the-same-file-location'][$lang]); ?></span></td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[remoteclient]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['remoteclient']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
-    </tr> 
-     <?php if ($preview != "yes") { ?>             
+    </tr>
+
+    <!-- AD / LDAP -->
+    <?php if (!empty ($mgmt_config['authconnect']) && empty ($mgmt_config['authconnect_all'])) {	?>
+    <tr>
+      <td style="white-space:nowrap; vertical-align:top;" colspan="2"><hr /></td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><div style="padding:10px 0px;">LDAP / MS Active Directory</div> </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD Server </td>
+      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_servers" name="setting[ldap_servers]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_servers']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">User Domain </td>
+      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_userdomain" name="setting[ldap_userdomain]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_userdomain']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">Base Distinguished Name (DN) </td>
+      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_base_dn" name="setting[ldap_base_dn]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_base_dn']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">LDAP version </td>
+      <td style="white-space:nowrap; vertical-align:top;"> 
+        <select name="setting[ldap_version]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>>
+          <option <?php if (@$mgmt_config[$site_name]['ldap_version'] == "3") echo "selected=\"selected\""; ?>>3</option>
+          <option <?php if (@$mgmt_config[$site_name]['ldap_version'] == "2") echo "selected=\"selected\""; ?>>2</option>
+        </select>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">Port </td>
+      <td style="white-space:nowrap; vertical-align:top;"> <input type="number" id="ldap_port" name="setting[ldap_port]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_port']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">Follow referrals </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" id="ldap_follow_referrals" name="setting[ldap_follow_referrals]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_follow_referrals'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">SSL </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" id="ldap_use_ssl" name="setting[ldap_use_ssl]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_use_ssl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">TLS </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" id="ldap_use_tls" name="setting[ldap_use_tls]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_use_tls'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">Synchronize users </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" id="ldap_sync" name="setting[ldap_sync]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_sync'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <?php } ?>
+
+    <!-- save -->
+    <?php if ($preview != "yes") { ?>         
     <tr>
       <td style="white-space:nowrap; vertical-align:middle; padding-top:10px;"><?php echo getescapedtext ($hcms_lang['save-publication-configuration'][$lang]); ?> </td>
       <td style="white-space:nowrap; vertical-align:middle; padding-top:10px;"><img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
     </tr>
     <?php } ?>
+
   </table>
 </form>
 <?php } ?>

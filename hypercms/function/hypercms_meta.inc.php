@@ -836,7 +836,7 @@ function copymetadata ($file_source, $file_dest)
     // copy metadata from original file using EXIFTOOL
     foreach ($mgmt_mediametadata as $extensions => $executable)
     {
-      if ($executable != "" && substr_count ($extensions.".", $file_source_ext.".") > 0)
+      if (substr_count ($extensions.".", $file_source_ext.".") > 0 && $executable != "")
       {
         // ------------- get source publication, location and media file name ---------------
         $site_source = getpublication ($file_source);
@@ -932,7 +932,7 @@ function extractmetadata ($file)
     // define executable
     foreach ($mgmt_mediametadata as $extensions => $executable)
     {
-      if (substr_count ($extensions.".", $file_info['ext'].".") > 0)
+      if (substr_count ($extensions.".", $file_info['ext'].".") > 0 && $executable != "")
       {
         // get publication, location and media file name
         $site = getpublication ($file);
@@ -1524,7 +1524,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
       // define executable
       foreach ($mgmt_mediametadata as $extensions => $executable)
       {
-        if (substr_count ($extensions.".", $file_info['ext'].".") > 0)
+        if (substr_count ($extensions.".", $file_info['ext'].".") > 0 && $executable != "")
         {
           // remove all XMP tags from file
           if ($keep_data == false || $keep_data == 0)
@@ -2312,7 +2312,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
         // define executable
         foreach ($mgmt_mediametadata as $extensions => $executable)
         {
-          if (substr_count ($extensions.".", $file_info['ext'].".") > 0)
+          if (substr_count ($extensions.".", $file_info['ext'].".") > 0 && $executable != "")
           {
             // remove all IPTC tags from file
             $cmd = $executable." -overwrite_original -r -IPTC:all= \"".shellcmd_encode ($file)."\"";

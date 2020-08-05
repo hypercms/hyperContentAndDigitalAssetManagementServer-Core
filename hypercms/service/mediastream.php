@@ -28,6 +28,7 @@ if ($wm != "")
   
   // get publication
   if (substr_count ($media, "/") == 1) list ($site, $mediafile) = explode ("/", $media);
+  elseif (substr_count ($media, "/") == 2) list ($site, $container_id, $mediafile) = explode ("/", $media);
   
   // check media file name
   if (valid_objectname ($mediafile) || is_thumbnail ($media, false))
@@ -44,6 +45,11 @@ if ($wm != "")
     if (is_file (getmedialocation ($site, $media, "abs_path_media").$media) || is_cloudobject (getmedialocation ($site, getobject($media), "abs_path_media").$site."/".getobject ($media)))
     {
       $media_root = getmedialocation ($site, $media, "abs_path_media");
+    }
+    // ... of multimedia file with no valid container identifier in repository (cloud storage is not supported)
+    elseif (!empty ($container_id) && is_file (getmedialocation ($site, ".hcms.dummy_hcm".$container_id.".hcm", "abs_path_media").$media))
+    {
+      $media_root = getmedialocation ($site, ".hcms.dummy_hcm".$container_id.".hcm", "abs_path_media");
     }
     // ... of temp file
     elseif (is_file ($mgmt_config['abs_path_temp'].getobject($media)))

@@ -345,7 +345,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">include='static'</td>
     </tr>
     <tr> 
-      <td class="hcmsRowHead2"><?php echo getescapedtext (str_replace (", uri, download, wrapper, location", "", $hcms_lang['path-type-optional'][$lang])); ?></td>
+      <td class="hcmsRowHead2"><?php echo getescapedtext (str_replace (", uri, download, wrapper", "", $hcms_lang['path-type-optional'][$lang])); ?></td>
       <td class="hcmsRowData1">pathtype='...'</td>
     </tr>
     <tr> 

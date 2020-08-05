@@ -1096,13 +1096,15 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
 
 // ---------------------- createthumbnail_video -----------------------------
 // function: createthumbnail_video()
-// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], frame of video in seconds or hh:mm:ss[.xxx]
+// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], frame of video in seconds or hh:mm:ss.xxx [integer,time], 
+//        image width in pixel and -1 to keep aspect ratio based on height [integer] (optional), image height in pixel and -1 to keep aspect ratio based on width [integer] (optional), individual file name without the file extension of the created image [string] (optional)
 // output: new file name / false on error
 
 // description:
-// Creates a thumbnail picture of a video frame.  Saves only the thumbnail media file in destination location. Only jpeg format is supported as output.
+// Creates a thumbnail picture of a video frame. Saves only the thumbnail media file in destination location. Only jpeg format is supported as output.
+// Media files with a valid container identifier in their name will be saved in the cloud storage.
 
-function createthumbnail_video ($site, $location_source, $location_dest, $file, $frame)
+function createthumbnail_video ($site, $location_source, $location_dest, $file, $frame, $width=0, $height=0, $filename="")
 {
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $user;
 
@@ -1128,7 +1130,8 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
     else $noautorotate = "";
 
     // thumbnail file name
-    $newfile = $fileinfo['filename'].".thumb.jpg";
+    if (!empty ($filename)) $newfile = $filename.".jpg";
+    else $newfile = $fileinfo['filename'].".thumb.jpg";
 
     // prepare media file
     $temp_source = preparemediafile ($site, $location_source, $file, $user);
@@ -1177,14 +1180,25 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
           elseif ($videoinfo['rotate'] == "180") $correct = "-vf \"hflip,vflip\"";
           elseif ($videoinfo['rotate'] == "-90") $correct = "-vf \"transpose=2\"";
         }
- 
+
+        // image size
+        $size = "";
+
+        // to keep the aspect ratio, we need to specify only one component, either width or height, and set the other component to -1
+        if (intval ($width) != 0 && intval ($height) != 0)
+        {
+          $size = "-vf scale=".intval($width).":".intval($height);
+        }
+
         // check file extension
         if (!empty ($fileinfo['ext']) && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0 && !empty ($mgmt_mediapreview[$mediapreview_ext]))
         {
           // remove destination file if it exists
           deletefile ($location_dest, $newfile, 0);
 
-          $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($location_source.$file)."\" ".$correct." -ss ".shellcmd_encode ($frame)." -f image2 -vframes 1 \"".shellcmd_encode ($location_dest.$newfile)."\"";
+          // Removed option "-f image2" in version 9.0.2:
+          // -f is the format of the input/output and image2 is the demuxer. See ffmpeg documenation for more info: http://www.ffmpeg.org/ffmpeg-formats.html#Demuxers
+          $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($location_source.$file)."\" ".$correct." -ss ".shellcmd_encode ($frame)." -vframes 1 ".$size." \"".shellcmd_encode ($location_dest.$newfile)."\"";
 
           // execute 
           exec ($cmd, $error_array, $errorCode);
@@ -1228,14 +1242,15 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 
 // ---------------------- createimages_video -----------------------------
 // function: createimages_video()
-// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], name for image files [string] (optional), frames per second to create from the video [number] (optional), image format [jpg,png,bmp] (optional), 
-//        image width in pixel [integer] (optional), image height in pixel [integer] (optional)
+// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], name for image files [string] (optional), frames per second to create from the video [number] (optional), 
+//        image format [jpg,png,bmp] (optional), image width in pixel and -1 to keep aspect ratio based on height [integer] (optional), image height in pixel and -1 to keep aspect ratio based on width [integer] (optional)
 // output: true / false on error
 
 // description:
-// Creates and saves images of video screen size from a video to a directory. 
+// Creates and saves images of video screen size from a video to a directory.
+// The media files will be saved in the local repository and not in the cloud storage.
 
-function createimages_video ($site, $location_source, $location_dest, $file, $name="", $fs=1, $format="jpg", $width="", $height="")
+function createimages_video ($site, $location_source, $location_dest, $file, $name="", $fs=1, $format="jpg", $width=0, $height=0)
 {
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $user;
 
@@ -1320,7 +1335,8 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
         // image size
         $size = "";
 
-        if (intval ($width) > 0 && intval ($height) > 0)
+        // to keep the aspect ratio, we need to specify only one component, either width or height, and set the other component to -1
+        if (intval ($width) != 0 && intval ($height) != 0)
         {
           $size = "-vf scale=".intval($width).":".intval($height);
         }
@@ -4102,26 +4118,26 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
 // ---------------------- hex2rgb -----------------------------
 // function: hex2rgb()
 // input: image color as hex-code [string]
-// output: RGB-color as array / false on error
+// output: RGB-color values as array / false on error
 
 function hex2rgb ($hex)
 {
   if ($hex != "")
   {
-    $hex = ereg_replace ("#", "", $hex);
+    $hex = str_replace ("#", "", $hex);
     $color = array();
  
     if (strlen($hex) == 3)
     {
-      $color['red'] = hexdec (substr ($hex, 0, 1) . $r);
-      $color['green'] = hexdec (substr ($hex, 1, 1) . $g);
-      $color['blue'] = hexdec (substr ($hex, 2, 1) . $b);
+      $color['r'] = hexdec (substr ($hex, 0, 1) . $r);
+      $color['g'] = hexdec (substr ($hex, 1, 1) . $g);
+      $color['b'] = hexdec (substr ($hex, 2, 1) . $b);
     }
     elseif(strlen($hex) == 6)
     {
-      $color['red'] = hexdec(substr($hex, 0, 2));
-      $color['green'] = hexdec(substr($hex, 2, 2));
-      $color['blue'] = hexdec(substr($hex, 4, 2));
+      $color['r'] = hexdec (substr ($hex, 0, 2));
+      $color['g'] = hexdec (substr ($hex, 2, 2));
+      $color['b'] = hexdec (substr ($hex, 4, 2));
     }
  
     return $color;
@@ -4131,11 +4147,18 @@ function hex2rgb ($hex)
 
 // ---------------------- rgb2hex -----------------------------
 // function: rgb2hex()
-// input: image color in RGB [string]
+// input: image color in RGB [array] or red value [integer], green value [integer], blue value [integer]
 // output: hex-color as string / false on error
 
-function rgb2hex ($red, $green, $blue)
+function rgb2hex ($red, $green=0, $blue=0)
 {
+  if (is_array ($red))
+  {
+    $red = $red['r'];
+    $green = $red['g'];
+    $blue = $red['b'];
+  }
+
   if ($red >= 0 && $green >= 0 && $blue >= 0)
   {
     $hex = "#";
@@ -4144,6 +4167,56 @@ function rgb2hex ($red, $green, $blue)
     $hex.= str_pad (dechex ($blue), 2, "0", STR_PAD_LEFT);
  
     return $hex;
+  }
+  else return false;
+}
+
+// ---------------------- rgb2cmyk -----------------------------
+// function: rgb2hex()
+// input: image color in RGB [array] or red value [integer], green value [integer], blue value [integer]
+// output: CMYK color percentage values as array / false on error
+
+function rgb2cmyk ($red, $green=0, $blue=0)
+{
+  if (is_array ($red))
+  {
+    $red = $red['r'];
+    $green = $red['g'];
+    $blue = $red['b'];
+  }
+
+  if ($red >= 0 && $green >= 0 && $blue >= 0)
+  {
+    $red = $red / 255;
+    $green = $green / 255;
+    $blue = $blue / 255;
+    $max = max ($red, $green, $blue);
+    $black = 1 - $max;
+
+    if ($black == 1)
+    {
+      $cyan = 0;
+      $magenta = 0;
+      $yellow = 0;
+    }
+    else
+    {
+      $cyan = (1 - $red - $black) / (1 - $black);
+      $magenta = (1 - $green - $black) / (1 - $black);
+      $yellow = (1 - $blue - $black) / (1 - $black);
+    }
+
+    $cyan = round ($cyan * 100);
+    $magenta = round ($magenta * 100);
+    $yellow = round ($yellow * 100);
+    $black = round ($black * 100);
+
+    return array(
+      'c' => $cyan,
+      'm' => $magenta,
+      'y' => $yellow,
+      'k' => $black,
+    );
   }
   else return false;
 }
@@ -5598,7 +5671,7 @@ function html2pdf ($source, $dest, $cover="", $toc=false, $page_orientation="Por
     if (!empty ($mgmt_config['x11'])) $x11 = $mgmt_config['x11']." --server-args=\"-screen 0, 1024x768x24\"";
     else $x11 = "";
 
-    // command
+    // command (use print CSS via option --print-media-type)
     $cmd = $x11." ".$mgmt_config['html2pdf']." --image-dpi ".intval($image_dpi)." --image-quality ".intval($image_quality)." --print-media-type --page-size ".shellcmd_encode($page_size)." ".$page_margin." ".$smart_shrinking." ".$page_orientation." ".$options." ".$cover_page." ".$toc." ".$source_pages." ".$dest_page;
     
     // execute

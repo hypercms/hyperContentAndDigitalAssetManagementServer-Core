@@ -835,8 +835,15 @@ function followlink ($site, $follow)
     // page link
     elseif (substr ($follow, 0, 1) == "/")
     {
-      $pos = strpos ($publ_config['url_publ_page'], "/", strpos ($publ_config['url_publ_page'], "://") + 3);
-      $rooturl = substr ($publ_config['url_publ_page'], 0, $pos);
+      // extract path (URI) without domain from URL
+      if (strpos ($publ_config['url_publ_page'], "://") > 0)
+      {
+        $pos = strpos ($publ_config['url_publ_page'], "/", strpos ($publ_config['url_publ_page'], "://") + 3);
+        $rooturl = substr ($publ_config['url_publ_page'], 0, $pos);
+      }
+      elseif (substr ($publ_config['url_publ_page'], -1) == "/") $rooturl = substr ($publ_config['url_publ_page'], 0, -1);
+      else $rooturl = $publ_config['url_publ_page'];
+
       $follow = $rooturl.$follow;
       $follow = str_replace ($publ_config['url_publ_page'], "%page%/".$site."/", $follow);
     }
@@ -1538,21 +1545,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // disable form fields
     if ($buildview == "formlock") $disabled = " disabled=\"disabled\"";
     else $disabled = "";
-
-    // ==================================== remove hyperCMS stylesheet tags in template ==================================
-
-    if ($buildview == "publish" || $buildview == "unpublish" || $buildview == "template" || ($buildview == "preview" && $ctrlreload != "yes"))
-    {
-      $hypertag_array = gethypertag ($viewstore, "compstylesheet", 0);
-
-      if ($hypertag_array != false && sizeof ($hypertag_array) > 0)
-      {
-        foreach ($hypertag_array as $hypertag)
-        {
-          $viewstore = str_replace ($hypertag, "", $viewstore);
-        }
-      }
-    }
 
     // ============================================== meta data templates ==============================================
 
@@ -6004,7 +5996,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
  
                       if ($buildview == "cmsview" || $buildview == "inlineview")
                       {
-                        $taglink = "<div style=\"all:unset;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" />".$compeditlink."</div>\n";
+                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" />".$compeditlink."</div>\n";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6089,7 +6081,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       if ($buildview == "cmsview" || $buildview == 'inlineview')
                       {
-                        $taglink = "<div style=\"all:unset;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".$db_connect."&id=".$id."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component[".$id."]=".url_encode($contentbot)."&condition[".$id."]=".url_encode($condbot)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" />".$arttaglink[$artid]."</div>\n";
+                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".$db_connect."&id=".$id."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component[".$id."]=".url_encode($contentbot)."&condition[".$id."]=".url_encode($condbot)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" />".$arttaglink[$artid]."</div>\n";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6301,7 +6293,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       if ($buildview == "cmsview" || $buildview == "inlineview")
                       {
-                        $taglink = "<div style=\"all:unset;\"><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; cursor:pointer; z-index:9999999;\" />".$arttaglink[$artid]."</div>";
+                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; margin:0; padding:0; cursor:pointer;\" />".$arttaglink[$artid]."</div>";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6520,23 +6512,32 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   // path type (absolute file path)
                   if ($comppathtype == "file" || $comppathtype == "abs")
                   {
-                     // use publish settings
+                    // use publish settings
                     if ($buildview == "publish") $temp_root = substr ($publ_config['abs_publ_comp'], 0, strlen ($publ_config['abs_publ_comp']) - 1);
                     // use management settings
                     else $temp_root = substr ($mgmt_config['abs_path_comp'], 0, strlen ($mgmt_config['abs_path_comp']) - 1);
+
+                    // replace the comp variables with the component root
+                    $contentbot = str_replace ("%comp%", $temp_root, $contentbot);
+                  }
+                  // path type (converted location path)
+                  elseif ($comppathtype == "location")
+                  {
+                    $contentbot = convertpath ($site, $contentbot, "comp");
                   }
                   // path type (URL)
                   else
                   {
-                     // use publish settings
-                     if ($buildview == "publish") $temp_root = substr ($publ_config['url_publ_comp'], 0, strlen ($publ_config['url_publ_comp']) - 1);
-                     // use management settings
-                     else $temp_root = substr ($mgmt_config['url_path_comp'], 0, strlen ($mgmt_config['url_path_comp']) - 1);
+                    // use publish settings
+                    if ($buildview == "publish") $temp_root = substr ($publ_config['url_publ_comp'], 0, strlen ($publ_config['url_publ_comp']) - 1);
+                    // use management settings
+                    else $temp_root = substr ($mgmt_config['url_path_comp'], 0, strlen ($mgmt_config['url_path_comp']) - 1);
+
+                    // replace the comp variables with the component root
+                    $contentbot = str_replace ("%comp%", $temp_root, $contentbot);
                   }
 
-                  // replace the comp variables with the component root
-                  $contentbot = str_replace ("%comp%", $temp_root, $contentbot);
-                  
+                  // replace template tag with path
                   $viewstore = str_replace ($hypertag, $contentbot, $viewstore);
                 }
                 else
@@ -6602,7 +6603,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           if (($buildview == "cmsview" || $buildview == "inlineview") && $onedit != "hidden" && $icon != "hidden")
                           {
-                            $taglink = "<div style=\"all:unset;\"><img onClick=\"hcms_openWindowComp('', 'scrollbars=yes,resizable=yes,status=yes', '".str_replace ("%comp%", "", $component_link)."');\"  src=\"".getthemelocation()."img/edit_edit.png\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','delete');\" src=\"".getthemelocation()."img/edit_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','moveup');\"  src=\"".getthemelocation()."img/edit_moveup.png\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','movedown');\" src=\"".getthemelocation()."img/edit_movedown.png\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /></div>\n";
+                            $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img onClick=\"hcms_openWindowComp('', 'scrollbars=yes,resizable=yes,status=yes', '".str_replace ("%comp%", "", $component_link)."');\"  src=\"".getthemelocation()."img/edit_edit.png\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','delete');\" src=\"".getthemelocation()."img/edit_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','moveup');\"  src=\"".getthemelocation()."img/edit_moveup.png\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','movedown');\" src=\"".getthemelocation()."img/edit_movedown.png\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /></div>\n";
 
                             $scriptarray .= "item['".$id."'][".$i."] = '".$component_link."';\n";
                             $i++;
@@ -6611,14 +6612,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
  
                           if ($onpublish != "hidden" && $component_link != "")
                           {
-                            //$component_link = deconvertpath ($component_link, "file");
+                            // $component_link = deconvertpath ($component_link, "file");
                             $component_file = getobject ($component_link);
                             $component_location = getlocation ($component_link);
                             $container_collection = "live";
                             $container_buffer = $container;
                             $container = null;
  
-                            // render compoent
+                            // render component
                             if ($buildview == "publish" && $application == "generator") $component_view = buildview ($site, $component_location, $component_file, $user, "publish", "no", "", "", "", false);
                             else $component_view = buildview ($site, $component_location, $component_file, $user, "preview", "no");
  
@@ -6656,6 +6657,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     if ($buildview == "publish") $temp_root = substr ($publ_config['abs_publ_comp'], 0, strlen ($publ_config['abs_publ_comp']) - 1);
                     // use management settings
                     else $temp_root = substr ($mgmt_config['abs_path_comp'], 0, strlen ($mgmt_config['abs_path_comp']) - 1);
+
+                    // replace the comp variables with the component root
+                    $contentbot = str_replace ("%comp%", $temp_root, $contentbot);
+                  }
+                  // path type (converted location path)
+                  elseif ($comppathtype == "location")
+                  {
+                    $contentbot = convertpath ($site, $contentbot, "comp");
                   }
                   // path type (URL)
                   else
@@ -6664,10 +6673,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                      if ($buildview == "publish") $temp_root = substr ($publ_config['url_publ_comp'], 0, strlen ($publ_config['url_publ_comp']) - 1);
                      // use management settings
                      else $temp_root = substr ($mgmt_config['url_path_comp'], 0, strlen ($mgmt_config['url_path_comp']) - 1);
+
+                    // replace the comp variables with the component root
+                    $contentbot = str_replace ("%comp%", $temp_root, $contentbot);
                   }
 
-                  // replace the comp variables with the component root
-                  $viewstore = str_replace ($hypertag, str_replace ("%comp%", $temp_root, $contentbot) , $viewstore);
+                  // replace template tag with path
+                  $viewstore = str_replace ($hypertag, $contentbot, $viewstore);
                 }
                 else
                 {
@@ -7197,6 +7209,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             }
           }
 
+          // if no CSS has been defined use system CSS
+          if (empty ($line_css)) $line_css .= "
+    <link rel=\"stylesheet\" hypercms_href=\"".getthemelocation()."css/main.css\" />
+    <link rel=\"stylesheet\" hypercms_href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />";
+
           // ======================================== insert code for component templates =======================================
           if ($buildview == "template")
           {
@@ -7293,10 +7310,24 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $bodytagold = "<body class=\"hcmsWorkplaceGeneric\">"; 
             }
 
-            $bodytagnew = str_ireplace ("onload", "lockonload", $bodytagold);
+            // deprecated since version 9.0.2: $bodytagnew = str_ireplace ("onload", "lockonload", $bodytagold);
+            $bodytagnew = $bodytagold;
 
             // insert onload commands
-            if (!empty ($add_onload)) $bodytagnew = str_ireplace (">", " onload=\"".$add_onload."\">", $bodytagnew);
+            if (!empty ($add_onload))
+            {
+              $onload_attr = getattribute ($bodytagnew, "onload");
+
+              if (empty ($onload_attr))
+              {
+                $bodytagnew = str_replace (">", " onload=\"".$add_onload."\">", $bodytagnew);
+              }
+              else
+              {
+                $onload_attr_new = substr ($onload_attr, 0, -1)." ".$add_onload.substr ($onload_attr, -1);
+                $bodytagnew = str_replace ($onload_attr, $onload_attr_new, $bodytagnew);
+              }
+            }
 
             // form for multiple component manipulation in cmsview
             if ($buildview != "preview") $bodytagnew = $bodytagnew."
@@ -7432,7 +7463,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           if (isset ($scriptcode) && $scriptcode != "")
           {
             // include javascript
-            $vendor = "<meta name=\"keyword\" content=\"hyper Content Management Server (http://www.hypercms.com/)\" />";
+            $vendor = "<meta name=\"keyword\" content=\"hyper Content & Digital Asset Management Server (http://www.hypercms.com/)\" />";
 
             if (preg_match ("/<head/i", $viewstore))
             {
@@ -8623,9 +8654,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   var videoface_id = [];
   var imageface_id = [];
 
-  // scaling of markers if the image size has been changed
-  var scale = 1;
-
   // click event memory to prevent other events from firing
   var clickevent = 'init';
 
@@ -8656,6 +8684,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // detect faces automatically
     if ((faces_json == '' || faces_json.length == 0) && $('#hcms_mediaplayer_asset').length)
     {
+      // scaling if the image size has been changed (display size / original)
+      ".(!empty ($mediawidth) ? "if (document.getElementById('hcms_mediaplayer_asset').naturalWidth) var scale = parseInt(document.getElementById('hcms_mediaplayer_asset').naturalWidth) / parseInt(".$mediawidth.");" : "var scale = 1;")."  
+
       $('#hcms_mediaplayer_asset').faceDetection({
         complete: function (faces) { 
           for (var i = 0; i < faces.length; i++)
@@ -8666,10 +8697,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               'onclick': 'switchFaceName(\"hcmsFaceName' + i + '\")',
               'css': {
                 'position': 'absolute',
-                'left': faces[i].x + 'px',
-                'top': faces[i].y + 'px',
-                'width': faces[i].width + 'px',
-                'height': faces[i].height + 'px'
+                'left': (faces[i].x * scale) + 'px',
+                'top': (faces[i].y * scale) + 'px',
+                'width': (faces[i].width * scale) + 'px',
+                'height': (faces[i].height * scale) + 'px'
               }
             })
             .insertAfter(this);
@@ -8677,7 +8708,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             imageface_id.push(i);
             var offset = (216 - faces[i].width) / 2;
 
-            $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
+            // label and form with scaled position and size
+            $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height * scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + Math.round(faces[i].x * scale) + \", \\\"y\\\":\" + Math.round(faces[i].y * scale) + \", \\\"width\\\":\" + Math.round(faces[i].width * scale) + \", \\\"height\\\":\" + Math.round(faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + i + \"');\\\" title='".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."' /></div>\").insertAfter($('#hcmsFace' + i));
           }
         },
         error:function (code, message) {
@@ -8698,6 +8730,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (typeof faces_json === 'string') var faces = JSON.parse (faces_json);
       else var faces = faces_json;
 
+      // width of annotation image
       if (document.getElementById('annotation') && document.getElementById('annotation').offsetWidth) var mediawidth = document.getElementById('annotation').offsetWidth;
       else var mediawidth = ".(!empty ($mediawidth) ? intval ($mediawidth) : "0").";
 
@@ -8706,7 +8739,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         if (faces[i].name != '')
         {
           // scaling of markers if the image size has been changed
-          if (parseInt(mediawidth) > 0 && parseInt(faces[i].imagewidth) > 0) scale = parseInt(mediawidth) / parseInt(faces[i].imagewidth);
+          if (parseInt(mediawidth) > 0 && parseInt(faces[i].imagewidth) > 0) var scale = parseInt(mediawidth) / parseInt(faces[i].imagewidth);
+          else var scale = 1;
 
           $('<div>', {
             'id': 'hcmsFace' + i,
@@ -8725,7 +8759,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           imageface_id.push(i);
           var offset = (216 - faces[i].width) / 2;
 
-          $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height * scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'>\" + faces[i].name + \"</textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + i + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + i));
+          // label and form with scaled position and size
+          $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height * scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + Math.round(faces[i].x * scale) + \", \\\"y\\\":\" + Math.round(faces[i].y * scale) + \", \\\"width\\\":\" + Math.round(faces[i].width * scale) + \", \\\"height\\\":\" + Math.round(faces[i].height * scale)  + \"' /><textarea type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'>\" + faces[i].name + \"</textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + i + \"');\\\" title='".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."' /></div>\").insertAfter($('#hcmsFace' + i));
         }
       }
     }
@@ -8740,11 +8775,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // if not a video tag (same id can be used for img tag)
     if ($('#hcms_mediaplayer_asset').is('img')) return false;
 
-    // remove existing face selector
+    // remove existing face selectors
     $('#hcmsFaceSelector').remove();
 
     // remove existing face markers
-    if ($('#hcms_mediaplayer_asset_html5_api').length || $('#hcms_mediaplayer_asset_flash_api').length)
+    if (type == 'all' && ($('#hcms_mediaplayer_asset_html5_api').length || $('#hcms_mediaplayer_asset_flash_api').length))
     {
       $('.hcmsFace').css('visibility', 'hidden');
       $('.hcmsFaceName').css('visibility', 'hidden');
@@ -8800,7 +8835,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               var id = i + '_' + time_id;
 
               // scaling of markers if the video size has been changed
-              ".(!empty ($mediawidth) ? "if (faces[i].videowidth) scale = parseInt(".$mediawidth.") / parseInt(faces[i].videowidth);" : "")."
+              ".(!empty ($mediawidth) ? "if (faces[i].videowidth) var scale = parseInt(".$mediawidth.") / parseInt(faces[i].videowidth);" : "var scale = 1;")."
  
               $('<div>', {
                 'id': 'hcmsFace' + id,
@@ -8820,7 +8855,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               videoface_id.push(id);
               var offset = (216 - faces[i].width) / 2;
 
-              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height *scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + (faces[i].x * scale) + \", \\\"y\\\":\" + (faces[i].y * scale) + \", \\\"width\\\":\" + (faces[i].width * scale) + \", \\\"height\\\":\" + (faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'>\" + faces[i].name + \"</textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+              if (typeof faces[i].link == 'undefined') faces[i].link = '';
+
+              // label and form with scaled position and size
+              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height *scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + Math.round(faces[i].x * scale) + \", \\\"y\\\":\" + Math.round(faces[i].y * scale) + \", \\\"width\\\":\" + Math.round(faces[i].width * scale) + \", \\\"height\\\":\" + Math.round(faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'>\" + faces[i].name + \"</textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" title='".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."' /><br/><textarea type='text' id='facelink\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'>\" + faces[i].link + \"</textarea></div>\").insertAfter($('#hcmsFace' + id));
             }
           }
         }
@@ -8830,10 +8868,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   function detectFaceOnVideo ()
   {
-    // find video ID
+    // find video ID (video in it's original size)
     if ($('#hcms_mediaplayer_asset_html5_api').length > 0) var video = $('#hcms_mediaplayer_asset_html5_api');
     else if ($('#hcms_mediaplayer_asset_flash_api').length > 0) var video = $('#hcms_mediaplayer_asset_flash_api');
     else var video = false;
+
+    // video frame (display size)
+    if ($('#hcms_mediaplayer_asset').length > 0) var videoframe = $('#hcms_mediaplayer_asset');
+    else var videoframe = false;
 
     // detect faces automatically
     if (video)
@@ -8849,6 +8891,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       {
         video[0].pause();
       }
+
+      // scaling if the video size has been changed (display size / original)
+      ".(!empty ($mediawidth) ? "if (video[0].videoWidth) var scale = parseInt(".$mediawidth.") / parseInt(video[0].videoWidth);" : "var scale = 1;")."
 
       var time = setPlayerTime('');
       var time_id = time.toString().replace ('.', '_');
@@ -8866,10 +8911,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               'onclick': 'switchFaceName(\"hcmsFaceName' + id + '\")',
               'css': {
                 'position': 'absolute',
-                'left': faces[i].x + 'px',
-                'top': faces[i].y + 'px',
-                'width': faces[i].width  + 'px',
-                'height': faces[i].height + 'px'
+                'left': (faces[i].x * scale) + 'px',
+                'top': (faces[i].y * scale) + 'px',
+                'width': (faces[i].width * scale)  + 'px',
+                'height': (faces[i].height * scale) + 'px'
               }
             })
             .insertAfter(this);
@@ -8877,7 +8922,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             videoface_id.push(id);
             var offset = (216 - Math.round (faces[i].width)) / 2;
 
-            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (Math.round (faces[i].x) - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+            // label and form with scaled position and size
+            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; white-space:nowrap; position:absolute; top:\" + (faces[i].y * scale + faces[i].height * scale + 6) +\"px; left:\" + (faces[i].x * scale - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(faces[i].x * scale) + \", \\\"y\\\":\" + Math.round(faces[i].y * scale) + \", \\\"width\\\":\" + Math.round(faces[i].width * scale) + \", \\\"height\\\":\" + Math.round(faces[i].height * scale) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" title='".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."' /><br/><textarea type='text' id='facelink\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea></div>\").insertAfter($('#hcmsFace' + id));
           }
         },
         error:function (code, message) {
@@ -8961,10 +9007,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
   }
 
+  // create face marker on image by mouse click or touch
   function createFaceOnImage (event, tag_id)
   {
-    var width = 70 * scale;
-    var height = 70 * scale;
+    var markerwidth = 70;
+    var markerheight = 70;
 
     if (imageface_id.length > 0) var id = imageface_id[imageface_id.length - 1] + 1;
     else var id = 0;
@@ -8986,16 +9033,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (pos_x > 35 && pos_y > 35)
       {
         // verify borders
-        if (pos_x < (width / 2)) pos_x = width / 2;
-        if (pos_y < (height / 2)) pos_y = height / 2;
-        if (pos_x > (imagewidth - (width / 2))) pos_x = imagewidth - (width / 2);
-        if (pos_y > (imageheight - (height / 2))) pos_y = imageheight - (height / 2);
+        if (pos_x < (markerwidth / 2)) pos_x = markerwidth / 2;
+        if (pos_y < (markerheight / 2)) pos_y = markerheight / 2;
+        if (pos_x > (imagewidth - (markerwidth / 2))) pos_x = imagewidth - (markerwidth / 2);
+        if (pos_y > (imageheight - (markerheight / 2))) pos_y = imageheight - (markerheight / 2);
 
         // correct x/y coordinates for rectangle
-        pos_x = pos_x - (width / 2);
-        pos_y = pos_y - (height / 2);
+        pos_x = pos_x - (markerwidth / 2);
+        pos_y = pos_y - (markerheight / 2);
 
-        if (pos_x >= 0 && pos_x <= (imagewidth - width) && pos_y >= 0 && pos_y <= (imageheight - height))
+        if (pos_x >= 0 && pos_x <= (imagewidth - markerwidth) && pos_y >= 0 && pos_y <= (imageheight - markerheight))
         {
           $('<div>', {
             'id': 'hcmsFace' + id,
@@ -9014,12 +9061,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           imageface_id.push(id);
           var offset = (216 - width) / 2;
 
-          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"x\\\":\" + Math.round(pos_x / scale) + \", \\\"y\\\":\" + Math.round(pos_y / scale) + \", \\\"width\\\":\" + Math.round(width / scale) + \", \\\"height\\\":\" + Math.round(height / scale) + \"' /><textarea type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+          // label and form
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + markerheight + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(markerwidth) + \", \\\"height\\\":\" + Math.round(markerheight) + \"' /><textarea type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" title='".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."' /></div>\").insertAfter($('#hcmsFace' + id));
         }
       }
     }
   }
 
+  // create face marker on video by mouse click or touch
   function createFaceOnVideo (event)
   {
     var width = 70;
@@ -9087,7 +9136,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           videoface_id.push(id);
           var offset = (216 - width) / 2;
 
-          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" /></div>\").insertAfter($('#hcmsFace' + id));
+          // label and form
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" title='".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."' /><br/><textarea type='text' id='facelink\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea></div>\").insertAfter($('#hcmsFace' + id));
         }
       }
     }
@@ -9146,6 +9196,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         if ($('#hcms_mediaplayer_asset_html5_api').length > 0) var video = $('#hcms_mediaplayer_asset_html5_api');
         else if ($('#hcms_mediaplayer_asset_flash_api').length > 0) var video = $('#hcms_mediaplayer_asset_flash_api');
 
+        // display width and height
         var videowidth = video.innerWidth();
         var videoheight = video.innerHeight();
         var faces = [];
@@ -9157,7 +9208,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           {
             var facedetails = $('#facedetails' + videoface_id[i]).val();
             var facename = $('#facename' + videoface_id[i]).val();
-            faces[j] = '{\"videowidth\":' + videowidth + ', \"videoheight\":' + videoheight + ', ' + facedetails + ', \"name\":\"' + facename + '\"}';
+            var facelink = $('#facelink' + videoface_id[i]).val();
+            faces[j] = '{\"videowidth\":' + videowidth + ', \"videoheight\":' + videoheight + ', ' + facedetails + ', \"name\":' + JSON.stringify(facename) + ', \"link\":' + JSON.stringify(facelink) + '}';
             j++;
           }
         }
@@ -9166,6 +9218,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       else if ($('#hcms_mediaplayer_asset').length > 0)
       {
         var image = document.getElementById('hcms_mediaplayer_asset');
+
+        // display width and height
         var imagewidth = image.clientWidth;
         var imageheight = image.clientHeight;
         var faces = [];
@@ -9177,7 +9231,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           {
             var facedetails = $('#facedetails' + imageface_id[i]).val();
             var facename = $('#facename' + imageface_id[i]).val();
-            faces[j] = '{\"imagewidth\":' + imagewidth + ', \"imageheight\":' + imageheight + ', ' + facedetails + ', \"name\":\"' + facename + '\"}';
+            faces[j] = '{\"imagewidth\":' + imagewidth + ', \"imageheight\":' + imageheight + ', ' + facedetails + ', \"name\":' + JSON.stringify(facename) + '}';
             j++;
           }
         }
@@ -9428,6 +9482,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 </body>
 </html>";
       }
+
+    // ==================================== remove hyperCMS stylesheet tags in template ==================================
+
+    if ($buildview == "publish" || $buildview == "unpublish" || $buildview == "template" || ($buildview == "preview" && $ctrlreload != "yes"))
+    {
+      $hypertag_array = gethypertag ($viewstore, "compstylesheet", 0);
+
+      if ($hypertag_array != false && sizeof ($hypertag_array) > 0)
+      {
+        foreach ($hypertag_array as $hypertag)
+        {
+          $viewstore = str_replace ($hypertag, "", $viewstore);
+        }
+      }
+    }
 
       // ====================================== Adding Headers for Video Player ============================================
 

@@ -636,9 +636,9 @@ function savetemplate(mode)
     <input type="hidden" name="application" value="media" />
     <?php } ?>
   </table>
-  <br />
+  <hr />
   
-  <table class="hcmsTableNarrow" style="border:1px solid #000000; width:100%; height:100%;">
+  <table class="hcmsTableNarrow" style="width:100%; height:100%;">
   <?php
   if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
   {

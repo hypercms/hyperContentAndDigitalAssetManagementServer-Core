@@ -86,7 +86,7 @@ if ($actual != "" && checktoken ($token, $user))
 }
 
 // delete versions
-if (is_array ($delete) && sizeof ($delete) > 0 && checktoken ($token, $user))
+if ($setlocalpermission['delete'] == 1 && is_array ($delete) && sizeof ($delete) > 0 && checktoken ($token, $user))
 {
   foreach ($delete as $file_v_del)
   {
@@ -237,7 +237,7 @@ function toggledelete (source)
           <td style=\"white-space:nowrap;\"><a href=\"#\" onClick=\"hcms_openWindow('container_source.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&container=".url_encode($file_v)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\">XML</a></td>
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"dummy\" value=\"".$file_v."\" onclick=\"if (compare_select('".$file_v."')) this.checked=true; else this.checked=false;\" /></td>
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"radio\" name=\"actual\" value=\"".$file_v."\" /></td>
-          <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" class=\"delete\" /></td>
+          <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" class=\"delete\" ".($setlocalpermission['delete'] != 1 ? "disabled=\"disabled\"" : "")."/></td>
         </tr>";
       }
     }

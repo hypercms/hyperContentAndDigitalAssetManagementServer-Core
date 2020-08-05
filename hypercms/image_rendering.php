@@ -242,7 +242,7 @@ $token_new = createtoken ($user);
 <style>
 .row
 {
-  margin-top: 1px;
+  margin-top: 10px;
 }
 
 .row *
@@ -261,8 +261,9 @@ $token_new = createtoken ($user);
   vertical-align: top;
   display: inline-block;
   margin-left: 10px;
-  margin-top: 10px;
-  width: 230px;
+  margin-top: 0px;
+  width: 220px;
+  white-space: nowrap;
 }
 
 .cellButton
@@ -274,6 +275,20 @@ $token_new = createtoken ($user);
 .cell *
 {
   font-size: 11px;
+}
+
+#renderOptions input[type=text], #renderOptions select
+{
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+@media screen and (max-width: 420px)
+{
+  .cell
+  {
+    width: 100%;
+  }
 }
 </style>
 
@@ -1111,7 +1126,7 @@ function activate ()
   toggle_colorspace();
 }
 
-function toggle_options (caller, element)
+function toggleOptions (caller, element)
 {
   var options = $(element);
   caller = $(caller);  
@@ -1156,7 +1171,7 @@ $(window).load( function()
 
 <body class="hcmsWorkplaceGeneric">
 
-<!-- saving --> 
+<!-- save layer --> 
 <div id="savelayer" class="hcmsLoadScreen" style="display:none;"></div>
 
 <?php
@@ -1165,11 +1180,11 @@ echo showmessage ($show, 600, 80, $lang, "position:fixed; left:50px; top:150px;"
 
 <!-- top bar -->
 <?php
-echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$lang] => 'onclick="toggle_options(this, \'#renderOptions\');"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
+echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$lang] => 'onclick="toggleOptions(this, \'#renderOptions\');"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin:-4px 10px 0px 10px;" class="hcmsMediaRendering">    
+<div id="renderOptions" style="padding:0px 5px 10px 5px; width:94%; display:none; vertical-align:top; z-index:1; margin:0px 10px 0px 10px;" class="hcmsMediaRendering">    
   <!-- start edit image -->
   <form name="mediaconfig" id="mediaconfig" action="service/renderimage.php" method="post">
     <input type="hidden" id="action" name="action" value="rendermedia" />
@@ -1180,100 +1195,74 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
     <input type="hidden" name="page" value="<?php echo $page; ?>" />
     <input type="hidden" name="media" value="<?php echo $mediafile; ?>" />
     <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>" />
-    <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>" />  
     
-    <!-- crop -->
     <div class="cell">
+      <!-- crop -->
       <div class="row">
         <input type="checkbox" id="crop" name="imageresize" value="crop" checked="checked" onclick="toggle_crop();" />
         <strong><label for='crop'><?php echo getescapedtext ($hcms_lang['crop'][$lang]); ?></label></strong>
       </div>
-      <div style="margin-left:20px;">
-        <label style="width:111px; display:inline-block;" for="imagecropwidth"><?php echo getescapedtext ($hcms_lang['width'][$lang]); ?></label>
+      <div>
+        <label style="width:108px; display:inline-block;" for="imagecropwidth"><?php echo getescapedtext ($hcms_lang['width'][$lang]); ?></label>
         <input name="imagecropwidth" type="text" id="imagecropwidth" size="5" maxlength="5" value="<?php echo $imagecropwidth; ?>" /> px
       </div>
-      <div style="margin-left:20px;">
-        <label style="width: 111px; display:inline-block;" for="imagecropheight"><?php echo getescapedtext ($hcms_lang['height'][$lang]); ?></label>
+      <div>
+        <label style="width: 108px; display:inline-block;" for="imagecropheight"><?php echo getescapedtext ($hcms_lang['height'][$lang]); ?></label>
         <input name="imagecropheight" type="text" id="imagecropheight" size="5" maxlength="5" value="<?php echo $imagecropheight?>" /> px
       </div>
-      <div style="margin-left:20px;">
-        <label style="width:111px; display:inline-block;" for="imagex"><?php echo getescapedtext ($hcms_lang['left-distance'][$lang]); ?></label>
+      <div>
+        <label style="width:108px; display:inline-block;" for="imagex"><?php echo getescapedtext ($hcms_lang['left-distance'][$lang]); ?></label>
         <input name="imagex" type="text" size="5" id="imagex" value="<?php echo $imagex; ?>" /> px
       </div>
-      <div style="margin-left:20px;">
-        <label style="width:111px; display:inline-block;" for="imagey"><?php echo getescapedtext ($hcms_lang['top-distance'][$lang]); ?></label>
+      <div>
+        <label style="width:108px; display:inline-block;" for="imagey"><?php echo getescapedtext ($hcms_lang['top-distance'][$lang]); ?></label>
         <input name="imagey" type="text" size="5" id="imagey" value="<?php echo $imagey; ?>" /> px
       </div>
-    </div>
-      
-    <!-- width or height -->
-    <div class="cell">
-      <div class="row" style="margin-left:20px;">
+
+      <!-- width or height -->
+      <div class="row">
         <strong><?php echo getescapedtext ($hcms_lang['image-size'][$lang]); ?></strong>
       </div>
-      <div class="row">
+      <div>
         <input type="checkbox" id="percentage" name="imageresize" value="percentage" onclick="toggle_percentage();" />
-        <label style="width:80px; display:inline-block;" for="percentage"><?php echo getescapedtext ($hcms_lang['percentage'][$lang]); ?></label>
+        <label style="width:90px; display:inline-block;" for="percentage"><?php echo getescapedtext ($hcms_lang['percentage'][$lang]); ?></label>
         <input name="imagepercentage" type="text" id="imagepercentage" size="5" maxlength="3" value="100" /> %
       </div>
-      <div class="row">
+      <div>
         <input type="checkbox" id="width" name="imageresize" value="imagewidth" onclick="toggle_size_width();" />
-        <label style="width:80px; display:inline-block;" for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang]); ?></label>
+        <label style="width:90px; display:inline-block;" for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang]); ?></label>
         <input name="imagewidth" type="text" id="imagewidth" size="5" maxlength="5" value="<?php echo $media_size[0]; ?>" /> px
       </div>
-      <div class="row">
+      <div>
         <input type="checkbox" id="height" name="imageresize" value="imageheight" onclick="toggle_size_height();" />
-        <label style="width:80px; display:inline-block;" for="height"><?php echo getescapedtext ($hcms_lang['height'][$lang]); ?></label>
+        <label style="width:90px; display:inline-block;" for="height"><?php echo getescapedtext ($hcms_lang['height'][$lang]); ?></label>
         <input name="imageheight" type="text" id="imageheight" size="5" maxlength="5" value="<?php echo $media_size[1]; ?>" /> px
       </div>
     </div>
     
     <?php if (getimagelib () != "GD") { ?>
-    <!-- Effects -->
-    <div class="cell">
-      <div class="row" style="margin-left:20px;">
-        <strong><?php echo getescapedtext ($hcms_lang['effects'][$lang]); ?></strong>
-      </div>
+    <div class="cell" style="width:240px;">
+      <!-- brigthness / contrast -->
       <div class="row">
-        <input type="checkbox" id="sepia" name="effect" value="sepia" onclick="toggle_sepia();" />
-        <label style="width:60px; display:inline-block;" for="sepia"><?php echo getescapedtext ($hcms_lang['sepia'][$lang]); ?></label>
-        <input name="sepia_treshold" type="text" id="sepia_treshold" size="2" maxlength="2" value="80" /> %
+        <strong><?php echo getescapedtext ($hcms_lang['adjust'][$lang]); ?></strong>
       </div>
-      <div class="row">
-        <input type="checkbox" id="blur" name="effect" value="blur" onclick="toggle_blur();" />
-        <label style="width:60px; display:inline-block;" for="blur"><?php echo getescapedtext ($hcms_lang['blur'][$lang]); ?></label>
-        <input name="blur_radius" type="text" id="blur_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang]); ?>" />
-        <label style="width:6px; display:inline-block;" for="blur_sigma">x</label>
-        <input name="blur_sigma" type="text" id="blur_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang]); ?>" />
+      <div>
+        <input type="checkbox" id="chbx_brightness" name="use_brightness" value="1" onclick="toggle_brightness();" />
+        <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang]); ?></label>
+        <input name="brightness" type="text" id="brightness" size="4" value="0" />
       </div>
-      <div class="row">
-        <input type="checkbox" id="sharpen" name="effect" value="sharpen" onclick="toggle_sharpen();" />
-        <label style="width:60px; display:inline-block;" for="sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang]); ?></label>
-        <input name="sharpen_radius" type="text" id="sharpen_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang]); ?>" />
-        <label style="width:6px; display:inline-block;" for="sharpen_sigma">x</label>
-        <input name="sharpen_sigma" type="text" id="sharpen_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang]); ?>" />
+      <div>
+         <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
+        <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang]); ?></label>
+        <input name="contrast" type="text" id="contrast" size="4" value="0" />
       </div>
-      <div class="row">
-        <input type="checkbox" id="sketch" name="effect" value="sketch" onclick="toggle_sketch();" />
-        <label style="width:60px; display:inline-block;" for="sketch"><?php echo getescapedtext ($hcms_lang['sketch'][$lang]); ?></label>
-        <input name="sketch_radius" type="text" id="sketch_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang]); ?> "/>
-        <label style="width:6px; display:inline-block;" for="sketch_sigma">x</label>
-        <input name="sketch_sigma" type="text" id="sketch_sigma" size="2" maxlength="2" value="0" title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang]); ?>" />
-        <input name="sketch_angle" type="text" id="sketch_angle" size="3" maxlength="3" value="0" title="<?php echo getescapedtext ($hcms_lang['angle'][$lang]); ?>" />
-      </div>
-      <div class="row">
-        <input type="checkbox" id="paint" name="effect" value="paint" onclick="toggle_paint();" />
-        <label style="width:60px; display:inline-block;" for="paint"><?php echo getescapedtext ($hcms_lang['oil'][$lang]); ?></label>
-        <input name="paint_value" type="text" id="paint_value" size="2" maxlength="3" value="0" />
-      </div>
-    </div>
-    <?php } ?>
-    
-    <div class="cell">    
-      <div class="row">
+
+      <!-- rotate -->  
+      <div>
         <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-        <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang]); ?></label></strong>
-        <select name="degree" id="degree" style="margin-left:20px">
+        <label for="rotate" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang]); ?></label>
+        <select name="degree" id="degree">
           <option value="90" selected="selected" >90&deg;</option>
           <option value="180" >180&deg;</option>
           <option value="-90" title="-90&deg;">270&deg;</option>
@@ -1282,10 +1271,10 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
       
       <?php if (getimagelib () != "GD") { ?>
       <!-- flip flop -->
-      <div class="row">
+      <div>
         <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-        <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang]); ?></label></strong>
-        <select name="flip" id="flip" style="margin-left:20px">
+        <label for="chbx_flip" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang]); ?></label>
+        <select name="flip" id="flip">
         <?php 
           foreach ($available_flip as $value => $name)
           {
@@ -1296,36 +1285,57 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
         ?>
         </select>
       </div>
-      <?php } ?>      
-    </div>
-    
-    <?php if (getimagelib () != "GD") { ?>
-    <!-- brigthness / contrast -->
-    <div class="cell">
-      <div style="margin-left:20px" class="row">
-        <strong><?php echo getescapedtext ($hcms_lang['adjust'][$lang]); ?></strong>
-      </div>
+      <?php } ?>
+
+      <?php if (getimagelib () != "GD") { ?>
+      <!-- Effects -->
       <div class="row">
-        <input type="checkbox" id="chbx_brightness" name="use_brightness" value="1" onclick="toggle_brightness();" />
-        <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang]); ?></label>
-        <input name="brightness" type="text" id="brightness" size="4" value="0" />
+        <strong><?php echo getescapedtext ($hcms_lang['effects'][$lang]); ?></strong>
       </div>
-      <div class="row">
-         <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
-        <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang]); ?></label>
-        <input name="contrast" type="text" id="contrast" size="4" value="0" />
+      <div>
+        <input type="checkbox" id="sepia" name="effect" value="sepia" onclick="toggle_sepia();" />
+        <label style="width:70px; display:inline-block;" for="sepia"><?php echo getescapedtext ($hcms_lang['sepia'][$lang]); ?></label>
+        <input name="sepia_treshold" type="text" id="sepia_treshold" size="2" maxlength="2" value="80" /> %
       </div>
+      <div>
+        <input type="checkbox" id="blur" name="effect" value="blur" onclick="toggle_blur();" />
+        <label style="width:70px; display:inline-block;" for="blur"><?php echo getescapedtext ($hcms_lang['blur'][$lang]); ?></label>
+        <input name="blur_radius" type="text" id="blur_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang]); ?>" />
+        <label style="width:6px; display:inline-block;" for="blur_sigma">x</label>
+        <input name="blur_sigma" type="text" id="blur_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang]); ?>" />
+      </div>
+      <div>
+        <input type="checkbox" id="sharpen" name="effect" value="sharpen" onclick="toggle_sharpen();" />
+        <label style="width:70px; display:inline-block;" for="sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang]); ?></label>
+        <input name="sharpen_radius" type="text" id="sharpen_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang]); ?>" />
+        <label style="width:6px; display:inline-block;" for="sharpen_sigma">x</label>
+        <input name="sharpen_sigma" type="text" id="sharpen_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang]); ?>" />
+      </div>
+      <div>
+        <input type="checkbox" id="sketch" name="effect" value="sketch" onclick="toggle_sketch();" />
+        <label style="width:70px; display:inline-block;" for="sketch"><?php echo getescapedtext ($hcms_lang['sketch'][$lang]); ?></label>
+        <input name="sketch_radius" type="text" id="sketch_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang]); ?> "/>
+        <label style="width:6px; display:inline-block;" for="sketch_sigma">x</label>
+        <input name="sketch_sigma" type="text" id="sketch_sigma" size="2" maxlength="2" value="0" title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang]); ?>" />
+        <input name="sketch_angle" type="text" id="sketch_angle" size="3" maxlength="3" value="0" title="<?php echo getescapedtext ($hcms_lang['angle'][$lang]); ?>" />
+      </div>
+      <div>
+        <input type="checkbox" id="paint" name="effect" value="paint" onclick="toggle_paint();" />
+        <label style="width:70px; display:inline-block;" for="paint"><?php echo getescapedtext ($hcms_lang['oil'][$lang]); ?></label>
+        <input name="paint_value" type="text" id="paint_value" size="2" maxlength="3" value="0" />
+      </div>
+      <?php } ?> 
     </div>
     <?php } ?>
     
     <div class="cell">
-    <?php if (getimagelib () != "GD") { ?>
+      <?php if (getimagelib () != "GD") { ?>
       <!-- colorspace -->
       <div class="row">
         <input type="checkbox" id="chbx_colorspace" name="colorspace" value="1" onclick="toggle_colorspace();" />
         <strong><label for="chbx_colorspace"><?php echo getescapedtext ($hcms_lang['change-colorspace'][$lang]); ?></label></strong>
       </div>
-      <div style="margin-left:20px">
+      <div>
         <select name="imagecolorspace" id="colorspace">
           <?php 
             foreach ($available_colorspaces as $value => $name)
@@ -1335,16 +1345,16 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
             <?php
             }
           ?>
-          </select>
+        </select>
       </div>
       <?php } ?>
       
       <!-- format -->
-      <div style="margin-left:20px;">
+      <div class="row">
         <strong><label for="imageformat"><?php echo getescapedtext ($hcms_lang['save-as'][$lang]); ?></label></strong>
       </div>
-      <div style="margin-left:20px">
-        <label for="imageformat"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?></label>
+      <div>
+        <label for="imageformat"><?php echo getescapedtext ($hcms_lang['type'][$lang]); ?></label>
         <select name="imageformat" id="imageformat" style="width:">
           <?php 
             $file_ext_old = strtolower (strrchr ($mediafile, ".")); 
@@ -1356,14 +1366,14 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
             <?php
             }
           ?>
-          </select>
+        </select>
       </div>
-    </div>
-    <br/>
-    
-    <div class="cell">
-      <button type="button" class="hcmsButtonGreen" name="save" onclick="submitform(true);"><img src="<?php echo getthemelocation()."img/button_save.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></button>
-      <button type="button" class="hcmsButtonGreen" name="preview" onclick="showPreview();"><img src="<?php echo getthemelocation()."img/button_file_preview.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></button>
+
+      <!-- save -->
+      <div class="row">
+        <button type="button" class="hcmsButtonGreen" name="save" onclick="submitform(true);"><img src="<?php echo getthemelocation()."img/button_save.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></button>
+        <button type="button" class="hcmsButtonGreen" name="preview" onclick="showPreview();"><img src="<?php echo getthemelocation()."img/button_file_preview.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></button>
+      </div>
     </div>
 
   </form>

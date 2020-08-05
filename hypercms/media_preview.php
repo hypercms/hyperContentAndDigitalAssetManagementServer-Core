@@ -54,6 +54,7 @@ checkusersession ($user, false);
       </tr>
     </table>
   </form>
+  <hr/>
 </div>
 
 <?php include_once ("include/footer.inc.php"); ?>
