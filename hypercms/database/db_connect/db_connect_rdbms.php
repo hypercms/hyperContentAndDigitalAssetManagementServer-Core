@@ -350,7 +350,7 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
 
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
         
-    $container_id = intval($container_id);
+    $container_id = intval ($container_id);
     $object = $db->rdbms_escape_string($object);
     $template = $db->rdbms_escape_string($template);
     if ($media != "") $media = $db->rdbms_escape_string($media);
@@ -457,8 +457,8 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $container_id_source = intval($container_id_source);  
-    $container_id_dest = intval($container_id_dest);
+    $container_id_source = intval ($container_id_source);  
+    $container_id_dest = intval ($container_id_dest);
     $user = $db->rdbms_escape_string($user);
 
     // copy textnodes
@@ -472,7 +472,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
       while ($row = $db->rdbms_getresultrow ('textnodes'))
       {
         $sql = 'INSERT INTO textnodes (id, text_id, textcontent, object_id, type, user) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.$db->rdbms_escape_string($row['text_id']).'", "'.$db->rdbms_escape_string($row['textcontent']).'", "'.intval($row['object_id']).'", "'.$db->rdbms_escape_string($row['type']).'", "'.$user.'")';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.$db->rdbms_escape_string($row['text_id']).'", "'.$db->rdbms_escape_string($row['textcontent']).'", '.intval($row['object_id']).', "'.$db->rdbms_escape_string($row['type']).'", "'.$user.'")';
         
         $errcode = "50102";
         $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -480,7 +480,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
     }
     
     // copy media
-    $sql = 'SELECT * FROM media WHERE id="'.$container_id_source.'"';
+    $sql = 'SELECT * FROM media WHERE id='.$container_id_source;
                
     $errcode = "50103";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'media');
@@ -490,7 +490,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
       if ($row = $db->rdbms_getresultrow ('media'))
       {
         $sql = 'INSERT INTO media (id, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.intval($row['filesize']).'", "'.$db->rdbms_escape_string($row['filetype']).'", "'.intval($row['width']).'", "'.intval($row['height']).'", "'.intval($row['red']).'", "'.intval($row['green']).'", "'.intval($row['blue']).'", "'.$db->rdbms_escape_string($row['colorkey']).'", "'.$db->rdbms_escape_string($row['imagetype']).'", "'.$db->rdbms_escape_string($row['md5_hash']).'")';
+        $sql .= 'VALUES ('.$container_id_dest.', '.intval($row['filesize']).', "'.$db->rdbms_escape_string($row['filetype']).'", '.intval($row['width']).', '.intval($row['height']).', '.intval($row['red']).', '.intval($row['green']).', '.intval($row['blue']).', "'.$db->rdbms_escape_string($row['colorkey']).'", "'.$db->rdbms_escape_string($row['imagetype']).'", "'.$db->rdbms_escape_string($row['md5_hash']).'")';
         
         $errcode = "50104";
         $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -498,7 +498,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
     }
     
     // copy keywords
-    $sql = 'SELECT * FROM keywords_container WHERE id="'.$container_id_source.'"';
+    $sql = 'SELECT * FROM keywords_container WHERE id='.$container_id_source;
                
     $errcode = "50105";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'keywords');
@@ -508,7 +508,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
       while ($row = $db->rdbms_getresultrow ('keywords'))
       {
         $sql = 'INSERT INTO keywords_container (id, keyword_id) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.intval($row['keyword_id']).'")';
+        $sql .= 'VALUES ('.$container_id_dest.', '.intval($row['keyword_id']).')';
         
         $errcode = "50106";
         $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -516,7 +516,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
     }
     
     // copy taxonomy
-    $sql = 'SELECT * FROM taxonomy WHERE id="'.$container_id_source.'"';
+    $sql = 'SELECT * FROM taxonomy WHERE id='.$container_id_source;
                
     $errcode = "50107";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'taxonomy');
@@ -526,7 +526,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
       while ($row = $db->rdbms_getresultrow ('taxonomy'))
       {
         $sql = 'INSERT INTO taxonomy (id, text_id, taxonomy_id, lang) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.$db->rdbms_escape_string($row['text_id']).'", "'.intval($row['taxonomy_id']).'", "'.$db->rdbms_escape_string($row['lang']).'")';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.$db->rdbms_escape_string($row['text_id']).'", '.intval($row['taxonomy_id']).', "'.$db->rdbms_escape_string($row['lang']).'")';
         
         $errcode = "50108";
         $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -578,7 +578,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
     {
       $sql = 'UPDATE container SET ';
       $sql .= implode (", ", $sql_attr).' ';    
-      $sql .= 'WHERE id="'.$container_id.'"';
+      $sql .= 'WHERE id='.$container_id;
       
       $errcode = "50003";
       $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 1);
@@ -600,7 +600,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
         {
           $text_id = $db->rdbms_escape_string($text_id);
 
-          $sql = 'SELECT id, textcontent, object_id FROM textnodes WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
+          $sql = 'SELECT id, textcontent, object_id FROM textnodes WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
                
           $errcode = "50004";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i);
@@ -632,7 +632,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
                 if (strpos ("_".$text_id, "comp:") > 0 && substr_count ($text_id, ":") == 2)
                 {
                   $text_id_base = substr ($text_id, 0, strrpos ($text_id, ":"));
-                  $sql = 'DELETE FROM textnodes WHERE id="'.$container_id.'" AND text_id LIKE "'.$text_id.':%"';
+                  $sql = 'DELETE FROM textnodes WHERE id='.$container_id.' AND text_id LIKE "'.$text_id.':%"';
                        
                   $errcode = "50007";
                   $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i);
@@ -717,7 +717,7 @@ function rdbms_setkeywords ($site, $container_id)
     $keywords_array = array();
     
     // select keyword content for container
-    $sql = 'SELECT textcontent FROM textnodes WHERE id="'.$container_id.'" AND type="textk"';
+    $sql = 'SELECT textcontent FROM textnodes WHERE id='.$container_id.' AND type="textk"';
     
     $errcode = "50300";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select1');
@@ -804,7 +804,7 @@ function rdbms_setkeywords ($site, $container_id)
     // no keywords provided by container
     else
     {
-      $sql = 'DELETE FROM keywords_container WHERE id='.$container_id.'';
+      $sql = 'DELETE FROM keywords_container WHERE id='.$container_id;
     }
 
     $errcode = "50307";
@@ -899,7 +899,7 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
       foreach ($taxonomy_array as $text_id=>$tx_lang_array)
       {
         // delete taxonomy entries with same text ID
-        $sql = 'DELETE FROM taxonomy WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
+        $sql = 'DELETE FROM taxonomy WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
              
         $errcode = "50201";
         $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete');
@@ -916,7 +916,7 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
 
               // insert new taxonomy entries    
               $sql = 'INSERT INTO taxonomy (id, text_id, taxonomy_id, lang) ';      
-              $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", "'.$taxonomy_id.'", "'.$lang.'")';  
+              $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", '.$taxonomy_id.', "'.$lang.'")';  
 
               $errcode = "50202";
               $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert');
@@ -1056,7 +1056,7 @@ function rdbms_gettaxonomy ($container_id, $text_id)
     $container_id = intval ($container_id);
     $text_id = $db->rdbms_escape_string ($text_id);
     
-    $sql = 'SELECT * FROM taxonomy WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
+    $sql = 'SELECT * FROM taxonomy WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
           
     $errcode = "50203";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'taxonomy');
@@ -1250,7 +1250,7 @@ function rdbms_getmedia ($container_id, $extended=false)
 {
   global $mgmt_config;
 
-  if ($container_id != "")
+  if (intval ($container_id) > 0)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
@@ -1344,7 +1344,7 @@ function rdbms_renameobject ($object_old, $object_new)
   global $mgmt_config;
   
   if ($object_old != "" && $object_new != "" && (substr_count ($object_old, "%page%") > 0 || substr_count ($object_old, "%comp%") > 0) && (substr_count ($object_new, "%page%") > 0 || substr_count ($object_new, "%comp%") > 0))
-  {  
+  {
     // correct object names
     if (strtolower (strrchr ($object_old, ".")) == ".off") $object_old = substr ($object_old, 0, -4);
     if (strtolower (strrchr ($object_new, ".")) == ".off") $object_new = substr ($object_new, 0, -4);
@@ -1378,7 +1378,7 @@ function rdbms_renameobject ($object_old, $object_new)
         if (!empty ($row['object_id']))
         {
           $object_id = intval ($row['object_id']);
-          $container_id = $row['id'];
+          $container_id = intval ($row['id']);
           $object = $row['objectpath'];
           $object = str_replace ($object_old, $object_new, $object);
           $fileext = strrchr ($object, ".");
@@ -1393,7 +1393,7 @@ function rdbms_renameobject ($object_old, $object_new)
           // update media file-type
           if ($filetype != "")
           {
-            $sql = 'UPDATE media SET filetype="'.$filetype.'" WHERE id='.$container_id.'';
+            $sql = 'UPDATE media SET filetype="'.$filetype.'" WHERE id='.$container_id;
     
             $errcode = "50012";
             $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);
@@ -1424,6 +1424,9 @@ function rdbms_deleteobject ($object="", $object_id="")
 {
   global $mgmt_config;
 
+  // clean input
+  $object_id = intval ($object_id);  
+
   if (($object != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0)) || $object_id > 0)
   {
     // correct object name 
@@ -1441,7 +1444,7 @@ function rdbms_deleteobject ($object="", $object_id="")
     $sql = 'SELECT id FROM object ';
     
     if ($object != "") $sql .= 'WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
-    elseif ($object_id > 0) $sql .= 'WHERE object_id="'.intval ($object_id).'"';
+    elseif ($object_id > 0) $sql .= 'WHERE object_id='.intval ($object_id).'';
        
     $errcode = "50012";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select1');
@@ -1452,10 +1455,10 @@ function rdbms_deleteobject ($object="", $object_id="")
     
       if ($row)
       {
-        $container_id = $row['id']; 
+        $container_id = intval ($row['id']); 
 
         $sql = 'SELECT object_id FROM object ';
-        $sql .= 'WHERE id='.$container_id.'';
+        $sql .= 'WHERE id='.$container_id;
 
         $errcode = "50013";
         $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select2');
@@ -1470,61 +1473,61 @@ function rdbms_deleteobject ($object="", $object_id="")
         if ($row_id && $num_rows == 1)
         {
           // delete object
-          $sql = 'DELETE FROM object WHERE id="'.$container_id.'"';
+          $sql = 'DELETE FROM object WHERE id='.$container_id;
 
           $errcode = "50014";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete1');
 
           // delete container
-          $sql = 'DELETE FROM container WHERE id="'.$container_id.'"';   
+          $sql = 'DELETE FROM container WHERE id='.$container_id;   
 
           $errcode = "50014";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete2');
 
-          // delete textnodes  
-          $sql = 'DELETE FROM textnodes WHERE id="'.$container_id.'"';
+          // delete textnodes
+          $sql = 'DELETE FROM textnodes WHERE id='.$container_id;
 
           $errcode = "50015";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete3');
 
-          // delete taxonomy  
-          $sql = 'DELETE FROM taxonomy WHERE id="'.$container_id.'"';
+          // delete taxonomy
+          $sql = 'DELETE FROM taxonomy WHERE id='.$container_id;
 
           $errcode = "50024";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete3');
           
           // delete keywords
-          $sql = 'DELETE FROM keywords_container WHERE id="'.$container_id.'"';
+          $sql = 'DELETE FROM keywords_container WHERE id='.$container_id;
 
           $errcode = "50025";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete4');
           
-          // delete media attributes  
-          $sql = 'DELETE FROM media WHERE id="'.$container_id.'"';
+          // delete media attributes
+          $sql = 'DELETE FROM media WHERE id='.$container_id;
 
           $errcode = "50016";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete5');
 
-          // delete dailytstat 
-          $sql = 'DELETE FROM dailystat WHERE id="'.$container_id.'"';
+          // delete dailytstat
+          $sql = 'DELETE FROM dailystat WHERE id='.$container_id;
 
           $errcode = "50017";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete6');        
 
           // delete queue
-          $sql = 'DELETE FROM queue WHERE object_id="'.$row_id['object_id'].'"';
+          $sql = 'DELETE FROM queue WHERE object_id='.$row_id['object_id'];
 
           $errcode = "50018";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete7');
           
           // delete accesslink
-          $sql = 'DELETE FROM accesslink WHERE object_id="'.$row_id['object_id'].'"';
+          $sql = 'DELETE FROM accesslink WHERE object_id='.$row_id['object_id'];
 
           $errcode = "50019";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete8');
           
           // delete task
-          $sql = 'DELETE FROM task WHERE object_id="'.$row_id['object_id'].'"';
+          $sql = 'DELETE FROM task WHERE object_id='.$row_id['object_id'];
 
           $errcode = "50023";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete9');    
@@ -1539,19 +1542,19 @@ function rdbms_deleteobject ($object="", $object_id="")
         }
 
         // delete queue
-        $sql = 'DELETE FROM queue WHERE object_id="'.$row_id['object_id'].'"';   
+        $sql = 'DELETE FROM queue WHERE object_id='.$row_id['object_id'];   
 
         $errcode = "50021";
         $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete11');
         
         // delete notification
-        $sql = 'DELETE FROM notify WHERE object_id="'.$row_id['object_id'].'"';   
+        $sql = 'DELETE FROM notify WHERE object_id='.$row_id['object_id'];   
 
         $errcode = "50022";
         $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete12');
         
-        // delete/update textnodes
-        $sql = 'UPDATE textnodes SET object_id="" WHERE object_id="'.$row_id['object_id'].'"';   
+        // delete/update textnodes (object_id for link)
+        $sql = 'UPDATE textnodes SET object_id=NULL WHERE object_id='.$row_id['object_id'];   
 
         $errcode = "50023";
         $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update1');
@@ -1588,13 +1591,13 @@ function rdbms_deletecontent ($site, $container_id, $text_id)
     $text_id = $db->rdbms_escape_string ($text_id);
     
     // delete textnodes
-    $sql = 'DELETE FROM textnodes WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
+    $sql = 'DELETE FROM textnodes WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
        
     $errcode = "50021";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
     // delete taxonomy
-    $sql = 'DELETE FROM taxonomy WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
+    $sql = 'DELETE FROM taxonomy WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
        
     $errcode = "50028";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -2824,9 +2827,10 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
           $row = $db->rdbms_getresultrow ("select", $i);
 
           $hash = $row['hash'];
+          $id = intval ($row['id']);
 
           $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
-          $objectpath[$hash]['container_id']  = $id = sprintf ("%07d", $row['id']);
+          $objectpath[$hash]['container_id']  = sprintf ("%07d", $row['id']);
           $objectpath[$hash]['media'] =  $row['media'];
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
@@ -3284,7 +3288,7 @@ function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user=""
     if ($type != "") $type = $db->rdbms_escape_string($type);
     if ($user != "") $user = $db->rdbms_escape_string($user);
 
-    $sql = 'SELECT text_id, textcontent FROM textnodes WHERE id="'.$container_id.'"';
+    $sql = 'SELECT text_id, textcontent FROM textnodes WHERE id='.$container_id;
     if ($text_id != "") $sql .= ' AND text_id="'.$text_id.'"';
     if ($type != "") $sql .= ' AND type="'.$type.'"';
     if ($user != "") $sql .= ' AND user="'.$user.'"';
@@ -3644,7 +3648,7 @@ function rdbms_getobject_hash ($object="", $container_id="")
   global $mgmt_config;
 
   // object can be an object path or object ID, second input parameter can only be the container ID
-  if ($object != "" || $container_id != "")
+  if ($object != "" || intval ($container_id) > 0)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
       
@@ -4001,7 +4005,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
 // ------------------------------------------ get objects by container_id or temlpate name -------------------------------------------- 
 
 // function: rdbms_getobjects()
-// input: container ID supports multiple values if | is used as separator [integer] (optional), template name [string] (optional), text IDs to be returned [array] (optional)
+// input: container ID supports multiple values if | is used as separator [string,integer] (optional), template name [string] (optional), text IDs to be returned [array] (optional)
 // output: 2 dimensional object path array / false
 
 // description:
@@ -4024,7 +4028,7 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
     foreach ($container_id_array as $container_id)
     {
       // clean input
-      if (trim ($container_id) != "") $container_id = intval ($container_id);
+      if (intval ($container_id) > 0) $container_id = intval ($container_id);
       if ($template != "") $template = $db->rdbms_escape_string ($template);
 
       $sql_add_attr = "";
@@ -4095,7 +4099,7 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
       $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj ';
       if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
       $sql .= 'WHERE obj.deleteuser="" ';
-      if (trim ($container_id) != "") $sql .= 'AND obj.id='.$container_id.' ';
+      if (intval ($container_id) > 0) $sql .= 'AND obj.id='.$container_id.' ';
       if ($template != "") $sql .= 'AND obj.template="'.$template.'" ';
       
       $errcode = "50040";
@@ -5099,14 +5103,14 @@ function rdbms_getnotification ($event="", $object="", $user="")
         // get object ID and container ID of object
         if ($row = $db->rdbms_getresultrow ('connected'))
         {
-          $object_id = $row['object_id'];
-          $container_id = $row['id'];
+          $object_id = intval ($row['object_id']);
+          $container_id = intval ($row['id']);
         }
         
         // get object IDs of connected objects
         if (!empty ($container_id))
         {
-          $sql = 'SELECT DISTINCT object_id FROM object WHERE id="'.$container_id.'" AND object_id!="'.$object_id.'"';
+          $sql = 'SELECT DISTINCT object_id FROM object WHERE id='.$container_id.' AND object_id!="'.$object_id.'"';
       
           $errcode = "50298";
           $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'connected');
@@ -5323,7 +5327,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
     // get all container IDs of the objects in the folder
     if ($include_all == true && !is_array ($container_id))
     {
-      $sql = 'SELECT objectpath FROM object WHERE id='.$container_id;
+      $sql = 'SELECT objectpath FROM object WHERE id='.intval($container_id);
 
       $errcode = "50759";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'objectpath');
@@ -5406,7 +5410,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
 // ----------------------------------------------- get statistics from dailystat -------------------------------------------------
 
 // function: rdbms_getmediastat()
-// input: date from [date] (optional), date to [date] (optional), activity [string] (optional), container ID [integer,array] (optional), object path [string] (optional), user name [string] (optional), 
+// input: date from [date] (optional), date to [date] (optional), activity [string] (optional), container ID [integer] (optional), object path [string] (optional), user name [string] (optional), 
 //        return file size of objects [boolean] (optional), limit returned results [integer] (optional)
 // output: result array of objects / false on error
 
@@ -5424,7 +5428,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
   if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
   if ($activity != "") $activity = $db->rdbms_escape_string ($activity);
-  if ($container_id != "") $container_id = $db->rdbms_escape_string (intval($container_id));
+  if (intval ($container_id) > 0) $container_id = intval ($container_id);
   if ($objectpath != "") $objectpath = $db->rdbms_escape_string ($objectpath);
   if ($user != "") $user = $db->rdbms_escape_string ($user);
 
@@ -5468,7 +5472,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       $sqlgroup = 'GROUP BY dailystat.id, dailystat.user';
     }
     // search by container id
-    elseif ($container_id != "")
+    elseif (intval ($container_id) > 0)
     {
       $sqlfilesize = ', media.filesize AS filesize';
       $sqltable = "LEFT JOIN media ON dailystat.id=media.id";
@@ -5488,7 +5492,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
     }
     // search by container id
-    elseif ($container_id != "")
+    elseif (intval ($container_id) > 0)
     { 
       $sqlfilesize = "";
       $sqltable = '';
@@ -5548,16 +5552,16 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
 {
   global $mgmt_config;
   
-  if ($container_id != "" || $objectpath != "")
+  if (intval ($container_id) > 0 || $objectpath != "")
   {
     // mySQL connect
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
     // get file size based on
     // container id
-    if ($container_id != "")
+    if (intval ($container_id) > 0)
     {
-      $container_id = $db->rdbms_escape_string ($container_id);
+      $container_id = intval ($container_id);
       
       $sqladd = ' WHERE media.id='.$container_id;
       
