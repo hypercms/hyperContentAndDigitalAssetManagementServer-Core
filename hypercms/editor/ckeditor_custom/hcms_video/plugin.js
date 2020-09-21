@@ -34,40 +34,11 @@
     return (variable == null || variable == 0 || variable == '' || variable == 'undefined' || variable == '0');
   }
   
-  function generate_videoplayer_iframe(cmsLink, video, width, height, logo, id, title, autoplay, enableFullScreen, enableKeyBoard, enableLoop, enableMuted, enableControls) {
+  function generate_videoplayer_iframe(cmsLink, video, width, height, logo, id, title, autoplay, enableFullScreen, enableLoop, enableMuted, enableControls) {
    
     if (isEmpty(id)) id = generateID(100000);
 
-    return '<iframe scrolling="no" frameBorder="0" style="border:0" '+((!isEmpty(title)) ? 'title="'+title+' "' : '')+'id="'+iframePreFix+id+'" width="'+width+'" height="'+height+'" src="'+cmsLink+'videoplayer.php?media='+video+'&width='+width+'&height='+height+'&autoplay='+((autoplay) ? "true" : "false")+'&fullscreen='+((enableFullScreen) ? "true" : "false")+'&keyboard='+((enableKeyBoard) ? "true" : "false")+((!isEmpty(title)) ? '&title='+encodeURIComponent(title) : '')+'&logo='+(!isEmpty(logo) ? encodeURIComponent(logo) : '')+'&loop='+((enableLoop) ? "true" : "false")+'&muted='+((enableMuted) ? "true" : "false")+'&controls='+((enableControls) ? "true" : "false")+'" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true">';
-  }
-  
-  function generate_videoplayer_span(cmsLink, video, width, height, logo, id, title, autoplay, enableFullScreen, enableKeyBoard) {
-    
-    if (isEmpty(id)) id = generateID(100000);
-
-    ret = '<span id="'+divIdPreFix_old+id+'"><video id="'+videoIdPreFix+id+'" class="projekktor"'+((!isEmpty(logo)) ? ' poster="'+logo+'" ' : ' ')+((!isEmpty(title)) ? ' title="'+title+'" ' : ' ')+'width="'+width+'" height="'+height+'" controls>';
-
-    ret += '</video>'+
-       '<hcms_script type="text/javascript">'+
-      'jq_vid(document).ready(function()'+ 
-      '{'+
-        'projekktor("#'+videoIdPreFix+id+'",'+ 
-        '{'+
-          'useYTIframeAPI: false,'+
-          'height: '+height+','+
-          'width: '+width+',';
-
-    if (!isEmpty(logo)) ret += 'poster: "'+logo+'",';
-
-    ret +=  'autoplay: '+((autoplay) ? 'true' : 'false')+','+
-          'enableFullscreen: '+((enableFullScreen) ? 'true' : 'false')+','+
-          'enableKeyboard: '+((enableKeyBoard) ? 'true' : 'false')+','+
-          'playerFlashMP4: "'+cmsLink+'video/js/jarisplayer.swf"'+
-        '});'+
-      '});'+
-    '</hcms_script></span>';
-
-    return ret;
+    return '<iframe scrolling="no" frameBorder="0" style="border:0" '+((!isEmpty(title)) ? 'title="'+title+' "' : '')+'id="'+iframePreFix+id+'" width="'+width+'" height="'+height+'" src="'+cmsLink+'videoplayer.php?media='+video+'&width='+width+'&height='+height+'&autoplay='+((autoplay) ? "true" : "false")+'&fullscreen='+((enableFullScreen) ? "true" : "false")+((!isEmpty(title)) ? '&title='+encodeURIComponent(title) : '')+'&logo='+(!isEmpty(logo) ? encodeURIComponent(logo) : '')+'&loop='+((enableLoop) ? "true" : "false")+'&muted='+((enableMuted) ? "true" : "false")+'&controls='+((enableControls) ? "true" : "false")+'" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true">';
   }
   
   function parseVideoParameters_iframe(link, editor) {
@@ -80,7 +51,6 @@
     var regPoster = /\&logo\=([a-zA-Z\/\.\:\_\~\%0-9\-]+)/i;
     var regAutoplay = /\&autoplay\=(true|false)/i;
     var regFullscreen = /\&fullscreen\=(true|false)/i;
-    var regKeyboard = /\&keyboard\=(true|false)/i;
     var regLoop = /\&loop\=(true|false)/i;
     var regMuted = /\&muted\=(true|false)/i;
     var regControls = /\&controls\=(true|false)/i;
@@ -98,10 +68,6 @@
     // Reading EnableFullscreen
     regFullscreen.exec(link);
     data.enablefullscreen = RegExp.$1;
-    
-    // Reading EnableKeyboard
-    regKeyboard.exec(link);
-    data.enablekeyboard = RegExp.$1;
     
     // Reading EnableLoop
     regLoop.exec(link);
@@ -134,7 +100,6 @@
     var regPoster = /poster\: \"([a-zA-Z\/\.\:\_\-\%0-9]+)\"/i;
     var regAutoplay = /autoplay\: (true|false)/i;
     var regFullscreen = /enableFullscreen\: (true|false)/i;
-    var regKeyboard = /EnableKeyboard\: (true|false)/i;
     var regLoop = /EnableLoop\: (true|false)/i;
     var regMuted = /EnableMuted\: (true|false)/i;
     var regControls = /EnableControls\: (true|false)/i;
@@ -190,10 +155,6 @@
     // Reading EnableControls
     regControls.exec(html);
     data.enablecontrols = RegExp.$1;
-    
-    // Reading EnableKeyboard
-    regKeyboard.exec(html);
-    data.enablekeyboard = RegExp.$1;
        
     // Reading poster
     if(regPoster.exec(html)) {
@@ -466,17 +427,6 @@
                     commit: function( config ) {
                       config.enablecontrols = this.getValue();
                     }
-                  }, {
-                    type : 'checkbox',
-                    id : 'keyBoard',
-                    label : editor.lang.hcms_video.tab.adv.enable.keyBoard,
-                    'default' : true,
-                    setup: function( config ) {
-                      this.setValue( (config.enablekeyboard == 'true') );
-                    },
-                    commit: function( config ) {
-                      config.enablekeyboard = this.getValue();
-                    }
                   }]
                 }]
               }]
@@ -486,7 +436,7 @@
               config = { };
               this.commitContent( config );
               
-              var html = generate_videoplayer_iframe(editor.config.cmsLink, config.link, config.width, config.height, config.poster, config.id, config.title, config.autoplay, config.enablefullscreen, config.enablekeyboard, config.enableloop, config.enablemuted, config.enablecontrols);
+              var html = generate_videoplayer_iframe(editor.config.cmsLink, config.link, config.width, config.height, config.poster, config.id, config.title, config.autoplay, config.enablefullscreen, config.enableloop, config.enablemuted, config.enablecontrols);
               var fakeName = fakeName_iframe;
               videoNode = CKEDITOR.dom.element.createFromHtml(html);
               var extraStyles = { width: config.width+'px', height: config.height+'px' };
@@ -553,7 +503,9 @@
                 parsedData.poster = '';
                 parsedData.autoplay = 'false';
                 parsedData.enablefullscreen = 'true';
-                parsedData.enablekeyboard = 'true';
+                parsedData.enableloop = 'false';
+                parsedData.enablemuted = 'false';
+                parsedData.enablecontrols = 'true';
               }
               this.setupContent( parsedData );
               
@@ -692,8 +644,7 @@
           fullScreen : html_entity_decode('Vollbild'),
           loop : html_entity_decode('Schleife'),
           muted : html_entity_decode('Stumm schalten'),
-          controls : html_entity_decode('Bedienelemente'),
-          keyBoard : html_entity_decode('Tastaturbefehle')
+          controls : html_entity_decode('Bedienelemente')
         }
       }
     },
@@ -738,8 +689,7 @@
           fullScreen : html_entity_decode('Fullscreen'),
           loop : html_entity_decode('Loop'),
           muted : html_entity_decode('Muted'),
-          controls : html_entity_decode('Controls'),
-          keyBoard : html_entity_decode('Keyboard Commands')
+          controls : html_entity_decode('Controls')
         }
       }
     },

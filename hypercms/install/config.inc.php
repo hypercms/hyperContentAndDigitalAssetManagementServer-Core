@@ -180,9 +180,6 @@ $mgmt_config['editoru_html'] = true;
 // Define the alternative image editor "minipaint", leave empty for the default image editor of the system
 $mgmt_config['imageeditor'] = "minipaint";
 
-// Define videoplayer name, leave empty for the default player (VIDEO.JS) or use "projekktor" as alternative
-$mgmt_config['videoplayer'] = "";
-
 // Define the default view for object editing
 // "formedit": use form for content editing
 // "cmsview": view of page based on template, includes hyperCMS specific code (buttons)
@@ -261,11 +258,12 @@ $mgmt_config['showinfobox'] = true;
 // Home boxes are located in directory hypercms/box/
 $mgmt_config['homeboxes'] = "search;news;tasks;recent_objects;up_and_downloads;recent_downloads;recent_uploads";
 
-// Define a directory for individual home boxes (components) that are based on a template and can be edited
-$mgmt_config['homeboxes_directory'] = "HomeBoxes";
-
 // Define URL to show in welcome/news home box
 $mgmt_config['homebox_welcome'] = "https://cms.hypercms.net/home/update_info_en.xhtml";
+
+// Brand Guidelines
+// Define a directory for your brand guidelines (components) that are based on a template and can be edited
+$mgmt_config['brandguide_directory'] = "BrandGuidelines";
 
 // Check for duplicate entries based on MD5 hash of files (true) or not (false)
 $mgmt_config['check_duplicates'] = true;
@@ -962,11 +960,37 @@ $mgmt_config['googlemaps_appkey'] = "";
 // Provide a valid key in order to track the users behaviour with Google Analytics
 $mgmt_config['googleanalytics_key'] = "";
 
-// --------------------------------- Authentification Connectivity -------------------------------------
+// --------------------------------- Authentication Connectivity -------------------------------------
 
 // If you are using LDAP, Active Directory, or any other user directory, you can specify the file name without extension to be used for the connector.
-// For instance specify the file name "ldap_connect" located in data/connect/ in order to connect to an LDAP directory and to verify users and also update user settings.
+// The standard connector file is named "ldap_connect" and located in data/connect/
+// Specify the file name "ldap_connect" located in data/connect/ in order to connect to an LDAP or AD directory and verify users.
+// Alternatively you can create your own connector file and refer to it. Make sure you use the file extension .inc.php and use the same function name and parameters.
 // $mgmt_config['authconnect'] = "ldap_connect";
+
+// Define the connection parameters
+// Port 389 is for LDAP over TLS. Port 636 is for LDAP over SSL, which is deprecated.
+// LDAP works from port 389 and when you issue the StartTLS (with ldap_start_tls()) it encrypts the connection.
+// $mgmt_config['ldap_servers'] = "ldapserver.name";
+// $mgmt_config['ldap_userdomain'] = "@domain";
+// $mgmt_config['ldap_base_dn'] = "OU=Departments,DC=MYDOMAIN,DC=COM";
+// $mgmt_config['ldap_version'] = 3;
+// $mgmt_config['ldap_port'] = "";
+// $mgmt_config['ldap_follow_referrals'] = false;
+// $mgmt_config['ldap_use_ssl'] = true;
+// $mgmt_config['ldap_use_tls'] = false;
+
+// Enable (true) or disable (false) the sync of LDAP users with the system users
+// The user information such as name, email, telephone is queried and synchronized.
+// If the user’s publication and group membership should also be synchronized according to certain rules, 
+// this must be specified in the authconnect function in the connector file in data/connect/ldap_connect.inc.php, 
+// otherwise the memberships are retained as stored in the system.
+// $mgmt_config['ldap_sync'] = false;
+
+// Enable (true) or disable (false) the connectivity for all publications
+// If enabled the above AD/LDAP settings need to be defined.
+// If disabled the AD/LDAP settings need to be defined in the publication management (per publication).
+// $mgmt_config['authconnect_all'] = false;
 
 // ----------------------------------- File System Permissions -----------------------------------------
 

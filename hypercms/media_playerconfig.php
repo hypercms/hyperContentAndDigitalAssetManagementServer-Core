@@ -165,6 +165,7 @@ if ($config && is_array ($config) && intval ($config['version']) >= 2)
 {
 ?>
 <script type="text/javascript">
+
 function updateCodeSegment()
 {
   <?php if (!$audio) { ?>
@@ -176,10 +177,6 @@ function updateCodeSegment()
   var width = document.getElementById("width").value;
   var height = document.getElementById("height").value;
   var autoplay = document.getElementById("autoplay").checked;
-  <?php if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
-  var pause = document.getElementById("pause").checked;
-  var seek = document.getElementById("seek").checked;
-  <?php } ?>
   var loop = document.getElementById("loop").checked;
   var controls = document.getElementById("controls").checked;
 
@@ -207,14 +204,6 @@ function updateCodeSegment()
   
   if (controls) newurl += '&controls=true';
   else newurl += '&controls=false';
-  
-  <?php if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
-  if (pause) newurl += '&pause=true';
-  else newurl += '&pause=false';
-  
-  if (seek) newurl += '&seek=true';
-  else newurl += '&seek=false';
-  <?php } ?>
 
   var playercode = "<?php echo $playercode; ?>";
 
@@ -306,6 +295,7 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
       <input type="text" onchange="updateCodeSegment();" id="title" value="<?php echo $title; ?>" style="width:280px;" />
     </div>
     <?php } ?>
+    
     <div style="margin-top:10px;">
       <label for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang]);?> </label> (px)<br/>
       <input type="number" onchange="updateCodeSegment();" id="width" value="<?php echo $config['width']; ?>" style="width:280px;" />
@@ -333,26 +323,15 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
     <div style="margin-top:10px;">
       <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="controls" /> <label for="controls"><?php echo getescapedtext ($hcms_lang['controls'][$lang]);?> </label>
     </div>
-    <?php if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
-    <div style="margin-top:10px;">
-      <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="keyboard" /> <label for="keyboard"><?php echo getescapedtext ($hcms_lang['enable-keyboard-input'][$lang]);?> </label>
-    </div>
-    <div style="margin-top:10px;">
-      <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="pause" /> <label for="pause"><?php echo getescapedtext ($hcms_lang['enable-pause'][$lang]);?> </label>
-    </div>
-    <div style="margin-top:10px;">
-      <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="seek" /> <label for="seek"><?php echo getescapedtext ($hcms_lang['enable-seek'][$lang]);?> </label>
-    </div>
-    <?php }
-     
-    if (!$audio) {
-    ?>
+
+    <?php if (!$audio) { ?>
     <div style="margin-top:10px;">
       <label for="logo"><?php echo getescapedtext ($hcms_lang['start-image'][$lang]);?> </label><br />
       <input style="vertical-align:top; width:240px;" type="text" onchange="updateCodeSegment();" id="logo" />
       <img class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_media.png" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
     </div>
     <?php } ?>
+
     <hr />
   <?php
   }

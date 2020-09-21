@@ -59,7 +59,7 @@ $media_root = getmedialocation ($site, $mediafile_info['name'], "abs_path_media"
 $pagefile_info = getfileinfo ($site, $location.$page, $cat);
 
 // if RAW image, use equivalent JPEG image
-if (is_rawimage ($mediafile_info['ext']))
+if (is_rawimage ($mediafile))
 {
   // reset media file
   $mediafile_raw = $mediafile_info['filename'].".jpg";
@@ -93,7 +93,7 @@ if (is_rawimage ($mediafile_info['ext']))
 }
 
 // if not a RAW image or no equivalent JPEG image is available
-if (!is_rawimage ($mediafile_info['ext']) || !empty ($mediafile_failed))
+if (!is_rawimage ($mediafile) || !empty ($mediafile_failed))
 {
   // prepare media file
   $temp = preparemediafile ($site, $media_root, $mediafile, $user);
@@ -115,8 +115,17 @@ if (!is_rawimage ($mediafile_info['ext']) || !empty ($mediafile_failed))
   }
 }
 
-// create image link
-$imagelink = createviewlink ($site, $mediafile, $pagefile_info['name'], false, "wrapper");
+// convert image file to JPG in its original size if not supported by the browser
+$media_config = "";
+
+if (!in_array ($mediafile_info['ext'], array(".bmp", ".gif", ".jpg", ".jpeg", ".png")))
+{
+  // suppress watermarking
+  $media_config = "&type=jpg&options=".url_encode("-wm none");
+}
+
+// create image link and add type parameter
+$imagelink = createviewlink ($site, $mediafile, $pagefile_info['name'], false, "wrapper").$media_config;
 
 // security token
 $token_new = createtoken ($user);

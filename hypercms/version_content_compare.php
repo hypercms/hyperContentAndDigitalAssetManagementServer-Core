@@ -176,7 +176,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <script src="javascript/main.js" type="text/javascript"></script>
 <?php 
 if (is_audio ($page)) echo showaudioplayer_head (false);
-else echo showvideoplayer_head (false);
+else echo showvideoplayer_head (false, false);
 ?>
 </head>
 

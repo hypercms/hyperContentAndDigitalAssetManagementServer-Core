@@ -1914,7 +1914,7 @@ Release 10/2016
 - Bug fix: Function getserverload did not exclude function sys_getloadavg on Windows OS
 - Implementation of new workouround for calculating the number of CPU and system load on Windows OS in function getserverload in get API
 - Changes in class HyperMailer to support future PHP versions
-- Bug fix: Function writehistory of external search engine in repository performed a file lock on a non existing log file
+- Bug fix: Function writehistory of external search engine in repository performed a file lock on a non-existing log file
 
 Version 6.1.29
 Release 11/2016
@@ -2066,8 +2066,8 @@ Release 03/2017
 - Removed hardcoded width and height window attributes from all JS functions in contextmenu.js 
 - Bug fix: Google API icons reference was set to HTTP instead of HTTPS in search_form
 - Bug fix: Corrected HTML-tag in page_view, popup_save_dropbox and image_rendering to support HTML5
-- Bug fix: Function lockobject in main API used non existing function objectname instead of function getobject for folders
-- Bug fix: Function unlockobject in main API used non existing function objectname instead of function getobject for folders
+- Bug fix: Function lockobject in main API used non-existing function objectname instead of function getobject for folders
+- Bug fix: Function unlockobject in main API used non-existing function objectname instead of function getobject for folders
 
 Version 6.2.3
 Release 03/2017
@@ -4286,10 +4286,10 @@ Release 06/2020
 
 Version 9.0.1
 Release 07/2020
-- Modifications in control_content_menu and control_objectlist_menu in order to optimize the dowload feature
+- Modifications in control_content_menu and control_objectlist_menu in order to optimize the download feature
 - Modifications in function createmultidownloadlink in Main API in order to remove media and folder location as optional input parameters
 - Minor modifications in service mediadownload and mediawrapper
-- Modifications in function getmetadata_multiobjects in order to remove container, media, deletuser, and deletedate from the result
+- Modifications in function getmetadata_multiobjects in order to remove container, media, deleteuser, and deletedate from the result
 - Modifications in the home box up_and_download in order to apply showdate for the correct date format based on the language setting of the user
 - Modifications in page_info_stats in order to apply showdate for the correct date format based on the language setting of the user
 - Design modifications in the header of all list views
@@ -4303,7 +4303,7 @@ Release 07/2020
 - Modifications in function setpagelink in Set API in order to replace for-next by foreach loop
 - Modifications in function setcomplink in Set API in order to replace for-next by foreach loop
 - Implementation of the new search function for the user administration
-- Modifications in function createmedia in Media API in order to set media size in database based on the created thumbnail in case no media size coulkd be extracted form the source media file
+- Modifications in function createmedia in Media API in order to set media size in database based on the created thumbnail in case no media size could be extracted from the source media file
 - Modifications in function manipulateallobjects in Main API in order to return a message if the marking or restore of deleted folders or objects failed
 - Design modifications in popup_status and popup_notify
 - Modifications in explorer_objectlist and search_objectlist for the new design of the large thumbnail view
@@ -4316,8 +4316,8 @@ Release 07/2020
 - Implementation of the new main configuration parameters $mgmt_config['html2pdf'] for WKHTMLTOPDF, $mgmt_config['x11'] for X11-Server, and $mgmt_config['mergepdf'] for PDFTK
 - Modifications in the installation script in order to support the new main configuration parameters
 - Modifications in the template engine in order to support the new pathtype attribute for components
-- Implementation of new Web2Print example templates in the install dirtectory that use the new function html2pdf
-- Modifications in the existing Web2Print example templates in the install dirtectory that use the TCPDF library
+- Implementation of new Web2Print example templates in the install directory that use the new function html2pdf
+- Modifications in the existing Web2Print example templates in the install directory that use the TCPDF library
 - Modifications in the function showAPIdocs in UI API in order to display only defined function names (new optional input parameter)
 - Modifications in search_form_advanced in order to define the search field width
 - Merged main.css and navigator.css into one CSS file holding all classes for all design themes
@@ -4339,7 +4339,7 @@ Release 07/2020
 - Modifications in function createmedia and createdocument in Media API in order to remove the existing thumbnail if the media conversion of the new file is not possible
 - Design modifications in Project Management module
 - Design modifications in Task Management module
-- Modifications in function getfileinfo in order to support new file extensiond and icons
+- Modifications in function getfileinfo in order to support new file extension and icons
 - Modifications in function showmedia in UI API for the preview of plain text files
 - Modifications in function hcms_loadSidebar in contextmenu.js in order to verify if sidebar is visible
 - Modifications in explorer_objectlist and search_objectlist for the sidebar
@@ -4377,11 +4377,11 @@ Release 08/2020
 - Design modifications in the template editor
 - Design modifications in the personalization editor
 - Design modifications in media_preview and media_edit_page
-- Implemenentation of the four new Brand Guidline templates in xmlschema
-- Implemenentation of the new CSS for the brand guideline templates in theme/brandguide.css 
-- Implemenentation of the new JS function hcms_Hex2Rgb in main.js
-- Implemenentation of the new JS function hcms_Rgb2Cmyk in main.js
-- Implemenentation of the new function rgb2cmyk in Media API
+- Implementation of the four new Brand Guideline templates in xmlschema
+- Implementation of the new CSS for the brand guideline templates in theme/brandguide.css 
+- Implementation of the new JS function hcms_Hex2Rgb in main.js
+- Implementation of the new JS function hcms_Rgb2Cmyk in main.js
+- Implementation of the new function rgb2cmyk in Media API
 - Modifications in function rgb2hex in Media API in order to support RGB values as input array
 - Modifications in function showcompexplorer in UI API in order to enable components for DAM configuration
 - Modifications in function createwrapperlink in Main API in order to verify object hash does exist
@@ -4396,29 +4396,29 @@ Release 08/2020
 - Modifications in xmlschema template_homebox in order to remove HTML, HEAD and BODY tags from the component template
 - Modifications in function followlink in template engine in order to verify if $publ_config['url_publ_page'] includes the :// marker
 - Implementation of the new service mediadownload and mediawrapper in order to support PDF printing of HTML files
-- Implemenentation of the new JS function hcms_createTOC in main.js in order to create a table of content based on the HTML headlines
+- Implementation of the new JS function hcms_createTOC in main.js in order to create a table of content based on the HTML headlines
 - Modifications in the template engine in order to replace lockonload by adding the system onload events to the ones defined in the template
 - Modifications in site_edit_form in order to include MS AD settings (Connector module required)
 - Modifications in function editpublication in Main API in order to support the new MS AD settings (Connector module required)
 - Modifications in function authconnect in ad_connect and ldap_connect of the Connector module in order to support publication specific AD settings
 - Modifications in function userlogin in Security API in order to support publication specific AD settings
 - Implementation of the new main configuration setting $mgmt_config['authconnect_all']
-- Modifications in explorer_preview in order to verify if the object is in the rcycle bin (marked as deleted) and to verify the local permissions array for the links
+- Modifications in explorer_preview in order to verify if the object is in the recycle bin (marked as deleted) and to verify the local permissions array for the links
 - Modifications in Import/Export module in order to verify if there is a buffer for output using PHP function ob_get_length()
 - Implementation of the new JS function setlogospacer in the home screen
 - Implementation of the new function is_hiddenfile in Main API
 - Modifications in explorer_objectlist, link_edit_explorer, and editor/link_explorer in order to exclude the files .htaccess and web.config from the listing
-- Modifications in JS function detectFaceOnVideo, detectFaceOnImage, and initFaceOnVideo in the template engine in order to position the face markers correctly if not displayed in it's original size
-- Modifications in JS function createFaceOnVideo and createFaceOnImage in the template engine in order to use unscaled values due to the displayed media size is used when markers are lpaced by mouse click or touch
+- Modifications in JS function detectFaceOnVideo, detectFaceOnImage, and initFaceOnVideo in the template engine in order to position the face markers correctly if not displayed in its original size
+- Modifications in JS function createFaceOnVideo and createFaceOnImage in the template engine in order to use unscaled values due to the displayed media size is used when markers are placed by mouse click or touch
 - Implementation of new video thumbnail gallery for videos with focal point support based on markers/faces in videos
 - Modifications in function showvideoplayer in UI API in order to support the new video thumbnail galleries with jump-to-playbacktime feature
 - Modifications in service savecontent in order to create and save the video thumbnail gallery and set the focal point for each image in the gallery based on the marker/face definitions 
-- Modifications in function createthumbnail_video in Media API in order to support individual width and height of the created image and and individual file name for the created image as input
+- Modifications in function createthumbnail_video in Media API in order to support individual width and height of the created image and individual file name for the created image as input
 - Modifications in function createthumbnail_video and createimages_video in order to support negative integer values for width and height in order to keep the aspect ratio
 - Modifications in service mediastream in order to support all media files including media files without a container identifier in their file name
-- Modifications in CSS class hcmsLoadScreen in main.css of all deisgn themes
+- Modifications in CSS class hcmsLoadScreen in main.css of all design themes
 - Modifications in videoplayer in order to use the night design theme
-- Modifications in JS function collectFaces in temlpate engine in order to implement JSON.stringify for face names (escape double quotes)
+- Modifications in JS function collectFaces in template engine in order to implement JSON.stringify for face names (escape double quotes)
 - Videoplayer PROJEKKTOR is deprecated but will be kept in order to support installations using PROJEKKTOR
 - Modifications in media_rendering in order to set media player dimension based on the viewportwidth and main config setting $mgmt_config['preview_video_width']
 - Design modifications in media_rendering, page_multiedit, and image_rendering
@@ -4431,21 +4431,52 @@ Release 08/2020
 - Modifications in function showmedia in UI API in order to remove &nbsp; in video information values
 - Modifications in version_content and version_template in order to disable the delete feature if the user has no delete permission for the object or template
 - Modifications in hypercms index in order to forward to install routine if the main configuration file is missing
-- Modifications in DB connect constructor in order to set sql_mode to TRADITIONAL
-- Modifications in DB connect in order to apply function intval for all object_id attributes
+- Modifications in DB Connect constructor in order to set sql_mode to TRADITIONAL
+- Modifications in DB Connect in order to apply function intval for all container_id and object_id attributes
+- Modifications in the verification of integer values in various functions of DB Connect
 - Changes in language files
 - Bug fix: The search frame did not switch to the navigation tree if the search frame has been opened by search icon in the right side of the task bar
 - Bug fix: Sort of table rows did not work in log_list due to the missing data-attribute in all links. Modifications in JS function hcms_sortTable in main.js in order to verify the link result.
-- Bug fix: The status bar tried to close a non existing contextmenu on mouse over in log_list
+- Bug fix: The status bar tried to close a non-existing contextmenu on mouse over in log_list
 - Bug fix: Function showvideoplayer in UI API used view link for video thumbnails that will only be resolved when a valid user session exists
-- Bug fix: JS function collectFaces in temlpate engine could not handle double quotes in face names
-- Bug fix: The display of the VTT records in function showmnedia caused a line break in a single record
+- Bug fix: JS function collectFaces in template engine could not handle double quotes in face names
+- Bug fix: The display of the VTT records in function showmedia caused a line break in a single record
 - Bug fix: The margin for the VTT editor has not properly applied to the language select box
 - Bug fix: page_multiedit did not verify if the selected media files are of mixed file-types (image, audio, video) in order to lock the rendering options for mixed file-types
 - Bug fix: Rich text editor media_select did not provide the mediafile and medialink values in case of a selected video file and caused a JS error
 - Bug fix: Rich text editor video plugin.js did not set the controls parameter in the video URL and did not provide the controls input parameter in the generate_videoplayer_iframe function call
 - Bug fix: version_template did not verify the token before deleting the selected template versions
-- Bug fix: Function xmp_writefile in Meta API diud not verity if the executable exists
-- Bug fix: Function iptc_writefile in Meta API diud not verity if the executable exists
-- Bug fix: Function extractmetadata in Meta API diud not verity if the executable exists
+- Bug fix: Function xmp_writefile in Meta API did not verity if the executable exists
+- Bug fix: Function iptc_writefile in Meta API did not verity if the executable exists
+- Bug fix: Function extractmetadata in Meta API did not verity if the executable exists
 - Bug fix: DB Connect used same error code 50039 multiple times
+
+Version 9.0.3
+Release 09/2020
+- Modifications in table textnodes in createtables.sql in order to set text_id length to 255 digits
+- Implementation of the new function update_database_v903 in the Update API
+- Modifications in function updates_all in the Update API in order to execute function update_database_v903
+- Modifications in function showvideoplayer in UI API in order to apply a line break for the thumbnail text
+- Modifications in function showvideoplayer in UI API in order to sort the thumbnails by time in seconds (numeric sort)
+- Design modifications in the video thumbnail frame/border of the videoplayer preview images
+- Modifications in video plugin of the rich text editor in order to enable the controls for the video ('true' as default value)
+- Modifications in explorer_objectview, media_rendering, and version_content_compare in order to disable the fullscreen view of the video player 
+- Modifications in rich text editor editorf and media_select in order to disable the fullscreen view of the video player 
+- Removed Projekktor JS code and keyboard controls checkbox from video player plugin of the rich text editor
+- Removed Projekktor video player code from function showvideoplayer_head in UI API
+- Removed Projekktor video player code from function showvideoplayer in UI API
+- Removed Projekktor video player code from function showmedia in UI API
+- Removed Projekktor video player code from JS function getplayertime in media_rendering
+- Removed Projekktor video player code from JS function updateCodeSegment and video player options in media_playerconfig
+- Removed Projekktor video player JS library
+- Modifications in main configuration file in the install directory in order to remove the deprecated alternative video player setting $mgmt_config['videoplayer']
+- Modifications in service savecontent in order to remove face images of the face/object markers if the have been removed
+- Modifications in template engine in order to redefine padding for comments
+- Modifications in image_minipaint in order to request the original image file to be converted to JPG in case the file type is not supported by the browser
+- Modifications in service mediawrapper in order to support file type requests without additional conversion options
+- Modifications in function createmedia in Media API in order to support the watermark values "none", "no", "0", or false to suppress the watermarking
+- Bug fix: videoplayer did not set the fullscreen parameter for function call showvideoplayer_head
+- Bug fix: Service savecontent removed face/object markers in the Mobile Edition (main configuration settings $mgmt_config['facedetection'] has not been verified)
+- Bug fix: Service savecontent did not remove the old face images of the face/object markers if they have been updated
+- Bug fix: Service savecontent did not provide face image names if they already existed. Therefore face images have been removed on save.
+- Bug fix: Image editor Minipaint did not load the converted image in case an image format has been used that is not supported by the browser

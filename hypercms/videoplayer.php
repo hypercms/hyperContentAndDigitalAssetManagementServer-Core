@@ -160,7 +160,7 @@ if ($playercode != "")
     <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']."theme/night/css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
     <?php
     if ($audio) echo showaudioplayer_head (false);
-    else echo showvideoplayer_head (false);
+    else echo showvideoplayer_head (false, $fullscreen);
     ?>
   </head>
   <body style="padding:0; margin:0;">

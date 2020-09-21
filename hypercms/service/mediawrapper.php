@@ -209,13 +209,13 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
   {
     $media_root = $mgmt_config['abs_path_tplmedia'];
   }
-  // ... of zip file in temp
+  // ... of zip file or converted file in temp
   elseif (is_file ($mgmt_config['abs_path_temp'].getobject($media)) && $user != "")
   {
     $media_root = $mgmt_config['abs_path_temp'];
     $media = getobject ($media);
   }
-  
+
   // download media file
   if (!empty ($media_root))
   {
@@ -239,14 +239,26 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
       $media_target = $mgmt_config['abs_path_temp'];
 
       // advanced image editing options used in download and wrapper links
-      if (is_image ($media) && !empty ($options) && !empty ($type))
+      if (is_image ($media) && empty ($media_config) && !empty ($type))
       {
-        // try to create a "somehow" unique media-config parameter
-        $media_config = substr (md5 ($options), 0, 6);
+        if (!empty ($options))
+        {
+          // try to create a "somehow" unique media-config parameter
+          $media_config = substr (md5 ($options), 0, 6);
 
-        // reset image options and set format/type
-        $mgmt_imageoptions = array();
-        $mgmt_imageoptions[".".$type][$media_config] = "-f ".$type." ".$options;
+          // reset image options and set format/type
+          $mgmt_imageoptions = array();
+          $mgmt_imageoptions[".".$type][$media_config] = "-f ".$type." ".$options;
+        }
+        else
+        {
+          // convert to requested file type without conversion options
+          $media_config = "orig";
+
+          // reset image options and set format/type
+          $mgmt_imageoptions = array();
+          $mgmt_imageoptions[".".$type][$media_config] = "-f ".$type;
+        }
       }
 
       // convert file
@@ -257,7 +269,7 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
       { 
         $media = $media_new;
         $media_info_new = getfileinfo ($site, getobject ($media_new), "comp");
-        
+
         // recheck media location (due to changed location by function convertdocument)
         if (is_file ($media_target.$media_new)) $media_root = $media_target;
         elseif (is_file ($media_root.$site."/".$media_new)) $media_root = $media_root.$site."/";

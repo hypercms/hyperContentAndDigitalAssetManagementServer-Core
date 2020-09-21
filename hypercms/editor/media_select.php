@@ -141,7 +141,8 @@ if (!empty ($mediafile) && $mediafile != "Null_media.png")
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script src="../javascript/main.js" type="text/javascript"></script>
-<script language="JavaScript">
+<script type="text/javascript">
+
 function checkType()
 {
   var mediafile = document.forms['media'].mediafile.value;
@@ -194,10 +195,10 @@ function submitMedia ()
 }
 </script>
 <?php
-if (!empty ($file_info['ext']))
+if (!empty ($mediafile))
 {
-  if (substr_count ($hcms_ext['video'], $file_info['ext']) > 0) echo showvideoplayer_head (false);
-  elseif (substr_count ($hcms_ext['audio'], $file_info['ext']) > 0) echo showaudioplayer_head (false);
+  if (is_audio ($mediafile)) echo showaudioplayer_head (false);
+  elseif (is_video ($mediafile)) echo showvideoplayer_head (false, false);
 }
 ?>
 </head>

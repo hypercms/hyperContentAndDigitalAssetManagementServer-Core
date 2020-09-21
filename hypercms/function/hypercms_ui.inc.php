@@ -2504,27 +2504,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
             function setPlayerTime (id)
             {
-              ";
-              // if projekktor is used, we need to check for the state beforehand
-              if (strtolower ($mgmt_config['videoplayer']) ==  "projekktor") $mediaview .= "
-              var player = projekktor('".$id."');
-
-              if (player.getState('PLAYING') || player.getState('PAUSED'))
-              {
-                var time = player.getPosition();
-              }
-              else
-              {
-                alert (hcms_entity_decode('".getescapedtext ($hcms_lang['videoplayer-must-be-playing-or-paused-to-set-start-and-end-positions'][$lang], $hcms_charset, $lang)."'));
-                return 0;
-              }
-              ";
-              // if VIDEO-JS
-              else $mediaview .= "
               var player = videojs(\"".$id."\");
               var time = player.currentTime();
-              ";
-              $mediaview .= "
               var seconds = Math.floor(time) % 60;
 
               if (seconds > 0)
@@ -4653,12 +4634,12 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
               }
               else $background_pos = "50% 50%";
 
-              $thumb_items[$time."-".$i] = "<div onclick=\"hcms_jumpToVideoTime(".$time.");\" class=\"hcmsVideoThumbFrame\" style=\"background-position:".$background_pos."; background-image:url('".$mgmt_config['url_path_cms']."?wm=".hcms_encrypt($site."/".$container_id."/face-".$time.".jpg")."');\"><div class=\"hcmsVideoThumbnail\">".$name."</div></div>";
+              $thumb_items[round($time).".".$i] = "<div onclick=\"hcms_jumpToVideoTime(".$time.");\" class=\"hcmsVideoThumbFrame\" style=\"background-position:".$background_pos."; background-image:url('".$mgmt_config['url_path_cms']."?wm=".hcms_encrypt($site."/".$container_id."/face-".$time.".jpg")."');\"><div class=\"hcmsVideoThumbnail\">".$name."</div></div>";
               $i++;
             }
           }
 
-          ksort ($thumb_items);
+          ksort ($thumb_items, SORT_NUMERIC);
         }
       }
 
@@ -4741,10 +4722,12 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
         font-size: 14px;
         font-weight: 300;
         text-align: left;
+        white-space: normal;
         background-color: transparent;
-        width: 100%;
-        height: 100%;
+        width: 212px;
+        height: 119px;
         padding: 5px;
+        overflow: hidden;
       }
 
       .hcmsVideoThumbnail:hover
@@ -4776,76 +4759,36 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
     // if no logo is defined set default logo
     if (empty ($logo_url)) $logo_url = getthemelocation()."img/logo_player.jpg";
 
-    // PROJEKKTOR Player
-    if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")
-    {
-      $return = '
-  <video id="'.$id.'" class="projekktor"'.(($loop) ? ' loop ' : ' ').(($muted) ? ' muted ' : ' ').((!empty($logo_url)) ? ' poster="'.$logo_url.'" ' : ' ').((!empty($title)) ? ' title="'.$title.'" ' : ' ').'width="'.$width.'" height="'.$height.'" '.($fullscreen ? 'allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" ' : '').(($controls) ? ' controls' : '').' onplay=\"if (typeof hideFaceOnVideo === \'function\') hideFaceOnVideo();\">'."\n";
-
-      $return .= $sources;
-
-      $return .= '  </video>
-  <script type="text/javascript">
-  jQuery(document).ready(function() 
-  {
-    projekktor("#hcms_projekktor_'.$id.'", 
-    {
-      useYTIframeAPI: false,
-      height: '.intval($height).',
-      width: '.intval($width).',';
-
-      if (!empty ($logo)) $return .= '
-      poster: "'.$logo.'",';
-
-      $return .= '
-      autoplay: '.(($autoplay) ? 'true' : 'false').',
-      enableFullscreen: '.(($fullscreen) ? 'true' : 'false').',
-      enableKeyboard: true,
-      disablePause: false,
-      disallowSkip: false,
-      playerFlashMP4: "'.$flashplayer.'"';
-
-      if ($iframe) $return .= ',
-      iframe: true';
-
-      $return .= '
-    });
-  });
-  </script>'."\n";
-    }
     // VIDEO.JS Player (Standard)
-    else
+    // get browser info
+    $user_client = getbrowserinfo ();
+
+    if (isset ($user_client['msie']) && $user_client['msie'] > 0) $fallback = ", \"playerFallbackOrder\":[\"flash\", \"html5\", \"links\"]";
+    else $fallback = "";
+
+    $return = $overlay."  <video id=\"".$id."\" class=\"video-js vjs-default-skin\" ".(($controls) ? " controls" : "").(($loop) ? " loop" : "").(($muted) ? " muted" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" width=\"".intval($width)."\" height=\"".intval($height)."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "")." data-setup='{\"loop\":".(($loop) ? "true" : "false").$fallback."}' title=\"".$title."\"".($fullscreen ? " allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "")." onplay=\"if (typeof hideFaceOnVideo === 'function') hideFaceOnVideo();\">\n";
+
+    $return .= $sources;
+
+    // create VTT track sources
+    if (!empty ($vtt_filename))
     {
-      // get browser info
-      $user_client = getbrowserinfo ();
+      // load language code index file
+      $langcode_array = getlanguageoptions ();
 
-      if (isset ($user_client['msie']) && $user_client['msie'] > 0) $fallback = ", \"playerFallbackOrder\":[\"flash\", \"html5\", \"links\"]";
-      else $fallback = "";
-
-      $return = $overlay."  <video id=\"".$id."\" class=\"video-js vjs-default-skin\" ".(($controls) ? " controls" : "").(($loop) ? " loop" : "").(($muted) ? " muted" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" width=\"".intval($width)."\" height=\"".intval($height)."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "")." data-setup='{\"loop\":".(($loop) ? "true" : "false").$fallback."}' title=\"".$title."\"".($fullscreen ? " allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "")." onplay=\"if (typeof hideFaceOnVideo === 'function') hideFaceOnVideo();\">\n";
-
-      $return .= $sources;
-
-      // create VTT track sources
-      if (!empty ($vtt_filename))
+      if ($langcode_array != false)
       {
-        // load language code index file
-        $langcode_array = getlanguageoptions ();
-
-        if ($langcode_array != false)
+        foreach ($langcode_array as $code => $language)
         {
-          foreach ($langcode_array as $code => $language)
+          if (is_file ($mgmt_config['abs_path_view'].$vtt_filename."_".trim($code).".vtt"))
           {
-            if (is_file ($mgmt_config['abs_path_view'].$vtt_filename."_".trim($code).".vtt"))
-            {
-              $return .= "    <track kind=\"captions\" src=\"".$mgmt_config['url_path_temp']."view/".$vtt_filename."_".trim($code).".vtt\" srclang=\"".trim($code)."\" label=\"".trim($language)."\" />\n";
-            }
+            $return .= "    <track kind=\"captions\" src=\"".$mgmt_config['url_path_temp']."view/".$vtt_filename."_".trim($code).".vtt\" srclang=\"".trim($code)."\" label=\"".trim($language)."\" />\n";
           }
         }
       }
-
-      $return .= "  </video>\n".$thumb_bar;
     }
+
+    $return .= "  </video>\n".$thumb_bar;
 
     return $return;
   }
@@ -4861,29 +4804,8 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
 {
   global $mgmt_config;
 
-  // PROJEKKTOR Player
-  if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")
-  {
-    $jquerylib = $mgmt_config['url_path_cms']."javascript/jquery/jquery-3.3.1.min.js";
-    $css = $mgmt_config['url_path_cms']."javascript/video/theme/style.css";
-    $projekktor = $mgmt_config['url_path_cms']."javascript/video/projekktor.min.js";
-
-    $return = '
-  <script type="text/javascript">
-    var noConflict = (typeof $ !== "undefined");
-  </script>
-  <script type="text/javascript" src="'.$jquerylib.'"></script>
-  <link rel="stylesheet" '.(($secureHref) ? 'hypercms_' : '').'href="'.$css.'" type="text/css" media="screen" />
-  <!-- older version before 5.3 needs jq_vid -->
-  <!-- we use $.noConflict() when there is already something loaded into $ -->
-  <script type="text/javascript">
-  if (noConflict) var jq_vid = $.noConflict();
-  else var jq_vid = $;
-  </script>
-  <script type="text/javascript" src="'.$projekktor.'"></script>'."\n";
-  }
   // VIDEO.JS Player (Standard)
-  else
+  if (is_dir ($mgmt_config['abs_path_cms']."javascript/video-js/"))
   {
     $return = "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
   <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/videojs.thumbnails.css\" rel=\"stylesheet\">

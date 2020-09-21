@@ -1365,7 +1365,44 @@ function update_database_v805 ()
     return true;
   }
   else return false;
-}   
+}
+
+// ------------------------------------------ update_database_v903 ----------------------------------------------
+// function: update_database_v903()
+// input: %
+// output: true / false
+
+// description: 
+// Update of database to version 9.0.3
+
+function update_database_v903 ()
+{
+  global $mgmt_config;
+
+  $logdata = loadlog ("update", "string");
+
+  if (empty ($logdata) || strpos ($logdata, "|9.0.3|") < 1)
+  {
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table
+    $sql = "ALTER TABLE textnodes MODIFY text_id CHAR(255);";
+    $errcode = "50098";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.0.3|updated to version 9.0.3"), "update");
+
+    return true;
+  }
+  else return false;
+}
 
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
@@ -1397,5 +1434,6 @@ function updates_all ()
   update_database_v800 ();
   update_users_804 ();
   update_database_v805 ();
+  update_database_v903 ();
 }
 ?>

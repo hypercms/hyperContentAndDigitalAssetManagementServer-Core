@@ -2054,9 +2054,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-wm ") > 0) 
                 {
-                  $watermarking = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-wm");
+                  $watermarking = strtolower (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-wm"));
 
-                  if ($watermarking == "" || $watermarking == "0"  || $watermarking == "false" || $watermarking == false)
+                  if ($watermarking == "" || $watermarking == "0" || $watermarking == "none"  || $watermarking == "no" || $watermarking == "false" || $watermarking == false)
                   {
                     $watermark = "";
                   }
@@ -3606,7 +3606,8 @@ function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $f
 // output: new file name / false on error
 
 // description:
-// Converts and creates a new image/video/audio or document from original. This is a wrapper function for createmedia, createimages_video and createdocument.
+// Converts and creates a new image/video/audio or document from the source file. This is a wrapper function for createmedia, createimages_video and createdocument.
+// If the destination media file exists already or is newer than the source file the file name will be returned without conversion.
 
 function convertmedia ($site, $location_source, $location_dest, $mediafile, $format, $media_config="", $force_no_encrypt=false)
 {

@@ -434,73 +434,92 @@ if ($usedby == "" || $usedby == $user)
 
           // -------------------------- create marker/face images for videos ----------------------------   
 
-          if (!empty ($textu['Faces-JSON']) && is_video ($mediafile_name) && intval ($container_id) > 0)
+          if (!empty ($mgmt_config['facedetection']) && intval ($container_id) > 0)
           {
-            $file_info = getfileinfo ($site, $mediafile_name, $cat);
-
-            // use preview video of original media file
-            if (is_file ($thumbfile_location.$file_info['filename'].".orig.mp4") || is_cloudobject ($thumbfile_location.$file_info['filename'].".orig.mp4"))
+            // create face images
+            if (!empty ($textu['Faces-JSON']) && is_video ($mediafile_name))
             {
-              $videofile_name = $file_info['filename'].".orig.mp4";
-            }
-            // use original video file
-            else
-            {
-              $videofile_name = $mediafile_name;
-            }
+              $file_info = getfileinfo ($site, $mediafile_name, $cat);
 
-            // create directory for thumbnails
-            if (!is_dir ($thumbfile_location.$container_id)) mkdir ($thumbfile_location.$container_id);
-      
-            if (is_dir ($thumbfile_location.$container_id))
-            {
-              // save JSON file for video player
-              savefile ($thumbfile_location.$container_id."/", "faces.json", $textu['Faces-JSON']);
-
-              // decode JSON string
-              $faces = json_decode ($textu['Faces-JSON'], true);
-              $temp_faces = array();
-
-              if (is_array ($faces))
+              // use preview video of original media file
+              if (is_file ($thumbfile_location.$file_info['filename'].".orig.mp4") || is_cloudobject ($thumbfile_location.$file_info['filename'].".orig.mp4"))
               {
-                foreach ($faces as $face)
+                $videofile_name = $file_info['filename'].".orig.mp4";
+              }
+              // use original video file
+              else
+              {
+                $videofile_name = $mediafile_name;
+              }
+
+              // create directory for thumbnails
+              if (!is_dir ($thumbfile_location.$container_id)) mkdir ($thumbfile_location.$container_id);
+
+              if (is_dir ($thumbfile_location.$container_id))
+              {
+                // save JSON file for video player
+                savefile ($thumbfile_location.$container_id."/", "faces.json", $textu['Faces-JSON']);
+
+                // decode JSON string
+                $faces = json_decode ($textu['Faces-JSON'], true);
+                $temp_faces = array();
+
+                if (is_array ($faces))
                 {
-                  if (!empty ($face['time']))
+                  foreach ($faces as $face)
                   {
-                    // create image named faces-[timestamp in sec].jpg for video player
-                    if (!is_file ($thumbfile_location.$container_id."/face-".$face['time'].".jpg"))
+                    if (!empty ($face['time']))
                     {
-                      // function createthumbnail_video also saves the created file in the cloud
-                      // to keep the aspect ratio, we need to specify only one component, either width or height, and set the other component to -1
-                      createthumbnail_video ($site, $mediafile_location, $thumbfile_location.$container_id."/", $videofile_name, $face['time'], -1, 240, "face-".$face['time']);
+                      // create image named faces-[timestamp in sec].jpg for video player
+                      if (!is_file ($thumbfile_location.$container_id."/face-".$face['time'].".jpg"))
+                      {
+                        // function createthumbnail_video also saves the created file in the cloud
+                        // to keep the aspect ratio, we need to specify only one component, either width or height, and set the other component to -1
+                        createthumbnail_video ($site, $mediafile_location, $thumbfile_location.$container_id."/", $videofile_name, $face['time'], -1, 240, "face-".$face['time']);
+                      }
 
                       $temp_faces[] = "face-".$face['time'].".jpg";
                     }
                   }
                 }
-              }
 
-              // remove existing old images
+                // remove existing old face images
+                $scandir = scandir ($thumbfile_location.$container_id);
+
+                if (is_array ($scandir) && sizeof ($scandir) > 0)
+                {
+                  foreach ($scandir as $temp)
+                  {
+                    if ($temp != "." && $temp != ".." && $temp != "faces.json" && substr ($temp, 0, 9) != "thumbnail" && is_file ($thumbfile_location.$container_id."/".$temp) && !in_array ($temp, $temp_faces))
+                    {
+                      deletefile ($thumbfile_location.$container_id."/", $temp, false);
+                    }
+                  }
+                }
+              }
+            }
+            // remove face images
+            elseif (is_dir ($thumbfile_location.$container_id))
+            {
+              // delete JSON file for video player
+              deletefile ($thumbfile_location.$container_id."/", "faces.json", false);
+
+              // remove existing face images
               $scandir = scandir ($thumbfile_location.$container_id);
 
               if (is_array ($scandir) && sizeof ($scandir) > 0)
               {
                 foreach ($scandir as $temp)
                 {
-                  if ($temp != "." && $temp != ".." && substr ($temp, 0, 9) != "thumbnail" && is_file ($thumbfile_location.$temp) && !in_array ($temp, $temp_faces))
+                  if ($temp != "." && $temp != ".." && substr ($temp, 0, 9) != "thumbnail" && is_file ($thumbfile_location.$container_id."/".$temp))
                   {
-                    deletefile ($thumbfile_location, $temp, false);
+                    deletefile ($thumbfile_location.$container_id."/", $temp, false);
                   }
                 }
               }
             }
           }
-          else
-          {
-            // delete JSON file for video player
-            deletefile ($thumbfile_location.$container_id."/", "faces.json", false);
-          }
-        
+
           // ----------------------------------- write metadata --------------------------------------  
           
           // write IPTC data to media file

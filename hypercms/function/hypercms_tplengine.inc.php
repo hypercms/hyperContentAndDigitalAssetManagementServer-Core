@@ -3033,7 +3033,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </div>";
 
                           if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") $contentcomment .= "
-                        <div class=\"hcmsRowData2\" style=\"width:100%; padding:3px 0px 0px 0px;\">".$tmpcontent[0]."</div>\n";
+                        <div class=\"hcmsRowData2\" style=\"padding:3px;\">".$tmpcontent[0]."</div>\n";
                           elseif ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview") $contentcomment .= "
                         <div class=\"hcms_comment_content\">".$tmpcontent[0]."</div>\n";
 

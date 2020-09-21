@@ -163,7 +163,7 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
 <?php 
 if ($is_audio) echo showaudioplayer_head (false);
-else echo showvideoplayer_head (false); 
+else echo showvideoplayer_head (false, true); 
 ?>
 <style>
 .row
@@ -481,30 +481,8 @@ function updateField (field)
 
 function getplayertime ()
 { 
-  <?php  
-  // if we use projekktor we need to check for the state beforehand
-  if (strtolower ($mgmt_config['videoplayer']) == "projekktor") { 
-  ?>
-  var player = projekktor('hcms_mediaplayer_edit');
-  
-  if (player.getState('PLAYING') || player.getState('PAUSED'))
-  {
-    var playerseconds = player.getPosition();
-  }
-  else
-  {
-    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['videoplayer-must-be-playing-or-paused-to-set-start-and-end-positions'][$lang]); ?>'));
-    return 0;
-  }
-  <?php 
-  // VIDEO JS
-  } else {
-  ?>
   var player = videojs("hcms_mediaplayer_edit");  
   var playerseconds = player.currentTime();
-  <?php 
-  }
-  ?>
 
   if (playerseconds > 0)
   {
