@@ -6,15 +6,15 @@
 <extension></extension>
 <application></application>
 <content><![CDATA[<?php
-// function: collectMedia()
+// function: searchMedia()
 // input: publication name [string], containerid [string], mediaTagId [string], absolute component root path [string], allowedFileExtensions [.jpg.jpeg.gif.png] (optional), text ID of the image title [string] (optional), 
-//          text Id of the image description [string] (optional), filter text-ID and filter value pairs [array] (optional), search expressions [array]
+//          text Id of the image description [string] (optional), filter text-ID and filter value pairs [array] (optional)
 // output: result array, each array contains name / link / thumb_link of a mediafile / false on error
 
 // description:
-// Performs a media search or retrieves the location of the given mediaTag container_id tuple and collects all mediafiles of this location.
+// Performs a media search or retrieves the location of the given mediaTag container_id and collects all mediafiles of this location.
 
-function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFileExtensions=".jpg.jpeg.gif.png", $metaTitleId="", $metaDescriptionId="", $filter=array())
+function searchMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFileExtensions=".jpg.jpeg.gif.png", $metaTitleId="", $metaDescriptionId="", $filter=array())
 {
   global $mgmt_config;
 

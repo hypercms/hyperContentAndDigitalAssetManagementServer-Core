@@ -67,7 +67,7 @@ if ($templatedata == false || $templatedata == "")
   echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
-  echo "<script src=\"javascript/click.js\" type=\"text/javascript\" />\n";
+  echo "<script src=\"javascript/click.min.js\" type=\"text/javascript\" />\n";
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
@@ -85,7 +85,7 @@ elseif ($viewstore == false)
   echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
-  echo "<script src=\"javascript/click.js\" type=\"text/javascript\" />\n";
+  echo "<script src=\"javascript/click.min.js\" type=\"text/javascript\" />\n";
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";

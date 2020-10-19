@@ -165,9 +165,9 @@ else $objects_counted = 0;
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/contextmenu.js" type="text/javascript"></script>
-<script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/contextmenu.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
 <style type="text/css">
 .hcmsCell
@@ -178,15 +178,6 @@ else $objects_counted = 0;
 }
 </style>
 <script type="text/javascript">
-
-// select area
-var selectarea;
-
-// context menu
-contextenable = true;
-is_mobile = <?php if (!empty ($is_mobile)) echo "true"; else echo "false"; ?>;
-contextxmove = true;
-contextymove = true;
 
 // define global variable for popup window name used in contextmenu.js
 var session_id = '<?php echo session_id(); ?>';

@@ -50,9 +50,9 @@ checkusersession ($user, false);
   border-bottom: 1px solid #333333;
 }
 </style>
-<script type="text/javascript" src="javascript/main.js" ></script>
-<script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="javascript/chat.js"></script>
+<script type="text/javascript" src="javascript/main.min.js" ></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="javascript/chat.min.js"></script>
 <script type="text/javascript">
 // user name    
 var username = "<?php echo $user; ?>";

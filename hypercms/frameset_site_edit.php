@@ -29,7 +29,7 @@ checkusersession ($user, false);
 <meta name="viewport" content="width=<?php echo windowwidth ("object"); ?>, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript">
 // disable transition effect
 hcms_transitioneffect = false;
@@ -45,10 +45,10 @@ else $css_iphone = "";
   <!-- tabs -->
   <div id="tabLayer" class="hcmsTabContainer hcmsWorkplaceControlWallpaper" style="position:fixed; visibility:visible; left:0; right:0; top:0; z-index:10;">
     <div id="tab1" class="hcmsTabActive">
-      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_showHideLayers('settingsLayer','','show', 'inheritanceLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?></a>
+      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_displayLayers('settingsLayer','','show', 'inheritanceLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?></a>
     </div>
     <div id="tab2" class="hcmsTabPassive">
-      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); hcms_showHideLayers('settingsLayer','','hide', 'inheritanceLayer','','show');" title="<?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?></a>
+      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); hcms_displayLayers('settingsLayer','','hide', 'inheritanceLayer','','show');" title="<?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?></a>
     </div>
   </div>
 
@@ -58,7 +58,7 @@ else $css_iphone = "";
   </div>
 
   <!-- publication inheritance -->
-  <div id="inheritanceLayer" style="position:fixed; top:24px; right:0; bottom:0; left:0; margin:0; padding:0; visibility:hidden; <?php echo $css_iphone; ?>">
+  <div id="inheritanceLayer" style="position:fixed; top:24px; right:0; bottom:0; left:0; margin:0; padding:0; display:none; <?php echo $css_iphone; ?>">
     <iframe name="mainFrame2" src="<?php echo "site_edit_inheritance.php?site_name=".$site_name; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 

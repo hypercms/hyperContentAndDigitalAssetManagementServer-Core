@@ -57,6 +57,7 @@ $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
 $file_info = getfileinfo ($site, $mediafile, "");
 
 $audio = false;
+$preview = false;
 
 // video type/format
 if ($type != "")
@@ -78,11 +79,13 @@ if ($media_root && file_exists ($media_root.$file_info['filename'].".config.".$t
 {
   $config = readmediaplayer_config ($media_root, $file_info['filename'].".config.".$type);
 } 
-elseif($media_root && file_exists ($media_root.$file_info['filename'].".config.orig")) 
+elseif ($media_root && file_exists ($media_root.$file_info['filename'].".config.orig")) 
 {
   $config = readmediaplayer_config ($media_root, $file_info['filename'].".config.orig");
+
+  $preview = true;
   
-  // We try to detect if we should use audio player
+  // We try to detect if we should use the audio player
   if (is_array ($config['mediafiles']))
   {
     list ($test, $duh) = explode (";", reset($config['mediafiles']));
@@ -106,6 +109,7 @@ $frameid = rand_secure() + time();
 
 if ($config && is_array ($config))
 {
+  // video player
   // version 2+
   if (intval ($config['version']) >= 2) 
   {
@@ -133,10 +137,16 @@ if ($config && is_array ($config))
     $playercode = $config['data'];
   }
 
-  // create view link for 360 viewer
+  // create view link for 360 image viewer / video player
   $link = "";
 
-  if (is_array ($config['mediafiles']))
+  // use original file if it is an MP4 video and the preview video is only available
+  if ($preview == true && substr_count (".mp4.", $file_info['ext'].".") > 0 && (is_file ($media_root.$mediafile) || is_cloudobject ($media_root.$mediafile)))
+  {
+    $video_file = $mediafile;
+  }
+  // use file provided by video config
+  elseif (is_array ($config['mediafiles']))
   {
     foreach ($config['mediafiles'] as $temp)
     {
@@ -159,7 +169,7 @@ if ($config && is_array ($config))
 <meta charset="<?php echo getcodepage ($lang);?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
 <?php
 if ($config && is_array ($config) && intval ($config['version']) >= 2)
 {
@@ -350,13 +360,16 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
 
   <!-- preview -->
   <div id="preview" style="float:left; scrolling:auto;">
+
     <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></span><br/><br/>
     <?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br/>
     <div id="playercode" style="margin-bottom:10px;"><?php echo $playercode; ?></div><br/>
+
     <?php if (!$is_mobile) { ?>
     <?php echo getescapedtext ("360 ".$hcms_lang['video'][$lang]); ?><br/>
     <div id="playercode360"><?php echo $playercode; ?></div>
     <?php } ?>
+
   </div>
 
 <?php

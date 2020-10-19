@@ -1973,10 +1973,19 @@ function getwallpaper ($theme="", $version="")
 {
   global $mgmt_config;
 
+  // 1. get system wallpaper
+  if (!empty ($mgmt_config['wallpaper']))
+  {
+    return $mgmt_config['wallpaper'];
+  }
+
+  // get theme defined in main config
+  if (empty ($theme) && !empty ($mgmt_config['theme'])) $theme = $mgmt_config['theme'];
+
   // get theme from session
   if (empty ($theme)) $theme = getsession ("hcms_themename");
 
-  // 1. wallpaper from design theme
+  // 2. wallpaper from design theme
   if (valid_locationname ($theme))
   {
     // get theme location (portal themes, system themes)
@@ -1994,13 +2003,11 @@ function getwallpaper ($theme="", $version="")
     // get theme wallpaper
     if (is_file ($root_abs.$theme."/img/wallpaper.jpg")) $wallpaper = cleandomain ($root_url.$theme."/img/wallpaper.jpg");
     elseif (is_file ($root_abs.$theme."/img/wallpaper.png")) $wallpaper = cleandomain ($root_url.$theme."/img/wallpaper.png");
+
+    if (!empty ($wallpaper)) return $wallpaper;
   }
-  // get system wallpaper
-  elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
 
-  if (!empty ($wallpaper)) return $wallpaper;
-
-  // 2. wallpaper service
+  // 3. wallpaper service
   // get version
   if (empty ($version) && is_file ($mgmt_config['abs_path_cms']."version.inc.php"))
   {
@@ -2028,7 +2035,7 @@ function getwallpaper ($theme="", $version="")
     else return $mgmt_config['url_path_view'].$wallpaper_name;
   }
 
-  // default wallpaper
+  // 4. default wallpaper
   return getthemelocation($theme)."img/backgrd_start.png";
 }
  

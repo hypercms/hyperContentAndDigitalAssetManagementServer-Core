@@ -118,12 +118,9 @@ if ($action == "user_register" && checktoken ($token, "sys") && !empty ($mgmt_co
 // wallpaper
 $wallpaper = "";
 
-if ($themename != "mobile")
+if (!$is_mobile)
 {
-  if (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg");
-  elseif (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.png")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.png");
-  elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
-  else $wallpaper = getwallpaper ($mgmt_config['version']);
+  $wallpaper = getwallpaper ();
 }
 
 // create secure token
@@ -177,9 +174,10 @@ video#videoScreen
 }
 </style>
 
-<script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/click.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function is_mobilebrowser()
 {
   if (document.forms['userform'] && hcms_mobileBrowser())

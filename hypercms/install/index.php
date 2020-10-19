@@ -657,16 +657,18 @@ $token_new = createtoken ($user);
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="../theme/standard/css/main.css">
 <link rel="stylesheet" href="../theme/standard/css/<?php echo ($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="../javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="../javascript/main.min.js"></script>
+
 <style type="text/css">
 #error { color:red; display:none; }
 .needsfilled { color:red; }
 </style>
+
 </head>
 
 <body class="hcmsStartScreen" style="font-size:12px; position:relative;">
 
-<script type="text/javascript" src="../javascript/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	// place ID's of all required fields here.

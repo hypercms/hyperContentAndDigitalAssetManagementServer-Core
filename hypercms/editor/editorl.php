@@ -79,9 +79,9 @@ if ($label == "") $label = $id;
 <meta charset="<?php echo $charset; ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="../javascript/main.js" type="text/javascript">
-</script>
-<script language="JavaScript">
+<script type="text/javascript" src="../javascript/main.min.js"></script>
+<script type="text/javascript">
+
 function setsavetype(type)
 {
   document.forms['editor'].elements['savetype'].value = type;

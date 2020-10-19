@@ -7254,7 +7254,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
             // scriptcode
             $scriptcode = "
-    <script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
+    <script src=\"".$mgmt_config['url_path_cms']."javascript/main.min.js\" type=\"text/javascript\"></script>
     <script type=\"text/javascript\">
     ".@$bodytag_controlreload."
     ".@$bodytag_popup."
@@ -7350,7 +7350,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     <div style=\"margin:4px; padding:0; border:0; background:none; visibility:visible;\">".$headstore."</div>\n";
 
             // javascript code
-            if ($buildview != "preview") $scriptcode .= "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
+            if ($buildview != "preview") $scriptcode .= "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.min.js\" type=\"text/javascript\"></script>
     <script type=\"text/javascript\">
     function hcms_openWindowComp (winName, features, theURL)
     {
@@ -7456,19 +7456,23 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
       return true;
     }
-    </script>\n";
+    </script>
+    ";
           }
 
           // =========================================== inject script code ==============================================
           if (isset ($scriptcode) && $scriptcode != "")
           {
             // include javascript
-            $vendor = "<meta name=\"keyword\" content=\"hyper Content & Digital Asset Management Server (http://www.hypercms.com/)\" />";
+            $vendor = "
+    <meta name=\"keyword\" content=\"hyper Content & Digital Asset Management Server (http://www.hypercms.com/)\" />
+            ";
 
             if (preg_match ("/<head/i", $viewstore))
             {
-              $viewstore = str_ireplace ("<head>", "<head>\n".$vendor, $viewstore);
-              $viewstore = str_ireplace ("</head>", $scriptcode."</head>", $viewstore);
+              $viewstore = str_ireplace ("<head>", "<head>".$vendor.$scriptcode, $viewstore);
+              // deprecated sinde version 9.0.4: 
+              // $viewstore = str_ireplace ("</head>", $scriptcode."</head>", $viewstore);
             }
             else $bodytagnew = $bodytagnew."\n".$scriptcode;
 
@@ -7683,9 +7687,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }
   </style>
 
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
+  <script src=\"".$mgmt_config['url_path_cms']."javascript/main.min.js\" type=\"text/javascript\"></script>
   <!-- JQuery -->
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.3.1.min.js\" type=\"text/javascript\"></script>
+  <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.5.1.min.js\" type=\"text/javascript\"></script>
   <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
   <link  rel=\"stylesheet\" href=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.css\" type=\"text/css\" />
   <!-- Editor -->
@@ -7693,7 +7697,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <script type=\"text/javascript\">CKEDITOR.disableAutoInline = true;</script>
   <!-- Calendar -->
   <link  rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\" />
-  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.min.js\"></script>
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_fr.js\"></script>
@@ -9523,7 +9527,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }
 
         // We only add if a audio is used (audio.js Player) and VIDEO.JS has not been integrated already
-        if (preg_match('/\<audio.*?id=[\"\\\']hcms_mediaplayer_/i', $viewstore) && substr_count ($viewstore, "javascript/video-js/video.js") == 0)
+        if (preg_match('/\<audio.*?id=[\"\\\']hcms_mediaplayer_/i', $viewstore) && substr_count ($viewstore, "javascript/video-js/video.min.js") == 0)
         {
            if (substr_count (strtolower ($viewstore), "</head>") > 0)
           {
@@ -9853,9 +9857,9 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
   <meta name=\"robots\" content=\"noindex, nofollow\" />
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
-  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/main.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/main.min.js\"></script>
   <link  rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\" />
-  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.min.js\"></script>
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_fr.js\"></script>

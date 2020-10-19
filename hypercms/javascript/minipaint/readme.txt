@@ -41,11 +41,12 @@ Add PHP code according to the existing file.
   <meta http-equiv="x-ua-compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css" />
-  <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/main.js" type="text/javascript"></script>
-  <script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
+  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/main.min.js"></script>
+  <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
   <!-- miniPaint -->
   <base href="<?php echo $mgmt_config['url_path_cms']; ?>/javascript/minipaint/" />
-  <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/minipaint/dist/bundle.js"></script>
+  <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/minipaint/dist/bundle.js"></script>
 </head>
 
 8. Add close button:

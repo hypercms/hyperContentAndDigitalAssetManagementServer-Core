@@ -15,6 +15,8 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // disk key
 require ("include/diskkey.inc.php");
+// version info
+require ("version.inc.php");
 
 
 // plugin config
@@ -1343,20 +1345,20 @@ else
     <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 
     <!-- JQuery (for navigation tree and autocomplete) -->
-    <script type="text/javascript" src="javascript/jquery/jquery-1.12.4.min.js"></script>
-    <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>  
+    <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
     <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.cookie.js"></script>
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.hotkeys.js"></script>
-    <script type="text/javascript" src="javascript/jstree/jquery.jstree.js"></script>
+    <script type="text/javascript" src="javascript/jstree/jquery.jstree.min.js"></script>
     
     <!-- main and contextmenu library -->
-    <script type="text/javascript" src="javascript/main.js?ts=<?php echo time(); ?>"></script>
-    <script type="text/javascript" src="javascript/contextmenu.js?ts=<?php echo time(); ?>"></script>
+    <script type="text/javascript" src="javascript/main.min.js?v=<?php echo url_encode ($mgmt_config['version']); ?>"></script>
+    <script type="text/javascript" src="javascript/contextmenu.min.js?v=<?php echo url_encode ($mgmt_config['version']); ?>"></script>
 
     <!-- Rich calendar -->
     <link  rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
-    <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+    <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.min.js"></script>
     <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
     <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
     <script type="text/javascript" src="javascript/rich_calendar/rc_lang_fr.js"></script>

@@ -15,6 +15,9 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // servertime class
 require ("function/servertime.class.php");
+// version info
+require ("version.inc.php");
+
 
 // layer size definitions
 $width_top = 36;
@@ -36,12 +39,12 @@ checkusersession ($user, false);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=1024, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?ts=<?php echo time(); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?ts=<?php echo time(); ?>" />
-<script src="javascript/click.js" type="text/javascript"></script>
-<script src="javascript/main.js" type="text/javascript"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo url_encode ($mgmt_config['version']); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo url_encode ($mgmt_config['version']); ?>" />
+<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/click.min.js"></script>
 <!-- JQuery used for AJAX viewport set request -->
-<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
 
 <?php
 // invert button colors
@@ -221,20 +224,35 @@ function closeMainView ()
   hcms_hideFormLayer('objectviewMainLayer');
 }
 
-function setWindows ()
+function setGlobals ()
 {
   // set window width and height for contextmenu
-  localStorage.setItem ('windowwidth', <?php echo windowwidth ("object"); ?>);
-  localStorage.setItem ('windowheight', <?php echo windowheight ("object"); ?>);
+  localStorage.setItem('windowwidth', <?php echo windowwidth ("object"); ?>);
+  localStorage.setItem('windowheight', <?php echo windowheight ("object"); ?>);
 
   // set object popup or new window for contextmenu
-  localStorage.setItem ('object_newwindow', <?php if (!empty ($mgmt_config['object_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+  localStorage.setItem('object_newwindow', <?php if (!empty ($mgmt_config['object_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
 
   // set message popup or new window for contextmenu
-  localStorage.setItem ('message_newwindow', <?php if (!empty ($mgmt_config['message_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+  localStorage.setItem('message_newwindow', <?php if (!empty ($mgmt_config['message_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
 
   // set user popup or new window for contextmenu
-  localStorage.setItem ('user_newwindow', <?php if (!empty ($mgmt_config['user_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+  localStorage.setItem('user_newwindow', <?php if (!empty ($mgmt_config['user_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+
+  // set is_mobile
+  localStorage.setItem('is_mobile', <?php if (!empty ($is_mobile)) echo "'true'"; else echo "'false'"; ?>);
+
+  // reset values (initially set in main.js)
+  if (localStorage.getItem('is_mobile') !== null && localStorage.getItem('is_mobile') == 'false')
+  {
+    is_mobile = false;
+    hcms_transitioneffect = true;
+  }
+  else
+  {
+    is_mobile = true;
+    hcms_transitioneffect = false;
+  }
 }
 
 var uploadwindows = 1;
@@ -340,7 +358,7 @@ function setSearchLocation (location, name)
 $(document).ready(function()
 {
   setviewport();
-  setWindows();
+  setGlobals();
   
   window.onresize = function()
   {

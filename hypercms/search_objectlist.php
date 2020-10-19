@@ -584,12 +584,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
               else $class_image = "class=\"hcmsIconList\"";            
               
-              // refresh sidebar
-              if (!$is_mobile) $sidebarclick = "hcms_loadSidebar();";
-              else $sidebarclick = "";
-              
               // onclick for marking objects
-              $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
+              $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
               
               // open folder
               if ($action != "recyclebin") $openFolder = "onDblClick=\"parent.location='frameset_objectlist.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc.$folder)."/&token=".$token."';\" ";
@@ -855,13 +851,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             // open on double click
             if ($action != "recyclebin") $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
             else $openObject = "";
-            
-            // refresh sidebar
-            if (!$is_mobile) $sidebarclick = "hcms_loadSidebar();";
-            else $sidebarclick = "";
-            
+
             // onclick for marking objects
-            $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
+            $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
             
             // set context
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
@@ -1098,11 +1090,11 @@ else $objects_counted = 0;
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/contextmenu.js" type="text/javascript"></script>
-<script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/contextmenu.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
-<script type="text/javascript" src="javascript/chat.js"></script>
+<script type="text/javascript" src="javascript/chat.min.js"></script>
 <script type="text/javascript" src="javascript/lazysizes/lazysizes.min.js" async=""></script>
 <style type="text/css">
 #objectlist
@@ -1212,6 +1204,8 @@ themelocation = '<?php echo getthemelocation(); ?>';
 // context menu
 contextenable = true;
 is_mobile = <?php if (!empty ($is_mobile)) echo "true"; else echo "false"; ?>;
+if (is_mobile) hcms_transitioneffect = false;
+else hcms_transitioneffect = true;
 contextxmove = true;
 contextymove = true;
 

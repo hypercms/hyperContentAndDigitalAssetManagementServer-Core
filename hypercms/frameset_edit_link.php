@@ -44,8 +44,9 @@ checkusersession ($user, false);
 <meta name="viewport" content="width=<?php echo windowwidth ("object"); ?>, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript">
+
 function minNavFrame ()
 {
   if (document.getElementById('navFrame2'))

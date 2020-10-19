@@ -1390,7 +1390,7 @@ Release 04/2016
 - Implementation of export job profiles in export module
 - Implementation of import job profile in import module
 - Implementation of new text variables into all language files
-- Bug fix: Help button appeared twice in instance management control task bar
+- Bug fix: Help button appeared twice in instance management control taskbar
 - Implementation of JS trim for new names in all controls
 - Bug fix: timeout.js has still been used in instance manager
 - Bug fix: Language has not been defined in import and export scripts
@@ -1582,7 +1582,7 @@ Release 06/2016
 - Removed frameset_main_linking (replaced by frameset_main)
 - Implementation of support for access links (object linking) in frameset_main
 - Implementation of support for access links (object linking) in frameset_mobile
-- Enable logout button in task bar for access links (object linking) in control_objectclist_menu for the mobile edition
+- Enable logout button in taskbar for access links (object linking) in control_objectclist_menu for the mobile edition
 
 Version 6.1.11
 Release 06/2016
@@ -3277,7 +3277,7 @@ Release 03/2019
 - Bug fix: Variable counter has not been declared in task_list in case of an empty task list of a user
 - Bug fix: function savetaxonomy in Meta API will not save the taxonomy if not language option has been defined in the publication settings
 - Bug fix: Taxonomy editor used wrong index number for first taxonomy element if no taxonomy is available
-- Bug fix: Delete button for users in task bar has not been enabled for a multiple selection in control_user_menu
+- Bug fix: Delete button for users in taskbar has not been enabled for a multiple selection in control_user_menu
 - Bug fix: Function convertmedia in Media API did not exclude image target formats for the conversion of documents (call of function createdocument)
 - Bug fix: Undefined variable onclick and clipboard_array in task_list
 - Bug fix: Undefined variable useritem_array in function getworkflowitem in Get API
@@ -4358,9 +4358,9 @@ Release 07/2020
 - Modifications in frameset_template_edit in order to reload the template versions on click of the versions tab
 - Update of the installation guide
 - Bug fix: control_content_menu did not provide the folder name in the location for function createmultidownloadlink
-- Bug fix: Implementation of a new condition in popup_action for action "publish" since the output will interfere with the session_start used in the template engine
-- Bug fix: Implementation of a new condition in popup_status for action "publish" since the output will interfere with the session_start used in the template engine
-- Bug fix: Function sendresetpassword did not reset password if the user was not assigned to at least one publication
+- Bug fix: Implementation of a new condition in popup_action for action "publish" since the output will interfere with session_start used in the template engine
+- Bug fix: Implementation of a new condition in popup_status for action "publish" since the output will interfere with session_start used in the template engine
+- Bug fix: Function sendresetpassword did not reset password if the user was not at leastassigned to one publication
 - Bug fix: user_edit did not execute function gethomeboxes if no publications have been assigned to the user
 - Bug fix: user_objectlist did not move to next set of user account during paging (replaced for-next by foreach loop)
 - Bug fix: Function rdbms_setdeletedobjects in DB Connect did not log an error if a folder or object can't be restored since a folder or object with the same name exists already
@@ -4435,7 +4435,7 @@ Release 08/2020
 - Modifications in DB Connect in order to apply function intval for all container_id and object_id attributes
 - Modifications in the verification of integer values in various functions of DB Connect
 - Changes in language files
-- Bug fix: The search frame did not switch to the navigation tree if the search frame has been opened by search icon in the right side of the task bar
+- Bug fix: The search frame did not switch to the navigation tree if the search frame has been opened by search icon in the right side of the taskbar
 - Bug fix: Sort of table rows did not work in log_list due to the missing data-attribute in all links. Modifications in JS function hcms_sortTable in main.js in order to verify the link result.
 - Bug fix: The status bar tried to close a non-existing contextmenu on mouse over in log_list
 - Bug fix: Function showvideoplayer in UI API used view link for video thumbnails that will only be resolved when a valid user session exists
@@ -4446,10 +4446,10 @@ Release 08/2020
 - Bug fix: Rich text editor media_select did not provide the mediafile and medialink values in case of a selected video file and caused a JS error
 - Bug fix: Rich text editor video plugin.js did not set the controls parameter in the video URL and did not provide the controls input parameter in the generate_videoplayer_iframe function call
 - Bug fix: version_template did not verify the token before deleting the selected template versions
-- Bug fix: Function xmp_writefile in Meta API did not verity if the executable exists
-- Bug fix: Function iptc_writefile in Meta API did not verity if the executable exists
-- Bug fix: Function extractmetadata in Meta API did not verity if the executable exists
-- Bug fix: DB Connect used same error code 50039 multiple times
+- Bug fix: Function xmp_writefile in Meta API did not verify if the executable exists
+- Bug fix: Function iptc_writefile in Meta API did not verify if the executable exists
+- Bug fix: Function extractmetadata in Meta API did not verify if the executable exists
+- Bug fix: DB Connect used the same error code 50039 multiple times
 
 Version 9.0.3
 Release 09/2020
@@ -4470,13 +4470,78 @@ Release 09/2020
 - Removed Projekktor video player code from JS function updateCodeSegment and video player options in media_playerconfig
 - Removed Projekktor video player JS library
 - Modifications in main configuration file in the install directory in order to remove the deprecated alternative video player setting $mgmt_config['videoplayer']
-- Modifications in service savecontent in order to remove face images of the face/object markers if the have been removed
-- Modifications in template engine in order to redefine padding for comments
+- Modifications in service savecontent in order to remove face images of the face/object markers if they have been removed
+- Modifications in template engine in order to redefine the padding for comments
 - Modifications in image_minipaint in order to request the original image file to be converted to JPG in case the file type is not supported by the browser
 - Modifications in service mediawrapper in order to support file type requests without additional conversion options
 - Modifications in function createmedia in Media API in order to support the watermark values "none", "no", "0", or false to suppress the watermarking
 - Bug fix: videoplayer did not set the fullscreen parameter for function call showvideoplayer_head
 - Bug fix: Service savecontent removed face/object markers in the Mobile Edition (main configuration settings $mgmt_config['facedetection'] has not been verified)
 - Bug fix: Service savecontent did not remove the old face images of the face/object markers if they have been updated
-- Bug fix: Service savecontent did not provide face image names if they already existed. Therefore face images have been removed on save.
+- Bug fix: Service savecontent did not provide face image names if the face definitions already existed (face images have been removed on save).
 - Bug fix: Image editor Minipaint did not load the converted image in case an image format has been used that is not supported by the browser
+
+Version 9.0.4
+Release 10/2020
+- Update of JQuery to version 3.5.1 and modifications in all system components using JQuery version 1.12.4 and 3.3.1 (dropped support for IE 6 and 7)
+- Modifications in rich text editor editoru and editorf
+- Modifications in jquery.jstree.js in order to replace the JQuery function size by property length
+- Modifications in image_rendering in order to implement JQuery migrate 3.3.0
+- Modifications in media_rendering in order to implement JQuery migrate 3.3.0
+- Modifications in page_multiedit in order to implement JQuery migrate 3.3.0
+- Modifications in explorer_imageview in order to implement JQuery migrate 3.3.0
+- Modifications in the attitude example page templates in the install directory
+- Modifications in the function showinlineeditor_head in the UI API
+- Modifications in the template engine in order to insert the JS and JQuery libraries before the template (important for the support of older JQuery libaries that are used in page templates)
+- Modifications in all asset presentation templates in the install directory for the update to JQuery version 3.5.1. Older browser versions (Internet Explorer 6 and 7) are not supported anymore by the templates for the asset presentation (code snippets for the integration in web pages) due to migration to JQuery version 3.5.1
+- Modifications in the component template GalleriaSearch in the install directory in order to create and update a view file for the presentation that can be generally accessed (new view link in code snippet)
+- Modifications in JS function hcms_updateControlObjectListMenu in contextmenu.js in order to include JS function call hcms_loadSidebar
+- Modifications in JS function hcms_loadSidebar in contextmenu.js in order to replace submit to iframe by iframe source (due to issues with 2 form submits at once in Safari)
+- Modifications in explorer_objectlist and search_objectlist in order to remove JS function call hcms_loadSidebar
+- Modifications in JS function hcms_showHideLayers, hcms_displayLayers, hcms_switchSelector, and hcms_hideSelector in main.js in order to disable opacity CSS settings if hcms_transitioneffect is false
+- Modifications in function downloadobject in Main API in order to use unique file name instead of prefix
+- Modifications in main.js and contextmenu.js in order to read is_mobile from the localStorage
+- Modifications in setting hcms_transitioneffect in main.js (default value is false)
+- Modifications in function downloadobject in Main API in order to create/copy the object code only if the object has been updated (object code will be kept in data/temp/view)
+- Renamed JS function setWindows to setGlobals in frameset_main and frameset_mobile
+- Modifications in frameset_main and frameset_mobile in order to implement the localStorage for is_mobile in JS function setGlobals
+- Modifications in explorer_objectlist, search_objectlist, message_objectlist, queue_objectlist, and user_objectlist in order to remove the setting of the value for the JS global variable is_mobile
+- Modifications in explorer_objectlist, search_objectlist, message_objectlist, queue_objectlist, and user_objectlist in order to remove the setting of the value for the JS global variables selectarea, contextenable, contextxmove, and contextymove
+- Modifications in control_user_menu in order to allow the special characters , and ; in passwords
+- Modifications in createtables.sql in DB Connect in order to set length of all user name attributes to 100 (previous value was 60, modifications in the database need to be performed manually)
+- Modifications in createtables.sql in DB Connect in order to set length of the template name attribute to 100 (previous value was 60, modifications in the database need to be performed manually)
+- Modifications in createtables.sql in DB Connect in order to set startdate attribute of table task to allow NULL value (Modifications in the database need to be performed manually)
+- Modifications in function createtask in Task Management API in order to modify the date format
+- Modifications in function rdbms_createtask in DB Connect in order to set the default empty date to 0000-00-00 instead of an empty string
+- Modifications in public function __construct in DB Connect in order to change mode from TRADITIONAL to STRICT_TRANS_TABLES, STRICT_ALL_TABLES, NO_AUTO_CREATE_USER, NO_ENGINE_SUBSTITUTION
+- Modifications in function downloadfile in Main API in order to write and close the session before the file download and restart the session after the file download for non-blocking download
+- Modifications in function rdbms_setdeletedobjects in DB Connect in order to support non-blocking operation for folders/collections
+- Modifications in Task Management list in order to migrate from JS function hcms_showHideLayers (visibility style) to function hcms_displayLayers (display style)
+- Modifications in frameset_template_edit in order to migrate from JS function hcms_showHideLayers (visibility style) to function hcms_displayLayers (display style)
+- Modifications in frameset_site_edit in order to migrate from JS function hcms_showHideLayers (visibility style) to function hcms_displayLayers (display style)
+- Design modifications in the Task Management module
+- Design modifications in the Project Management module
+- Removed swfobject.js and mediaplayer.swf from javascript
+- Modifications in explorer in order to use the version number for loading main.js and contextmenu.js (browser chache based on version of the JS files)
+- Modifications in frameset_main and frameset_mobile in order to use the version number for loading main.css and desktop.js or mobile.css (browser chache based on version of the CSS files)
+- Providing all JS files as minified JS libraries in hypercms/javascript
+- Modifications in all system components in order to use the minified version of the JS libraries
+- Update of PDF.JS library to version 2.5.207
+- Modifications in videoplayer in order to use the MP4 format for function call createmedia
+- Modifications in videoplayer in order to add the original video file as source if it is of MP4, WebM or OGG/OGV video format and the display width is more than 854 pixels
+- Modifications in media_playerconfig in order to use the orginal MP4 video file if a preview video is only available
+- Modifications in function createmedia in Media API in order to verify that the width and height for scaling are not zero
+- Modifications in function showmedia in UI API in order to use orgional video file if it is of MP4, WebM or OGG/OGV video format and the display width is more than 854 pixels
+- Modifications in pop_action and popup_status in order to suppress possible error messages due to header sent
+- Modifications in function getwallpaper in Get API in order to apply the wallpaper defined in the main configuration as the 1st option and the theme wallpaper as the 2nd option
+- Modifications in userregister in order to apply function getwallpaper and remove the old wallpaper code
+- Updates in the Template Designers Guide and Installation Guide
+- Bug fix: Safari is not able to submit 2 forms at once (issues with control and sidebar update)
+- Bug fix: Safari did not display selectors due to an issue with the opacity CSS setting in main.js
+- Bug fix: An empty string for the start- or enddate has caused an error in function rdbms_createtask in DB Connect due to the database mode
+- Bug fix: The Task Management list did not hide all elements inside a tab
+- Bug fix: The Task Management list did not initalize the variable for the objects thumbnail
+- Bug fix: Function showthumbnail in UI API did not use the provided thumbnail size for the calculation of the width or height of the thumbnail
+- Bug fix: The Workflow Management module loaded the desktop or mobile stylesheet two times
+- Bug fix: Function showtaxonomytree in UI API did not verify the first search result item
+- Bug fix: Function showmedia in UI API did not assign a z-index higher than 9900 to the 360 video player overlay and layers from the standard video player could still be seen

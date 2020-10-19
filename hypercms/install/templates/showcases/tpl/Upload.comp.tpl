@@ -204,10 +204,10 @@ if (!empty ($site) && !empty ($location)) createfolder ($site, $location_esc, $n
 <link rel="stylesheet" href="[hyperCMS:scriptbegin echo getthemelocation($themename)."css/".($is_mobile ? "mobile.css" : "desktop.css"); scriptend]" />
 <link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/jquery-fileupload.css" />
 
-<script src="%url_hypercms%/javascript/main.js" type="text/javascript"></script>
+<script src="%url_hypercms%/javascript/main.min.js" type="text/javascript"></script>
 
 <!-- JQuery -->
-<script src="%url_hypercms%/javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script src="%url_hypercms%/javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
 
 <!-- JQuery UI -->
 <script src="%url_hypercms%/javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>

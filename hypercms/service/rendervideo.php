@@ -429,8 +429,8 @@ elseif ($savetype == "editor_so")
 <script type="text/javascript">
 <?php echo $add_onload; ?>
 </script>
-<script src="../javascript/main.js" type="text/javascript"></script>
-<script src="../javascript/click.js" type="text/javascript"></script>
+<script type="text/javascript" src="../javascript/main.min.js"></script>
+<script type="text/javascript" src="../javascript/click.min.js"></script>
 </head>
 <body class="hcmsWorkplaceGeneric">
 <div style="padding:4px;">

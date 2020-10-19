@@ -113,18 +113,18 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 }
 </style>
 
-<script src="javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
 
 <!-- JQuery -->
-<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 
 <!-- JQuery UI -->
-<script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css">
 
 <!-- JQuery File Upload -->
-<script src="javascript/jquery/plugins/jquery.fileupload.js" type="text/javascript"></script>
-<script src="javascript/jquery/plugins/jquery.iframe-transport.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/jquery.fileupload.js"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/jquery.iframe-transport.js"></script>
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/jquery-fileupload.css" type="text/css">
 
 <!-- Dropbox dropin.js -->
@@ -1193,7 +1193,7 @@ function showwarning ()
 </script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
-<script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rich_calendar.min.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>

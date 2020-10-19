@@ -37,8 +37,8 @@ $add_onload = "";
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="../../../javascript/click.js" type="text/javascript"></script>
-<script src="../../../javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../../javascript/click.min.js"></script>
+<script type="text/javascript" src="../../../javascript/main.min.js"></script>
 </head>
 
 <body class="hcmsWorkplaceControlWallpaper" onload="<?php echo $add_onload; ?>">

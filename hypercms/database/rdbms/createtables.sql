@@ -8,7 +8,7 @@ CREATE TABLE `container` (
   `publishdate` datetime DEFAULT NULL,
   `latitude` float(10,6) DEFAULT NULL,
   `longitude` float(10,6) DEFAULT NULL,
-  `user` char(60) NOT NULL default '',
+  `user` char(100) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `container` (`date`,`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -33,9 +33,9 @@ CREATE TABLE `object` (
   `hash` char(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL default '',
   `id` int(11) NOT NULL default '0',
   `objectpath` varchar(21000) NOT NULL default '',
-  `template` char(60) NOT NULL default '',
+  `template` char(100) NOT NULL default '',
   `media` char(255) NOT NULL default '',
-  `deleteuser` char(60) DEFAULT '',
+  `deleteuser` char(100) DEFAULT '',
   `deletedate` date DEFAULT NULL,
   PRIMARY KEY  (`object_id`),
   UNIQUE KEY `objecthash` (`hash`),
@@ -49,7 +49,7 @@ CREATE TABLE `recipient` (
   `recipient_id` int(11) NOT NULL auto_increment,
   `object_id` int(11) NOT NULL default '0',
   `date` datetime NOT NULL,
-  `from_user` char(60) NOT NULL default '',
+  `from_user` char(100) NOT NULL default '',
   `to_user` varchar(600) NOT NULL default '',
   `email` char(80) NOT NULL default '',
   PRIMARY KEY  (`recipient_id`),
@@ -68,7 +68,7 @@ CREATE TABLE `project` (
   `createdate` datetime NOT NULL, 
   `project` char(200) NOT NULL DEFAULT 'undefined',
   `description` varchar(3600),
-  `user` char(60) NOT NULL default '',
+  `user` char(100) NOT NULL default '',
   PRIMARY KEY  (`project_id`),
   KEY `project` (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -80,9 +80,9 @@ CREATE TABLE `task` (
   `project_id` int(11) NOT NULL default '0',
   `object_id` int(11) NOT NULL default '0',
   `task` char(200) NOT NULL DEFAULT 'undefined',
-  `from_user` char(60) NOT NULL default '',
-  `to_user` char(60) NOT NULL default '',
-  `startdate` date NOT NULL,
+  `from_user` char(100) NOT NULL default '',
+  `to_user` char(100) NOT NULL default '',
+  `startdate` date DEFAULT NULL,
   `finishdate` date DEFAULT NULL,
   `category` char(20) NOT NULL default 'user',
   `description` varchar(3600),
@@ -127,11 +127,11 @@ DROP TABLE IF EXISTS `textnodes`;
 CREATE TABLE `textnodes` (
   `textnodes_id` int(11) NOT NULL auto_increment,
   `id` int(11) NOT NULL default '0',
-  `text_id` char(120) NOT NULL default '',
+  `text_id` char(255) NOT NULL default '',
   `textcontent` text,
   `object_id` int(11) DEFAULT NULL,
   `type` char(6) NOT NULL default '',
-  `user` char(60) DEFAULT NULL,
+  `user` char(100) DEFAULT NULL,
   PRIMARY KEY  (`textnodes_id`),
   KEY `textnodes_id` (`id`),
   KEY `textnodes_text_id` (`text_id`),
@@ -148,7 +148,7 @@ CREATE TABLE `queue` (
   `action` char(20) NOT NULL,
   `date` datetime default NULL,
   `published_only` tinyint(4) default NULL,
-  `user` char(60) default NULL,
+  `user` char(100) default NULL,
   PRIMARY KEY  (`queue_id`),
   KEY `queue` (`date`,`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -160,7 +160,7 @@ CREATE TABLE `dailystat` (
   `id` int(11) NOT NULL,
   `date` date NOT NULL,
   `activity` char(20) DEFAULT NULL,
-  `user` char(60) DEFAULT NULL,
+  `user` char(100) DEFAULT NULL,
   `count` int(11) NOT NULL,
   PRIMARY KEY (`stats_id`),
   KEY `dailystat` (`id`,`date`,`user`)
@@ -189,7 +189,7 @@ DROP TABLE IF EXISTS `notify`;
 CREATE TABLE `notify` (
   `notify_id` int(11) NOT NULL AUTO_INCREMENT,
   `object_id` int(11) NOT NULL default '0',
-  `user` char(60) NOT NULL default '',
+  `user` char(100) NOT NULL default '',
   `oncreate` tinyint(1) NOT NULL default '0',
   `onedit` tinyint(1) NOT NULL default '0',
   `onmove` tinyint(1) NOT NULL default '0',

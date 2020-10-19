@@ -1,6 +1,17 @@
+// ------------------------ default values ----------------------------
+
+// mobile browser
+if (localStorage.getItem('is_mobile') !== null && localStorage.getItem('is_mobile') == 'false')
+{
+  var is_mobile = false;
+}
+else
+{
+  var is_mobile = true;
+}
+
 // general context menu options
 var contextenable = true;
-var is_mobile = false;
 
 // contect menu move options
 var contextxmove = true;
@@ -29,7 +40,11 @@ var y4 = 0;
 
 // drag and drop
 var dragndrop = false;
+
+// design theme
 var themelocation = '';
+
+// ------------------------ contextmenu ----------------------------
 
 // remove selection marks of browser
 function hcms_clearSelection ()
@@ -57,13 +72,13 @@ function hcms_loadSidebar ()
     // wait (due to issues with browsers like MS Edge, Chrome)
     hcms_sleep (400);
 
-    document.forms['contextmenu_object'].attributes['action'].value = 'explorer_preview.php';
-    document.forms['contextmenu_object'].attributes['target'].value = 'sidebarFrame';
-    document.forms['contextmenu_object'].elements['action'].value = '';
+    var location = document.forms['contextmenu_object'].elements['location'].value;
+    var folder = document.forms['contextmenu_object'].elements['folder'].value;
+    var page = document.forms['contextmenu_object'].elements['page'].value;
     
-    if (allow_tr_submit)
+    if (allow_tr_submit && location != '' && (folder != '' || page != ''))
     {
-      document.forms['contextmenu_object'].submit();
+      parent.document.getElementById('sidebarFrame').src='explorer_preview.php?location=' + encodeURIComponent(location) + '&folder=' +  encodeURIComponent(folder) + '&page=' + encodeURIComponent(page);
     }
     else
     {
@@ -1064,69 +1079,96 @@ function hcms_selectObject (row_id, event)
 // update control object list menu
 function hcms_updateControlObjectListMenu ()
 {
-  document.forms['contextmenu_object'].attributes['action'].value = 'control_objectlist_menu.php';
-  document.forms['contextmenu_object'].attributes['target'].value = 'controlFrame';
-  document.forms['contextmenu_object'].elements['action'].value = '';
-  
-  if (allow_tr_submit && document.forms['contextmenu_object'].elements['location'].value != '')
+  if (document.forms['contextmenu_object'])
   {
-    document.forms['contextmenu_object'].submit();
+    document.forms['contextmenu_object'].attributes['action'].value = 'control_objectlist_menu.php';
+    document.forms['contextmenu_object'].attributes['target'].value = 'controlFrame';
+    document.forms['contextmenu_object'].elements['action'].value = '';
+
+    if (allow_tr_submit && document.forms['contextmenu_object'].elements['location'].value != '')
+    {
+      document.forms['contextmenu_object'].submit();
+    }
+    else
+    {
+      allow_tr_submit = true;
+    }
+
+    // sidebar
+    if (!is_mobile) hcms_loadSidebar();
+
+    return true;
   }
-  else
-  {
-    allow_tr_submit = true;
-  }
+  else return false;
 }
 
 // update control user menu
 function hcms_updateControlUserMenu ()
-{	
-  document.forms['contextmenu_user'].attributes['action'].value = 'control_user_menu.php';
-  document.forms['contextmenu_user'].attributes['target'].value = 'controlFrame';
-  document.forms['contextmenu_user'].elements['action'].value = '';
-  
-  if (allow_tr_submit)
+{
+  if (document.forms['contextmenu_user'])
   {
-    document.forms['contextmenu_user'].submit();
+    document.forms['contextmenu_user'].attributes['action'].value = 'control_user_menu.php';
+    document.forms['contextmenu_user'].attributes['target'].value = 'controlFrame';
+    document.forms['contextmenu_user'].elements['action'].value = '';
+    
+    if (allow_tr_submit)
+    {
+      document.forms['contextmenu_user'].submit();
+    }
+    else
+    {
+      allow_tr_submit = true;
+    }
+
+    return true;
   }
-  else
-  {
-    allow_tr_submit = true;
-  }
+  else return false;
 }
 
 // update control queue menu
 function hcms_updateControlQueueMenu()
 {
-  document.forms['contextmenu_queue'].attributes['action'].value = 'control_queue_menu.php';
-  document.forms['contextmenu_queue'].attributes['target'].value = 'controlFrame';
-  document.forms['contextmenu_queue'].elements['action'].value = '';
-   
-  if (allow_tr_submit)
+  if (document.forms['contextmenu_queue'])
   {
-    document.forms['contextmenu_queue'].submit();
+    document.forms['contextmenu_queue'].attributes['action'].value = 'control_queue_menu.php';
+    document.forms['contextmenu_queue'].attributes['target'].value = 'controlFrame';
+    document.forms['contextmenu_queue'].elements['action'].value = '';
+    
+    if (allow_tr_submit)
+    {
+      document.forms['contextmenu_queue'].submit();
+    }
+    else
+    {
+      allow_tr_submit = true;
+    }
+
+    return true;
   }
-  else
-  {
-    allow_tr_submit = true;
-  }
+  else return false;
 }
 
 // update control message menu
 function hcms_updateControlMessageMenu ()
 {
-  document.forms['contextmenu_message'].attributes['action'].value = 'control_message_menu.php';
-  document.forms['contextmenu_message'].attributes['target'].value = 'controlFrame';
-  document.forms['contextmenu_message'].elements['action'].value = '';
-   
-  if (allow_tr_submit)
+  if (document.forms['contextmenu_message'])
   {
-    document.forms['contextmenu_message'].submit();
+    document.forms['contextmenu_message'].attributes['action'].value = 'control_message_menu.php';
+    document.forms['contextmenu_message'].attributes['target'].value = 'controlFrame';
+    document.forms['contextmenu_message'].elements['action'].value = '';
+    
+    if (allow_tr_submit)
+    {
+      document.forms['contextmenu_message'].submit();
+    }
+    else
+    {
+      allow_tr_submit = true;
+    }
+
+    return true;
   }
-  else
-  {
-    allow_tr_submit = true;
-  }
+  else return false;
 }
 
 // unselect all objects

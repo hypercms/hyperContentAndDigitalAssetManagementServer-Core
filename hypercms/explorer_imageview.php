@@ -61,9 +61,10 @@ $height = $screenheight - 80;
 <meta charset="<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.js"></script>
-<script type="text/javascript" src="javascript/click.js"></script>
-<script type="text/javascript" src="javascript/jquery/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/click.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-migrate-3.3.0.min.js"></script>
 <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
 <script type="text/javascript" src="javascript/zoomcrop/jquery.zoomcrop.js"></script>
 

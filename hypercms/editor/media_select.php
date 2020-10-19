@@ -140,7 +140,7 @@ if (!empty ($mediafile) && $mediafile != "Null_media.png")
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="../javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="../javascript/main.min.js"></script>
 <script type="text/javascript">
 
 function checkType()

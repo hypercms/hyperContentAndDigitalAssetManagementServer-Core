@@ -36,7 +36,7 @@ class hcms_db
         $this->_db->query ("SET time_zone='".$offset."'");
 
         // set sql_mode to TRADITIONAL
-        $this->_db->query ("SET SESSION sql_mode = 'TRADITIONAL'");
+        $this->_db->query ("SET SESSION sql_mode = 'STRICT_TRANS_TABLES, STRICT_ALL_TABLES, NO_AUTO_CREATE_USER, NO_ENGINE_SUBSTITUTION'");
 
         break;
       case 'odbc':
@@ -1351,7 +1351,7 @@ function rdbms_renameobject ($object_old, $object_new)
     
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    // remove seperator
+    // remove separator
     $object_old = str_replace ("|", "", $object_old);
     $object_new = str_replace ("|", "", $object_new); 
     
@@ -4303,6 +4303,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
   if (is_array ($objects) && sizeof ($objects) > 0 && $user != "" && (strtolower ($mark) == "set" || strtolower ($mark) == "unset"))
   {
     $result = true;
+    $session_id = "";
 
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
@@ -4421,8 +4422,18 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
 
             if (!empty ($sql))
             {
+              // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
+              if (session_id() != "")
+              {
+                $session_id = session_id();
+                session_write_close();
+              }
+
               $errcode = "50072";
               $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
+
+              // restart session (that has been previously closed)
+              if (empty (session_id()) && $session_id != "") createsession();
             }
           }
         }
@@ -4501,6 +4512,8 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
         $result = false;
       }  
     }
+
+
 
     // save log
     savelog ($db->rdbms_geterror ());
@@ -5383,7 +5396,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
             if ($count == 0)
             {
               // insert
-              $sql = 'INSERT INTO dailystat (id,user,activity,date,count) VALUES ('.$container_id.',"'.$user.'","'.$activity.'","'.$date.'",1)';
+              $sql = 'INSERT INTO dailystat (id, user, activity, date, count) VALUES ('.$container_id.',"'.$user.'","'.$activity.'","'.$date.'",1)';
             }
             else
             {
@@ -5656,7 +5669,9 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $
     if ($from_user != "") $from_user = $db->rdbms_escape_string ($from_user);
     if ($to_user != "") $to_user = $db->rdbms_escape_string ($to_user);
     if ($startdate != "") $startdate = date ("Y-m-d", strtotime ($startdate));
+    else $startdate = "0000-00-00";
     if ($finishdate != "") $finishdate = date ("Y-m-d", strtotime ($finishdate));
+    else $startdate = "0000-00-00";
     if ($category != "") $category = $db->rdbms_escape_string ($category);
     else $category = "user";
     $taskname = $db->rdbms_escape_string ($taskname);
@@ -5673,7 +5688,7 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $
     }
 
     // insert
-    $sql = 'INSERT INTO task (object_id,project_id,task,from_user,to_user,startdate,finishdate,category,description,priority,planned,status) VALUES ('.$object_id.','.$project_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'","'.$planned.'",0)';
+    $sql = 'INSERT INTO task (object_id, project_id, task, from_user, to_user, startdate, finishdate, category, description, priority, planned, status) VALUES ('.$object_id.','.$project_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'","'.$planned.'",0)';
 
     $errcode = "50048";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert');

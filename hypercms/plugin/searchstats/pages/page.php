@@ -159,7 +159,7 @@ if (is_file ($keywordfile))
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="../../../javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../../javascript/main.min.js"></script>
 </head>
 
 <body class="hcmsWorkplaceGeneric" background="<?php echo getthemelocation(); ?>img/backgrd_empty.png">

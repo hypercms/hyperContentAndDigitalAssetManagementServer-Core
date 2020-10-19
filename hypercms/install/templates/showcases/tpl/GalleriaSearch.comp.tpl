@@ -20,8 +20,12 @@ $uniqid = uniqid();
 $site = "%publication%";
 $abs_comp = "%abs_comp%/";
 $container_id = "%container_id%";
+$object = "%object%";
 $view = "%view%";
 $hash = "%objecthash%";
+
+// file extension
+$file_ext = strtolower (strrchr ($object, "."));
 
 // picture - file extensions
 $picture_extensions = ".jpg.png.gif.bmp";
@@ -55,6 +59,21 @@ elseif ($search != "")
 }
 else $filter = "";
 
+// CREATE VIEW FILE
+if (is_file ("%abs_location%/%object%") && !empty ($file_ext))
+{
+  // create file in view directory
+  if (!is_file ($mgmt_config['abs_path_view'].$hash.$file_ext))
+  {
+    copy ("%abs_location%/%object%", $mgmt_config['abs_path_view'].$hash.$file_ext);
+  }
+  // update file in view directory on publish 
+  elseif ($view == "publish" && filemtime ($mgmt_config['abs_path_view'].$hash.$file_ext) < filemtime ("%abs_location%/%object%"))
+  {
+    copy ("%abs_location%/%object%", $mgmt_config['abs_path_view'].$hash.$file_ext);
+  }
+}
+
 // CMS VIEW => get user entry and create iframe code
 if ($view == "cmsview")
 {
@@ -65,7 +84,7 @@ if ($view == "cmsview")
     <title>hyperCMS.com</title>
     <meta charset='utf-8'/>
     <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("night"); scriptend]css/main.css" />
-    <link rel="stylesheet" href="[hyperCMS:scriptbegin echo getthemelocation("night")."css/".($is_mobile ? "mobile.css" : "desktop.css"); scriptend]" />
+    <link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation("night")."css/".($is_mobile ? "mobile.css" : "desktop.css"); scriptend]" />
   </head>
   <body class="hcmsWorkplaceGeneric">
     <div class="hcmsWorkplaceFrame">
@@ -90,7 +109,10 @@ if ($view == "cmsview")
           <td>&nbsp;</td><td><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></td>
         </tr>
       </table>
-      <p>Please do not forget to publish this page after changing the parameters!</p>
+      <p>
+        Please do not forget to publish this page after changing the parameters!<br/>
+        This component is only supported if used inside a CMs publication!
+      </p>
       <hr/>
 <?php
   //check if component is published
@@ -99,7 +121,8 @@ if ($view == "cmsview")
 
   if ($compinfo['published'])
   {
-    $embed_code = "<iframe id='frame_$uniqid' src='%url_location%/%object%' frameborder='0' style='border:0; width:".$galleriaWidth."px; height:".$galleriaHeight."px; overflow:hidden;'></iframe>";
+    // the search requires a CMS publication with direct http access to the component!
+    $embed_code = "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_view'].$hash.$file_ext."' frameborder='0' style='border:0; width:".$galleriaWidth."px; height:".$galleriaHeight."px; overflow:hidden;'></iframe>";
   }
   else
   {
@@ -116,23 +139,24 @@ if ($view == "cmsview")
       <hr/>
       <strong>Online view</strong>
       <br />
-      <?php if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='%url_location%/%object%' frameborder='0' style='border:1px solid grey; background-color:#000000; width:".$galleriaWidth."px; height:".$galleriaHeight."px; overflow:hidden;'></iframe>"; ?>
+      <?php if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_view'].$hash.$file_ext."' frameborder='0' style='border:1px solid grey; background-color:#000000; width:".$galleriaWidth."px; height:".$galleriaHeight."px; overflow:hidden;'></iframe>"; ?>
     </div>
   </body>
 </html>
 
 <?php
 }
+// published file
 elseif ($view == "publish" || $view == "preview")
 {
-  //published file should be a valid html
 ?>
 <!DOCTYPE html>
 <html>
   <head>
     <title>hyperCMS.com</title>
     <meta charset='utf-8'/>
-    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-migrate-3.3.0.min.js"></script>
     <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_galleria/galleria-1.2.9.min.js"></script>
     <style>
         body {
@@ -180,7 +204,7 @@ var data = [
 <?php
   if (!empty ($filter) && sizeof ($filter) > 0)
   {
-    $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions, $metaTitleId, $metaDescriptionId, $filter);
+    $mediaFiles = searchMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions, $metaTitleId, $metaDescriptionId, $filter);
 
     if (!empty ($mediaFiles))
     {

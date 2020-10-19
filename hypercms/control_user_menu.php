@@ -149,8 +149,8 @@ $token_new = createtoken ($user);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="javascript/click.js" type="text/javascript"></script>
-<script src="javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/click.min.js"></script>
 
 <?php
 // invert button colors
@@ -190,7 +190,7 @@ function warning_delete()
 
 function checkForm_chars(text, exclude_chars)
 {
-  exclude_chars = exclude_chars.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  exclude_chars = exclude_chars.replace(/[-[\]{}()*+?.,;\\^$|#\s]/g, "\\$&");
   
 	var expr = new RegExp ("[^a-zA-Z0-9" + exclude_chars + "]", "g");
 	var separator = ', ';
@@ -249,7 +249,7 @@ function checkForm()
     return false;
   }
   
-  if (!checkForm_chars (userpassword.value, ".-_#+*[]%$�!?@"))
+  if (!checkForm_chars (userpassword.value, ".,;-_#+*[]%$!?@"))
   {
     userpassword.focus();
     return false;
@@ -262,7 +262,7 @@ function checkForm()
     return false;
   } 
   
-  if (!checkForm_chars (userconfirm_password.value, "-_#+*[]%$�!?@"))
+  if (!checkForm_chars (userconfirm_password.value, ".,;-_#+*[]%$!?@"))
   {
     userconfirm_password.focus();
     return false;

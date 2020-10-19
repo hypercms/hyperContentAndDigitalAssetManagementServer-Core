@@ -646,15 +646,16 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <meta name="viewport" content="width=580, initial-scale=0.9, maximum-scale=1.0, user-scalable=1" />
 
 <!-- JQuery and JQuery UI -->
-<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-1.12.4.min.js"></script>
-<script type="text/javascript" src="javascript/jquery/plugins/jquery.color.js"></script>
-<script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-migrate-3.3.0.min.js"></script>
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/plugins/jquery.color.js"></script>
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
+<link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
 
 <!-- Tag it script -->
-<script src="javascript/tag-it/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
-<link href="javascript/tag-it/jquery.tagit.css" rel="stylesheet" type="text/css" />
-<link href="javascript/tag-it/tagit.ui-zendesk.css" rel="stylesheet" type="text/css" />
+<script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/tag-it/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/tag-it/jquery.tagit.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/tag-it/tagit.ui-zendesk.css" rel="stylesheet" type="text/css" />
 
 <!-- CKEditor -->
 <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>editor/ckeditor/ckeditor.js"></script>
@@ -662,7 +663,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 
 <!-- Richcalendar -->
 <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.css" />
-<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.js"></script>
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.min.js"></script>
 <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_en.js"></script>
 <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_de.js"></script>
 <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/domready.js"></script>
@@ -674,14 +675,14 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 #preview
 {
   padding: 0px 20px 10px 0px;
-  min-width: 600px;
+  width: 854px;
   float: left;
 }
 
 #settings
 {
   padding :0px 20px 10px 0px;
-  scrolling: auto;
+  overflow: auto;
   min-width: 620px;
   float: left;
 }
@@ -692,7 +693,6 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
   {
     padding: 0;
     width: 100%;
-
   }
 
   #settings
@@ -754,7 +754,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 }
 </style>
 
-<script type="text/javascript" src="javascript/main.js"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
 
 <script type="text/javascript">
 

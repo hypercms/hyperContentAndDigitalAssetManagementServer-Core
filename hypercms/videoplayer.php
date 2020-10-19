@@ -109,6 +109,17 @@ if ($media_dir != "")
       $testfinfo = getfileinfo ($site, $test, 'comp');    
       if (is_audio ($testfinfo['ext'])) $audio = true;
     }
+
+    // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
+    if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) < 1 || $width > 854)
+    {
+      if (substr_count (".mp4.ogg.ogv.webm.", $file_info['ext'].".") > 0 && (is_file ($media_dir.$media) || is_cloudobject ($media_dir.$media)))
+      {
+        if (!is_array ($config['mediafiles'])) $config['mediafiles'] = array();
+        $temp = $media.";".getmimetype ($media);
+        array_unshift ($config['mediafiles'], $temp);
+      }
+    }
   }
   // 3rd Priority: older versions before 5.5.13
   elseif (is_file ($media_dir.$site."/".$file_info['filename'].".config.flv") || is_cloudobject ($media_dir.$site."/".$file_info['filename'].".config.flv"))
@@ -119,7 +130,7 @@ if ($media_dir != "")
   elseif (is_file ($media_dir.$site."/".$file_info['file']) || is_cloudobject ($media_dir.$site."/".$file_info['file']))
   {
     // create thumbnail video of original file
-    $create_media = createmedia ($site, $media_dir.$site."/", $media_dir.$site."/", $file_info['file'], "flv", "origthumb");
+    $create_media = createmedia ($site, $media_dir.$site."/", $media_dir.$site."/", $file_info['file'], "mp4", "origthumb");
 
     if ($create_media) $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
   }

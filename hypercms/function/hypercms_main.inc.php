@@ -4386,14 +4386,21 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
     if (!session_id()) $add = "?PHPSESSID=".session_id();
     else $add = "";
 
-    // copy to temp/view and execute
-    copy ($location.$object, $mgmt_config['abs_path_view'].$prefix."_".$object);
+    // file extension
+    $file_ext = strtolower (strrchr ($object, "."));
+
+    // copy to temp/view
+    if (!is_file ($mgmt_config['abs_path_view'].$prefix.$file_ext) || filemtime ($mgmt_config['abs_path_view'].$prefix.$file_ext) < filemtime ($location.$object))
+    {
+      copy ($location.$object, $mgmt_config['abs_path_view'].$prefix.$file_ext);
+    }
 
     // get content via HTTP in order ro render page
-    $content = @file_get_contents ($mgmt_config['url_path_view'].$prefix."_".$object.$add);
+    $content = @file_get_contents ($mgmt_config['url_path_view'].$prefix.$file_ext.$add);
 
+    // deprecated since version 9.0.4 for performance improvemenents with presentation components:
     // remove temp file
-    unlink ($mgmt_config['abs_path_view'].$prefix."_".$object);
+    // unlink ($mgmt_config['abs_path_view'].$prefix."_".$object);
 
     // return rendered content
     if ($content != "")
@@ -4445,6 +4452,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
   $end = -1;
   $size = 0;
   $range = false;
+  $session_id = "";
 
   if (valid_locationname ($filepath) && $name != "")
   {
@@ -4477,6 +4485,13 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 
     // verify local media file
     if (!is_file ($filepath)) return false;
+
+    // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
+    if (session_id() != "")
+    {
+      $session_id = session_id();
+      session_write_close();
+    }
 
     // eventsystem
     if ($eventsystem['onfiledownload_pre'] == 1) onfiledownload_pre ($site, $location, $media, $name, $user);
@@ -4658,6 +4673,9 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 
     // write log
     savelog (@$error);
+
+    // restart session (that has been previously closed)
+    if (empty (session_id()) && $session_id != "") createsession();
 
     // return result
     if ($force == "noheader" && !empty ($filedata)) return $filedata;
@@ -8734,7 +8752,7 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['password-insufficient'][$lang]."</span><br />\n".checkpassword ($password)."\n";
   }
-  // check if submitted passwords has at least 8 digits
+  // check if submitted passwords has at least 10 digits
   elseif (strlen ($password) < 10 || strlen ($confirm_password) < 10)
   {
     $add_onload = "";
@@ -17306,7 +17324,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
 // output: result array / false
 
 // description:
-// Help function used to create a list of all objects inside a folder
+// Help function used to create a list of all objects inside the provided location.
 
 function collectobjects ($root_id, $site, $cat, $location, $published_only=false)
 { 

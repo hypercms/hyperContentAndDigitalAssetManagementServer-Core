@@ -89,11 +89,11 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <meta charset="<?php echo $charset; ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/click.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/click.min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
-<script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rich_calendar.min.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>

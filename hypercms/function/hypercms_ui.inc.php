@@ -1440,7 +1440,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   <div style=\"margin-top:30px;\">
     <div id=\"annotation\" style=\"position:relative;\" class=\"".$class."\"></div>
   </div>
-  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.min.js\"></script>
 	<script type=\"text/javascript\">
     // set annotation buttons
     function setAnnotationButtons ()
@@ -1804,8 +1804,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               if ($width_diff <= 0) $width_diff = 0;
 
               if (!$is_mobile) $mediaview .= "
-              <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; margin-left:-2px; width:".intval($width_annotation + $width_diff + 4)."px; height:".intval($height_annotation + 42)."px;\">
-                <div style=\"position:absolute; right:4px; top:4px; z-index:9011;\">
+              <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:9910; display:none; margin-left:-2px; width:".intval($width_annotation + $width_diff + 4)."px; height:".intval($height_annotation + 42)."px;\">
+                <div style=\"position:absolute; right:4px; top:4px;\">
                   <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer ('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
                 </div>
                 <iframe src=\"".$mgmt_config['url_path_cms']."media_360view.php?type=image&link=".url_encode($preview_image).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
@@ -1824,8 +1824,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $preview_image = createviewlink ($site, $mediafile, $medianame, true);
 
               if (!$is_mobile) $mediaview .= "
-              <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; ".$style."\">
-                <div style=\"position:absolute; right:4px; top:4px; z-index:9011;\">
+              <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:9910; display:none; ".$style."\">
+                <div style=\"position:absolute; right:4px; top:4px;\">
                   <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer ('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
                 </div>
                 <iframe src=\"".$mgmt_config['url_path_cms']."media_360view.php?type=image&link=".url_encode($preview_image).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowfullscreen ></iframe>
@@ -1944,7 +1944,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           }
 
           $mediaview .= "
-  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.min.js\"></script>
 	<script type=\"text/javascript\">
     // set annotation buttons
     function setAnnotationButtons ()
@@ -2242,7 +2242,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
-        if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) < 1 || $width > 640)
+        if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) < 1 || $width > 854)
         {
           if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
           {
@@ -2327,26 +2327,28 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $width_diff = 500 - intval($mediawidth);
         if ($width_diff <= 0) $width_diff = 0;
 
-        if (!empty ($mgmt_config['facedetection']) && $viewtype == "preview") $style = "width:".intval($mediawidth + $width_diff + 4)."px; height:".intval($mediaheight + 42)."px;";
-        else $style = "width:".intval($mediawidth)."px; height:".intval($mediaheight)."px;";
+        if (!empty ($mgmt_config['facedetection']) && $viewtype == "preview") $style360 = "left:0px; top:0px; width:".intval($mediawidth + $width_diff + 4)."px; height:".intval($mediaheight)."px;";
+        else $style360 = "left:0px; top:0px; width:".intval($mediawidth)."px; height:".intval($mediaheight)."px;";
 
         // link for 360 view
         $link360 = $mgmt_config['url_path_cms']."media_360view.php?type=video&link=".url_encode($preview_video).($mediaratio > $switch_panoview ? "&view=horizontal" : "");
 
+        // 360 video player code
+        $playercode360 = "";
+
+        if ((!empty ($video_file)) && !$is_mobile) $playercode360 = "
+        <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:9910; display:none; ".$style360."\">
+          <div style=\"position:absolute; right:4px; top:4px;\">
+            <img name=\"hcms_mediaClose\" onClick=\"hcms_switchFormLayer ('hcms360View'); document.getElementById('hcms360videoplayer').src='';\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
+          </div>
+          <iframe id=\"hcms360videoplayer\" src=\"\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
+        </div>";
+
         $mediaview .= "
         <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">
           <tr>
-            <td style=\"text-align:left;\">";
+            <td style=\"text-align:left;\">
 
-        if ((!empty ($video_file)) && !$is_mobile) $mediaview .= "
-            <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:8000; display:none; margin-left:-2px; ".$style."\">
-              <div style=\"position:absolute; right:4px; top:4px; z-index:9011;\">
-                <img name=\"hcms_mediaClose\" onClick=\"hcms_switchFormLayer ('hcms360View'); document.getElementById('hcms360videoplayer').src='';\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
-              </div>
-              <iframe id=\"hcms360videoplayer\" src=\"\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
-            </div>";
-
-        $mediaview .= "
             <!-- video player begin -->
             <div id=\"videoplayer_container\" style=\"display:inline-block; text-align:left;\">";
 
@@ -2383,7 +2385,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               </div>";
 
         $mediaview .= "
-              <div style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"if (annotationmode) createFaceOnVideo (event);\"" : "").">".$playercode."</div>
+              <div style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"if (annotationmode) createFaceOnVideo (event);\"" : "").">".$playercode360.$playercode."</div>
               <div id=\"mediaplayer_segmentbar\" style=\"display:none; width:100%; height:22px; background-color:#808080; text-align:left; margin-bottom:8px;\"></div>";
         
         $mediaview .= "
@@ -3130,7 +3132,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
 
     // javascript code
     $result = "<!-- Jquery and Jquery UI Autocomplete -->
-<script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.3.1.min.js\" type=\"text/javascript\"></script>
+<script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.5.1.min.js\" type=\"text/javascript\"></script>
 <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
 <script src=\"".$mgmt_config['url_path_cms']."javascript/lazysizes/lazysizes.min.js\" type=\"text/javascript\" async=\"\"></script>
 <script type=\"text/javascript\">
@@ -3668,7 +3670,7 @@ function showinlineeditor_head ($lang)
   if (is_array ($mgmt_config) && $lang != "")
   {
     return "
-    <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-1.12.4.min.js\" type=\"text/javascript\"></script>
+    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.5.1.min.js\"></script>
     <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."/editor/ckeditor/ckeditor.js\"></script>
     <script type=\"text/javascript\">
       CKEDITOR.disableAutoInline = true;
@@ -3822,7 +3824,7 @@ function showinlinedatepicker_head ()
     return " 
 
     <link rel=\"stylesheet\" hypercms_href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\">
-    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
+    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.min.js\"></script>
     <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
     <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
     <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
@@ -4702,7 +4704,7 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
         width: ".intval($width)."px;
         height: 22px;
         padding: 0;
-        z-index: 99000;
+        z-index: 9900;
       }
 
       .hcmsVideoThumbFrame
@@ -4809,7 +4811,7 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
   {
     $return = "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
   <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/videojs.thumbnails.css\" rel=\"stylesheet\">
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/video.js\"></script>
+  <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/video.min.js\"></script>
   <script type=\"text/javascript\">
     videojs.options.flash.swf = \"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.swf\";
   </script>
@@ -4970,7 +4972,7 @@ function showaudioplayer_head ($secureHref=true)
 
   //return "<script src=\"".$mgmt_config['url_path_cms']."javascript/audio-js/audio.js\"></script>\n";
   return "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/video.js\"></script>
+  <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/video.min.js\"></script>
   <script type=\"text/javascript\">
     videojs.options.flash.swf = \"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.swf\";
   </script>
@@ -6034,9 +6036,9 @@ function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=fal
         else
         {
           // image width >= height
-          if ($imgratio >= 1) $style_size = "width:".$thumbsize."px; height:".round(($imgheight / $imgratio), 0)."px;";
+          if ($imgratio >= 1) $style_size = "width:".$thumbsize."px; height:".round(($thumbsize / $imgratio), 0)."px;";
           // image width < height
-          else $style_size = "width:".round(($imgwidth * $imgratio), 0)."px; height:".$thumbsize."px;";
+          else $style_size = "width:".round(($thumbsize * $imgratio), 0)."px; height:".$thumbsize."px;";
         }
       }
       // default value
@@ -6216,7 +6218,7 @@ function showtaxonomytree ($site="", $container_id, $text_id, $tagname="textk", 
           }
 
           // scroll to search result
-          searchResults".$toogleid."[0].scrollIntoView ({ block:'center', behavior:'smooth' });
+          if (searchResults".$toogleid.".length > 0) searchResults".$toogleid."[0].scrollIntoView ({ block:'center', behavior:'smooth' });
 
           // fix for MS IE and Edge
           if (hcms_getBrowserName() == 'ie' || hcms_getBrowserName() == 'edge') window.scrollBy(0, -100);

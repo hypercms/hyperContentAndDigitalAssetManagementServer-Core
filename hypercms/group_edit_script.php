@@ -106,7 +106,7 @@ elseif ($sender == "access" && checktoken ($token, $user))
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="javascript/click.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/click.min.js"></script>
 </head>
 
 <body class="hcmsWorkplaceGeneric" <?php if ($add_onload != "") echo "onLoad=\"".$add_onload."\""; ?>>

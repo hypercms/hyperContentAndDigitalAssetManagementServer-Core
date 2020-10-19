@@ -299,10 +299,10 @@ $token_new = createtoken ($user);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/jquery/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="javascript/click.js"></script>
-<script type="text/javascript" src="javascript/main.js"></script>
-<script type="text/javascript" src="javascript/chat.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="javascript/click.min.js"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/chat.min.js"></script>
 
 <?php
 // invert button colors
@@ -1265,7 +1265,7 @@ else
 			if ($dropbox_rendering)
 			{
 				echo "
-            <div class=\"hcmsSelectorItem\" onclick=\"document.getElementById('button_obj_convert').click(); submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'status=yes,scrollbars=yes,resizable=yes,width=600,height=400', 600, 400);\"><img src=\"".getthemelocation()."img/file_dropbox.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['dropbox'][$lang])."</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"document.getElementById('button_obj_convert').click(); submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'status=yes,scrollbars=yes,resizable=yes,width=600,height=400', 600, 400);\"><img src=\"".getthemelocation()."img/file_dropbox.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['dropbox'][$lang])."</div>";
 			}
       
       echo "
@@ -1788,8 +1788,8 @@ function downloadFile()
   location.replace('<?php echo $downloadlink; ?>');
 }
 
-setTimeout('downloadFile()', 2000);
-</script>  
+setTimeout('downloadFile()', 1000);
+</script>
 <?php
   }
   // download failed (zip file could not be created)

@@ -54,7 +54,7 @@ checkusersession ($user, false);
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="javascript/click.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/click.min.js"></script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
@@ -69,9 +69,8 @@ checkusersession ($user, false);
 // do not use it for action "publish" since the output will interfere with the session_start used in the template engine
 if ($action != "publish")
 {
-  ob_implicit_flush (true);
-  ob_end_flush ();
-  //sleep (1);
+  @ob_implicit_flush (true);
+  while (@ob_end_flush());
 }
 
 // initalize
@@ -356,8 +355,8 @@ if ($action == "unzip" && $authorized == true)
   $media_info = getfileinfo ($site, $location.$page, $cat);
     
   // flush
-  ob_implicit_flush (true);
-  ob_end_flush ();
+  @ob_implicit_flush (true);
+  while (@ob_end_flush());
   sleep (1);
 
   // unzip file in assets

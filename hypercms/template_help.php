@@ -35,7 +35,8 @@ checkusersession ($user, false);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.js"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
+
 <style>
 table td
 {
@@ -43,6 +44,7 @@ table td
   vertical-align: top;
 }
 </style>
+
 </head>
 
 <body class="hcmsWorkplaceGeneric">

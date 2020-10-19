@@ -177,8 +177,9 @@ else
 <meta charset="<?php echo $mgmt_config[$site]['default_codepage']; ?>" />
 <link href="<?php echo getthemelocation(); ?>css/main.css" rel="stylesheet" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript">
+
 function openHelp ()
 {
   help = window.open('<?php echo $mgmt_config['url_path_cms']."pers_help.php?site=".url_encode($site)."&cat=".url_encode($cat); ?>','help','resizable=yes,scrollbars=yes,width=640,height=400');

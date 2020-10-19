@@ -241,8 +241,8 @@ $mgmt_config['facedetection'] = false;
 // Define standard mail link type ("access" = access-link; "download" = download-link)
 $mgmt_config['maillink'] = "download";
 
-// Define name of the theme/design for the UI 
-// Themes are located in directory hypercms/theme/
+// Define the name of the theme/design for the UI for all publications
+// The standard themes are located in directory hypercms/theme/ and the Portal themes are in repository/portal/[publication]
 $mgmt_config['theme'] = "";
 
 // Define alternative logo (URL notation) for top frame.

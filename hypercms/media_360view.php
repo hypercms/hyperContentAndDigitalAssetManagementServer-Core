@@ -61,7 +61,7 @@ if ($link != "")
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang);?>" />
-<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no" />
 <style>
 html, body
 {

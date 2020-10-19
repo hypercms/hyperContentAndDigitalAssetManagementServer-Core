@@ -1394,7 +1394,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
 
 // description:
 // Creates an new image or video from the original file or creates a thumbnail and transferes the generated image via remoteclient.
-// Saves original or thumbnail media file in destination location, for thumbnail only jpeg format is supported as output.
+// Saves original or thumbnail media file in destination location. For the thumbnail only JPEG is supported as output format.
 
 function createmedia ($site, $location_source, $location_dest, $file, $format="", $type="thumbnail", $force_no_encrypt=false)
 {
@@ -1835,7 +1835,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // -sketch ... sketches an image, e.g. -sketch 0x20+120
                 // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
                 // -monochrome ... transform image to black and white
-                // -wm ... watermark image-path->positioning->margin, e.g. /files/image.png->topleft->+30
+                // -wm ... watermark image-path->positioning->margin, e.g. /files/image.png->topleft->+30 or use "no", "none", 0 or false in order to suppress watermarking
 
                 // image size (in pixel) definition
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-s ") > 0)
@@ -2807,19 +2807,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
                   }
 
-                  // width must be divisible by 2
-                  if ($mediawidth % 2 != 0)
+                  // libx264 requires width/height to be divisible by 2 when using the standard yuv420p pixel format
+                  if (intval ($mediawidth) != 0 && intval ($mediaheight) != 0)
                   {
-                    $mediawidth = $mediawidth - 1;
+                    $vfilter[] = "scale=trunc(".intval($mediawidth)."/2)*2:trunc(".intval($mediaheight)."/2)*2";
                   }
-
-                  // height must be divisible by 2
-                  if ($mediaheight % 2 != 0)
-                  {
-                    $mediaheight = $mediaheight - 1;
-                  }
-
-                  $vfilter[] = "scale=".intval($mediawidth).":".intval($mediaheight);
 
                   // remove from options string since it will be added later as a video filter
                   if (!empty ($mediasize)) $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s:v ".$mediasize, "", $mgmt_mediaoptions[$mediaoptions_ext]);

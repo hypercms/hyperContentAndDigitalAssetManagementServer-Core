@@ -19,9 +19,9 @@
     <meta name="keywords" content="[hyperCMS:textu id='Keywords' infotype='meta' height='50']" />
     <link rel="shortcut icon" href="%tplmedia%/favicon.ico"> 
     <!-- 57 x 57 Android and iPhone 3 icon -->
-    <link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" href="%tplmedia%/mobile_icon57.png" />
+    <link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" hypercms_href="%tplmedia%/mobile_icon57.png" />
      <!-- 114 x 114 iPhone 4 icon -->
-    <link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" href="%tplmedia%/mobile_icon114.png" />
+    <link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" hypercms_href="%tplmedia%/mobile_icon114.png" />
     <!-- 57 x 57 Nokia icon -->
     <link rel="shortcut icon" href="%tplmedia%/mobile_icon57.png" />
     <link rel="stylesheet" id="attitude_style-css" hypercms_href="%tplmedia%/style.css" type="text/css" media="all">

@@ -43,7 +43,7 @@ checkusersession ($user, false);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script src="../../../javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../../javascript/main.min.js"></script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
@@ -55,9 +55,9 @@ checkusersession ($user, false);
 <?php
 echo showtopbar ($hcms_lang['simple-statistics'][$lang], $lang); 
 
-ob_flush();
-flush();
-ob_end_flush();
+@ob_flush();
+@flush();
+while (@ob_end_flush());
 ?>
 
 <div class="hcmsWorkplaceFrame" style="padding:0; width:100%; height:100%; overflow:auto;">

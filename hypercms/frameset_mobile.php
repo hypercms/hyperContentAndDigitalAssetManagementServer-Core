@@ -42,13 +42,12 @@ toggleview ($view);
 <link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon114.png" />
 <!-- 57 x 57 Nokia icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
- <!-- main library -->
-<script type="text/javascript" src="javascript/main.js"></script>
+<!-- main library -->
+<script type="text/javascript" src="javascript/main.min.js"></script>
 <!-- JQuery used for AJAX viewport set request -->
-<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
-</head> 
-
+<script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
 <script type="text/javascript">
+
 // callback for hcms_geolocation
 function hcms_geoposition (position)
 {
@@ -144,26 +143,41 @@ function openChat ()
   }
 }
 
-function setWindows ()
+function setGlobals ()
 {
   // set window width and height for contextmenu
-  localStorage.setItem ('windowwidth', <?php echo windowwidth ("object"); ?>);
-  localStorage.setItem ('windowheight', <?php echo windowheight ("object"); ?>);
+  localStorage.setItem('windowwidth', <?php echo windowwidth ("object"); ?>);
+  localStorage.setItem('windowheight', <?php echo windowheight ("object"); ?>);
 
   // set object popup or new window for contextmenu
-  localStorage.setItem ('object_newwindow', <?php if (!empty ($mgmt_config['object_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+  localStorage.setItem('object_newwindow', <?php if (!empty ($mgmt_config['object_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
 
   // set message popup or new window for contextmenu
-  localStorage.setItem ('message_newwindow', <?php if (!empty ($mgmt_config['message_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+  localStorage.setItem('message_newwindow', <?php if (!empty ($mgmt_config['message_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
 
   // set user popup or new window for contextmenu
-  localStorage.setItem ('user_newwindow', <?php if (!empty ($mgmt_config['user_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+  localStorage.setItem('user_newwindow', <?php if (!empty ($mgmt_config['user_newwindow'])) echo "'true'"; else echo "'false'"; ?>);
+
+  // set is_mobile
+  localStorage.setItem('is_mobile', <?php if (!empty ($is_mobile)) echo "'true'"; else echo "'false'"; ?>);
+
+  // reset values (initially set in main.js)
+  if (localStorage.getItem('is_mobile') !== null && localStorage.getItem('is_mobile') == 'false')
+  {
+    is_mobile = false;
+    hcms_transitioneffect = true;
+  }
+  else
+  {
+    is_mobile = true;
+    hcms_transitioneffect = false;
+  }
 }
 
 $(document).ready(function()
 {
   setviewport();
-  setWindows();
+  setGlobals();
   
   window.onresize = function()
   {
@@ -179,6 +193,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 }
 ?>
 </script>
+</head>
 
 <body onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>">
 

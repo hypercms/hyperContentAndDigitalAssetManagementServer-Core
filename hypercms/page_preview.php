@@ -78,7 +78,7 @@ if ($templatefile != false || $contentfile != false)
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
-    echo "<script src=\"javascript/click.js\" type=\"text/javascript\"></script>\n";
+    echo "<script src=\"javascript/click.min.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
     echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
@@ -97,7 +97,7 @@ if ($templatefile != false || $contentfile != false)
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
-    echo "<script src=\"javascript/click.js\" type=\"text/javascript\"></script>\n";
+    echo "<script src=\"javascript/click.min.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
     echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
@@ -116,7 +116,7 @@ if ($templatefile != false || $contentfile != false)
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
-    echo "<script src=\"javascript/click.js\" type=\"text/javascript\"></script>\n";
+    echo "<script src=\"javascript/click.min.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
     echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";

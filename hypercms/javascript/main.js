@@ -1,6 +1,16 @@
 // ------------------------ default values ----------------------------
 
-var hcms_transitioneffect = true;
+// mobile browser
+if (localStorage.getItem('is_mobile') !== null && localStorage.getItem('is_mobile') == 'false')
+{
+  var is_mobile = false;
+  var hcms_transitioneffect = true;
+}
+else
+{
+  var is_mobile = true;
+  var hcms_transitioneffect = false;
+}
 
 // ------------------------ browser information ----------------------------
 
@@ -1208,7 +1218,7 @@ function hcms_slideDownLayer (id, offset)
 
 function hcms_showHideLayers () 
 {
-  // uses visibilty (included form data will be submitted)
+  // uses visibilty (nested form data will be submitted)
   var i, p, z, v, o, obj;
   var args = hcms_showHideLayers.arguments;
 
@@ -1225,13 +1235,16 @@ function hcms_showHideLayers ()
       if (obj.style)
       {
         // transition
-        if (hcms_transitioneffect) obj.style.transition = 'all 0.3s linear';
+        if (hcms_transitioneffect)
+        {
+          obj.style.transition = 'all 0.3s linear';
 
-        // opacity
-        o = (v == 'show') ? '1' : (v == 'hide') ? '0' : '0';
-        obj.style.opacity = o;
-        // fix for MS IE
-        obj.style.filter = 'alpha(opacity=' + (o * 100) + ')';
+          // opacity
+          o = (v == 'show') ? '1' : (v == 'hide') ? '0' : '0';
+          obj.style.opacity = o;
+          // fix for MS IE
+          obj.style.filter = 'alpha(opacity=' + (o * 100) + ')';
+        }
 
         // z-index
         if (z != '')
@@ -1261,19 +1274,23 @@ function hcms_displayLayers ()
     {
       // z-index (2nd argument)
       z = args[i+1];
-      // visibility (3rd argument)
+      // display (3rd argument)
       v = args[i+2];
 
       if (obj.style)
       {
         // transition
-        if (hcms_transitioneffect) obj.style.transition = 'all 0.3s linear';
+        if (hcms_transitioneffect)
+        {
+          obj.style.transition = 'all 0.3s linear';
 
-        // opacity
-        o = (v == 'show') ? '1' : (v == 'hide') ? '0' : '0';
-        obj.style.opacity = o;
-        // fix for MS IE
-        obj.style.filter = 'alpha(opacity=' + o * 100 + ')';
+          // opacity
+          o = (v == 'show') ? '1' : (v == 'hide') ? '0' : '0';
+
+          obj.style.opacity = o;
+          // fix for MS IE
+          obj.style.filter = 'alpha(opacity=' + o * 100 + ')';
+        }
 
         // z-index
         if (z != '')
@@ -1406,15 +1423,24 @@ function hcms_switchSelector (id)
 
     if (selector.style.visibility == 'hidden') 
     {
-      selector.style.opacity = '1';
-      // for MS IE
-      selector.style.filter = 'alpha(opacity=100)';
+      if (hcms_transitioneffect) 
+      {
+        selector.style.opacity = '1';
+        // for MS IE
+        selector.style.filter = 'alpha(opacity=100)';
+      }
 
       selector.style.visibility = 'visible';
     }
     else
     {
-      selector.style.opacity = '0';
+      if (hcms_transitioneffect) 
+      {
+        selector.style.opacity = '0';
+        // fix for MS IE
+        selector.style.filter = 'alpha(opacity=0)';
+      }
+
       selector.style.visibility = 'hidden';
     }
 
@@ -1430,11 +1456,13 @@ function hcms_hideSelector (id)
 
   if (selector)
   {
-    if (hcms_transitioneffect) selector.style.transition = 'all 0.3s linear';
-
-    selector.style.opacity = '0';
-    // for MS IE
-    selector.style.filter = 'alpha(opacity=0)';
+    if (hcms_transitioneffect)
+    {
+      selector.style.transition = 'all 0.3s linear';
+      selector.style.opacity = '0';
+      // for MS IE
+      selector.style.filter = 'alpha(opacity=0)';
+    }
 
     if (selector.style.visibility == 'visible') selector.style.visibility = 'hidden';
 

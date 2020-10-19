@@ -38,7 +38,7 @@ checkusersession ($user, false);
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.js"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript">
 
 var hcms_objectpath;

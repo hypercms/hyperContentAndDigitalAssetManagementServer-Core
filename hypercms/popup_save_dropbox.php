@@ -110,15 +110,16 @@ $object_name = getlocationname ($site, $location, $cat, "path");
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/jquery-fileupload.css" type="text/css" />
-<script src="javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.min.js"></script>
 <!-- JQuery -->
-<script src="javascript/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
 <!-- JQuery UI -->
 <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css">
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
 <!-- Dropbox dropin.js -->
 <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropins.js" id="dropboxjs" data-app-key="<?php echo $mgmt_config['dropbox_appkey']; ?>"></script>
 <script type="text/javascript">
+
 // override window open function
 var childwindows = [];
 
