@@ -27,10 +27,13 @@ $mediafile = $query['media'];
 
 if (!empty ($mediafile) && is_file ($mgmt_config['abs_path_temp'].getobject ($mediafile)))
 {
-  list ($imagewidth, $imageheight) = getimagesize ($mgmt_config['abs_path_temp'].getobject ($mediafile));
+  $imagesize = getmediasize ($mgmt_config['abs_path_temp'].getobject ($mediafile));
   
-  if ($imagewidth > 0 && $imageheight > 0)
+  if (!empty ($imagesize['width']) && !empty ($imagesize['height']))
   {
+    $imagewidth = $imagesize['width'];
+    $imageheight = $imagesize['height'];
+
     // reset screen dimension if necessary
     if ($imagewidth + 80 < $screenwidth || $imageheight + 80 < $screenheight)
     {

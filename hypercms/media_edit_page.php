@@ -441,13 +441,13 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     	$mediaheight = "";
     	// get file information
     	$media_path = getmedialocation ($site, $mediafile, "abs_path_media").$mediafile;
-    	$media_size = @getimagesize ($media_path);
+    	$media_size = getmediasize ($media_path);
     
-    	if (!empty ($media_size[3]))
+    	if (!empty ($media_size['width']) && !empty ($media_size['width']))
       {
     		// scaling images to reach given dpi 
-    		$mediawidth = round ($media_size[0] * $scaling);
-    		$mediaheight = round ($media_size[1] * $scaling);
+    		$mediawidth = round ($media_size['width'] * $scaling);
+    		$mediaheight = round ($media_size['height'] * $scaling);
     	}
     }
   

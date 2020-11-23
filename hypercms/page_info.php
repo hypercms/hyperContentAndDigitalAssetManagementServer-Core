@@ -139,15 +139,18 @@ if ($pagestore != false)
       {
         $media_info = rdbms_getmedia ($container_id, true);
         $date_modified = $media_info['date'];
-        $fileMD5 = $media_info['md5_hash'];
+        // don't use saved MD5 hash since it is not updated in order to support the search for duplicates
+        // $fileMD5 = $media_info['md5_hash'];
         $filesize = $media_info['filesize'];
       }
       elseif (is_file ($mediadir.$media))
       {
         $date_modified = date ("Y-m-d H:i:s", filemtime ($mediadir.$media));
-        $fileMD5 = md5_file ($mediadir.$media);
         $filesize = filesize ($mediadir.$media) / 1024;
       }
+
+      // get actual MD5 hash of file
+      $fileMD5 = md5_file ($mediadir.$media);
 
       // symbolic link
       if (is_link ($mediadir.$media))

@@ -102,6 +102,8 @@ function updateCodeSegment()
 
   document.getElementById("codesegment").innerHTML = code;
   document.getElementById("codepreview").innerHTML = code;
+
+  document.getElementById('viewerlink').value = '<?php echo $pdfjs_path.urlencode($doc_link); ?>';
 }
 </script>
 <style>
@@ -146,21 +148,24 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
   <div id="settings" style="padding:0px 20px 10px 0px; float:left;">
     <div>
       <label for="title"><?php echo getescapedtext ($hcms_lang['title'][$lang]);?> </label><br/>
-      <input type="text" onchange="updateCodeSegment();" id="title" value="<?php echo $title; ?>" style="width:280px;" />
+      <input type="text" onchange="updateCodeSegment();" id="title" value="<?php echo $title; ?>" style="width:98%;" />
     </div>
     <div style="margin-top:10px;">
       <label for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang]);?> </label> (px, cm, mm, in, pt, pc)<br/>
-      <input type="text" onchange="updateCodeSegment();" id="width" value="560px" style="width:280px;" />
+      <input type="text" onchange="updateCodeSegment();" id="width" value="560px" style="width:98%;" />
     </div>
     <div style="margin-top:10px;">
       <label for="height"><?php echo getescapedtext ($hcms_lang['height'][$lang]);?> </label> (px, cm, mm, in, pt, pc)<br/>
-      <input type="text" onchange="updateCodeSegment();" id="height" value="800px" style="width:280px;" />
+      <input type="text" onchange="updateCodeSegment();" id="height" value="800px" style="width:98%;" />
     </div>
     <hr />
 
     <strong><?php echo getescapedtext ($hcms_lang['html-body-segment'][$lang]); ?></strong> (<?php echo getescapedtext ($hcms_lang['character-set'][$lang])." ".strtoupper (getcodepage ($lang)); ?>)<br />
     <?php echo getescapedtext ($hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang]); ?><br /><br />
     <textarea id="codesegment" style="height:140px; width:98%" wrap="VIRTUAL"></textarea>
+    <hr />
+    <strong><?php echo getescapedtext ($hcms_lang['link'][$lang]); ?></strong><br/><br />
+    <textarea id="viewerlink" style="height:120px; width:98%" wrap="VIRTUAL"></textarea>
     <hr />
   </div>
 

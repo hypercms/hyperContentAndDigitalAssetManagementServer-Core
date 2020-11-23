@@ -579,7 +579,9 @@ if ($usedby == "" || $usedby == $user)
             {
               $md5_hash = md5_file ($object_mediafile);
               $filesize = round (@filesize ($object_mediafile) / 1024, 0);
-              rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
+
+              // don't save the actual MD5 hash of the file since the search for duplicates is based on the MD5 hash
+              rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", "");
             }
             
             // encrypt and save file if required

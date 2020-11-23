@@ -703,6 +703,7 @@ function is_cloudstorage ($site="")
   // if cloud connector is available
   if (is_array ($mgmt_config) && is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php"))
   {
+    // is cloud storage enabled
     if (valid_publicationname ($site))
     {
       // load publication config if not available
@@ -719,13 +720,31 @@ function is_cloudstorage ($site="")
     }
 
     // AWS S3 cloud storage
-    if (!empty ($mgmt_config['aws_access_key_id']) && !empty ($mgmt_config['aws_secret_access_key']) && !empty ($mgmt_config['aws_bucket']))
+    if (!empty ($mgmt_config[$site]['aws_access_key_id']) && !empty ($mgmt_config[$site]['aws_secret_access_key']) && !empty ($mgmt_config[$site]['aws_bucket']))
+    {
+      return true;
+    }
+    elseif (!empty ($mgmt_config['aws_access_key_id']) && !empty ($mgmt_config['aws_secret_access_key']) && !empty ($mgmt_config['aws_bucket']))
     {
       return true;
     }
 
     // Google cloud storage
-    if (!empty ($mgmt_config['gs_access_key_id']) && !empty ($mgmt_config['gs_secret_access_key']) && !empty ($mgmt_config['gs_bucket']))
+    if (!empty ($mgmt_config[$site]['gs_access_key_id']) && !empty ($mgmt_config[$site]['gs_secret_access_key']) && !empty ($mgmt_config[$site]['gs_bucket']))
+    {
+      return true;
+    }
+    elseif (!empty ($mgmt_config['gs_access_key_id']) && !empty ($mgmt_config['gs_secret_access_key']) && !empty ($mgmt_config['gs_bucket']))
+    {
+      return true;
+    }
+
+    // MS Azure cloud storage
+    if (!empty ($mgmt_config[$site]['azure_access_key']) && !empty ($mgmt_config[$site]['azure_container']))
+    {
+      return true;
+    }
+    elseif (!empty ($mgmt_config['azure_access_key']) && !empty ($mgmt_config['azure_container']))
     {
       return true;
     }
@@ -750,15 +769,23 @@ function is_cloudobject ($file)
   {
     $result = false;
 
+    // get publication
+    $site = getpublication ($file);
+
     // AWS S3 cloud storage
-    if (!empty ($mgmt_config['aws_access_key_id']) && !empty ($mgmt_config['aws_secret_access_key']) && !empty ($mgmt_config['aws_bucket']) && function_exists ("is_S3object"))
+    if (function_exists ("is_S3object") && !empty ($mgmt_config['aws_bucket']))
     {
-      $result = is_S3object ($mgmt_config['aws_bucket'], getobject ($file));
+      $result = is_S3object ($site, $mgmt_config['aws_bucket'], getobject ($file));
     }
     // Google cloud storage
-    elseif (!empty ($mgmt_config['gs_access_key_id']) && !empty ($mgmt_config['gs_secret_access_key']) && !empty ($mgmt_config['gs_bucket']) && function_exists ("is_GSobject"))
+    elseif (function_exists ("is_GSobject") && !empty ($mgmt_config['gs_bucket']))
     {
-      $result = is_GSobject ($mgmt_config['gs_bucket'], getobject ($file));
+      $result = is_GSobject ($site, $mgmt_config['gs_bucket'], getobject ($file));
+    }
+    // MS Azure cloud storage
+    elseif (function_exists ("is_AZUREobject") && !empty ($mgmt_config['azure_container']))
+    {
+      $result = is_AZUREobject ($site, $mgmt_config['azure_container'], getobject ($file));
     }
 
     return $result;
@@ -2938,6 +2965,9 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
 
             // save working container 
             $test = savecontainer ($contentfile_wrk, "work", $tempdata, $user);
+
+            // delete annotation images
+            deleteannotationimages ($site, $mediafile);
           }
           else
           {
@@ -4119,6 +4149,57 @@ function preparemediafile ($site, $medialocation, $mediafile, $user="")
   else return false;
 }
 
+// ------------------------------------------ deleteannotationimages --------------------------------------------
+// function: deleteannotationimages()
+// input: publication name [string], mediafile name [string]
+// output: true/false
+
+// description:
+// Deletes all annoation images of images and documents
+
+function deleteannotationimages ($site, $mediafile)
+{
+  global $user, $mgmt_config;
+
+  if (valid_publicationname ($site) && valid_objectname ($mediafile) && !empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_rep']))
+  {
+    // define media location in repository
+    $medialocation = getmedialocation ($site, strrpos ($mediafile, ".").".thumb.jpg", "abs_path_media");
+
+    // image annotation file
+    $mediafile_annotation = substr ($mediafile, 0, strrpos ($mediafile, ".")).".annotation.jpg";
+    // local media file
+    deletefile ($medialocation.$site."/", $mediafile_annotation, 0);
+    // cloud storage
+    if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_annotation, $user);
+    // remote client
+    remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_annotation, "");
+
+    // documents annotation files (test for 1st page)
+    $docfile_annotation = substr ($mediafile, 0, strrpos ($mediafile, ".")).".annotation";
+
+    if (is_file ($medialocation.$site."/".$docfile_annotation."-0.jpg") || is_cloudobject ($medialocation.$site."/".$docfile_annotation."-0.jpg"))
+    { 
+      for ($p=0; $p<=100000; $p++)
+      {
+        $temp = $docfile_annotation."-".$p.".jpg";
+        // local media file
+        $delete_1 = deletefile ($medialocation.$site."/", $temp, false);
+        // cloud storage
+        if (function_exists ("deletecloudobject")) $delete_2 = deletecloudobject ($site, $medialocation.$site."/", $temp, $user);
+        else $delete_2 = false;
+        // remote client
+        remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $temp, "");
+        // break if no more page is available
+        if (empty ($delete_1) && empty ($delete_2)) break;
+      }
+    }
+
+    return true;
+  }
+  else return false; 
+}
+
 // ------------------------------------------ deletemediafiles --------------------------------------------
 // function: deletemediafiles()
 // input: publication name [string], mediafile name [string], delete original media file [boolean] (optional)
@@ -4164,34 +4245,8 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
     // remote client
     remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
 
-    // image annotation file
-    $mediafile_annotation = substr ($mediafile, 0, strrpos ($mediafile, ".")).".annotation.jpg";
-    // local media file
-    deletefile ($medialocation.$site."/", $mediafile_annotation, 0);
-    // cloud storage
-    if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_annotation, $user);
-    // remote client
-    remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_annotation, "");
-
-    // documents annotation files (test for 1st page)
-    $docfile_annotation = substr ($mediafile, 0, strrpos ($mediafile, ".")).".annotation";
-
-    if (is_file ($medialocation.$site."/".$docfile_annotation."-0.jpg") || is_cloudobject ($medialocation.$site."/".$docfile_annotation."-0.jpg"))
-    { 
-      for ($p=0; $p<=100000; $p++)
-      {
-        $temp = $docfile_annotation."-".$p.".jpg";
-        // local media file
-        $delete_1 = deletefile ($medialocation.$site."/", $temp, false);
-        // cloud storage
-        if (function_exists ("deletecloudobject")) $delete_2 = deletecloudobject ($site, $medialocation.$site."/", $temp, $user);
-        else $delete_2 = false;
-        // remote client
-        remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $temp, "");
-        // break if no more page is available
-        if (empty ($delete_1) && empty ($delete_2)) break;
-      }
-    }
+    // delete annotation images
+    deleteannotationimages ($site, $mediafile);
 
     // image file from RAW image
     if (is_rawimage ($mediafile))
@@ -12905,12 +12960,12 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             }
 
             // get media size
-            $media_size = @getimagesize ($symlinktarget_path);
+            $media_size = getmediasize ($symlinktarget_path);
 
-            if (!empty ($media_size[0]) && !empty ($media_size[1]))
+            if (!empty ($media_size['width']) && !empty ($media_size['height']))
             {
-              $imagewidth = round ($media_size[0], 0);
-              $imageheight = round ($media_size[1], 0);
+              $imagewidth = round ($media_size['width'], 0);
+              $imageheight = round ($media_size['height'], 0);
             }
             else
             {
@@ -13174,15 +13229,15 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
             // note: output rendering must be supported and the render format must be the same format as the original file!
             $media_supported_ext = ".gif.jpg.jpeg.png";
             // get media size
-            $media_size = @getimagesize ($medialocation.$mediafile);
+            $media_size = getmediasize ($medialocation.$mediafile);
             // get file extension
             $media_ext = strtolower (strrchr ($mediafile, "."));
 
             // get new rendering settings for original images and set image options (if given)
-            if (substr_count ($media_supported_ext.".", $media_ext.".") > 0 && $media_size != false)
+            if (substr_count ($media_supported_ext.".", $media_ext.".") > 0 && !empty ($media_size['width']) && !empty ($media_size['height']))
             {
-              $imagewidth = round ($media_size[0] * $imagepercentage / 100, 0);
-              $imageheight = round ($media_size[1] * $imagepercentage / 100, 0);
+              $imagewidth = round ($media_size['width'] * $imagepercentage / 100, 0);
+              $imageheight = round ($media_size['height'] * $imagepercentage / 100, 0);
 
               if ($imagewidth != "" && $imageheight != "")
               {
@@ -13453,7 +13508,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
       $result_save = base64_to_file ($mediadata, $target_location, $mediafile_new);
 
       // create new thumbnail
-      $thumbnail_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_new, "jpg", "thumbnail", true);
+      $thumbnail_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_new, "jpg", "thumbnail", true, true);
  
       // remote client
       remoteclient ("save", "abs_path_media", $site, $mediafile_location, "", $mediafile_new, "");
@@ -13461,10 +13516,10 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
       // save to cloud storage
       if (!empty ($result_save) && function_exists ("savecloudobject")) savecloudobject ($site, $mediafile_location, $mediafile_new, $user);
     }
-    // render media file of object
+    // render media file of the object
     elseif ($createversion)
     {
-      $mediafile_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_orig, $format, $type);
+      $mediafile_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_orig, $format, $type, false, true);
     }
     else $mediafile_new = false;
 
@@ -20439,9 +20494,11 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
               // write updated media information to DB
               if (!empty ($container_id))
               {
-                $md5_hash = md5_file ($mediafile_path);
+                // $md5_hash = md5_file ($mediafile_path);
                 $filesize = round (@filesize ($mediafile_path) / 1024, 0);
-                rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
+
+                // don't save the actual MD5 hash of the file since the search for duplicates is based on the MD5 hash
+                rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", "");
               }
               
               // encrypt and save file if required

@@ -13,8 +13,7 @@ define ("SESSION", "create");
 require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
-// disk key
-require ("include/diskkey.inc.php");
+
 
 // input parameters
 $site = getrequest_esc ("site", "publicationname");
@@ -364,7 +363,7 @@ else
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['travel-though-time'][$lang]); ?></td>
     </tr>
     <?php
-    if ($diskkey == "server" && !empty ($mgmt_config[$site]['site_admin']))
+    if (!empty ($mgmt_config[$site]['site_admin']))
     {
     ?>
     <tr class="hcmsRowHead1">

@@ -155,27 +155,27 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript">
 
-function openHelp()
+function openHelp ()
 {
-  hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help', 'resizable=yes,scrollbars=yes', 750, 680);
+  hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help_template_edit', 'resizable=yes,scrollbars=yes', 750, 680);
 }
 
-function openmetaInfo()
+function openmetaInfo ()
 {  
   hcms_openWindow('template_edit_metainfo.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', 450, 150);
 }
 
-function openLanguageInfo()
+function openLanguageInfo ()
 {  
   hcms_openWindow('template_edit_language.php?site=<?php echo $site; ?>', 'language', 'scrollbars=no,resizable=no', 450, 150);
 }
 
-function openConstraints()
+function openConstraints ()
 {  
   hcms_openWindow('template_edit_constraints.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', 450, 250);
 }
 
-function openmediaType()
+function openmediaType ()
 {  
   hcms_openWindow('template_edit_mediatype.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', 350, 150);
 }
@@ -246,7 +246,7 @@ function insertAtCaret (aTag, eTag)
     range.select();
   }
   // new Gecko based browsers
-  else if(typeof input.selectionStart != 'undefined')
+  else if (typeof input.selectionStart != 'undefined')
   {
     // insert code
     var start = input.selectionStart;
@@ -292,6 +292,22 @@ function insertAtCaret (aTag, eTag)
     var insText = prompt("Please input the text to be formatted:");
     input.value = input.value.substr(0, pos) + aTag + insText + eTag + input.value.substr(pos);
   }
+}
+
+function help ()
+{
+  if (document.forms['template_edit'].elements['tagid']) var tagid = document.forms['template_edit'].elements['tagid'].value;
+  else var tagid = "";
+
+  if (tagid != "" && tagid != null)
+  {
+    var value = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['help'][$lang]."/".$hcms_lang['information'][$lang], $charset, $lang); ?>"), "");
+    if (value == null) value = "";
+    
+    var code = "[hyperCMS:help id='"+tagid+"' value='"+value+"']";
+    insertAtCaret (code, '');
+  }
+  else alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-fill-in-a-content-identification-name'][$lang], $charset, $lang); ?>"));
 }
 
 function format_tag (format)
@@ -362,7 +378,7 @@ function format_tag (format)
   }
 }
 
-function format_tag_attr(format)
+function format_tag_attr (format)
 {
   if (document.forms['template_edit'].artid) var artid = document.forms['template_edit'].elements['artid'].value;
   else var artid = "";
@@ -428,13 +444,13 @@ function format_tag_attr(format)
   }
 }
 
-function customertracking()
+function customertracking ()
 {
-  code = "[hyperCMS:pagetracking infotype='meta']\r\n";
+  var code = "[hyperCMS:pagetracking infotype='meta']\r\n";
   document.forms['template_edit'].contentfield.value = code + document.forms['template_edit'].elements['contentfield'].value;
 }
 
-function geolocation()
+function geolocation ()
 {
   if (document.forms['template_edit'].onpublish && document.forms['template_edit'].elements['onpublish'].checked) var onpublish = " onPublish='hidden'";  
   else var onpublish = ""; 
@@ -442,11 +458,11 @@ function geolocation()
   if (document.forms['template_edit'].onedit && document.forms['template_edit'].elements['onedit'].checked) var onedit = " onEdit='hidden'";  
   else var onedit = "";
   
-  code = "[hyperCMS:geolocation infotype='meta'"+onpublish+onedit+"]";
+  var code = "[hyperCMS:geolocation infotype='meta'"+onpublish+onedit+"]";
   insertAtCaret (code, '');
 }
 
-function db_connect()
+function db_connect ()
 {
   var filename = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-enter-the-file-name-of-the-database-connectivity-eg'][$lang], $charset, $lang); ?>"), "");
   
@@ -457,18 +473,18 @@ function db_connect()
   }
 }
 
-function workflow()
+function workflow ()
 {
   var filename = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-enter-the-name-of-the-master-workflow-eg'][$lang], $charset, $lang); ?>"), "");
   
   if (filename != null)
   {
-    code = "[hyperCMS:workflow name='"+filename+"']\r\n";
+    var code = "[hyperCMS:workflow name='"+filename+"']\r\n";
     document.forms['template_edit'].contentfield.value = code + document.forms['template_edit'].elements['contentfield'].value;
   }
 }
 
-function metainfo()
+function metainfo ()
 {
   if (document.forms['template_edit'].elements['onpublish'].checked) onpublish = " onPublish='hidden'";  
   else onpublish = ""; 
@@ -476,35 +492,35 @@ function metainfo()
   if (document.forms['template_edit'].elements['onedit'].checked) onedit = " onEdit='hidden'";  
   else onedit = "";
   
-  metatag = document.forms['template_edit'].elements['constraints'].value;
-  code = "[hyperCMS:"+metatag+" infotype='meta'"+onpublish+onedit+"]";
+  var metatag = document.forms['template_edit'].elements['constraints'].value;
+  var code = "[hyperCMS:"+metatag+" infotype='meta'"+onpublish+onedit+"]";
   insertAtCaret (code, '');
 }
 
-function language()
+function language ()
 { 
   var language_sessionvar = document.forms['template_edit'].elements['language_sessionvar'].value;
   var language_sessionvalues = document.forms['template_edit'].elements['language_sessionvalues'].value;
   
-  list = language_sessionvalues.replace (';', '|');
+  var list = language_sessionvalues.replace (';', '|');
   
-  code = "[hyperCMS:language name='"+language_sessionvar+"' list='"+list+"']";
+  var code = "[hyperCMS:language name='"+language_sessionvar+"' list='"+list+"']";
   insertAtCaret (code, '');
 }
 
-function compcontenttype()
+function compcontenttype ()
 {
   var charset = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['define-character-set'][$lang], $charset, $lang); ?>"), "<?php echo $mgmt_config[$site]['default_codepage']; ?>");
   
   if (charset != null)
   {
-    code = "[hyperCMS:compcontenttype content='text/html; charset="+charset+"']\r\n";
+    var code = "[hyperCMS:compcontenttype content='text/html; charset="+charset+"']\r\n";
     document.forms['template_edit'].elements['contentfield'].value = code + document.forms['template_edit'].elements['contentfield'].value; 
     document.charset = charset;
   } 
 }
 
-function pagetitle()
+function pagetitle ()
 {
   if (document.forms['template_edit'].elements['onpublish'].checked) onpublish = " onPublish='hidden'";  
   else onpublish = "";
@@ -512,41 +528,41 @@ function pagetitle()
   if (document.forms['template_edit'].elements['onedit'].checked) onedit = " onEdit='hidden'";  
   else onedit = "";     
   
-  code = "[hyperCMS:pagetitle"+onpublish+onedit+" infotype='meta']";
+  var code = "[hyperCMS:pagetitle"+onpublish+onedit+" infotype='meta']";
   insertAtCaret (code, '');
 }
 
-function date()
+function date ()
 {
-  code = "%date%";
+  var code = "%date%";
   insertAtCaret (code, '');
 }
 
-function tplmedia()
+function tplmedia ()
 {
-  code = "%tplmedia%/";
+  var code = "%tplmedia%/";
   insertAtCaret (code, '');
 }
 
-function phpscript()
+function phpscript ()
 {
-  code = "[hyperCMS:scriptbegin\r// insert your script here\rscriptend]";
+  var code = "[hyperCMS:scriptbegin\r// insert your script here\rscriptend]";
   insertAtCaret (code, '');
 }
 
-function javascript()
+function javascript ()
 {
-  code = "[JavaScript:scriptbegin\r// insert your script here\rscriptend]";
+  var code = "[JavaScript:scriptbegin\r// insert your script here\rscriptend]";
   insertAtCaret (code, '');
 }
 
-function include(format)
+function include (format)
 {
   if (format == "php") {filename = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['path-to-component-to-be-included-with-ext'][$lang], $charset, $lang); ?>"), "");}
   if (format == "") {filename = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['name-of-template-component-to-be-included-without-ext-no-path-required'][$lang], $charset, $lang); ?>"), "");}
 
-  if (filename != null && format == "php") {code = "[hyperCMS:fileinclude file='"+filename+"']";}
-  if (filename != null && format == "") {code = "[hyperCMS:tplinclude file='"+filename+".inc.tpl']";}
+  if (filename != null && format == "php") var code = "[hyperCMS:fileinclude file='"+filename+"']";
+  if (filename != null && format == "") var code = "[hyperCMS:tplinclude file='"+filename+".inc.tpl']";
 
   if (filename != null) insertAtCaret (code, '');
 }
@@ -712,6 +728,8 @@ function savetemplate(mode)
               echo "
             <div class=\"hcmsToolbarBlock\">
                 <img onClick=\"geolocation();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_marker.png\" alt=\"".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."\" />";
+              if ($cat != "page") echo "
+                <img onClick=\"help();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_info.png\" alt=\"".getescapedtext ($hcms_lang['help'][$lang]."/".$hcms_lang['information'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['help'][$lang]."/".$hcms_lang['information'][$lang], $charset, $lang)."\" />";
               if ($cat != "meta") echo "
                 <img onClick=\"openLanguageInfo();\" class=\"hcmsButton hcmsButtonSizeSquare\" border=0 src=\"".getthemelocation()."img/button_language.png\" alt=\"".getescapedtext ($hcms_lang['language'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['language'][$lang], $charset, $lang)."\" />";
               echo "

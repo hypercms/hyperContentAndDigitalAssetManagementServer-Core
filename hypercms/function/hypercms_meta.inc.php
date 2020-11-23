@@ -882,8 +882,20 @@ function copymetadata ($file_source, $file_dest)
         // verify destination media file
         if (!is_file ($file_dest)) return false;
 
-        // copy meta data
-        $cmd = $executable." -overwrite_original -TagsFromFile \"".shellcmd_encode ($file_source)."\" \"-all:all>all:all\" \"".shellcmd_encode ($file_dest)."\"";
+        // get dimensions of destination file
+        $imagesize = getmediasize ($file_dest);
+  
+        // correct EXIF width and height
+        $exif_widthheight = "";
+
+        if (!empty ($imagesize['width']) && !empty ($imagesize['height']))
+        {
+          $exif_widthheight = "-ExifImageWidth=".intval($imagesize['width'])." -ExifImageHeight=".intval ($imagesize['height']);
+        }
+
+        // copy meta data without orientation since the image will be autorotated by function createmedia
+        $cmd = $executable." -overwrite_original -TagsFromFile \"".shellcmd_encode ($file_source)."\" \"-all:all>all:all\" --Orientation --Rotation --ImageWidth --ImageHeight ".$exif_widthheight." \"".shellcmd_encode ($file_dest)."\"";
+
         @exec ($cmd, $buffer, $errorCode);
 
         // delete temp files
@@ -1323,13 +1335,7 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
           // save media stats and move temp file
           if ($movetempfile)
           {
-            // write media information to DB
-            if (!empty ($container_id))
-            {
-              $md5_hash = md5_file ($file);
-              $filesize = round (@filesize ($file) / 1024, 0);
-              rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
-            }
+            // write media information to DB with function rdbms_setmedia is used by function and service savecontent for the original media file only
 
             // encrypt and save file if required
             if ($temp['result']) movetempfile ($location, $media, true);
@@ -1565,13 +1571,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
           // save media stats and move temp file on success
           if ($movetempfile && (empty ($errorCode) || $errorCode < 1))
           {
-            // write media information to DB
-            if (!empty ($container_id))
-            {
-              $md5_hash = md5_file ($file);
-              $filesize = round (@filesize ($file) / 1024, 0);
-              rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
-            }
+            // write media information to DB with function rdbms_setmedia is used by function and service savecontent for the original media file only
 
             // encrypt and save file if required
             if ($temp['result']) movetempfile ($location, $media, true);
@@ -2360,13 +2360,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
           // save media stats and move temp file
           if ($movetempfile)
           {
-            // write media information to DB
-            if (!empty ($container_id))
-            {
-              $md5_hash = md5_file ($file);
-              $filesize = round (@filesize ($file) / 1024, 0);
-              rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
-            }
+            // write media information to DB with function rdbms_setmedia is used by function and service savecontent for the original media file only
 
             // encrypt and save file if required
             if ($temp['result']) movetempfile ($location, $media, true);
@@ -2839,7 +2833,7 @@ google:keywords => 'textk:Keywords'";
 
 // ------------------------- metadata_exists -----------------------------
 // function: metadata_exists()
-// input: mapping [array:metadata-tag-name => text-id], text [array:metadata-text-id => content]
+// input: mapping [array:metadata-tag-name => text-id], text content [array:metadata-text-id => content]
 // output: true / false
 
 // description:
@@ -2850,7 +2844,7 @@ function metadata_exists ($mapping, $text_array)
 {
   $result = true;
 
-  if (is_array ($mapping) && is_array ($text_array))
+  if (is_array ($mapping))
   {
     reset ($mapping);
 

@@ -529,6 +529,8 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       // get file content from MS Powerpoint 2007 (pptx) in UTF-8
       elseif (($file_ext == ".pptx" || $file_ext == ".ppsx") && !empty ($mgmt_uncompress['.zip']))
       {
+        $file_content = "";
+        
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
         $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
@@ -1389,14 +1391,14 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
 // input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], 
 //        format (file extension w/o dot) [string] (optional), 
 //        type of image/video/audio file [thumbnail(for thumbnails of images),origthumb(thumbnail made from original video/audio),original(to overwrite original video/audio file),annotation(for annotation images),any other string present in $mgmt_imageoptions/$mgmt_mediaoptions,temp(for temporary files)] (optional),
-//        force the file to be not encrypted even if the content of the publication must be encrypted [boolean] (optional)
+//        force the file to be not encrypted even if the content of the publication must be encrypted [boolean] (optional), set media information [boolean] (optional)
 // output: new file name / false on error
 
 // description:
 // Creates an new image or video from the original file or creates a thumbnail and transferes the generated image via remoteclient.
 // Saves original or thumbnail media file in destination location. For the thumbnail only JPEG is supported as output format.
 
-function createmedia ($site, $location_source, $location_dest, $file, $format="", $type="thumbnail", $force_no_encrypt=false)
+function createmedia ($site, $location_source, $location_dest, $file, $format="", $type="thumbnail", $force_no_encrypt=false, $setmediainfo=true)
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $user;
 
@@ -1674,6 +1676,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       if (is_document ($file_ext) && ($type == "thumbnail" || $type == "origthumb"))
       {
         $newfile = createdocument ($site, $location_source, $location_dest, $file, "jpg");
+
+        // write media information to container and DB
+        // don not overwrite if the 
+        if (!empty ($setmediainfo)) $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, "", "", "", "", "", $md5_hash);
       }
       // ---------------------- if Audio file ------------------------
       // the extracted thumbnail will be used as it is and don't use the image data for table media
@@ -1684,11 +1690,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
         $id3_data = id3_getdata ($location_source.$file);
 
-        // if album art image is available
+        // if album art image is available (use as thumbnail for the audio file)
         if (!empty ($id3_data['imagedata']))
         {
           // convert album art if not a JPEG and image is too large in size
-          if ($id3_data['imagemimetype'] != "image/jpeg" || $id3_data['imagewidth'] > 240 || $id3_data['imageheight'] > 240)
+          if ($id3_data['imagemimetype'] != "image/jpeg" || $id3_data['imagewidth'] > 260 || $id3_data['imageheight'] > 260)
           {
             // save temp file
             if (strpos ("_".$id3_data['imagemimetype'], "/") > 0)
@@ -1709,8 +1715,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               fclose ($filehandler);
 
               // calculate new width and height
-              $thumb_width = 180;
-              $thumb_height = 180;
+              $thumb_width = 260;
+              $thumb_height = 260;
         
               if ($id3_data['imagewidth'] > 0 && $id3_data['imageheight'] > 0)
               {
@@ -1727,7 +1733,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               }
 
               // convert thumbnail to proper format and size
-              $temp_file_2 = convertimage ($site, $location_temp.$temp_file, $location_temp, "jpg", "RGB", "", $thumb_width, $thumb_height);
+              $temp_file_2 = convertimage ($site, $location_temp.$temp_file, $location_temp, "jpg", "RGB", "", $thumb_width, $thumb_height, 0, "px", 72, "", false);
 
               // remove temp file
               deletefile ($location_temp, $temp_file, 0);
@@ -1775,7 +1781,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           }
 
           // write media information to container and DB
-          if (!empty ($container_id))
+          if (!empty ($container_id) && !empty ($setmediainfo))
           {
             $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
           }
@@ -2295,6 +2301,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       $imagecolorspace = "";
                     }
 
+                    // auto rotate the image
+                    $autorotate = "-auto-orient";
+
                     if ($type == "thumbnail" || ($type == "annotation" && is_dir ($mgmt_config['abs_path_cms']."workflow/")))
                     {
                       if ($type == "annotation") $newfile = $file_name.".annotation.jpg";
@@ -2306,7 +2315,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
                       }
 
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($path_source)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." ".$autorotate." \"".shellcmd_encode ($path_source)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     else
                     {
@@ -2315,11 +2324,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     
                       if ($crop_mode)
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." ".$autorotate." \"".shellcmd_encode ($buffer_file)."[0]\" -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                       else
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." ".$autorotate." \"".shellcmd_encode ($buffer_file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                     }
 
@@ -2335,11 +2344,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     else $converted = true;
                   }
 
-                  // WATERMARK AND PROCESS IMAGE ON SUCCESS: if new file is larger than 5 bytes
+                  // ------------- WATERMARK AND PROCESS IMAGE ON SUCCESS: if new file is larger than 5 bytes --------------
                   if ($converted == true && !empty ($newfile) && is_file ($location_dest.$newfile) && filesize ($location_dest.$newfile) > 5)
                   {
                     // watermark image using composite command (using a temporaray intermediate image file in order to restore image if watermarking failed)
-                    if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
+                    if ($type != "thumbnail" && $type != "original" && $type != "annotation" && substr_count ($type, "preview.") == 0 && !empty ($watermark))
                     {
                       $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." \"".shellcmd_encode ($location_dest.$newfile)."\" \"".shellcmd_encode ($location_temp."watermark.".$newfile)."\"";
 
@@ -2355,15 +2364,15 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile." (".implode (", ", $error_array).")";
                       }
                       // on success
-                      else
+                      elseif (is_file ($location_temp."watermark.".$newfile))
                       {
                         // overwrite source file with watermarked image file
-                        @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
+                        rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
                       }
                     }
 
                     // get media information from thumbnail
-                    if ($type == "thumbnail" && !empty ($container_id))
+                    if ($type == "thumbnail" && !empty ($container_id) && !empty ($setmediainfo))
                     {
                       $imagecolor = getimagecolors ($site, $newfile);
 
@@ -2438,6 +2447,53 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // -------------------- convert image using GD-Library (no watermarking supported) -----------------------
                 elseif ($imagewidth_orig > 0 && $imageheight_orig > 0 && (empty ($mgmt_imagepreview[$imagepreview_ext]) || $mgmt_imagepreview[$imagepreview_ext] == "GD") && in_array (strtolower($file_ext), $GD_allowed_ext))
                 {
+                  // initalize
+                  $temp_file = $path_source;
+
+                  // auto rotate image based on the orientation
+                  // use EXIF image orientation in order to correct width and height
+                  // orientation numbers used by EXIF:
+                  // use EXIFTOOL to set the orinetation: -orientation#=6
+                  // 1 = Horizontal (normal)
+                  // 2 = Mirror horizontal
+                  // 3 = Rotate 180
+                  // 4 = Mirror vertical
+                  // 5 = Mirror horizontal and rotate 270 CW
+                  // 6 = Rotate 90 CW
+                  // 7 = Mirror horizontal and rotate 90 CW
+                  // 8 = Rotate 270 CW
+                  $exif = @exif_read_data ($path_source);
+
+                  if (!empty ($exif['Orientation']))
+                  {
+                    $orientation = $exif['Orientation'];
+
+                    if ($orientation != 0)
+                    {
+                      // create temp file
+                      $temp_file = $location_temp.$file_name.".temp".strrchr ($file, ".");;
+                      copy ($path_source, $temp_file);
+
+                      switch ($orientation)
+                      {
+                        // 180 rotate left
+                        case 3:
+                          $result = rotateimage ($site, $temp_file, 180, $format_set);
+                          break;
+
+                        // 90 rotate right
+                        case 6:
+                          $result = rotateimage ($site, $temp_file, 90, $format_set);
+                          break;
+
+                        // 90 rotate left
+                        case 8:
+                          $result = rotateimage ($site, $temp_file, 270, $format_set);
+                          break;
+                      }
+                    }
+                  }
+
                   // calculate aspect ratio
                   $imageratio_orig = $imagewidth_orig / $imageheight_orig;
                   $imageratio = $imagewidth / $imageheight;
@@ -2452,9 +2508,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
                   }
 
-                  if ($file_ext == ".gif") $imgsource = @imagecreatefromgif ($path_source);
-                  elseif ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @imagecreatefromjpeg ($path_source);
-                  elseif ($file_ext == ".png") $imgsource = @imagecreatefrompng ($path_source);
+                  if ($file_ext == ".gif") $imgsource = @imagecreatefromgif ($temp_file);
+                  elseif ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @imagecreatefromjpeg ($temp_file);
+                  elseif ($file_ext == ".png") $imgsource = @imagecreatefrompng ($temp_file);
                   else return false;
 
                   // crop image
@@ -2567,7 +2623,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
 
                     // get media information from thumbnail
-                    if ($type == "thumbnail" && !empty ($container_id))
+                    if ($type == "thumbnail" && !empty ($container_id) && !empty ($setmediainfo))
                     {
                       $imagecolor = getimagecolors ($site, $newfile);
 
@@ -2591,7 +2647,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // create thumbnail (new preview of original image)
                 if ($converted == true && $type == "original")
                 {
-                  createmedia ($site, $location_dest, $location_dest, $newfile, "jpg", "thumbnail");
+                  createmedia ($site, $location_dest, $location_dest, $newfile, "jpg", "thumbnail", true, false);
                 }
               } 
             }
@@ -3129,8 +3185,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $mgmt_mediaoptions[$mediaoptions_ext] .= " ".$mgmt_config[$site]['watermark_video'];
                 }
 
-                // dont watermark the original file or audio file
-                if (is_video (".hcms.".$format_set) && $type != "original" && is_file ($location_temp.$tmpfile) && filesize ($location_temp.$tmpfile) > 100 && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") > 0)
+                // dont watermark the thumbnail video, original video or audio file
+                if (is_video (".hcms.".$format_set) && $type != "thumbnail" && $type != "origthumb" && $type != "original" && is_file ($location_temp.$tmpfile) && filesize ($location_temp.$tmpfile) > 100 && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") > 0)
                 {
                   // get watermark defined by media option 
                   $watermarking = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-wm");
@@ -3311,14 +3367,17 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
 
                 // set media width and height to empty string
-                if ($videoinfo['width'] < 1 || $videoinfo['height'] < 1)
+                if (empty ($videoinfo['width']) || $videoinfo['width'] < 1 || empty ($videoinfo['height']) || $videoinfo['height'] < 1)
                 {
                   $videoinfo['width'] = "";
                   $videoinfo['height'] = "";
                 }
  
                 // save config
-                if ($type != "temp") savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $videoinfo['width'], $videoinfo['height'], $videoinfo['rotate'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']);
+                if ($type != "temp" && is_file ($location_dest.$newfile) && is_array ($videoinfo))
+                {
+                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $videoinfo['width'], $videoinfo['height'], $videoinfo['rotate'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']);
+                }
 
                 // get video information to save in DB
                 if ($type == "origthumb" || $type == "original")
@@ -3337,7 +3396,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   }
 
                   // write media information to DB
-                  if (!empty ($container_id))
+                  if (!empty ($container_id) && !empty ($setmediainfo))
                   {
                     // correct width and height for the database if autorotation has been applied (in order to provide the correct display size)
                     if (!empty ($noautorotate) && !empty ($videoinfo['rotate']) && ($videoinfo['rotate'] == "90" || $videoinfo['rotate'] == "270" || $videoinfo['rotate'] == "-90"))
@@ -3353,7 +3412,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // create preview (new preview for video/audio file)
                   if ($type == "original")
                   {
-                    createmedia ($site, $location_dest, $location_dest, $newfile, "", "origthumb");
+                    createmedia ($site, $location_dest, $location_dest, $newfile, "", "origthumb", true, false);
                   }
                 }
 
@@ -3382,7 +3441,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     }
 
     // no option was found for given format or no media conversion software defined
-    if (empty ($setmedia) && ($type == "thumbnail" || $type == "origthumb") && !empty ($container_id))
+    if (empty ($setmedia) && ($type == "thumbnail" || $type == "origthumb") && !empty ($container_id) && !empty ($setmediainfo))
     {
       // write media information to container and DB
       $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, "", "", "", "", "", $md5_hash);
@@ -3570,7 +3629,7 @@ function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $f
         if (trim ($format) != "")
         {
           // convert media file
-          $convfile = createmedia ($site, getlocation ($temp_path), $location_dest, getobject ($temp_path), $format, "temp", $force_no_encrypt);
+          $convfile = createmedia ($site, getlocation ($temp_path), $location_dest, getobject ($temp_path), $format, "temp", $force_no_encrypt, false);
 
           // remove temp file segment
           @unlink ($temp_path);
@@ -3598,7 +3657,7 @@ function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $f
 // output: new file name / false on error
 
 // description:
-// Converts and creates a new image/video/audio or document from the source file. This is a wrapper function for createmedia, createimages_video and createdocument.
+// Converts and creates a new image, video, audio, or document from the source file. This is a wrapper function for createmedia, createimages_video and createdocument.
 // If the destination media file exists already or is newer than the source file the file name will be returned without conversion.
 
 function convertmedia ($site, $location_source, $location_dest, $mediafile, $format, $media_config="", $force_no_encrypt=false)
@@ -3749,7 +3808,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
       // generate new file only if necessary
       if (!is_file ($location_dest.$newname) || @filemtime ($location_source.$mediafile) > @filemtime ($location_dest.$newname) || !empty ($force_recreate)) 
       {
-        $result_conv = createmedia ($site, $location_source, $location_dest, $mediafile, $format, $media_config, $force_no_encrypt);
+        $result_conv = createmedia ($site, $location_source, $location_dest, $mediafile, $format, $media_config, $force_no_encrypt, false);
       }
       // use the existing file
       else $result_conv = $newname;
@@ -3768,14 +3827,14 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 // input: publication name [string], path to source image file [string], path to destination dir [string], format (file extension w/o dot) of destination file [string] (optional), 
 //        colorspace of new image [CMY,CMYK,Gray,HCL,HCLp,HSB,HSI,HSL,HSV,HWB,Lab,LCHab,LCHuv,LMS,Log,Luv,OHTA,Rec601YCbCr,Rec709YCbCr,RGB,scRGB,sRGB,Transparent,XYZ,YCbCr,YCC,YDbDr,YIQ,YPbPr,YUV] (optional), 
 //        width in pixel/mm/inch [integer] (optional), height in pixel/mm/inch [integer] (optional), slug in pixel/mm/inch [integer] (optional), units for width [string], height and slug [px,mm,inch] (optional),
-//        dpi [integer] (optional), image quality [1 to 100]
+//        dpi [integer] (optional), image quality [1 to 100], apply watermark [boolean] (optional)
 // output: new file name / false on error
 
 // description:
-// Converts and creates a new image from original. The new image keeps will be resized and cropped to fit width and height.
-// This is a wrapper function for createmedia.
+// Converts and creates a new image from original. The new image will be resized and cropped to fit width and height.
+// This is a wrapper function of function createmedia.
 
-function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="RGB", $iccprofile="", $width="", $height="", $slug=0, $units="px", $dpi=72, $quality="")
+function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="RGB", $iccprofile="", $width="", $height="", $slug=0, $units="px", $dpi=72, $quality="", $watermark=true)
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $user;
 
@@ -3852,13 +3911,13 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
       $size = $width."x".$height;
 
       // get image size in px
-      $imagesize = getimagesize ($file_source);
+      $imagesize = getmediasize ($file_source);
 
       // if image size is available
-      if (!empty ($imagesize[0]) && !empty ($imagesize[1]))
+      if (!empty ($imagesize['width']) && !empty ($imagesize['height']))
       {
         // image ratios
-        $imageratio = $imagesize[0] / $imagesize[1];
+        $imageratio = $imagesize['width'] / $imagesize['height'];
         $ratio = $width / $height;
 
         // if image has larger ratio we define new height
@@ -3943,6 +4002,13 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
     // new file name
     $file_name = $file_info['filename'].".".$type.".".$format;
 
+    // suppress watermark defined by publication or asset
+    if (empty ($watermark)) 
+    {
+      $mgmt_config[$site]['watermark_image'] = "";
+      $mgmt_imageoptions['.'.$format][$type] = "";
+    }
+
     // check if image exists and is newer than the original image
     if (!is_file ($location_dest.$file_name) || @filemtime ($file_source) > @filemtime ($location_dest.$file_name))
     {
@@ -3951,7 +4017,7 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
       $mgmt_imageoptions['.'.$format][$type] = $size_para.$color_para.$format_para.$density_para.$quality_para;
 
       // render image w/o crop since one step crop and resize are not supported by hyperCMS
-      $file_name_new = createmedia ($site, $location_source, $location_dest, $file, $format, $type);
+      $file_name_new = createmedia ($site, $location_source, $location_dest, $file, $format, $type, true, false);
 
       // define image option for crop
       if (!empty ($crop_para) && $file_name_new != false)
@@ -3963,7 +4029,7 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
         $mgmt_imageoptions['.'.$format][$type] = $crop_para;
 
         // render image
-        $file_name_new = createmedia ($site, $location_dest, $location_dest, $file_info['filename'].".".$format, $format, $type);
+        $file_name_new = createmedia ($site, $location_dest, $location_dest, $file_info['filename'].".".$format, $format, $type, true, false);
 
         // delete intermediate file
         if (is_file ($location_dest.$file_info['filename'].".".$format)) unlink ($location_dest.$file_info['filename'].".".$format);
@@ -4777,7 +4843,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
 
                       if (!is_file ($thumbnail) || filemtime ($location_source.$file) > filemtime ($location_media.$thumbnail))
                       {
-                        $thumbnail_new = createmedia ($site, $location_dest, $location_media, $newfile, "jpg", "thumbnail", true);
+                        $thumbnail_new = createmedia ($site, $location_dest, $location_media, $newfile, "jpg", "thumbnail", true, false);
 
                         // correct file name by removing double .thumb
                         if (!empty ($thumbnail_new) && is_file ($location_media.$thumbnail_new))

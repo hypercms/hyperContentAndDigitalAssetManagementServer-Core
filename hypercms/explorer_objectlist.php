@@ -690,7 +690,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           // try to create thumbnail if not available
           if (!empty ($mgmt_config['recreate_preview']) && (!is_file ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg")))
           {
-            createmedia ($site, $thumbdir.$site."/", $thumbdir.$site."/", $media_info['file'], "", "thumbnail");
+            createmedia ($site, $thumbdir.$site."/", $thumbdir.$site."/", $media_info['file'], "", "thumbnail", true, true);
           }
 
           if (is_file ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg"))

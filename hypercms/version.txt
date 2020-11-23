@@ -4545,3 +4545,84 @@ Release 10/2020
 - Bug fix: The Workflow Management module loaded the desktop or mobile stylesheet two times
 - Bug fix: Function showtaxonomytree in UI API did not verify the first search result item
 - Bug fix: Function showmedia in UI API did not assign a z-index higher than 9900 to the 360 video player overlay and layers from the standard video player could still be seen
+
+Version 9.0.5
+Release 11/2020
+- All preview images used in the graphical user interface of the system will not be watermarked (if a watermark has been defined in the publication of for the asset). Only downloaded views of the original image will be automatically watermarked.
+- The preview video used in the graphical user interface of the system will not be watermarked (if a watermark has been defined in the publication of for the asset). Only created videos of the original video will be automatically watermarked. 
+- Modifications in function createmedia in Media API in order to auto rotate the image based on the EXIF orientation (support of ImageMagick and PHP GD library)
+- Modifications in function getmediasize in Get API in order to auto rotate image width and height based on the EXIF orientation
+- Modifications in function showmedia in UI API in order to replace function getimagesize with function getmediasize (function getimagesize should only be used for thumbnail images)
+- Modifications in explorer_imageview, image_rendering, media_edit_page, media_view, page_multiedit, editor/media_select in order to replace function getimagesize with function getmediasize
+- Modifications in function createmediaobject and uploadfile in Main API in order to replace function getimagesize with function getmediasize
+- Modifications in function convertimage in Media API in order to replace function getimagesize with function getmediasize
+- Modifications in service renderimage in order to replace function getimagesize with function getmediasize
+- Modifications in function copymetadata in Meta API in order to suppress copy of the orientation, width and height tag since the orientation, width and height has been corrected by function createmedia
+- Modifications in function copymetadata in Meta API in order to set the EXIF width and height based on the actual dimensions of the target image file
+- Downgrade of PDF.js JavaScript library from version 2.5.207 to version 2.2.228 due to issues with document previews by users using old browser versions
+- Modifications in function showmedia in UI API in order to assign an new sub file extension "preview" instead of "view" for preview images that can be used to identify them by function createmedia
+- Modifications in function createmedia in Media API in order to suppress watermarking for annotation images and preview images requested by function showmedia
+- Modifications in function createmedia in Media API in order to set new dimension (260x260 px) for the thumbnail of audio files based on their album art image
+- Modifications in function createmedia in Media API in order to support a new input parameter to suppress the rdbms_setmedia function call (save media information)
+- Modifications in function convertimage in Media API in order to support a new input parameter to suppress watermarking
+- Modifications in function showmedia in UI API in order to remove existing video renderings
+- Design modifications in function showmedia in UI API for the presentation of the video information table
+- Implementation of the new service deletemedia in order to remove a selected media file version that is based on the original media file (audio or video)
+- Modifications in function GCanalyzeimage in Cloud API in createmedia function call
+- Modifications in function editmediaobject in Main API in createmedia function call
+- Modifications in OpenSearch module in createmedia function call
+- Modifications in function splitmedia in Media API in createmedia function call
+- Modifications in function convertmedia in Media API in createmedia function call
+- Modifications in function convertimage in Media API in createmedia function call
+- Modifications in function createdocument in Media API in createmedia function call
+- Modifications in the template engine in createmedia function call
+- Modifications in function showmedia in UI API in createmedia function call
+- Modifications in service renderimage and rendervideo in createmedia function call
+- Modifications in videplayer in createmedia function call
+- Modifications in explorer_objectlist and search_objectlist in createmedia function call
+- Modifications in function id3_writefile, xmp_writefile, and iptc_writefile in Meta API in order to remove rdbms_setmedia function call
+- Modifications in service and function savecontent in order to remove MD5 hash from rdms_setmedia function call (since the search for duplicates is based on the MD5 hash)
+- Modifications in page_info in order to calculate the MD5 hash of the actual file (since the search for duplicates is based on the MD5 hash and the saved MD5 hash is not necessarily the actual MD5 hash)
+- Design modifications in image_rendering and media_rendering
+- Modifications in template engine in order to initialize and empty the variable $searchtag_array
+- Implementation of the new hyperCMS help tag in the template engine that can be used for the presentation of information in the form view
+- Implementation of the new hyperCMS help tag and icon in the template editor
+- Modifications in the template engine in order to strip tags only for the template view of metadata templates (important for the help tag if the value includes HTML tags)
+- Modifications in CSS class hcmsFace in main.css of all design themes in order to reduce the z-index to 9
+- Design modifications in media_playerconfig
+- Design modifications in document_viewerconfig
+- Implementation of the video link in media_playerconfig
+- Implementation of the design theme support for the video link in media_playerconfig
+- Implementation of auto-resizing (width and height) for large screen videos in media_playerconfig
+- Implementation of the design theme support for the video link in videoplayer (new input parameter theme, display of the theme wallpaper, logo and video title)
+- Implementation of an in-iframe check in videoplayer in order to automatically use the design theme and center the video if no iframe is used for the video integration
+- Implementation of the load screen in videoplayer
+- Modifications in function checkdiskkey in Security API
+- Modifications in explorer in order to remove diskkey
+- Modifications in group_edit_form in order to remove diskkey
+- Removed deprecated variable disksite from diskkey file
+- Updates in the Template Designers and Installation Guide
+- Updates in all language files
+- Modifications in function AZUREconnect and S3connect in Cloud APIs in order to support publication specific connection. For AWS S3 and MS Azure the publication specific definitions need to be made in the main configuration, these settings are not officially supported. The AWS S3 container or MS Azure blob names in the main configuration do not support publication specific settings.
+- Modifications in function is_cloudstorage and is_cloudobject in Main API in order to extract the publication name from the file input and exclude the main configuration cloud settings since they will be verified by the cloud API functions
+- Modifications in all Cloud API functions in order to remove verification of main configuration cloud settings
+- Implementation of the new Cloud API main configuration settings $mgmt_config['aws_api'], $mgmt_config['gs_api'], and $mgmt_config['azure_api'] in order to enable and disable the Cloud APIs of the vendors (AWS, Google, MS Azure)
+- Modifications in function S3connect in AWS S3 Cloud API in order to catch errors using S3Exception
+- Modifications in Google Cloud API functions GCanalyzevideo, GCanalyzeiage, and GCspeech2text in order to remove verification of the main configuration settings, only publication settings will be used
+- Removed deprecated main configuration settings $mgmt_config['gs_analyze_image'], $mgmt_config['gs_analyze_video'], and $mgmt_config['gs_speech2text']
+- Modifications in function createmedia in Media API in order to create annotation images in JPEG format of highest quality 
+- Modifications in function showmedia in UI API in order to create annotation images in JPEG format of highest quality 
+- Modifications in annotation JS library in order to "flatten" the vector image using JPEG format of highest quality
+- Implementation of the new function deleteannotationimages in Main API in order to delete all annotation images of a media file
+- Modifications in function deletemediafiles in Main API in order to call function deleteannotationimages
+- Modifications in explorer in order to change error code 10178 to warning code 00178 if a directory has been deleted and the explorer can't access it anymore
+- Modifications in template editor in order to assign a different window name for the help window
+- Bug fix: Function createmedia in Media API did save file size of the created PDF preview document
+- Bug fix: Variable $file_content has not been initialized for MS Power Point (PPTX) files in function indexcontent in Media API
+- Bug fix: Since the MD5 hash has been updated whenever new metadata has been saved in the original media file, the search for duplicates was not able to identify the file due to the changed MD5 hash of the file
+- Bug fix: JS function createFaceOnImage in template engine did refer to an undefined width and height variable of the marker
+- Bug fix: Changed to z-index of the video overlay for the marker images to 10 due to an overlay issue with the help layer in the video editor
+- Bug fix: The video title has not been encoded for the embed code in media_playerconfig
+- Bug fix: Modifications in function showmedia in UI API in order to use the correct original video width and height for the file parameter in the source code and remove the check of minimum values since this might lead to a fallback to default video dimensions
+- Bug fix: control_queue_menu used input parameter for inherit_db_read function call
+- Bug fix: Function metadata_exists in Meta API did verify the text array which lead to a wrong result since the text array can be empty

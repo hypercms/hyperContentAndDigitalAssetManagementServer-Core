@@ -1983,7 +1983,7 @@ function getwallpaper ($theme="", $version="")
   if (empty ($theme) && !empty ($mgmt_config['theme'])) $theme = $mgmt_config['theme'];
 
   // get theme from session
-  if (empty ($theme)) $theme = getsession ("hcms_themename");
+  if (empty ($theme) && getsession ("hcms_themename") != "") $theme = getsession ("hcms_themename");
 
   // 2. wallpaper from design theme
   if (valid_locationname ($theme))
@@ -4190,6 +4190,36 @@ function getmediasize ($filepath)
       }
     }
 
+    // use EXIF image orientation in order to correct width and height 
+    // (converted image will be auto rotated by function createmedia)
+    $exif = @exif_read_data ($filepath, 0, true);
+
+    if (!empty ($exif['IFD0']['Orientation']))
+    {
+      $orientation = $exif['IFD0']['Orientation'];
+
+      switch ($orientation)
+      {
+        // 180 rotate left (leave width and height)
+        case 3:
+          break;
+
+        // 90 rotate right (switch width and height)
+        case 6:
+          $temp_width = $result['width'];
+          $result['width'] = $result['height'];
+          $result['height'] = $temp_width;
+          break;
+
+        // 90 rotate left (switch width and height)
+        case 8:
+          $temp_width = $result['width'];
+          $result['width'] = $result['height'];
+          $result['height'] = $temp_width;
+          break;
+      }
+    }
+
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
 
@@ -5936,7 +5966,7 @@ function getattribute ($string, $attribute, $secure=true)
         $value = $result[$attribute];
 
         // secure value
-        if ($secure)
+        if (!empty ($secure))
         {
           $value = strip_tags ($value);
           $value = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $value);
@@ -6055,7 +6085,7 @@ function getattribute ($string, $attribute, $secure=true)
           else $value = "";
 
           // secure value
-          if ($secure)
+          if (!empty ($secure))
           {
             $value = strip_tags ($value);
             $value = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $value);

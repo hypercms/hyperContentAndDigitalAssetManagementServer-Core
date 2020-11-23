@@ -46,9 +46,9 @@ if (!empty ($html2pdf) && !empty ($mgmt_config['html2pdf']))
     <link rel="stylesheet" hypercms_href="<?php echo getthemelocation($theme); ?>css/main.css" />
     <link rel="stylesheet" hypercms_href="<?php echo getthemelocation($theme)."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
     <link rel="stylesheet" hypercms_href="%url_hypercms%/theme/brandguide.css" />
-    <script src="%url_hypercms%/javascript/main.js" type="text/javascript"></script>
+    <script type="text/javascript" src="%url_hypercms%/javascript/main.min.js"></script>
+    <script type="text/javascript">
 
-    <script>
     function minNavFrame ()
     {
         if (document.getElementById('navLayer'))

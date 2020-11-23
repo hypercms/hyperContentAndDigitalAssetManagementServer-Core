@@ -7,7 +7,6 @@ html, body
   padding: 0;
   margin: 0;
   font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 12px; 
   font-weight: normal;
   color: #FFFFFF;
   text-decoration: none;
@@ -28,7 +27,6 @@ input, select, textarea, button, .hcmsTextArea
   border-radius: 0px;
   box-sizing: border-box;
   font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 12px;
   font-weight: normal;
   color: #000000;
   text-decoration: none;
@@ -797,7 +795,7 @@ a.hcmsLink
   height: 100%;
   background: url("../img/loading.gif") no-repeat center center #565656;
   position: fixed;
-  opacity: 0.9;
+  filter: alpha(opacity=90); -moz-opacity: 0.9; opacity: 0.9;
 }
 
 .hcmsTextGreen
@@ -829,7 +827,7 @@ a.hcmsLink
 .hcmsFace
 {
   position: absolute;
-  z-index:  90000;
+  z-index:  9;
   border: 2px solid #FFFFFF;
   filter: alpha(opacity=70); -moz-opacity: 0.7; opacity: 0.7;
   cursor: pointer;

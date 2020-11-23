@@ -284,13 +284,13 @@ foreach ($multiobject_array as $object)
     // thumbnails preview
     if (is_file ($mediadir.$thumbnail))
     {
-      $imgsize = getimagesize ($mediadir.$thumbnail);
+      $imgsize = getmediasize ($mediadir.$thumbnail);
       
       // calculate image ratio to define CSS for image container div-tag
-      if (is_array ($imgsize))
+      if (!empty ($imgsize['width']) && !empty ($imgsize['height']))
       {
-    		$imgwidth = $imgsize[0];
-    		$imgheight = $imgsize[1];
+    		$imgwidth = $imgsize['width'];
+    		$imgheight = $imgsize['height'];
         $imgratio = $imgwidth / $imgheight;   
         
         // image width >= height

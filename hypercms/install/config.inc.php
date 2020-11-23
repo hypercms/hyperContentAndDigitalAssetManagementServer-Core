@@ -118,44 +118,45 @@ $mgmt_config['abs_path_media'] = $mgmt_config['abs_path_rep']."media_cnt/";
 // If you are using AWS S3 or Google Cloud as media repository, the system will save all media files
 // using the SDK client of the cloud service provider.
 // Please note, that you need a cloud service account with your cloud service provider.
-// In order to connect with the cloud service you need provide the credentials for the cloud service.
-//
+// In order to connect with the cloud service, you need provide the credentials for the cloud service.
+
 // For AWS S3 use:
+// Enable (true) or disable (false) the AWS S3 Cloud API
+$mgmt_config['aws_api'] = false;
 // Provide credentials for access
-// $mgmt_config['aws_access_key_id'] = "";
-// $mgmt_config['aws_secret_access_key'] = "";
+$mgmt_config['aws_access_key_id'] = "";
+$mgmt_config['aws_secret_access_key'] = "";
 // Provide region code, see also: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions
-// $mgmt_config['aws_region'] = "";
+$mgmt_config['aws_region'] = "";
 // Provide the name of your AWS S3 bucket (mandatory for cloud storage)
-// $mgmt_config['aws_bucket'] = "";
+$mgmt_config['aws_bucket'] = "";
 
 // For Google Cloud Platform use:
+// Enable (true) or disable (false) the Google Cloud API
+$mgmt_config['gs_api'] = false;
 // Provide credentials for Google API access (path to Google API JSON key file)
-// $mgmt_config['gs_access_json'] = "";
-// Analyze images (Google Vision) and videos (Google Video Intelligence)
-// $mgmt_config['gs_analyze_image'] = true;
-// $mgmt_config['gs_analyze_video'] = true;
-// Enable Google Cloud Speech-to-Text
-// $mgmt_config['gs_speech2text'] = true;
+$mgmt_config['gs_access_json'] = "";
 // Define default language code to be used for speech-to-text
 // See all the supported lanuage codes here: https://cloud.google.com/speech-to-text/docs/languages
-// $mgmt_config['gs_speech2text_langcode'] = "en-US";
+$mgmt_config['gs_speech2text_langcode'] = "en-US";
 // Provide region code for the storage, see also: https://cloud.google.com/compute/docs/zones
-// $mgmt_config['gs_region'] = "";
+$mgmt_config['gs_region'] = "";
 // Provide the name of your Google Cloud Storage bucket (mandatory for cloud storage)
-// $mgmt_config['gs_bucket'] = "";
+$mgmt_config['gs_bucket'] = "";
 // Optionally provide the path to autoload.php of the Google Cloud API (https://github.com/GoogleCloudPlatform/google-cloud-php) if you are not using the included API
 // $mgmt_config['google_cloud_api'] = "vendor/autoload.php";
 
-// For MS Azure use:
+// For MS Azure Blob Storage use:
+// Enable (true) or disable (false) the MS Azure Cloud API
+$mgmt_config['azure_api'] = false;
 // Provide credentials for access (connection statement: DefaultEndpointsProtocol=https;AccountName=myAccount;AccountKey=myKey;)
-// $mgmt_config['azure_access_key'] = "";
+$mgmt_config['azure_access_key'] = "";
 // Provide the name of your Azure container (mandatory for cloud storage)
-// $mgmt_config['azure_container'] = "";
+$mgmt_config['azure_container'] = "";
 
 // Define daily synchronization for delayed saving of media files in cloud storage (true) or save media files immediately (false)
 // If the daily synchronization has been enabled the media files will not be saved in the cloud storage immediately!
-// $mgmt_config['storage_dailycloudsnyc'] = false;
+$mgmt_config['storage_dailycloudsnyc'] = false;
 
 // ------------------------------------ Load balancing settings ----------------------------------------
 
@@ -881,8 +882,8 @@ $mgmt_maxsizepreview['.pdf'] = 500;
 $mgmt_maxsizepreview['.psd'] = 500;
 $mgmt_maxsizepreview['.doc'] = 100;
 $mgmt_maxsizepreview['.docx'] = 100;
-$mgmt_maxsizepreview['.ppt'] = 50;
-$mgmt_maxsizepreview['.pptx'] = 50;
+$mgmt_maxsizepreview['.ppt'] = 100;
+$mgmt_maxsizepreview['.pptx'] = 100;
 $mgmt_maxsizepreview['.xls'] = 50;
 $mgmt_maxsizepreview['.xlsx'] = 50;
 

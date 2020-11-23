@@ -56,8 +56,14 @@ $pagefile_info = getfileinfo ($site, $page, $cat);
 $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
 $file_info = getfileinfo ($site, $mediafile, "");
 
+// initalize
 $audio = false;
 $preview = false;
+$url = "";
+$head = false;
+$frameid = rand_secure() + time();
+$playercode = "";
+$link = "";
 
 // video type/format
 if ($type != "")
@@ -74,7 +80,7 @@ else
   $type = "video";
 }
 
-// read config
+// read media config
 if ($media_root && file_exists ($media_root.$file_info['filename'].".config.".$type))
 {
   $config = readmediaplayer_config ($media_root, $file_info['filename'].".config.".$type);
@@ -102,10 +108,6 @@ else
   $config = false;
   $playercode = getescapedtext ($hcms_lang['configuration-not-available'][$lang]);
 }
-
-$head = false;
-
-$frameid = rand_secure() + time();
 
 if ($config && is_array ($config))
 {
@@ -138,8 +140,6 @@ if ($config && is_array ($config))
   }
 
   // create view link for 360 image viewer / video player
-  $link = "";
-
   // use original file if it is an MP4 video and the preview video is only available
   if ($preview == true && substr_count (".mp4.", $file_info['ext'].".") > 0 && (is_file ($media_root.$mediafile) || is_cloudobject ($media_root.$mediafile)))
   {
@@ -160,6 +160,9 @@ if ($config && is_array ($config))
   }
 
   if (!empty ($video_file)) $link = createviewlink ($site, $video_file, $video_file, true);
+
+  // inital display size
+  $initalsize = mediasize2frame ($config['width'], $config['height'], 854, 854, true);
 }
 ?>
 <!DOCTYPE html>
@@ -193,8 +196,8 @@ function updateCodeSegment()
   var newurl = "";
 
   <?php if (!$audio) { ?>
-  if (title != "") newurl += '&title='+title;  
-  if (logo) newurl += '&logo='+encodeURIComponent(logo);
+  if (title != "") newurl += '&title=' + encodeURIComponent(title);  
+  if (logo) newurl += '&logo=' + encodeURIComponent(logo);
 
   if (fullscreen) newurl += '&fullscreen=true';
   else newurl += '&fullscreen=false';
@@ -226,6 +229,10 @@ function updateCodeSegment()
   document.getElementById('codesegment360').innerHTML = playercode360;
   document.getElementById('playercode360').innerHTML = playercode360;
   <?php } ?>
+
+  var theme = document.getElementById("theme").value;
+  var playerlink = "<?php echo $url; ?>" + newurl + '&theme=' + encodeURIComponent(theme);
+  document.getElementById('playerlink').value = playerlink;
 }
 
 // The image selector expects to be a CKEDITOR.tools.callFunction function, so we fake it here
@@ -234,7 +241,7 @@ var CKEDITOR = {
     callFunction: 
       function(name, link, config) 
       {  
-        if(name == 123) {
+        if (name == 123) {
           document.getElementById("logo").value = link;
           updateCodeSegment();          
         }
@@ -302,17 +309,17 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
     <?php if (!$audio) { ?>
     <div>
       <label for="title"><?php echo getescapedtext ($hcms_lang['title'][$lang]);?> </label><br/>
-      <input type="text" onchange="updateCodeSegment();" id="title" value="<?php echo $title; ?>" style="width:280px;" />
+      <input type="text" onchange="updateCodeSegment();" id="title" value="<?php echo $title; ?>" style="width:98%;" />
     </div>
     <?php } ?>
     
     <div style="margin-top:10px;">
       <label for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang]);?> </label> (px)<br/>
-      <input type="number" onchange="updateCodeSegment();" id="width" value="<?php echo $config['width']; ?>" style="width:280px;" />
+      <input type="number" onchange="updateCodeSegment();" id="width" value="<?php if (!empty ($initalsize['width'])) echo round ($initalsize['width']); ?>" style="width:98%;" />
     </div>
     <div style="margin-top:10px;">
       <label for="height"><?php echo getescapedtext ($hcms_lang['height'][$lang]);?> </label> (px)<br/>
-      <input type="number" onchange="updateCodeSegment();" id="height" value="<?php echo $config['height']; ?>" style="width:280px;" />
+      <input type="number" onchange="updateCodeSegment();" id="height" value="<?php if (!empty ($initalsize['height'])) echo round ($initalsize['height']); ?>" style="width:98%;" />
     </div>
     <div style="margin-top:10px;">
       <input type="checkbox" onchange="updateCodeSegment();" id="autoplay" /> <label for="autoplay"><?php echo getescapedtext ($hcms_lang['autoplay'][$lang]);?> </label>
@@ -337,7 +344,7 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
     <?php if (!$audio) { ?>
     <div style="margin-top:10px;">
       <label for="logo"><?php echo getescapedtext ($hcms_lang['start-image'][$lang]);?> </label><br />
-      <input style="vertical-align:top; width:240px;" type="text" onchange="updateCodeSegment();" id="logo" />
+      <input style="vertical-align:top; width:calc(98% - 36px);" type="text" onchange="updateCodeSegment();" id="logo" />
       <img class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_media.png" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
     </div>
     <?php } ?>
@@ -349,12 +356,34 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
   
   	<strong><?php echo getescapedtext ($hcms_lang['html-body-segment'][$lang]);?></strong> (<?php echo getescapedtext ($hcms_lang['character-set'][$lang])." ".strtoupper (getcodepage ($lang)); ?>)<br />
   	<?php echo getescapedtext ($hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang]);?><br /><br />
-    <?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br/>
-  	<textarea id="codesegment" style="height:140px; width:98%" wrap="VIRTUAL"><?php	echo html_encode($playercode, $hcms_lang_codepage[$lang]); ?></textarea><br/><br/>
+    <strong><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></strong><br/>
+  	<textarea id="codesegment" style="height:160px; width:98%;" wrap="VIRTUAL"><?php	echo html_encode($playercode, $hcms_lang_codepage[$lang]); ?></textarea><br/><br/>
     <?php if (!$is_mobile) { ?>
-    <?php echo getescapedtext ("360 ".$hcms_lang['video'][$lang]); ?><br/>
-    <textarea id="codesegment360" style="height:140px; width:98%" wrap="VIRTUAL"></textarea>
+    <strong><?php echo getescapedtext ("360 ".$hcms_lang['video'][$lang]); ?></strong><br/>
+    <textarea id="codesegment360" style="height:160px; width:98%;" wrap="VIRTUAL"></textarea><br/><br/>
     <?php } ?>
+    <hr />
+    <strong><?php echo getescapedtext ($hcms_lang['link'][$lang]); ?></strong><br/>
+    <div style="margin-top:10px;">
+      <?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?><br/>
+      <select id="theme" style="width:98%; margin:0px 0px 6px 0px;" onchange="updateCodeSegment();">
+      <?php
+      // get themes of user
+      if (!empty ($siteaccess)) $theme_array = getthemes ($siteaccess);
+      else $theme_array = false;
+
+      if (is_array ($theme_array) && sizeof ($theme_array) > 0)
+      {
+        foreach ($theme_array as $theme_key => $theme_value)
+        {
+          echo "
+          <option value=\"".$theme_key."\">".$theme_value."</option>";
+        }
+      }
+      ?>
+      </select>
+    </div>
+    <textarea id="playerlink" style="height:120px; width:98%" wrap="VIRTUAL"></textarea>
     <hr />
   </div>
 

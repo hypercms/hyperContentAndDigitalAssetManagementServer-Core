@@ -71,6 +71,28 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">[hyperCMS:art...<span class="hcmsTextSmall">tag</span>...]</td>
     </tr>
     
+    <!-- help -->
+    <tr> 
+      <td class="hcmsRowHead1" colspan="2"><b><?php echo getescapedtext ($hcms_lang['help'][$lang]); ?></b> 
+        <?php echo getescapedtext ($hcms_lang['tag-set'][$lang]); ?></td>
+    </tr>
+    <tr> 
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['help'][$lang]."/".$hcms_lang['information'][$lang]." (".$hcms_lang['form-view'][$lang].")"); ?></td>
+      <td class="hcmsRowData1">[hyperCMS:help id='...' value='...']</td>
+    </tr>
+    <tr> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['width-of-editorfield-in-pixel-optional'][$lang]); ?></td>
+      <td class="hcmsRowData1">width='...'</td>
+    </tr>
+    <tr> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['height-of-editorfield-in-pixel-optional'][$lang]); ?></td>
+      <td class="hcmsRowData1">height='...'</td>
+    </tr>
+    <tr> 
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['permission-for-certain-user-groups-optional'][$lang]); ?></td>
+      <td class="hcmsRowData1">groups='...'</td>
+    </tr>
+
     <!-- text -->
     <tr> 
       <td class="hcmsRowHead1" colspan="2"><b><?php echo getescapedtext ($hcms_lang['text'][$lang]); ?></b> 

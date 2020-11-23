@@ -1549,7 +1549,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // ============================================== meta data templates ==============================================
 
     // remove tags in meta-data templates
-    if (strpos ($templatefile, ".meta.tpl") > 0)
+    if (strpos ($templatefile, ".meta.tpl") > 0 && $buildview == "template")
     {
       // remove all tags
       $viewstore = strip_tags ($viewstore);
@@ -1562,6 +1562,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $contenttype = "text/html; charset=".$charset;
       }
 
+      // for the template view
       $viewstore = "<!DOCTYPE html>
   <html>
   <head>
@@ -2704,8 +2705,87 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }
       }
 
+      // =========================================== help content for form views ============================================
+
+      $searchtag_array = array();
+      $searchtag_array[0] = "help";
+      $repl_offset = 0;
+
+      foreach ($searchtag_array as $searchtag)
+      {
+        // get all hyperCMS tags
+        $hypertag_array = gethypertag ($viewstore, $searchtag, 0);
+
+        if ($hypertag_array != false)
+        {
+          reset ($hypertag_array);
+
+          // loop for each hyperCMS tag found in template
+          foreach ($hypertag_array as $key => $hypertag)
+          {
+            // get tag name
+            $hypertagname = gethypertagname ($hypertag);
+
+            // get tag id
+            $id = getattribute ($hypertag, "id");
+
+            // get group access
+            $groupaccess = getattribute ($hypertag, "groups");
+            $groupaccess = checkgroupaccess ($groupaccess, $ownergroup);
+
+            // extract text value of checkbox
+            $value = getattribute ($hypertag, "value", false);
+
+            if (trim ($value) != "" && $groupaccess == true && ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock"))
+            {
+              // get height in pixel of text field
+              $sizeheight = getattribute ($hypertag, "height");
+
+              if ($sizeheight == false || $sizeheight <= 0) $sizeheight = "";
+
+              // get width in pixel of text field
+              $sizewidth = getattribute ($hypertag, "width");
+
+              if ($sizewidth == false || $sizewidth <= 0) $sizewidth = "600";
+
+              // define style
+              $style = "";
+              
+              if (!empty ($sizewidth)) $style .= "width:".intval($sizewidth)."px; ";
+              if (!empty ($sizeheight)) $style .= "height:".intval($sizeheight)."px; ";
+
+              // form item
+              $formitem[$key] = "<div id=\"".$id."\" class=\"hcmsInfoBox ".$hypertagname."_".$id."\" style=\"display:block; overflow:auto; margin:12px 0px 3px 0px; ".$style."\">".$value."</div>";
+            }
+            // for template view
+            elseif ($buildview == "template")
+            {
+              $taglink = "
+              <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
+                <tr>
+                  <td>
+                    <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Help: ".$id."</b><br />
+                    ".getescapedtext ($hcms_lang['information'][$lang], $charset, $lang)."</span>
+                  </td>
+                </tr>
+              </table>";
+
+              // insert taglink
+              $viewstore = str_replace ($hypertag, $taglink, $viewstore);
+            }
+            // for all other views
+            else
+            {
+              // remove tag
+              $viewstore = str_replace ($hypertag, "", $viewstore);
+            }
+          }
+        }
+      }
+
       // =================================================== text content ===================================================
 
+      $searchtag_array = array();
       $searchtag_array[0] = "arttext";
       $searchtag_array[1] = "text";
       $searchtag_array[2] = "comment";
@@ -2775,7 +2855,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
-    <p class=hcmsHeadline>".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
+    <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
   </body>
   </html>";
 
@@ -3385,7 +3465,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-entries'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -3424,8 +3504,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>article: ".$artid."</b><br />
-                              <b>element: ".$elementid."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Article: ".$artid."</b><br />
+                              <b>Element: ".$elementid."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-entries'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -3467,7 +3547,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-comments'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -3532,7 +3612,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-formatted-text-entries'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -3583,8 +3663,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>article: ".$artid."</b><br />
-                              <b>element: ".$elementid."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Article: ".$artid."</b><br />
+                              <b>Element: ".$elementid."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-formatted-text-entries'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -3640,7 +3720,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                               ".$hcms_lang['this-place-is-reserved-for-formatted-comments'][$lang]."</span>
                             </td>
                           </tr>
@@ -3731,7 +3811,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-options'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -3785,8 +3865,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>article: ".$artid."</b><br />
-                              <b>element: ".$elementid."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Article: ".$artid."</b><br />
+                              <b>Element: ".$elementid."</b><br />
                               ".$hcms_lang['this-place-is-reserved-for-text-options'][$lang]."</span>
                             </td>
                           </tr>
@@ -3837,7 +3917,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\"0>
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -3872,8 +3952,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>article: ".$artid."</b><br />
-                              <b>element: ".$elementid."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Article: ".$artid."</b><br />
+                              <b>Element: ".$elementid."</b><br />
                               ".$hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang]."</span>
                             </td>
                           </tr>
@@ -3923,7 +4003,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\"0>
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-date-field'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -3957,8 +4037,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>article: ".$artid."</b><br />
-                              <b>element: ".$elementid."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Article: ".$artid."</b><br />
+                              <b>Element: ".$elementid."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -4069,6 +4149,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // =================================================== media content ===================================================
 
       // create view for media content
+      $searchtag_array = array();
       $searchtag_array[0] = "artmedia";
       $searchtag_array[1] = "media";
       $infotype = array();
@@ -4643,7 +4724,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-media-image'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -4764,7 +4845,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <tr>
                             <td>
                               <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>article ".$artid." </b><br />
-                              <b>element: ".$elementid."</b><br />
+                              <b>Element: ".$elementid."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-media-image'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -4990,6 +5071,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // =================================================== link content ===================================================
 
       // create view for link content
+      $searchtag_array = array();
       $searchtag_array[0] = "artlink";
       $searchtag_array[1] = "link";
       $hypertagname = array();
@@ -5411,7 +5493,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                             <tr>
                               <td>
-                                <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                                <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                                 ".getescapedtext ($hcms_lang['here-you-can-add-a-link'][$lang], $charset, $lang)."</span>
                               </td>
                             </tr>
@@ -5508,8 +5590,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>article: ".$artid."</b><br />
-                              <b>element: ".$elementid."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Article: ".$artid."</b><br />
+                              <b>Element: ".$elementid."</b><br />
                               </b>".getescapedtext ($hcms_lang['here-you-can-add-a-link'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -5665,6 +5747,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // ================================================ component content ===================================================
 
       // create view for component content
+      $searchtag_array = array();
       $searchtag_array[0] = "component";
       $searchtag_array[1] = "artcomponent";
       $id_array = array();
@@ -6068,7 +6151,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                               ".getescapedtext ($hcms_lang['here-you-can-insert-a-single-component'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -6146,8 +6229,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>article: ".$artid."</b><br />
-                              <b>element: ".$elementid."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Article: ".$artid."</b><br />
+                              <b>Element: ".$elementid."</b><br />
                               ".getescapedtext ($hcms_lang['here-you-can-insert-a-single-component'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -6280,7 +6363,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".$id."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".$id."</b><br />
                               ".getescapedtext ($hcms_lang['here-you-can-insert-multiple-components'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -6386,8 +6469,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>article: ".$artid."</b><br />
-                              <b>element: ".$elementid."</b><br />
+                              <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Article: ".$artid."</b><br />
+                              <b>Element: ".$elementid."</b><br />
                               ".getescapedtext ($hcms_lang['here-you-can-insert-multiple-components'][$lang], $charset, $lang)."</span>
                             </td>
                           </tr>
@@ -6808,7 +6891,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             <table style=\"width:200px; padding:4px; border:1px solid #000000; background-color:#FFFFFF;\">
               <tr>
                 <td>
-                  <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>element: ".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."</b></span>
+                  <span style=\"font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000000;\"><b>Element: ".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."</b></span>
                 </td>
               </tr>
             </table>";
@@ -7095,7 +7178,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                 deletefile ($mgmt_config['abs_path_view'], $unique_id.".generate.php", 0);
 
-                // generation of file was successful, save it to the media repository
+                // creation of the file was successful, save it to the media repository
                 if ($viewstore == $viewstore_save)
                 {
                   $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
@@ -7104,7 +7187,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $result_save = savefile ($mediadir, $mediafile, $viewstore);
 
                   // create thumbnail
-                  createmedia ($site, $mediadir, $mediadir, $mediafile, "", "thumbnail");
+                  createmedia ($site, $mediadir, $mediadir, $mediafile, "", "thumbnail", true, true);
 
                   // remote client
                   remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", "", $mediafile, "");
@@ -9056,14 +9139,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               'position': 'absolute',
               'left': pos_x + 'px',
               'top': pos_y + 'px',
-              'width': width + 'px',
-              'height': height + 'px'
+              'width': markerwidth + 'px',
+              'height': markerheight + 'px'
             }
           })
           .insertAfter('#hcms_mediaplayer_asset');
 
           imageface_id.push(id);
-          var offset = (216 - width) / 2;
+          var offset = (216 - markerwidth) / 2;
 
           // label and form
           $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + markerheight + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(markerwidth) + \", \\\"height\\\":\" + Math.round(markerheight) + \"' /><textarea type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" title='".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."' /></div>\").insertAfter($('#hcmsFace' + id));
@@ -9075,8 +9158,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   // create face marker on video by mouse click or touch
   function createFaceOnVideo (event)
   {
-    var width = 70;
-    var height = 70;
+    var markerwidth = 70;
+    var markerheight = 70;
 
     // get video width, height and tag ID
     if ($('#hcms_mediaplayer_asset_html5_api').length > 0)
@@ -9108,16 +9191,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (pos_x > 35 && pos_y > 35)
       {
         // verify borders
-        if (pos_x < (width / 2)) pos_x = width / 2;
-        if (pos_y < (height / 2)) pos_y = height / 2;
-        if (pos_x > (videowidth - (width / 2))) pos_x = videowidth - (width / 2);
-        if (pos_y > (videoheight - (height / 2))) pos_y = videoheight - (height / 2);
+        if (pos_x < (markerwidth / 2)) pos_x = markerwidth / 2;
+        if (pos_y < (markerheight / 2)) pos_y = markerheight / 2;
+        if (pos_x > (videowidth - (markerwidth / 2))) pos_x = videowidth - (markerwidth / 2);
+        if (pos_y > (videoheight - (markerheight / 2))) pos_y = videoheight - (markerheight / 2);
 
         // correct x/y coordinates for rectangle
-        pos_x = pos_x - (width / 2);
-        pos_y = pos_y - (height / 2);
+        pos_x = pos_x - (markerwidth / 2);
+        pos_y = pos_y - (markerheight / 2);
 
-        if (pos_x >= 0 && pos_x <= (videowidth - width) && pos_y >= 0 && pos_y <= (videoheight - height))
+        if (pos_x >= 0 && pos_x <= (videowidth - markerwidth) && pos_y >= 0 && pos_y <= (videoheight - markerheight))
         {
           // get video time
           var time_id = time.toString().replace ('.', '_');
@@ -9131,17 +9214,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               'position': 'absolute',
               'left': pos_x + 'px',
               'top': pos_y + 'px',
-              'width': width + 'px',
-              'height': height + 'px'
+              'width': markerwidth + 'px',
+              'height': markerheight + 'px'
             }
           })
           .insertAfter(videotag_id);
 
           videoface_id.push(id);
-          var offset = (216 - width) / 2;
+          var offset = (216 - markerwidth) / 2;
 
           // label and form
-          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" title='".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."' /><br/><textarea type='text' id='facelink\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea></div>\").insertAfter($('#hcmsFace' + id));
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:visible; white-space:nowrap; position:absolute; top:\" + (pos_y + markerheight + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(markerwidth) + \", \\\"height\\\":\" + Math.round(markerheight) + \"' /><textarea type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea> <img src='".getthemelocation()."img/button_delete.png' class='hcmsButtonTiny hcmsButtonSizeSquare' align='absmiddle' onmousedown=\\\"deleteFace('\" + id + \"');\\\" title='".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."' /><br/><textarea type='text' id='facelink\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."' class='hcmsTextArea' style='width:200px; height:32px;'></textarea></div>\").insertAfter($('#hcmsFace' + id));
         }
       }
     }
@@ -9654,6 +9737,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
   if (!empty ($viewstore))
   {
     // =================================================== text content ===================================================
+    $searchtag_array = array();
     $searchtag_array[0] = "arttext";
     $searchtag_array[1] = "text";
     $searchtag_array[2] = "linkhref";

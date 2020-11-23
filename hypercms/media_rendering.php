@@ -748,7 +748,7 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="padding:0px 5px 10px 5px; width:94%; vertical-align:top; z-index:1; display:none; margin:0px 10px 0px 10px;" class="hcmsMediaRendering">
+<div id="renderOptions" style="padding:5px 5px 10px 5px; width:94%; vertical-align:top; z-index:1; display:none; margin:-4px 10px 0px 10px;" class="hcmsMediaRendering">
   <form name="mediaconfig" action="service/rendervideo.php" method="post">
   	<input type="hidden" name="action" value="rendermedia" />
     <input type="hidden" name="savetype" value="editor_so">

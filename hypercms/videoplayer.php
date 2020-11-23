@@ -29,6 +29,7 @@ $height = getrequest_esc ("height", "numeric", 0);
 $loop = getrequest ("loop", "bool", false);
 $muted = getrequest ("muted", "bool", false);
 $controls = getrequest ("controls", "bool", true);
+$theme = getrequest_esc ("theme", "locationname");
 
 // language file
 require ("language/".getlanguagefile ($lang));
@@ -130,7 +131,7 @@ if ($media_dir != "")
   elseif (is_file ($media_dir.$site."/".$file_info['file']) || is_cloudobject ($media_dir.$site."/".$file_info['file']))
   {
     // create thumbnail video of original file
-    $create_media = createmedia ($site, $media_dir.$site."/", $media_dir.$site."/", $file_info['file'], "mp4", "origthumb");
+    $create_media = createmedia ($site, $media_dir.$site."/", $media_dir.$site."/", $file_info['file'], "mp4", "origthumb", false, true);
 
     if ($create_media) $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
   }
@@ -158,6 +159,17 @@ if (is_array ($config))
   }
 }
 
+// wallpaper
+$wallpaper = "";
+
+if (!$is_mobile)
+{
+  $wallpaper = getwallpaper ($theme);
+}
+
+// create unique id
+$videocontainer_id = uniqid();
+
 // create video player
 if ($playercode != "") 
 {
@@ -173,9 +185,67 @@ if ($playercode != "")
     if ($audio) echo showaudioplayer_head (false);
     else echo showvideoplayer_head (false, $fullscreen);
     ?>
+    <script type="text/javascript">
+
+    function iniframe ()
+    {
+      try
+      {
+        return window.self !== window.top;
+      }
+      catch (e)
+      {
+        return true;
+      }
+    }
+
+    function hideloadscreen ()
+    {
+      document.getElementById('hcmsLoadScreen').style.display = 'none';
+    }
+
+    function setwallpaper ()
+    {
+      // display startScreen, center video and display logo and title
+      document.getElementById('startScreen').style.display = 'block';
+      document.getElementById('logo').style.display = 'block';
+      document.getElementById('<?php echo $videocontainer_id; ?>_container').style.cssText = 'position:absolute; z-index:100; width:<?php echo $width; ?>px; height:<?php echo $height; ?>px; top:calc(50% - <?php echo round ($height/2); ?>px); left:calc(50% - <?php echo round ($width/2); ?>px);';
+      <?php if ($title != "") { ?>document.getElementById('<?php echo $videocontainer_id; ?>_title').style.display = 'block';<?php } ?>
+
+      // hide load screen
+      hideloadscreen ();
+
+      // set background image
+      <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
+      document.getElementById('startScreen').style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
+      return true;
+      <?php } else { ?>
+      return false;
+      <?php } ?>
+    }
+    </script>
   </head>
-  <body style="padding:0; margin:0;">
-    <?php echo $playercode; ?>
+  <body style="padding:0; margin:0;" onload="if (iniframe() == false) setwallpaper(); else hideloadscreen();">
+
+    <!-- wallpaper -->
+    <div id="startScreen" class="hcmsStartScreen" style="display:none;"></div>
+
+    <!-- load screen --> 
+    <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:block; filter:alpha(opacity=100); -moz-opacity:1; opacity:1;"></div>
+
+    <!-- logo -->
+    <div id="logo" style="display:none; position:fixed; top:10px; left:10px; z-index:2;">
+      <img id="logoimage" src="<?php echo getthemelocation($theme); ?>img/logo_server.png" style="max-width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>; max-height:80px;" />
+    </div>
+
+    <!-- video player -->
+    <div id="<?php echo $videocontainer_id; ?>_container" style="position:absolute; z-index:100; width:<?php echo $width; ?>px; height:<?php echo $height; ?>px; top:0; left:0; padding:0; margin:0;">
+      <div id="<?php echo $videocontainer_id; ?>_title" style="display:none; position:absolute; z-index:101; top:-32px; left:0; width:100%; font-size:20px; text-align:center;" class="hcmsTextWhite hcmsTextShadow"><?php echo $title; ?></div>
+
+      <?php echo $playercode; ?>
+
+    </div>
+
     <?php include_once ("include/footer.inc.php"); ?>
   </body>
 </html>

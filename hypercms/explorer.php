@@ -13,8 +13,6 @@ define ("SESSION", "create");
 require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
-// disk key
-require ("include/diskkey.inc.php");
 // version info
 require ("version.inc.php");
 
@@ -419,8 +417,8 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
       }
       else 
       {
-        $errcode = "10178";
-        $error[] = $mgmt_config['today']."|explorer.php|error|".$errcode."|root directory for publication ".$site." is missing";         
+        $errcode = "00178";
+        $error[] = $mgmt_config['today']."|explorer.php|warning|".$errcode."|directory ".$location_esc." is missing";         
 
         // save log
         savelog (@$error);   
@@ -960,7 +958,7 @@ else
         {
           $set_site_admin = true;
 
-          if ((checkrootpermission ('site') || checkrootpermission ('user')) && strtolower ($diskkey) == "server")
+          if ((checkrootpermission ('site') || checkrootpermission ('user')))
           {
             $point = new hcms_menupoint($hcms_lang['administration'][$lang], '#main', 'admin.png', 'main');
             $point->setOnClick('hcms_jstree_toggle_preventDefault("main", event);');
@@ -1074,17 +1072,8 @@ else
               $point->addSubPoint($subpoint);
             }
 
-            // display system log if it is not a server diskkey
-            if (checkglobalpermission ($site, 'user') && strtolower ($diskkey) != "server")
-            {
-              $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php", 'event.png');
-              $subpoint->setOnClick('changeSelection(this); minNavFrame();');
-              $subpoint->setTarget('workplFrame');
-              $subpoint->setOnMouseOver('hcms_resetContext();');
-              $point->addSubPoint($subpoint);
-            }
             // display publication system log if a publication log file exists
-            elseif (checkglobalpermission ($site, 'user') && is_file ($mgmt_config['abs_path_data']."log/".$site.".publication.log"))
+            if (checkglobalpermission ($site, 'user') && is_file ($mgmt_config['abs_path_data']."log/".$site.".publication.log"))
             {
               $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php?site=".url_encode($site), 'event.png');
               $subpoint->setOnClick('changeSelection(this); minNavFrame();');

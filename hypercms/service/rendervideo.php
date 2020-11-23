@@ -126,7 +126,7 @@ function startConversion ($videotype)
     $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$rotate_add.$gbcs_add.str_replace (array('%videobitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $mgmt_mediaoptions['.'.$filetype]);
 
     // create video
-    $createmedia = createmedia ($site, $media_root, $media_root, $file_info['file'], $filetype, $videotype);
+    $createmedia = createmedia ($site, $media_root, $media_root, $file_info['file'], $filetype, $videotype, false, true);
 
     if ($createmedia == false)
     {

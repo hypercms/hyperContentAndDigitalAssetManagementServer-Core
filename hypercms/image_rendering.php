@@ -184,42 +184,42 @@ if (!is_rawimage ($mediafile_info['ext']) || !empty ($mediafile_failed))
 // if encrypted
 if (!empty ($temp['result']) && !empty ($temp['crypted']) && is_file ($temp['templocation'].$temp['tempfile']))
 {
-  $media_size = getimagesize ($temp['templocation'].$temp['tempfile']);
+  $media_size = getmediasize ($temp['templocation'].$temp['tempfile']);
 }
 // if restored
 elseif (!empty ($temp['result']) && !empty ($temp['restored']) && is_file ($temp['location'].$temp['file']))
 {
-  $media_size = getimagesize ($temp['location'].$temp['file']);
+  $media_size = getmediasize ($temp['location'].$temp['file']);
 }
 else
 {
-  $media_size = getimagesize ($media_root.$mediafile);
+  $media_size = getmediasize ($media_root.$mediafile);
 }
 
 // initalize thumb width and height
 $thumb_size = array();
-$thumb_size[0] = 740;
-$thumb_size[1] = "";
+$thumb_size['width'] = 740;
+$thumb_size['height'] = "";
 
 // define width and height for image editing
-if (!empty ($media_size[0]) && !empty ($media_size[1]))
+if (!empty ($media_size['width']) && !empty ($media_size['height']))
 {
   // use original size
-  if ($media_size[0] < 740)
+  if ($media_size['width'] < 740)
   {
-    $thumb_size[0] = $media_size[0];
-    $thumb_size[1] = $media_size[1];
+    $thumb_size['width'] = $media_size['width'];
+    $thumb_size['height'] = $media_size['height'];
   }
   // use reduzed size
   else
   {
-    $imgratio = $media_size[0] / $media_size[1];
-    $thumb_size[1] = round (($thumb_size[0] / $imgratio), 0);
+    $imgratio = $media_size['width'] / $media_size['height'];
+    $thumb_size['height'] = round (($thumb_size['width'] / $imgratio), 0);
   }
 }
 
 // generate preview of media for image editor
-$mediaview = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_download", "cropbox", $thumb_size[0], $thumb_size[1], "");
+$mediaview = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_download", "cropbox", $thumb_size['width'], $thumb_size['height'], "");
 
 // security token
 $token_new = createtoken ($user);
@@ -296,10 +296,10 @@ $token_new = createtoken ($user);
 <script type="text/javascript">
 var jcrop;
 var crop_active = false;
-var thumbWidth = <?php echo $thumb_size[0] ?>;
-var thumbHeight= <?php echo $thumb_size[1] ?>;
-var imgWidth = <?php echo $media_size[0] ?>;
-var imgHeight= <?php echo $media_size[1] ?>;
+var thumbWidth = <?php echo $thumb_size['width'] ?>;
+var thumbHeight= <?php echo $thumb_size['height'] ?>;
+var imgWidth = <?php echo $media_size['width'] ?>;
+var imgHeight= <?php echo $media_size['height'] ?>;
 var thumbImgRatio = thumbWidth / imgWidth;
 var imgRatio = imgWidth / imgHeight;
 
@@ -1185,7 +1185,7 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="padding:0px 5px 10px 5px; width:94%; display:none; vertical-align:top; z-index:1; margin:0px 10px 0px 10px;" class="hcmsMediaRendering">    
+<div id="renderOptions" style="padding:5px 5px 10px 5px; width:94%; display:none; vertical-align:top; z-index:1; margin:-4px 10px 0px 10px;" class="hcmsMediaRendering">    
   <!-- start edit image -->
   <form name="mediaconfig" id="mediaconfig" action="service/renderimage.php" method="post">
     <input type="hidden" id="action" name="action" value="rendermedia" />
@@ -1233,12 +1233,12 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
       <div>
         <input type="checkbox" id="width" name="imageresize" value="imagewidth" onclick="toggle_size_width();" />
         <label style="width:90px; display:inline-block;" for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang]); ?></label>
-        <input name="imagewidth" type="text" id="imagewidth" size="5" maxlength="5" value="<?php echo $media_size[0]; ?>" /> px
+        <input name="imagewidth" type="text" id="imagewidth" size="5" maxlength="5" value="<?php echo $media_size['width']; ?>" /> px
       </div>
       <div>
         <input type="checkbox" id="height" name="imageresize" value="imageheight" onclick="toggle_size_height();" />
         <label style="width:90px; display:inline-block;" for="height"><?php echo getescapedtext ($hcms_lang['height'][$lang]); ?></label>
-        <input name="imageheight" type="text" id="imageheight" size="5" maxlength="5" value="<?php echo $media_size[1]; ?>" /> px
+        <input name="imageheight" type="text" id="imageheight" size="5" maxlength="5" value="<?php echo $media_size['height']; ?>" /> px
       </div>
     </div>
     

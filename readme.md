@@ -8,7 +8,7 @@ All manuals are provided as PDF documents on our website or in the directory hyp
 **On server-side:**
 
 * Operating System: Linux, UNIX-Derivates, MS Windows
-* WebServer: Apache 2.4 or Microsoft IIS with PHP Version 5.5+ and mbstring, bcmath, ldap PHP modules 
+* WebServer: Apache 2.4 or Microsoft IIS with PHP Version 7+ and mbstring, bcmath, ldap PHP modules 
 * RDBMS (Database): MariaDB or MySQL 5+ (required for installation script), any database with ODBC support (not supported by installation script)
 
 **Optionally required for full Digital Asset Management (DAM) support on server-side:**
@@ -17,6 +17,7 @@ All manuals are provided as PDF documents on our website or in the directory hyp
 * YAMDI (for meta data injection into FLV files)
 * UFRAW (for raw images from digital cameras)
 * ImageMagick (for converting images)
+* WebP (for webp image format support)
 * XPDF (for indexing PDF-documents)
 * ANTIWORD (for indexing older Word-documents)
 * ZIP/UNZIP (for packing and unpacking files)

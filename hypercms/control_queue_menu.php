@@ -314,7 +314,7 @@ function jumpTo (target)
         <option value=""><?php echo getescapedtext ($hcms_lang['all-publications'][$lang]); ?></option>
         <?php
           // select publication
-          $inherit_db = inherit_db_read ($user);
+          $inherit_db = inherit_db_read ();
 
           if ($inherit_db != false && sizeof ($inherit_db) >= 1)
           {

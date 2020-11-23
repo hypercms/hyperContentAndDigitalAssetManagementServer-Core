@@ -116,12 +116,12 @@ if (!empty ($mediafile) && $mediafile != "Null_media.png")
   // fallback: try to extract width and height from source file
   if (empty ($mediawidth) || empty ($mediaheight))
   {
-    $media_size = @getimagesize ($mediadir.$mediafile);
+    $media_size = getmediasize ($mediadir.$mediafile);
     
-    if (!empty ($media_size[0]) && !empty ($media_size[1]))
+    if (!empty ($media_size['width']) && !empty ($media_size['height']))
     {
-      $mediawidth = $media_size[0];
-      $mediaheight = $media_size[1];
+      $mediawidth = $media_size['width'];
+      $mediaheight = $media_size['height'];
     }
   }
 

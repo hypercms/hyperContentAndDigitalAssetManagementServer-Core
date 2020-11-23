@@ -850,7 +850,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   $linking_auth = true;
   $ldap_auth = true;
   $auth = false;
-  $site_collection = Null;
+  $site_collection = "";
   $fileuser = Null;
   $filepasswd = Null;
   $superadmin = Null;
@@ -1508,14 +1508,11 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   if (!empty ($auth))
   {
     // check disk key
-    $result['keyserver'] = checkdiskkey ($users, $site_collection."|");
+    $result['keyserver'] = checkdiskkey ();
 
     // first time logon
     if (is_file ($mgmt_config['abs_path_data']."check.dat"))
     {
-      // include disk key
-      require ($mgmt_config['abs_path_cms']."include/diskkey.inc.php");
-
       // load check.dat
       $check = loadfile ($mgmt_config['abs_path_data'], "check.dat");
 
@@ -1541,10 +1538,10 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         $mailer = new HyperMailer();
         $mailer->AddAddress ("info@hypercms.net");
         $mailer->Subject = "hyperCMS Started First Time";
-        $mailer->Body = "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nLicense key: ".$diskhash."\n";
+        $mailer->Body = "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".$_SERVER['SERVER_ADDR']."), License key: ".$mgmt_config['diskkey']."\n";
         $mailer->Send();
 
-        mail ("info@hypercms.net", "hyperCMS Started First Time", "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nLicense key: ".$diskhash."\n");
+        mail ("info@hypercms.net", "hyperCMS Started First Time", "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".$_SERVER['SERVER_ADDR']."), License key: ".$mgmt_config['diskkey']."\n");
       }
       // installation date has been set
       else
@@ -1557,7 +1554,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         $mailer = new HyperMailer();
         $mailer->AddAddress ("info@hypercms.net");
         $mailer->Subject = "hyperCMS License Alert";
-        $mailer->Body = "License limit reached by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nPublications: ".$site_collection."|\n";
+        $mailer->Body = "License limit reached by ".$mgmt_config['url_path_cms']." (".$_SERVER['SERVER_ADDR']."), Publications: ".str_replace ("|", ", ". trim ($site_collection, "|"))."\n";
         $mailer->Send();
 
         // deletefile ($mgmt_config['abs_path_data'], "check.dat", 0);
@@ -2349,41 +2346,62 @@ function killsession ($user="", $destroy_php=true, $remove=false)
 
 // ---------------------- checkdiskkey -----------------------------
 // function: checkdiskkey()
-// input: users XML [string] (optional), publication names (use | as seperator) [string] (optional)
+// input: %
 // output: true / false
 
 // description:
 // Checks the disc key of the installation.
 
-function checkdiskkey ($users="", $site="")
+function checkdiskkey ()
 {
   global $mgmt_config;
+
   // version info
   require ($mgmt_config['abs_path_cms']."version.inc.php");
-  // include disk key
-  require ($mgmt_config['abs_path_cms']."include/diskkey.inc.php"); 
 
-  if ($diskhash != "")
+  // disk key
+  require ($mgmt_config['abs_path_cms'].strrev("php.cni.yekksid/edulcni"));
+
+  // mapping
+  $key = strrev ("yekksid");
+  $hash = strrev ("hsahksid");
+
+  if (!empty ($mgmt_config[$key]))
   {
     $data = array();
 
-    // disk hash code
-    $data['key'] = $diskhash;
+    // disk key
+    $data['key'] = $mgmt_config[$key];
 
     // MD5 hash of hypercms_sec.inc.php 
     $md5 = md5_file ($mgmt_config['abs_path_cms']."function/hypercms_sec.inc.php");
     $data['md5'] = $md5;
 
-    $data['site'] = $site;
-
-    // count users
-    if ($users == "")
+    // publications
+    $data['site'] = "";
+    $site_array = array();
+    $inherit_db = inherit_db_read ();
+    
+    if ($inherit_db != false && sizeof ($inherit_db) > 0)
     {
-      $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php"); 
-      $users = substr_count ($userdata, "</user>");
+      foreach ($inherit_db as $inherit_db_record)
+      {
+        if ($inherit_db_record['parent'] != "")
+        {
+          $site_array[] = trim ($inherit_db_record['parent']);
+        }
+      }
+
+      if (is_array ($site_array))
+      {
+        natcasesort ($site_array);
+        $data['site'] = implode ("|", $site_array);
+      }
     }
 
-    $data['users'] = $users;
+    // count users
+    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php"); 
+    $data['users'] = substr_count ($userdata, "</user>");
 
     // storage in MB
     $filesize = rdbms_getfilesize ("", "%hcms%");
@@ -2403,6 +2421,9 @@ function checkdiskkey ($users="", $site="")
     // domain
     $data['domain'] = $mgmt_config['url_path_cms'];
 
+    // server IP address
+    $data['server_ip'] = $_SERVER['SERVER_ADDR'];
+
     // non-free modules
     $data['modules'] = "";
 
@@ -2420,13 +2441,39 @@ function checkdiskkey ($users="", $site="")
 
     $result_post = HTTP_Post ($mgmt_config['url_protocol']."cloud.hypercms.net/keyserver/", $data);
 
-    if ($result_post != "")
+    if (!empty ($result_post) && strpos ("_".$result_post, "<result>") > 0)
     {
       $result = getcontent ($result_post, "<result>");
 
       // result must be true or the default hash key is provided by the system (free edition)
-      if ((is_array ($result) && $result[0] == "true") || ($diskhash == "tg3234g234zg78ze8whf" && $data['modules'] == "")) return true;
+      if ((is_array ($result) && $result[0] == "true") || ($mgmt_config[$key] == "tg3234g234zg78ze8whf" && $data['modules'] == "")) return true;
       else return false; 
+    }
+    elseif (!empty ($mgmt_config[$hash]))
+    {
+      $result = hcms_decrypt ($mgmt_config[$hash], $mgmt_config[$key], "strong", "base64");
+
+      if ($result != "")
+      {
+        list ($server_ip, $modules, $cpu, $users, $storage, $timestamp) = explode (";", $result);
+
+        // check limits
+        if ($server_ip == $data['server_ip'] && $modules == $data['modules'] && ($cpu <= 0 || $data['cpu'] <= $cpu) && ($user <= 0 || $data['users'] <= $users) && ($storage <= 0 || $data['storage'] <= $storage) && ($timestamp <= 0 || time() <= $timestamp))
+        {
+          return true;
+        }
+        else
+        {
+          // warning
+          $errcode = "00130";
+          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|$errcode|ip ".$data['server_ip']."(".$server_ip."), modules ".$data['modules']."(".$modules."), cpu ".$data['cpu']."(".$cpu."), users ".$data['users']."(".$users."), storage ".$data['storage']."(".$storage."), time ".time()."(".$timestamp.")";
+
+          savelog (@$error, "license");
+          
+          return false;
+        }
+      }
+      else return false;
     }
     else return false;
   }

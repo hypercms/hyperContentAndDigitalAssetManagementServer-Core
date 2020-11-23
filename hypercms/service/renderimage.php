@@ -194,20 +194,20 @@ if (checktoken ($token, $user))
   // if encrypted
   if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && is_file ($temp_source['templocation'].$temp_source['tempfile']))
   {
-    $media_size = @getimagesize ($temp_source['templocation'].$temp_source['tempfile']);
+    $media_size = getmediasize ($temp_source['templocation'].$temp_source['tempfile']);
   }
   // if restored
   elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && is_file ($temp_source['location'].$temp_source['file']))
   {
-    $media_size = @getimagesize ($temp_source['location'].$temp_source['file']);
+    $media_size = getmediasize ($temp_source['location'].$temp_source['file']);
   }
   else
   {
-    $media_size = @getimagesize ($media_root_source.$mediafile);
+    $media_size = getmediasize ($media_root_source.$mediafile);
   }
 
   // render image
-  if ($media_size != false && valid_publicationname ($site))
+  if (!empty ($media_size['width']) && !empty ($media_size['height']) && valid_publicationname ($site))
   { 
     // sets the maximum execution time for the script to 300 sec.
     ini_set ("max_execution_time", "300");
@@ -215,18 +215,18 @@ if (checktoken ($token, $user))
     // image resize options
     if ($imageresize == "percentage")
     {
-      $imagewidth = round ($media_size[0] * $imagepercentage / 100, 0);
-      $imageheight = round ($media_size[1] * $imagepercentage / 100, 0);
+      $imagewidth = round ($media_size['width'] * $imagepercentage / 100, 0);
+      $imageheight = round ($media_size['height'] * $imagepercentage / 100, 0);
     }
     elseif ($imageresize == "imagewidth")
     {
-      $imageratio = $media_size[0] / $media_size[1];
+      $imageratio = $media_size['width'] / $media_size['height'];
       $imagewidth = round ($imagewidth, 0);
       $imageheight = round ($imagewidth / $imageratio, 0);
     }
     elseif ($imageresize == "imageheight")
     {
-      $imageratio = $media_size[0] / $media_size[1];
+      $imageratio = $media_size['width'] / $media_size['height'];
       $imageheight = round ($imageheight, 0);
       $imagewidth = round ($imageheight * $imageratio, 0);
     }
@@ -374,7 +374,7 @@ if (checktoken ($token, $user))
         else
         {
           // preview image in original size
-          $result = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], $imageformat, 'preview', true);
+          $result = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], $imageformat, 'preview', true, false);
 
           if ($result)
           {
@@ -382,8 +382,8 @@ if (checktoken ($token, $user))
             
             if (($imageresize == "crop" || $output->imagewidth > $thumbwidth || $output->imageheight > $thumbheight))
             {
-              // reduzed image for image editor
-              $resultthumb = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], "png", 'render.'.$thumbwidth.'x'.$thumbheight);
+              // reduced image for image editor
+              $resultthumb = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], "png", 'render.'.$thumbwidth.'x'.$thumbheight, true, false);
             }
             else $resultthumb = false;
           }
