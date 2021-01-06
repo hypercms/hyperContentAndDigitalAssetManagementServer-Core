@@ -524,6 +524,8 @@ $token_new = createtoken ($user);
     // transform single object to multi object
     if (empty ($multiobject_array) && $location_esc != "" && $page != "")
     {
+      $multiobject_array = array();
+      
       if ($folder != "") $multiobject_array[0] = $location_esc.$folder."/".$page;
       else $multiobject_array[0] = $location_esc.$page;
     }
@@ -1069,6 +1071,6 @@ $token_new = createtoken ($user);
     </form>
   </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

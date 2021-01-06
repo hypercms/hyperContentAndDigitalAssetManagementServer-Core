@@ -6,7 +6,7 @@
  *
  * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
- 
+
 // ========================================= FTP FUNCTIONS =========================================
 
 // ----------------------------------------- ftp_userlogon -----------------------------------------
@@ -20,6 +20,8 @@
 function ftp_userlogon ($server, $user, $passwd, $ssl=false)
 {
   global $mgmt_config;
+
+  $error = array();
 
   if ($server != "" && $user != "" && $passwd != "")
   {
@@ -90,6 +92,8 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 {
   global $mgmt_config;
 
+  $error = array();
+
   if ($conn_id != "" && $local_file != "" && $remote_file != "" && ($passive == true || $passive == false))
   {
     $download = false;
@@ -122,6 +126,8 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 {
   global $mgmt_config;
+
+  $error = array();
 
   if ($conn_id != "" && $local_file != "" && $remote_file != "" && ($passive == true || $passive == false))
   {
@@ -159,6 +165,8 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 function ftp_deletefile ($conn_id, $remote_file, $passive=true)
 {
   global $mgmt_config;
+
+  $error = array();
 
   if ($conn_id != "" && $remote_file != "" && ($passive == true || $passive == false))
   {
@@ -210,7 +218,7 @@ function ftp_filelist ($conn_id, $path=".", $passive=true)
         list ($item['rights'], $item['number'], $item['user'], $item['group'], $item['size'], $item['month'], $item['day'], $item['time']) = $chunks;
 
         // file or directory
-        $item['type'] = $chunks[0]{0} === 'd' ? 'directory' : 'file';
+        $item['type'] = $chunks[0][0] === 'd' ? 'directory' : 'file';
 
         array_splice ($chunks, 0, 8);
 

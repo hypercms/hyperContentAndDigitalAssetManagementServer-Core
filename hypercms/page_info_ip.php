@@ -80,6 +80,6 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
   ?>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

@@ -40,7 +40,7 @@ $listview = "";
 $items_row = -1;
 $thumbnailsize_small = 120;
 $thumbnailsize_medium = 160;
-$thumbnailsize_large = 180;
+$thumbnailsize_large = 160;
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -74,6 +74,9 @@ if ((is_array ($column) || empty ($column)) && checktoken ($token, $user))
   if (empty ($column)) $column = array();
   
   // replace defintion of publication
+  if (empty ($objectlistcols)) $objectlistcols = array();
+  if (empty ($objectlistcols[$site])) $objectlistcols[$site] = array();
+  
   $objectlistcols[$site][$cat] = $column;
   
   // save column definition
@@ -124,7 +127,7 @@ if (valid_locationname ($location))
     {
       reset ($access);
 
-      while (list ($group, $value) = each ($access[$site]))
+      foreach ($access[$site] as $group=>$value)
       {
         if ($localpermission[$site][$group][$itemname] == 1 && $value != "")
         {    
@@ -264,7 +267,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
           }
           
           // get metadata of container
-          if (is_array ($objectlistcols[$site][$cat]) && sizeof ($objectlistcols[$site][$cat]) > 0)
+          if (!empty ($objectlistcols[$site][$cat]) && is_array ($objectlistcols[$site][$cat]) && sizeof ($objectlistcols[$site][$cat]) > 0)
           {
             $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols[$site][$cat]));
             
@@ -353,7 +356,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
                        
         if (!$is_mobile)
         {            
-          if (is_array ($objectlistcols[$site][$cat]))
+          if (!empty ($objectlistcols[$site][$cat]) && is_array ($objectlistcols[$site][$cat]))
           {
             $i = 1;
             
@@ -412,8 +415,8 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
                        <div id=\"t".$items_row."\" ".$selectclick." class=\"hcmsObjectUnselected\">
                           <div class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
                             $dlink_start."
-                              <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\" data-objectpath=\"".$location_esc.$folder."/\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"max-width:186px; max-height:186px;\" /></div>
-                              ".showshorttext($folder_name, 18, true)."
+                              <div id=\"w".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnailWidth".$temp_explorerview."\" data-objectpath=\"".$location_esc.$folder."/\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"max-width:186px; max-height:186px;\" /></div>
+                              <div class=\"hcmsItemName\">".showshorttext($folder_name, 18, true)."</div>
                             ".$dlink_end."
                           </div>
                           ".$linking_buttons."
@@ -695,6 +698,8 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
           if (is_file ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg"))
           {
+            $size_image = "";
+
             // use original image size from RDBMS
             if (!empty ($container_info['width']) && !empty ($container_info['height']))
             {
@@ -710,12 +715,13 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
               if ($container_info['width'] < 100 && $container_info['height'] < 100)
               {
                 $div_id = "id=\"x".$items_row."\"";
-                $class_size = "";
+                $class_size = "class=\"hcmsThumbnailFrame\"";
+                $size_image = "style=\"width:".$container_info['width']."px; height:".$container_info['height']."px;\"";
               }
               else
               {
                 $div_id = "id=\"".strtolower(substr($ratio, 0, 1)).$items_row."\"";
-                $class_size = "class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"";
+                $class_size = "class=\"hcmsThumbnailFrame hcmsThumbnail".$ratio.$temp_explorerview."\"";
               }
             }
             // no size from RDBMS available
@@ -725,15 +731,14 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
               // use size of thumbnail file (will increase I/O and reduce performance)
               // $imgsize = getimagesize ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg");
               $div_id = "id=\"b".$items_row."\"";
-              $class_size = "class=\"hcmsThumbnailWidth".$temp_explorerview." hcmsThumbnailHeight".$temp_explorerview."\"";
-              $class_size = "";
+              $class_size = "class=\"hcmsThumbnailFrame hcmsThumbnailWidth".$temp_explorerview." hcmsThumbnailHeight".$temp_explorerview."\"";
             }
 
             // galleryview - view option for locked multimedia objects
             if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
             else $class_image  = "class=\"lazyload hcmsImageItem\"";
 
-            $thumbnail = "<div ".$div_id." ".$class_size."><img data-src=\"".createviewlink ($site, $media_info['filename'].".thumb.jpg")."\" ".$class_image." /></div>";
+            $thumbnail = "<div ".$div_id." ".$class_size."><img data-src=\"".cleandomain (createviewlink ($site, $media_info['filename'].".thumb.jpg"))."\" ".$class_image." ".$size_image." /></div>";
           }
           // display file icon if thumbnail fails 
           else
@@ -742,7 +747,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
             else $class_image = "";
                     
-            $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
+            $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
           }           
         }
         // display file icon for non multimedia objects 
@@ -752,7 +757,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
           else $class_image = "";
                   
-          $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
+          $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
         }
 
         // if linking is used display download buttons, display edit button for mobile edition
@@ -765,7 +770,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           {            
             $linking_buttons .= "
             <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"openObjectView('".$location_esc."', '".$object."', 'preview');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
-            <a href=\"".createviewlink ($site, $mediafile, $object_name, false, "download")."\" target=\"_blank\"><button class=\"hcmsButtonDownload\" style=\"width:94%;\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
+            <a href=\"".cleandomain (createviewlink ($site, $mediafile, $object_name, false, "download"))."\" target=\"_blank\"><button class=\"hcmsButtonDownload\" style=\"width:94%;\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
           }
         }
 
@@ -793,7 +798,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
                           <div class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".
                             $dlink_start."
                               ".$thumbnail."
-                              ".showshorttext($object_name, 18, true)."
+                              <div class=\"hcmsItemName\">".showshorttext($object_name, 18, true)."</div>
                             ".$dlink_end."
                           </div>
                           ".$linking_buttons."
@@ -856,10 +861,25 @@ else $objects_counted = 0;
 
 .hcmsObjectGalleryMarker
 {
-  cursor: pointer;
   display: table-cell;
+  cursor: pointer;
   text-align: center;
   vertical-align: bottom;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hcmsThumbnailFrame
+{
+  display: block;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+.hcmsItemName
+{
+  display: block;
+  height: 50px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -959,7 +979,7 @@ function toggleview (viewoption)
   var thumbnail;
 
   // thumbnail frame size definitions
-  if (viewoption == "large") style = "max-width:<?php echo ceil ($thumbnailsize_large * 1.6); ?>px; height:<?php echo ($thumbnailsize_large + 56); ?>px;";
+  if (viewoption == "large") style = "max-width:<?php echo ceil ($thumbnailsize_large * 4); ?>px; height:<?php echo ($thumbnailsize_large + 56); ?>px;";
   else if (viewoption == "medium") style = "width:<?php echo ($thumbnailsize_medium + 12); ?>px; height:<?php echo ($thumbnailsize_medium + 56); ?>px;";
   else if (viewoption == "small") style = "width:<?php echo ($thumbnailsize_small + 28); ?>px; height:<?php echo ($thumbnailsize_small + 56); ?>px;";
 
@@ -980,7 +1000,7 @@ function toggleview (viewoption)
     
     if (thumbnail)
     {
-      thumbnail.className = 'hcmsThumbnailWidth' + viewoption;
+      thumbnail.className = 'hcmsThumbnailFrame hcmsThumbnailWidth' + viewoption;
     }
     else
     {
@@ -998,7 +1018,7 @@ function toggleview (viewoption)
 
         if (thumbnail)
         {
-          thumbnail.className = 'hcmsThumbnailWidth' + viewoption + ' hcmsThumbnailHeight' + viewoption;    
+          thumbnail.className = 'hcmsThumbnailFrame hcmsThumbnailWidth' + viewoption + ' hcmsThumbnailHeight' + viewoption;    
         }
       }
     }
@@ -1025,7 +1045,7 @@ function initsizecols ()
 {
   var colwidth;
 
-  for (i = 0; i < <?php if (is_array ($objectlistcols[$site][$cat])) echo sizeof ($objectlistcols[$site][$cat]) + 1; else echo 1;  ?>; i++)
+  for (i = 0; i < <?php if (!empty ($objectlistcols[$site][$cat]) && is_array ($objectlistcols[$site][$cat])) echo sizeof ($objectlistcols[$site][$cat]) + 1; else echo 1;  ?>; i++)
   {
     // get column width
     colwidth = localStorage.getItem('Col<?php echo $site.$cat; ?>'+i);
@@ -1042,7 +1062,7 @@ function resizecols ()
 {
   var colwidth;
 
-  for (i = 0; i < <?php if (is_array ($objectlistcols[$site][$cat])) echo sizeof ($objectlistcols[$site][$cat]) + 1; else echo 1;  ?>; i++)
+  for (i = 0; i < <?php if (!empty ($objectlistcols[$site][$cat]) && is_array ($objectlistcols[$site][$cat])) echo sizeof ($objectlistcols[$site][$cat]) + 1; else echo 1;  ?>; i++)
   {
     // get width of table header columns
     if ($('#c'+i)) colwidth = $('#c'+i).width();
@@ -1057,7 +1077,7 @@ function resizecols ()
 
 function resetcols ()
 {
-  for (i = 0; i < <?php if (is_array ($objectlistcols[$site][$cat])) echo sizeof ($objectlistcols[$site][$cat]) + 1; else echo 1;  ?>; i++)
+  for (i = 0; i < <?php if (!empty ($objectlistcols[$site][$cat]) && is_array ($objectlistcols[$site][$cat])) echo sizeof ($objectlistcols[$site][$cat]) + 1; else echo 1;  ?>; i++)
   {
     // save column width
     localStorage.removeItem('Col<?php echo $site.$cat; ?>'+i);
@@ -1279,7 +1299,7 @@ function initalize ()
             <label><input onclick="setcolumns()" type="checkbox" name="column[type]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['type'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['type'][$lang]); ?></label><br />
             <label><input onclick="setcolumns()" type="checkbox" name="column[owner]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['owner'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['owner'][$lang]); ?></label><br />
             <?php
-            if (is_array ($labels[$site][$cat]) && sizeof ($labels[$site][$cat]) > 0)
+            if (!empty ($labels[$site][$cat]) && is_array ($labels[$site][$cat]) && sizeof ($labels[$site][$cat]) > 0)
             {
               foreach ($labels[$site][$cat] as $text_id => $label)
               {
@@ -1306,7 +1326,7 @@ function initalize ()
     <?php
     if (!$is_mobile)
     {
-      if (is_array ($objectlistcols[$site][$cat]))
+      if (!empty ($objectlistcols[$site][$cat]) && is_array ($objectlistcols[$site][$cat]))
       {
         $i = 1;
         
@@ -1439,6 +1459,6 @@ else
 initalize();
 </script>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

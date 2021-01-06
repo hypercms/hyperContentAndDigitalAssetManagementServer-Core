@@ -572,6 +572,6 @@ foreach ($result as $row => $temp_array)
 
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

@@ -148,8 +148,8 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
             list ($portalsite, $portaltheme) = explode ("/", $temp_portaltheme[0]);
             $brightness = getbrightness ($temp_portalcolor[0]);
 
-            if ($portaltheme == "day" && $brightness < 130) $themeinvertcolors = true;
-            elseif ($portaltheme == "night" && $brightness >= 130) $themeinvertcolors = true;
+            if ($portaltheme == "day" && $brightness < 130) $themeinvertcolors = "night";
+            elseif ($portaltheme == "night" && $brightness >= 130) $themeinvertcolors = "day";
           }
         }
       }
@@ -409,37 +409,48 @@ if ($login != "" && $login != false)
   if (!empty ($userrecord[0]))
   {
     $superadminarray = getcontent ($userrecord[0], "<admin>");
-    $superadmin = $superadminarray[0];
+    if (!empty ($superadminarray[0])) $superadmin = $superadminarray[0];
+    else $superadmin = 0;
 
     $phonearray = getcontent ($userrecord[0], "<phone>");
-    $phone = $phonearray[0];
+    if (!empty ($phonearray[0])) $phone = $phonearray[0];
+    else $phone = "";
     
     $emailarray = getcontent ($userrecord[0], "<email>");
-    $email = $emailarray[0];
+    if (!empty ($emailarray[0])) $email = $emailarray[0];
+    else $email = "";
     
     $realnamearray = getcontent ($userrecord[0], "<realname>");
-    $realname = $realnamearray[0];
+    if (!empty ($realnamearray[0])) $realname = $realnamearray[0];
+    else $realname = "";
     
     $hashcodearray = getcontent ($userrecord[0], "<hashcode>");
-    $hashcode = $hashcodearray[0];
+    if (!empty ($hashcodearray[0])) $hashcode = $hashcodearray[0];
+    else $hashcode = "";
     
     $languagearray = getcontent ($userrecord[0], "<language>");
-    $userlanguage = $languagearray[0];
+    if (!empty ($languagearray[0])) $userlanguage = $languagearray[0];
+    else $userlanguage = "";
     
     $timezonearray = getcontent ($userrecord[0], "<timezone>");
-    $usertimezone = $timezonearray[0];
+    if (!empty ($timezonearray[0])) $usertimezone = $timezonearray[0];
+    else $usertimezone = "";
     
     $themearray = getcontent ($userrecord[0], "<theme>");
-    $usertheme = $themearray[0];
+    if (!empty ($themearray[0])) $usertheme = $themearray[0];
+    else $usertheme = "standard";
 
     $validdatefromarray = getcontent ($userrecord[0], "<validdatefrom>");
-    $uservaliddatefrom = $validdatefromarray[0];
+    if (!empty ($validdatefromarray[0])) $uservaliddatefrom = $validdatefromarray[0];
+    else $uservaliddatefrom = "";
 
     $validdatetoarray = getcontent ($userrecord[0], "<validdateto>");
-    $uservaliddateto = $validdatetoarray[0];
+    if (!empty ($validdatetoarray[0])) $uservaliddateto = $validdatetoarray[0];
+    else $uservaliddateto = "";
     
     $signaturearray = getcontent ($userrecord[0], "<signature>");
-    $signature = $signaturearray[0];
+    if (!empty ($signaturearray[0])) $signature = $signaturearray[0];
+    else $signature = "";
     
     if (valid_publicationname ($site)) 
     {
@@ -453,7 +464,7 @@ if ($login != "" && $login != false)
 
     $usersitearray = getcontent ($userrecord[0], "<publication>");
       
-    if ($usersitearray != false) $usersite = "|".implode ("|", $usersitearray)."|";    
+    if (is_array ($usersitearray)) $usersite = "|".implode ("|", $usersitearray)."|";    
     else $usersite = "";
   }
 }
@@ -583,7 +594,7 @@ if ($login != "" && $login != false)
         // get themes of user
         if ($superadmin == "1") $theme_array = getthemes ($siteaccess);
         elseif (!empty ($usersitearray)) $theme_array = getthemes ($usersitearray);
-        else $theme_array = false;
+        else $theme_array = getthemes ();
 
         if (is_array ($theme_array) && sizeof ($theme_array) > 0)
         {
@@ -635,6 +646,7 @@ if ($login != "" && $login != false)
                 natcasesort ($grouprecord_array);
                 reset ($grouprecord_array);
                 
+                $list1_array = array();
                 $list2_array = array();
                           
                 foreach ($grouprecord_array as $grouprecord)
@@ -644,7 +656,7 @@ if ($login != "" && $login != false)
                     // unselected groups      
                     if (substr_count ($usergroup, "|".$grouprecord."|") == 0)
                     {
-                      echo "
+                      $list1_array[] = "
                       <option value=\"".$grouprecord."\">".$grouprecord."</option>";
                     }
                     // selected groups
@@ -654,6 +666,14 @@ if ($login != "" && $login != false)
                       <option value=\"".$grouprecord."\">".$grouprecord."</option>";
                     }
                   }
+                }
+
+                natcasesort ($list1_array);
+                reset ($list1_array);
+                
+                if (is_array ($list1_array) && sizeof ($list1_array) > 0)
+                {
+                  foreach ($list1_array as $list1) echo $list1;
                 }
               }
   
@@ -847,6 +867,6 @@ if ($login != "" && $login != false)
 
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

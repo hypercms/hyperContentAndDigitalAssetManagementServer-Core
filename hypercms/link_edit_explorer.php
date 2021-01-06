@@ -41,20 +41,25 @@ checkusersession ($user, false);
 $dir = deconvertpath ($dir, "file");
 
 // get last location in page structure
-if (!valid_locationname ($dir) && isset ($temp_pagelocation[$site])) 
+if (!valid_locationname ($dir) && !empty ($temp_pagelocation[$site])) 
 {
   $dir = $temp_pagelocation[$site];
   
   if (!is_dir ($dir))
   {
     $dir = "";
-    $temp_pagelocation[$site] = null;
+
+    unset ($temp_pagelocation[$site]);
+
     setsession ('hcms_temp_pagelocation', $temp_pagelocation);
   }
 }
 elseif (valid_locationname ($dir))
 {
+  if (!isset ($temp_pagelocation)) $temp_pagelocation = array();
+
   $temp_pagelocation[$site] = $dir;
+
   setsession ('hcms_temp_pagelocation', $temp_pagelocation);
 }
 
@@ -149,6 +154,8 @@ if (!empty ($dir) && !empty ($site))
       <td colspan=\"2\" style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang])."</a></td>
     </tr>";
   }
+
+  $entry_dir = array();
   
   // search results
   if (trim ($search_expression) != "")

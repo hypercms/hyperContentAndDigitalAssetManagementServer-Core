@@ -13,6 +13,8 @@
 <language>en</language>
 <timezone></timezone>
 <theme>standard</theme>
+<validdatefrom></validdatefrom>
+<validdateto></validdateto>
 </user>
 <user>
 <login>hcms_download</login>
@@ -27,5 +29,7 @@
 <language>en</language>
 <timezone></timezone>
 <theme>standard</theme>
+<validdatefrom></validdatefrom>
+<validdateto></validdateto>
 </user>
 </userlist>

@@ -21,7 +21,7 @@ function encryptfile ($location, $file, $key="")
   if (valid_locationname ($location) && valid_objectname ($file))
   {
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
     
     if (is_file ($location.$file))
     {
@@ -43,7 +43,7 @@ function decryptfile ($location, $file, $key="")
   if (valid_locationname ($location) && valid_objectname ($file))
   {
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
     
     if (is_file ($location.$file))
     {

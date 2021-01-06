@@ -345,7 +345,7 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
     <div style="margin-top:10px;">
       <label for="logo"><?php echo getescapedtext ($hcms_lang['start-image'][$lang]);?> </label><br />
       <input style="vertical-align:top; width:calc(98% - 36px);" type="text" onchange="updateCodeSegment();" id="logo" />
-      <img class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_media.png" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
+      <img class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_media.png" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
     </div>
     <?php } ?>
 
@@ -413,6 +413,6 @@ updateCodeSegment();
 ?>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

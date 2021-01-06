@@ -47,6 +47,8 @@ if (linking_valid() == true)
 
 // --------------------------------- logic section ----------------------------------
 
+$error = array();
+
 // delete entry from saved search log
 function searchlog_delete ($search_delete_id, $user)
 {
@@ -114,7 +116,7 @@ class hcms_menupoint
   {
     $this->name = $name;
 
-    // If we start with a / we don't use a image from our theme location
+    // If we start with a / we don't use an image from our theme location
     if (substr ($image, 0, strlen ('http://')) == 'http://' || substr ($image, 0, strlen ('https://')) == 'https://')
       $this->image = $image;
     elseif (!empty($image))
@@ -312,6 +314,7 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
 {
   global $mgmt_config, $pageaccess, $compaccess, $localpermission, $hiddenfolder;
 
+  $location = correctpath ($location);
   $site = getpublication ($location);
   $cat = getcategory ($site, $location);
 
@@ -321,7 +324,7 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
     $location = deconvertpath ($location);
     $id = "";
     $rnrid = "";
-  
+
     // full access to the folder
     if (accesspermission ($site, $location, $cat))
     {
@@ -333,7 +336,7 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
         $folder_array = array ();
 
         while ($folder = @readdir ($dir)) 
-        { 
+        {
           // if directory
           if ($folder != "" && $folder != '.' && $folder != '..' && is_dir ($location.$folder)) 
           { 
@@ -944,7 +947,7 @@ else
           {
             $result_load = loadtemplate ($portalsite, $portaltemplate.".portal.tpl");
             
-            if ($result_load['result'] == true)
+            if (!empty ($result_load['result']))
             {
               $temp = getcontent ($result_load['content'], "<navigation>");
               if (!empty ($temp[0])) $portalnavigation = explode ("|", $temp[0]);
@@ -1356,7 +1359,7 @@ else
     <script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
 
     <!-- Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php echo $mgmt_config['googlemaps_appkey']; ?>"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php if (!empty ($mgmt_config['googlemaps_appkey'])) echo $mgmt_config['googlemaps_appkey']; ?>"></script>
 
     <script type="text/javascript">
 
@@ -2081,8 +2084,8 @@ else
           // workplace frame load screen
           if (parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen')) parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen').style.display='inline';
 
-          // submit form
-          form.submit();
+          // submit form (use delay due to issues with frames)
+          window.setTimeout(function(){form.submit();}, 100);
 
           // enable checkboxes for file-type
           if (filetypeLayer && filetypeLayer.style.display != 'none')
@@ -2102,8 +2105,11 @@ else
 
           return true;
         }
-        // wait
-        else window.setTimeout(startSearch, 1000);
+        // wait and restart search
+        else
+        {
+          window.setTimeout(startSearch, 1000);
+        }
       }
       else return false;
     }
@@ -2516,7 +2522,7 @@ else
         <hr />
 
         <!-- geolocation search -->
-        <?php if (!$is_mobile) { ?>
+        <?php if (!$is_mobile && !empty ($mgmt_config['googlemaps_appkey'])) { ?>
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></span>
           <img onClick="activateGeolocationSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />

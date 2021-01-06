@@ -94,6 +94,6 @@ if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, '
   </form>
   <?php echo $show; ?>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

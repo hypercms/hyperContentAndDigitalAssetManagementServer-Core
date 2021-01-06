@@ -22,6 +22,8 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
 {
   global $mgmt_config, $eventsystem;
 
+  $error = array();
+
   // define delimiters and enclosures
   $delimiters_csv = array (",", ";", "\t", "|");
   $enclosures_csv = array ('"', "'");
@@ -295,7 +297,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                 if ($contentdata_new == false)
                 {
                   $errcode = "10198";
-                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|CSV content for ".$contentfile." could not be imported into container";
+                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|CSV content for '".$contentfile."' could not be imported into container";
                 }
                 // save container on success
                 else
@@ -330,12 +332,12 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                   if ($savefile == false)
                   {
                     $errcode = "10199";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|container  ".$contentfile." could not be saved after CSV import";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|container  ".$contentfile." could not be saved after CSV import";
                   }
                   else
                   {
                     $errcode = "00199";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|$errcode|CSV content for ".convertpath ($site, $location.$object, $cat)." (".$contentfile.") has been successfully imported and saved into container by user '".$user."' (".getuserip().")";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|".$errcode."|CSV content for ".convertpath ($site, $location.$object, $cat)." (".$contentfile.") has been successfully imported and saved into container by user '".$user."' (".getuserip().")";
                   }
                 }
               }
@@ -756,12 +758,12 @@ function createtaxonomy ($site_name="", $recreate=false)
               }
 
               $errcode = "00209";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|$errcode|Taxonomy of publication '".$site."' has been created";
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|".$errcode."|Taxonomy of publication '".$site."' has been created";
             }
             else
             {
               $errcode = "10209";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Taxonomy of publication '".$site."' could not be created";
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Taxonomy of publication '".$site."' could not be created";
             }
           }
         }
@@ -826,7 +828,9 @@ function splitkeywords ($keywords, $charset="UTF-8")
 
 function copymetadata ($file_source, $file_dest)
 {
-	global $mgmt_config, $mgmt_mediametadata, $user;
+  global $mgmt_config, $mgmt_mediametadata, $user;
+  
+  $error = array();
 
 	if ($file_source != "" && $file_dest != "" && is_array ($mgmt_mediametadata))
   {
@@ -899,14 +903,14 @@ function copymetadata ($file_source, $file_dest)
         @exec ($cmd, $buffer, $errorCode);
 
         // delete temp files
-        if ($temp_source['crypted']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
-        if ($temp_dest['crypted']) deletefile ($temp_dest['templocation'], $temp_dest['tempfile'], 0);
+        if (!empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty($temp_source['tempfile'])) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+        if (!empty ($temp_dest['crypted']) && !empty ($temp_source['templocation']) && !empty($temp_source['tempfile'])) deletefile ($temp_dest['templocation'], $temp_dest['tempfile'], 0);
 
         // on error
         if ($errorCode)
         {
           $errcode = "20241";
-          $error[] = $mgmt_config['today']."|hypercms_meta.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed in copy metadata to file: ".getobject($file_dest);
+          $error[] = $mgmt_config['today']."|hypercms_meta.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) failed in copy metadata to file: ".getobject($file_dest);
 
           // save log
           savelog (@$error);
@@ -932,6 +936,8 @@ function copymetadata ($file_source, $file_dest)
 function extractmetadata ($file)
 {
   global $user, $mgmt_config, $mgmt_mediametadata;
+
+  $error = array();
 
   if (is_file ($file) && is_array ($mgmt_mediametadata))
   {
@@ -976,7 +982,7 @@ function extractmetadata ($file)
         if ($errorCode)
         {
           $errcode = "20247";
-          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) '".$cmd."' failed for file: ".getobject($file);
+          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) '".$cmd."' failed for file: ".getobject($file);
         }
         elseif (is_array ($output))
         {
@@ -1232,6 +1238,8 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
 {
   global $user, $mgmt_config, $mgmt_mediametadata, $hcms_ext;
 
+  $error = array();
+
   if (is_file ($file) && is_array ($id3) && is_array ($hcms_ext) && is_file ($mgmt_config['abs_path_cms']."library/getID3/getid3/getid3.php"))
   {
     if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
@@ -1329,7 +1337,7 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
         	if (!empty ($tagwriter->warnings))
           {
             $errcode = "20280";
-            $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|warning|$errcode|There were warnings when writing ID3 tags to file: ".getobject($file)."<br />".implode("<br />", $tagwriter->warnings);
+            $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|warning|".$errcode."|There were warnings when writing ID3 tags to file: ".getobject($file)."<br />".implode("<br />", $tagwriter->warnings);
         	}
 
           // save media stats and move temp file
@@ -1348,7 +1356,7 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
         else
         {
           $errcode = "20281";
-          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write ID3 tags to file: ".getobject($file);
+          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write ID3 tags to file: ".getobject($file);
         }
       }
 
@@ -1372,6 +1380,8 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
 function id3_create ($site, $text)
 {
   global $mgmt_config;
+
+  $error = array();
 
   if (valid_publicationname ($site) && is_array ($text) && !empty ($mgmt_config['abs_path_data']))
   {
@@ -1403,7 +1413,7 @@ function id3_create ($site, $text)
     else
     {
       $errcode = "10109";
-      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Media mapping of publication '".$site."' could not be loaded";
+      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Media mapping of publication '".$site."' could not be loaded";
 
       savelog (@$error);
 
@@ -1542,7 +1552,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
             if ($errorCode)
             {
               $errcode = "20242";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject($file);
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject($file);
             }
           }
 
@@ -1560,7 +1570,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
               if ($errorCode)
               {
                 $errcode = "20243";
-                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject($file);
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject($file);
               }
             }
           }
@@ -1635,7 +1645,7 @@ function xmp_create ($site, $text)
     else
     {
       $errcode = "10101";
-      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Media mapping of publication '".$site."' could not be loaded";
+      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Media mapping of publication '".$site."' could not be loaded";
 
       savelog (@$error);
 
@@ -2235,6 +2245,8 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
 {
   global $user, $mgmt_config, $mgmt_mediametadata;
 
+  $error = array();
+
   // write meta data only for the following file extensions
   $allowed_ext = array (".jpg", ".jpeg", ".pjpeg");
 
@@ -2322,7 +2334,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
             if ($errorCode)
             {
               $errcode = "20242";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for clearing IPTC of file: ".getobject($file);
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) failed for clearing IPTC of file: ".getobject($file);
             }
           }
         }
@@ -2377,7 +2389,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
       else
       {
         $errcode = "20244";
-        $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|injection of IPTC failed for file: ".getobject($file);
+        $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|injection of IPTC failed for file: ".getobject($file);
       }
     }
 
@@ -2524,7 +2536,7 @@ function createmapping ($site, $mapping)
     {
       // remove all tags
       $mapping_data_info = strip_tags ($mapping);
-      $mapping_data_save = "/*\n".$mapping_data_info."\n*/\n/* hcms_mapping */\n".trim ($mapping_result);
+      $mapping_data_save = "/*\n".$mapping_data_info."\n*/\n/* hcms_mapping */\n\$mapping = array();\n".trim ($mapping_result);
 
       // save mapping file
       return savefile ($mgmt_config['abs_path_data']."config/", $site.".media.map.php", "<?php\n".$mapping_data_save."\n?>");
@@ -2878,6 +2890,8 @@ function metadata_exists ($mapping, $text_array)
 function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="", $containerdata="", $user, $savecontainer=true)
 {
   global $eventsystem, $mgmt_config, $hcms_ext;
+
+  $error = array();
   
   if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
 
@@ -3060,7 +3074,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   else
                   {
                     $errcode = "20604";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write meta data to container with ID: ".$container_id;
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write meta data to container with ID: ".$container_id;
                   }
                 }
               }
@@ -3152,7 +3166,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 else
                 {
                   $errcode = "20606";
-                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write EXIF meta data to container with ID: ".$container_id;
+                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write EXIF meta data to container with ID: ".$container_id;
                 }
               }
             }
@@ -3233,7 +3247,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 else
                 {
                   $errcode = "20605";
-                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write ID3 meta data to container with ID: ".$container_id;
+                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write ID3 meta data to container with ID: ".$container_id;
                 }
               }
             }
@@ -3365,7 +3379,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               else
               {
                 $errcode = "20607";
-                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write XMP meta data to container with ID: ".$container_id;
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write XMP meta data to container with ID: ".$container_id;
               }
             }
           }
@@ -3513,7 +3527,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   else
                   {
                     $errcode = "20608";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write IPTC meta data to container with ID: ".$container_id;
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write IPTC meta data to container with ID: ".$container_id;
                   }
                 }
               }
@@ -3584,7 +3598,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               else
               {
                 $errcode = "20600";
-                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Speech meta data to container with ID: ".$container_id;
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write Google Speech meta data to container with ID: ".$container_id;
               }
             }
           }
@@ -3665,7 +3679,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   else
                   {
                     $errcode = "20602";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Vision meta data to container with ID: ".$container_id;
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write Google Vision meta data to container with ID: ".$container_id;
                   }
                 }
               }
@@ -3817,7 +3831,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   else
                   {
                     $errcode = "20603";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write Google Video Intelligence meta data to container with ID: ".$container_id;
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write Google Video Intelligence meta data to container with ID: ".$container_id;
                   }
                 }
               }
@@ -3898,7 +3912,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             else
             {
               $errcode = "20609";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write QUALITY meta data to container with ID: ".$container_id;
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write QUALITY meta data to container with ID: ".$container_id;
             }
           }
         }
@@ -3923,7 +3937,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             if ($save == false)
             {
               $errcode = "20581";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write meta data to container with ID: ".$container_id;
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write meta data to container with ID: ".$container_id;
             }
           }
         }

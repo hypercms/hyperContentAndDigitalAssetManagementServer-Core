@@ -1,6 +1,7 @@
 <?php
 // set functions active (1) or inactive (0)
 // these settings are valid for all publications
+$eventsystem = array();
 $eventsystem['onaccess'] = 0;
 $eventsystem['onlogon_pre'] = 0;
 $eventsystem['onlogon_post'] = 1;
@@ -73,8 +74,8 @@ $eventsystem['ondeletegroup_post'] = 0;
 // $eventsystem ['searchcharset']['publicationname'] = "ISO-8859-1";
 
 // define language suffix in text ID's
-// $eventsystem ['searchlanguage']['publicationname'][0] = "_EN";
-// $eventsystem ['searchlanguage']['publicationname'][1] = "_DE";
+// $eventsystem['searchlanguage']['publicationname'][0] = "_EN";
+// $eventsystem['searchlanguage']['publicationname'][1] = "_DE";
 
 // description:
 // with the help of the hyperCMS Event System you can automize operations on the basis

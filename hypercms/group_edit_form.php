@@ -653,6 +653,6 @@ else
 </form>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

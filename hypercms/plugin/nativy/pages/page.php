@@ -502,7 +502,7 @@ function checkForm()
   </form>
 </div>
 
-<?php include_once ($mgmt_config['abs_path_cms']."include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>
 <?php

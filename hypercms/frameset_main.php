@@ -47,12 +47,11 @@ checkusersession ($user, false);
 <script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
 
 <?php
-// invert button colors
-if ($hcms_themeinvertcolors)
+// invert colors
+if (!empty ($hcms_themeinvertcolors))
 {
   echo "<style>";
-  echo invertcolorCSS ("img.hcmsButtonTiny", 100);
-  echo invertcolorCSS ("img.hcmsButtonTiny:hover", 0);
+  echo invertcolorCSS ($hcms_themeinvertcolors);
   echo "</style>";
 }
 
@@ -326,10 +325,15 @@ function maxUpload (id)
 
 function closeUpload (id)
 {
-  // verify if objects beeing edited in upload layer
-  var warning = document.getElementById("uploadsFrame").contentWindow.showwarning();
+  var warning = "";
 
-  if (warning != "") alert ("<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>");
+  // verify if objects beeing edited in upload layer
+  if (typeof document.getElementById("uploadsFrame").contentWindow.showwarning !== "undefined")
+  {
+    var warning = document.getElementById("uploadsFrame").contentWindow.showwarning();
+
+    if (warning != "") alert ("<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>");
+  }
 
   // close upload layer
   if (document.getElementById(id) && warning == "")
@@ -393,35 +397,36 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <img src="<?php if (!empty ($mgmt_config['logo_top'])) echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
   
   <?php if (empty ($hcms_assetbrowser)) { ?>
-  <img src="<?php echo getthemelocation(); ?>img/home.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="showHome();" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />
+  <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="showHome();" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />
   <?php } ?>
 
   <?php if (linking_valid() == false) { ?>
-  <img src="<?php echo getthemelocation(); ?>img/button_explorer.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="switchNav();" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
-  <img src="<?php echo getthemelocation(); ?>img/button_search.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="switchSearch();" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+  <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="switchNav();" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+  <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="switchSearch();" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
   <?php } ?>
   
   <?php if (linking_valid() == true)  { ?>
-  <a href="frameset_objectlist.php?action=linking" target="workplFrame"><img src="<?php echo getthemelocation(); ?>img/button_view_gallery_medium.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" /></a>
+  <a href="frameset_objectlist.php?action=linking" target="workplFrame"><img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_gallery_medium.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" /></a>
   <?php if (checkrootpermission ('desktoptaskmgmt')) { ?>
-  <a href="task/task_list.php" target="workplFrame"><img src="<?php echo getthemelocation(); ?>img/task.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" /></a>
+  <a href="task/task_list.php" target="workplFrame"><img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/task.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" /></a>
   <?php } ?>
   <?php } ?>
 
   <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
-  <img src="<?php echo getthemelocation(); ?>img/button_chat.png" class="hcmsButtonTiny  hcmsButtonSizeSquare" style="padding:2px;" onClick="hcms_openChat();" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
+  <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_chat.png" class="hcmsButtonTiny  hcmsButtonSizeSquare" style="padding:2px;" onClick="hcms_openChat();" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
   <?php } ?>
   
   <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
-  <img src="<?php echo getthemelocation(); ?>img/button_logout.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="top.location='userlogout.php';" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
+  <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_logout.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" onclick="top.location='userlogout.php';" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
+  <?php } ?>
+
+  <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
+  <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_info.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="position:absolute; left:0; bottom:0; padding:2px; margin:32px 0px;" onclick="hcms_showFormLayer ('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
   <?php } ?>
 </div>
 
 <!-- user info -->
 <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
-
-<img src="<?php echo getthemelocation(); ?>img/button_info.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="position:absolute; left:0; bottom:0; padding:2px; margin:32px 0px;" onclick="hcms_showFormLayer ('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
-  
 <div id="userInfoLayer" class="hcmsMessage" style="position:absolute; bottom:10px; left:32px; display:none; z-index:100; padding:4px; width:200px; min-height:80px; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
   <img src="<?php echo getthemelocation()."img/user.png"; ?>" class="hcmsIconList" /> <span class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></span><br/>
   <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php echo getsession ('hcms_user'); ?></span><br/><br/>
@@ -429,7 +434,6 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php $servertime->InstallClock(); ?></span>
 </div>
 <?php $servertime->InstallClockBody(); ?>
-
 <?php } ?>
 
 <!-- Access Links -->

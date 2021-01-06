@@ -87,16 +87,16 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
   $contentfield_check = scriptcode_clean_functions ($contentfield, $cleanlevel);
 
    // if passed
-  if ($contentfield_check['result'] == true)
+  if (!empty ($contentfield_check['result']))
   {    
     // save template file
     $result_save = edittemplate ($site, $template, $cat, $user, $contentfield, $extension, $application);
     
-    if ($result_save['result'] == true && $preview == "yes")
+    if (!empty ($result_save['result']) && $preview == "yes")
     {
-      $add_onload = " hcms_openWindow('".$mgmt_config['url_path_cms']."template_view.php?site=".url_encode($site)."&cat=".$cat."&template=".url_encode($template)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
+      $add_onload = " hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."template_view.php?site=".url_encode($site)."&cat=".$cat."&template=".url_encode($template)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
     }
-    elseif ($result_save['result'] == false)
+    elseif (empty ($result_save['result']))
     {
       $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['template-could-not-be-saved'][$lang], $charset, $lang)."</span>";
     }
@@ -746,6 +746,7 @@ function savetemplate(mode)
               <img onClick=\"format_tag('commentu');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_commentu.png\" alt=\"".getescapedtext ($hcms_lang['unformatted-comment'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['unformatted-comment'][$lang], $charset, $lang)."\" />
               <img onClick=\"format_tag('commentf');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_commentf.png\" alt=\"".getescapedtext ($hcms_lang['formatted-comment'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['formatted-comment'][$lang], $charset, $lang)."\" />";
              echo "
+             <img onClick=\"format_tag('texts')\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_signature.png\" alt=\"".getescapedtext ($hcms_lang['signature'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['signature'][$lang], $charset, $lang)."\" />
            </div>";
            
               if ($cat == "meta") echo "
@@ -822,6 +823,6 @@ function savetemplate(mode)
 
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

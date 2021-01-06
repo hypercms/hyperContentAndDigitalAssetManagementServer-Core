@@ -155,6 +155,12 @@ if (is_file ($mgmt_config['abs_path_cms']."connector/rest/library/hypercms_rest.
   require_once ($mgmt_config['abs_path_cms']."connector/rest/library/hypercms_rest.inc.php");
 }
 
+// include SSO API (not included in Free Edition)
+if (is_file ($mgmt_config['abs_path_cms']."connector/sso/hypercms_sso.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."connector/sso/hypercms_sso.inc.php");
+}
+
 // include developer AddOns
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_dev.inc.php"))
 {

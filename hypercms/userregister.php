@@ -20,6 +20,12 @@ require ("version.inc.php");
 // kill session if user is not logged in
 if ($user == "") killsession ();
 
+// input parameter for instance
+$sentinstance = getrequest ("sentinstance", "publicationname");
+
+// register instance in session and load main config of instance
+registerinstance ($sentinstance);
+
 // input parameters
 $action = getrequest ("action");
 $site = getrequest_esc ("site"); // site can be *Null* which is not a valid name!
@@ -60,9 +66,11 @@ $show = "";
 $add_onload = "";
 
 // detect browser and set theme
-if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes") $themename = "mobile";
-elseif (!empty ($theme)) $themename = $theme;
+if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes") $is_mobile = 1;
+
+if (!empty ($theme)) $themename = $theme;
 else $themename = "";
+
 
 // save user
 if ($action == "user_register" && checktoken ($token, "sys") && !empty ($mgmt_config['userregistration']))
@@ -75,7 +83,7 @@ if ($action == "user_register" && checktoken ($token, "sys") && !empty ($mgmt_co
   $result = createuser ($site, $login, $password, $confirm_password, "sys");
 
   // edit user settings
-  if ($result['result'] == true)
+  if (!empty ($result['result']))
   {
     // theme
     if (!empty ($mgmt_config[$site]['theme'])) $theme = $mgmt_config[$site]['theme'];
@@ -116,12 +124,7 @@ if ($action == "user_register" && checktoken ($token, "sys") && !empty ($mgmt_co
 }
 
 // wallpaper
-$wallpaper = "";
-
-if (!$is_mobile)
-{
-  $wallpaper = getwallpaper ();
-}
+$wallpaper = getwallpaper ();
 
 // create secure token
 $token_new = createtoken ("sys");
@@ -326,186 +329,188 @@ function blurbackground (blur)
 
 <body onload="setwallpaper(); is_mobilebrowser();">
 
-<div id="startScreen" class="hcmsStartScreen">
-  <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-  <video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.png">
-    <source src="<?php echo $wallpaper; ?>" type="video/mp4">
-  </video>
-  <?php } ?>
-</div>
-
-<div class="hcmsStartBar">
-  <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
-  <div style="position:absolute; top:15px; right:15px; text-align:right;"></div>
-</div>
-
-<div class="hcmsLogonScreen" style="width:300px; margin-left:-150px; margin-top:-240px;" onkeyup="blurbackground(true);" onmouseout="blurbackground(false);">
-
-<?php
-if ($show != "") echo "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"width:290px; padding:5px;\">".$show."</div>\n";
-?>  
-
-<?php if (empty ($result['result'])) { ?>
-  <form name="userform" action="" method="post" onsubmit="return checkForm();">
-    <input type="hidden" name="action" value="user_register">
-    <input type="hidden" name="is_mobile" value="0" />
-    <input type="hidden" name="site" value="<?php echo $site; ?>">
-    <input type="hidden" name="token" value="<?php echo $token_new; ?>">
-    
-    <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?> </div>
-    <div><input type="text" name="login" style="width:300px;" value="<?php echo $login; ?>" /></div>
-    
-    <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['password'][$lang]); ?> </div>
-    <div><input type="password" name="password" style="width:300px;" value="<?php echo $password; ?>" /></div>
-
-    <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?> </div>
-    <div><input type="password" name="confirm_password" style="width:300px;" value="<?php echo $confirm_password; ?>" /></div>
-
-    <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?> </div>
-    <div><input type="text" name="realname" style="width:300px;" value="<?php echo $realname; ?>" /></div>
-
-    <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?> </div>
-    <div><input type="text" name="email" style="width:300px;" value="<?php echo $email; ?>" /></div>
-
-    <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['phone'][$lang]); ?> </div>
-    <div><input type="text" name="phone" style="width:300px;" value="<?php echo $phone; ?>" /></div>
-
-    <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['signature'][$lang]); ?> </div>
-    <div><textarea name="signature" wrap="VIRTUAL" style="width:300px; height:60px;"><?php echo $signature; ?></textarea></div>
-
-    <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?> </div>
-    <div>
-      <select name="language" style="width:300px;">
-      <?php
-      if (!empty ($mgmt_lang_shortcut) && is_array ($mgmt_lang_shortcut))
-      {
-        foreach ($mgmt_lang_shortcut as $lang_opt)
-        {
-          if ($language == $lang_opt) $selected = "selected=\"selected\"";
-          else $selected = "";
-          
-          echo "<option value=\"".$lang_opt."\" ".$selected.">".$mgmt_lang_name[$lang_opt]."</option>\n";
-        }
-      }
-      ?>
-      </select>
-    </div>
-
-    <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['timezone'][$lang]); ?> </div>
-    <div>
-      <select name="timezone" style="width:300px;">
-      <?php
-      $timezone_array = timezone_identifiers_list();
-
-      if (is_array ($timezone_array) && sizeof ($timezone_array) > 0)
-      {
-        $timezone_array = array_unique ($timezone_array);
-        natcasesort ($timezone_array);
-        
-        foreach ($timezone_array as $tz)
-        {
-          if ($timezone == $tz) $selected = "selected=\"selected\"";
-          else $selected = "";
-          
-          echo "
-          <option value=\"".$tz."\" ".$selected.">".$tz."</option>";
-        }
-      }
-      ?>
-      </select>
-    </div>
-
-    <?php
-    // check if publication defines a theme
-    if (empty ($mgmt_config['theme']) && empty ($mgmt_config[$site]['theme'])) {
-    ?>
-    <div class="hcmsTextWhite hcmsTextShadow"><?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?> </div>
-    <div>
-      <select name="theme" style="width:300px;">
-      <?php
-      $theme_dir = $mgmt_config['abs_path_cms']."theme/";
-      $dir_handler = opendir ($theme_dir);
-      
-      if ($dir_handler != false)
-      {
-        $theme_array = array();
-        
-        while ($theme_opt = @readdir ($dir_handler))
-        {
-          if (strtolower($theme_opt) != "mobile" && $theme_opt != "." && $theme_opt != ".." && is_dir ($theme_dir.$theme_opt) && is_dir ($theme_dir.$theme_opt."/img") && is_dir ($theme_dir.$theme_opt."/css"))
-          {
-            if ($theme == $theme_opt) $selected = "selected=\"selected\"";
-            else $selected = "";
-            
-            $theme_array[] = $theme_opt;
-          }
-        }
-        
-        if (sizeof ($theme_array) > 0)
-        {
-          natcasesort ($theme_array);
-          reset ($theme_array);
-          
-          foreach ($theme_array as $temp)
-          {
-            if ($temp == $theme) $selected = "selected=\"selected\"";
-            else $selected = "";
-            
-            echo "<option value=\"".$temp."\" ".$selected.">".ucfirst ($temp)."</option>\n";
-          }
-        }
-      }
-      ?>
-      </select>
-    </div>
+  <!-- wallpaper -->
+  <div id="startScreen" class="hcmsStartScreen">
+    <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+    <video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.png">
+      <source src="<?php echo $wallpaper; ?>" type="video/mp4">
+    </video>
     <?php } ?>
-    
-    <?php
-    if (empty ($site))
-    {    
-      echo "
-    <div class=\"hcmsTextWhite hcmsTextShadow\">".getescapedtext ($hcms_lang['publication'][$lang])."</div>
-    <div><select name=\"site\" style=\"width:300px;\">";
+  </div>
 
-      $inherit_db = inherit_db_read ("sys");      
-      $site_array = array();
+  <!-- top bar -->
+  <div class="hcmsStartBar">
+    <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
+    <div style="position:absolute; top:15px; right:15px; text-align:right;"></div>
+  </div>
 
-      if ($inherit_db != false && is_array ($inherit_db))
-      {                        
-        foreach ($inherit_db as $inherit_db_record)
+  <div class="hcmsLogonScreen" style="width:300px; margin-left:-150px; margin-top:-240px;" onkeyup="blurbackground(true);" onmouseout="blurbackground(false);">
+
+  <?php
+  if ($show != "") echo "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"width:290px; padding:5px;\">".$show."</div>\n";
+  ?>  
+
+  <?php if (empty ($result['result'])) { ?>
+    <form name="userform" action="" method="post" onsubmit="return checkForm();">
+      <input type="hidden" name="action" value="user_register">
+      <input type="hidden" name="is_mobile" value="0" />
+      <input type="hidden" name="site" value="<?php echo $site; ?>">
+      <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+      
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?> </div>
+      <div><input type="text" name="login" style="width:300px;" value="<?php echo $login; ?>" /></div>
+      
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['password'][$lang]); ?> </div>
+      <div><input type="password" name="password" style="width:300px;" value="<?php echo $password; ?>" /></div>
+
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?> </div>
+      <div><input type="password" name="confirm_password" style="width:300px;" value="<?php echo $confirm_password; ?>" /></div>
+
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?> </div>
+      <div><input type="text" name="realname" style="width:300px;" value="<?php echo $realname; ?>" /></div>
+
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?> </div>
+      <div><input type="text" name="email" style="width:300px;" value="<?php echo $email; ?>" /></div>
+
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['phone'][$lang]); ?> </div>
+      <div><input type="text" name="phone" style="width:300px;" value="<?php echo $phone; ?>" /></div>
+
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['signature'][$lang]); ?> </div>
+      <div><textarea name="signature" wrap="VIRTUAL" style="width:300px; height:60px;"><?php echo $signature; ?></textarea></div>
+
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?> </div>
+      <div>
+        <select name="language" style="width:300px;">
+        <?php
+        if (!empty ($mgmt_lang_shortcut) && is_array ($mgmt_lang_shortcut))
         {
-          if ($inherit_db_record['parent'] != "")
+          foreach ($mgmt_lang_shortcut as $lang_opt)
           {
-            $site = $inherit_db_record['parent'];
+            if ($language == $lang_opt) $selected = "selected=\"selected\"";
+            else $selected = "";
             
-            // publication management config
-            if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php")) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-            
-            if (!empty ($mgmt_config[$site]['registration'])) $site_array[] = $site;
+            echo "<option value=\"".$lang_opt."\" ".$selected.">".$mgmt_lang_name[$lang_opt]."</option>\n";
           }
         }
-        
-        natcasesort ($site_array);
-        reset ($site_array);
-        
-        if (is_array ($site_array) && sizeof ($site_array) > 0)
+        ?>
+        </select>
+      </div>
+
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['timezone'][$lang]); ?> </div>
+      <div>
+        <select name="timezone" style="width:300px;">
+        <?php
+        $timezone_array = timezone_identifiers_list();
+
+        if (is_array ($timezone_array) && sizeof ($timezone_array) > 0)
         {
-          foreach ($site_array as $temp) echo "
-      <option value=\"".$temp."\">".$temp."</option>";
+          $timezone_array = array_unique ($timezone_array);
+          natcasesort ($timezone_array);
+          
+          foreach ($timezone_array as $tz)
+          {
+            if ($timezone == $tz) $selected = "selected=\"selected\"";
+            else $selected = "";
+            
+            echo "
+            <option value=\"".$tz."\" ".$selected.">".$tz."</option>";
+          }
         }
-      }
+        ?>
+        </select>
+      </div>
 
-      echo "
-    </select></div>";
-    }    
-    ?>  
-    <div><button type="submit" class="hcmsButtonGreen hcmsButtonSizeHeight" style="width:300px; margin-top:10px;"><?php echo getescapedtext ($hcms_lang['sign-up'][$lang]); ?></button></div>
-<?php } ?>
+      <?php
+      // check if publication defines a theme
+      if (empty ($mgmt_config['theme']) && empty ($mgmt_config[$site]['theme'])) {
+      ?>
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?> </div>
+      <div>
+        <select name="theme" style="width:300px;">
+        <?php
+        $theme_dir = $mgmt_config['abs_path_cms']."theme/";
+        $dir_handler = opendir ($theme_dir);
+        
+        if ($dir_handler != false)
+        {
+          $theme_array = array();
+          
+          while ($theme_opt = @readdir ($dir_handler))
+          {
+            if (strtolower($theme_opt) != "mobile" && $theme_opt != "." && $theme_opt != ".." && is_dir ($theme_dir.$theme_opt) && is_dir ($theme_dir.$theme_opt."/img") && is_dir ($theme_dir.$theme_opt."/css"))
+            {
+              if ($theme == $theme_opt) $selected = "selected=\"selected\"";
+              else $selected = "";
+              
+              $theme_array[] = $theme_opt;
+            }
+          }
+          
+          if (sizeof ($theme_array) > 0)
+          {
+            natcasesort ($theme_array);
+            reset ($theme_array);
+            
+            foreach ($theme_array as $temp)
+            {
+              if ($temp == $theme) $selected = "selected=\"selected\"";
+              else $selected = "";
+              
+              echo "<option value=\"".$temp."\" ".$selected.">".ucfirst ($temp)."</option>\n";
+            }
+          }
+        }
+        ?>
+        </select>
+      </div>
+      <?php } ?>
+      
+      <?php
+      if (empty ($site))
+      {    
+        echo "
+      <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding-top:8px;\">".getescapedtext ($hcms_lang['publication'][$lang])."</div>
+      <div><select name=\"site\" style=\"width:300px;\">";
 
-    <div class="hcmsTextWhite hcmsTextShadow" style="padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;" onclick="document.location.href='userlogin.php';"><?php echo getescapedtext ($hcms_lang['sign-in'][$lang]); ?></div>
+        $inherit_db = inherit_db_read ("sys");      
+        $site_array = array();
 
-</div>
+        if ($inherit_db != false && is_array ($inherit_db))
+        {                        
+          foreach ($inherit_db as $inherit_db_record)
+          {
+            if ($inherit_db_record['parent'] != "")
+            {
+              $site = $inherit_db_record['parent'];
+              
+              // publication management config
+              if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php")) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+              
+              if (!empty ($mgmt_config[$site]['registration'])) $site_array[] = $site;
+            }
+          }
+          
+          natcasesort ($site_array);
+          reset ($site_array);
+          
+          if (is_array ($site_array) && sizeof ($site_array) > 0)
+          {
+            foreach ($site_array as $temp) echo "
+        <option value=\"".$temp."\">".$temp."</option>";
+          }
+        }
 
-<?php include_once ("include/footer.inc.php"); ?>
+        echo "
+      </select></div>";
+      }    
+      ?>  
+      <div><button type="submit" class="hcmsButtonGreen hcmsButtonSizeHeight" style="width:300px; margin-top:10px;"><?php echo getescapedtext ($hcms_lang['sign-up'][$lang]); ?></button></div>
+  <?php } ?>
+
+      <div class="hcmsTextWhite hcmsTextShadow" style="padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;" onclick="document.location.href='userlogin.php';"><?php echo getescapedtext ($hcms_lang['sign-in'][$lang]); ?></div>
+
+  </div>
+
+<?php includefooter(); ?>
 </body>
 </html>

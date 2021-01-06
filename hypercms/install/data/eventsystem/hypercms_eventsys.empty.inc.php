@@ -9,6 +9,7 @@
  
 // set functions active (1) or inactive (0)
 // these settings are valid for all publications
+$eventsystem = array();
 $eventsystem['onaccess'] = 0;
 $eventsystem['onlogon_pre'] = 0;
 $eventsystem['onlogon_post'] = 0;

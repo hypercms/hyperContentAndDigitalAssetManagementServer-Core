@@ -118,7 +118,7 @@ if ($save == "yes" && $persfile != "" && checktoken ($token, $user))
   $persdata_check = scriptcode_clean_functions ("<?".$persdata_save."?>", $cleanlevel);
         
    // save pers file
-  if ($persdata_check['result'] == true)
+  if (!empty ($persdata_check['result']))
   {
     $savefile = savefile ($mgmt_config['abs_path_data']."customer/".$site."/", $persfile, $persdata_save);
 
@@ -229,6 +229,6 @@ function openHelp ()
 
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

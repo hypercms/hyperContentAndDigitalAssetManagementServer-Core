@@ -70,7 +70,7 @@ function settemplate ($site, $location, $object, $template, $recursive=false)
     if (!empty ($mgmt_config['db_connect_rdbms']) && !function_exists ("rdbms_settemplate")) include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
 
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
 
     // convert location
     $location = deconvertpath ($location, "file");
@@ -276,7 +276,7 @@ function settaxonomy ($site, $container_id, $langcode="", $taxonomy="")
           rdbms_settaxonomy ($site, $container_id, $result);
         }
 
-        if (sizeof ($result) > 0) return $result;
+        if (is_array ($result) && sizeof ($result) > 0) return $result;
         else return false;
       }
       else return false;
@@ -354,7 +354,7 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle=array(), $arts
 
 // -------------------------------------------- settext -----------------------------------------------
 // function: settext()
-// input: publication name [string], container (XML) [string], container name [string], text with tag Id as key and text as value [array], text type [array or string] [u,f,l,c,d,k], article [array or string]  [yes,no] (optional), 
+// input: publication name [string], container (XML) [string], container name [string], text with tag Id as key and text as value [array], text type [array or string] [u,f,l,c,d,k,s], article [array or string]  [yes,no] (optional), 
 //          text user [array or string] (optional), user name [string] (optional), character set of text content [string] (optional), add microtime to ID used for comments [boolean] (optional)
 // output: updated content container (XML), false on error
 
@@ -364,6 +364,8 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle=array(), $arts
 function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(), $art="no", $textuser=array(), $user="sys", $charset="", $addmicrotime=false)
 {
   global $mgmt_config, $publ_config;
+
+  $error = array();
 
   if (valid_publicationname ($site) && valid_objectname ($contentfile) && $contentdata != "" && is_array ($text) && (is_array ($type) || $type != "") && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
@@ -473,6 +475,12 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
 
           // escape special characters (transform all special chararcters into their html/xml equivalents)
           $textcontent  = html_encode ($textcontent);
+        }
+        // signature
+        elseif ($type[$id] == "s")
+        {
+          // base64 encoded image (image/png;base64,image-string)
+          $textcontent = trim ($textcontent);
         }
         // checkbox value, text options, keywords
         else
@@ -693,7 +701,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
         link_db_close ($site, $user);
  
         $errcode = "20522";
-        $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|$errcode|link management file is missing or you do not have write permissions for ".$site.".link.dat";
+        $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|link management file is missing or you do not have write permissions for '".$site.".link.dat'";
       }
     }
 
@@ -736,6 +744,8 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
 function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $mediaobject=array(), $mediaalttext=array(), $mediaalign=array(), $mediawidth=array(), $mediaheight=array(), $art="no", $mediauser="", $user="sys", $charset="")
 {
   global $mgmt_config;
+
+  $error = array();
 
   if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($mediafile) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
@@ -891,7 +901,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
       link_db_close ($site, $user);
 
       $errcode = "20510";
-      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|$errcode|link management file is missing or you do not have write permissions for ".$site.".link.dat";
+      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|link management file is missing or you do not have write permissions for ".$site.".link.dat";
     }
 
     // return container
@@ -905,7 +915,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
         $text_array = array();
         $type = array();
 
-        while (list ($key, $value) = each ($mediaalttext))
+        foreach ($mediaalttext as $key => $value)
         {
           // get object ID
           if (!empty ($mediaobject[$key])) $object_id = $mediaobject[$key]."|";
@@ -937,6 +947,8 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
 function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $linktarget=array(), $linktext=array(), $art="no", $linkuser=array(), $user="sys", $charset="")
 {
   global $mgmt_config;
+
+  $error = array();
 
   if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($linkhref) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
@@ -1072,7 +1084,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
       link_db_close ($site, $user);
  
       $errcode = "20511";
-      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|$errcode|link management file is missing or you do not have write permissions for ".$site.".link.dat";
+      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|link management file is missing or you do not have write permissions for ".$site.".link.dat";
     }
 
     // save log
@@ -1089,7 +1101,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
         $text_array = array();
         $type_array = array();
 
-        while (list ($key, $value) = each ($linktext))
+        foreach ($linktext as $key => $value)
         {
           // get object ID
           if (!empty ($linkhref[$key])) $object_id = $linkhref[$key]."|";
@@ -1121,6 +1133,8 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
 function setcomplink ($site, $contentdata, $contentfile, $component=array(), $condition=array(), $art="no", $compuser=array(), $user="sys")
 {
   global $mgmt_config;
+
+  $error = array();
 
   if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($component) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
@@ -1245,7 +1259,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
       link_db_close ($site, $user);
  
       $errcode = "20512";
-      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|$errcode|link management file is missing or you do not have write permissions for ".$site.".link.dat";
+      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|link management file is missing or you do not have write permissions for ".$site.".link.dat";
     }
 
     // save log
@@ -1262,7 +1276,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
         $text_array = array();
         $type_array = array();
 
-        while (list ($key, $value) = each ($component_object_id))
+        foreach ($component_object_id as $key => $value)
         {
           // multiple components
           if (!empty ($value) && strpos ("_".$value, "|") > 0)
@@ -1320,7 +1334,7 @@ function sethead ($site, $contentdata, $contentfile, $headcontent=array(), $user
   {
     reset ($headcontent);
 
-    while (list ($tagname, $content) = each ($headcontent))
+    foreach ($headcontent as $tagname => $content)
     {
       if ($tagname != "") 
       {
@@ -1407,6 +1421,8 @@ function setrelation ($site, $location_1, $object_1, $id_1="Related", $location_
 {
   global $mgmt_config;
 
+  $error = array();
+
   if (valid_publicationname ($site) && valid_locationname ($location_1) && valid_objectname ($object_1) && valid_locationname ($location_2) && valid_objectname ($object_2))
   {
     // convert locations and get object IDs
@@ -1450,7 +1466,7 @@ function setrelation ($site, $location_1, $object_1, $id_1="Related", $location_
         if (empty ($save_1))
         {
           $errcode = "20601";
-          $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|$errcode|relation to ".$location_esc_2.$object_2." could not be saved for ".$location_esc_1.$object_1; 
+          $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|relation to ".$location_esc_2.$object_2." could not be saved for ".$location_esc_1.$object_1; 
         }
       }
     }
@@ -1487,7 +1503,7 @@ function setrelation ($site, $location_1, $object_1, $id_1="Related", $location_
         if (empty ($save_2))
         {
           $errcode = "20602";
-          $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|$errcode|relation to ".$location_esc_1.$object_1." could not be saved for ".$location_esc_2.$object_2; 
+          $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|relation to ".$location_esc_1.$object_1." could not be saved for ".$location_esc_2.$object_2; 
         }
       }
     }

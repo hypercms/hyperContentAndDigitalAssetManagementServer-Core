@@ -22,6 +22,8 @@ function link_db_restore ($site="")
 {
   global $mgmt_config;
 
+  $error = array();
+
   if (is_array ($mgmt_config) && isset ($mgmt_config['abs_path_cms']))
   { 
     // content repository
@@ -167,12 +169,12 @@ function link_db_restore ($site="")
         if ($test == true)
         {
           $errcode = "00810";
-          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|information|$errcode|regernated and saved link index for publication '".$publication."' successfully (execution time: ".$duration." sec)";
+          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|information|".$errcode."|regernated and saved link index for publication '".$publication."' successfully (execution time: ".$duration." sec)";
         }
         else
         {
           $errcode = "10810";
-          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|$errcode|could not regenerate and save link index for publication '".$publication."' (execution time: ".$duration." sec)";
+          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|could not regenerate and save link index for publication '".$publication."' (execution time: ".$duration." sec)";
         }
       }
 
@@ -202,6 +204,8 @@ function link_db_load ($site, $user)
 {
   global $mgmt_config;
 
+  $error = array();
+
     // if link management is enabled
   if (!empty ($mgmt_config[$site]['linkengine']) && valid_publicationname ($site) && valid_objectname ($user))
   {
@@ -228,7 +232,7 @@ function link_db_load ($site, $user)
     else 
     {
       $errcode = "10701";
-      $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|$errcode|loadlockfile failed in link_db_load for site: ".$site; 
+      $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|loadlockfile failed in link_db_load for site '".$site."'"; 
 
       $link_db = false;
     }
@@ -253,6 +257,8 @@ function link_db_load ($site, $user)
 function link_db_read ($site)
 {
   global $mgmt_config;
+
+  $error = array();
 
   // if link management is enabled
   if (!empty ($mgmt_config[$site]['linkengine']) && valid_publicationname ($site))
@@ -284,14 +290,14 @@ function link_db_read ($site)
           else 
           {
             $errcode = "10712";
-            $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|$errcode|link_db_record is corrupt (null), link_db_load failed for site: ".$site; 
+            $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|link_db_record is corrupt (null), link_db_load failed for site '".$site."'"; 
           }
         }
       }
       else 
       {
         $errcode = "10711";
-        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|$errcode|loadfile failed in link_db_load for site: ".$site; 
+        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|loadfile failed in link_db_load for site '".$site."'"; 
 
         $link_db = false;
       }
@@ -843,11 +849,14 @@ function getlinkedobject ($site, $location, $page, $cat)
 {
   global $mgmt_config;
 
+  $error = array();
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
   {
     // load link management database
     $inherit_db = inherit_db_read ();
 
+    $site_array = array();
     $site_array[0] = $site;
     $child_array = inherit_db_getchild ($inherit_db, $site);
     if ($child_array != false) $site_array = array_merge ($site_array, $child_array);
@@ -915,7 +924,7 @@ function getlinkedobject ($site, $location, $page, $cat)
       {
         $result = false;
         $errcode = "10189";
-        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|$errcode|could not read link management database for publication $site";
+        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|could not read link management database for publication '".$site."'";
       }
       // link management is disabled
       elseif ($link_db == true)
@@ -946,6 +955,8 @@ function getlinkedobject ($site, $location, $page, $cat)
 function getconnectedobject ($container, $type="work")
 {
   global $mgmt_config, $user;
+
+  $error = array();
 
   if (valid_objectname ($container))
   {
@@ -995,7 +1006,7 @@ function getconnectedobject ($container, $type="work")
     else
     {
       $errcode = "10188";
-      $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|$errcode|could not extract objects from container $container";
+      $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|could not extract objects from container '".$container."'";
     }
 
     // save log

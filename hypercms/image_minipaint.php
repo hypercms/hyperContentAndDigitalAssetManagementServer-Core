@@ -125,7 +125,7 @@ if (!in_array ($mediafile_info['ext'], array(".bmp", ".gif", ".jpg", ".jpeg", ".
 }
 
 // create image link and add type parameter
-$imagelink = createviewlink ($site, $mediafile, $pagefile_info['name'], false, "wrapper").$media_config;
+$imagelink = createviewlink ($site, $mediafile, $pagefile_info['name'], true, "wrapper").$media_config;
 
 // security token
 $token_new = createtoken ($user);

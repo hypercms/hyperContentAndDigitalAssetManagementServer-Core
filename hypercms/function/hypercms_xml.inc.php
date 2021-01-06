@@ -142,7 +142,7 @@ function getcontent ($xmldata, $starttagname)
   // extract content between tags
   $record_array = explode ($starttagname, $xmldata);
 
-  if (is_array ($record_array) && sizeof ($record_array) > 0)
+  if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
   {
     // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
     $i = -1;
@@ -239,7 +239,7 @@ function geticontent ($xmldata, $starttagname)
   // extract content between tags
   $record_array = explode (strtolower ($starttagname), $xmldata);
 
-  if (is_array ($record_array) && sizeof ($record_array) > 0)
+  if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
   {
     // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
     $i = -1;
@@ -331,7 +331,7 @@ function getxmlcontent ($xmldata, $starttagname)
   // extract content between tags
   $record_array = explode ($starttagname, $xmldata);
 
-  if (sizeof ($record_array != false && $record_array) >= 1)
+  if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
   {
     // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
     $i = -1;
@@ -404,7 +404,7 @@ function getxmlicontent ($xmldata, $starttagname)
   // extract content between tags
   $record_array = explode (strtolower ($starttagname), $xmldata);
 
-  if (sizeof ($record_array != false && $record_array) >= 1)
+  if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
   {
     // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
     $i = -1;
@@ -497,7 +497,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     // extract content between tags
     $record_array = explode ($starttagname, $xmldata);
 
-    if ($record_array != false && sizeof ($record_array) >= 1)
+    if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
     {
       // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
       $i = -1;
@@ -660,7 +660,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     // extract content between tags
     $record_array = explode (strtolower ($starttagname), $xmldata);
 
-    if ($record_array != false && sizeof ($record_array) >= 1)
+    if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
     {
       // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
       $i = -1;
@@ -820,7 +820,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     // extract content between tags
     $record_array = explode ($starttagname, $xmldata);
 
-    if ($record_array != false && sizeof ($record_array) >= 1)
+    if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
     {
       // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
       $i = -1;
@@ -985,7 +985,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     // extract content between tags
     $record_array = explode ($starttagname, $xmldata);
 
-    if ($record_array != false && sizeof ($record_array) >= 1)
+    if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
     {
       // do not accept first record (it is not a part of the query result! may even be empty, if starttag is the first value in the file)
       $i = -1;
@@ -1113,7 +1113,7 @@ function deletecontent ($xmldata, $starttagname, $startcondtag="", $condvalue=""
   }
 
   // delete childs 
-  if ($record_array != false && sizeof ($record_array) > 0)
+  if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
   {
     foreach ($record_array as $record)
     {
@@ -1167,7 +1167,7 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag="", $condvalue="
   }
 
   // delete childs 
-  if ($record_array != false && sizeof ($record_array) >= 1)
+  if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
   {
     foreach ($record_array as $record)
     {
@@ -1237,7 +1237,7 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
     return false;
   }
 
-  if ($record_array != false && sizeof ($record_array) >= 1)
+  if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
   {
     foreach ($record_array as $record)
     {
@@ -1323,7 +1323,7 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
     return false;
   }
 
-  if ($record_array != false && sizeof ($record_array) >= 1)
+  if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
   {
     foreach ($record_array as $record)
     {
@@ -1409,7 +1409,7 @@ function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $content
     return false;
   }
 
-  if ($record_array != false && sizeof ($record_array) >= 1)
+  if (!empty ($record_array) && is_array ($record_array) && sizeof ($record_array) > 0)
   {
     $i = 0;
 

@@ -110,7 +110,7 @@ if ($force == "start" && substr_count ($action, "->") == 1)
 
       foreach ($multiobject_array as $objectpath)
       {
-        if ($objectpath != "" && $result['result'] == true)
+        if ($objectpath != "" && !empty ($result['result']))
         {
           $temp_site = getpublication ($objectpath);
           $temp_location = getlocation ($objectpath);
@@ -232,7 +232,7 @@ if ($authorized == true || $force == "stop")
       elseif ($site != "" && $location != "" && strlen ($location) > 6)
       {
         if ($folder != "") $multiobject_array[0] = convertpath ($site, $location.".folder", $cat); 
-        $multiobject_array[0] = convertpath ($site, $location.$page, $cat);
+        else $multiobject_array[0] = convertpath ($site, $location.$page, $cat);
       }
     }
 
@@ -248,7 +248,7 @@ if ($authorized == true || $force == "stop")
     $result = manipulateallobjects ($action, $multiobject_array, "$method", $force, $published_only, $user, $tempfile);
     
     // if manipulation was successful
-    if ($result['result'] != false) 
+    if (!empty ($result['result'])) 
     {
       if ($maxcount == "") $maxcount = $result['maxcount'];
 
@@ -270,11 +270,11 @@ if ($authorized == true || $force == "stop")
       // define next process
       if ($working == true)
       {
-        $add_javascript = "document.location='".$mgmt_config['url_path_cms']."popup_status.php?force=continue&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".url_encode($token)."';\n";
+        $add_javascript = "document.location='".cleandomain ($mgmt_config['url_path_cms'])."popup_status.php?force=continue&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".url_encode($token)."';\n";
       }
       elseif ($working == false)
       {
-        $add_javascript = "document.location='".$mgmt_config['url_path_cms']."popup_status.php?force=finish&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".url_encode($token)."';\n"; 
+        $add_javascript = "document.location='".cleandomain ($mgmt_config['url_path_cms'])."popup_status.php?force=finish&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".url_encode($token)."';\n"; 
       }    
     }
     // if an error occured

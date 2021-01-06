@@ -109,6 +109,6 @@ echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsBu
   </div>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

@@ -109,7 +109,7 @@ if ($userdata != false)
     }
   }
   // get users of a publication
-  elseif (isset ($site) && $group == "")
+  elseif (isset ($site) && empty ($group))
   {
     if ($site == "*Null*")
     {
@@ -465,6 +465,6 @@ else
 initalize();
 </script>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

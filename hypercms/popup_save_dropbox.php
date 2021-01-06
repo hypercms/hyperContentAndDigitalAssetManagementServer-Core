@@ -64,13 +64,13 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
-//extract and prepare information for uploading to dropbox
+// extract and prepare information for uploading to dropbox
 $saveObjects = array();
 $displayObjects = array();
+$multiObjectArray = array();
 
 if ((!empty ($multiobject) || !empty ($page)) && !empty ($location))
 {
-	$multiObjectArray = array();
 	if (!empty ($multiobject))
 	{
 		if (strpos ($multiobject, "|") === 0 && strlen ($multiobject) > 2) $multiobject = substr ($multiobject, 1);
@@ -84,8 +84,10 @@ if ((!empty ($multiobject) || !empty ($page)) && !empty ($location))
     {
 			$objectLocation = getlocation ($object);
 			$objectFile = getobject ($object);
-			$objectInfo = getobjectinfo ($site, $objectLocation, $objectFile);
-			if (empty ($objectInfo['media'])) continue;
+      $objectInfo = getobjectinfo ($site, $objectLocation, $objectFile);
+      
+      if (empty ($objectInfo['media'])) continue;
+      
 			$downlaodlink = createdownloadlink ($site, $objectLocation, $objectFile, $cat);
 			$objectFileInfo = getfileinfo ($site, $object, $cat);
 			$objectMediaPath = getmedialocation ($site, $objectInfo['media'], "abs_path_media").$site."/".$objectInfo['media'];
@@ -243,6 +245,6 @@ $(function() {
     
   </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

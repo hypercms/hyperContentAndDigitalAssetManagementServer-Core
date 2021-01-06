@@ -608,7 +608,7 @@ function setbreakpoint ()
         segments[duration_id] = { time:duration_time, seconds:duration_ms, left:width_bar, keep:'1' };
       }
       
-      setsegements();
+      setsegments();
     }
     else return false;
   }
@@ -620,13 +620,13 @@ function deletebreakpoint (id)
   if (id != "" && typeof segments === 'object')
   {
     delete segments[id];
-    setsegements();
+    setsegments();
     return true;
   }
   else return false;
 }
 
-function setsegements ()
+function setsegments ()
 {
   if (typeof segments === 'object')
   {
@@ -696,7 +696,7 @@ function keepsegment (id)
     
     segments[id]['keep'] = keep;
     
-    setsegements();
+    setsegments();
     return true;
   }
   else return false;
@@ -959,6 +959,6 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
   <?php echo $playercode; ?>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

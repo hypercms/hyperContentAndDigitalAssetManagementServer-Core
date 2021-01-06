@@ -222,11 +222,11 @@ function hcms_showPage (id_frame, id_layer)
 
 // -------------------------------- share link functions ---------------------------------
 
-function hcms_sharelinkFacebook (url)
+function hcms_sharelinkFacebook (url, title)
 {
   if (url != "")
   {
-    var sharelink = "https://www.facebook.com/sharer/sharer.php?p[url]=" + encodeURIComponent(url);
+    var sharelink = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url) + "&t=" + encodeURIComponent(title);
     hcms_openWindow (sharelink, "", "", 800, 800);
   }
   else return false;

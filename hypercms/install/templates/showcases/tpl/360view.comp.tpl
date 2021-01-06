@@ -68,7 +68,7 @@ scriptend]
 
   if ($compinfo['published'])
   {
-    $embed_code = "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_cms']."?wl=".$hash."' frameborder='0' style='border:0; width:".$stageWidth."px; height:".$stageHeight."px; overflow:hidden;'></iframe>";
+    $embed_code = "<iframe id='frame_$uniqid' src='".cleandomain ($mgmt_config['url_path_cms'])."?wl=".$hash."' frameborder='0' style='border:0; width:".$stageWidth."px; height:".$stageHeight."px; overflow:hidden;'></iframe>";
   }
   else
   {
@@ -85,7 +85,7 @@ scriptend]
       <hr/>
       <strong>Online view</strong>
       <br />
-      [hyperCMS:scriptbegin if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_cms']."?wl=$hash' frameborder='0' style='border:1px solid grey; width:".$stageWidth."px; height:".$stageHeight."px; overflow:hidden;'></iframe>"; scriptend]
+      [hyperCMS:scriptbegin if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='".cleandomain ($mgmt_config['url_path_cms'])."?wl=$hash' frameborder='0' style='border:1px solid grey; width:".$stageWidth."px; height:".$stageHeight."px; overflow:hidden;'></iframe>"; scriptend]
     </div>
     </div>
   </body>

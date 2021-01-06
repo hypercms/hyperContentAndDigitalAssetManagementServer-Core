@@ -230,6 +230,6 @@ $token_new = createtoken ($user);
   </div>
 <?php } ?>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

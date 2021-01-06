@@ -161,17 +161,13 @@ $mgmt_config['storage_dailycloudsnyc'] = false;
 // ------------------------------------ Load balancing settings ----------------------------------------
 
 // URL to services / Load balancing
-// To enable load balancing for file upload, storing content and rendering files
-// the system need to be alled on several physical servers.
-// In order to enable load balancing an array providing the URL to the servers services
-// need to be defined.
-// One physical server provides the GUI and splits the load. Only this server need to be
-// configured for load balancing.
+// To enable load balancing for file upload, storing content and rendering files the system need to be installed on multiple servers.
+// In order to enable load balancing an array providing the URL to the servers services need to be defined.
+// One physical server provides the GUI and splits the load. Only this server need to be configured for load balancing.
 // Make sure that all servers store the files in the same central repository and use the same database.
 // There is no limit for the amount of physical servers in the load balancing array.
-// (e.g. http://www.yourdomain.com/service/)
-// $mgmt_config['url_path_service'][1] = "http://server1/hypercms/service/";
-// $mgmt_config['url_path_service'][2] = "http://server2/hypercms/service/";
+// Example: array ("http://server1.domain.com/hypercms/service/", "http://server2.domain.com/hypercms/service/")
+$mgmt_config['url_path_service'] = array();
 
 // ------------------------------------ GUI settings ----------------------------------------
 
@@ -260,7 +256,7 @@ $mgmt_config['showinfobox'] = true;
 $mgmt_config['homeboxes'] = "search;news;tasks;recent_objects;up_and_downloads;recent_downloads;recent_uploads";
 
 // Define URL to show in welcome/news home box
-$mgmt_config['homebox_welcome'] = "https://cms.hypercms.net/home/update_info_en.xhtml";
+$mgmt_config['homebox_welcome'] = "https://cloud.hypercms.net/home/update_info_en.xhtml";
 
 // Brand Guidelines
 // Define a directory for your brand guidelines (components) that are based on a template and can be edited
@@ -594,6 +590,10 @@ $mgmt_config['search_max_results'] = 300;
 // If enabled, passwords will be checked regarding minimum security requirements
 $mgmt_config['strongpassword'] = true;
 
+// Define the minimum password length
+// The maximum password length is 100 characters and can't be changed
+$mgmt_config['passwordminlength'] = 10;
+
 // Password dictionary of passwords that must not be used (blacklist), use "," as delimiter. 
 $mgmt_config['passwordblacklist'] = "";
 
@@ -689,6 +689,11 @@ $mgmt_config['writesessiondata'] = false;
 // and does not include annotation images, video previews and versions, file versions of the same asset, thumbnails, and temporary files.
 // Correction factors per publication can be defined as well by $mgmt_config['publicationname']['storagefactor'] = 1.5;
 $mgmt_config['storagefactor'] = 1.15;
+
+// Clean domain from URL
+// Enable (true) or disable (false) the function cleandomain to convert the URL to a relative path.
+// Only disable the function if you are using hyperCMS function in an external webapplication that sends requests to the hyperCMS server. 
+$mgmt_config['cleandomain'] = true;
 
 // ------------------------------------ Executable Linking -------------------------------------
 
@@ -933,16 +938,16 @@ $mgmt_config['smtp_sender']   = "%smtp_sender%";
 
 // ------------------------------------ Import / Export ----------------------------------------
 
-// Define password for Import and Export REST API
+// Define password for Import and Export REST API (requires Connector module)
 $mgmt_config['passcode'] = "";
 
-// Restore exported media files to the media repository if requested (true) or leave the media file at their current export location (false)
-// The media file will always be restored if any change will be applied
+// Restore exported media files to the media repository if requested (true) or leave the media files at their current export location (false)
+// The media file will always be restored if any modifications will be applied
 $mgmt_config['restore_exported_media'] = true;
 
 // --------------------------------------- App Keys --------------------------------------------
 
-// Youtube integration
+// Youtube integration (requires Connector module)
 // Please provide Google API credentials in order to upload videos to Youtube
 $mgmt_config['youtube_oauth2_client_id'] = "";
 $mgmt_config['youtube_oauth2_client_secret'] = "";
@@ -963,35 +968,107 @@ $mgmt_config['googleanalytics_key'] = "";
 
 // --------------------------------- Authentication Connectivity -------------------------------------
 
+// LDAP/AD Integration
 // If you are using LDAP, Active Directory, or any other user directory, you can specify the file name without extension to be used for the connector.
 // The standard connector file is named "ldap_connect" and located in data/connect/
 // Specify the file name "ldap_connect" located in data/connect/ in order to connect to an LDAP or AD directory and verify users.
 // Alternatively you can create your own connector file and refer to it. Make sure you use the file extension .inc.php and use the same function name and parameters.
-// $mgmt_config['authconnect'] = "ldap_connect";
+// Use "ldap_connect" for LDAP/AD
+$mgmt_config['authconnect'] = "";
+
+// Enable (true) or disable (false) the connectivity for all publications
+// If enabled the below AD/LDAP settings need to be defined.
+// If disabled the AD/LDAP settings need to be defined in the publication management (per publication).
+$mgmt_config['authconnect_all'] = false;
+
+// Define a LDAP/AD user with general read permissions
+// This LDAP/AD user is only required if you want to use SSO using the OAuth remoteclient
+$mgmt_config['ldap_admin_username'] = "";
+$mgmt_config['ldap_admin_password'] = "";
 
 // Define the connection parameters
 // Port 389 is for LDAP over TLS. Port 636 is for LDAP over SSL, which is deprecated.
 // LDAP works from port 389 and when you issue the StartTLS (with ldap_start_tls()) it encrypts the connection.
-// $mgmt_config['ldap_servers'] = "ldapserver.name";
-// $mgmt_config['ldap_userdomain'] = "@domain";
-// $mgmt_config['ldap_base_dn'] = "OU=Departments,DC=MYDOMAIN,DC=COM";
-// $mgmt_config['ldap_version'] = 3;
-// $mgmt_config['ldap_port'] = "";
-// $mgmt_config['ldap_follow_referrals'] = false;
-// $mgmt_config['ldap_use_ssl'] = true;
-// $mgmt_config['ldap_use_tls'] = false;
+// Example: ldapserver.name
+$mgmt_config['ldap_servers'] = "ldapserver.name";
+// Example: @domain.com
+$mgmt_config['ldap_userdomain'] = "";
+// Example: OU=Departments,DC=MYDOMAIN,DC=COM
+$mgmt_config['ldap_base_dn'] = "";
+// Example: 2 or 3
+$mgmt_config['ldap_version'] = 3;
+// Example: 389 or 636
+$mgmt_config['ldap_port'] = "";
+$mgmt_config['ldap_follow_referrals'] = false;
+$mgmt_config['ldap_use_ssl'] = true;
+$mgmt_config['ldap_use_tls'] = false;
 
 // Enable (true) or disable (false) the sync of LDAP users with the system users
 // The user information such as name, email, telephone is queried and synchronized.
 // If the user’s publication and group membership should also be synchronized according to certain rules, 
-// this must be specified in the authconnect function in the connector file in data/connect/ldap_connect.inc.php, 
+// this must be specified in the $mgmt_config['ldap_sync_publications_mapping'] and $mgmt_config['ldap_sync_groups_mapping']
 // otherwise the memberships are retained as stored in the system.
-// $mgmt_config['ldap_sync'] = false;
+$mgmt_config['ldap_sync'] = false;
 
-// Enable (true) or disable (false) the connectivity for all publications
-// If enabled the above AD/LDAP settings need to be defined.
-// If disabled the AD/LDAP settings need to be defined in the publication management (per publication).
-// $mgmt_config['authconnect_all'] = false;
+// Define the user filter for the search in LDAP/AD
+// For Active Directory define "sAMAccountName" 
+$mgmt_config['ldap_user_filter'] = "sAMAccountName";
+
+// Define the user attributes you want so sync with LDAP/AD
+// Supported attributes for the sync are 'memberof', 'givenname', 'sn', 'telephonenumber', and 'mail'
+// memberof ... user memberships in LDAP/AD
+// givenname ... firstname
+// sn ... surename/lastname
+// telephonenumber ... phone
+// mail ... e-mail address
+$mgmt_config['ldap_user_attributes'] = array('memberof', 'givenname', 'sn', 'telephonenumber', 'mail');
+
+// Delete the user if it does not exist in the LDAP/AD directory (true) or leave user (false)
+$mgmt_config['ldap_delete_user'] = false;
+
+// Synchronize AD/LDAP groups with publications of the user
+// Define mapping based on a search string that defines the users publication membership
+// Mapping: "LDAP search string" => "Publication name"
+// Example: $mgmt_config['ldap_sync_publications_mapping'] = array("DC=domain,DC=de"=>"PublicationA", "DC=domain,DC=uk"=>"PublicationB");
+$mgmt_config['ldap_sync_publications_mapping'] = array();
+
+// Synchronize AD/LDAP groups with user groups of the user
+// Define mapping based on a search string that defines the users group membership
+// Mapping: "LDAP search string" => "Group name"
+// Example: $mgmt_config['ldap_sync_groups_mapping'] = array("OU=MANAGER GROUP"=>"ChiefEditor", "OU=ALL GROUPS"=>"Editor");
+$mgmt_config['ldap_sync_groups_mapping'] = array();
+
+// Signature template
+// If the user data should be used to create a signature for the  e-mails you can use the following template.
+// Leave empty or comment if you don't want to use the signature template.
+// Use %firstname%, $lastname%, %email%, and %phone% for the provided user data from LDAP/AD.
+$mgmt_config['ldap_user_signature'] = "Best regards
+%firstname% %lastname%
+E: %email%
+T: %phone%
+  
+This message is intended for the individual named above and is confidential and may also be privileged. If you are not the intended 
+recipient, please do not read, copy, use or disclose this communication to others. For electronically send information and pieces of advice, 
+which are not confirmed by following written execution, in principle no adhesion is taken over.
+";
+
+// OAuth 1.0 can be used for Single-Sign-On (SSO requires the Connector module)
+// In order to use SSO, the remote webserver need to support PHP and the OAuth remote client file in hypercms/connector/sso/outh_remoteclient.php need to be copied to the remote server.
+// The OAuth configuration of the remote client must be the same as of the OAuth server (see settings below).
+// The OAuth remote client must be copied to an IIS server with activated Integrated Windows authentication and PHP, and need to be accessed by the users using MS IE or MS Edge via HTTP(S). 
+// The OAuth client will provide the user ID of the authentication user in a Windows network to the server and will forward the user on success.
+// This user need to be verified using LDAP/AD. Keep in mind that a LDAP/AD user with general read permissions is required in order to verify the user, 
+// see setting $mgmt_config['ldap_admin_username'] and $mgmt_config['ldap_admin_password']
+
+// Provide the OAuth consumer key
+// Example: hypercms
+$mgmt_config['oauth_consumer_key'] = "";
+// Provide the OAuth consumer secret
+// Example: XMB9APEytVnxoAkLcRGqKQkxptw3rVVY
+$mgmt_config['oauth_secret'] = "";
+// Define the default timezone for OAuth
+// Example: Europe/Vienna
+$mgmt_config['oauth_timezone'] = "";
 
 // ----------------------------------- File System Permissions -----------------------------------------
 

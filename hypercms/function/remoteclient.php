@@ -83,7 +83,7 @@ function deletefiles ($location, $file)
 // output: encoded string / false on error
 
 // description:
-// Unidrectional encryption using crc32 and urlencode. Used to create tokens for simple view links in the system.
+// Unidrectional encryption using sha1 and urlencode. Used to create tokens for simple view links in the system.
 // The tokens can be verified by calculating the hash of the media file name and comparing the hash values.
 // Don't use this function to secure any string or to for password hashing.
 
@@ -96,8 +96,11 @@ function hcms_crypt ($string, $start=0, $length=0)
     // set default private key for hashing
     if (empty ($mgmt_config['crypt_key'])) $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
 
+    // reduce string for faster encryption
+    if ($start == 0 && $length == 0 && strlen ($string) > 32) $string = substr ($string, -32);
+
     // encoding algorithm
-    $string_encoded = hash_hmac ("crc32", $string, $mgmt_config['crypt_key']);
+    $string_encoded = hash_hmac ("sha1", $string, $mgmt_config['crypt_key']);
 
     // extract substring
     if ($length != 0) $string_encoded = substr ($string_encoded, $start, $length);
@@ -306,5 +309,5 @@ function remoteclient ($action, $passcode, $root, $site, $location, $locationnew
 // savelog ("", "log.txt", date ("Y-m-d H:i:s", time()).", ".$_POST['action'].", ".$_POST['passcode'].", ".$_POST['root'].", ".$_POST['site'].", ".$_POST['location'].", ".$_POST['locationnew'].", ".$_POST['page'].", ".$_POST['pagenew']."\r\n");
 
 // call client
-remoteclient ($_POST['action'], $_POST['passcode'], $_POST['root'], $_POST['site'], $_POST['location'], $_POST['locationnew'], $_POST['page'], $_POST['pagenew'], $_POST['content'], $_FILES['Filedata']);
+if (!empty ($_POST)) remoteclient ($_POST['action'], $_POST['passcode'], $_POST['root'], $_POST['site'], $_POST['location'], $_POST['locationnew'], $_POST['page'], $_POST['pagenew'], $_POST['content'], $_FILES['Filedata']);
 ?>

@@ -6,6 +6,7 @@
  */
 
 
+// initalize
 $mgmt_config = array();
 $publ_config = array();
 
@@ -27,28 +28,33 @@ $base_path = dirname (dirname (getcwd()));
 // Directory name of hyperCMS application
 $hypercms_dir = basename (dirname (getcwd()));
 
-// correct for Windows
-$base_path = str_replace ("\\", "/", $base_path);
+// correct path if Windows is used (backslash instead of forward slash)
+$base_path = rtrim (str_replace ("\\", "/", $base_path), "/");
 
-// url and asolute path to hyperCMS on your webserver (e.g. /home/domain/hyperCMS/)
+// URL and absolute path to hyperCMS on your webserver (e.g. /home/domain/hyperCMS/)
 $mgmt_config['url_path_cms'] = $mgmt_config['url_protocol'].$base_url."/".$hypercms_dir."/";
 $mgmt_config['url_path_cms_sub'] = $base_url."/".$hypercms_dir."/";
 $mgmt_config['abs_path_cms'] = $base_path."/".$hypercms_dir."/";
 
-// url and absolute path to hyperCMS repository on your webserver (e.g. /home/domain/repository/)
+// URL and absolute path to hyperCMS repository on your webserver (e.g. /home/domain/repository/)
 // the repository includes the XML content repository, the component repository, 
 // the content-media and template-media repository
 $mgmt_config['url_path_rep'] = $mgmt_config['url_protocol'].$base_url."/repository/";
 $mgmt_config['url_path_rep_sub'] = $base_url."/repository/";
 $mgmt_config['abs_path_rep'] = $base_path."/repository/";
 
-// url and absolute path to hyperCMS data on your webserver (e.g. /home/domain/hyperCMS/data/)
+// URL and absolute path to hyperCMS data on your webserver (e.g. /home/domain/hyperCMS/data/)
 // data is used for the storage of internal content management information   
 $mgmt_config['url_path_data'] = $mgmt_config['url_protocol'].$base_url."/data/";
 $mgmt_config['url_path_data_sub'] = $base_url."/data/";
 $mgmt_config['abs_path_data'] = $base_path."/data/";
 
-// url and absolute path to MyPublication on your webserver (e.g. /home/domain/hyperCMS/mypublication/)
+// Absolute path to the temporary directory
+// Used for the storage of temporary data
+$mgmt_config['url_path_temp'] = $mgmt_config['url_path_data']."temp/";
+$mgmt_config['abs_path_temp'] = $mgmt_config['abs_path_data']."temp/";
+
+// URL and absolute path to MyPublication on your webserver (e.g. /home/domain/hyperCMS/mypublication/)
 $publ_config['url_path_mypublication'] = $mgmt_config['url_protocol'].$base_url."/mypublication/";
 $publ_config['abs_path_mypublication'] = $base_path."/mypublication/";
 
@@ -73,6 +79,10 @@ require ($mgmt_config['abs_path_cms']."function/hypercms_api.inc.php");
 // version info
 require ($mgmt_config['abs_path_cms']."version.inc.php");
 
+// detect browser
+if (is_mobilebrowser ()) $is_mobile = 1;
+else $is_mobile = 0;
+
 // check for existing installation (using check.dat)
 if (is_file ($mgmt_config['abs_path_data']."check.dat"))
 {
@@ -85,16 +95,19 @@ if (is_file ($mgmt_config['abs_path_data']."check.dat"))
 <html lang="en">
 <head>
 <title>hyperCMS</title>
-<meta charset=UTF-8" />
+<meta charset="UTF-8" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="../theme/standard/css/main.css" />
 <link rel="stylesheet" href="../theme/standard/css/<?php echo ($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 </head>
-<body class="hcmsWorkplaceGeneric">
-<div class="hcmsHeadline" style="width:380px; margin:20px auto;">
-  The hyper Content &amp; Digital Asset Management is already installed!
-</div>
+<body class="hcmsStartScreen">
+  <div style="width:420px; margin:120px auto;">
+    <img src="<?php echo $mgmt_config['url_path_cms']."theme/standard/img/logo.png"; ?>" style="max-width:420px; max-height:45px; border:0; margin:10px 0px 20px 0px;" /><br />
+    <span style="font-size:16px; position:relative;">The hyper Content &amp; Digital Asset Management Server is already installed</span>
+    <br/><br/>
+    <span style="font-size:12px; position:relative;">Visit <a href="https://www.hypercms.com">www.hypercms.com</a> for more information</span>
+  </div>
 </body>
 </html>
 <?php
@@ -146,17 +159,33 @@ $token = getrequest ("token");
 
 $show = "";
 
-// install hyperCMS
-if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($token, $user))
+// ------------------- basic checks -------------------
+
+// file structure
+if (empty ($mgmt_config['abs_path_cms']."config/") || !is_writeable ($mgmt_config['abs_path_cms']."config/")) $show .= "<li>Write permission for config-directory is missing (".$mgmt_config['abs_path_cms']."config/). Please make the Webserver user the owner of this directory.</li>\n";
+if (empty ($mgmt_config['abs_path_data']) || !is_writeable ($mgmt_config['abs_path_data'])) $show .= "<li>Write permission for data-directory is missing (".$mgmt_config['abs_path_data']."). Please make the Webserver user the owner of this directory.</li>\n";
+if (empty ($mgmt_config['abs_path_rep']) || !is_writeable ($mgmt_config['abs_path_rep'])) $show .= "<li>Write permission for repository-directory is missing (".$mgmt_config['abs_path_rep']."). Please make the Webserver user the owner of this directory.</li>\n";
+if (empty ($publ_config['abs_path_mypublication']) || !is_writeable ($publ_config['abs_path_mypublication'])) $show .= "<li>Write permissions for publication-directory is missing (".$publ_config['abs_path_mypublication']."). Please make the Webserver user the owner of this directory.</li>\n";
+
+// mbstring support
+if (!function_exists ("mb_detect_encoding")) $show .= "<li>The PHP mbstring extension is disabled or missing.</li>\n";
+
+// mysqli support
+if (!function_exists ("mysqli_connect")) $show .= "<li>The PHP mysqli extension is disabled or missing.</li>\n";
+
+// ldap support
+if (!function_exists ("ldap_add")) $show .= "<li>The PHP ldap extension is disabled or missing.</li>\n";
+
+// bcmath support
+if (!function_exists ("bcadd")) $show .= "<li>The PHP bcmath extension is disabled or missing.</li>\n";
+
+// ----------------- install hyperCMS -----------------
+
+if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken ($token, $user))
 {
   // create data and repository file structure
-  if ($mgmt_config['abs_path_data'] != "" && $mgmt_config['abs_path_rep'] != "" && $publ_config['abs_path_mypublication'] != "")
+  if (!empty ($mgmt_config['abs_path_data']) && !empty ($mgmt_config['abs_path_rep']) && !empty ($publ_config['abs_path_mypublication']))
   {   
-    if (!is_writeable ($mgmt_config['abs_path_cms']."config/")) $show .= "<li>Write permission for config-directory is missing (".$mgmt_config['abs_path_cms']."config/)! Please make the Webserver user the owner of this directory.</li>\n";
-    if (!is_writeable ($mgmt_config['abs_path_data'])) $show .= "<li>Write permission for data-directory is missing (".$mgmt_config['abs_path_data'].")! Please make the Webserver user the owner of this directory.</li>\n";
-    if (!is_writeable ($mgmt_config['abs_path_rep'])) $show .= "<li>Write permission for repository-directory is missing (".$mgmt_config['abs_path_rep'].")! Please make the Webserver user the owner of this directory.</li>\n";
-    if (!is_writeable ($publ_config['abs_path_mypublication'])) $show .= "<li>Write permissions for publication-directory is missing (".$publ_config['abs_path_mypublication'].")! Please make the Webserver user the owner of this directory.</li>\n";
-
     // copy to internal repository
     if ($show == "")
     {
@@ -252,13 +281,13 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
     if (trim ($password) != "" && trim ($confirm_password) != "" && trim ($language) != "" && trim ($email) != "")
     {
       $result = edituser ("*Null*", "admin", "", trim ($password), trim ($confirm_password), "1", $realname, $language, "*Leave*", "standard", trim ($email), "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", $user);
-      if ($result['result'] == false) $show .= "<li>".strip_tags ($result['message'])."</li>\n";
+      if (empty ($result['result'])) $show .= "<li>".strip_tags ($result['message'])."</li>\n";
     }
     else $show .= "<li>Please provide all information for the Administrator Account</li>\n";
   }
 
   // create configs
-  if ($show == "" && $os_cms != "" && $mgmt_config['url_path_cms'] != "" && $mgmt_config['abs_path_cms'] != "")
+  if ($show == "" && $os_cms != "" && !empty ($mgmt_config['url_path_cms']) && !empty ($mgmt_config['abs_path_cms']))
   {
     if (preg_match ('/\s/', $smtp_host) > 0) $show .= "<li>Whitespaces in '".$smtp_host."' are not allowed!</li>\n";
     if (preg_match ('/\s/', $smtp_username) > 0) $show .= "<li>Whitespaces in '".$smtp_username."' are not allowed!</li>\n";
@@ -642,8 +671,9 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
   
   // show errors
   if ($show != "") $show = "<strong>The following errors occured:</strong><br/>\n<ul>".$show."</ul>";
+  
   // forward on success
-  else header ("Location: ".$mgmt_config['url_path_cms']);
+  else header ("Location: ".cleandomain ($mgmt_config['url_path_cms']));
 }
 
 // create secure token
@@ -672,7 +702,7 @@ $token_new = createtoken ($user);
 <script type="text/javascript">
 $(document).ready(function(){
 	// place ID's of all required fields here.
-	required = ["password", "confirm_password", "email", "db_host", "db_username", "db_password", "db_name", "smtp_host", "smtp_username", "smtp_password", "smtp_port", "smtp_sender"];
+	required = ["password", "confirm_password", "email", "db_host", "db_username", "db_password", "db_name", "smtp_host", "smtp_port", "smtp_sender"];
 
 	// if using an ID other than #email or #error then replace it here
 	email = $("#email");
@@ -1009,8 +1039,8 @@ Otherwise just provide the information below and install the most powerful Conte
       <td colspan="2" style="white-space:nowrap;">
       After installation the following scheduled Cron Jobs (Linux/UNIX) <br/>
       or scheduled Tasks (MS Windows) need to be created manually:<br/>
-      <strong>cms/job/daily.php</strong> ... needs to be executed daily (e.g. midnight)<br/>
-      <strong>cms/job/minutely.php</strong> ... needs to be executed every minute<br/>
+      <strong>hypercms/job/daily.php</strong> ... needs to be executed daily (e.g. midnight)<br/>
+      <strong>hypercms/job/minutely.php</strong> ... needs to be executed every minute<br/>
       <hr />
       Please make sure that the .htaccess files of the system are supported by adding<br/>
       these directives to your Apache 2.4 configuration of your virtual host:<br/>

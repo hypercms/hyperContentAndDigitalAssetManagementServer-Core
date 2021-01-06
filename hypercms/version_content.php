@@ -81,7 +81,7 @@ if ($actual != "" && checktoken ($token, $user))
   if ($page != $rollbackversion['object'])
   {
     $page = $rollbackversion['object'];
-    $add_onload = "if (parent.frames['controlFrame']) parent.frames['controlFrame'].location='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
+    $add_onload = "if (parent.frames['controlFrame']) parent.frames['controlFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
   }
 }
 
@@ -294,6 +294,6 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
 </form>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

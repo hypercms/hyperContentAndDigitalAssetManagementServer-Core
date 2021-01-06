@@ -39,12 +39,7 @@ if ($action == "save" && checktoken ($token, $user))
 }
 
 // wallpaper
-$wallpaper = "";
-
-if (!$is_mobile)
-{
-  $wallpaper = getwallpaper ();
-}
+$wallpaper = getwallpaper ();
 
 // get home boxes for selection
 $homebox_array = gethomeboxes ($siteaccess);
@@ -287,7 +282,7 @@ function closePopup ()
 </script>
 </head>
 
-<body onload="setlogospacer(); <?php if (!$is_mobile) echo "setwallpaper();"; ?>">
+<body onload="setlogospacer(); setwallpaper();">
 
 <!-- popup (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="popupLayer" class="hcmsHomeBox" style="position:fixed; left:50%; bottom:0px; z-index:-1; overflow:hidden; width:0px; height:0px; visibility:hidden;">
@@ -396,6 +391,6 @@ function closePopup ()
 
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

@@ -174,6 +174,7 @@ function getallusers ($site)
 // --------------------------------- logic section ----------------------------------
 
 // initalize
+$error = array();
 $add_onload = "";
 $groupdata = "";
 $userdata = "";
@@ -379,7 +380,7 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
 
         $result = createuser ($site, $login, $password, $confirm_password, $user);
 
-        if ($result['result'] == true)
+        if (!empty ($result['result']))
         {
           // create names form e-mails
           $realnames = array();
@@ -543,6 +544,8 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
                 // transform single object to multi object
                 if (empty ($multiobject_array) && $location_esc != "" && $page != "")
                 {
+                  $multiobject_array = array();
+
                   if ($folder != "") $multiobject_array[0] = $location_esc.$folder."/".$page;
                   else $multiobject_array[0] = $location_esc.$page;
                 }
@@ -595,6 +598,7 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
                 // transform single object to multi object (folders cant be attached!)
                 if (empty ($multiobject_array) && $location_esc != "" && $page != "" && $folder == "")
                 {
+                  $multiobject_array = array();
                   $multiobject_array[0] = $location_esc.$page;
                 }
 
@@ -789,14 +793,14 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
               savemessage ($message_data, "mail", $user);
 
               $errcode = "00101";
-              $error[] = $mgmt_config['today']."|user_sendlink.php|information|$errcode|e-mail message was sent to ".$temp_email_to." by user ".$user;
+              $error[] = $mgmt_config['today']."|user_sendlink.php|information|".$errcode."|e-mail message was sent to '".$temp_email_to."' by user '".$user."'";
             }
             else
             {
               $mail_error[] = $temp_email_to;
               
               $errcode = "20101";
-              $error[] = $mgmt_config['today']."|user_sendlink.php|error|$errcode|e-mail message could not be sent to ".$temp_email_to." by user ".$user;
+              $error[] = $mgmt_config['today']."|user_sendlink.php|error|".$errcode."|e-mail message could not be sent to '".$temp_email_to."' by user '".$user."'";
             }
           }
         }

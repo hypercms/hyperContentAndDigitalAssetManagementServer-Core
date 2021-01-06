@@ -133,7 +133,9 @@ function setfilter ($filter_set)
     $filter_names = array ("comp", "image", "document", "video", "audio", "flash", "compressed", "binary");
 
     // unset session variable
-    unset ($_SESSION['hcms_objectfilter']);
+    if (isset ($_SESSION['hcms_objectfilter'])) unset ($_SESSION['hcms_objectfilter']);
+
+    $_SESSION['hcms_objectfilter'] = array();
 
     foreach ($filter_names as $filter)
     {
@@ -197,30 +199,44 @@ function objectfilter ($file)
 
 // --------------------------------------- invertcolorCSS -------------------------------------------
 // function: invertcolorCSS ()
-// input: CSS selector for elements [string], percentage value [integer] [optional]
+// input: design theme name for CSS class hcmsToolbarBlock [string] (optional), CSS selector for elements [string] (optional), percentage value [integer] (optional)
 // output: CSS style code / false on error
 
 // description:
-// Used for portals in order to invert the color of buttons.
+// Used for portals in order to invert the color of elements.
 // MS IE does not support invert, MS Edge does.
 
-function invertcolorCSS ($css_selector, $percentage=100)
+function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $percentage=100)
 {
+  global $mgmt_config;
+
+  $result = "";
+
+  // invert colors
   if ($css_selector != "" && intval ($percentage) >= 0)
   {
-    $result = "
-".$css_selector."
-{
-  -webkit-filter: invert(".intval ($percentage)."%);
-  -o-filter: invert(".intval ($percentage)."%);
-  -moz-filter: invert(".intval ($percentage)."%);
-  -ms-filter: invert(".intval ($percentage)."%);
-  filter: invert(".intval ($percentage)."%);
-}";
-
-    return $result;
+    $result .= "
+  ".$css_selector."
+  {
+    -webkit-filter: invert(".intval ($percentage)."%);
+    -o-filter: invert(".intval ($percentage)."%);
+    -moz-filter: invert(".intval ($percentage)."%);
+    -ms-filter: invert(".intval ($percentage)."%);
+    filter: invert(".intval ($percentage)."%);
+  }";
   }
-  else return false;
+
+  // set color for border
+  if ($theme == "day") $color = "#000000";
+  elseif ($theme == "night") $color = "#FFFFFF";
+
+  if (!empty ($color)) $result .= "
+  .hcmsToolbarBlock
+  {
+    border-color: ".$color."; 
+  }";
+
+  return $result;
 }
 
 // --------------------------------------- showdate -------------------------------------------
@@ -300,7 +316,7 @@ function showshorttext ($text, $length=0, $linebreak=false, $charset="UTF-8")
       elseif (mb_strlen ($text, $charset) > $length) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, NULL, $charset);
 
       // keep 
-      return "<div style=\"vertical-align:top; height:50px; display:block;\">".$text."</div>";
+      return $text;
     }
   }
   elseif ($text != "" && $length < 0)
@@ -342,14 +358,14 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
 
     return "
   <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
-    <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
+    <table style=\"width:100%; min-height:36px; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
-        <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:0px 4px; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".$show."</td>".
+        <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:0px 6px; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".$show."</td>".
         $individual_button_code.$close_button_code.
       "</tr>
     </table>
   </div>
-  <div style=\"width:100%; height:38px;\">&nbsp;</div>";
+  <div style=\"width:100%; height:40px;\">&nbsp;</div>";
   }
   else return false;
 }
@@ -388,9 +404,9 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
 
     return "
   <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
-    <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
+    <table style=\"width:100%; min-height:36px; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
-        <td class=\"hcmsHeadline\" style=\"width:80px; text-align:left; vertical-align:middle; padding:0px 4px; margin:0; white-space:nowrap;\">".$show."</td>
+        <td class=\"hcmsHeadline\" style=\"width:80px; text-align:left; vertical-align:middle; padding:0px 6px; margin:0; white-space:nowrap;\">".$show."</td>
         <td style=\"text-align:left; vertical-align:middle; padding:0; margin:0;\">".$menu_button."</td>".
         $close_button.
       "</tr>
@@ -1440,7 +1456,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   <div style=\"margin-top:30px;\">
     <div id=\"annotation\" style=\"position:relative;\" class=\"".$class."\"></div>
   </div>
-  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.min.js\"></script>
+  <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/annotate/annotate.min.js\"></script>
 	<script type=\"text/javascript\">
     // set annotation buttons
     function setAnnotationButtons ()
@@ -1808,7 +1824,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <div style=\"position:absolute; right:4px; top:4px;\">
                   <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer ('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
                 </div>
-                <iframe src=\"".$mgmt_config['url_path_cms']."media_360view.php?type=image&link=".url_encode($preview_image).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
+                <iframe src=\"".cleandomain ($mgmt_config['url_path_cms'])."media_360view.php?type=image&link=".url_encode($preview_image).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
               </div>";
               $mediaview .= "
               <div id=\"annotationFrame\" style=\"margin-top:40px; width:".intval($width_annotation + $width_diff)."px; height:".intval($height_annotation + 8)."px;\">
@@ -1828,7 +1844,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <div style=\"position:absolute; right:4px; top:4px;\">
                   <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer ('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
                 </div>
-                <iframe src=\"".$mgmt_config['url_path_cms']."media_360view.php?type=image&link=".url_encode($preview_image).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowfullscreen ></iframe>
+                <iframe src=\"".cleandomain ($mgmt_config['url_path_cms'])."media_360view.php?type=image&link=".url_encode($preview_image).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowfullscreen ></iframe>
               </div>";
               $mediaview .= "
               <div id=\"annotation\" style=\"position:relative; width:auto; height:auto;\" ".((!empty ($mgmt_config['facedetection']) && $viewtype == "preview") ? "onclick=\"createFaceOnImage (event, '".$id."');\"" : "")."><img src=\"".$preview_image."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" style=\"".$style."\" /></div>";
@@ -1944,7 +1960,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           }
 
           $mediaview .= "
-  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.min.js\"></script>
+  <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/annotate/annotate.min.js\"></script>
 	<script type=\"text/javascript\">
     // set annotation buttons
     function setAnnotationButtons ()
@@ -3000,7 +3016,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $.ajax({
               async: false,
               type: 'POST',
-              url: '".$mgmt_config['url_path_cms']."service/deletemedia.php',
+              url: '".cleandomain ($mgmt_config['url_path_cms'])."service/deletemedia.php',
               data: {'location': '".$location_esc."', 'media': mediafile},
               dataType: 'json',
               success: function(data){ if(data.success) {result = true;} }
@@ -3106,14 +3122,16 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
 
     // get location in component structure from session
-    if (!valid_locationname ($dir) && isset ($temp_complocation[$site])) 
+    if (!valid_locationname ($dir) && !empty ($temp_complocation[$site])) 
     {
       $dir = $temp_complocation[$site];
 
       if (!is_dir ($dir))
       {
         $dir = "";
-        $temp_complocation[$site] = null;
+
+        unset ($temp_complocation[$site]);
+
         setsession ('hcms_temp_complocation', $temp_complocation, true);
       }
     }
@@ -3192,7 +3210,10 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     // set location in component structure in session
     if (valid_locationname ($dir))
     {
+      if (!isset ($temp_complocation)) $temp_complocation = array();
+
       $temp_complocation[$site] = $dir;
+
       setsession ('hcms_temp_complocation', $temp_complocation, true);
     }
 
@@ -3210,9 +3231,9 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
 
     // javascript code
     $result = "<!-- Jquery and Jquery UI Autocomplete -->
-<script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.5.1.min.js\" type=\"text/javascript\"></script>
-<script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
-<script src=\"".$mgmt_config['url_path_cms']."javascript/lazysizes/lazysizes.min.js\" type=\"text/javascript\" async=\"\"></script>
+<script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery/jquery-3.5.1.min.js\" type=\"text/javascript\"></script>
+<script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
+<script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/lazysizes/lazysizes.min.js\" type=\"text/javascript\" async=\"\"></script>
 <script type=\"text/javascript\">
 function sendCompOption(newtext, newvalue)
 {
@@ -3280,7 +3301,7 @@ $(document).ready(function()
       <div style=\"text-align:left; padding:2px; width:100%;\">
         <button name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" onClick=\"";
         // only new upload window supported
-        $result .= "hcms_openWindow('".$mgmt_config['url_path_cms']."popup_upload_html.php?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'location=no,status=yes,scrollbars=yes,resizable=yes,titlebar=no', 800, 600);";
+        $result .= "hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."popup_upload_html.php?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'location=no,status=yes,scrollbars=yes,resizable=yes,titlebar=no', 800, 600);";
         $result .= "\">".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."</button>
         <img class=\"hcmsButtonTiny hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
@@ -3291,7 +3312,7 @@ $(document).ready(function()
     {
       $result .= "
       <div style=\"text-align:left; padding:2px; width:100%;\">
-        <button name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">".getescapedtext ($hcms_lang['new-component'][$lang], $hcms_charset, $lang)."</button>
+        <button name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:184px; margin-right:4px; float:left;\" type=\"button\" onClick=\"hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">".getescapedtext ($hcms_lang['new-component'][$lang], $hcms_charset, $lang)."</button>
         <img class=\"hcmsButtonTiny hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
       <div style=\"clear:both;\"></div>";
@@ -3563,44 +3584,28 @@ $(document).ready(function()
                 $thumbnail = "";
                 $mediadir = getmedialocation ($site, $objectinfo['media'], "abs_path_media").$site."/";
 
+                $container_info = getmetadata_container ($objectinfo['container_id']);
+                 
                 // use thumbnail preview
                 if (is_file ($mediadir.$thumbnailfile))
                 {
-                  /* deprecated since version 8.1.3 due to performance issues when reading all thumbnail files in order to collect their dimensions
-                  $imgsize = getimagesize ($mediadir.$thumbnailfile);
+                  // use original image size from RDBMS
+                  $style_size = "";
 
-                  // calculate image ratio to define CSS for image container div-tag
-                  if (is_array ($imgsize))
+                  if (!empty ($container_info['width']) && !empty ($container_info['height']))
                   {
-                    $imgwidth = $imgsize[0];
-                    $imgheight = $imgsize[1];
-                    $imgratio = $imgwidth / $imgheight;
-
                     // if thumbnail is smaller than defined thumbnail size
-                    if ($imgwidth < $thumbsize && $imgheight < $thumbsize)
+                    if ($container_info['width'] < $thumbsize && $container_info['height'] < $thumbsize)
                     {
-                      $style_size = "width:".$imgwidth."px; height:".$imgheight."px;";
-                    }
-                    else
-                    {
-                      // image width >= height
-                      if ($imgratio >= 1) $style_size = "width:".$thumbsize."px; height:".round(($imgheight / $imgratio), 0)."px;";
-                      // image width < height
-                      else $style_size = "width:".round(($imgwidth * $imgratio), 0)."px; height:".$thumbsize."px;";
+                      $style_size = "width:".$container_info['width']."px; height:".$container_info['height']."px;";
                     }
                   }
-                  // default value
-                  else
-                  {
-                    $style_size = "width:".$thumbsize."px;";
-                  }
-                  */
 
                   // listview - view option for un/published objects
                   if ($comp_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
                   else $class_image = "class=\"lazyload hcmsImageItem\"";
 
-                  $thumbnail = "<img data-src=\"".createviewlink ($site, $thumbnailfile, $objectinfo['name'])."\" ".$class_image." style=\"margin-top:10px;\" /><br/>";
+                  $thumbnail = "<img data-src=\"".cleandomain (createviewlink ($site, $thumbnailfile, $objectinfo['name']))."\" ".$class_image." style=\"".$style_size." margin-top:10px;\" /><br/>";
                 }
                 // use standard file icon as thumbnail
                 else
@@ -3658,8 +3663,8 @@ $(document).ready(function()
               </tr>";
                 else $result .= "
               <tr>
-                <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
-                <td style=\"width:28px; text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+                <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='text_media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 20)."</a></td>
+                <td style=\"width:28px; text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='text_media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
               }
             }
@@ -3715,18 +3720,18 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
         CKEDITOR.replace( '".$hypertagname."_".$id."',
         {
           baseHref:					               		'".$publ_config['url_publ_page']."',
-          customConfig:             			  	'".$mgmt_config['url_path_cms']."editor/ckeditor_custom/editorf_config.js',
+          customConfig:             			  	'".cleandomain ($mgmt_config['url_path_cms'])."javascript/ckeditor/ckeditor_custom/editorf_config.js',
           language:	              						'".$lang."',
           scayt_sLang:		              			'".getscaytlang ($lang)."',
           height:					              			'".$sizeheight."',
           width:							              	'".$sizewidth."',
-          filebrowserImageBrowseUrl:	    		'".$mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&scaling=".url_encode($scalingfactor)."',
-          filebrowserFlashBrowseUrl:	    		'".$mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=flash',
-          filebrowserVideoBrowseUrl:	    		'".$mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=video',
-          filebrowserLinkBrowsePageUrl:	    	'".$mgmt_config['url_path_cms']."editor/link_explorer.php?site=".url_encode($site)."',
-          filebrowserLinkBrowseComponentUrl:	'".$mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=',
+          filebrowserImageBrowseUrl:	    		'".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&scaling=".url_encode($scalingfactor)."',
+          filebrowserFlashBrowseUrl:	    		'".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=flash',
+          filebrowserVideoBrowseUrl:	    		'".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=video',
+          filebrowserLinkBrowsePageUrl:	    	'".cleandomain ($mgmt_config['url_path_cms'])."text_link_explorer.php?site=".url_encode($site)."',
+          filebrowserLinkBrowseComponentUrl:	'".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=',
           toolbar:	              						'".$toolbar."',
-          cmsLink:	              						'".$mgmt_config['url_path_cms']."'
+          cmsLink:	              						'".cleandomain ($mgmt_config['url_path_cms'])."'
         });
       </script>";
   }
@@ -3748,8 +3753,12 @@ function showinlineeditor_head ($lang)
   if (is_array ($mgmt_config) && $lang != "")
   {
     return "
-    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.5.1.min.js\"></script>
-    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."/editor/ckeditor/ckeditor.js\"></script>
+    <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery/jquery-3.5.1.min.js\"></script>
+    <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/signature/jSignature.min.noconflict.js\"></script>
+    <!--[if lt IE 9]>
+    <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/signature/flashcanvas.js\"></script>
+    <![endif]-->
+    <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."/javascript/ckeditor/ckeditor/ckeditor.js\"></script>
     <script type=\"text/javascript\">
       CKEDITOR.disableAutoInline = true;
       var jq_inline = $.noConflict();
@@ -3767,7 +3776,7 @@ function showinlineeditor_head ($lang)
             nm=val.name;
             nm=nm.substring(nm.indexOf('_')+1, nm.length);
 
-            if ((val=val.value)!='') 
+            if ((val=val.value) != '') 
             {
               if (test.indexOf('isEmail')!=-1) 
               { 
@@ -3801,6 +3810,16 @@ function showinlineeditor_head ($lang)
           return false;
         }
         else return true;
+      }
+
+      function hcms_resetSignature (id)
+      {
+        // clears the canvas and rerenders the decor on it
+        jq_inline('#signature_'+id).jSignature('reset');
+        // empty hidden field
+        jq_inline('#signature_'+id).val('');
+
+        return false;
       }
 
       function hcms_initTextarea(ta_id, width, height)
@@ -3846,7 +3865,7 @@ function showinlineeditor_head ($lang)
         line-height: inherit;
         display: inline-block;
         box-sizing: border-box;
-        outline: 0 auto;
+        outline: 1px dotted auto;
         box-shadow: none !important;
       }
       .hcms_editable:hover {
@@ -3869,7 +3888,7 @@ function showinlineeditor_head ($lang)
         line-height: inherit;
         box-sizing: border-box;
         white-space: pre;
-        outline: 0 auto;
+        outline: 1px dotted auto;
         box-shadow: none !important;
         background-color: transparent;
       }
@@ -3901,11 +3920,11 @@ function showinlinedatepicker_head ()
   {
     return " 
 
-    <link rel=\"stylesheet\" hypercms_href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\">
-    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.min.js\"></script>
-    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
-    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
-    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
+    <link rel=\"stylesheet\" hypercms_href=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/rich_calendar/rich_calendar.css\">
+    <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/rich_calendar/rich_calendar.min.js\"></script>
+    <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/rich_calendar/rc_lang_en.js\"></script>
+    <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/rich_calendar/rc_lang_de.js\"></script>
+    <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/rich_calendar/domready.js\"></script>
     ";
   }
   else return false;
@@ -3979,6 +3998,10 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 
     switch ($hypertagname)
     {
+      case 'arttexts':
+      case 'texts':
+        $title .= getescapedtext ($hcms_lang['signature'][$lang], $hcms_charset, $lang);
+        break;
       case 'arttextu':
       case 'textu':
         $title .= getescapedtext ($hcms_lang['edit-unformatted-text'][$lang], $hcms_charset, $lang);
@@ -4014,6 +4037,88 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 
     switch ($hypertagname)
     {
+      // signature
+      case 'arttexts':
+      case 'texts':
+
+        // do not add the content display for signatures to the form that is submitted including the element that is sent
+        $return = "
+        <script type=\"text/javascript\">
+        jq_inline().ready(function() {
+          // display the form for signatures
+          form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
+          form.css('display', 'inline');
+
+          // initialize the jSignature widget with options
+          jq_inline('#signature_".$hypertagname."_".$id."').jSignature({ 'lineWidth': 2, 'decor-color': 'transparent' });
+
+          jq_inline('#signature_".$hypertagname."_".$id."').bind('change', function(e) {
+            var constraint = \"".$constraint."\";
+
+            // create image (image = PNG, svgbase64 = SVG)
+            if (jq_inline('#signature_".$hypertagname."_".$id."').jSignature('getData', 'native').length > 0) 
+            {
+              var imagedata = jq_inline('#signature_".$hypertagname."_".$id."').jSignature('getData', 'image');
+              // set image data string
+              jq_inline('#".$hypertagname."_".$id."').val(imagedata);
+            }
+            else jq_inline('#".$hypertagname."_".$id."').val('');
+
+            if (constraint == '' || (check = hcms_validateForm('".$hypertagname."_".$id."','', constraint)))
+            {
+              jq_inline.post(
+                \"".cleandomain ($mgmt_config['url_path_cms'])."service/savecontent.php\", 
+                jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
+                function(data)
+                {
+                  if (data.message.length !== 0)
+                  {
+                    alert (hcms_entity_decode(data.message));
+                  }				
+                }, 
+                \"json\"
+              );
+            }
+          });
+          
+          // show existing signature image and hide signature field
+          if (jq_inline('#signatureimage_".$hypertagname."_".$id."').length)
+          {
+            jq_inline('#signatureimage_".$hypertagname."_".$id."').show();
+            jq_inline('#signaturefield_".$hypertagname."_".$id."').hide();
+          }
+          else
+          {
+            jq_inline('#signaturefield_".$hypertagname."_".$id."').show();
+          }
+        });
+        </script>
+        ";
+
+        // size of the element
+        $style = "";
+        if ($sizewidth > 0) $style .= "width:".$sizewidth."px;";
+        // no height will be used since the signature canvas will define the height
+        // if ($sizeheight > 0) $style .= "height:".$sizeheight."px; ";
+
+        // existing signature
+        if (!empty ($contentbot) && strlen ($contentbot) > 333) $signature_image = "<img id=\"signatureimage_".$hypertagname."_".$id."\" onclick=\"jq_inline('#signatureimage_".$hypertagname."_".$id."').hide(); jq_inline('#signaturefield_".$hypertagname."_".$id."').show();\" src=\"data:".$contentbot."\" style=\"".$style." display:none; padding:0 !important; max-width:100%; max-height:100%;\" />";
+        else $signature_image = "";
+        
+        $element = "
+        <div class=\"hcms_editable\" title=\"".$title."\">
+          ".$signature_image."
+          <div id=\"signaturefield_".$hypertagname."_".$id."\" style=\"".$style."\">
+            <div id=\"signature_".$hypertagname."_".$id."\" style=\"outline:2px dotted #FF9000; background-color:#FFFFFF; color:darkblue;\"></div>
+            <div style=\"all:unset; position:relative; float:right; margin:-25px 5px 0px 0px;\">
+              <img src=\"".getthemelocation()."img/button_delete.png\" onclick=\"hcms_resetSignature('".$hypertagname."_".$id."');\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $hcms_charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\"/>
+            </div>
+            <input id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" type=\"hidden\" value=\"".$contentbot."\" />
+          </div>
+        </div>";
+
+        break;
+
       // checkbox
       case 'arttextc':
       case 'textc':
@@ -4025,7 +4130,8 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           <script type=\"text/javascript\">
           jq_inline().ready(function() 
           {
-            var oldcheck_".$hypertagname."_".$id." = \"\";
+            var oldcheck_".$hypertagname."_".$id." = '';
+
             jq_inline('#".$hypertagname."_".$id."').click(function(event)
             {
               event.stopPropagation();
@@ -4054,14 +4160,15 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               if (oldcheck_".$hypertagname."_".$id." != newcheck".$confirm_save.")
               {
                 oldcheck_".$hypertagname."_".$id." = newcheck;
+
                 jq_inline.post(
-                  \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
+                  \"".cleandomain ($mgmt_config['url_path_cms'])."service/savecontent.php\", 
                   jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                   function(data)
                   {
-                    if(data.message.length !== 0)
+                    if (data.message.length !== 0)
                     {
-                      alert(hcms_entity_decode(data.message));
+                      alert (hcms_entity_decode(data.message));
                     }				
                   }, 
                   \"json\"
@@ -4071,7 +4178,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               }
               else
               {
-                checkbox.prop('checked', (oldcheck_".$hypertagname."_".$id." == \"\" ? false : true));
+                checkbox.prop('checked', (oldcheck_".$hypertagname."_".$id." == '' ? false : true));
               }
 
               form.hide();
@@ -4080,12 +4187,15 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           });
         </script>
         ";
-        $element = "<input type=\"hidden\" name=\"".$hypertagname."[".$id_orig."]\" value=\"\"/><input title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-checkbox'][$lang], $hcms_charset, $lang)."\" type=\"checkbox\" id=\"hcms_checkbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" value=\"".$value."\"".($value == $contentbot ? ' checked ' : '').">".$labelname;
+
+        $element = "<input type=\"hidden\" name=\"".$hypertagname."[".$id_orig."]\" value=\"\" /><input title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-checkbox'][$lang], $hcms_charset, $lang)."\" type=\"checkbox\" id=\"hcms_checkbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" value=\"".$value."\"".($value == $contentbot ? ' checked ' : '')." />".$labelname;
+        
         break;
 
       // date picker
       case 'arttextd':
       case 'textd':
+
         $return .= "
           <script type=\"text/javascript\">
           var cal_obj_".$hypertagname."_".$id." = null;
@@ -4120,7 +4230,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 {
                   olddate_".$hypertagname."_".$id." = newdate;
                   jq_inline.post(
-                    \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
+                    \"".cleandomain ($mgmt_config['url_path_cms'])."service/savecontent.php\", 
                     jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                     function(data)
                     {
@@ -4132,7 +4242,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                     \"json\"
                   );
 
-                  elem.html(newdate == \"\" ? '".$defaultText."' : newdate);
+                  elem.html(newdate == '' ? '".$defaultText."' : newdate);
                 }
                 else if (!check)
                 {
@@ -4219,17 +4329,21 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           });
           </script>
         ";
+
         $element = "<input title=\"".$labelname.": ".getescapedtext ($hcms_lang['pick-a-date'][$lang], $hcms_charset, $lang)."\" type=\"text\" id=\"hcms_datefield_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" value=\"".$contentbot."\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\" /><br>";
+        
         break;
 
       // unformatted text
       case 'arttextu':
       case 'textu':
+
         $return .= "
           <script type=\"text/javascript\">
           jq_inline().ready(function() 
           {
-            var oldtext_".$hypertagname."_".$id." = \"\";
+            var oldtext_".$hypertagname."_".$id." = '';
+
             jq_inline('#".$hypertagname."_".$id."').click(function(event) {
               event.stopPropagation();
 
@@ -4266,7 +4380,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               {
                 oldtext_".$hypertagname."_".$id." = newtext;
                 jq_inline.post(
-                  \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
+                  \"".cleandomain ($mgmt_config['url_path_cms'])."service/savecontent.php\", 
                   jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                   function(data)
                   {
@@ -4295,18 +4409,22 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           setTimeout(function(){ hcms_initTextarea('hcms_txtarea_".$hypertagname."_".$id."', document.getElementById('".$hypertagname."_".$id."').offsetWidth, document.getElementById('".$hypertagname."_".$id."').offsetHeight); }, 800);
           </script>
         ";
+
         // textarea
         $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" onkeyup=\"hcms_adjustTextarea(this);\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
+        
         break;
 
       // text options/list
       case 'arttextl':
       case 'textl':
+
         $return .= "
           <script type=\"text/javascript\">
           jq_inline().ready(function() 
           {
-            var oldselect_".$hypertagname."_".$id." = \"\";
+            var oldselect_".$hypertagname."_".$id." = '';
+
             jq_inline('#".$hypertagname."_".$id."').click(function(event) {
               event.stopPropagation();
 
@@ -4335,8 +4453,9 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               if (oldselect_".$hypertagname."_".$id." != newselect".$confirm_save.")
               {
                 oldselect_".$hypertagname."_".$id." = newselect;
+
                 jq_inline.post(
-                  \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
+                  \"".cleandomain ($mgmt_config['url_path_cms'])."service/savecontent.php\", 
                   jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                   function(data)
                   {
@@ -4360,6 +4479,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           });
         </script>
         ";
+
         // Building the select box
         $list = explode ("|", getattribute ($hypertag, "list"));
         $element = "<select title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-text-options'][$lang], $hcms_charset, $lang)."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\">\n";
@@ -4370,11 +4490,13 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         }
 
         $element .= "</select>\n";
+        
         break;
 
       // formatted text
       case 'arttextf':
       case 'textf':
+
         //get attribute dpi for right scaling of the images 72/dpi
         $dpi = getattribute ($hypertag, "dpi");
 
@@ -4391,7 +4513,8 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           <script type=\"text/javascript\">
             jq_inline().ready(function() 
             {
-              var oldtext_".$hypertagname."_".$id." = \"\";
+              var oldtext_".$hypertagname."_".$id." = '';
+
               jq_inline('#".$hypertagname."_".$id."').click(function(event) 
               { // Prevent propagation so that only ckeditor is shown and no operations from a parent onClick is performed
                 event.stopPropagation();
@@ -4399,21 +4522,22 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               { // Overwriting the title everytime the mouse moves over the element, because CKEditor does overwrite it sometimes
                 jq_inline(this).attr('title', '".$title."' );
               });
+
               CKEDITOR.inline( '".$hypertagname."_".$id."',
               {
                 baseHref:					               		'".$publ_config['url_publ_page']."',
-                customConfig:             			  	'".$mgmt_config['url_path_cms']."editor/ckeditor_custom/inline_config.js',
+                customConfig:             			  	'".cleandomain ($mgmt_config['url_path_cms'])."javascript/ckeditor/ckeditor_custom/inline_config.js',
                 language:	              						'".$lang."',
                 scayt_sLang:		              			'".getscaytlang ($lang)."',
                 height:					              			'".$sizeheight."',
                 width:							              	'".$sizewidth."',
-                filebrowserImageBrowseUrl:	    		'".$mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&scaling=".url_encode($scalingfactor)."',
-                filebrowserFlashBrowseUrl:	    		'".$mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=flash',
-                filebrowserVideoBrowseUrl:	    		'".$mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=video',
-                filebrowserLinkBrowsePageUrl:	    	'".$mgmt_config['url_path_cms']."editor/link_explorer.php?site=".url_encode($site)."',
-                filebrowserLinkBrowseComponentUrl:	'".$mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=',
+                filebrowserImageBrowseUrl:	    		'".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&scaling=".url_encode($scalingfactor)."',
+                filebrowserFlashBrowseUrl:	    		'".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=flash',
+                filebrowserVideoBrowseUrl:	    		'".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=video',
+                filebrowserLinkBrowsePageUrl:	    	'".cleandomain ($mgmt_config['url_path_cms'])."text_link_explorer.php?site=".url_encode($site)."',
+                filebrowserLinkBrowseComponentUrl:	'".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=',
                 toolbar:	              						'".$toolbar."',
-                cmsLink:	              						'".$mgmt_config['url_path_cms']."',
+                cmsLink:	              						'".cleandomain ($mgmt_config['url_path_cms'])."',
                 on: {
                   focus: function( event ) {
                     oldtext_".$hypertagname."_".$id." = jq_inline.trim(event.editor.getData());
@@ -4434,7 +4558,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                       oldtext_".$hypertagname."_".$id." = newtext;
                       jq_inline('#hcms_txtarea_".$hypertagname."_".$id."').val(event.editor.getData());
                       jq_inline.post(
-                        \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
+                        \"".cleandomain ($mgmt_config['url_path_cms'])."service/savecontent.php\", 
                         jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                         function(data)
                         {
@@ -4464,28 +4588,30 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         ";
 
         $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\">".$contentbot."</textarea>";
+        
         break;
+
       default:
         break;
     }
 
     // Adding the form that is submitted including the element that is sent
     $return .= "
-      <form style=\"display:none;\" method=\"post\" id=\"hcms_form_".$hypertagname."_".$id."\">
-        <input type=\"hidden\" name=\"contenttype\" value=\"".$contenttype."\"> 
-        <input type=\"hidden\" name=\"site\" value=\"".$site."\"> 
-        <input type=\"hidden\" name=\"cat\" value=\"".$cat."\"> 
-        <input type=\"hidden\" name=\"location\" value=\"".$location_esc."\">
-        <input type=\"hidden\" name=\"page\" value=\"".$page."\"> 
-        <input type=\"hidden\" name=\"contentfile\" value=\"".$contentfile."\">
-        <input type=\"hidden\" name=\"db_connect\" value=\"".$db_connect."\">
-        <input type=\"hidden\" name=\"tagname\" value=\"".$hypertagname."\"> 
-        <input type=\"hidden\" name=\"id\" value=\"".$id."\"> 
-        <input type=\"hidden\" name=\"width\" value=\"".$sizewidth."\"> 
-        <input type=\"hidden\" name=\"height\" value=\"".$sizeheight."\">
-        <input type=\"hidden\" name=\"toolbar\" value=\"".$toolbar."\"> 
-        <input type=\"hidden\" id=\"savetype\" name=\"savetype\" value=\"auto\">
-        <input type=\"hidden\" name=\"token\" value=\"".$token."\">
+      <form style=\"display:none;\" method=\"post\" id=\"hcms_form_".$hypertagname."_".$id."\" />
+        <input type=\"hidden\" name=\"contenttype\" value=\"".$contenttype."\" /> 
+        <input type=\"hidden\" name=\"site\" value=\"".$site."\" /> 
+        <input type=\"hidden\" name=\"cat\" value=\"".$cat."\" /> 
+        <input type=\"hidden\" name=\"location\" value=\"".$location_esc."\" />
+        <input type=\"hidden\" name=\"page\" value=\"".$page."\" /> 
+        <input type=\"hidden\" name=\"contentfile\" value=\"".$contentfile."\" />
+        <input type=\"hidden\" name=\"db_connect\" value=\"".$db_connect."\" />
+        <input type=\"hidden\" name=\"tagname\" value=\"".$hypertagname."\" /> 
+        <input type=\"hidden\" name=\"id\" value=\"".$id."\" /> 
+        <input type=\"hidden\" name=\"width\" value=\"".$sizewidth."\" /> 
+        <input type=\"hidden\" name=\"height\" value=\"".$sizeheight."\" />
+        <input type=\"hidden\" name=\"toolbar\" value=\"".$toolbar."\" /> 
+        <input type=\"hidden\" id=\"savetype\" name=\"savetype\" value=\"auto\" />
+        <input type=\"hidden\" name=\"token\" value=\"".$token."\" />
         ".$element."
       </form>\n";
   }
@@ -4714,7 +4840,7 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
               }
               else $background_pos = "50% 50%";
 
-              $thumb_items[round($time).".".$i] = "<div onclick=\"hcms_jumpToVideoTime(".$time.");\" class=\"hcmsVideoThumbFrame\" style=\"background-position:".$background_pos."; background-image:url('".$mgmt_config['url_path_cms']."?wm=".hcms_encrypt($site."/".$container_id."/face-".$time.".jpg")."');\"><div class=\"hcmsVideoThumbnail\">".$name."</div></div>";
+              $thumb_items[round($time).".".$i] = "<div onclick=\"hcms_jumpToVideoTime(".$time.");\" class=\"hcmsVideoThumbFrame\" style=\"background-position:".$background_pos."; background-image:url('".cleandomain ($mgmt_config['url_path_cms'])."?wm=".hcms_encrypt($site."/".$container_id."/face-".$time.".jpg")."');\"><div class=\"hcmsVideoThumbnail\">".$name."</div></div>";
               $i++;
             }
           }
@@ -4887,13 +5013,13 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
   // VIDEO.JS Player (Standard)
   if (is_dir ($mgmt_config['abs_path_cms']."javascript/video-js/"))
   {
-    $return = "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
-  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/videojs.thumbnails.css\" rel=\"stylesheet\">
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/video.min.js\"></script>
+    $return = "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
+  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/video-js/videojs.thumbnails.css\" rel=\"stylesheet\">
+  <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/video-js/video.min.js\"></script>
   <script type=\"text/javascript\">
-    videojs.options.flash.swf = \"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.swf\";
+    videojs.options.flash.swf = \"".cleandomain ($mgmt_config['url_path_cms'])."javascript/video-js/video-js.swf\";
   </script>
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/videojs.thumbnails.js\"></script>\n";
+  <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/video-js/videojs.thumbnails.js\"></script>\n";
     if ($fullscreen == false) $return .= "  <style> .vjs-fullscreen-control { display: none; } .vjs-default-skin .vjs-volume-control { margin-right: 20px; } </style>";
   }
 
@@ -5048,11 +5174,10 @@ function showaudioplayer_head ($secureHref=true)
 {
   global $mgmt_config;
 
-  //return "<script src=\"".$mgmt_config['url_path_cms']."javascript/audio-js/audio.js\"></script>\n";
-  return "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/video-js/video.min.js\"></script>
+  return "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
+  <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/video-js/video.min.js\"></script>
   <script type=\"text/javascript\">
-    videojs.options.flash.swf = \"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.swf\";
+    videojs.options.flash.swf = \"".cleandomain ($mgmt_config['url_path_cms'])."javascript/video-js/video-js.swf\";
   </script>
   <style> .vjs-fullscreen-control { display: none; } .vjs-default-skin .vjs-volume-control { margin-right: 20px; } </style>";
 }
@@ -5135,7 +5260,7 @@ function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFuncti
 
 // description:
 // Generates the documentation of an API file.
-// If you only want toi display the main API functions that you would normally be interested in, please use this defintion:
+// If you only want to display the main API functions that you would normally be interested in, please use this defintion:
 // $display_functions = array ("is_folder", "is_emptyfolder", "is_supported", "is_date", "is_document", "is_image", "is_rawimage", "is_video", "is_rawvideo", "is_audio", "is_keyword", "is_mobilebrowser", "is_iOS", "createviewlink", "createportallink", "createaccesslink", "createobjectaccesslink", "createwrapperlink", "createdownloadlink", "createmultiaccesslink", "createmultidownloadlink", "restoremediafile", "downloadobject", "downloadfile", "createpublication", "editpublication", "editpublicationsetting", "deletepublication", "createtemplate", "edittemplate", "deletetemplate, "createportal", "editportal", "deleteportal", "createuser", "edituser", "deleteuser", "creategroup", "editgroup", "deletegroup", "createfolder", "renamefolder", "deletefolder",  "createobject", "uploadfile", "createmediaobject", "createmediaobjects", "editmediaobject", "editobject", "renameobject", "deleteobject", "cutobject", "copyobject", "copyconnectedobject", "pasteobject", "lockobject", "unlockobject", "publishobject", "unpublishobject", "createqueueentry", "remoteclient", "savelog", "loadlog", "deletelog", "debuglog", "sendlicensenotification", "sendresetpassword", "createfavorite", "deletefavorite", "load_csv", "create_csv", "sendmessage", "savecontent", "hmtl2pdf", "mergepdf");
 
 function showAPIdocs ($file, $return="html", $html_hr=true, $html_description=true, $html_input=true, $html_globals=true, $html_output=true, $display_functions=array())
@@ -5270,7 +5395,7 @@ function showAPIdocs ($file, $return="html", $html_hr=true, $html_description=tr
 
         foreach ($function as $name => $value)
         {
-          $result .= "<h3>".$name."</h3><br/>\n";
+          $result .= "<h3><a id=".$name."></a>".$name."</h3><br/>\n";
 
           if (!empty ($description[$name]) && !empty ($html_description))
           {
@@ -5407,7 +5532,7 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
         $navtitles = "";
         $links = "";
 
-        while (list ($key, $value) = each ($navi_config['lang_text_id']))
+        foreach ($navi_config['lang_text_id'] as $key => $value)
         {
           // get title
           $textnode = selectcontent ($xmldata, "<text>", "<text_id>", $value);
@@ -5546,8 +5671,8 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
     }
 
     // add slash if not present at the end of the location string
-    if (substr ($docroot, -1) != "/") $docroot = $docroot."/";
-    if (substr ($currentobject, -1) != "/") $currentobject = $currentobject."/";
+    $docroot = correctpath ($docroot);
+    $currentobject = correctpath ($currentobject);
 
     // collect navigation data
     $scandir = scandir ($docroot);
@@ -5960,7 +6085,7 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
   {
     $count = 0;
     $galleryview = "
-    <script src=\"".$mgmt_config['url_path_cms']."javascript/lazysizes/lazysizes.min.js\" type=\"text/javascript\" async=\"\"></script>";
+    <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/lazysizes/lazysizes.min.js\" type=\"text/javascript\" async=\"\"></script>";
 
     // create secure token
     $token = createtoken ($user);
@@ -6498,6 +6623,7 @@ function showworkflowstatus ($site, $location, $page)
               if (!empty ($task_array[0])) $task = $task_array[0];
               else $task = "";
 
+              $member_array = array();
               $type_array = getcontent ($item, "<type>");       
              
               if ($type_array[0] == "user")

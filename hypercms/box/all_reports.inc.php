@@ -16,7 +16,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
       <div class=\"hcmsHeadline\" style=\"float:left; margin:6px;\">".getescapedtext ($hcms_lang['report'][$lang])." </div>
       <div style=\"float:left; margin:0px 10px 0px 2px;\">
         <select id=\"reportfile\" style=\"width:240px;\">
-          <option value=\"".$mgmt_config['url_path_cms']."empty.php\">".getescapedtext ($hcms_lang['select'][$lang])."</option>
+          <option value=\"".cleandomain ($mgmt_config['url_path_cms'])."empty.php\">".getescapedtext ($hcms_lang['select'][$lang])."</option>
   ";
 
   $report_files = getdirectoryfiles ($mgmt_config['abs_path_data']."report/", ".report.dat");
@@ -35,7 +35,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
         if (trim ($report_config['title']) == "") $report_config['title'] = $report_name;
 
         echo "
-          <option value=\"".$mgmt_config['url_path_cms']."report/?reportname=".url_encode($report_name)."\">".$report_config['title']."</option>";
+          <option value=\"".cleandomain ($mgmt_config['url_path_cms'])."report/?reportname=".url_encode($report_name)."\">".$report_config['title']."</option>";
       }
     }
   }
@@ -47,7 +47,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
       <div style=\"float:right;\"><img class=\"hcmsButtonTiny\" style=\"width:43px; height:22px; margin:6px;\" onClick=\"hcms_minMaxLayer('reportviewer');\" src=\"".getthemelocation()."img/button_plusminus_light.png\" alt=\"+/-\" title=\"+/-\" /></div>
     </div>
     <div style=\"display:block; width:100%; height:calc(100% - 42px); padding:0; margin:0;\">
-      <iframe id=\"report\" src=\"".$mgmt_config['url_path_cms']."empty.php\" style=\"width:100%; height:100%; border:0;\"frameborder=\"0\" seamless=\"seamless\"></iframe>
+      <iframe id=\"report\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."empty.php\" style=\"width:100%; height:100%; border:0;\"frameborder=\"0\" seamless=\"seamless\"></iframe>
     </div>
   </div>";
 }

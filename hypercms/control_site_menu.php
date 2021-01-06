@@ -62,20 +62,15 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
-
 <?php
-// invert button colors
+// invert colors
 if (!empty ($hcms_themeinvertcolors))
 {
   echo "<style>";
-  // invert all buttons
-  echo invertcolorCSS ("div.hcmsToolbarBlock", 100);
-  // revert on hover
-  echo invertcolorCSS (".hcmsButton:hover, div.hcmsToolbarBlock select", 100);
+  echo invertcolorCSS ($hcms_themeinvertcolors);
   echo "</style>";
 }
 ?>
-
 <script type="text/javascript">
 
 function selectpublication (selObj)
@@ -188,14 +183,15 @@ function checkForm ()
     <form name="site_delete" action="" method="post">
       <input type="hidden" name="action" value="site_delete" />
       <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
-      <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
+
+      <span class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></span>
       <select name="site_name" onChange="selectpublication(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
         <?php
         $inherit_db = inherit_db_read ();
         $item_options = array();
 
-        if ($inherit_db != false && sizeof ($inherit_db) > 0)
+        if (!empty ($inherit_db) && sizeof ($inherit_db) > 0)
         {
           foreach ($inherit_db as $inherit_db_record)
           {
@@ -225,23 +221,23 @@ function checkForm ()
   <div class="hcmsToolbarBlock">
     <?php
     if (checkrootpermission ('site')  && checkrootpermission ('sitecreate'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','show');\" name=\"media_new\" src=\"".getthemelocation()."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','show');\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_site_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
+    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
     ?>
     <?php
     if (checkrootpermission ('site')  && checkrootpermission ('sitedelete'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deletepublication();\" name=\"media_delete\" src=\"".getthemelocation()."img/button_site_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deletepublication();\" name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_site_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
+    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
     ?>
   </div>
   <div class="hcmsToolbarBlock">
     <?php
     if (file_exists ($mgmt_config['abs_path_cms']."help/adminguide_".$hcms_lang_shortcut[$lang].".pdf") && checkrootpermission ('site'))
-    {echo "<img  onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
+    {echo "<img  onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
     elseif (file_exists ($mgmt_config['abs_path_cms']."help/adminguide_en.pdf") && checkrootpermission ('site'))
-    {echo "<img  onClick=\"hcms_openWindow('help/adminguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
+    {echo "<img  onClick=\"hcms_openWindow('help/adminguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
     ?>
   </div>
 </div>

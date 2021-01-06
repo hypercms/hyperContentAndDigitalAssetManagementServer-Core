@@ -115,7 +115,7 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
   // save template file
   $result_save = editportal ($site, $template, $portaluser, $designtheme, $primarycolor, $_FILES, $navigation, $formats, $user);
   
-  if ($result_save['result'] == false)
+  if (empty ($result_save['result']))
   {
     $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['template-could-not-be-saved'][$lang])."</span>";
   }
@@ -126,8 +126,9 @@ else
   $templatedata = loadfile ($mgmt_config['abs_path_template'].$site."/", $template);
   
   // initalize
-  $primarycolor = "";
   $designtheme = "";
+  $primarycolor = "";
+  $hcms_themeinvertcolors = "";
   $designuser = "";
   $navigation = array();
   $format_img = array();
@@ -135,11 +136,11 @@ else
   $format_vid= array();
 
   // extract information
-  $temp_array = getcontent ($templatedata, "<primarycolor>");
-  if (!empty ($temp_array[0])) $primarycolor = $temp_array[0];
-
   $temp_array = getcontent ($templatedata, "<designtheme>");
   if (!empty ($temp_array[0])) list ($temp, $designtheme) = explode ("/", $temp_array[0]);
+
+  $temp_array = getcontent ($templatedata, "<primarycolor>");
+  if (!empty ($temp_array[0])) $primarycolor = $temp_array[0];
 
   $temp_array = getcontent ($templatedata, "<user>");
   if (!empty ($temp_array[0])) $designuser = $temp_array[0];
@@ -196,7 +197,22 @@ $wallpaper = "";
 
 if ($templatename != "")
 {
-  $wallpaper = getwallpaper ($site."/".$templatename);
+  // design theme
+  $portaltheme = $site."/".$templatename;
+
+  // inverted theme default value
+  $hcms_themeinvertcolors = $portaltheme;
+
+  $wallpaper = getwallpaper ($portaltheme);
+}
+
+// invert colors
+if (!empty ($designtheme) && !empty ($primarycolor))
+{
+  $brightness = getbrightness ($primarycolor);
+
+  if ($designtheme == "day" && $brightness < 130) $hcms_themeinvertcolors = "night";
+  elseif ($designtheme == "night" && $brightness >= 130) $hcms_themeinvertcolors = "day";
 }
 
 // create secure token
@@ -207,20 +223,17 @@ $token_new = createtoken ($user);
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation($site."/".$templatename); ?>css/main.css?ts=<?php echo time(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation($portaltheme); ?>css/main.css?ts=<?php echo time(); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/jscolor/jscolor.min.js"></script>
 
 <?php
-// invert button colors
-if (($designtheme == "day" && getbrightness ($primarycolor) < 130 ) || ($designtheme == "night" && getbrightness ($primarycolor) >= 130 ))
+// invert colors
+if (!empty ($hcms_themeinvertcolors))
 {
   echo "<style>";
-  // invert all buttons
-  echo invertcolorCSS (".hcmsInvertColor", 100);
-  // revert on hover
-  echo invertcolorCSS (".hcmsInvertColor:hover", 0);
+  echo invertcolorCSS ($hcms_themeinvertcolors);
   echo "</style>";
 }
 ?>
@@ -377,7 +390,7 @@ table.TableNarrow th, table.TableNarrow td
       <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['upload-file'][$lang]); ?></span><br/><br/>
       <?php echo getescapedtext ($hcms_lang['logo'][$lang]." (PNG, WxH >= 114x114 px)"); ?><br/>
       <input type="file" name="logo_top" accept="image/png" style="width:280px; float:left;" />
-      <?php if (is_file ($mgmt_config['abs_path_rep']."portal/".$site."/".$templatename."/uploads/logo_top.png")) { ?>
+      <?php if (is_file ($mgmt_config['abs_path_rep']."portal/".$portaltheme."/uploads/logo_top.png")) { ?>
       <img onclick="deleteSelected('delete_logo_top');" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
       <?php } else { ?>
       <img src="<?php echo getthemelocation(); ?>img/button_delete.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
@@ -386,7 +399,7 @@ table.TableNarrow th, table.TableNarrow td
       <br/>
       <?php echo getescapedtext ($hcms_lang['logo'][$lang]." (PNG, H <= 100 px)"); ?><br/>
       <input type="file" name="logo" accept="image/png" style="width:280px; float:left;" />
-      <?php if (is_file ($mgmt_config['abs_path_rep']."portal/".$site."/".$templatename."/uploads/logo.png")) { ?>
+      <?php if (is_file ($mgmt_config['abs_path_rep']."portal/".$portaltheme."/uploads/logo.png")) { ?>
       <img onclick="deleteSelected('delete_logo');" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
       <?php } else { ?>
       <img src="<?php echo getthemelocation(); ?>img/button_delete.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
@@ -395,7 +408,7 @@ table.TableNarrow th, table.TableNarrow td
       <br/>
       <?php echo getescapedtext ($hcms_lang['wallpaper'][$lang]." (PNG, JPG, ~ 1920x1080 px)"); ?><br/>
       <input type="file" name="wallpaper" accept="image/png, image/jpeg" style="width:280px; float:left;" />
-      <?php if (is_file ($mgmt_config['abs_path_rep']."portal/".$site."/".$templatename."/uploads/wallpaper.png") || is_file ($mgmt_config['abs_path_rep']."portal/".$site."/".$templatename."/uploads/wallpaper.jpg")) { ?>
+      <?php if (is_file ($mgmt_config['abs_path_rep']."portal/".$portaltheme."/uploads/wallpaper.png") || is_file ($mgmt_config['abs_path_rep']."portal/".$portaltheme."/uploads/wallpaper.jpg")) { ?>
       <img onclick="deleteSelected('delete_wallpaper');" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
       <?php } else { ?>
       <img src="<?php echo getthemelocation(); ?>img/button_delete.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
@@ -600,21 +613,25 @@ table.TableNarrow th, table.TableNarrow td
       <tr>
         <td class="hcmsWorkplaceTop" style="width:36px !important;">
           <!-- navigation items -->
-          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
-          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare hcmsInvertColor" style="padding:2px;" />
-          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare hcmsInvertColor" style="padding:2px;" />
-          <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare hcmsInvertColor" style="padding:2px;" />
+          <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
+          <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
+          <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
+          <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
         </td>
         <td class="hcmsWorkplaceExplorer" style="width:260px !important;">
           <!-- explorer items -->
-          <div style="padding:8px 0px 0px 10px;"><img src="<?php echo getthemelocation($site."/".$templatename); ?>img/site.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></a></div>
-          <div style="padding:4px 0px 0px 26px;"><img src="<?php echo getthemelocation($site."/".$templatename); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['assets'][$lang]); ?></a></div>
-          <div style="padding:4px 0px 0px 42px;"><img src="<?php echo getthemelocation($site."/".$templatename); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?></a></div>
+          <div style="display:block; width:260px;">
+            <div style="padding:8px 0px 0px 10px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/site.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></a></div>
+            <div style="padding:4px 0px 0px 26px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['assets'][$lang]); ?></a></div>
+            <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Marketing</a></div>
+            <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Product Management</a></div>
+            <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Public Relations</a></div>
+          </div>
         </td>
         <td class="hcmsStartScreen" id="homeScreen" style="position:static; display:table-cell; background-attachment:scroll;">
           <!-- logo -->
           <div id="logo" style="margin:10px;">
-            <img src="<?php echo getthemelocation($site."/".$templatename); ?>img/logo_server.png?ts=<?php echo time(); ?>" style="max-width:420px; max-height:100px;" />
+            <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_server.png?ts=<?php echo time(); ?>" style="max-width:420px; max-height:100px;" />
           </div>
 
           <!-- home boxes -->
@@ -629,6 +646,6 @@ table.TableNarrow th, table.TableNarrow td
 
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

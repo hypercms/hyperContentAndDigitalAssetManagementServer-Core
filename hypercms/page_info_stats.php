@@ -246,7 +246,7 @@ if (!empty ($container_id))
       }
 
       // link for popup
-      if (!empty ($view_axis[$i]['onclick'])) $view_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($view_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['views'][$lang])."');";
+      if (!empty ($view_axis[$i]['onclick'])) $view_axis[$i]['onclick'] = "openPopup('".cleandomain ($mgmt_config['url_path_cms'])."popup_gallery.php?container_id=".url_encode (trim ($view_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['views'][$lang])."');";
 
       // bar text
       $view_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$view_axis[$i]['value']." ".getescapedtext ($hcms_lang['views'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$view_axis[$i]['text'];
@@ -283,7 +283,7 @@ if (!empty ($container_id))
       }
 
       // link for popup
-      if (!empty ($download_axis[$i]['onclick'])) $download_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($download_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['downloads'][$lang])."');";
+      if (!empty ($download_axis[$i]['onclick'])) $download_axis[$i]['onclick'] = "openPopup('".cleandomain ($mgmt_config['url_path_cms'])."popup_gallery.php?container_id=".url_encode (trim ($download_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['downloads'][$lang])."');";
 
       // bar text
       $download_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$download_axis[$i]['value']." ".getescapedtext ($hcms_lang['downloads'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$download_axis[$i]['text'];
@@ -320,7 +320,7 @@ if (!empty ($container_id))
       }
 
       // link for popup
-      if (!empty ($upload_axis[$i]['onclick'])) $upload_axis[$i]['onclick'] = "openPopup('".$mgmt_config['url_path_cms']."popup_gallery.php?container_id=".url_encode (trim ($upload_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['uploads'][$lang])."');";
+      if (!empty ($upload_axis[$i]['onclick'])) $upload_axis[$i]['onclick'] = "openPopup('".cleandomain ($mgmt_config['url_path_cms'])."popup_gallery.php?container_id=".url_encode (trim ($upload_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['uploads'][$lang])."');";
 
       // bar text
       $upload_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$upload_axis[$i]['value']." ".getescapedtext ($hcms_lang['uploads'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$upload_axis[$i]['text'];   
@@ -411,6 +411,6 @@ if (!empty ($container_id))
   </div>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

@@ -48,6 +48,6 @@ function popupfocus ()
     <textarea name="textarea" style="width:100%; height:100%;"><?php @include ("license.txt"); ?></textarea>
   </div>
   
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

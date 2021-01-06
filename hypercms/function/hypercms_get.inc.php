@@ -227,10 +227,11 @@ function getrequest_esc ($variable, $force_type=false, $default="", $js_protecti
 
 function getuserip ()
 {
-  if (!isset ($_SERVER['HTTP_X_FORWARDED_FOR'])) $client_ip = $_SERVER['REMOTE_ADDR'];
-  else $client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-
-  if ($client_ip != "") return $client_ip;
+  if (!empty ($_SERVER['HTTP_X_FORWARDED_FOR'])) $client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+  elseif (!empty ($_SERVER['REMOTE_ADDR'])) $client_ip = $_SERVER['REMOTE_ADDR'];
+  elseif (!empty ($_SERVER['HTTP_CLIENT_IP'])) $client_ip = $_SERVER['HTTP_CLIENT_IP'];
+ 
+  if (!empty ($client_ip)) return $client_ip;
   else return false;
 }
 
@@ -1056,7 +1057,7 @@ function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $pri
   if (valid_publicationname ($site) && $dir != "" && is_dir ($dir) && $url != "")
   {
     // add slash if not present at the end of the location string
-    if (substr ($dir, -1) != "/") $dir = $dir."/";
+    $dir = correctpath ($dir);
     if (substr ($url, -1) != "/") $url = $url."/";
 
     // ignore these files
@@ -1228,7 +1229,7 @@ function getgooglesitemap ($site, $dir, $url, $getpara=array(), $permalink=array
 // output: JS code as string / false on error
 
 // description:
-// Generates a google analytics code segement for embedding.
+// Generates a google analytics code segment for embedding.
 
 function getgoogleanalytics ($google_analytics_key)
 {
@@ -1486,11 +1487,16 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
               {
                 $label = str_replace ("_", " ", $text_id[0]);
 
-    						$text_content = getcontent ($buffer, "<textcontent>");
-    						$text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
+                $text_content = getcontent ($buffer, "<textcontent>");
+                
+                // strip tags and replace double by single quotes
+                if (!empty ($text_content[0]) && strpos ("_".$text_content[0], "\"") > 0)
+                {
+                  $text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
+                }
 
                 // add space after comma
-                if (strpos ($text_content[0], ",") > 0 && strpos ($text_content[0], ", ") < 1)
+                if (!empty ($text_content[0]) && strpos ($text_content[0], ",") > 0 && strpos ($text_content[0], ", ") < 1)
                 {
                   $text_content[0] = str_replace (",", ", ", $text_content[0]);
                 }
@@ -1516,15 +1522,20 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
               if ($textnode != false)
               {
                 $text_content = getcontent ($textnode[0], "<textcontent>");
-                $text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
+
+                // strip tags and replace double by single quotes
+                if (!empty ($text_content[0]) && strpos ("_".$text_content[0], "\"") > 0)
+                {
+                  $text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
+                }
 
                 // add space after comma
-                if (strpos ($text_content[0], ",") > 0 && strpos ($text_content[0], ", ") < 1)
+                if (!empty ($text_content[0]) && strpos ($text_content[0], ",") > 0 && strpos ($text_content[0], ", ") < 1)
                 {
                   $text_content[0] = str_replace (",", ", ", $text_content[0]);
                 }
 
-    						$text_str = $text_content[0];
+    						if (!empty ($text_content[0])) $text_str = $text_content[0];
               }
             }
 
@@ -1659,18 +1670,18 @@ function getmetadata_multiobjects ($multiobject_array, $user)
 
 // ---------------------- getmetadata_container -----------------------------
 // function: getmetadata_container()
-// input: container ID [string], array of text IDs [array]
+// input: container ID [string], array of text IDs [array] (optional)
 // output: assoziatve array with all text content and meta data / false
 
 // description:
 // Extracts container, media, and metadata information of a container.
 // This function is used for the presentation of metadata for objectlist views.
 
-function getmetadata_container ($container_id, $text_id_array)
+function getmetadata_container ($container_id, $text_id_array=array())
 {
   global $mgmt_config, $labels;
 
-  if (intval ($container_id) > 0 && is_array ($text_id_array) && sizeof ($text_id_array) > 0)
+  if (intval ($container_id) > 0 && is_array ($text_id_array))
   {
     $result = array();
     $result['createdate'] = "";
@@ -1719,14 +1730,14 @@ function getmetadata_container ($container_id, $text_id_array)
         $select .= 'media.filesize';
       }
 
-      if ($select != "")
-      {
-        $sql = 'SELECT media.width, media.height, '.$select.' FROM container LEFT JOIN media ON media.id=container.id WHERE container.id='.intval($container_id);
-        $objectdata = rdbms_externalquery ($sql);
- 
-        // reduce array
-        if (is_array ($objectdata) && sizeof ($objectdata) > 0) $result = $objectdata[0];
-      }
+      // media dimensions
+      if ($select != "") $select = ', '.$select;
+
+      $sql = 'SELECT media.width, media.height '.$select.' FROM container LEFT JOIN media ON media.id=container.id WHERE container.id='.intval($container_id);
+      $objectdata = rdbms_externalquery ($sql);
+
+      // reduce array
+      if (is_array ($objectdata) && sizeof ($objectdata) > 0) $result = $objectdata[0];
 
       // collect text content
       $conditions = "";
@@ -1815,12 +1826,15 @@ function getmetadata_container ($container_id, $text_id_array)
 						$text_id = getcontent ($buffer, "<text_id>");
 
             // only include requested text IDs
-            if (in_array ("text:".$text_id[0], $text_id_array))
+            if (!empty ($text_id[0]) && in_array ("text:".$text_id[0], $text_id_array))
             {
-  						$text_content = getcontent ($buffer, "<textcontent>");
-  						$text_content[0] = cleancontent ($text_content[0]);
+              $text_content = getcontent ($buffer, "<textcontent>");
 
-              $result['text:'.$text_id[0]] = $text_content[0];
+              if (!empty ($text_content[0]))
+              {
+                $text_content[0] = cleancontent ($text_content[0]);
+                $result['text:'.$text_id[0]] = $text_content[0];
+              }
             }
 					}
 				}
@@ -1911,7 +1925,7 @@ function getobjectcontainer ($site, $location, $object, $user, $type="work")
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($user) && ($type == "work" || $type == "published"))
   {
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
 
     // evaluate if object is a file or a folder
     if (@is_dir ($location.$object))
@@ -1971,7 +1985,7 @@ function getcontainer ($containerid, $type)
 
 function getwallpaper ($theme="", $version="")
 {
-  global $mgmt_config;
+  global $mgmt_config, $is_mobile;
 
   // 1. get system wallpaper
   if (!empty ($mgmt_config['wallpaper']))
@@ -2007,32 +2021,35 @@ function getwallpaper ($theme="", $version="")
     if (!empty ($wallpaper)) return $wallpaper;
   }
 
-  // 3. wallpaper service
-  // get version
-  if (empty ($version) && is_file ($mgmt_config['abs_path_cms']."version.inc.php"))
+  // 3. wallpaper service (not for mobile edition)
+  if (empty ($is_mobile))
   {
-    // version info
-    include ($mgmt_config['abs_path_cms']."version.inc.php");
-    if (!empty ($mgmt_config['version'])) $version = $mgmt_config['version'];
-  }
-
-  // get wallpaper name
-  $wallpaper_name = @file_get_contents ("http://cloud.hypercms.net/wallpaper/?action=name&version=".urlencode($version));
-
-  if (!empty ($wallpaper_name))
-  {
-    // if file does not exist in temp view directory
-    if (!is_file ($mgmt_config['abs_path_view'].$wallpaper_name))
+    // get version
+    if (empty ($version) && is_file ($mgmt_config['abs_path_cms']."version.inc.php"))
     {
-      // get wallpaper file
-      $wallpaper_file = @file_get_contents ("http://cloud.hypercms.net/wallpaper/?action=get&name=".urlencode($wallpaper_name));
-
-      if (!empty ($wallpaper_file))
-      {
-        if (savefile ($mgmt_config['abs_path_view'], $wallpaper_name, $wallpaper_file)) return $mgmt_config['url_path_view'].$wallpaper_name;
-      }
+      // version info
+      include ($mgmt_config['abs_path_cms']."version.inc.php");
+      if (!empty ($mgmt_config['version'])) $version = $mgmt_config['version'];
     }
-    else return $mgmt_config['url_path_view'].$wallpaper_name;
+
+    // get wallpaper name
+    $wallpaper_name = @file_get_contents ("https://cloud.hypercms.net/wallpaper/?action=name&version=".urlencode($version));
+
+    if (!empty ($wallpaper_name))
+    {
+      // if file does not exist in temp view directory
+      if (!is_file ($mgmt_config['abs_path_view'].$wallpaper_name))
+      {
+        // get wallpaper file
+        $wallpaper_file = @file_get_contents ("https://cloud.hypercms.net/wallpaper/?action=get&name=".urlencode($wallpaper_name));
+
+        if (!empty ($wallpaper_file))
+        {
+          if (savefile ($mgmt_config['abs_path_view'], $wallpaper_name, $wallpaper_file)) return $mgmt_config['url_path_view'].$wallpaper_name;
+        }
+      }
+      else return $mgmt_config['url_path_view'].$wallpaper_name;
+    }
   }
 
   // 4. default wallpaper
@@ -2273,7 +2290,7 @@ function getthemes ($site_array=array())
   }
 
   // prepare output
-  if (sizeof ($theme_array) > 0)
+  if (is_array ($theme_array) && sizeof ($theme_array) > 0)
   {
     natcasesort ($theme_array);
     reset ($theme_array);
@@ -2295,8 +2312,8 @@ function getthemelocation ($theme="")
 {
   global $mgmt_config;
 
-  // mandatory theme defined by main configuration
-  if (!empty ($mgmt_config['theme']) && valid_locationname ($mgmt_config['theme']))
+  // mandatory theme defined in the main configuration
+  if (trim ($theme) == "" && !empty ($mgmt_config['theme']) && valid_locationname ($mgmt_config['theme']))
   {
     $theme = $mgmt_config['theme'];
   }
@@ -2465,14 +2482,14 @@ function getlocation ($path)
     // if object has no slash at the end
     if (substr ($path, -1) != "/")
     {
-      $location = substr ($path, 0, strrpos ($path, "/")+1);
+      $location = substr ($path, 0, strrpos ($path, "/") + 1);
     }
     // else remove slash
     else
     {
       // remove slash at the end of the objectpath string
       $location = substr ($path, 0, strlen ($path)-1);
-      $location = substr ($location, 0, strrpos ($location, "/")+1);
+      $location = substr ($location, 0, strrpos ($location, "/") + 1);
     }
 
     return $location;
@@ -3090,7 +3107,7 @@ function gettemplateversions ($site, $template)
 // ---------------------- getfileinfo -----------------------------
 // function: getfileinfo()
 // input: publication name [string] (optional), file name incl. extension [string], category [page,comp] (optional)
-// output: array/false
+// output: result array / false on error
 
 // description:
 // defines file properties based on the file extension and returns file info as an array:
@@ -3468,7 +3485,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
     $result['icon'] = "";
 
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
 
     // get category
     $cat = getcategory ($site, $location.$object);
@@ -4221,7 +4238,10 @@ function getmediasize ($filepath)
     }
 
     // delete temp file
-    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+    if (!empty ($temp['result']) && !empty ($temp['created']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
+    {
+      deletefile ($temp['templocation'], $temp['tempfile'], 0);
+    }
 
     // return result
     if (!empty ($result['width']) && !empty ($result['height'])) return $result;
@@ -5059,7 +5079,7 @@ function getlockedobjects ($user, $return_text_id=array())
               // find corresponding objects in link management database
               $result_array = getconnectedobject ($container);
 
-              if ($result_array != false)
+              if (is_array ($result_array))
               {
                 foreach ($result_array as $result)
                 {
@@ -5070,8 +5090,13 @@ function getlockedobjects ($user, $return_text_id=array())
                   // check if file exists
                   if ($page !== false)
                   {
-                    $object_hash = rdbms_getobject_hash (convertpath ($site, $location.$page, ""));
-                    $object_info = rdbms_getobject_info ($object_hash, $return_text_id);
+                    $temp = convertpath ($site, $location.$page, "");
+
+                    if ($temp != "")
+                    {
+                      $object_hash = rdbms_getobject_hash ($temp);
+                      $object_info = rdbms_getobject_info ($object_hash, $return_text_id);
+                    }
 
                     if (is_array ($object_info))
                     {
@@ -5089,12 +5114,9 @@ function getlockedobjects ($user, $return_text_id=array())
         }
 
         // update checked out list if necessary
-        if ($save)
-        {
-          savefile ($dir, $file, $data);
-        }
+        if ($save) savefile ($dir, $file, $data);
 
-        if (sizeof ($object_array) > 0)
+        if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array) > 0)
         {
           return $object_array;
         }
@@ -6457,61 +6479,64 @@ function getuserinformation ($login="")
     if ($login != "") $usernode = selectcontent ($userdata, "<user>", "<login>", $login);
     else $usernode = getcontent ($userdata, "<user>");
 
-    foreach ($usernode as $temp)
+    if (is_array ($usernode))
     {
-      if ($temp != "")
+      foreach ($usernode as $temp)
       {
-        $login = getcontent ($temp, "<login>");
-        if ($user == "sys") $hashcode = getcontent ($temp, "<hashcode>");
-        $admin = getcontent ($temp, "<admin>");
-        $email = getcontent ($temp, "<email>");
-        $realname = getcontent ($temp, "<realname>");
-        $signature = getcontent ($temp, "<signature>");
-        $language = getcontent ($temp, "<language>");
-        $publication_array = getcontent ($temp, "<publication>");
-        $usergroup_array = getcontent ($temp, "<usergroup>");
-
-        if (is_array ($publication_array))
+        if ($temp != "")
         {
-          foreach ($publication_array as $key=>$pub_temp)
-          {
-            if (!empty ($pub_temp) && !empty ($usergroup_array[$key])) $usergroup[$pub_temp] = $usergroup_array[$key];
-          }
-        }
+          $login = getcontent ($temp, "<login>");
+          if ($user == "sys") $hashcode = getcontent ($temp, "<hashcode>");
+          $admin = getcontent ($temp, "<admin>");
+          $email = getcontent ($temp, "<email>");
+          $realname = getcontent ($temp, "<realname>");
+          $signature = getcontent ($temp, "<signature>");
+          $language = getcontent ($temp, "<language>");
+          $publication_array = getcontent ($temp, "<publication>");
+          $usergroup_array = getcontent ($temp, "<usergroup>");
 
-        // standard user
-        if (!empty ($login[0]) && (empty ($admin[0]) || $admin[0] == 0) && is_array ($publication_array))
-        {
-          foreach ($publication_array as $pub_temp)
+          if (is_array ($publication_array))
           {
-            if ($pub_temp != "")
+            foreach ($publication_array as $key=>$pub_temp)
             {
-              $username = $login[0];
-              if (!empty ($hashcode[0])) $user_array[$pub_temp][$username]['hashcode'] = $hashcode[0];
-              $user_array[$pub_temp][$username]['email'] = $email[0];
-              $user_array[$pub_temp][$username]['realname'] = $realname[0];
-              $user_array[$pub_temp][$username]['signature'] = $signature[0];
-              $user_array[$pub_temp][$username]['language'] = $language[0];
-              if (!empty ($usergroup[$pub_temp])) $user_array[$pub_temp][$username]['usergroup'] = $usergroup[$pub_temp];
-              else $user_array[$pub_temp][$username]['usergroup'] = "";
+              if (!empty ($pub_temp) && !empty ($usergroup_array[$key])) $usergroup[$pub_temp] = $usergroup_array[$key];
             }
           }
-        }
-        // super user
-        elseif (!empty ($login[0]) && !empty ($admin[0]) && $admin[0] == 1)
-        {
-          foreach ($site_array as $pub_temp)
+
+          // standard user
+          if (!empty ($login[0]) && (empty ($admin[0]) || $admin[0] == 0) && is_array ($publication_array))
           {
-            if ($pub_temp != "")
+            foreach ($publication_array as $pub_temp)
             {
-              $username = $login[0];
-              if (!empty ($hashcode[0])) $user_array[$pub_temp][$username]['hashcode'] = $hashcode[0];
-              $user_array[$pub_temp][$username]['email'] = $email[0];
-              $user_array[$pub_temp][$username]['realname'] = $realname[0];
-              $user_array[$pub_temp][$username]['signature'] = $signature[0];
-              $user_array[$pub_temp][$username]['language'] = $language[0];
-              if (!empty ($usergroup[$pub_temp])) $user_array[$pub_temp][$username]['usergroup'] = $usergroup[$pub_temp];
-              else $user_array[$pub_temp][$username]['usergroup'] = "";
+              if ($pub_temp != "")
+              {
+                $username = $login[0];
+                if (!empty ($hashcode[0])) $user_array[$pub_temp][$username]['hashcode'] = $hashcode[0];
+                $user_array[$pub_temp][$username]['email'] = $email[0];
+                $user_array[$pub_temp][$username]['realname'] = $realname[0];
+                $user_array[$pub_temp][$username]['signature'] = $signature[0];
+                $user_array[$pub_temp][$username]['language'] = $language[0];
+                if (!empty ($usergroup[$pub_temp])) $user_array[$pub_temp][$username]['usergroup'] = $usergroup[$pub_temp];
+                else $user_array[$pub_temp][$username]['usergroup'] = "";
+              }
+            }
+          }
+          // super user
+          elseif (!empty ($login[0]) && !empty ($admin[0]) && $admin[0] == 1)
+          {
+            foreach ($site_array as $pub_temp)
+            {
+              if ($pub_temp != "")
+              {
+                $username = $login[0];
+                if (!empty ($hashcode[0])) $user_array[$pub_temp][$username]['hashcode'] = $hashcode[0];
+                $user_array[$pub_temp][$username]['email'] = $email[0];
+                $user_array[$pub_temp][$username]['realname'] = $realname[0];
+                $user_array[$pub_temp][$username]['signature'] = $signature[0];
+                $user_array[$pub_temp][$username]['language'] = $language[0];
+                if (!empty ($usergroup[$pub_temp])) $user_array[$pub_temp][$username]['usergroup'] = $usergroup[$pub_temp];
+                else $user_array[$pub_temp][$username]['usergroup'] = "";
+              }
             }
           }
         }

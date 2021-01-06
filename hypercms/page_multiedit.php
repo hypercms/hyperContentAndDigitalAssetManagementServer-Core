@@ -2741,5 +2741,5 @@ $().ready(function() {
   ?>
 </body>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </html>

@@ -158,7 +158,9 @@ function goToURL()
       <div id="searchLayer" style="position:relative; width:220px; height:94%; z-index:2; left:2px; top:2px; overflow:auto; visibility:visible;"> 
 <?php
 if ($sender == "search")
-{   
+{
+  $files = array();
+
   if ($mediacat_name == "")
   {
     // select all files in directory

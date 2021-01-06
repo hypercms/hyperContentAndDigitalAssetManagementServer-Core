@@ -4626,3 +4626,153 @@ Release 11/2020
 - Bug fix: Modifications in function showmedia in UI API in order to use the correct original video width and height for the file parameter in the source code and remove the check of minimum values since this might lead to a fallback to default video dimensions
 - Bug fix: control_queue_menu used input parameter for inherit_db_read function call
 - Bug fix: Function metadata_exists in Meta API did verify the text array which lead to a wrong result since the text array can be empty
+
+Version 9.0.6
+Release 12/2020
+- Updates in the Administrators Guide, Connector Guide, Installation Guide, and Users Guide
+- Various modifications for PHP version 7.4 (migration from while-each to foreach)
+- Modifications in various functions in order to apply function correctpath
+- Moved CKEditor libraries from editor to javascript/ckeditor directory
+- Moved all text editors from editor to root directory
+- Modifications in function showeditor in UI API in order to change the source locations of the editor popup windows for the media and page browser
+- Modifications in function showcompexplorer in UI API in order to change the source locations of the editor popup windows for the media and page browser
+- Modifications in service savecontent in order to change the source locations of the editor popup windows for the media and page browser
+- Modifications in template engine in order to change the source locations of the editor popup windows for the media and page browser
+- Modifications in function showinlineeditor in UI API in order to change the source locations of the editor popup windows for the media and page browser
+- Modifications in media_playerconfig in order to change the source locations of the editor popup windows for the media and page browser
+- Modifications in function uploadfile in Main API in order to write and close the session before the file upload and restart the session after the file upload for non-blocking upload
+- Implementation of the electronic signature
+- Implementation of the new JSignature JQuery library for the signature
+- Implementation of the new hyperCMS template tag texts for the signature in the template editor
+- Implementation of the new hyperCMS template tag texts for the support of the signature
+- Modifications in function showinlineditor in UI API in order to unset all styles for the editable elements
+- Modifications in function showinlineditor in UI API in order to support the signature
+- Modifications in template_edit_constraints in order to implement labels for the checkboxes and radio buttons
+- Modifications in service savecontent in order to support signatures
+- Modifications in function settext in Set API in order to support signatures
+- Modification in the template_editor in order to support the news texts hyperCMS tag
+- Modification in the template_help in order to present the news texts hyperCMS tag
+- Modifications in class.phpmailer in order to verify deprecated function get_magic_quotes_runtime
+- Modifications in function ftp_filelist in Connect API due to array and string offset access syntax with curly braces
+- Modifications in remoteclient in order to verify the POST request before calling function remoteclient
+- Modifications in library getid3 due to Array and string offset access syntax with curly braces
+- Update of getID3 library to version 1.9.20
+- Removed PHP JPEG metadata toolkit version 1.12 from library since it has never been used
+- Modifications in userlogin in order to support Basic HTTP authentication
+- Removed the LDAP/AD connector from data/connect. The new LDAP/AD connector is part of the Connector module. The old versions of function authconnect are still supported.
+- Modifications in function editpublication in Main API in order to html decode all settings
+- Modifications in function editpublication in Main API in order to escape double quotes for settings of type string
+- Modifications in text_edit_format and text_edit_unformat regarding the verification of the content
+- Modifications in function getuserinformation in Get API in order to verify the user array after the XML query
+- Modifications in the installation routine in order to set the parameters for the SMT user name and password as optional to support anonymous SMTP access
+- Modifications in the installation routine in order to verify write permissions and required PHP extensions before the installation
+- Design modifications in the installation routine 
+- Modifications in function userlogin in Security API in order to set the inverted portal theme name for icons in 'hcms_themeinvertcolors'
+- Modifications in user_edit in order to set the inverted portal theme name for icons in 'hcms_themeinvertcolors'
+- Modifications in all controls in order to partly remove CSS classes from function invertcolorCSS calls and moving to the inverted icons of theme 'day' and 'night'
+- Modifications in function createsession in Security API in order to verify the session by session ID and also the global session variable
+- Modifications in function getthemelocation in order to refer to inverted source theme to invert image colors
+- Modifications in test and logviewer plugin controls in order to partly remove CSS classes from function invertcolorCSS calls and moving to the inverted icons of theme 'day' and 'night'
+- Modifications in portal_edit, frameset_main and frameset_mobile in order to partly remove CSS classes from function invertcolorCSS calls and moving to the inverted icons of theme 'day' and 'night'
+- Modifications in function invertcolorCSS in order to invert colors of CSS class hcmsToolbarBlock for portal design themes
+- Modifications in function getwallpaper in order to use SSL for the download of the images
+- Modifications in function convert_utf8 in Main API in order to verify that the mb_detect_encoding function exists and fallback to is_utf8 function call
+- Modifications in function load_csv in Main API in order to verify that the mb_detect_encoding function exists and fallback to UTF-8 character set
+- Modifications in various function of the XML API in order to verify variable record_array
+- Modifications in function edituser in Main API in order to support arrays as input for the parameters usergroup and usersite
+- Modifications in function edituser in Main API in order to remove duplicates from input parameters usergroup and usersite
+- Modifications in function inherit_db_save in Main API in order to verify input
+- Modifications in function inherit_db_load and inherit_db_read in Main API in order to trim loaded data
+- Modifications in site_edit_inheritance in order to verify that parent publications are not empty
+- Modifications in frameset_content and frameset_objectlist in order to enable popups for FTP and DropBox windows using the sandbox attribute for the objectview element
+- Modifications in most system parts in order to use function cleandomain on $mgmt_config['url_path_cms'] to convert the URL to a relative path
+- Implementation of the new main configuration setting $mgmt_config['cleandomain']
+- Modifications in function cleandomain in Main API in order to support the main configuration setting $mgmt_config['cleandomain']
+- Modifications in function hcms_crypt in Security API and remote client in order to move from the faster crc32 to sha1 encryption with reduced string length of max 32 characters if a start and length input parameter has not been provided
+- Implementation of the new main configuration setting $mgmt_config['passwordminlength']
+- Modifications in function checkpassword in Security API in order to support the new main configuration parameter $mgmt_config['passwordminlength']
+- Modifications in function createuser and edituser in Main API in order to support the new main configuration parameter $mgmt_config['passwordminlength']
+- Modifications in function edituser in Main API in order to log additional errors
+- Modifications in service mediawrapper in order to verify variables
+- Modifications in function rewrite_targetURI in Main API in order to apply function cleandomain to the URI and support URI parameters
+- Modifications in function showAPIdocs in UI API in order to support anchors
+- Modifications in media_rendering in order to rename JS function name from setsegements to setsegments
+- Modifications in frameset_mobile in order to implement a local CSS class hcmsShadow that is used for the Navigator overlay
+- Modifications in function getmediasize in Get API in order to verify the results before deleting the temporary file
+- Modifications in function copymetadata in Meta API in order to verify the results before deleting the temporary files
+- Modifications in template engine in order to correct the initialization of the position array for text and component content
+- Removed include of footer in explorer_preview and media_view
+- Implementation of the new CSS class hcmsBoxShadow in all design themes
+- Modifications in function sendresetpassword in Main API in order to send a password reset link instead of the temporary password
+- Modifications in function sendresetpassword in Main API in order to use type instead link input parameter
+- Modifications in control_user_menu in order to change sendresetpassword function call
+- Modifications in userlogin in order to change sendresetpassword function calls
+- Modifications in JS function closeUpload of frameset_main in order to verify that the JS function showwarning exists in the upload frame
+- Modifications in userlogin and resetpassword in order to provide the old password (hash) for the password reset
+- Modifications in function createmapping in Meta API in order to initialize the mapping array
+- Implementation of the new function includefooter in the Main API that replaces the standard footer include in the system
+- Modifications in function getuserip in Get API in order to support HTTP_CLIENT_IP
+- Implementation of error reporting in message_objectlist
+- Replacement of all error codes that have been used quotation marks in the log entry
+- Implementation of new CSS class hcmsImageFrame in explorer_objectlist and search_objectlist in order to assign width and height values to images on change of view
+- Modifications in function showshorttext in UI API in order to remove the div tag from the result if linebreak input parameter has been set
+- Modifications in template engine in order to block the editing of page links if they include a question mark
+- Modifications in explorer_objectlist and search_objectlist in order to apply function cleandomain on image sources
+- Modifications in explorer_objectlist and search_objectlist in order to add new CSS classes and max-width style settings
+- Modifications in function getmetadata_container in Get API in order to always query media dimensions in case no other media attribute has been requested
+- Modifications in function createmedia in Media API in order to sue the original image dimensions of PSD files when creating the thumbnail image
+- Modifications in function showcompexplorer in UI API in order to initialize the array temp_complocation
+- Modifications in link_edit_explorer and text_link_explorer in order to initialize the array temp_pagelocation
+- Modifications in explorer_objetclist in order to initialize and verify variables of type array
+- Modifications in the task_list of the task management module in order to initialize and verify variables of type array
+- Modifications in various functions in the Main API in order to initialize and verify variables of type array
+- Modifications in various functions in the Get API in order to initialize and verify variables of type array
+- Modifications in various functions in the UI API in order to initialize and verify variables of type array
+- Modifications in various functions in the Security API in order to initialize and verify variables of type array
+- Modifications in function getwallpaper in order to global variable is_mobile for the control of the wallpaper service
+- Modifications in home, resetpassword, userlogin, and userregister in order to remove the condition for the getwallpaper function call
+- Design modifications in popup_upload_html
+- Design modifications in JS rich calendar due to issues with field width of hours and minutes in Chrome browser
+- Modifications in function unpublishobject in Main PAI in order to create new error log events
+- Modifications in function synccloudobjects in Cloud API in order to keep thumbnail files in the local repository
+- Modifications in JS function hcms_sharelinkFacebook in main.js due to new GET parameter names of Facebook share API
+- Modifications in user_edit in order to verify all queried values from the user XML nodes
+- Modifications in function correctpath in Main API in order to not verify the path using function valid_locationname
+- Modifications in function rdbms_searchcontent in DB Connect in order to include media table if the width or height attribute has been requested
+- Modifications in function rdbms_getobject_info in DB Connect in order to add width and height attributes of the media table
+- Implementation of the new function resolvepermission in the Security API in order to resolve permissions
+- Modifications in various functions in the Security API in order to use the function resolvepermission
+- Modifications in user_edit in order to query the standard theme for a new user
+- Modifications in image_minipaint in order to force the reload of the image
+- Modifications in popup_upload_html in order to check the option "keep existing file as old version" by default
+- Design modifications in function showtopbar and showtopmenubar in UI API 
+- Updates in all language files
+- Bug fix: The template engine did not use the text checkbox editor for the article textc tag
+- Bug fix: The test plugin used a wrong reference (file extension) to an icon and the filename for groupmenu.png has been corrected
+- Bug fix: Function getxmlcontent used a wrong function call
+- Bug fix: Popup windows for FTP and DropBox have been blocked by the browser in frameset_content
+- Bug fix: Function sendresetpassword in Main API used unassigned publication for edituser function call
+- Bug fix: Implementation of a search form post delay due to issues with the update of the search result in the mainframe
+- Bug fix: The $multiobject_array[0] in popup_status has been overwritten if the variable page has been supplied (should not be possible if folder has been provided)
+- Bug fix: control_message_menu, control_queu_menu, site_edit_inheritance, user_sendlink did not initialize some variables as an array
+- Bug fix: version_template_compare did not verify the content before replacing characters
+- Bug fix: Function getlinkedobject in Link API did not initialize some variables as arrays
+- Bug fix: Function getmetadata and getmetadata_container did not verify the text content before replacing characters
+- Bug fix: Function createmediacat in Main API did not verify and initialize the array mediacat_array_work
+- Bug fix: Function renamefolder and manipulateobject in Main API did not verify and initialize the array site_array
+- Bug fix: Function publishobject in Main API did not initialize the array component_file_array
+- Bug fix: Function transformlink in template engine did not initialize the array link_array
+- Bug fix: control_message_mneu tried to access undefined variable for the publication for the help link permissions
+- Bug fix: Verification of the table row definition was missing in explorer_objectlist
+- Bug fix: site_edit_inheritance used wrong html form element name
+- Bug fix: message_objectlist could not extract user name if a dot was used in the user name
+- Bug fix: Image height has not been adjusted by setting the width and height of CSS class hcmsObjectGalleryMarker
+- Bug fix: Function unpublishobject in Main API did not save the event log entries
+- Bug fix: The installation routine did not define the path to the temporary directory
+- Bug fix: The eventsystem array has not been initialized
+- Bug fix: DB Connect function rdbms_query did use a Capital letter for input parameter errCode instead of errcode
+- Bug fix: The user XML file in the installation directory did not use the latest XML schema that inlcudes validdatefrom and validdateto nodes
+- Bug fix: Function accessgeneral in Security API did not correct the file system path for Windows OS (correctpath function call has been missing)
+- Bug fix: Function createmediacat, renamemediacat, deletemediacat, and uploadtomediacat in Main API did not verify the separator in the media categories index
+- Bug fix: Function edituser in Main API used glue parameter for an implode function call as 2nd parameter
+- Bug fix: Function renamemediacat in Main API did not verify if the same category name exists already

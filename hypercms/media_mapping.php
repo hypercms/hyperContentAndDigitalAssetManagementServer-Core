@@ -164,6 +164,6 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
   
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

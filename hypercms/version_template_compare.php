@@ -164,8 +164,11 @@ if (is_array ($content_array))
   $result .= "<p><div class=\"hcmsHeadline\" style=\"display:inline-block; margin:2px; padding:2px; width:160px; height:16px;\">".getescapedtext ($hcms_lang['application'][$lang])."</div><div class=\"hcmsTextArea\" style=\"display:inline-block; margin:2px; width:360px; height:32px;\">".$application_diff."</div></p>";
   
   // content
-  $content_array[0] = str_replace (array("<",">"), array("&lt;","&gt;"), $content_array[0]);
-  $content_array[1] = str_replace (array("<",">"), array("&lt;","&gt;"), $content_array[1]);
+  if (!empty ($content_array[0])) $content_array[0] = str_replace (array("<",">"), array("&lt;","&gt;"), $content_array[0]);
+  else $content_array[0] = "";
+
+  if (!empty ($content_array[1])) $content_array[1] = str_replace (array("<",">"), array("&lt;","&gt;"), $content_array[1]);
+  else $content_array[1] = "";
   
   $content_diff = html_diff ($content_array[0], $content_array[1]);
   $content_diff = str_replace ("\n", "<br />\n", $content_diff);  
@@ -178,6 +181,6 @@ else showmessage ($hcms_lang['error-occured-no-text-based-content-could-be-found
 ?>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

@@ -80,23 +80,23 @@ function applyconstraints ()
       </tr>
       <tr> 
         <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['value'][$lang]); ?> </td>
-        <td style="white-space:nowrap; vertical-align:top;"><input name="required" type="checkbox" id="required" value="R" />&nbsp;<?php echo getescapedtext ($hcms_lang['required'][$lang]); ?></td>
+        <td style="white-space:nowrap; vertical-align:top;"><label><input name="required" type="checkbox" id="required" value="R" />&nbsp;<?php echo getescapedtext ($hcms_lang['required'][$lang]); ?></label></td>
       </tr>
       <tr> 
         <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['accept'][$lang]); ?> </td>
-        <td style="white-space:nowrap; vertical-align:top;"><input type="radio" name="accept" value="" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['anything'][$lang]); ?></td>
+        <td style="white-space:nowrap; vertical-align:top;"><label><input type="radio" name="accept" value="" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['anything'][$lang]); ?></label></td>
       </tr>
       <tr> 
         <td style="white-space:nowrap; vertical-align:top;">&nbsp;</td>
-        <td style="white-space:nowrap; vertical-align:top;"><input type="radio" name="accept" value="isEmail" />&nbsp;<?php echo getescapedtext ($hcms_lang['e-mail-address'][$lang]); ?></td>
+        <td style="white-space:nowrap; vertical-align:top;"><label><input type="radio" name="accept" value="isEmail" />&nbsp;<?php echo getescapedtext ($hcms_lang['e-mail-address'][$lang]); ?></label></td>
       </tr>
       <tr> 
         <td style="white-space:nowrap; vertical-align:top;">&nbsp;</td>
-        <td style="white-space:nowrap; vertical-align:top;"><input type="radio" name="accept" value="isNum" />&nbsp;<?php echo getescapedtext ($hcms_lang['number'][$lang]); ?></td>
+        <td style="white-space:nowrap; vertical-align:top;"><label><input type="radio" name="accept" value="isNum" />&nbsp;<?php echo getescapedtext ($hcms_lang['number'][$lang]); ?></label></td>
       </tr>  
       <tr> 
         <td style="white-space:nowrap; vertical-align:top;">&nbsp;</td>
-        <td style="white-space:nowrap; vertical-align:top;"><input type="radio" name="accept" value="inRange" />&nbsp;<?php echo getescapedtext ($hcms_lang['number-between'][$lang]); ?> 
+        <td style="white-space:nowrap; vertical-align:top;"><label><input type="radio" name="accept" value="inRange" />&nbsp;<?php echo getescapedtext ($hcms_lang['number-between'][$lang]); ?></label>
         <input name="min" type="text" id="min" size="8" />&nbsp;<?php echo getescapedtext ($hcms_lang['and'][$lang]); ?>&nbsp;<input name="max" type="text" id="max" size="8" /></td>
       </tr> 
       <tr> 
@@ -111,6 +111,6 @@ function applyconstraints ()
   </form>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

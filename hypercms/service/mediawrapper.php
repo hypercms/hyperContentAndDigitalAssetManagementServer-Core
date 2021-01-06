@@ -126,7 +126,7 @@ else
 }
 
 // get object from object id
-if ($object_id != "" && $mgmt_config['db_connect_rdbms'] != "")
+if ($object_id != "" && !empty ($mgmt_config['db_connect_rdbms']))
 { 
   $media = "";
 	$objectpath_esc = rdbms_getobject ($object_id);
@@ -189,7 +189,7 @@ if (substr_count ($media, "/") == 1) $site = substr ($media, 0, strpos ($media, 
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
 // read multimedia file (publication/file) and submit data
-if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || !$mgmt_config[$site]['dam'])) || $media_approved))
+if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || empty ($mgmt_config[$site]['dam']))) || $media_approved == true))
 {
   // check IP and public access
   if ($user == "" && (!allowuserip ($site) || !mediapublicaccess ($media)))

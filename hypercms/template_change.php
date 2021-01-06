@@ -62,7 +62,7 @@ $load_template = loadtemplate ($site, $template);
 
 if (is_array ($load_template))
 {
-  if ($load_template['result'] == false)
+  if (empty ($load_template['result']))
   {
     $template = "";
   }
@@ -175,6 +175,6 @@ $token_new = createtoken ($user);
   </form>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

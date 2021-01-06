@@ -76,20 +76,15 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
-
 <?php
-// invert button colors
+// invert colors
 if (!empty ($hcms_themeinvertcolors))
 {
   echo "<style>";
-  // invert all buttons
-  echo invertcolorCSS ("div.hcmsToolbarBlock", 100);
-  // revert on hover
-  echo invertcolorCSS (".hcmsButton:hover, div.hcmsToolbarBlock select", 100);
+  echo invertcolorCSS ($hcms_themeinvertcolors);
   echo "</style>";
 }
 ?>
-
 <script type="text/javascript">
 
 function selectportal (selObj)
@@ -199,7 +194,8 @@ function checkForm_tpl_create()
       <input type="hidden" name="action" value="tpl_delete" />
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
-      <?php echo $hcms_lang['portal-template'][$lang]; ?>
+
+      <span class="hcmsInvertColor"><?php echo $hcms_lang['portal-template'][$lang]; ?></span>
       <select name="template" onChange="selectportal(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
       <?php
@@ -223,23 +219,23 @@ function checkForm_tpl_create()
   <div class="hcmsToolbarBlock">
     <?php
     if (checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tplcreate'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createtplLayer','','show', 'hcms_messageLayer','','hide');\" name=\"media_new\" src=\"".getthemelocation()."img/button_tpl_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createtplLayer','','show', 'hcms_messageLayer','','hide');\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />\n";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_tpl_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
+    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpldelete'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deleteportal();\" name=\"media_delete\" src=\"".getthemelocation()."img/button_tpl_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deleteportal();\" name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />\n";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_tpl_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
+    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
   </div>
   <div class="hcmsToolbarBlock">
     <?php
     if (file_exists ($mgmt_config['abs_path_cms']."help/templateguide_".$hcms_lang_shortcut[$lang].".pdf") && checkglobalpermission ($site, 'tpl'))
-    {echo "<img  onClick=\"hcms_openWindow('help/templateguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
+    {echo "<img  onClick=\"hcms_openWindow('help/templateguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
     elseif (file_exists ($mgmt_config['abs_path_cms']."help/templateguide_en.pdf") && checkglobalpermission ($site, 'tpl'))
-    {echo "<img  onClick=\"hcms_openWindow('help/templateguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
+    {echo "<img  onClick=\"hcms_openWindow('help/templateguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
     ?>      
   </div>
 </div>

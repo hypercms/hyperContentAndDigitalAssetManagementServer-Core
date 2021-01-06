@@ -82,7 +82,7 @@ function openPopup (link)
   if (link != "")
   {
     document.getElementById('objectview').src = link;
-    hcms_showFormLayer('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer', 0);
   }
 }
 
@@ -94,7 +94,7 @@ function openObjectView (location, object, view)
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 
     document.getElementById('objectview').src = 'explorer_objectview.php?location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(object) + '&width=' + width + '&height=' + height + '&view=' + encodeURIComponent(view);
-    hcms_showFormLayer('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer', 0);
   }
 }
 
@@ -106,7 +106,7 @@ function openimageview (link)
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 
     document.getElementById('objectview').src = 'explorer_imageview.php?link=' + encodeURIComponent(link) + '&width=' + width + '&height=' + height;
-    hcms_showFormLayer('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer', 0);
   }
 }
 
@@ -115,7 +115,7 @@ function opengeoview (ip)
   if (ip != "")
   {
     document.getElementById('objectview').src = 'page_info_ip.php?ip=' + encodeURIComponent(ip);
-    hcms_showFormLayer('objectviewLayer',0);
+    hcms_showFormLayer('objectviewLayer', 0);
   }
 }
 
@@ -146,7 +146,7 @@ function openBrWindowLink (url, winName, features)
     <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
   </div>
   <div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> position:fixed; margin:0; padding:0; left:0; top:<?php if ($is_mobile) echo "20px"; else echo "36px"; ?>; right:0; bottom:0; z-index:9010;">
-    <iframe id="objectview" name="objectview" src="" frameBorder="0" <?php if (!$is_mobile) echo 'scrolling="no"'; else echo 'scrolling="yes"'; ?> style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>" sandbox="allow-top-navigation allow-same-origin allow-scripts allow-forms" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+    <iframe id="objectview" name="objectview" src="" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox" frameBorder="0" <?php if (!$is_mobile) echo 'scrolling="no"'; else echo 'scrolling="yes"'; ?> style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>" sandbox="allow-top-navigation allow-same-origin allow-scripts allow-forms" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
   </div>
 </div>
 

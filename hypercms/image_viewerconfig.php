@@ -268,6 +268,6 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
 
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

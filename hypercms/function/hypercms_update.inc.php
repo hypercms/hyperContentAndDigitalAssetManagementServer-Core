@@ -136,6 +136,8 @@ function update_tasks_v584 ()
 {
   global $mgmt_config;
 
+  $error = array();
+
   // connect to MySQL
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -207,12 +209,12 @@ function update_tasks_v584 ()
                 if ($result)
                 {
                   $errcode = "00101";
-                  $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|$errcode|task ".$task_id[0]." of user ".$to_user." has been updated";
+                  $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|".$errcode."|task '".$task_id[0]."' of user '".$to_user."' has been updated";
                 }
                 else
                 {
                   $errcode = "50101";
-                  $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|$errcode|task ".$task_id[0]." of user ".$to_user." has not been updated";
+                  $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|".$errcode."|task '".$task_id[0]."' of user '".$to_user."' has not been updated";
                 }
               }
             }
@@ -242,6 +244,8 @@ function update_tasks_v584 ()
 function update_database_v586 ()
 {
   global $mgmt_config;
+
+  $error = array();
 
   // connect to MySQL
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -336,7 +340,7 @@ function update_database_v586 ()
         if (!$mkdir)
         {
           $errcode = "10201";
-          $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|$errcode|report directory could not be created";
+          $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|report directory could not be created";
         }
       }
     }
@@ -361,6 +365,8 @@ function update_database_v586 ()
 function update_database_v601 ()
 {
   global $mgmt_config;
+
+  $error = array();
 
   // connect to MySQL
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -427,6 +433,8 @@ function update_database_v614 ()
 {
   global $mgmt_config;
 
+  $error = array();
+
   // connect to MySQL
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -470,6 +478,8 @@ function update_database_v614 ()
 function update_database_v6113 ()
 {
   global $mgmt_config;
+
+  $error = array();
 
   // connect to MySQL
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -630,6 +640,8 @@ function update_database_v6115 ()
 {
   global $mgmt_config;
 
+  $error = array();
+
   // connect to MySQL
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -655,7 +667,7 @@ function update_database_v6115 ()
 
         // information
         $errcode = "00101";
-        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|$errcode|cleaned content of container ".$row['id']." with text ID '".$row['text_id']."': ".$cleaned; 
+        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|".$errcode."|cleaned content of container '".$row['id']."' with text ID '".$row['text_id']."': ".$cleaned; 
       }
     }
   }
@@ -679,6 +691,8 @@ function update_database_v6115 ()
 function update_container_v6118 ()
 {
   global $mgmt_config;
+
+  $error = array();
 
   $logdata = loadlog ("update", "string");
 
@@ -752,7 +766,7 @@ function update_container_v6118 ()
                       {
                         // error
                         $errcode = "10105";
-                        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|$errcode|container '".$file."' could not be updated";
+                        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|container '".$file."' could not be updated";
                       }
 
                       $i++;
@@ -794,6 +808,8 @@ function update_container_v6118 ()
 function update_database_v6139 ()
 {
   global $mgmt_config;
+
+  $error = array();
 
   $logdata = loadlog ("update", "string");
 
@@ -840,6 +856,8 @@ function update_database_v625 ()
 {
   global $mgmt_config;
 
+  $error = array();
+
   $logdata = loadlog ("update", "string");
 
   if (empty ($logdata) || strpos ($logdata, "|6.2.5|") < 1)
@@ -878,6 +896,8 @@ function update_database_v625 ()
 function update_database_v705 ($dir, $db_alter)
 {
   global $mgmt_config;
+
+  $error = array();
 
   $logdata = loadlog ("update", "string");
 
@@ -949,6 +969,8 @@ function update_users_706 ()
 {
   global $mgmt_config;
 
+  $error = array();
+
   $logdata = loadlog ("update", "string");
 
   if (empty ($logdata) || strpos ($logdata, "|7.0.6|") < 1)
@@ -988,6 +1010,8 @@ function update_users_706 ()
 function update_database_v708 ()
 {
   global $mgmt_config;
+
+  $error = array();
 
   $logdata = loadlog ("update", "string");
 
@@ -1030,6 +1054,8 @@ function update_database_v708 ()
 function update_users_709 ()
 {
   global $mgmt_config;
+
+  $error = array();
 
   $logdata = loadlog ("update", "string");
 
@@ -1119,6 +1145,8 @@ function update_config_7010 ()
 {
   global $mgmt_config;
 
+  $error = array();
+
   $logdata = loadlog ("update", "string");
 
   if (empty ($logdata) || strpos ($logdata, "|7.0.10|") < 1)
@@ -1182,6 +1210,8 @@ function update_database_v800 ()
 {
   global $mgmt_config;
 
+  $error = array();
+
   $logdata = loadlog ("update", "string");
 
   if (empty ($logdata) || strpos ($logdata, "|8.0.0|") < 1)
@@ -1219,6 +1249,8 @@ function update_users_804 ()
 {
   global $mgmt_config;
 
+  $error = array();
+
   $logdata = loadlog ("update", "string");
 
   if (empty ($logdata) || strpos ($logdata, "|8.0.4|") < 1)
@@ -1243,7 +1275,7 @@ function update_users_804 ()
             if (!$rename)
             {
               $errcode = "10801";
-              $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|$errcode|publication log '".$site.".custom.log' could not be renamed to '".$site.".publication.log";
+              $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|publication log '".$site.".custom.log' could not be renamed to '".$site.".publication.log";
             }
           }
         }
@@ -1258,7 +1290,7 @@ function update_users_804 ()
       if (!$mkdir)
       {
         $errcode = "10802";
-        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|$errcode|portal directory could not be created";
+        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|portal directory could not be created";
       }
     }
 
@@ -1298,6 +1330,8 @@ function update_users_804 ()
 function update_database_v805 ()
 {
   global $mgmt_config;
+
+  $error = array();
 
   $logdata = loadlog ("update", "string");
 
@@ -1378,6 +1412,8 @@ function update_database_v805 ()
 function update_database_v903 ()
 {
   global $mgmt_config;
+
+  $error = array();
 
   $logdata = loadlog ("update", "string");
 

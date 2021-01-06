@@ -237,7 +237,7 @@ if (checktoken ($token, $user))
       $formats = "";
       $thumbformat = "";
 
-      while (list ($formatstring, $settingstring) = each ($mgmt_imageoptions))
+      foreach ($mgmt_imageoptions as $formatstring => $settingstring)
       {
         if (substr_count ($formatstring.".", ".".$imageformat.".") > 0)
         {

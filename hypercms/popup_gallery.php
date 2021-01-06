@@ -74,6 +74,6 @@ $show = showgallery ($assets_array, 140, true, $user);
 if (!empty ($show)) echo $show;
 ?>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

@@ -22,6 +22,8 @@ $template = getrequest ("template", "objectname");
 $location = getrequest ("location", "locationname");
 $css_display = getrequest ("css_display", "objectname");
 
+$site = "";
+
 // extract publication and template name
 if (substr_count ($template, "/") == 1) list ($site, $template) = explode ("/", $template);
 
@@ -74,7 +76,7 @@ else
   echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
   echo "<head>\n";
   echo "<title>hyperCMS</title>\n";
-  echo "<meta charset=\"".$mgmt_config[$site]['default_codepage']."\" />\n";
+  echo "<meta charset=\"".(!empty ($mgmt_config[$site]['default_codepage']) ? $mgmt_config[$site]['default_codepage'] : "UTF-8")."\" />\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
   echo "</head>\n";

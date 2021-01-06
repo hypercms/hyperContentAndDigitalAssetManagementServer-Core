@@ -27,7 +27,7 @@
       </group>
       <group>
         <name>Plugin Group 2</name>
-        <icon>img/group.gif</icon>
+        <icon>img/group.png</icon>
         <subpoints>
           <point>
             <name>Plugin Point 2.1</name>

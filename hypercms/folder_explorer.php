@@ -126,6 +126,8 @@ function sendOption(folder_name, folder_location)
         
         // get all files in dir
         $scandir = scandir ($dir);
+
+        $entry_dir = array();
         
         // get all outdir entries in folder and file array
         if (!empty ($scandir))

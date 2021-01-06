@@ -87,20 +87,15 @@ elseif ($action == "item_delete")
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
-
 <?php
-// invert button colors
+// invert colors
 if (!empty ($hcms_themeinvertcolors))
 {
   echo "<style>";
-  // invert all buttons
-  echo invertcolorCSS ("div.hcmsToolbarBlock", 100);
-  // revert on hover
-  echo invertcolorCSS (".hcmsButton:hover, div.hcmsToolbarBlock select", 100);
+  echo invertcolorCSS ($hcms_themeinvertcolors);
   echo "</style>";
 }
 ?>
-
 <script type="text/javascript">
 
 function selectpers (selObj)
@@ -200,7 +195,8 @@ function checkForm_item_create ()
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
       <input type="hidden" name="action" value="item_delete" />
-      <?php echo getescapedtext ($item_type); ?>
+
+      <span class="hcmsInvertColor"><?php echo getescapedtext ($item_type); ?></span>
       <select name="persfile" onChange="selectpers(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($item_type); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
         <?php
@@ -254,23 +250,23 @@ function checkForm_item_create ()
   <div class="hcmsToolbarBlock">
     <?php
     if (($cat == "profile" && checkglobalpermission ($site, 'persprof') && checkglobalpermission ($site, 'persprofcreate')) || ($cat == "tracking" && checkglobalpermission ($site, 'perstrack') && checkglobalpermission ($site, 'perstrackcreate')))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createpersLayer','','show', 'hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation()."img/button_tpl_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createpersLayer','','show', 'hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />\n";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_tpl_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
+    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (($cat == "profile" && checkglobalpermission ($site, 'persprof') && checkglobalpermission ($site, 'persprofdelete')) || ($cat == "tracking" && checkglobalpermission ($site, 'perstrack') && checkglobalpermission ($site, 'perstrackdelete')))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deletepers();\" name=\"media_delete\" src=\"".getthemelocation()."img/button_tpl_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deletepers();\" name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />\n";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_tpl_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
+    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
   </div>
   <div class="hcmsToolbarBlock">
     <?php
     if (file_exists ($mgmt_config['abs_path_cms']."help/personalizationguide_".$hcms_lang_shortcut[$lang].".pdf"))
-    {echo "<img  onClick=\"hcms_openWindow('help/personalizationguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
+    {echo "<img  onClick=\"hcms_openWindow('help/personalizationguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
     elseif (file_exists ($mgmt_config['abs_path_cms']."help/personalizationguide_en.pdf"))
-    {echo "<img  onClick=\"hcms_openWindow('help/personalizationguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
+    {echo "<img  onClick=\"hcms_openWindow('help/personalizationguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
     ?>
   </div>
 </div>

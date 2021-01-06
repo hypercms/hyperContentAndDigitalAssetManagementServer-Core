@@ -42,6 +42,8 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+$error = array();
+
 // helper function for appending text content in multiedit mode
 function appendcontent_helper ($xmlcontent, $text, $delimiter=" ")
 {
@@ -131,6 +133,8 @@ $arttextd = getrequest ("arttextd", "array");
 $format = getrequest_esc ("format");
 $commentu = getrequest ("commentu", "array");
 $commentf = getrequest ("commentf", "array");
+$texts = getrequest ("texts", "array");
+$arttexts = getrequest ("arttexts", "array");
 
 $mediacat = getrequest ("mediacat", "array");
 $mediafile = getrequest ("mediafile", "array");
@@ -361,6 +365,8 @@ if ($usedby == "" || $usedby == $user)
       if (isset ($arttextc) && is_array ($arttextc) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextc, "c", "yes", $user, $user, $charset);
       if (isset ($textd) && is_array ($textd) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textd, "d", "no", $user, $user, $charset);
       if (isset ($arttextd) && is_array ($arttextd) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextd, "d", "yes", $user, $user, $charset);
+      if (isset ($texts) && is_array ($texts) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $texts, "s", "no", $user, $user, $charset);
+      if (isset ($arttexts) && is_array ($arttexts) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttexts, "s", "yes", $user, $user, $charset);
       // keywords usually only apply for metadata templates (support for articles added in version 8.1.3)
       if (isset ($textk) && is_array ($textk) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textk, "k", "no", $user, $user, $charset);
       if (isset ($arttextk) && is_array ($arttextk) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextk, "k", "yes", $user, $user, $charset);
@@ -713,36 +719,40 @@ if ($usedby == "" || $usedby == $user)
          	// define forward to URL
          	if ($savetype == "editorf_so" || $savetype == "editorf_wysiwyg")
           {
-         	  $add_onload =  "document.location='".$mgmt_config['url_path_cms']."editor/editorf.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&contenttype=".url_encode($contenttype)."&width=".url_encode($width)."&height=".url_encode($height)."&toolbar=".url_encode($toolbar)."';\n";
+         	  $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."text_edit_format.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&contenttype=".url_encode($contenttype)."&width=".url_encode($width)."&height=".url_encode($height)."&toolbar=".url_encode($toolbar)."';\n";
          	}
           elseif ($savetype == "editoru_so")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."editor/editoru.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&constraint=".url_encode($constraint)."&contenttype=".url_encode($contenttype)."&width=".url_encode($width)."&height=".url_encode($height)."';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."text_edit_unformat.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&constraint=".url_encode($constraint)."&contenttype=".url_encode($contenttype)."&width=".url_encode($width)."&height=".url_encode($height)."';\n";
          	}
           elseif ($savetype == "editorl_so")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."editor/editorl.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&list=".url_encode($list)."&contenttype=".url_encode($contenttype)."';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."text_editor_list.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&list=".url_encode($list)."&contenttype=".url_encode($contenttype)."';\n";
          	}
           elseif ($savetype == "editorc_so")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."editor/editorc.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&value=".url_encode($value)."&contenttype=".url_encode($contenttype)."';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."text_edit_checkbox.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&value=".url_encode($value)."&contenttype=".url_encode($contenttype)."';\n";
          	}
           elseif ($savetype == "editord_so")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."editor/editord.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&format=".url_encode($format)."&contenttype=".url_encode($contenttype)."&wf_token=".url_encode($wf_token)."';\n";
-         	}        
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."text_edit_date.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&format=".url_encode($format)."&contenttype=".url_encode($contenttype)."&wf_token=".url_encode($wf_token)."';\n";
+          }
+          elseif ($savetype == "editors_so")
+         	{
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."text_edit_signature.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&constraint=".url_encode($constraint)."&contenttype=".url_encode($contenttype)."&width=".url_encode($width)."&height=".url_encode($height)."';\n";
+         	}
           elseif ($savetype == "form_so")
          	{
-            if ($forward == "") $add_onload =  "document.location='".$mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
+            if ($forward == "") $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
             else $add_onload = "document.location='".$forward."';\n";
          	}
          	elseif ($savetype == "form_sc")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."page_view.php?view=cmsview&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."page_view.php?view=cmsview&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
           }
          	elseif ($savetype == "documentviewerconfig_so")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."document_viewerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&title=".(!empty ($textu['Title']) ? url_encode($textu['Title']) : "")."&wf_token=".url_encode($wf_token)."';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."document_viewerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&title=".(!empty ($textu['Title']) ? url_encode($textu['Title']) : "")."&wf_token=".url_encode($wf_token)."';\n";
          	} 
          	elseif ($savetype == "imagerendering_so")
          	{
@@ -750,23 +760,23 @@ if ($usedby == "" || $usedby == $user)
             if (!empty ($mgmt_config['imageeditor']) && strtolower ($mgmt_config['imageeditor']) == "minipaint") $imageeditor = "image_minipaint.php";
             else $imageeditor = "image_rendering.php";
 
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms'].$imageeditor."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms']).$imageeditor."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
           }
          	elseif ($savetype == "imageviewerconfig_so")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."image_viewerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&title=".(!empty ($textu['Title']) ? url_encode($textu['Title']) : "")."&wf_token=".url_encode($wf_token)."';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."image_viewerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&title=".(!empty ($textu['Title']) ? url_encode($textu['Title']) : "")."&wf_token=".url_encode($wf_token)."';\n";
          	} 
          	elseif ($savetype == "mediarendering_so")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."media_rendering.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."media_rendering.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
           } 
          	elseif ($savetype == "mediaplayerconfig_so")
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."media_playerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&title=".(!empty ($textu['Title']) ? url_encode($textu['Title']) : "")."&wf_token=".url_encode($wf_token)."';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."media_playerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&title=".(!empty ($textu['Title']) ? url_encode($textu['Title']) : "")."&wf_token=".url_encode($wf_token)."';\n";
          	}                   
           else
          	{
-            $add_onload =  "document.location='".$mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no';\n";
          	}
 
          	// define message to display
@@ -785,7 +795,7 @@ if ($usedby == "" || $usedby == $user)
         if ($test == false)
         {
           $errcode = "20101";
-          $error[] = $mgmt_config['today']."|page_save.inc.php|error|$errcode|unable to save data of container '$contentfile' using db_connect '$db_connect'";          
+          $error[] = $mgmt_config['today']."|page_save.inc.php|error|".$errcode."|unable to save data of container '".$contentfile."' using db_connect '".$db_connect."'";          
         }
       }
     }

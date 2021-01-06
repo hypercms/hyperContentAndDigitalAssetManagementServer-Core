@@ -7,7 +7,7 @@
  * You should have received a copy of the license (license.txt) along with hyper Content & Digital Management Server
  */
  
-include ($mgmt_config['abs_path_cms']."library/phpmailer/class.phpmailer.php");
+require_once ($mgmt_config['abs_path_cms']."library/phpmailer/class.phpmailer.php");
 
 class HyperMailer extends PHPMailer
 {

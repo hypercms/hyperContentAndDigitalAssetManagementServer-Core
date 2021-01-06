@@ -9,6 +9,29 @@
  
  // ===================================== PERMISSIONS =========================================
 
+// ---------------------- resolvepermission -----------------------------
+// function: resolvepermission()
+// input: permission array [array], permission segment name [string], permission value position [integer]
+// output: 1 / 0
+
+// description:
+// Returns the permission value (true or false) of a permission position of a permission segment 
+
+function resolvepermission ($permission_array, $segment, $position)
+{
+ if (is_array ($permission_array) && sizeof ($permission_array) > 0 && is_string ($segment) && $segment != "" && intval ($position) >= 0)
+ {
+  if (!empty ($permission_array[$segment]))
+  {
+    $value = substr ($permission_array[$segment], $position, 1);
+
+    if (!empty ($value)) return 1;
+  }
+ }
+
+ return 0;
+}
+
 // ---------------------- rootpermission -----------------------------
 // function: rootpermission()
 // input: publication name [string], publication admin [boolean], permission string from group [string]
@@ -29,6 +52,9 @@ function rootpermission ($site_name, $site_admin, $permission_str)
 
   if (is_array ($permission_str) && valid_publicationname ($site_name))
   {
+    // initalize
+    if (!isset ($rootpermission)) $rootpermission = array();
+
     if (!isset ($rootpermission['desktop'])) $rootpermission['desktop'] = 0;
     if (!isset ($rootpermission['desktopsetting'])) $rootpermission['desktopsetting'] = 0;
     if (!isset ($rootpermission['desktopprojectmgmt'])) $rootpermission['desktopprojectmgmt'] = 0; 
@@ -49,34 +75,34 @@ function rootpermission ($site_name, $site_admin, $permission_str)
 
     reset ($permission_str);
 
-    while (list ($group_name, $value) = each ($permission_str[$site_name]))
+    foreach ($permission_str[$site_name] as $group_name => $value)
     {
       if ($group_name != "" && $value != "")
       {
         // get permissions from string
-        parse_str ($value);
+        parse_str ($value, $permission_array);
 
         // desktop permissions
-        if ($rootpermission['desktop'] == 0 && @$desktop[0] == 1) $rootpermission['desktop'] = 1;
-        if ($rootpermission['desktopsetting'] == 0 && @$desktop[1] == 1) $rootpermission['desktopsetting'] = 1;
-        if ($rootpermission['desktoptaskmgmt'] == 0 && @$desktop[2] == 1) $rootpermission['desktoptaskmgmt'] = 1;
-        if ($rootpermission['desktopcheckedout'] == 0 && @$desktop[3] == 1) $rootpermission['desktopcheckedout'] = 1; 
-        if ($rootpermission['desktoptimetravel'] == 0 && @$desktop[4] == 1) $rootpermission['desktoptimetravel'] = 1;
-        if ($rootpermission['desktopfavorites'] == 0 && @$desktop[5] == 1) $rootpermission['desktopfavorites'] = 1;
-        if ($rootpermission['desktopprojectmgmt'] == 0 && @$desktop[6] == 1) $rootpermission['desktopprojectmgmt'] = 1; // new in version 6.0.1
+        if ($rootpermission['desktop'] == 0 && resolvepermission ($permission_array, "desktop", 0)) $rootpermission['desktop'] = 1;
+        if ($rootpermission['desktopsetting'] == 0 && resolvepermission ($permission_array, "desktop", 1)) $rootpermission['desktopsetting'] = 1;
+        if ($rootpermission['desktoptaskmgmt'] == 0 && resolvepermission ($permission_array, "desktop", 2)) $rootpermission['desktoptaskmgmt'] = 1;
+        if ($rootpermission['desktopcheckedout'] == 0 && resolvepermission ($permission_array, "desktop", 3)) $rootpermission['desktopcheckedout'] = 1; 
+        if ($rootpermission['desktoptimetravel'] == 0 && resolvepermission ($permission_array, "desktop", 4)) $rootpermission['desktoptimetravel'] = 1;
+        if ($rootpermission['desktopfavorites'] == 0 && resolvepermission ($permission_array, "desktop", 5)) $rootpermission['desktopfavorites'] = 1;
+        if ($rootpermission['desktopprojectmgmt'] == 0 && resolvepermission ($permission_array, "desktop", 6)) $rootpermission['desktopprojectmgmt'] = 1; // new in version 6.0.1
 
         if ($site_admin == true)
         {
           // site permissions
-          if ($rootpermission['site'] == 0 && @$site[0] == 1) $rootpermission['site'] = 1;
-          if ($rootpermission['sitecreate'] == 0 && @$site[1] == 1) $rootpermission['sitecreate'] = 1;
-          if ($rootpermission['sitedelete'] == 0 && @$site[2] == 1) $rootpermission['sitedelete'] = 1;
-          if ($rootpermission['siteedit'] == 0 && @$site[3] == 1) $rootpermission['siteedit'] = 1; 
+          if ($rootpermission['site'] == 0 && resolvepermission ($permission_array, "site", 0)) $rootpermission['site'] = 1;
+          if ($rootpermission['sitecreate'] == 0 && resolvepermission ($permission_array, "site", 1)) $rootpermission['sitecreate'] = 1;
+          if ($rootpermission['sitedelete'] == 0 && resolvepermission ($permission_array, "site", 2)) $rootpermission['sitedelete'] = 1;
+          if ($rootpermission['siteedit'] == 0 && resolvepermission ($permission_array, "site", 3)) $rootpermission['siteedit'] = 1; 
           // user permissions
-          if ($rootpermission['user'] == 0 && @$user[0] == 1) $rootpermission['user'] = 1;
-          if ($rootpermission['usercreate'] == 0 && @$user[1] == 1) $rootpermission['usercreate'] = 1;
-          if ($rootpermission['userdelete'] == 0 && @$user[2] == 1) $rootpermission['userdelete'] = 1;
-          if ($rootpermission['useredit'] == 0 && @$user[3] == 1) $rootpermission['useredit'] = 1; 
+          if ($rootpermission['user'] == 0 && resolvepermission ($permission_array, "user", 0)) $rootpermission['user'] = 1;
+          if ($rootpermission['usercreate'] == 0 && resolvepermission ($permission_array, "user", 1)) $rootpermission['usercreate'] = 1;
+          if ($rootpermission['userdelete'] == 0 && resolvepermission ($permission_array, "user", 2)) $rootpermission['userdelete'] = 1;
+          if ($rootpermission['useredit'] == 0 && resolvepermission ($permission_array, "user", 3)) $rootpermission['useredit'] = 1; 
         }
       }
     }
@@ -102,6 +128,10 @@ function globalpermission ($site_name, $permission_str)
 {
   if (is_array ($permission_str) && valid_publicationname ($site_name))
   {
+    // initalize
+    $globalpermission = array();
+    $globalpermission[$site_name] = array();
+
     $globalpermission[$site_name]['user'] = 0;
     $globalpermission[$site_name]['usercreate'] = 0;
     $globalpermission[$site_name]['userdelete'] = 0;
@@ -150,69 +180,69 @@ function globalpermission ($site_name, $permission_str)
 
     reset ($permission_str);
  
-    while (list ($group_name, $value) = each ($permission_str[$site_name]))
+    foreach ($permission_str[$site_name] as $group_name => $value)
     {
       if ($group_name != "" && $value != "")
       {
         // get permissions from string
-        parse_str ($value);
+        parse_str ($value, $permission_array);
 
         // user permissions
-        if ($globalpermission[$site_name]['user'] == 0 && @$user[0] == 1) $globalpermission[$site_name]['user'] = 1;
-        if ($globalpermission[$site_name]['usercreate'] == 0 && @$user[1] == 1) $globalpermission[$site_name]['usercreate'] = 1;
-        if ($globalpermission[$site_name]['userdelete'] == 0 && @$user[2] == 1) $globalpermission[$site_name]['userdelete'] = 1;
-        if ($globalpermission[$site_name]['useredit'] == 0 && @$user[3] == 1) $globalpermission[$site_name]['useredit'] = 1;
+        if ($globalpermission[$site_name]['user'] == 0 && resolvepermission ($permission_array, "user", 0)) $globalpermission[$site_name]['user'] = 1;
+        if ($globalpermission[$site_name]['usercreate'] == 0 && resolvepermission ($permission_array, "user", 1)) $globalpermission[$site_name]['usercreate'] = 1;
+        if ($globalpermission[$site_name]['userdelete'] == 0 && resolvepermission ($permission_array, "user", 2)) $globalpermission[$site_name]['userdelete'] = 1;
+        if ($globalpermission[$site_name]['useredit'] == 0 && resolvepermission ($permission_array, "user", 3)) $globalpermission[$site_name]['useredit'] = 1;
         // group permissions
-        if ($globalpermission[$site_name]['group'] == 0 && @$group[0] == 1) $globalpermission[$site_name]['group'] = 1;
-        if ($globalpermission[$site_name]['groupcreate'] == 0 && @$group[1] == 1) $globalpermission[$site_name]['groupcreate'] = 1;
-        if ($globalpermission[$site_name]['groupdelete'] == 0 && @$group[2] == 1) $globalpermission[$site_name]['groupdelete'] = 1;
-        if ($globalpermission[$site_name]['groupedit'] == 0 && @$group[3] == 1) $globalpermission[$site_name]['groupedit'] = 1;
+        if ($globalpermission[$site_name]['group'] == 0 && resolvepermission ($permission_array, "group", 0)) $globalpermission[$site_name]['group'] = 1;
+        if ($globalpermission[$site_name]['groupcreate'] == 0 && resolvepermission ($permission_array, "group", 1)) $globalpermission[$site_name]['groupcreate'] = 1;
+        if ($globalpermission[$site_name]['groupdelete'] == 0 && resolvepermission ($permission_array, "group", 2)) $globalpermission[$site_name]['groupdelete'] = 1;
+        if ($globalpermission[$site_name]['groupedit'] == 0 && resolvepermission ($permission_array, "group", 3)) $globalpermission[$site_name]['groupedit'] = 1;
         // personalization permissions
-        if ($globalpermission[$site_name]['pers'] == 0 && @$pers[0] == 1) $globalpermission[$site_name]['pers'] = 1;
-        if ($globalpermission[$site_name]['perstrack'] == 0 && @$pers[1] == 1) $globalpermission[$site_name]['perstrack'] = 1;
-        if ($globalpermission[$site_name]['perstrackcreate'] == 0 && @$pers[2] == 1) $globalpermission[$site_name]['perstrackcreate'] = 1;
-        if ($globalpermission[$site_name]['perstrackdelete'] == 0 && @$pers[3] == 1) $globalpermission[$site_name]['perstrackdelete'] = 1;
-        if ($globalpermission[$site_name]['perstrackedit'] == 0 && @$pers[4] == 1) $globalpermission[$site_name]['perstrackedit'] = 1;
-        if ($globalpermission[$site_name]['persprof'] == 0 && @$pers[5] == 1) $globalpermission[$site_name]['persprof'] = 1;
-        if ($globalpermission[$site_name]['persprofcreate'] == 0 && @$pers[6] == 1) $globalpermission[$site_name]['persprofcreate'] = 1;
-        if ($globalpermission[$site_name]['persprofdelete'] == 0 && @$pers[7] == 1) $globalpermission[$site_name]['persprofdelete'] = 1;
-        if ($globalpermission[$site_name]['persprofedit'] == 0 && @$pers[8] == 1) $globalpermission[$site_name]['persprofedit'] = 1;
+        if ($globalpermission[$site_name]['pers'] == 0 && resolvepermission ($permission_array, "pers", 0)) $globalpermission[$site_name]['pers'] = 1;
+        if ($globalpermission[$site_name]['perstrack'] == 0 && resolvepermission ($permission_array, "pers", 1)) $globalpermission[$site_name]['perstrack'] = 1;
+        if ($globalpermission[$site_name]['perstrackcreate'] == 0 && resolvepermission ($permission_array, "pers", 2)) $globalpermission[$site_name]['perstrackcreate'] = 1;
+        if ($globalpermission[$site_name]['perstrackdelete'] == 0 && resolvepermission ($permission_array, "pers", 3)) $globalpermission[$site_name]['perstrackdelete'] = 1;
+        if ($globalpermission[$site_name]['perstrackedit'] == 0 && resolvepermission ($permission_array, "pers", 4)) $globalpermission[$site_name]['perstrackedit'] = 1;
+        if ($globalpermission[$site_name]['persprof'] == 0 && resolvepermission ($permission_array, "pers", 5)) $globalpermission[$site_name]['persprof'] = 1;
+        if ($globalpermission[$site_name]['persprofcreate'] == 0 && resolvepermission ($permission_array, "pers", 6)) $globalpermission[$site_name]['persprofcreate'] = 1;
+        if ($globalpermission[$site_name]['persprofdelete'] == 0 && resolvepermission ($permission_array, "pers", 7)) $globalpermission[$site_name]['persprofdelete'] = 1;
+        if ($globalpermission[$site_name]['persprofedit'] == 0 && resolvepermission ($permission_array, "pers", 8)) $globalpermission[$site_name]['persprofedit'] = 1;
         // workflow permissions
-        if ($globalpermission[$site_name]['workflow'] == 0 && @$workflow[0] == 1) $globalpermission[$site_name]['workflow'] = 1;
-        if ($globalpermission[$site_name]['workflowproc'] == 0 && @$workflow[1] == 1) $globalpermission[$site_name]['workflowproc'] = 1;
-        if ($globalpermission[$site_name]['workflowproccreate'] == 0 && @$workflow[2] == 1) $globalpermission[$site_name]['workflowproccreate'] = 1;
-        if ($globalpermission[$site_name]['workflowprocdelete'] == 0 && @$workflow[3] == 1) $globalpermission[$site_name]['workflowprocdelete'] = 1;
-        if ($globalpermission[$site_name]['workflowprocedit'] == 0 && @$workflow[4] == 1) $globalpermission[$site_name]['workflowprocedit'] = 1;
-        if ($globalpermission[$site_name]['workflowprocfolder'] == 0 && @$workflow[5] == 1) $globalpermission[$site_name]['workflowprocfolder'] = 1;
-        if ($globalpermission[$site_name]['workflowscript'] == 0 && @$workflow[6] == 1) $globalpermission[$site_name]['workflowscript'] = 1;
-        if ($globalpermission[$site_name]['workflowscriptcreate'] == 0 && @$workflow[7] == 1) $globalpermission[$site_name]['workflowscriptcreate'] = 1;
-        if ($globalpermission[$site_name]['workflowscriptdelete'] == 0 && @$workflow[8] == 1) $globalpermission[$site_name]['workflowscriptdelete'] = 1;
-        if ($globalpermission[$site_name]['workflowscriptedit'] == 0 && @$workflow[9] == 1) $globalpermission[$site_name]['workflowscriptedit'] = 1;
+        if ($globalpermission[$site_name]['workflow'] == 0 && resolvepermission ($permission_array, "workflow", 0)) $globalpermission[$site_name]['workflow'] = 1;
+        if ($globalpermission[$site_name]['workflowproc'] == 0 && resolvepermission ($permission_array, "workflow", 1)) $globalpermission[$site_name]['workflowproc'] = 1;
+        if ($globalpermission[$site_name]['workflowproccreate'] == 0 && resolvepermission ($permission_array, "workflow", 2)) $globalpermission[$site_name]['workflowproccreate'] = 1;
+        if ($globalpermission[$site_name]['workflowprocdelete'] == 0 && resolvepermission ($permission_array, "workflow", 3)) $globalpermission[$site_name]['workflowprocdelete'] = 1;
+        if ($globalpermission[$site_name]['workflowprocedit'] == 0 && resolvepermission ($permission_array, "workflow", 4)) $globalpermission[$site_name]['workflowprocedit'] = 1;
+        if ($globalpermission[$site_name]['workflowprocfolder'] == 0 && resolvepermission ($permission_array, "workflow", 5)) $globalpermission[$site_name]['workflowprocfolder'] = 1;
+        if ($globalpermission[$site_name]['workflowscript'] == 0 && resolvepermission ($permission_array, "workflow", 6)) $globalpermission[$site_name]['workflowscript'] = 1;
+        if ($globalpermission[$site_name]['workflowscriptcreate'] == 0 && resolvepermission ($permission_array, "workflow", 7)) $globalpermission[$site_name]['workflowscriptcreate'] = 1;
+        if ($globalpermission[$site_name]['workflowscriptdelete'] == 0 && resolvepermission ($permission_array, "workflow", 8)) $globalpermission[$site_name]['workflowscriptdelete'] = 1;
+        if ($globalpermission[$site_name]['workflowscriptedit'] == 0 && resolvepermission ($permission_array, "workflow", 9)) $globalpermission[$site_name]['workflowscriptedit'] = 1;
         // template permissions
-        if ($globalpermission[$site_name]['template'] == 0 && @$template[0] == 1) $globalpermission[$site_name]['template'] = 1;
-        if ($globalpermission[$site_name]['tpl'] == 0 && @$template[1] == 1) $globalpermission[$site_name]['tpl'] = 1;
-        if ($globalpermission[$site_name]['tplcreate'] == 0 && @$template[2] == 1) $globalpermission[$site_name]['tplcreate'] = 1;
-        if (isset ($template[5]) && $template[5] != "") // older versions before 5.5.11 (template upload still exists)
+        if ($globalpermission[$site_name]['template'] == 0 && resolvepermission ($permission_array, "template", 0)) $globalpermission[$site_name]['template'] = 1;
+        if ($globalpermission[$site_name]['tpl'] == 0 && resolvepermission ($permission_array, "template", 1)) $globalpermission[$site_name]['tpl'] = 1;
+        if ($globalpermission[$site_name]['tplcreate'] == 0 && resolvepermission ($permission_array, "template", 2)) $globalpermission[$site_name]['tplcreate'] = 1;
+        if (resolvepermission ($permission_array, "template", 5)) // older versions before 5.5.11 (template upload still exists)
         {
-          if ($globalpermission[$site_name]['tpldelete'] == 0 && @$template[4] == 1) $globalpermission[$site_name]['tpldelete'] = 1;
-          if ($globalpermission[$site_name]['tpledit'] == 0 && @$template[5] == 1) $globalpermission[$site_name]['tpledit'] = 1;
+          if ($globalpermission[$site_name]['tpldelete'] == 0 && resolvepermission ($permission_array, "template", 4)) $globalpermission[$site_name]['tpldelete'] = 1;
+          if ($globalpermission[$site_name]['tpledit'] == 0 && resolvepermission ($permission_array, "template", 5)) $globalpermission[$site_name]['tpledit'] = 1;
         }
         else
         {
-          if ($globalpermission[$site_name]['tpldelete'] == 0 && @$template[3] == 1) $globalpermission[$site_name]['tpldelete'] = 1;
-          if ($globalpermission[$site_name]['tpledit'] == 0 && @$template[4] == 1) $globalpermission[$site_name]['tpledit'] = 1;
+          if ($globalpermission[$site_name]['tpldelete'] == 0 && resolvepermission ($permission_array, "template", 3)) $globalpermission[$site_name]['tpldelete'] = 1;
+          if ($globalpermission[$site_name]['tpledit'] == 0 && resolvepermission ($permission_array, "template", 4)) $globalpermission[$site_name]['tpledit'] = 1;
         }
         // template media permissions
-        if ($globalpermission[$site_name]['tplmedia'] == 0 && @$media[0] == 1) $globalpermission[$site_name]['tplmedia'] = 1;
-        if ($globalpermission[$site_name]['tplmediacatcreate'] == 0 && @$media[1] == 1) $globalpermission[$site_name]['tplmediacatcreate'] = 1;
-        if ($globalpermission[$site_name]['tplmediacatdelete'] == 0 && @$media[2] == 1) $globalpermission[$site_name]['tplmediacatdelete'] = 1;
-        if ($globalpermission[$site_name]['tplmediacatrename'] == 0 && @$media[3] == 1) $globalpermission[$site_name]['tplmediacatrename'] = 1;
-        if ($globalpermission[$site_name]['tplmediaupload'] == 0 && @$media[4] == 1) $globalpermission[$site_name]['tplmediaupload'] = 1;
-        if ($globalpermission[$site_name]['tplmediadelete'] == 0 && @$media[5] == 1) $globalpermission[$site_name]['tplmediadelete'] = 1;
+        if ($globalpermission[$site_name]['tplmedia'] == 0 && resolvepermission ($permission_array, "media", 0)) $globalpermission[$site_name]['tplmedia'] = 1;
+        if ($globalpermission[$site_name]['tplmediacatcreate'] == 0 && resolvepermission ($permission_array, "media", 1)) $globalpermission[$site_name]['tplmediacatcreate'] = 1;
+        if ($globalpermission[$site_name]['tplmediacatdelete'] == 0 && resolvepermission ($permission_array, "media", 2)) $globalpermission[$site_name]['tplmediacatdelete'] = 1;
+        if ($globalpermission[$site_name]['tplmediacatrename'] == 0 && resolvepermission ($permission_array, "media", 3)) $globalpermission[$site_name]['tplmediacatrename'] = 1;
+        if ($globalpermission[$site_name]['tplmediaupload'] == 0 && resolvepermission ($permission_array, "media", 4)) $globalpermission[$site_name]['tplmediaupload'] = 1;
+        if ($globalpermission[$site_name]['tplmediadelete'] == 0 && resolvepermission ($permission_array, "media", 5)) $globalpermission[$site_name]['tplmediadelete'] = 1;
         // component permissions
-        if ($globalpermission[$site_name]['component'] == 0 && @$component[0] == 1) $globalpermission[$site_name]['component'] = 1;
+        if ($globalpermission[$site_name]['component'] == 0 && resolvepermission ($permission_array, "component", 0)) $globalpermission[$site_name]['component'] = 1;
         // content permissions
-        if ($globalpermission[$site_name]['page'] == 0 && @$page[0] == 1) $globalpermission[$site_name]['page'] = 1; 
+        if ($globalpermission[$site_name]['page'] == 0 && resolvepermission ($permission_array, "page", 0)) $globalpermission[$site_name]['page'] = 1; 
       }
     }
 
@@ -239,36 +269,41 @@ function localpermission ($site_name, $permission_str)
   {
     reset ($permission_str);
 
-    while (list ($group_name, $value) = each ($permission_str[$site_name]))
+    foreach ($permission_str[$site_name] as $group_name => $value)
     {
       if ($group_name != "" && $value != "")
       {
         // get permissions from string
-        parse_str ($value);
+        parse_str ($value, $permission_array);
+
+        // initalize
+        $localpermission = array();
+        $localpermission[$site_name] = array();
+        $localpermission[$site_name][$group_name] = array();
 
         // component permissions
-        $localpermission[$site_name][$group_name]['component'] = @$component[0];
-        $localpermission[$site_name][$group_name]['compupload'] = @$component[1];
-        $localpermission[$site_name][$group_name]['compdownload'] = @$component[2];
-        $localpermission[$site_name][$group_name]['compsendlink'] = @$component[3]; 
-        $localpermission[$site_name][$group_name]['compfoldercreate'] = @$component[4];
-        $localpermission[$site_name][$group_name]['compfolderdelete'] = @$component[5];
-        $localpermission[$site_name][$group_name]['compfolderrename'] = @$component[6];
-        $localpermission[$site_name][$group_name]['compcreate'] = @$component[7];
-        $localpermission[$site_name][$group_name]['compdelete'] = @$component[8];
-        $localpermission[$site_name][$group_name]['comprename'] = @$component[9];
-        $localpermission[$site_name][$group_name]['comppublish'] = @$component[10];
+        $localpermission[$site_name][$group_name]['component'] = resolvepermission ($permission_array, "component", 0);
+        $localpermission[$site_name][$group_name]['compupload'] = resolvepermission ($permission_array, "component", 1);
+        $localpermission[$site_name][$group_name]['compdownload'] = resolvepermission ($permission_array, "component", 2);
+        $localpermission[$site_name][$group_name]['compsendlink'] = resolvepermission ($permission_array, "component", 3); 
+        $localpermission[$site_name][$group_name]['compfoldercreate'] = resolvepermission ($permission_array, "component", 4);
+        $localpermission[$site_name][$group_name]['compfolderdelete'] = resolvepermission ($permission_array, "component", 5);
+        $localpermission[$site_name][$group_name]['compfolderrename'] = resolvepermission ($permission_array, "component", 6);
+        $localpermission[$site_name][$group_name]['compcreate'] = resolvepermission ($permission_array, "component", 7);
+        $localpermission[$site_name][$group_name]['compdelete'] = resolvepermission ($permission_array, "component", 8);
+        $localpermission[$site_name][$group_name]['comprename'] = resolvepermission ($permission_array, "component", 9);
+        $localpermission[$site_name][$group_name]['comppublish'] = resolvepermission ($permission_array, "component", 10);
         // content permissions
-        $localpermission[$site_name][$group_name]['page'] = @$page[0];
-        $localpermission[$site_name][$group_name]['pageupload'] = @$component[1]; // the upload permission of components is reused here
-        $localpermission[$site_name][$group_name]['pagesendlink'] = @$page[1]; 
-        $localpermission[$site_name][$group_name]['pagefoldercreate'] = @$page[2];
-        $localpermission[$site_name][$group_name]['pagefolderdelete'] = @$page[3];
-        $localpermission[$site_name][$group_name]['pagefolderrename'] = @$page[4];
-        $localpermission[$site_name][$group_name]['pagecreate'] = @$page[5];
-        $localpermission[$site_name][$group_name]['pagedelete'] = @$page[6];
-        $localpermission[$site_name][$group_name]['pagerename'] = @$page[7];
-        $localpermission[$site_name][$group_name]['pagepublish'] = @$page[8];
+        $localpermission[$site_name][$group_name]['page'] = resolvepermission ($permission_array, "page", 0);
+        $localpermission[$site_name][$group_name]['pageupload'] = resolvepermission ($permission_array, "component", 1); // the upload permission of components is reused here
+        $localpermission[$site_name][$group_name]['pagesendlink'] = resolvepermission ($permission_array, "page", 1); 
+        $localpermission[$site_name][$group_name]['pagefoldercreate'] = resolvepermission ($permission_array, "page", 2);
+        $localpermission[$site_name][$group_name]['pagefolderdelete'] = resolvepermission ($permission_array, "page", 3);
+        $localpermission[$site_name][$group_name]['pagefolderrename'] = resolvepermission ($permission_array, "page", 4);
+        $localpermission[$site_name][$group_name]['pagecreate'] = resolvepermission ($permission_array, "page", 5);
+        $localpermission[$site_name][$group_name]['pagedelete'] = resolvepermission ($permission_array, "page", 6);
+        $localpermission[$site_name][$group_name]['pagerename'] = resolvepermission ($permission_array, "page", 7);
+        $localpermission[$site_name][$group_name]['pagepublish'] = resolvepermission ($permission_array, "page", 8);
       }
     }
 
@@ -291,7 +326,9 @@ function localpermission ($site_name, $permission_str)
 
 function accessgeneral ($site, $location, $cat)
 {
-  global $mgmt_config, $hiddenfolder, $siteaccess; 
+  global $mgmt_config, $hiddenfolder, $siteaccess;
+
+  $location = correctpath ($location);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
   {
@@ -315,9 +352,9 @@ function accessgeneral ($site, $location, $cat)
     }
 
     // resolve symbolic links
-    if (!empty ($mgmt_config[$site]['abs_path_page'])) $mgmt_config[$site]['abs_path_page'] = realpath ($mgmt_config[$site]['abs_path_page'])."/";
-    if (!empty ($mgmt_config['abs_path_comp'])) $mgmt_config['abs_path_comp'] = realpath ($mgmt_config['abs_path_comp'])."/";
-    if (!empty ($mgmt_config['abs_path_rep'])) $mgmt_config['abs_path_rep'] = realpath ($mgmt_config['abs_path_rep'])."/";
+    if (!empty ($mgmt_config[$site]['abs_path_page'])) $mgmt_config[$site]['abs_path_page'] = correctpath (realpath ($mgmt_config[$site]['abs_path_page']));
+    if (!empty ($mgmt_config['abs_path_comp'])) $mgmt_config['abs_path_comp'] = correctpath (realpath ($mgmt_config['abs_path_comp']));
+    if (!empty ($mgmt_config['abs_path_rep'])) $mgmt_config['abs_path_rep'] = correctpath (realpath ($mgmt_config['abs_path_rep']));
 
     // cut off file name 
     if (is_file ($location) && $location[strlen ($location)-1] != "/")
@@ -388,8 +425,15 @@ function accesspermission ($site, $location, $cat)
 {
   global $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $mgmt_config; 
 
+  $location = correctpath ($location);
+
   if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
   {
+    // initalize
+    $points = array();
+    $groups = array();
+    $result = array();
+
     // publication management config
     if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
@@ -417,7 +461,7 @@ function accesspermission ($site, $location, $cat)
     if (is_file ($location)) $location = getlocation ($location);
 
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/"; 
+    $location = correctpath ($location); 
 
     // check general access permissions
     $access_passed = accessgeneral ($site, $location, $cat);
@@ -430,10 +474,11 @@ function accesspermission ($site, $location, $cat)
       {
         reset ($pageaccess);
         $thisaccess = $pageaccess[$site];
+        
         $i = 0;
 
         // groups
-        while (list ($group, $value) = each ($thisaccess))
+        foreach ($thisaccess as $group => $value)
         {
           // split access-string into an array
           $value = substr ($value, 0, strlen ($value)-1);
@@ -451,7 +496,7 @@ function accesspermission ($site, $location, $cat)
           }
         }
       }
-      // check component access (must hold absolute path values)
+      // check component access (must provide absolute path values)
       elseif ($cat == "comp" && isset ($compaccess[$site]) && is_array ($compaccess[$site]))
       {
         reset ($compaccess);
@@ -459,7 +504,7 @@ function accesspermission ($site, $location, $cat)
         $i = 0;
 
         // groups
-        while (list ($group, $value) = each ($thisaccess))
+        foreach ($thisaccess as $group => $value)
         {
           // split access-string into an array
           $value = substr ($value, 0, strlen ($value)-1);
@@ -485,7 +530,7 @@ function accesspermission ($site, $location, $cat)
         // get longest location (this is the closest to the current location and will therefore apply)
         $max = max ($points);
 
-        while (list ($id, $point) = each ($points))
+        foreach ($points as $id => $point)
         {
           if ($point == $max) $result[] = $groups[$id];
         }
@@ -518,7 +563,10 @@ function setlocalpermission ($site, $group_array, $cat)
   global $localpermission;
 
   // try to get localpermission from session
-  if ((!isset ($localpermission) || !is_array ($localpermission)) && isset ($_SESSION['hcms_localpermission'])) $localpermission = $_SESSION['hcms_localpermission'];
+  if ((!isset ($localpermission) || !is_array ($localpermission)) && isset ($_SESSION['hcms_localpermission']) && is_array ($_SESSION['hcms_localpermission']))
+  {
+    $localpermission = $_SESSION['hcms_localpermission'];
+  }
 
   // set all permissions to zero
   $setlocalpermission = array();
@@ -563,8 +611,8 @@ function setlocalpermission ($site, $group_array, $cat)
         if ($setlocalpermission['root'] == 0 && @$localpermission[$site][$group]['page'] == 1) $setlocalpermission['root'] = 1;
         if ($setlocalpermission['upload'] == 0 && @$localpermission[$site][$group]['pageupload'] == 1) $setlocalpermission['upload'] = 1;
         if ($setlocalpermission['sendlink'] == 0 && @$localpermission[$site][$group]['pagesendlink'] == 1) $setlocalpermission['sendlink'] = 1;
-        if ($setlocalpermission['foldercreate'] == 0 && @@$localpermission[$site][$group]['pagefoldercreate'] == 1) $setlocalpermission['foldercreate'] = 1;
-        if ($setlocalpermission['folderdelete'] == 0 && $localpermission[$site][$group]['pagefolderdelete'] == 1) $setlocalpermission['folderdelete'] = 1;
+        if ($setlocalpermission['foldercreate'] == 0 && @$localpermission[$site][$group]['pagefoldercreate'] == 1) $setlocalpermission['foldercreate'] = 1;
+        if ($setlocalpermission['folderdelete'] == 0 && @$localpermission[$site][$group]['pagefolderdelete'] == 1) $setlocalpermission['folderdelete'] = 1;
         if ($setlocalpermission['folderrename'] == 0 && @$localpermission[$site][$group]['pagefolderrename'] == 1) $setlocalpermission['folderrename'] = 1;
         if ($setlocalpermission['create'] == 0 && @$localpermission[$site][$group]['pagecreate'] == 1) $setlocalpermission['create'] = 1;
         if ($setlocalpermission['delete'] == 0 && @$localpermission[$site][$group]['pagedelete'] == 1) $setlocalpermission['delete'] = 1;
@@ -590,9 +638,12 @@ function checkpublicationpermission ($site, $strict=true)
   global $mgmt_config, $siteaccess;
 
   // try to get siteaccess from session
-  if (!is_array ($siteaccess) && isset ($_SESSION['hcms_siteaccess'])) $siteaccess = $_SESSION['hcms_siteaccess'];
+  if (!is_array ($siteaccess) && isset ($_SESSION['hcms_siteaccess']) && is_array ($_SESSION['hcms_siteaccess']))
+  {
+    $siteaccess = $_SESSION['hcms_siteaccess'];
+  }
 
-  if (valid_publicationname ($site) && is_array ($siteaccess))
+  if (valid_publicationname ($site) && !empty ($siteaccess) && is_array ($siteaccess))
   {
     // publication is in scope of user
     if (in_array ($site, $siteaccess)) return "direct";
@@ -633,7 +684,10 @@ function checkadminpermission ()
   global $adminpermission;
 
   // try to get localpermission from session
-  if ((!isset ($adminpermission) || !is_array ($adminpermission)) && isset ($_SESSION['hcms_superadmin'])) $adminpermission = $_SESSION['hcms_superadmin'];
+  if ((!isset ($adminpermission) || !is_array ($adminpermission)) && isset ($_SESSION['hcms_superadmin']))
+  {
+    $adminpermission = $_SESSION['hcms_superadmin'];
+  }
 
   // root permission
   if (isset ($adminpermission))
@@ -659,7 +713,10 @@ function checkrootpermission ($name)
   if (valid_objectname ($name))
   {
     // try to get localpermission from session
-    if ((!isset ($rootpermission) || !is_array ($rootpermission)) && isset ($_SESSION['hcms_rootpermission'])) $rootpermission = $_SESSION['hcms_rootpermission'];
+    if ((!isset ($rootpermission) || !is_array ($rootpermission)) && isset ($_SESSION['hcms_rootpermission']) && is_array ($_SESSION['hcms_rootpermission']))
+    {
+      $rootpermission = $_SESSION['hcms_rootpermission'];
+    }
 
     // root permission
     if (isset ($rootpermission[$name]))
@@ -687,7 +744,10 @@ function checkglobalpermission ($site, $name)
   if (valid_publicationname ($site) && valid_objectname ($name))
   {
     // try to get localpermission from session
-    if ((!isset ($globalpermission) || !is_array ($globalpermission)) && isset ($_SESSION['hcms_globalpermission'])) $globalpermission = $_SESSION['hcms_globalpermission'];
+    if ((!isset ($globalpermission) || !is_array ($globalpermission)) && isset ($_SESSION['hcms_globalpermission']) && is_array ($_SESSION['hcms_globalpermission']))
+    {
+      $globalpermission = $_SESSION['hcms_globalpermission'];
+    }
 
     // global permission
     if (isset ($globalpermission[$site][$name]))
@@ -715,7 +775,10 @@ function checklocalpermission ($site, $group, $name)
   if (valid_publicationname ($site) && valid_objectname ($group) && valid_objectname ($name))
   {
     // try to get localpermission from session
-    if ((!isset ($localpermission) || !is_array ($localpermission)) && isset ($_SESSION['hcms_localpermission'])) $localpermission = $_SESSION['hcms_localpermission'];
+    if ((!isset ($localpermission) || !is_array ($localpermission)) && isset ($_SESSION['hcms_localpermission']) && is_array ($_SESSION['hcms_localpermission']))
+    {
+      $localpermission = $_SESSION['hcms_localpermission'];
+    }
 
     // local permission
     if (isset ($localpermission[$site][$group][$name]))
@@ -802,6 +865,8 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
 {
   global $mgmt_config, $eventsystem, $hcms_lang_codepage, $hcms_lang, $lang;
 
+  $error = array();
+
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
 
@@ -855,12 +920,49 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   $filepasswd = Null;
   $superadmin = Null;
   $memberofnode = Null;
+  $permission_str = array();
   $usergroups = array();
 
   // eventsystem
   if ($eventsystem['onlogon_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
   {
     onlogon_pre ($user);
+  }
+
+  // --------------------- user data --------------------- 
+  // please note: each user login name and user group name is unique
+  // load user file
+  $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+
+  // user file could not be loaded (might be locked by a user)
+  if ($userdata == false)
+  {
+    // get locked file info
+    $result_locked = getlockedfileinfo ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+
+    if (is_array ($result_locked) && $result_locked['user'] != "")
+    {
+      // unlock file
+      $result_unlock = unlockfile ($result_locked['user'], $mgmt_config['abs_path_data']."user/", "user.xml.php");
+    }
+    else
+    {
+      // send mail
+      $mailer = new HyperMailer();
+      $mailer->AddAddress ("info@hypercms.net");
+      $mailer->Subject = "hyperCMS logon failed on server: ".$_SERVER['SERVER_NAME'];
+      $mailer->Body = "User directory is locked!\nhyperCMS Host: ".$_SERVER['SERVER_NAME']."\n";
+      $mailer->Send();
+
+      $result['message'] = $hcms_lang['the-user-index-is-locked'][$lang];
+    }
+
+    if (isset ($result_unlock) && $result_unlock == true)
+    {
+      // load user file
+      $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php"); 
+    }
+    else $userdata = false;
   }
 
   // --------------------- object linking --------------------- 
@@ -901,16 +1003,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     $passwd_crypted = @crypt ($passwd, substr ($passwd, 1, 2));
   }
 
-  // --------------------- include authentification connectivity (LDAP, AD, or others) --------------------- 
-  // new main configuration parameter $mgmt_config['authconnect_all'] has been introduced in version 9.0.2
-  if (!empty ($mgmt_config['authconnect']) && !empty ($mgmt_config['authconnect_all']) && is_file ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php"))
-  {
-    include ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php");
- 
-    $ldap_auth = authconnect ($user, $passwd);
-  }
-
-  if ($ldap_auth && $linking_auth)
+  if ($linking_auth)
   {
     // change of the password after reset request
     if (is_file ($mgmt_config['abs_path_temp'].$user.".resetpassword.dat"))
@@ -956,45 +1049,10 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       }
     }
 
-    // --------------------- user data --------------------- 
-    // please note: each user login name and user group name is unique
-    // load user file
-    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-
-    // user file could not be loaded (might be locked by a user)
-    if ($userdata == false)
-    {
-      // get locked file info
-      $result_locked = getlockedfileinfo ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-
-      if (is_array ($result_locked) && $result_locked['user'] != "")
-      {
-        // unlock file
-        $result_unlock = unlockfile ($result_locked['user'], $mgmt_config['abs_path_data']."user/", "user.xml.php");
-      }
-      else
-      {
-        // send mail
-        $mailer = new HyperMailer();
-        $mailer->AddAddress ("info@hypercms.net");
-        $mailer->Subject = "hyperCMS logon failed on server: ".$_SERVER['SERVER_NAME'];
-        $mailer->Body = "User directory is locked!\nhyperCMS Host: ".$_SERVER['SERVER_NAME']."\n";
-        $mailer->Send();
-
-        $result['message'] = $hcms_lang['the-user-index-is-locked'][$lang];
-      }
-
-      if (isset ($result_unlock) && $result_unlock == true)
-      {
-        // load user file
-        $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php"); 
-      }
-      else $userdata = false;
-    }
-
     if ($userdata != false)
     {
-      // --------------------- updates --------------------- 
+      // --------------------- updates ---------------------
+
       updates_all ();
 
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
@@ -1004,22 +1062,139 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       {
         // set encoding
         $charset = "utf-8";
+
         // UTF-8 encode ISO-8859-1 special characters
         $userdata = utf8_encode ($userdata);
+
         // write XML declaration parameter for text encoding
-        if ($charset != "") $userdata = setxmlparameter ($userdata, "encoding", $charset); 
+        if ($charset != "") $userdata = setxmlparameter ($userdata, "encoding", $charset);
+
         // save user file in unlocked mode
         if ($userdata != "") $update_result = savefile ($mgmt_config['abs_path_data']."user/", "user.xml.php", $userdata);
+
         // error log
         if ($update_result == false)
         {
           $errcode = "10318";
-          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|$errcode|update (UTF-8 encoding) of user management file failed";
+          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|".$errcode."|update (UTF-8 encoding) of user management file failed";
 
           // save log
           savelog (@$error);
         } 
       }
+
+      // --------------------- include authentification connectivity (LDAP, AD, or others) for sync of users ---------------------
+
+      // new main configuration parameter $mgmt_config['authconnect_all'] has been introduced in version 9.0.2
+      if (!empty ($mgmt_config['authconnect']))
+      {
+        // use data/connect/
+        if (is_file ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php")) include_once ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php");
+        // use connector/authconnect/
+        elseif (is_file ($mgmt_config['abs_path_cms']."connector/authconnect/".$mgmt_config['authconnect'].".inc.php")) include_once ($mgmt_config['abs_path_cms']."connector/authconnect/".$mgmt_config['authconnect'].".inc.php");
+
+        if (function_exists ("authconnect"))
+        {
+          // if LDAP/AD has been defined for all publications
+          if (!empty ($mgmt_config['authconnect_all']))
+          {
+            $ldap_auth = authconnect ($user, $passwd);
+
+            if ($ldap_auth == false)
+            {
+              // warning
+              $errcode = "00721";
+              $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|LDAP/AD authentication failed for user '".$user."' using LDAP servers: ".$mgmt_config['ldap_servers'].", base DN: ".$mgmt_config['ldap_base_dn'].", user domain: ".$mgmt_config['ldap_userdomain'];
+            }
+          }
+          // if LDAP/AD has been defined per publication
+          else
+          {
+            $usernode = selectcontent ($userdata, "<user>", "<login>", $user);
+
+            // get publications if user exists
+            if (!empty ($usernode[0]))
+            {
+              $temp_user_sites = getcontent ($usernode[0], "<publication>");
+            }
+            // create user information array for all publications if user does not exist
+            else
+            {
+              $inherit_db = inherit_db_read ();
+              $temp_user_sites = array();
+
+              if (!empty ($inherit_db) && sizeof ($inherit_db) > 0)
+              {
+                foreach ($inherit_db as $inherit_db_record)
+                {
+                  if (!empty ($inherit_db_record['parent']))
+                  {
+                    $temp_user_sites[] = trim ($inherit_db_record['parent']);
+                  }
+                }
+              }
+            }
+
+            // verify user
+            if (!empty ($temp_user_sites) && is_array ($temp_user_sites))
+            {
+              foreach ($temp_user_sites as $temp_site)
+              {
+                // publication management config
+                if (valid_publicationname ($temp_site) && empty ($mgmt_config[$temp_site]['ldap_servers'])) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+
+                // verify mandatory settings
+                if (!empty ($mgmt_config[$temp_site]['ldap_servers']) && !empty ($mgmt_config[$temp_site]['ldap_base_dn']))
+                {
+                  $ldap_auth = authconnect ($user, $passwd, $temp_site);
+
+                  if ($ldap_auth != true)
+                  {
+                    // warning
+                    $errcode = "00722";
+                    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|LDAP/AD authentication failed for user '".$user."' using LDAP servers: ".$mgmt_config[$temp_site]['ldap_servers'].", base DN: ".$mgmt_config[$temp_site]['ldap_base_dn'].", user domain: ".$mgmt_config[$temp_site]['ldap_userdomain'];
+                  }
+                }
+              }
+            }
+          }
+
+          // SSO with provided user name
+          // only grant user access if it has been verified by a provided LDAP/AD admin user and the function verifyoauthclient exists (requires Connector module)
+          if ($ldap_auth == true && !empty ($mgmt_config['ldap_admin_username']) && !empty ($mgmt_config['ldap_admin_password']) && function_exists ("verifyoauthclient"))
+          {
+            // get user hash for authentication since no password has been provided
+            if (!empty ($userdata))
+            {
+              $usernode = selectcontent ($userdata, "<user>", "<login>", $user);
+
+              if (!empty ($usernode[0]))
+              {
+                $temp = getcontent ($usernode[0], "<hashcode>");
+
+                if (!empty ($temp[0]))
+                {
+                  $hash = $temp[0];
+                }
+                else
+                {
+                  // warning
+                  $errcode = "00723";
+                  $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|the user hash of user '".$user."' is empty";
+                }
+              }
+            }
+          }
+        }
+
+        // reload the user file on success since the user might have been edited by function authconnect
+        if (!empty ($ldap_auth))
+        {
+          $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+        }
+      }
+
+      // --------------------- get user data --------------------- 
 
       // count users
       $users = substr_count ($userdata, "</user>");
@@ -1029,7 +1204,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       elseif ($hash != "") $usernode = selectcontent ($userdata, "<user>", "<hashcode>", $hash);
       else $usernode = false;
 
-      if (is_array ($usernode) && !empty ($usernode[0]))
+      if (!empty ($usernode[0]))
       {
         // user name
         $userlogin = getcontent ($usernode[0], "<login>");
@@ -1085,6 +1260,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         else $result['validdateto'] = "";
 
         // --------------------- portal --------------------- 
+
         if (!empty ($portal))
         {
           // set design theme of portal for the user
@@ -1122,13 +1298,24 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
           }
         }
 
+        // --------------------- design theme --------------------- 
+
         // if design theme has not been set so far (no portal used or portal name is not valid)
         if (empty ($result['themename']))
         {
-          $usertheme = getcontent ($usernode[0], "<theme>");
+          // mandatory design theme has been defined in main configuration
+          if (!empty ($mgmt_config['theme']))
+          {
+            $result['themename'] = $mgmt_config['theme'];
+          }
+          // get design theme of the user
+          else
+          {
+            $usertheme = getcontent ($usernode[0], "<theme>");
 
-          if (!empty ($usertheme[0])) $result['themename'] = $usertheme[0];
-          else $result['themename'] = "standard";
+            if (!empty ($usertheme[0])) $result['themename'] = $usertheme[0];
+            else $result['themename'] = "standard";
+          }
         }
 
         // get design theme and primary color if a portal theme is used
@@ -1157,8 +1344,8 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               list ($portalsite, $portaltheme) = explode ("/", $temp_portaltheme[0]);
               $brightness = getbrightness ($temp_portalcolor[0]);
 
-              if ($portaltheme == "day" && $brightness < 130) $result['themeinvertcolors'] = true;
-              elseif ($portaltheme == "night" && $brightness >= 130) $result['themeinvertcolors'] = true;
+              if ($portaltheme == "day" && $brightness < 130) $result['themeinvertcolors'] = "night";
+              elseif ($portaltheme == "night" && $brightness >= 130) $result['themeinvertcolors'] = "day";
             }
           }
         }
@@ -1167,6 +1354,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       }
 
       // --------------------- permissions --------------------- 
+
       // check valid dates
       $validdate = true;
 
@@ -1212,7 +1400,13 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                 $site_admin = true;
 
                 // deseralize the permission string and define root, global and local permissions
-                $permission_str[$site_name][$group_name_admin] = $permission_str_admin;
+                if (!isset ($permission_str)) $permission_str = array();
+
+                if (valid_publicationname ($site_name) && !empty ($group_name_admin))
+                {
+                  if (!isset ($permission_str[$site_name])) $permission_str[$site_name] = array();
+                  $permission_str[$site_name][$group_name_admin] = $permission_str_admin;
+                }
 
                 $result['siteaccess'][] = $site_name;
                 $result['rootpermission'] = rootpermission ($site_name, $site_admin, $permission_str);
@@ -1224,7 +1418,9 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               {
                 @require_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
 
-                $site_collection .= "|".$site_name; 
+                $site_collection .= "|".$site_name;
+
+                if (!isset ($result['hiddenfolder'][$site_name])) $result['hiddenfolder'][$site_name] = false;
 
                 // define array of excluded/hidden folders
                 if (!empty ($mgmt_config[$site_name]['exclude_folders']))
@@ -1244,22 +1440,35 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                   }
                   else
                   {
-                    $result['hiddenfolder'][$site_name][0] = $excludefolders;
+                    $result['hiddenfolder'][$site_name] = array ($excludefolders);
                   }
-                }
-                else
-                {
-                  $result['hiddenfolder'][$site_name] = false;
                 }
               }
 
-              // access permissions to publications and folders
+              // access permissions to publications
               $result['siteaccess'][] = $site_name;
-              $result['compaccess'][$site_name][$group_name_admin] = deconvertpath ("%comp%/".$site_name."/|", "file");
-              if (empty ($mgmt_config[$site_name]['dam'])) $result['pageaccess'][$site_name][$group_name_admin] = deconvertpath ("%page%/".$site_name."/|", "file");
+
+              // access permissions to asset folders
+              if (valid_publicationname ($site_name) && !empty ($group_name_admin))
+              {
+                if (!isset ($result['compaccess'][$site_name])) $result['compaccess'][$site_name] = array();
+
+                $result['compaccess'][$site_name][$group_name_admin] = deconvertpath ("%comp%/".$site_name."/|", "file");
+              }
+
+              // access permissions to page folders
+              if (valid_publicationname ($site_name) && !empty ($group_name_admin) && empty ($mgmt_config[$site_name]['dam']))
+              {
+                if (empty ($result['pageaccess'][$site_name])) $result['pageaccess'][$site_name] = array();
+                $result['pageaccess'][$site_name][$group_name_admin] = deconvertpath ("%page%/".$site_name."/|", "file");
+              }
 
               // deseralize the permission string and define root, global and local permissions
-              $permission_str[$site_name][$group_name_admin] = $permission_str_admin;
+              if (valid_publicationname ($site_name) && !empty ($group_name_admin))
+              {
+                if (empty ($permission_str[$site_name])) $permission_str[$site_name] = array();
+                $permission_str[$site_name][$group_name_admin] = $permission_str_admin;
+              }
 
               // set group names for each publication
               $usergroups[$site_name] = array ($group_name_admin);
@@ -1307,12 +1516,14 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               $usergroupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site_name.".usergroup.xml.php");
 
               // include configuration of site
-              if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
+              if (valid_publicationname ($site_name) && is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
               {
                 require_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
 
+                if (!isset ($result['hiddenfolder'][$site_name])) $result['hiddenfolder'][$site_name] = false;
+
                 // define array of excluded/hidden folders
-                if (!empty($mgmt_config[$site_name]['exclude_folders']))
+                if (!empty ($mgmt_config[$site_name]['exclude_folders']))
                 {
                   if (substr ($mgmt_config[$site_name]['exclude_folders'], strlen ($mgmt_config[$site_name]['exclude_folders']) - 1, 1) == ";")
                   {
@@ -1329,19 +1540,15 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                   }
                   else
                   {
-                    $result['hiddenfolder'][$site_name][0] = $excludefolders;
+                    $result['hiddenfolder'][$site_name] = array ($excludefolders);
                   }
                 }
-                else
-                {
-                  $result['hiddenfolder'][$site_name] = false;
-                }
 
-                if ($usergroupdata != false && strlen ($group_string) > 0)
+                if (!empty ($usergroupdata) && strlen ($group_string) > 0)
                 {
                   // user group names as array
                   if (strpos ("_".$group_string, "|") > 0) $group_array = explode ("|", trim ($group_string, "|"));
-                  else $group_array = array($group_string);
+                  else $group_array = array ($group_string);
 
                   // if object linking is used assign group "default" if it exists
                   // user must have at least one group assigned to have access to the system!
@@ -1349,7 +1556,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                   {
                     $defaultgroup = selectcontent ($usergroupdata, "<usergroup>", "<groupname>", "default");
 
-                    if ($defaultgroup != false && $defaultgroup[0] != "" && !in_array ("default", $group_array))
+                    if (!empty ($defaultgroup[0]) && !in_array ("default", $group_array))
                     {
                       $group_array[] = "default";
                     }
@@ -1363,101 +1570,104 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                     // get the permissions of the group
                     foreach ($group_array as $group_name)
                     {
-                      // get usergroup information
-                      $usergroupnode = selectcontent ($usergroupdata, "<usergroup>", "<groupname>", $group_name);
-
-                      if ($usergroupnode != false)
+                      if ($group_name != "")
                       {
-                        $userpermission = getcontent ($usergroupnode[0], "<permission>");
-                        $userpageaccess = getcontent ($usergroupnode[0], "<pageaccess>");
-                        $usercompaccess = getcontent ($usergroupnode[0], "<compaccess>");
+                        // get usergroup information
+                        $usergroupnode = selectcontent ($usergroupdata, "<usergroup>", "<groupname>", $group_name);
 
-                        if ($userpermission != false)
+                        if ($usergroupnode != false)
                         {
-                          $permission_str[$site_name][$group_name] = trim ($userpermission[0]);
-                        }
-                        else
-                        {
-                          $permission_str = null;
-                        }
+                          $userpermission = getcontent ($usergroupnode[0], "<permission>");
+                          $userpageaccess = getcontent ($usergroupnode[0], "<pageaccess>");
+                          $usercompaccess = getcontent ($usergroupnode[0], "<compaccess>");
 
-                        // page accsess
-                        if ($userpageaccess != false && strlen ($userpageaccess[0]) > 0)
-                        {
-                          // versions before 5.6.3 used folder path instead of object id
-                          if (substr_count ($userpageaccess[0], "/") == 0)
+                          if (!empty ($userpermission[0]))
                           {
-                            $temp_array = explode ("|", $userpageaccess[0]);
-      
-                            if (is_array ($temp_array))
-                            {
-                              $folder_path = "";
-        
-                              foreach ($temp_array as $temp)
-                              {
-                                if ($temp != "")
-                                {
-                                  $temp_path = rdbms_getobject ($temp);
-                                  if ($temp_path != "") $folder_path .= getlocation($temp_path)."|";
-                                }
-                              }
-                            }
+                            if (!isset ($permission_str)) $permission_str = array();
+                            if (!isset ($permission_str[$site_name])) $permission_str[$site_name] = array();
+                            $permission_str[$site_name][$group_name] = trim ($userpermission[0]);
                           }
-                          else $folder_path = $userpageaccess[0];
+                          else
+                          {
+                            $permission_str = null;
+                          }
 
-                          $result['pageaccess'][$site_name][$group_name] = deconvertpath ($folder_path, "file");
-                        }
-                        else
-                        {
+                          // page accsess
+                          if (!isset ($result['pageaccess'][$site_name])) $result['pageaccess'][$site_name] = array();
                           $result['pageaccess'][$site_name][$group_name] = null;
-                        }
 
-                        // component access
-                        if ($usercompaccess != false && strlen ($usercompaccess[0]) > 0)
-                        {
-                          // versions before 5.6.3 used folder path instead of object id
-                          if (substr_count ($usercompaccess[0], "/") == 0)
+                          if (!empty ($userpageaccess[0]))
                           {
-                            $temp_array = explode ("|", $usercompaccess[0]);
-      
-                            if (is_array ($temp_array))
+                            // versions before 5.6.3 used folder path instead of object id
+                            if (substr_count ($userpageaccess[0], "/") == 0)
                             {
-                              $folder_path = "";
-
-                              foreach ($temp_array as $temp)
+                              $temp_array = explode ("|", $userpageaccess[0]);
+        
+                              if (is_array ($temp_array))
                               {
-                                if ($temp != "")
+                                $folder_path = "";
+          
+                                foreach ($temp_array as $temp)
                                 {
-                                  $temp_path = rdbms_getobject ($temp);
-                                  if ($temp_path != "") $folder_path .= getlocation ($temp_path)."|";
+                                  if ($temp != "")
+                                  {
+                                    $temp_path = rdbms_getobject ($temp);
+                                    if ($temp_path != "") $folder_path .= getlocation ($temp_path)."|";
+                                  }
                                 }
                               }
                             }
-                          }
-                          else $folder_path = $usercompaccess[0];
+                            else $folder_path = $userpageaccess[0];
 
-                          $result['compaccess'][$site_name][$group_name] = deconvertpath ($folder_path, "file");
-                        }
-                        else
-                        {
+                            $result['pageaccess'][$site_name][$group_name] = deconvertpath ($folder_path, "file");
+                          }
+
+                          // component access
+                          if (!isset ($result['compaccess'][$site_name])) $result['compaccess'][$site_name] = array();
                           $result['compaccess'][$site_name][$group_name] = null;
-                        }
 
-                        // deseralize the permission string and define root, global and local permissions
-                        if (isset ($permission_str[$site_name][$group_name]))
-                        {
-                          $result['rootpermission'] = rootpermission ($site_name, $mgmt_config[$site_name]['site_admin'], $permission_str);
-                          $globalpermission_new = globalpermission ($site_name, $permission_str);
-                          $localpermission_new = localpermission ($site_name, $permission_str);
-
-                          if ($globalpermission_new != false)
+                          if (!empty ($usercompaccess[0]))
                           {
-                            $result['globalpermission'] = array_replace_recursive ($result['globalpermission'], $globalpermission_new);
+                            // versions before 5.6.3 used folder path instead of object id
+                            if (substr_count ($usercompaccess[0], "/") == 0)
+                            {
+                              $temp_array = explode ("|", $usercompaccess[0]);
+        
+                              if (is_array ($temp_array))
+                              {
+                                $folder_path = "";
+
+                                foreach ($temp_array as $temp)
+                                {
+                                  if ($temp != "")
+                                  {
+                                    $temp_path = rdbms_getobject ($temp);
+                                    if ($temp_path != "") $folder_path .= getlocation ($temp_path)."|";
+                                  }
+                                }
+                              }
+                            }
+                            else $folder_path = $usercompaccess[0];
+
+                            $result['compaccess'][$site_name][$group_name] = deconvertpath ($folder_path, "file");
                           }
-    
-                          if ($localpermission_new != false)
+
+                          // deseralize the permission string and define root, global and local permissions
+                          if (isset ($permission_str[$site_name][$group_name]))
                           {
-                            $result['localpermission'] = array_replace_recursive ($result['localpermission'], $localpermission_new);
+                            $result['rootpermission'] = rootpermission ($site_name, $mgmt_config[$site_name]['site_admin'], $permission_str);
+                            $globalpermission_new = globalpermission ($site_name, $permission_str);
+                            $localpermission_new = localpermission ($site_name, $permission_str);
+
+                            if ($globalpermission_new != false)
+                            {
+                              $result['globalpermission'] = array_replace_recursive ($result['globalpermission'], $globalpermission_new);
+                            }
+      
+                            if ($localpermission_new != false)
+                            {
+                              $result['localpermission'] = array_replace_recursive ($result['localpermission'], $localpermission_new);
+                            }
                           }
                         }
                       }
@@ -1474,37 +1684,11 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     }
   }
 
-  // --------------------- if AD has been defined for a publication --------------------- 
-  if (!empty ($auth) && !empty ($mgmt_config['authconnect']) && is_file ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php"))
-  {
-    include ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php");
-
-    if (!empty ($result['siteaccess']) && is_array ($result['siteaccess']))
-    {
-      foreach ($result['siteaccess'] as $temp)
-      {
-        // verify mandatory settings
-        if (!empty ($mgmt_config[$temp]['ldap_servers']) && !empty ($mgmt_config[$temp]['ldap_base_dn']) && !empty ($mgmt_config[$temp]['ldap_userdomain']))
-        {
-          $auth = authconnect ($user, $passwd, $temp);
-
-          if ($auth == false)
-          {
-            // warning
-            $errcode = "00723";
-            $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|LDAP/AD authentication failed for LDAP servers: ".$mgmt_config[$temp]['ldap_servers'].", base DN: ".$mgmt_config[$temp]['ldap_base_dn'].", user domain: ".$mgmt_config[$temp]['ldap_userdomain'];
-
-            break;
-          }
-        }
-      }
-    }
-  }
-
   // in case a user hash code has been provided
   if (empty ($user)) $user = $fileuser;
 
   // --------------------- verify key --------------------- 
+
   if (!empty ($auth))
   {
     // check disk key
@@ -1554,7 +1738,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         $mailer = new HyperMailer();
         $mailer->AddAddress ("info@hypercms.net");
         $mailer->Subject = "hyperCMS License Alert";
-        $mailer->Body = "License limit reached by ".$mgmt_config['url_path_cms']." (".$_SERVER['SERVER_ADDR']."), Publications: ".str_replace ("|", ", ". trim ($site_collection, "|"))."\n";
+        $mailer->Body = "License limit exceeded by ".$mgmt_config['url_path_cms']." (".$_SERVER['SERVER_ADDR']."), Publications: ".str_replace ("|", ", ", trim ($site_collection, "|"))."\n";
         $mailer->Send();
 
         // deletefile ($mgmt_config['abs_path_data'], "check.dat", 0);
@@ -1583,11 +1767,14 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     }
   }
 
-  // --------------------- auth. result --------------------- 
-  // combined results
-  $result['auth'] = ($ldap_auth && $linking_auth && $auth && $checkresult);
+  // --------------------- authentication result --------------------- 
 
-  // --------------------- security ---------------------
+  // combined results
+  // $ldap_auth result has been removed in version 9.0.6 in order to allow access for external users
+  $result['auth'] = ($linking_auth && $auth && $checkresult);
+
+  // --------------------------- security ----------------------------
+
   // get client IP address
   $client_ip = getuserip();
 
@@ -1621,6 +1808,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   }
 
   // --------------------- GUI definitions (chat, columns, views) ---------------------
+
   if ($result['auth'] == true)
   {
     // read colum defintions of user
@@ -1742,7 +1930,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   $result['mobile'] = is_mobilebrowser ();
 
   // message
-  if (!$result['message'])
+  if (empty ($result['message']))
   {
     if (!empty ($result['auth'])) $result['message'] = $hcms_lang['login-correct'][$lang];
     else $result['message'] = $hcms_lang['login-incorrect'][$lang];
@@ -1763,6 +1951,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   }
 
   // --------------------- chat --------------------- 
+
   // chat relations file
   $chat_relations_log = $mgmt_config['abs_path_temp']."/chat_relations.php";
 
@@ -1792,6 +1981,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   }
 
   // --------------------- reset permissions for portal --------------------- 
+
   // if a portal access link is used we withdraw all permissions except for favorites, assets, and pages
   if (!empty ($result['portal']))
   {
@@ -1799,6 +1989,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   }
 
   // --------------------- permission checksum --------------------- 
+
   // calculate checksum of permissions
   if (isset ($_SESSION['hcms_instance'])) $result['instance'] = $_SESSION['hcms_instance'];
   else $result['instance'] = false;
@@ -2100,7 +2291,9 @@ function writesession ($user, $passwd, $checksum, $siteaccess=array())
 {
   global $mgmt_config;
 
-  if (session_id() != "" && valid_objectname ($user) && $passwd != "" && $checksum != "")
+  $error = array();
+
+  if ((session_id() != "" || !isset ($_SESSION)) && valid_objectname ($user) && $passwd != "" && $checksum != "")
   {
     // write session data for the load balancing
     writesessiondata ();
@@ -2124,7 +2317,7 @@ function writesession ($user, $passwd, $checksum, $siteaccess=array())
       else 
       {
         $errcode = "10108";
-        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|$errcode|appendfile failed for user $user on /data/session/".$user.".dat";
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|".$errcode."|appendfile failed for user $user on /data/session/".$user.".dat";
 
         // save log
         savelog (@$error);
@@ -2145,7 +2338,7 @@ function writesession ($user, $passwd, $checksum, $siteaccess=array())
       else 
       {
         $errcode = "10109";
-        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|$errcode|savefile failed for user $user on /data/session/".$user.".dat";
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|".$errcode."|savefile failed for user $user on /data/session/".$user.".dat";
 
         // save log
         savelog (@$error); 
@@ -2182,7 +2375,7 @@ function writesessiondata ()
  
       // serialize session data
       $session_data = session_encode ();
-      $tst = savefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", $session_data);
+      savefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", $session_data);
 
       // save session data
       if ($session_data != "") return savefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", $session_data);
@@ -2205,6 +2398,8 @@ function createsession ()
 {
   global $mgmt_config;
 
+  $error = array();
+
   // check user session and set session ID if required
   if (!empty ($_REQUEST['PHPSESSID']))
   {
@@ -2212,17 +2407,17 @@ function createsession ()
   }
 
   // start session
-  if (!session_id() || session_name() != "hyperCMS")
+  if (session_id() == "" || !isset ($_SESSION) || session_name() != "hyperCMS")
   {
     session_name ("hyperCMS");
     session_start ();
   }
 
   // session is not valid or data directory is missing
-  if (!valid_objectname (session_id()))
+  if (session_id() == "" || !isset ($_SESSION))
   {
     $errcode = "10401";
-    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|$errcode|session could not be created or session ID is invalid";
+    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|".$errcode."|session could not be created or session ID is invalid";
 
     // save log
     savelog (@$error);
@@ -2279,6 +2474,8 @@ function killsession ($user="", $destroy_php=true, $remove=false)
 {
   global $mgmt_config;
 
+  $error = array();
+
   // if hypercms user session file exists
   if (valid_objectname ($user) && is_file ($mgmt_config['abs_path_data']."session/".$user.".dat"))
   {
@@ -2286,7 +2483,7 @@ function killsession ($user="", $destroy_php=true, $remove=false)
     {
       $session_array = file ($mgmt_config['abs_path_data']."session/".$user.".dat");
 
-      if ($session_array != false && sizeof ($session_array) > 0)
+      if (is_array ($session_array) && sizeof ($session_array) > 0)
       {
         $sessiondata = "";
         $remove = true;
@@ -2355,6 +2552,8 @@ function killsession ($user="", $destroy_php=true, $remove=false)
 function checkdiskkey ()
 {
   global $mgmt_config;
+
+  $error = array();
 
   // version info
   require ($mgmt_config['abs_path_cms']."version.inc.php");
@@ -2458,7 +2657,7 @@ function checkdiskkey ()
         list ($server_ip, $modules, $cpu, $users, $storage, $timestamp) = explode (";", $result);
 
         // check limits
-        if ($server_ip == $data['server_ip'] && $modules == $data['modules'] && ($cpu <= 0 || $data['cpu'] <= $cpu) && ($user <= 0 || $data['users'] <= $users) && ($storage <= 0 || $data['storage'] <= $storage) && ($timestamp <= 0 || time() <= $timestamp))
+        if ($server_ip == $data['server_ip'] && $modules == $data['modules'] && (intval ($cpu) <= 0 || intval ($data['cpu']) <= intval ($cpu)) && (intval ($users) <= 0 || intval ($data['users']) <= intval ($users)) && (intval ($storage) <= 0 || intval ($data['storage']) <= intval ($storage)) && ($timestamp <= 0 || time() <= $timestamp))
         {
           return true;
         }
@@ -2466,7 +2665,7 @@ function checkdiskkey ()
         {
           // warning
           $errcode = "00130";
-          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|$errcode|ip ".$data['server_ip']."(".$server_ip."), modules ".$data['modules']."(".$modules."), cpu ".$data['cpu']."(".$cpu."), users ".$data['users']."(".$users."), storage ".$data['storage']."(".$storage."), time ".time()."(".$timestamp.")";
+          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|ip ".$data['server_ip']."(".$server_ip."), modules ".$data['modules']."(".$modules."), cpu ".$data['cpu']."(".$cpu."), users ".$data['users']."(".$users."), storage ".$data['storage']."(".$storage."), time ".time()."(".$timestamp.")";
 
           savelog (@$error, "license");
           
@@ -2492,14 +2691,19 @@ function checkpassword ($password, $user="")
 {
   global $mgmt_config, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)); 
+  $error = array();
+
+  require ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+
+  // set default
+  if (!isset ($mgmt_config['passwordminlength'])) $mgmt_config['passwordminlength'] = 10;
 
   if ($password != "")
   {
     $error = array();
 
-    // must be at least 10 digits long
-    if (strlen ($password) < 10) $error[] = $hcms_lang['the-passwords-has-less-than-digits'][$lang];
+    // must be at least X digits long
+    if (strlen ($password) < intval ($mgmt_config['passwordminlength'])) $error[] = $hcms_lang['the-passwords-has-less-than-digits'][$lang];
     // must not be longer than 100 digits
     if (strlen ($password) > 100)	$error[] = $hcms_lang['the-password-has-more-than-digits'][$lang];
     // must contain at least one number
@@ -2652,8 +2856,10 @@ function checkuserrequests ($user="sys")
 {
   global $mgmt_config;
 
+  $error = array();
+
   // set default value
-  if (!isset($mgmt_config['requests_per_minute'])) $mgmt_config['requests_per_minute'] = 1000;
+  if (!isset ($mgmt_config['requests_per_minute'])) $mgmt_config['requests_per_minute'] = 1000;
 
   if ($mgmt_config['requests_per_minute'] > 0)
   {
@@ -2678,7 +2884,7 @@ function checkuserrequests ($user="sys")
         // warning
         $client_ip = getuserip ();
         $errcode = "00109";
-        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|$errcode|user $user with client IP $client_ip is banned due to a possible CSRF attack";
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|user $user with client IP $client_ip is banned due to a possible CSRF attack";
 
         savelog (@$error);
         killsession ($user);
@@ -2758,7 +2964,7 @@ function checkusersession ($user="sys", $CSRF_detection=true)
   // unauth. access
   if ($alarm == true)
   {
-    echo showinfopage ("Unauthorized Access!", "en", "top.location='".$mgmt_config['url_path_cms']."userlogout.php';");
+    echo showinfopage ("Unauthorized Access!", "en", "top.location='".cleandomain ($mgmt_config['url_path_cms'])."userlogout.php';");
     exit;
   }
   // auth. access
@@ -2777,6 +2983,8 @@ function checkusersession ($user="sys", $CSRF_detection=true)
 function allowuserip ($site)
 {
   global $mgmt_config;
+
+  $error = array();
 
   // publication management config
   if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['allow_ip'])) require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -3500,7 +3708,7 @@ function shellcmd_encode ($variable, $type="")
 // output: encoded string / false on error
 
 // description:
-// Unidrectional encryption using crc32 and urlencode. Used to create tokens for simple view links in the system.
+// Unidrectional encryption using sha1 and urlencode. Used to create tokens for simple view links in the system.
 // The tokens can be verified by calculating the hash of the media file name and comparing the hash values.
 // Don't use this function to secure any string or for password hashing.
 
@@ -3513,8 +3721,11 @@ function hcms_crypt ($string, $start=0, $length=0)
     // set default private key for hashing
     if (empty ($mgmt_config['crypt_key'])) $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
 
+    // reduce string for faster encryption
+    if ($start == 0 && $length == 0 && strlen ($string) > 32) $string = substr ($string, -32);
+
     // encoding algorithm
-    $string_encoded = hash_hmac ("crc32", $string, $mgmt_config['crypt_key']);
+    $string_encoded = hash_hmac ("sha1", $string, $mgmt_config['crypt_key']);
 
     // extract substring
     if ($length != 0) $string_encoded = substr ($string_encoded, $start, $length);
@@ -3541,6 +3752,8 @@ function hcms_crypt ($string, $start=0, $length=0)
 function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 {
   global $mgmt_config;
+
+  $error = array();
 
   if ($string != "")
   {
@@ -3627,7 +3840,7 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
       {
         // warning
         $errcode = "00110";
-        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|$errcode|fallback to crypt level 'weak' due to missing support of stronger encryption technologies";
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|fallback to crypt level 'weak' due to missing support of stronger encryption technologies";
 
         savelog (@$error);
       }
@@ -3765,10 +3978,13 @@ function createtimetoken ($lifetime=0, $secret=4)
   {
     // create timestamp
     $timestamp = time() + intval ($lifetime);
+
     // create token
     $timetoken = round ($timestamp / intval ($secret), 0, PHP_ROUND_HALF_UP);
+
     // shift mode
     $shiftmode = rand (0, 5);
+
     // apply shift mode
     $timetoken = substr ($timetoken, $shiftmode).substr ($timetoken, 0, $shiftmode);
 
@@ -3790,11 +4006,14 @@ function checktimetoken ($token, $secret=4)
   {
     // get shift mode
     $shiftmode = strlen ($token) - 1 - substr ($token, 0, 1);
+
     // reverse shift mode
     $timetoken = substr ($token, 1);
     $timetoken = substr ($timetoken, $shiftmode).substr ($timetoken, 0, $shiftmode);
+
     // get time stamp
     $timestamp = intval ($timetoken) * $secret;
+
     // check if token is valid
     if ($timestamp >= time() || $timestamp == 0) return true;
     else return false;
@@ -3824,8 +4043,10 @@ function createtoken ($user="sys", $lifetime=0, $secret=4)
       }
       else $lifetime = 86400;
     }
+
     // create token
     $timetoken = createtimetoken ($lifetime, $secret);
+
     // create security token
     $token = hcms_encrypt ($timetoken."@".$user);
 
@@ -3847,8 +4068,10 @@ function checktoken ($token, $user="sys", $secret=4)
   {
     // decrypt token
     $token = hcms_decrypt ($token);
+
     // extract user name and timestamp
     if ($token != false) list ($timetoken, $token_user) = explode ("@", $token);
+
     // check if token is valid
     if ($timetoken != "" && $token_user != "")
     {
@@ -3923,16 +4146,20 @@ function rand_secure ($min=1000, $max=999999999999)
     {
       $range = $max - $min;
       $log = log ($range, 2);
+
       // length in bytes
       $bytes = (int) ($log / 8) + 1;
+
       // length in bits
       $bits = (int) $log + 1;
+
       // set all lower bits to 1
       $filter = (int) (1 << $bits) - 1;
 
       do
       {
         $rnd = hexdec (bin2hex (openssl_random_pseudo_bytes($bytes)));
+        
         // discard irrelevant bits
         $rnd = $rnd & $filter;
       }

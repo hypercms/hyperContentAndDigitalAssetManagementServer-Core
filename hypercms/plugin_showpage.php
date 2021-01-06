@@ -84,7 +84,7 @@ function adjust_height ()
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;">
     <iframe id="mainFrame" name="mainFrame" src="<?php echo plugin_generatelink ($plugin, $page, false, $add_parameters); ?>" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
   </div>
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>
 <?php
@@ -93,7 +93,7 @@ function adjust_height ()
   else
   {
     // require ($mgmt_plugin[$plugin]['folder'].$page);
-    header ("Location: ".$mgmt_config['url_path_cms']."plugin/".$plugin."/".$page."?plugin=".url_encode($plugin)."&page=".url_encode($page).($add_parameters ? "&".$add_parameters : ""));
+    header ("Location: ".cleandomain ($mgmt_config['url_path_cms'])."plugin/".$plugin."/".$page."?plugin=".url_encode($plugin)."&page=".url_encode($page).($add_parameters ? "&".$add_parameters : ""));
   }
 }
 // show error page

@@ -8,7 +8,7 @@ All manuals are provided as PDF documents on our website or in the directory hyp
 **On server-side:**
 
 * Operating System: Linux, UNIX-Derivates, MS Windows
-* WebServer: Apache 2.4 or Microsoft IIS with PHP Version 7+ and mbstring, bcmath, ldap PHP modules 
+* WebServer: Apache 2.4 or Microsoft IIS with PHP Version 7+ and the following PHP modules: bcmath, calendar, Core, ctype, curl, date, dom, exif, fileinfo, filter, ftp, gd, gettext, hash, iconv, json, ldap, libxml, mbstring, mysqli, mysqlnd, openssl, pcntl, pcre, Phar, posix, readline, Reflection, session, shmop, SimpleXML, soap, sockets, SPL, standard, sysvmsg, sysvsem, sysvshm, tokenizer, wddx, xml, xmlreader, xmlwriter, xsl, zip, zlib, Zend OPcache
 * RDBMS (Database): MariaDB or MySQL 5+ (required for installation script), any database with ODBC support (not supported by installation script)
 
 **Optionally required for full Digital Asset Management (DAM) support on server-side:**

@@ -1,5 +1,6 @@
 <?php
-// mapping of hyperCMS and Google 2-digit language code with Tesseract 3-digit language code
+// mapping of hyperCMS and Google 2-digit language code with Tesseract 3-digit language cod
+$tesseract_lang = array();
 $tesseract_lang['af'] = "afr";
 $tesseract_lang['am'] = "amh";
 $tesseract_lang['ar'] = "ara";

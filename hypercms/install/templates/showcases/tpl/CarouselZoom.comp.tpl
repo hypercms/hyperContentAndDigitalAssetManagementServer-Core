@@ -119,7 +119,7 @@ scriptend]
       <hr/>
       <strong>Online view</strong>
       <br />
-      [hyperCMS:scriptbegin if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='".$mgmt_config['url_path_cms']."?wl=$hash' frameborder='0' style='width:90%; height:600px; border:1px solid grey; overflow:hidden;'></iframe>"; scriptend]
+      [hyperCMS:scriptbegin if ($compinfo['published']) echo "<iframe id='frame_$uniqid' src='".cleandomain ($mgmt_config['url_path_cms'])."?wl=$hash' frameborder='0' style='width:90%; height:600px; border:1px solid grey; overflow:hidden;'></iframe>"; scriptend]
     </div>
   </body>
 </html>

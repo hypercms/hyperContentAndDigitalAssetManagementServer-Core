@@ -371,6 +371,6 @@ hr
   <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="margin:16px;" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

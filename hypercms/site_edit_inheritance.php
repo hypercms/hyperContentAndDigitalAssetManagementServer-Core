@@ -35,7 +35,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initalize
 $show = "";
+$parent_array = array();
 
 // save inheritance settings
 if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save == "yes" && checktoken ($token, $user))
@@ -62,7 +64,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
     
     if ($test == false)
     {
-      $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-publication-information-cannot-be-accessed'][$lang])."</p>\n".getescapedtext ($hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-publication-information-cannot-be-accessed'][$lang])."</p>\n".getescapedtext ($hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
     }
     
     // update the inheritance settings in the config file of the publication
@@ -110,7 +112,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
           
           if ($test = true)
           {
-            $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-publication-configuration-was-saved-successfully'][$lang])."</p>\n";  
+            $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-publication-configuration-was-saved-successfully'][$lang])."</p>\n";  
             
             // eventsystem
             if ($eventsystem['onsavepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
@@ -118,14 +120,14 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
           }
           else
           {
-            $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-publication-information-cannot-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['the-publication-information-is-corrupt-or-you-do-not-have-write-permissions'][$lang])."\n";      
+            $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-publication-information-cannot-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['the-publication-information-is-corrupt-or-you-do-not-have-write-permissions'][$lang])."\n";      
           }
         }
       }
     }
     else
     {
-      $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-publication-information-cannot-be-accessed'][$lang])."</p>\n".getescapedtext ($hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-publication-information-cannot-be-accessed'][$lang])."</p>\n".getescapedtext ($hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
     }  
   }
 }
@@ -162,7 +164,7 @@ function selectAll ()
     assigned = "*Null*";
   }
 
-  if (form.elements['site'].value == "*Null*")  
+  if (form.elements['site_name'].value == "*Null*")  
   {
     form.elements['site_parents'].value = assigned;  
   }
@@ -279,16 +281,19 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
                 $list2_array = array();
                           
                 foreach ($inherit_db as $inherit_db_record)
-                {      
-                  if (substr_count ("|".$inherit_db_record['child'], "|".$site_name."|") == 0 && $inherit_db_record['parent'] != $site_name && in_array ($inherit_db_record['parent'], $siteaccess))
-                  {
-                    $list1_array[] = "
-                    <option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>";
-                  }
-                  elseif (substr_count ("|".$inherit_db_record['child'], "|".$site_name."|") == 1 && $inherit_db_record['parent'] != $site_name)
-                  {
-                    $list2_array[] = "
-                    <option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>";
+                {
+                  if (!empty ($inherit_db_record['parent']))
+                  { 
+                    if (substr_count ("|".$inherit_db_record['child'], "|".$site_name."|") == 0 && $inherit_db_record['parent'] != $site_name && in_array ($inherit_db_record['parent'], $siteaccess))
+                    {
+                      $list1_array[] = "
+                      <option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>";
+                    }
+                    elseif (substr_count ("|".$inherit_db_record['child'], "|".$site_name."|") == 1 && $inherit_db_record['parent'] != $site_name)
+                    {
+                      $list2_array[] = "
+                      <option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>";
+                    }
                   }
                 }
               }
@@ -366,6 +371,6 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

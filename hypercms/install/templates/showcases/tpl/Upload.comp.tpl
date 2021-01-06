@@ -70,7 +70,7 @@ scriptend]
 
   if ($compinfo['published'])
   {
-    $embed_code = "<iframe id='frame_".$uniqid."' src='".$mgmt_config['url_path_cms']."?wl=".$hash."' frameborder='0' style='border:0; width:".$uploadWidth."px; height:".$uploadHeight."px; overflow:hidden;'></iframe>";
+    $embed_code = "<iframe id='frame_".$uniqid."' src='".cleandomain ($mgmt_config['url_path_cms'])."?wl=".$hash."' frameborder='0' style='border:0; width:".$uploadWidth."px; height:".$uploadHeight."px; overflow:hidden;'></iframe>";
   }
   else
   {

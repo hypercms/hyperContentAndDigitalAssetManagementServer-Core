@@ -1,4 +1,7 @@
 <?php
+$specialchr_search = array();
+$specialchr_replace = array();
+
 // transformation of polish letters
 $specialchr_search[0] = "Ä„";
 $specialchr_replace[0] = "A";

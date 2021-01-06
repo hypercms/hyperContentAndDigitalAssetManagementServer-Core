@@ -135,7 +135,7 @@ if ($authorized == true)
       // delete objects
       foreach ($multiobject_array as $objectpath)
       {
-        if ($objectpath != "" && $result['result'] == true)
+        if ($objectpath != "" && !empty ($result['result']))
         {
           $site = getpublication ($objectpath);
           $location = getlocation ($objectpath);
@@ -180,7 +180,7 @@ if ($authorized == true)
 
       foreach ($multiobject_array as $objectpath)
       {
-        if ($objectpath != "" && $result['result'] == true)
+        if ($objectpath != "" && !empty ($result['result']))
         {
           $site = getpublication ($objectpath);
           $location = getlocation ($objectpath);
@@ -228,7 +228,7 @@ if ($authorized == true)
 
       foreach ($multiobject_array as $multiobject_item)
       {
-        if ($multiobject_item != "" && $result['result'] == true)
+        if ($multiobject_item != "" && !empty ($result['result']))
         {
           $site = getpublication ($multiobject_item);
           $page = getobject ($multiobject_item);
@@ -252,7 +252,7 @@ if ($authorized == true)
     }
 
     // check result
-    if ($result['result'] == false) 
+    if (empty ($result['result'])) 
     {
       $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['error-occured'][$lang])."</span>";
       $add_onload = "";
@@ -280,7 +280,7 @@ if (opener && parent.frames['mainFrame']) parent.frames['mainFrame'].location.re
 
       foreach ($multiobject_array as $multiobject_item)
       {
-        if ($multiobject_item != "" && $result['result'] == true)
+        if ($multiobject_item != "" && !empty ($result['result']))
         {
           $site = getpublication ($multiobject_item);
           $page = getobject ($multiobject_item);
@@ -301,7 +301,7 @@ if (opener && parent.frames['mainFrame']) parent.frames['mainFrame'].location.re
     }
 
     // check result
-    if ($result['result'] == false) 
+    if (empty ($result['result'])) 
     {
       $show = $result['message'];
       $add_onload = "";

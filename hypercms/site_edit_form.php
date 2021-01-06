@@ -97,6 +97,25 @@ function switchDAM ()
   }
 }
 
+function switchLDAPsync ()
+{
+  if (document.getElementById('ldap_sync'))
+  {
+    if (document.getElementById('ldap_sync').checked == true)
+    {
+      document.getElementById('ldap_delete_user').disabled = false;
+      document.getElementById('ldap_user_attributes').disabled = false;
+      document.getElementById('ldap_sync_groups_mapping').disabled = false;
+    }
+    else
+    {
+      document.getElementById('ldap_delete_user').disabled = true;
+      document.getElementById('ldap_user_attributes').disabled = true;
+      document.getElementById('ldap_sync_groups_mapping').disabled = true;
+    }
+  }
+}
+
 function moveBoxEntry(box1, box2, max)
 {
   var arrbox1 = new Array();
@@ -196,7 +215,7 @@ function submitForm ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onload="<?php if ($preview != "yes") echo "switchDAM();"; ?> hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png'); <?php if ($add_onload != "") echo $add_onload; ?>">
+<body class="hcmsWorkplaceGeneric" onload="<?php if ($preview != "yes") echo "switchDAM(); switchLDAPsync();"; ?> hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png'); <?php if ($add_onload != "") echo $add_onload; ?>">
 
 <!-- saving --> 
 <div id="savelayer" class="hcmsLoadScreen"></div>
@@ -234,7 +253,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   $mgmt_config[$site_name] = array();
 
   // load publication config file of management system
-  if (valid_publicationname ($site_name) && file_exists ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
+  if (valid_publicationname ($site_name) && is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
   {
     // copy publication configuration file to temp directory in order to avoid PHP file caching
     copy ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php", $mgmt_config['abs_path_temp'].$site_name.".conf.php");
@@ -411,11 +430,11 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <?php } ?>
 
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['watermark-options-for-images'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['watermark-options-for-images'][$lang]); ?> <br/><span class="hcmsTextSmall">-wm /images/watermark.png->topleft->10</span></td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[watermark_image]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['watermark_image']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['watermark-options-for-vidoes'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['watermark-options-for-vidoes'][$lang]); ?> <br/><span class="hcmsTextSmall">-wm /images/watermark.png->topleft->10</span></td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[watermark_video]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['watermark_video']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php if (is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php")) { ?>
@@ -717,8 +736,8 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[remoteclient]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['remoteclient']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
 
-    <!-- AD / LDAP -->
-    <?php if (!empty ($mgmt_config['authconnect']) && empty ($mgmt_config['authconnect_all'])) {	?>
+    <!-- LDAP/AD -->
+    <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config['authconnect']) && empty ($mgmt_config['authconnect_all'])) {	?>
     <tr>
       <td style="white-space:nowrap; vertical-align:top;" colspan="2"><hr /></td>
     </tr>
@@ -726,11 +745,11 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><div style="padding:10px 0px;">LDAP / MS Active Directory</div> </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD Server </td>
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD <?php echo getescapedtext ($hcms_lang['server'][$lang]); ?> </td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_servers" name="setting[ldap_servers]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_servers']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">User Domain </td>
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user domain </td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_userdomain" name="setting[ldap_userdomain]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_userdomain']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
@@ -738,7 +757,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_base_dn" name="setting[ldap_base_dn]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_base_dn']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP version </td>
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD <?php echo getescapedtext ($hcms_lang['version'][$lang]); ?> </td>
       <td style="white-space:nowrap; vertical-align:top;"> 
         <select name="setting[ldap_version]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>>
           <option <?php if (@$mgmt_config[$site_name]['ldap_version'] == "3") echo "selected=\"selected\""; ?>>3</option>
@@ -747,7 +766,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">Port </td>
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD Port </td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="number" id="ldap_port" name="setting[ldap_port]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_port']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
@@ -772,10 +791,49 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">Synchronize users </td>
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user filter <br/><span class="hcmsTextSmall">sAMAccountName</span></td>
+      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_user_filter" name="setting[ldap_user_filter]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_user_filter']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD Sync (<?php echo getescapedtext ($hcms_lang['user-information'][$lang].", ".$hcms_lang['member-of-group'][$lang]); ?>) </td>
       <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="ldap_sync" name="setting[ldap_sync]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_sync'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <label><input type="checkbox" id="ldap_sync" name="setting[ldap_sync]" onclick="switchLDAPsync();" value="true" <?php if (@$mgmt_config[$site_name]['ldap_sync'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['delete-user'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" id="ldap_delete_user" name="setting[ldap_delete_user]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_delete_user'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user attributes <br/><span class="hcmsTextSmall">'memberof', 'givenname', 'sn', 'telephonenumber', 'mail'</span></td>
+      <?php
+      if (is_array (@$mgmt_config[$site_name]['ldap_user_attributes']) && sizeof (@$mgmt_config[$site_name]['ldap_user_attributes']) > 0)
+      {
+        $mgmt_config[$site_name]['ldap_user_attributes'] = "'".implode ("','", $mgmt_config[$site_name]['ldap_user_attributes'])."'";
+      }
+      else $mgmt_config[$site_name]['ldap_user_attributes'] = "";
+      ?>
+      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_user_attributes" name="setting[ldap_user_attributes]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_user_attributes']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">Mapping 'LDAP <?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>' => '<?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>' <br/><span class="hcmsTextSmall">'OU=MANAGER GROUP'=>'ChiefEditor'<br/>'OU=ALL GROUPS'=>'Editor'</span></td>
+      <td style="white-space:nowrap; vertical-align:top;">
+        <textarea type="text" id="ldap_sync_groups_mapping" name="setting[ldap_sync_groups_mapping]" style="width:350px; height:100px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>><?php
+          if (is_array (@$mgmt_config[$site_name]['ldap_sync_groups_mapping']))
+          {
+            $temp = implode ("\n", array_map(
+              function ($v, $k) { return sprintf("'%s'=>'%s'", $k, $v); },
+              @$mgmt_config[$site_name]['ldap_sync_groups_mapping'],
+              array_keys(@$mgmt_config[$site_name]['ldap_sync_groups_mapping'])
+            ));
+
+            echo trim ($temp);
+          }
+          ?></textarea>
       </td>
     </tr>
     <?php } ?>
@@ -794,6 +852,6 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

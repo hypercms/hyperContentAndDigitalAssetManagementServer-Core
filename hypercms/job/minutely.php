@@ -117,7 +117,7 @@ if (!empty ($report) && is_array ($report))
   if ($report['load'] > 0.9)
   {
     $errcode = "00911";
-    $error = $mgmt_config['today']."|minutely.php|warning|$errcode|server load is ".round ($report['load'] * 100)."%";
+    $error = $mgmt_config['today']."|minutely.php|warning|".$errcode."|server load is ".round ($report['load'] * 100)."%";
     
     savelog (array ($error));
   }

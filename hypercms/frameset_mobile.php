@@ -46,6 +46,15 @@ toggleview ($view);
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <!-- JQuery used for AJAX viewport set request -->
 <script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
+<style>
+<?php
+// invert colors
+if (!empty ($hcms_themeinvertcolors))
+{
+  echo invertcolorCSS ($hcms_themeinvertcolors);
+}
+?>
+</style>
 <script type="text/javascript">
 
 // callback for hcms_geolocation
@@ -201,30 +210,30 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; width:100%; height:36px;">
     <div style="float:left; width:72px; text-align:left;"> 
     <?php if (linking_valid() == false) { ?>
-      <img src="<?php echo getthemelocation(); ?>img/button_explorer.png" onclick="switchNav();" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+      <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png" onclick="switchNav();" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
     <?php } else { ?>
       <a href="frameset_objectlist.php?action=linking" id="navigateButton" target="workplFrame" onclick="this.style.display='none'; document.getElementById('tasksButton').style.display='inline';" style="display:none;">
-        <img src="<?php echo getthemelocation(); ?>img/button_view_gallery_medium.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+        <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_gallery_medium.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
       </a>
       <a href="task/task_list.php" id="tasksButton" target="workplFrame" onclick="document.getElementById('navigateButton').style.display='inline'; this.style.display='none';">
-        <img src="<?php echo getthemelocation(); ?>img/task.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" />
+        <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/task.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" />
       </a>
     <?php } ?>
     <?php if (empty ($hcms_assetbrowser)) { ?>
-      <img src="<?php echo getthemelocation(); ?>img/button_logout.png" onclick="top.location='userlogout.php';" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
+      <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_logout.png" onclick="top.location='userlogout.php';" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
     <?php } ?>
     </div>
     <div style="float:left; width:calc(100% - 144px); text-align:center;"><div class="hcmsHeadline" style="padding:8px;"></div></div>
     <div style="float:left; width:36px; text-align:right; margin-left:35px;"> 
     <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
-      <img src="<?php echo getthemelocation(); ?>img/button_chat.png" onclick="openChat();" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
+      <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_chat.png" onclick="openChat();" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
     <?php } ?>
     </div>
-  </div> 
+  </div>
 
   <?php if (linking_valid() == false) { ?>
   <!-- navigator panel -->
-  <div id="navLayer" class="hcmsWorkplaceExplorer" style="position:fixed; top:36px; bottom:0; left:-280px; width:260px; margin:0; padding:0; z-index:50;">
+  <div id="navLayer" class="hcmsWorkplaceExplorer hcmsBoxShadow" style="position:fixed; top:36px; bottom:0; left:-280px; width:260px; margin:0; padding:0; z-index:50;">
     <div style="width:100%; height:36px;">
       <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
         <input type="hidden" name="action" value="base_search" />

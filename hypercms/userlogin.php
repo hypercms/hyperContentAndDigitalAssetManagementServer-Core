@@ -61,6 +61,19 @@ $oal = getrequest ("oal");
 $ignore_password = false;
 $hcms_objformats = false;
 $accesslink = false;
+$rootpermission = null;
+$globalpermission = null;
+$localpermission = null;
+$user = null;
+$passwd = null;
+$siteaccess = null;
+$pageaccess = null;
+$compaccess = null;
+$superadmin = null;
+$hiddenfolder = null;
+$result_frameset = "";
+$show = "";
+$onload = "";
 
 // include language file
 if (!empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)))
@@ -73,6 +86,8 @@ if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes") $is_mobile 
 
 if (!empty ($theme)) $themename = $theme;
 else $themename = "";
+
+$error = array();
 
 // -------------------- link types ---------------------
 
@@ -174,7 +189,7 @@ elseif ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
   }
 }
 
-// ------------------- deprecateds link types -----------------------
+// ------------------- deprecated link types -----------------------
 
 // deprecated since version 5.6.1 but still supported:
 // extract user and object information
@@ -196,7 +211,7 @@ if ($hcms_user_token != "")
 
   // warning
   $errcode = "00111";
-  $error[] = $mgmt_config['today']."|userlogin.php|warning|$errcode|deprecated user token provided for access (used before version 5.6.1)";
+  $error[] = $mgmt_config['today']."|userlogin.php|warning|".$errcode."|deprecated user token provided for access (used before version 5.6.1)";
 }
 
 // deprecated since version 5.6.1 (will not work anymore due to the embedded object code in the token):
@@ -208,7 +223,7 @@ if ($hcms_id_token != "")
   
   // warning
   $errcode = "00112";
-  $error[] = $mgmt_config['today']."|userlogin.php|warning|$errcode|deprecated object token provided for access (used before version 5.5.13)";
+  $error[] = $mgmt_config['today']."|userlogin.php|warning|".$errcode."|deprecated object token provided for access (used before version 5.5.13)";
 }
 
 // deprecated since version 5.6.1 but still supported:
@@ -235,7 +250,7 @@ if ($user != "" && $passwd != "" && $hcms_user == "")
   if ($is_mobile || getsession ("hcms_mobile")) $result_frameset = "frameset_mobile.php";
   // frameset for standard logonor access links
   else $result_frameset = "frameset_main.php";
-  
+
   // forward to main frameset if check was passed
   header ("Location: ".$result_frameset);
 }
@@ -264,32 +279,18 @@ $token_new = createtoken ("sys");
 
 // --------------------------- logon ---------------------------
 
-$rootpermission = null;
-$globalpermission = null;
-$localpermission = null;
-$user = null;
-$passwd = null;
-$siteaccess = null;
-$pageaccess = null;
-$compaccess = null;
-$superadmin = null;
-$hiddenfolder = null;
-$result_frameset = "";
-$show = "";
-$onload = "";
-
 // check IP and user logon name of client
 if (checkuserip (getuserip ()) == true)
 {
   // reset password without login link (forgot password)
   if ($action == "reset" && !empty ($mgmt_config['resetpassword']))
   {
-    $show = sendresetpassword ($sentuser, false);
+    $show = sendresetpassword ($sentuser, "resetpassword");
   }
   // reset password and send login link (for 2 factor authentication)
   elseif ($action == "request" && !empty ($mgmt_config['multifactorauth']))
   {
-    $show = sendresetpassword ($sentuser, true);
+    $show = sendresetpassword ($sentuser, "multifactorauth");
   }
   // login
   else
@@ -314,6 +315,42 @@ if (checkuserip (getuserip ()) == true)
     {
       $login_result = userlogin ($sentuser, $sentpasswd);
     }
+    // get username and password from Basic HTTP Authentication used for SSO (if passed through)
+    elseif (!empty ($_SERVER['PHP_AUTH_USER']) && !empty ($_SERVER['PHP_AUTH_PW']))
+    {
+      $sentuser = $_SERVER['PHP_AUTH_USER'];
+      $sentpasswd = $_SERVER['PHP_AUTH_PW'];
+
+      if (strpos ($sentuser, "/") > 0) list ($domain, $sentuser) = explode ("/", $sentuser);
+      elseif (strpos ($sentuser, "\\") > 0) list ($domain, $sentuser) = explode ("\\", $sentuser);
+
+      $login_result = userlogin ($sentuser, $sentpasswd);
+    }
+    // get authenticated username from webserver (if passed through)
+    elseif (!empty ($_SERVER['LOGON_USER']) || !empty ($_SERVER['REMOTE_USER']) || !empty ($_SERVER['AUTH_USER']))
+    {
+      if (!empty ($_SERVER['LOGON_USER'])) $user = $_SERVER['LOGON_USER'];
+      elseif (!empty ($_SERVER['REMOTE_USER'])) $sentuser = $_SERVER['REMOTE_USER'];
+      elseif (!empty ($_SERVER['AUTH_USER'])) $sentuser = $_SERVER['AUTH_USER'];
+
+      if (strpos ($sentuser, "/") > 0) list ($domain, $sentuser) = explode ("/", $sentuser);
+      elseif (strpos ($sentuser, "\\") > 0) list ($domain, $sentuser) = explode ("\\", $sentuser);
+
+      $login_result = userlogin ($sentuser, "*Null*");
+    }
+    // get authenticated user name from OAuth client (requires the Connector module and a general LDAP/AD user account)
+    elseif (!empty ($mgmt_config['ldap_admin_username']) && !empty ($mgmt_config['ldap_admin_password']) && function_exists ("verifyoauthclient"))
+    {
+      $sentuser = verifyoauthclient ();
+
+      if (!empty ($sentuser))
+      {
+        if (strpos ($sentuser, "/") > 0) list ($domain, $sentuser) = explode ("/", $sentuser);
+        elseif (strpos ($sentuser, "\\") > 0) list ($domain, $sentuser) = explode ("\\", $sentuser);
+
+        $login_result = userlogin ($sentuser, "*Null*");
+      }
+    }
     else $login_result = false;
 
     // if logon was successful and user account has not been expired
@@ -336,24 +373,24 @@ if (checkuserip (getuserip ()) == true)
     // user is logged in (forward)
     if (!empty ($login_result['writesession']))
     {
-      $onload = "location.href='".$mgmt_config['url_path_cms'].$result_frameset."';";
+      $onload = "location.href='".cleandomain ($mgmt_config['url_path_cms']).$result_frameset."';";
     }
   
     // user password is expired (forward) and no access link is used
     if (!empty ($login_result['resetpassword']) && empty ($portal) && empty ($al) && empty ($oal))
     {
-      $onload = "location.href='".$mgmt_config['url_path_cms']."resetpassword.php?forward=".$result_frameset."';";
+      $onload = "location.href='".cleandomain ($mgmt_config['url_path_cms'])."resetpassword.php?hash=".url_encode ($sentpasswd)."&forward=".url_encode ($result_frameset)."';";
     }
 
     // message from function userlogin
     if (!empty ($login_result['message'])) $show = $login_result['message'];
   }
-
+  
   // login form (if login is missing or failed)
   if (!isset ($login_result) || empty ($login_result['auth']))
   {
     if ($show != "") $show = "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".$show."</div>\n";
-          
+
     if (!empty ($mgmt_config['instances']) && is_dir ($mgmt_config['instances'])) $show .= "
         <div id=\"sentinstance_container\" ".($require == "password" ? "style=\"position:absolute; visibility:hidden;\"" :  "").">
           <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" placeholder=\"".getescapedtext ($hcms_lang['instance'][$lang])."\" value=\"".$sentinstance."\" maxlength=\"100\" style=\"box-sizing:border-box; width:100%; margin:3px 0px; padding:8px 5px;\" tabindex=\"1\" /><br/>
@@ -399,12 +436,7 @@ else
 }
 
 // wallpaper
-$wallpaper = "";
-
-if (!$is_mobile)
-{
-  $wallpaper = getwallpaper ();
-}
+$wallpaper = getwallpaper ();
 
 // save log
 savelog (@$error);
@@ -566,13 +598,18 @@ function resetpassword()
     
     if (document.getElementById('sentinstance')) var instance = document.getElementById('sentinstance').value;
     else var instance = '';
+
     if (document.getElementById('sentuser')) var username = document.getElementById('sentuser').value;
     else var username = '';
     
     if (username.trim() == "") document.getElementById('sentuser').className = 'hcmsRequiredInput';
     else document.getElementById('sentuser').className = '';
     
-    if (document.getElementById('sentpasswd')) document.getElementById('sentpasswd').className = '';
+    if (document.getElementById('sentpasswd'))
+    {
+      document.getElementById('sentpasswd').value = '';
+      document.getElementById('sentpasswd').className = '';
+    }
     
     if (username.trim() != "")
     {
@@ -635,11 +672,12 @@ function blurbackground (blur)
 </script>
 </head>
 
-<body onload="focusform(); is_mobilebrowser(); is_iOS(); html5support(); <?php if (!$is_mobile) echo "setwallpaper();"; ?>">
+<body onload="focusform(); is_mobilebrowser(); is_iOS(); html5support(); setwallpaper();">
 
   <!-- load screen --> 
   <div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
 
+  <!-- wallpaper -->
   <div id="startScreen" class="hcmsStartScreen">
     <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
     <video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.png">
@@ -648,11 +686,13 @@ function blurbackground (blur)
     <?php } ?>
   </div>
 
+  <!-- top bar -->
   <div class="hcmsStartBar">
     <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; max-width:420px; max-height:42px;" alt="hyper Content & Digital Asset Management Server - hypercms.com" /></div>
     <div style="position:absolute; top:15px; right:15px; text-align:right;"></div>
   </div>
   
+  <!-- logon form -->
   <div class="hcmsLogonScreen" onkeyup="blurbackground(true);" onmouseout="blurbackground(false);">
     <?php
     echo "
@@ -668,6 +708,6 @@ function blurbackground (blur)
    ?>
   </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

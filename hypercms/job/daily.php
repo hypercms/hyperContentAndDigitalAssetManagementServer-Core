@@ -11,6 +11,7 @@ require ("../config.inc.php");
 require ("../function/hypercms_api.inc.php");
 
 
+$error = array();
 $config_files = array();
 
 // if multiple instances are used

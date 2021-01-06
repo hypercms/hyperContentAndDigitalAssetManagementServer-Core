@@ -42,7 +42,7 @@ if ($sender == "settings" && checktoken ($token, $user))
 {
   $result = editgroup ($site, $group_name, "", "", $permission, $user);
 
-  if ($result['result'] == true)
+  if (!empty ($result['result']))
   {
     if ($cat == "page") 
     {
@@ -72,7 +72,7 @@ if ($sender == "settings" && checktoken ($token, $user))
 // ----------------------------------- folder access ---------------------------------
 elseif ($sender == "access" && checktoken ($token, $user))
 {
-  $access_array = null;
+  $access_array = array();
   
   // deserialize access string
   if ($access_new != "")
@@ -113,6 +113,6 @@ elseif ($sender == "access" && checktoken ($token, $user))
 <?php
 echo showmessage ($show, 600, 70, $lang, "position:fixed; left:20px; top:20px;");
 ?>
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

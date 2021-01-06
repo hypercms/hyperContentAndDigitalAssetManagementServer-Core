@@ -125,6 +125,8 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
   
     // get all files in dir
     $outdir = @dir ($dir);
+
+    $entry_dir = array();
   
     // get all outdir entries in folder and file array
     if ($outdir != false)

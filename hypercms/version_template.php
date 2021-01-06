@@ -36,6 +36,8 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+$error = array();
+
 // template directory
 if (valid_publicationname ($site)) $versiondir = $mgmt_config['abs_path_template'].$site."/";
 else $versiondir = "";
@@ -97,7 +99,7 @@ if (checkglobalpermission ($site, 'tpldelete') == 1 && is_array ($delete) && siz
       if ($test == false)
       {
         $errcode = "10200";
-        $error[] = $mgmt_config['today']."|version_template.php|error|$errcode|deletefile failed for ".$versiondir.$file_v_del;           
+        $error[] = $mgmt_config['today']."|version_template.php|error|".$errcode."|deletefile failed for ".$versiondir.$file_v_del;           
       }
     }
   }     
@@ -276,6 +278,6 @@ function toggledelete (source)
 </form>
 </div>
 
-<?php @include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

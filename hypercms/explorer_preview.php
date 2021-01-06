@@ -242,6 +242,5 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   </div>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
 </body>
 </html>

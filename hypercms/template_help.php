@@ -123,6 +123,10 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <td class="hcmsRowData1">[hyperCMS:textk id='...' list='...' file='...' onlylist='yes/no' display='taxonomy']</td>
     </tr>
     <tr> 
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['signature'][$lang]); ?></td>
+      <td class="hcmsRowData1">[hyperCMS:texts id='...']</td>
+    </tr>
+    <tr> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['unformatted-comment'][$lang]); ?></td>
       <td class="hcmsRowData1">[hyperCMS:commentu id='...']</td>
     </tr>
@@ -781,6 +785,6 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
   </div>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

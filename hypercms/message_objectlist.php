@@ -30,6 +30,7 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // initalize
+$error = array();
 $objects_counted = 0;
 $objects_total = 0;
 $listview = "";
@@ -66,15 +67,19 @@ if (is_dir ($dir))
 // write object entries
 if (is_array ($message_array) && sizeof ($message_array) > 0)
 {
-  $objects_total = sizeof ($message_array); 
+  $objects_total = sizeof ($message_array);
 
   foreach ($message_array as $message_file)
   {
     // break loop if maximum has been reached
     if (($items_row + 1) >= $end) break;
 
-    // extract data from file
-    list ($message_time, $message_user, $message_type, $ext) = explode (".", $message_file);
+    // remove extensions
+    $message_file_name = str_replace (".mail.php", "", $message_file);
+
+    // extract data from file name
+    $message_time = substr ($message_file_name, 0, strpos ($message_file_name,"."));
+    $message_user = substr ($message_file_name, strpos ($message_file_name,".") + 1);
     
     if ($message_time > 0)
     {
@@ -110,6 +115,7 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
       
         // recipients
         $recipients = array();
+        
         if (is_array ($user_login) && sizeof ($user_login) > 0) $recipients[] = implode (", ", $user_login);
         if (is_array ($email_to) && sizeof ($email_to) > 0) $recipients[] = implode (", ", $email_to);
         if (!empty ($group_login)) $recipients[] = $group_login;
@@ -149,9 +155,18 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
       }
     }
     // message not valid
-    else $objects_total--;
+    else
+    {
+      $errcode = "40911";
+      $error[] = $mgmt_config['today']."|message_objectlist.php|error|".$errcode."|invalid message time prefix in message file '".$message_file."'";
+
+      $objects_total--;
+    }
   }
 }
+
+// log 
+savelog ($error);
 
 // objects counted
 if ($items_row > 0) $objects_counted = $items_row;
@@ -348,6 +363,6 @@ else
 initalize();
 </script>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

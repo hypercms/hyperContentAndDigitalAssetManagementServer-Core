@@ -55,6 +55,7 @@ checkusersession ($user, false);
 // --------------------------------- logic section ----------------------------------
 
 $message = "";
+$multiobject_array = array();
 
 // show info if access is not allowed
 if (!$access_allowed)
@@ -250,6 +251,6 @@ echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px
   </form>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

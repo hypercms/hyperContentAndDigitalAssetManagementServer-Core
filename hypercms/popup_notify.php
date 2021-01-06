@@ -54,6 +54,7 @@ checkusersession ($user, false);
 // --------------------------------- logic section ----------------------------------
 
 $message = "";
+$multiobject_array = array();
 
 // show info if access is not allowed
 if (!$access_allowed)
@@ -244,6 +245,6 @@ if (is_array ($notify_array)) echo "&nbsp;".getescapedtext ($hcms_lang['remove-s
 ?>
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>

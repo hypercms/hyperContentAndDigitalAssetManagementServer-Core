@@ -70,20 +70,15 @@ elseif (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
-
 <?php
-// invert button colors
+// invert colors
 if (!empty ($hcms_themeinvertcolors))
 {
   echo "<style>";
-  // invert all buttons
-  echo invertcolorCSS ("div.hcmsToolbarBlock", 100);
-  // revert on hover
-  echo invertcolorCSS (".hcmsButton:hover, div.hcmsToolbarBlock select", 100);
+  echo invertcolorCSS ($hcms_themeinvertcolors);
   echo "</style>";
 }
 ?>
-
 <script type="text/javascript">
 
 function selectgroup (selObj)
@@ -192,10 +187,11 @@ function checkForm ()
     <form name="group_delete" action="control_group_menu.php" method="post">
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="hidden" name="action" value="group_delete" />
-      <?php echo getescapedtext ($hcms_lang['group'][$lang]); ?>
+      
+      <span class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['group'][$lang]); ?></span>
       <select name="group_name" onChange="selectgroup(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
-      <?php
+        <?php
         if (!isset ($usergroupdata) || $usergroupdata == false)
         {
           $usergroupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
@@ -217,30 +213,30 @@ function checkForm ()
             }
           }
         }
-      ?>
+        ?>
       </select>
     </form>
   </div>
   <div class="hcmsToolbarBlock">
     <?php
     if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupcreate'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','show','hcms_messageLayer','','hide');\" name=\"media_new\" src=\"".getthemelocation()."img/button_usergroup_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\">";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','show','hcms_messageLayer','','hide');\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\">";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_usergroup_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
+    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
     ?>
     <?php
     if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupdelete'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deletegroup();\" name=\"media_delete\" src=\"".getthemelocation()."img/button_usergroup_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\">";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deletegroup();\" name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\">";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_usergroup_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
+    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
     ?> 
   </div>
   <div class="hcmsToolbarBlock">
     <?php
     if (file_exists ($mgmt_config['abs_path_cms']."help/adminguide_".$hcms_lang_shortcut[$lang].".pdf") && checkglobalpermission ($site, 'group'))
-    {echo "<img onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\">\n";}
+    {echo "<img onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\">\n";}
     elseif (file_exists ($mgmt_config['abs_path_cms']."help/adminguide_en.pdf") && checkglobalpermission ($site, 'group'))
-    {echo "<img onClick=\"hcms_openWindow('help/adminguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\">\n";}
+    {echo "<img onClick=\"hcms_openWindow('help/adminguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\">\n";}
     ?>
   </div>
 </div>

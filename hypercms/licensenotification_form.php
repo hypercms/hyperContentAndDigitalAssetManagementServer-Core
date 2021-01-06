@@ -289,7 +289,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
 
 </div>
 
-<?php include_once ("include/footer.inc.php"); ?>
+<?php includefooter(); ?>
 </body>
 </html>
 

@@ -22,6 +22,8 @@ function ocr_extractcontent ($site, $location, $file)
 {
   global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $hcms_lang, $lang;
 
+  $error = array();
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && !empty ($mgmt_parser) && is_array ($mgmt_parser) && is_supported ($mgmt_parser, $file))
   {
     $usedby = "";
@@ -31,7 +33,7 @@ function ocr_extractcontent ($site, $location, $file)
     if (empty ($tesseract_lang) || !is_array ($tesseract_lang)) require ($mgmt_config['abs_path_cms']."include/tesseract_lang.inc.php");
 
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
 
     // get file extension
     $file_info = getfileinfo ($site, $file, "comp");
@@ -244,6 +246,8 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 {
   global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, $hcms_lang, $lang;
 
+  $error = array();
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($user))
   {
     $usedby = "";
@@ -252,7 +256,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
 
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
 
     // get file extension
     $file_ext = strtolower (strrchr ($file, "."));
@@ -326,7 +330,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           $file_content = "";
 
           $errcode = "20132";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of pdftotext (code:$errorCode) failed in indexcontent for file: ".$location.$file; 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of pdftotext (code:".$errorCode.") failed in indexcontent for file '".$location.$file."'"; 
         }
         elseif (is_array ($file_content))
         {
@@ -360,7 +364,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
         {
           $errcode = "20133";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzip failed for '".$location.$file."'<br />".implode ("<br />", $error_array); 
         } 
         else
         {
@@ -393,7 +397,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           $file_content = ""; 
 
           $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of antiword (code:$errorCode) failed in indexcontent for file: ".$location.$file; 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of antiword (code:$errorCode) failed in indexcontent for file: ".$location.$file; 
         }
         elseif (is_array ($file_content))
         {
@@ -419,7 +423,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
         {
           $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array); 
         } 
         else
         {
@@ -460,7 +464,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
         {
           $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array); 
         } 
         else
         {
@@ -523,7 +527,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         else
         {
           $errcode = "20135";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|extraction of content from powerpoint failed in indexcontent for file: ".$location.$file; 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|extraction of content from powerpoint failed in indexcontent for file: ".$location.$file; 
         } 
       }
       // get file content from MS Powerpoint 2007 (pptx) in UTF-8
@@ -546,7 +550,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
         {
           $errcode = "20136";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array); 
         } 
         else
         {
@@ -836,6 +840,8 @@ function reindexcontent ($site, $container_id_array="")
 {
   global $mgmt_config;
 
+  $error = array();
+
   if (valid_publicationname ($site) && !empty ($mgmt_config['abs_path_media']))
   {
     $mediadir_array = array();
@@ -883,12 +889,12 @@ function reindexcontent ($site, $container_id_array="")
             if ($result)
             {
               $errcode = "00501";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|$errcode|reindex of content was successful for: ".$site."/".$file; 
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|".$errcode."|reindex of content was successful for: ".$site."/".$file; 
             }
             else
             {
               $errcode = "20501";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|reindex of content failed for: ".$site."/".$file; 
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|reindex of content failed for: ".$site."/".$file; 
             }
 
             // save log
@@ -916,7 +922,7 @@ function base64_to_file ($base64_string, $location, $file)
   if ($base64_string != "" && valid_locationname ($location) && valid_objectname ($file))
   {
       // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
 
     // exctract image data from string (image/jpg;base64,$data)
     if (strpos ("_".$base64_string, ",") > 0) list ($format, $data) = explode (",", $base64_string);
@@ -943,17 +949,19 @@ function base64_to_file ($base64_string, $location, $file)
 
 // description:
 // Creates a thumbnail by extracting the thumbnail from an indesign file and transferes the generated image via remoteclient.
-// For good results, InDesign Preferences must be set to save preview image and at extra large size.
+// For good results, InDesign Preferences must be set to save preview image at an extra large size.
 
 function createthumbnail_indesign ($site, $location_source, $location_dest, $file)
 {
   global $mgmt_config, $user;
 
+  $error = array();
+
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
     // add slash if not present at the end of the location string
-    if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
-    if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
+    $location_source = correctpath ($location_source);
+    $location_dest = correctpath ($location_dest);
 
     // prepare media file
     $temp_source = preparemediafile ($site, $location_source, $file, $user);
@@ -1072,7 +1080,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
         else
         {
           $errcode = "20221";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|createthumbnail_indesign failed to save file: ".$location_dest.$newfile; 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|createthumbnail_indesign failed to save file: ".$location_dest.$newfile; 
  
           // save log
           savelog (@$error);
@@ -1083,7 +1091,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
       else
       {
         $errcode = "20222";
-        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|createthumbnail_indesign failed for file: ".$location_source.$file; 
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|createthumbnail_indesign failed for file: ".$location_source.$file; 
  
         // save log
         savelog (@$error);
@@ -1113,8 +1121,8 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && is_video ($file) && $frame != "")
   {
     // add slash if not present at the end of the location string
-    if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
-    if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
+    $location_source = correctpath ($location_source);
+    $location_dest = correctpath ($location_dest);
 
     // remove .orig sub-file-extension
     if (strpos ($file, ".orig.") > 0) $newfile = str_replace (".orig.", ".", $file);
@@ -1264,8 +1272,8 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
     if ($format != "jpg" && $format != "png" && $format != "bmp") $format = "jpg";
 
     // add slash if not present at the end of the location string
-    if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
-    if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
+    $location_source = correctpath ($location_source);
+    $location_dest = correctpath ($location_dest);
 
     // define file name for images and remove .orig sub-file-extension
     if (strpos ($file, ".orig.") > 0) $newfile = str_replace (".orig.", ".", $file);
@@ -1402,6 +1410,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $user;
 
+  $error = array();
+
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
     // appending data to a file ensures that the previous write process is finished (required due to issue when editing encrypted files)
@@ -1433,8 +1443,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     $type_memory = $type;
 
     // add slash if not present at the end of the location string
-    if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
-    if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
+    $location_source = correctpath ($location_source);
+    $location_dest = correctpath ($location_dest);
 
     // save original file source location and file name
     $location_source_orig = $location_source;
@@ -1565,7 +1575,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               if ($errorCode)
               {
                 $errcode = "20259";
-                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file."<br />".implode ("<br />", $error_array); 
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file."<br />".implode ("<br />", $error_array); 
               }
               else
               {
@@ -2245,7 +2255,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode)
                     {
                       $errcode = "20231";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;
                     }
                     // on success
                     else $converted = true;
@@ -2256,6 +2266,16 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($type == "thumbnail")
                     {
                       $newfile = $file_name.".thumb.jpg";
+
+                      // reduce thumbnail size if original image is smaller then the defined thumbnail image size
+                      if ($imagewidth_orig > 0 && $imagewidth_orig < $imagewidth && $imageheight_orig > 0 && $imageheight_orig < $imageheight)
+                      {
+                        $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
+                      }
+                      else
+                      {
+                        $imageresize = "-resize ".$imagewidth."x".$imageheight;
+                      }
 
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($path_source)."[0]\" -flatten ".$imageresize." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
@@ -2287,7 +2307,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode || !is_file ($location_dest.$newfile))
                     {
                       $errcode = "20232";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file; 
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file; 
                     }
                     // on success
                     else $converted = true;
@@ -2338,7 +2358,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode || !is_file ($location_dest.$newfile))
                     {
                       $errcode = "20234";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file." (".implode (", ", $error_array).")"; 
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file." (".implode (", ", $error_array).")"; 
                     }
                     // on success
                     else $converted = true;
@@ -2361,7 +2381,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         if (is_file ($location_temp."watermark.".$newfile)) unlink ($location_temp."watermark.".$newfile);
 
                         $errcode = "20262";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile." (".implode (", ", $error_array).")";
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile." (".implode (", ", $error_array).")";
                       }
                       // on success
                       elseif (is_file ($location_temp."watermark.".$newfile))
@@ -3042,7 +3062,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           if ($errorCode || !is_file ($location_temp.shellcmd_encode ($file_name)."-1.ts"))
                           {
                             $errcode = "20239";
-                            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file; 
+                            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file; 
                           }
                           //
                           else
@@ -3074,7 +3094,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       if ($errorCode || !is_file ($location_temp.shellcmd_encode ($file_orig)))
                       {
                         $errcode = "20240";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file_orig; 
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file_orig; 
                       }
                       // reset media file source
                       else
@@ -3149,7 +3169,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $newfile = $file;
 
                   $errcode = "20277";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|ffmpeg failed to create original thumbnail file, using orginal file name: ".$file;
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|ffmpeg failed to create original thumbnail file, using orginal file name: ".$file;
                 }
                 // correct rotation metadata if necessary 
                 elseif (is_video (".hcms.".$format_set) && is_file ($location_temp.$tmpfile) && !empty ($videoinfo['rotate']) && $videoinfo['rotate'] != "0")
@@ -3168,7 +3188,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode)
                     {
                       $errcode = "10338";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|metadata update (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|metadata update (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
                     }
                     // replace video file
                     else
@@ -3235,7 +3255,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   @unlink ($location_temp.$tmpfile);
 
                   $errcode = "20236";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
                 } 
                 elseif (is_file ($location_temp.$tmpfile))
                 {
@@ -3257,7 +3277,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode)
                     {
                       $errcode = "20237";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of yamdi (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$newfile;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of yamdi (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$newfile;
                     }
                     // on success
                     else
@@ -3510,8 +3530,8 @@ function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $f
     } 
 
     // add slash if not present at the end of the location string
-    if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
-    if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
+    $location_source = correctpath ($location_source);
+    $location_dest = correctpath ($location_dest);
 
     // get file name without extension
     $file_name = strrev (substr (strstr (strrev ($file), "."), 1));
@@ -3607,7 +3627,7 @@ function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $f
             {
               // use original file name if rendering failed
               $errcode = "20288";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|ffmpeg failed to split media file: ".$file." (".$cmd.")";
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|ffmpeg failed to split media file: ".$file." (".$cmd.")";
             }
           }
         }
@@ -3664,6 +3684,8 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $mgmt_compress, $hcms_ext;
 
+  $error = array();
+
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($mediafile) && $format != "")
   {
     $result_conv = false;
@@ -3672,8 +3694,8 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
 
     // add slash if not present at the end of the location string
-    if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
-    if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
+    $location_source = correctpath ($location_source);
+    $location_dest = correctpath ($location_dest);
 
     // format
     $format = strtolower (trim ($format));
@@ -3875,7 +3897,7 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
     }
 
     // add slash if not present at the end of the location string
-    if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
+    $location_dest = correctpath ($location_dest);
 
     // get file info
     $file_info = getfileinfo ($site, $file_source, "comp");
@@ -4294,7 +4316,7 @@ function readmediaplayer_config ($location, $configfile)
   if (valid_locationname ($location) && valid_objectname ($configfile))
   {
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
 
     // get publication
     $site = getpublication ($location.$configfile);
@@ -4536,7 +4558,7 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
   if (valid_locationname ($location) && valid_objectname ($configfile) && (is_array ($mediafiles) || $mediafiles != ""))
   {
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
 
     // get publication
     $site = getpublication ($location.$configfile);
@@ -4625,6 +4647,8 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
 function createdocument ($site, $location_source, $location_dest, $file, $format="", $force_no_encrypt=false)
 {
   global $mgmt_config, $mgmt_docpreview, $mgmt_docoptions, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_ext, $hcms_lang, $lang, $user;
+
+  $error = array();
  
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
@@ -4633,8 +4657,8 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
     set_time_limit (60);
 
     // add slash if not present at the end of the location string
-    if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
-    if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
+    $location_source = correctpath ($location_source);
+    $location_dest = correctpath ($location_dest);
  
     // for inital conversion request the temp directory will be defined as destination directory by default of the service mediadownload or mediawrapper
     // the converted files however should be placed in the media repository to avoid the recreation of the file over and over again
@@ -4893,10 +4917,12 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions;
 
+  $error = array();
+
   if ($mgmt_uncompress['.zip'] != "" && valid_publicationname ($site) && $zipfilepath != "" && valid_locationname ($location) && valid_objectname ($filename) && ($cat == "page" || $cat == "comp") && valid_objectname ($user))
   {
       // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
+    $location = correctpath ($location);
 
     // extension of zip file
     $file_ext = strtolower (strrchr ($filename, "."));
@@ -5130,6 +5156,8 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
 function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
 {
  global $mgmt_config, $mgmt_compress;
+
+ $error = array();
  
  if (!empty ($mgmt_compress['.zip']) && is_dir ($source) && is_dir ($destination) && valid_objectname ($zipfilename))
  {
@@ -5180,6 +5208,8 @@ function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
 function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $user, $activity="", $flatzip=false)
 {
   global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
+
+  $error = array();
 
   if (empty ($lang)) $lang = "en";
   $updates = array();
@@ -5627,6 +5657,8 @@ function html2pdf ($source, $dest, $cover="", $toc=false, $page_orientation="Por
 {
   global $mgmt_config;
 
+  $error = array();
+
   // correct source
   $source = link_db_getobject ($source);
          
@@ -5772,6 +5804,8 @@ function html2pdf ($source, $dest, $cover="", $toc=false, $page_orientation="Por
 function mergepdf ($source, $dest)
 {
   global $mgmt_config;
+
+  $error = array();
 
   // correct source
   $source = link_db_getobject ($source);
