@@ -248,7 +248,7 @@ foreach ($multiobject_array as $object)
   // define link to open object
   if ($setlocalpermission['root'] == 1)
   {
-    $openobject = "onclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site_item)."&cat=".url_encode($cat_item)."&location=".url_encode($location_item_esc)."&page=".url_encode($file_item)."&token=".$token."', '".$objectinfo_item['container_id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"";
+    $openobject = "onclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site_item)."&cat=".url_encode($cat_item)."&location=".url_encode($location_item_esc)."&page=".url_encode($file_item)."&token=".$token."', '".$objectinfo_item['container_id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").")\"";
   }
   else $openobject = "";
   

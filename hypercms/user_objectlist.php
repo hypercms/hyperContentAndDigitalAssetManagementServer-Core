@@ -34,7 +34,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
+// initialize
 $objects_counted = 0;
 $objects_total = 0;
 $items_row = -1;
@@ -235,7 +235,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
         // open on double click
         if (checkrootpermission ('user') && checkrootpermission ('useredit') || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
         {
-          $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 880);\"";
+          $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes', 560, 880);\"";
         }
         else $openUser = "";
 
@@ -245,21 +245,21 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
         $listview .= "
               <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
-                <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:180px;\">
+                <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:180px;\">
                   <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">
                     <a data-objectpath=\"".$object_array['login'][$key]."\" data-href=\"javascript:void(0);\">
                       <img src=\"".getthemelocation()."img/user.png\" class=\"hcmsIconList\" /> ".$object_array['login'][$key]."
                     </a>
                   </div>
                 </td>
-                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"padding-left:3px; width:180px;\"><span ".$setContext."> ".$object_array['name'][$key]."</span></td>";
+                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:180px;\"><span ".$setContext."> ".$object_array['name'][$key]."</span></td>";
 
         if (!$is_mobile) $listview .= "
-                <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:300px;\"><span ".$setContext."> ".$object_array['email'][$key]."</span></td>
-                <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:120px;\"><span ".$setContext."> <span style=\"display:none;\">".date ("Ymd", strtotime ($object_array['date'][$key]))."</span>".showdate ($object_array['date'][$key], "Y-m-d", $hcms_lang_date[$lang])."</span></td>";
+                <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:300px;\"><span ".$setContext."> ".$object_array['email'][$key]."</span></td>
+                <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:120px;\"><span ".$setContext."> <span style=\"display:none;\">".date ("Ymd", strtotime ($object_array['date'][$key]))."</span>".showdate ($object_array['date'][$key], "Y-m-d", $hcms_lang_date[$lang])."</span></td>";
 
         $listview .= "
-                <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px;\"><span ".$setContext."> ".$user_status."</span></td>";
+                <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"\"><span ".$setContext."> ".$user_status."</span></td>";
 
         $listview .= "
               </tr>";
@@ -287,11 +287,19 @@ else $objects_counted = 0;
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
 <style type="text/css">
+.hcmsHead
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .hcmsCell
 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-left: 3px; 
 }
 </style>
 <script type="text/javascript">
@@ -331,7 +339,7 @@ function resizecols()
   $('.hcmsCol5').width(c5);
 }
 
-function initalize ()
+function initialize ()
 {
   // resize columns
   $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
@@ -386,21 +394,21 @@ function initalize ()
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:32px; width:100%; z-index:1; visibility:visible; overflow-x:hidden; overflow-y:hidden;">
   <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:180px;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:180px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;
       </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:180px;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:180px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;
       </td>
       <?php if (!$is_mobile) { ?>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:300px;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:300px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>&nbsp;
       </td> 
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:120px;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:120px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?>&nbsp;
       </td>
       <?php } ?>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead">
         &nbsp;<?php echo getescapedtext ($hcms_lang['status'][$lang]); ?>&nbsp;
       </td>
     </tr>
@@ -460,9 +468,9 @@ else
 }
 ?>
 
-<!-- initalize -->
+<!-- initialize -->
 <script type="text/javascript">
-initalize();
+initialize();
 </script>
 
 <?php includefooter(); ?>

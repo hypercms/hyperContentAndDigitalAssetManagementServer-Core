@@ -6,7 +6,7 @@
  */
 
 
-// initalize
+// initialize
 $mgmt_config = array();
 $publ_config = array();
 

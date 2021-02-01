@@ -16,7 +16,7 @@ require ("function/hypercms_api.inc.php");
 
 
 // delete session file of user
-$result = killsession ($user, true);
+$result = killsession ($user, true, true);
 
 if (empty ($lang)) $lang = "en";
 

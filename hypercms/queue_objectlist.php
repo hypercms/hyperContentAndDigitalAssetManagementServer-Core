@@ -36,7 +36,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
+// initialize
 $objects_counted = 0;
 $objects_total = 0;
 $items_row = -1;
@@ -104,7 +104,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
           else $temp_object_name = $file_info['name'];
   
           // open on double click
-          $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($temp_site)."&cat=".url_encode($temp_cat)."&location=".url_encode($temp_location_esc)."&page=".url_encode($temp_object)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
+          $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($temp_site)."&cat=".url_encode($temp_cat)."&location=".url_encode($temp_location_esc)."&page=".url_encode($temp_object)."&token=".$token."', '".$queue_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"";
           
           // onclick for marking objects
           $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlQueueMenu();\"";
@@ -118,7 +118,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
     
           $listview .= "
                 <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
-                  <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
+                  <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                     <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
                       <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
                         <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$temp_object_name."&nbsp;
@@ -127,11 +127,11 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
                   </td>";
                   
           if (!$is_mobile) $listview .= "
-                  <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$temp_site."\">&nbsp;&nbsp;".$temp_site."</span></td>
-                  <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$temp_location_name."\">&nbsp;&nbsp;".$temp_location_name."</span></td>
-                  <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                  <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_action."</span></td>
-                  <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_user."</span></td>";
+                  <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_site."\">&nbsp;&nbsp;".$temp_site."</span></td>
+                  <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_location_name."\">&nbsp;&nbsp;".$temp_location_name."</span></td>
+                  <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                  <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_action."</span></td>
+                  <td id=\"h".$items_row."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_user."</span></td>";
                   
           $listview .= "
                 </tr>";
@@ -153,7 +153,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
         $temp_object_name = $file_info['name'];
         
         // open on double click
-        $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', 600, 900);\"";
+        $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$queue_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', 600, 900);\"";
         
         // onclick for marking objects
         $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlQueueMenu();\"";
@@ -166,7 +166,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
     
         $listview .= "
               <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
-                <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:180px;\">
+                <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:180px;\">
                   <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject.">
                     <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
                       <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$temp_object_name."</span>&nbsp;
@@ -175,11 +175,11 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
                 </td>";
                 
           if (!$is_mobile) $listview .= "
-                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"padding-left:3px; width:100px;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
-                <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:200px;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
-                <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px; width:60px;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_action."</span></td>
-                <td id=\"h".$items_row."_5\" class=\"hcmsCol6 hcmsCell\" style=\"padding-left:3px; \"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_user."</span></td>";
+                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
+                <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
+                <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">".$queue_action."</span></td>
+                <td id=\"h".$items_row."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$queue_user."</span></td>";
                 
           $listview .= "
               </tr>";
@@ -207,11 +207,19 @@ else $objects_counted = 0;
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
 <style type="text/css">
+.hcmsHead
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .hcmsCell
 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-left: 3px; 
 }
 </style>
 <script type="text/javascript">
@@ -242,7 +250,7 @@ function resizecols()
   var c3 = $('#c3').width();
   var c4 = $('#c4').width();
   var c5 = $('#c5').width();
-  var c6 = $('#c6').width() ;
+  var c6 = $('#c6').width();
 
   // set width for table columns
   $('.hcmsCol1').width(c1);
@@ -253,7 +261,7 @@ function resizecols()
   $('.hcmsCol6').width(c6);
 }
 
-function initalize ()
+function initialize ()
 {
   // resize columns
   $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
@@ -305,26 +313,26 @@ function initalize ()
 </div>
 
 <!-- Table Header -->
-<div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:3; visibility:visible;">
-  <table id="objectlist_head" cols="6" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
+<div id="detailviewLayer" style="position:fixed; top:0; left:0; margin:0; padding:0; width:100%; z-index:2; visibility:visible;">
+  <table id="objectlist_head" cols="6" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:180px;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:180px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;
       </td>
       <?php if (!$is_mobile) { ?>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:100px;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:100px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>&nbsp;
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:200px;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:200px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;
       </td> 
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:140px;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:140px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>&nbsp;
       </td>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell" style="width:60px;">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead" style="width:80px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>&nbsp;
       </td>
-      <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader hcmsCell">
+      <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader hcmsHead">
         &nbsp;<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;
       </td>
       <?php } ?>
@@ -332,7 +340,7 @@ function initalize ()
   </table>
   
   <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
-    <table id="objectlist" name="objectlist" cols="6" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
+    <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
     <?php 
     echo $listview;
     ?>
@@ -386,9 +394,9 @@ else
 }
 ?>
 
-<!-- initalize -->
+<!-- initialize -->
 <script type="text/javascript">
-initalize();
+initialize();
 </script>
 
 <?php includefooter(); ?>

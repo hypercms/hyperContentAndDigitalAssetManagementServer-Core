@@ -182,7 +182,7 @@ else
 
 function openHelp ()
 {
-  help = window.open('<?php echo $mgmt_config['url_path_cms']."pers_help.php?site=".url_encode($site)."&cat=".url_encode($cat); ?>','help','resizable=yes,scrollbars=yes,width=640,height=400');
+  help = window.open('<?php echo $mgmt_config['url_path_cms']."pers_help.php?site=".url_encode($site)."&cat=".url_encode($cat); ?>','help','location=no,menubar=no,toolbar=no,titlebar=no,resizable=yes,scrollbars=yes,width=640,height=400,status=no');
   help.moveTo(screen.width/2-640/2, screen.height/2-400/2);
   help.focus();
 }

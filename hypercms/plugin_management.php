@@ -82,15 +82,7 @@ if ($action)
 
   <!-- top bar -->
   <?php
-  if (file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf"))
-  {
-    $help = "<img onClick=\"hcms_openWindow('help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"margin-right:7px;\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />";
-  }
-  elseif (file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_en.pdf"))
-  {
-    $help = "<img onClick=\"hcms_openWindow('help/pluginguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"margin-right:7px;\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />";
-  }
-  else $help = "";
+  $help = showhelpbutton ("pluginguide", true, $lang, "");
 
   echo showtopbar ($hcms_lang['plugin-management'][$lang], $lang, "", "", $help);
   echo showmessage ($show, 500, 40, $lang, "position:fixed; left:15px; top:40px;");

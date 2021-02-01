@@ -1440,6 +1440,45 @@ function update_database_v903 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v910 ----------------------------------------------
+// function: update_database_v910()
+// input: %
+// output: true / false
+
+// description: 
+// Adds new column analyzed to table media for support of version 9.1.0
+
+function update_database_v910 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  $logdata = loadlog ("update", "string");
+
+  if (empty ($logdata) || strpos ($logdata, "|9.1.0|") < 1)
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table
+    $sql = "ALTER TABLE media ADD COLUMN analyzed tinyint(1) NOT NULL default '0';";
+    $errcode = "50099";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.1.0|updated to version 9.1.0"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -1471,5 +1510,6 @@ function updates_all ()
   update_users_804 ();
   update_database_v805 ();
   update_database_v903 ();
+  update_database_v910 ();
 }
 ?>

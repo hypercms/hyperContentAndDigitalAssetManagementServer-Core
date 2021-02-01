@@ -135,6 +135,15 @@ function openBrWindowLink (url, winName, features)
   }
   else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang]); ?>'));
 }
+
+function recognizeFaces (element)
+{
+  if (element && window.opener)
+  {
+    return window.opener.top.recognizeFaces (element);
+  }
+  else return false;
+}
 </script>
 </head>
 

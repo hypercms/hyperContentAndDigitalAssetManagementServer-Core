@@ -2724,7 +2724,7 @@ else
       </form>
     </div>
         
-    <!-- initalize -->
+    <!-- initialize -->
     <script type="text/javascript">
     // load screen
     if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';

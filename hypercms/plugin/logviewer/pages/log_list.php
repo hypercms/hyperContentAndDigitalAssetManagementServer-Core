@@ -42,11 +42,19 @@ else $logfile = "";
 <script type="text/javascript" src="../../../javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="../../../javascript/jquery/plugins/colResizable.min.js"></script>
 <style type="text/css">
+.hcmsHead
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .hcmsCell
 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-left: 3px;
 }
 </style>
 <script type="text/javascript">
@@ -84,7 +92,7 @@ function resizecols()
   $('.hcmsCol5').width(c5);
 }
 
-function initalize ()
+function initialize ()
 {
   // resize columns
   $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
@@ -98,20 +106,20 @@ function initalize ()
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; width:100%; z-index:1; visibility:visible;">
   <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;">  
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:105px;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:105px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>
       </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:120px;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:120px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>
       </td>
       <?php if (!$is_mobile) { ?>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:180px;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:180px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['source'][$lang]); ?>
       </td>
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:55px;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:55px;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['code'][$lang]); ?>
       </td>    
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead">
         &nbsp; <?php echo getescapedtext ($hcms_lang['description'][$lang]); ?>
       </td>
       <?php } ?>   
@@ -172,12 +180,12 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 
       echo "
       <tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top;\">
-        <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:105px;\"><a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', '600', '400');\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\" />&nbsp;".$type_name."</a></td>
-        <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"padding-left:3px; width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>\n";
+        <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px;\"><a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', '600', '400');\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\" />&nbsp;".$type_name."</a></td>
+        <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>\n";
         if (!$is_mobile) echo "
-        <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:180px;\">".$source."</td>
-        <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:55px;\">".$errorcode."</td>
-        <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px;\"><a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', 600, 400);\">".$description_short."</a></td>
+        <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:180px;\">".$source."</td>
+        <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:55px;\">".$errorcode."</td>
+        <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"\"><a href=\"javascript:void(0);\" onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', 600, 400);\">".$description_short."</a></td>
       </tr>"; 
 
       $items_row++;
@@ -196,9 +204,9 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
   <input type="hidden" name="description" value="">
 </form>
 
-<!-- initalize -->
+<!-- initialize -->
 <script type="text/javascript">
-initalize();
+initialize();
 </script>
 
 <?php includefooter(); ?>

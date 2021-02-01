@@ -30,7 +30,7 @@ $token = getrequest ("token");
 $site = getpublication ($location);
 $cat = getcategory ($site, $location); 
 
-// initalize
+// initialize
 $resetcols = false;
 $objects_total = 0;
 $folder_array = array();
@@ -348,7 +348,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
 
         $listview .= "
                       <tr id=\"g".$items_row."\" style=\"cursor:pointer\" ".$selectclick.">
-                       <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"padding-left:3px; width:280px;\">                
+                       <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">                
                          <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">
                            ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end."
                          </div>
@@ -401,7 +401,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
                 }
                 
                 $listview .= "
-                        <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"padding-left:3px; ".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
+                        <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
                 
                 $i++;
               }
@@ -584,7 +584,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           onobjectlist_post ($site, $cat, $location, $object, $contentfile, $contentdata, $usedby, $user);     
 
         // open on double click
-        $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
+        $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
 
         // onclick for marking objects      
         $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
@@ -614,7 +614,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
         $listview .= "
                       <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
-                        <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"padding-left:3px; width:280px;\">
+                        <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                           <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">
                             ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end."  
                           </div>
@@ -667,7 +667,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
                 }
 
                 $listview .= "
-                        <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"padding-left:3px; ".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
+                        <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
               
                 $i++;
               }
@@ -778,7 +778,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         if ($is_mobile && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
         {   
           $linking_buttons .= "
-          <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
+          <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
         }
 
         // if assetbrowser is used display edit button
@@ -884,11 +884,19 @@ else $objects_counted = 0;
   text-overflow: ellipsis;
 }
 
+.hcmsHead
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .hcmsCell
 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-left: 3px; 
 }
 
 .hcmsThumbnailWidthlarge img
@@ -1104,7 +1112,7 @@ function openObjectView (location, object, view)
   else return false;
 }
 
-function initalize ()
+function initialize ()
 {
   // set view
   toggleview (explorerview);
@@ -1322,7 +1330,7 @@ function initalize ()
 <div id="tableHeadLayer" style="position:fixed; top:0; left:0; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:hidden;">
   <table id="objectlist_head" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr onmouseover="hcms_setColumncontext()">
-      <td id="c0" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:280px;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
+      <td id="c0" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:280px;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
     <?php
     if (!$is_mobile)
     {
@@ -1375,7 +1383,7 @@ function initalize ()
             }
             
             echo "
-      <td id=\"c".$i."\" onClick=\"hcms_sortTable(".$i.$sortnumeric.");\" class=\"hcmsTableHeader hcmsCell\" style=\"".$style_td."\">&nbsp;".$title."&nbsp;</td>";
+      <td id=\"c".$i."\" onClick=\"hcms_sortTable(".$i.$sortnumeric.");\" class=\"hcmsTableHeader hcmsHead\" style=\"".$style_td."\">&nbsp;".$title."&nbsp;</td>";
 
             $i++;
           }
@@ -1454,9 +1462,9 @@ else
 }
 ?>
 
-<!-- initalize -->
+<!-- initialize -->
 <script type="text/javascript">
-initalize();
+initialize();
 </script>
 
 <?php includefooter(); ?>

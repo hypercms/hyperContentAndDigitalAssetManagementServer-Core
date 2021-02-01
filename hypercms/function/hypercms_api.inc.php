@@ -15,7 +15,7 @@ if (empty ($mgmt_config['abs_path_cms']) && is_file ("../config.inc.php"))
   require_once ("../config.inc.php");
 }
 
-// initalize todays date and time
+// initialize todays date and time
 if (empty ($mgmt_config['today'])) $mgmt_config['today'] = date ("Y-m-d H:i", time());
 
 // include Get API
@@ -196,6 +196,6 @@ if (!empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlangu
 if (!empty ($is_mobile))
 {
   $mgmt_config['object_newwindow'] = true;
-  $mgmt_config['facedetection'] = false;
+  $mgmt_config['facerecognition'] = false;
 }
 ?>

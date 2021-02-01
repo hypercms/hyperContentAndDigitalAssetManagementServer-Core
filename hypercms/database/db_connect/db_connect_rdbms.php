@@ -948,7 +948,7 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
 // description:
 // Saves all taxonomy keywords of a publication in the database.
 
-function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
+function rdbms_setpublicationtaxonomy ($site="", $recreate=false) 
 {
   global $mgmt_config;
  
@@ -962,7 +962,7 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
   {
     $inherit_db = inherit_db_read ();
     
-    if ($inherit_db != false && sizeof ($inherit_db) > 0)
+    if (is_array ($inherit_db) && sizeof ($inherit_db) > 0)
     {
       foreach ($inherit_db as $site => $array)
       {
@@ -971,7 +971,7 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
     }
   }
 
-  if (sizeof ($site_array) > 0)
+  if (is_array ($site_array) && sizeof ($site_array) > 0)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -986,7 +986,7 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
       }
 
       // if taxonomy is enabled
-      if (!empty ($mgmt_config[$site]['taxonomy']))
+      if (valid_publicationname ($site) && !empty ($mgmt_config[$site]['taxonomy']))
       {
         // remove all taxonomy entries from publication
         if ($recreate == true) rdbms_deletepublicationtaxonomy ($site, true);
@@ -1161,17 +1161,18 @@ function rdbms_setmedianame ($id, $media)
 // ----------------------------------------------- set media attributes -------------------------------------------------
 
 // function: rdbms_setmedia()
-// input: container ID [integer], file size in KB [integer] (optional), file type [string] (optional), width in pixel [integer] (optional), heigth in pixel [integer] (optional), red color [integer] (optional), green color [integer] (optional), blue color [integer] (optional), colorkey [string] (optional), image type [string] (optional), MD5 hash [string] (optional)
+// input: container ID [integer], file size in KB [integer] (optional), file type [string] (optional), width in pixel [integer] (optional), heigth in pixel [integer] (optional), 
+//        red color [integer] (optional), green color [integer] (optional), blue color [integer] (optional), colorkey [string] (optional), image type [string] (optional), MD5 hash [string] (optional), analyzed [boolean] (optional)
 // output: true / false
 
 // description:
 // Saves media attributes in the database.
 
-function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="", $red="", $green="", $blue="", $colorkey="", $imagetype="", $md5_hash="")
+function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="", $red="", $green="", $blue="", $colorkey="", $imagetype="", $md5_hash="", $analyzed="")
 {
   global $mgmt_config;
   
-  if ($id != "" && ($filesize != "" || $filetype != "" || $width != "" || $height != "" || $red != "" || $green != "" || $blue != "" || $colorkey != "" || $imagetype != "" || $md5_hash != ""))
+  if ($id != "" && ($filesize != "" || $filetype != "" || $width != "" || $height != "" || $red != "" || $green != "" || $blue != "" || $colorkey != "" || $imagetype != "" || $md5_hash != "" || $analyzed == true || $analyzed == false))
   {    
     
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -1185,6 +1186,8 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
     if ($colorkey != "") $colorkey = $db->rdbms_escape_string ($colorkey);
     if ($imagetype != "") $imagetype = $db->rdbms_escape_string ($imagetype);
     if ($md5_hash != "") $md5_hash = $db->rdbms_escape_string ($md5_hash);
+    if ($analyzed === true) $analyzed = 1;
+    elseif ($analyzed === false) $analyzed = 0;
         
     // check for existing record
     $sql = 'SELECT id FROM media WHERE id='.intval($id); 
@@ -1199,8 +1202,8 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
       // insert media attributes
       if ($num_rows == 0)
       {
-        $sql = 'INSERT INTO media (id, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash) '; 
-        $sql .= 'VALUES ('.intval($id).','.intval($filesize).',"'.$filetype.'",'.intval($width).','.intval($height).','.intval($red).','.intval($green).','.intval($blue).',"'.$colorkey.'","'.$imagetype.'","'.$md5_hash.'")';      
+        $sql = 'INSERT INTO media (id, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash, analyzed) '; 
+        $sql .= 'VALUES ('.intval($id).','.intval($filesize).',"'.$filetype.'",'.intval($width).','.intval($height).','.intval($red).','.intval($green).','.intval($blue).',"'.$colorkey.'","'.$imagetype.'","'.$md5_hash.'",'.intval($analyzed).')';      
       }
       // update media attributes
       else
@@ -1217,6 +1220,7 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
         if ($colorkey != "") $sql_update[] = 'colorkey="'.$colorkey.'"';
         if ($imagetype != "") $sql_update[] = 'imagetype="'.$imagetype.'"';
         if ($md5_hash != "") $sql_update[] = 'md5_hash="'.$md5_hash.'"';
+        if ($analyzed != "") $sql_update[] = 'analyzed='.intval($analyzed);
 
         if (sizeof ($sql_update) > 0)
         {
@@ -1234,6 +1238,37 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
         
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------------ get media attributes -------------------------------------------------
+
+// function: rdbms_resetanalyzed()
+// input: %
+// output: true / false
+
+// description:
+// Resets the analyzed attribute in the media table for all assets if a new face label has been added
+
+function rdbms_resetanalyzed ()
+{
+  global $mgmt_config;
+
+  $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+  if ($db)
+  {    
+    $sql = 'UPDATE media SET analyzed=0 WHERE analyzed=1';
+
+    $errcode = "50219";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update');
+
+    // save log
+    savelog ($db->rdbms_geterror ());    
+    $db->rdbms_close();
+
     return true;
   }
   else return false;
@@ -2701,7 +2736,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 // description:
 // Replaces an expression by another in the content of object which are not in the recycle bin.
 
-function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $date_to="", $search_expression, $replace_expression, $user="sys")
+function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $date_to="", $search_expression="", $replace_expression="", $user="sys")
 {
   global $mgmt_config;
 
@@ -2974,7 +3009,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 // description:
 // Queries all objects of a user.
 
-function rdbms_searchuser ($site="", $user, $maxhits=300, $return_text_id=array(), $count=false)
+function rdbms_searchuser ($site, $user, $maxhits=300, $return_text_id=array(), $count=false)
 {
   global $mgmt_config;
 
@@ -4847,7 +4882,7 @@ function rdbms_deleterecipient ($recipient_id)
 // description:
 // Creates a new action in the queue.
 
-function rdbms_createqueueentry ($action, $object, $date, $published_only=false, $user)
+function rdbms_createqueueentry ($action, $object, $date, $published_only, $user)
 {
   global $mgmt_config;
 
@@ -5661,7 +5696,7 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
 
 // ----------------------------------------------- create task -------------------------------------------------
 
-function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $startdate="", $finishdate="", $category="", $taskname, $description="", $priority="low", $planned="")
+function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user="", $startdate="", $finishdate="", $category="", $taskname="", $description="", $priority="low", $planned="")
 {
   global $mgmt_config;
 
@@ -5889,7 +5924,7 @@ function rdbms_deletetask ($task_id="", $object_id="", $to_user="")
 
 // ----------------------------------------------- create project -------------------------------------------------
 
-function rdbms_createproject ($subproject_id, $object_id=0, $user="", $projectname, $description="")
+function rdbms_createproject ($subproject_id, $object_id=0, $user="", $projectname="", $description="")
 {
   global $mgmt_config;
 

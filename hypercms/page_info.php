@@ -311,7 +311,7 @@ if ($pagestore != false)
       $temp = selectcontent ($contentdata, "<text>", "<text_id>", "Youtube-ID");
       if (!empty ($temp[0])) $temp = getcontent ($temp[0], "<textcontent>");
 
-      if (!empty ($temp[0])) echo "<tr><td style=\"white-space:nowrap;\">Youtube Link </td><td><img name=\"Button6\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"hcms_openWindow('".get_youtube_videourl($site, $temp[0])."', '', 'scrollbars=yes,resizable=yes', 640, 640);\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button6','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+      if (!empty ($temp[0])) echo "<tr><td style=\"white-space:nowrap;\">Youtube Link </td><td><img name=\"Button6\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"hcms_openWindow('".get_youtube_videourl($site, $temp[0])."', '', 'location=yes,menubar=yes,toolbar=yes,titlebar=yes,scrollbars=yes,resizable=yes', 640, 640);\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button6','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
     // show meta information button

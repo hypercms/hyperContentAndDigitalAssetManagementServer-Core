@@ -29,7 +29,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
+// initialize
 $objects_counted = 0;
 $objects_total = 0;
 $items_row = 0;
@@ -58,17 +58,25 @@ else $logfile = "event";
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
 <style>
-.hcmsCell
+.hcmsHead
 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.hcmsCell
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 3px;
+}
 </style>
 <script type="text/javascript">
 function submitToWindow (date, source, type, errorcode, description)
 {
-  var features = 'scrollbars=yes,resizable=yes';
+  var features = 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no';
   var width = 700;
   var height = 700;
   var windowname = Math.floor(Math.random()*9999999);
@@ -104,7 +112,7 @@ function resizecols()
   $('.hcmsCol5').width(c5);
 }
 
-function initalize ()
+function initialize ()
 {
   // resize columns
   $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
@@ -118,21 +126,21 @@ function initalize ()
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:32px; width:100%; z-index:1; visibility:visible;">
   <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:105px;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:105px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>&nbsp;
       </td>
       <?php if (!$is_mobile) { ?>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:120px;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:120px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>&nbsp;
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:180px;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:180px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['source'][$lang]); ?>&nbsp;
       </td>
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:55px;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:55px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['code'][$lang]); ?>&nbsp;
       </td>
       <?php } ?>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead">
         &nbsp;<?php echo getescapedtext ($hcms_lang['description'][$lang]); ?>&nbsp;
       </td>
     </tr>
@@ -207,15 +215,15 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
 
         echo "
   <tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top; cursor:pointer;\" onClick=\"submitToWindow ('".$date."', '".$source."', '".$type."', '".$errorcode."', '".$description."');\">
-    <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:105px;\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</td>";
+    <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px;\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</td>";
 
         if (!$is_mobile) echo "
-    <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"padding-left:3px; width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
-    <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:180px;\">".$source."</td>
-    <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:55px;\">".$errorcode."</td>";
+    <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+    <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:180px;\">".$source."</td>
+    <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:55px;\">".$errorcode."</td>";
 
         echo "
-    <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px;\">".$description_short."</td>
+    <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"\">".$description_short."</td>
   </tr>";
       }
       // subtract empty entries
@@ -284,9 +292,9 @@ else
   <input type="hidden" name="description" value="" />
 </form>
 
-<!-- initalize -->
+<!-- initialize -->
 <script type="text/javascript">
-initalize();
+initialize();
 </script>
 
 <?php includefooter(); ?>

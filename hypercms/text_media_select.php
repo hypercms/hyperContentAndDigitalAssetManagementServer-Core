@@ -197,8 +197,8 @@ function submitMedia ()
 <?php
 if (!empty ($mediafile))
 {
-  if (is_audio ($mediafile)) echo showaudioplayer_head (false);
-  elseif (is_video ($mediafile)) echo showvideoplayer_head (false, false);
+  if (is_audio ($mediafile)) echo showaudioplayer_head (false, true);
+  elseif (is_video ($mediafile)) echo showvideoplayer_head (false, false, true);
 }
 ?>
 </head>

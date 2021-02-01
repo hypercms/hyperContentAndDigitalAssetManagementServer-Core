@@ -476,13 +476,18 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
           // escape special characters (transform all special chararcters into their html/xml equivalents)
           $textcontent  = html_encode ($textcontent);
         }
+        // keywords
+        elseif ($type[$id] == "k")
+        {
+          $textcontent = trim ($textcontent);
+        }
         // signature
         elseif ($type[$id] == "s")
         {
           // base64 encoded image (image/png;base64,image-string)
           $textcontent = trim ($textcontent);
         }
-        // checkbox value, text options, keywords
+        // checkbox value, text options
         else
         {
           // escape special characters
@@ -1417,7 +1422,7 @@ function sethead ($site, $contentdata, $contentfile, $headcontent=array(), $user
 // description:
 // This function sets a relationship between two objects by adding the reference as a multi component link to the specified tag ID of both objects.
 
-function setrelation ($site, $location_1, $object_1, $id_1="Related", $location_2, $object_2, $id_2="Related", $user)
+function setrelation ($site, $location_1="", $object_1="", $id_1="Related", $location_2="", $object_2="", $id_2="Related", $user="")
 {
   global $mgmt_config;
 

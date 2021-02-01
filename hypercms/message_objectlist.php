@@ -29,7 +29,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
+// initialize
 $error = array();
 $objects_counted = 0;
 $objects_total = 0;
@@ -93,7 +93,7 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
       $file_info = getfileinfo ("", $mailfile, "comp");
       
       // open on double click
-      $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$message_time."', 'status=yes,scrollbars=no,resizable=yes', 600, 900);\"";
+      $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$message_time."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', 600, 900);\"";
       
       // onclick for marking objects
       $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlMessageMenu();\"";
@@ -107,7 +107,7 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
       // message
       if (is_file ($dir.$message_file))
       {
-        // initalize
+        // initialize
         $email_title = "";
         
         // include message file
@@ -140,17 +140,17 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
 
         $listview .= "
             <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
-              <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:160px;\">
+              <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:160px;\">
                 <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." > 
                   <a data-objectpath=\"".$mailfile."\" data-href=\"javascript:void(0);\">
                     <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$email_title."</span>
                   </a>
                 </div>
               </td>
-              <td id=\"h".$items_row."_1\" class=\"hcmsCol3 hcmsCell\" style=\"padding-left:3px; width:200px;\"><span ".$hcms_setObjectcontext.">".$recipients."</span></td>
-              <td id=\"h".$items_row."_2\" class=\"hcmsCol4 hcmsCell\" style=\"padding-left:3px; width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-              <td id=\"h".$items_row."_3\" class=\"hcmsCol5 hcmsCell\" style=\"padding-left:3px; width:60px;\"><span ".$hcms_setObjectcontext.">sent</span></td>
-              <td id=\"h".$items_row."_4\" class=\"hcmsCol6 hcmsCell\" style=\"padding-left:3px;\"><span ".$hcms_setObjectcontext.">".$message_user."</span></td>
+              <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext.">".$recipients."</span></td>
+              <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+              <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:60px;\"><span ".$hcms_setObjectcontext.">sent</span></td>
+              <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$message_user."</span></td>
             </tr>"; 
       }
     }
@@ -185,11 +185,19 @@ else $objects_counted = 0;
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
 <style type="text/css">
+.hcmsHead
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .hcmsCell
 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-left: 3px;
 }
 </style>
 <script type="text/javascript">
@@ -229,7 +237,7 @@ function resizecols()
   $('.hcmsCol5').width(c5);
 }
 
-function initalize ()
+function initialize ()
 {
   // resize columns
   $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
@@ -285,19 +293,19 @@ function initalize ()
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:3; visibility:visible;">
   <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:160px;">
+      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:160px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['subject'][$lang]); ?>&nbsp;
       </td>
-      <td id="c2" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsCell" style="width:200px;">
+      <td id="c2" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:200px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?>&nbsp;
       </td> 
-      <td id="c3" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsCell" style="width:120px;">
+      <td id="c3" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:120px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>&nbsp;
       </td>
-      <td id="c4" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsCell" style="width:60px;">
+      <td id="c4" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead" style="width:60px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>&nbsp;
       </td>
-      <td id="c5" onClick="hcms_sortTable(5);" class="hcmsTableHeader hcmsCell">
+      <td id="c5" onClick="hcms_sortTable(5);" class="hcmsTableHeader hcmsHead">
         &nbsp;<?php echo getescapedtext ($hcms_lang['sender'][$lang]); ?>&nbsp;
       </td>
     </tr>
@@ -358,9 +366,9 @@ else
 }
 ?>
 
-<!-- initalize -->
+<!-- initialize -->
 <script type="text/javascript">
-initalize();
+initialize();
 </script>
 
 <?php includefooter(); ?>

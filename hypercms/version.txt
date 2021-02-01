@@ -3774,7 +3774,7 @@ Release 10/2019
 - Bug fix: frameset_objectlist did provide the style property "overflow" 2 times for the same div-tag
 - Bug fix: explorer_objectview did not assign the style property "z-index" to the toolbar for the preview of pages
 - Bug fix: JS function deleteFace did not prevent the functions createFaceOnImage and createFaceOnvideo being executed on click of the face delete button (changed onclick to onmousedown event)
-- Bug fix: page_multiedit initalized the variables is_audio, is_image, and is_video as true instead of false and set the values false after the verification of the media type
+- Bug fix: page_multiedit initialized the variables is_audio, is_image, and is_video as true instead of false and set the values false after the verification of the media type
 - Bug fix: explorer_objectlist did not use modified date from database for folders due to the verification of the file size instead of the modified date
 - Bug fix: Function createdocument in Media API did not correctky verify the requested format in $mgmt_docoptions
 - Bug fix: Function convertmedia in Media API did exclude images as target formats for document conversions
@@ -4540,7 +4540,7 @@ Release 10/2020
 - Bug fix: Safari did not display selectors due to an issue with the opacity CSS setting in main.js
 - Bug fix: An empty string for the start- or enddate has caused an error in function rdbms_createtask in DB Connect due to the database mode
 - Bug fix: The Task Management list did not hide all elements inside a tab
-- Bug fix: The Task Management list did not initalize the variable for the objects thumbnail
+- Bug fix: The Task Management list did not initialize the variable for the objects thumbnail
 - Bug fix: Function showthumbnail in UI API did not use the provided thumbnail size for the calculation of the width or height of the thumbnail
 - Bug fix: The Workflow Management module loaded the desktop or mobile stylesheet two times
 - Bug fix: Function showtaxonomytree in UI API did not verify the first search result item
@@ -4652,16 +4652,36 @@ Release 12/2020
 - Modifications in function settext in Set API in order to support signatures
 - Modification in the template_editor in order to support the news texts hyperCMS tag
 - Modification in the template_help in order to present the news texts hyperCMS tag
+- Removed deprecated library rest-api form Connector module
+- Removed unused library saml-api from Connector module 
 - Modifications in class.phpmailer in order to verify deprecated function get_magic_quotes_runtime
 - Modifications in function ftp_filelist in Connect API due to array and string offset access syntax with curly braces
 - Modifications in remoteclient in order to verify the POST request before calling function remoteclient
 - Modifications in library getid3 due to Array and string offset access syntax with curly braces
 - Update of getID3 library to version 1.9.20
+- Update of easySVG library
+- Update of PHPWord library to version 0.17
 - Removed PHP JPEG metadata toolkit version 1.12 from library since it has never been used
 - Modifications in userlogin in order to support Basic HTTP authentication
 - Removed the LDAP/AD connector from data/connect. The new LDAP/AD connector is part of the Connector module. The old versions of function authconnect are still supported.
+- Modifications in data/ldap_connect function authconnect in order to support the publication and user group mapping for the synchronization of the users with AD/LDAP
+- Modifications in data/ldap_connect function authconnect in order disable the strong password rules if the user has been successfully authenticated or retrieved from LDAP/AD
+- Implementation of the new main configuration settings $mgmt_config['ldap_user_filter'] and $mgmt_config['ldap_user_attributes'] for the LDAP/AD query
+- Implementation of the new main configuration settings $mgmt_config['ldap_sync_publications_mapping'] and $mgmt_config['ldap_sync_groups_mapping'] for the publication and group membership mapping definitions
+- Modifications in ldap_connect in order to support domain names in the user name (will be used for the LDAP/AD connection)
+- Modifications in ldap_connect in order to support anonymous LDAP bind
+- Modifications in ldap_connect in order to set *Leave* values for user data that can't be provided by the LDAP/AD server
+- Implementation of the new main configuration setting $mgmt_config['ldap_delete_user'] in order to delete users which do not exist in the LDAP/AD directory
+- Modifications in ldap_connect in order to support the new main configuration setting $mgmt_config['ldap_delete_user'] and delete users which do not exist in the LDAP/AD directory 
+- Implementation of the new main configuration settings $mgmt_config['ldap_admin_username'] and $mgmt_config['ldap_admin_password'] for the general LDAP/AD access is SSO is used and only the user name can be provided via OAuth
+- Implementation of the new main configuration settings $mgmt_config['oauth_consumer_key'], $mgmt_config['oauth_secret'], and $mgmt_config['oauth_timezone'] for OAuth 1.0 support
+- Implementation of the new OAuth 1.0 remote client located in install/data/oauth_remoteclient.php and can be used on a remote IIS webserver with activated Integrated Windows authentication for SSO with the system (only user name will be provided using OAuth)
+- Implementation of the new function verifyoauthclient in the Connector module (SSO API)
+- Modifications in API loader in order to include SSO API
+- Modifications in function editpublication in Main API in order to support the new setting 'ldap_delete_user', 'ldap_user_filter', 'ldap_user_attributes', and 'ldap_sync_publications_mapping'
 - Modifications in function editpublication in Main API in order to html decode all settings
 - Modifications in function editpublication in Main API in order to escape double quotes for settings of type string
+- Modifications in function userlogin in Security API in order to synchronize the user data using ldap_connect without locking out users that are not kept in LDAP/AD (creates a warning log entry)
 - Modifications in text_edit_format and text_edit_unformat regarding the verification of the content
 - Modifications in function getuserinformation in Get API in order to verify the user array after the XML query
 - Modifications in the installation routine in order to set the parameters for the SMT user name and password as optional to support anonymous SMTP access
@@ -4679,6 +4699,8 @@ Release 12/2020
 - Modifications in function convert_utf8 in Main API in order to verify that the mb_detect_encoding function exists and fallback to is_utf8 function call
 - Modifications in function load_csv in Main API in order to verify that the mb_detect_encoding function exists and fallback to UTF-8 character set
 - Modifications in various function of the XML API in order to verify variable record_array
+- Implementation of the new authconnect Connector module that is used as a fallback for the LDAP/AD connector in data/connect
+- Modifications in function userlogin in Security API in order to support the new authconnect/ldap_connect in the Connector module (used as fallback LDAP/AD connect)
 - Modifications in function edituser in Main API in order to support arrays as input for the parameters usergroup and usersite
 - Modifications in function edituser in Main API in order to remove duplicates from input parameters usergroup and usersite
 - Modifications in function inherit_db_save in Main API in order to verify input
@@ -4737,6 +4759,8 @@ Release 12/2020
 - Modifications in function synccloudobjects in Cloud API in order to keep thumbnail files in the local repository
 - Modifications in JS function hcms_sharelinkFacebook in main.js due to new GET parameter names of Facebook share API
 - Modifications in user_edit in order to verify all queried values from the user XML nodes
+- Implementation of a signature LDAP for the LDAP/AD Connector module in order to automatically create an e-mail signature for the users
+- Implementation of the new main configuration setting $mgmt_config['ldap_user_signature']
 - Modifications in function correctpath in Main API in order to not verify the path using function valid_locationname
 - Modifications in function rdbms_searchcontent in DB Connect in order to include media table if the width or height attribute has been requested
 - Modifications in function rdbms_getobject_info in DB Connect in order to add width and height attributes of the media table
@@ -4756,12 +4780,16 @@ Release 12/2020
 - Bug fix: The $multiobject_array[0] in popup_status has been overwritten if the variable page has been supplied (should not be possible if folder has been provided)
 - Bug fix: control_message_menu, control_queu_menu, site_edit_inheritance, user_sendlink did not initialize some variables as an array
 - Bug fix: version_template_compare did not verify the content before replacing characters
+- Bug fix: Changes Null values to arrays for the initialization of several variables in the Import/Export API
 - Bug fix: Function getlinkedobject in Link API did not initialize some variables as arrays
 - Bug fix: Function getmetadata and getmetadata_container did not verify the text content before replacing characters
 - Bug fix: Function createmediacat in Main API did not verify and initialize the array mediacat_array_work
 - Bug fix: Function renamefolder and manipulateobject in Main API did not verify and initialize the array site_array
 - Bug fix: Function publishobject in Main API did not initialize the array component_file_array
 - Bug fix: Function transformlink in template engine did not initialize the array link_array
+- Bug fix: Function showworkflowstatus in UI API did not initialize the array member_array
+- Bug fix: Function workflowaccept and workflowreject in Workflow API did not initialize some variables as array
+- Bug fix: Function importxmlfiles in Import/Export API did not initialize all arrays
 - Bug fix: control_message_mneu tried to access undefined variable for the publication for the help link permissions
 - Bug fix: Verification of the table row definition was missing in explorer_objectlist
 - Bug fix: site_edit_inheritance used wrong html form element name
@@ -4776,3 +4804,114 @@ Release 12/2020
 - Bug fix: Function createmediacat, renamemediacat, deletemediacat, and uploadtomediacat in Main API did not verify the separator in the media categories index
 - Bug fix: Function edituser in Main API used glue parameter for an implode function call as 2nd parameter
 - Bug fix: Function renamemediacat in Main API did not verify if the same category name exists already
+
+Version 9.1.0
+Release 01/2021
+- Update of all user guides
+- Various modifications for the support of PHP version 8.0 (migration of functions that used required parameter followed by optional parameter)
+- Dropped support of MS IE if face detection or recognition will be used
+- Modifications in PHPMailer class.pop3.php and class.smtp.php in order to migrate while each to foreach
+- Design modifications in explorer_objectlist, log_objectlist, message_objectlist, queue_objectlist, search_objectlist, and user_objectlist
+- Implementation of face recognition based on tensorflow.js
+- Implementation of service users that do not exist like standard user accounts. These service users are only used for services (non-blocking face recognition service) and can be identified by their unique user name "sys:service-name:16-digit-servicehash" that is registered in the session.
+- Implementation of the new JS function hcms_remoteFileExists in main.js
+- Implementation of resizable (manual) face markers besides the markers provided by the face detection 
+- Implementation of the new main configuration parameter $mgmt_config['facerecognition'] for the new face recognition feature
+- Implementation of the new main configuration parameter $mgmt_config['facerecognition_service_url'] for the new face recognition service
+- Implementation of the new main configuration parameter $mgmt_config['facerecognition_service_users'] for the new face recognition service
+- Implementation of the new main configuration parameter $mgmt_config['facerecognition_service_exclude'] for the new face recognition service
+- Implementation of the new function is_facerecognitionservice in Main API
+- Modifications in service savecontent in order to create face images form the provided face markers and save them in the faces collection in the repository
+- Modifications in template engine in order to provide the temporary preview image used for the face definitions
+- Modifications in function showmedia in Media API in order to provide the used preview image for the face definitions and that should be used as a reference for the face recognition
+- Modifications in function showmedia in Media API in order to accept thumbnail images only if the requested size is not higher than 150% of the thumbnail size (the thumbnail file will not be accepted as a reference for the face recognition)
+- Implementation of the new local JS function initializeSignature in the template engine
+- Changed the thumbnail size frame to 280x220px in the main configuration
+- Implementation of the new JS library for face recognition
+- Modifications in frameset_main in order to load the face recognition JS API (not supported by Mobile Edition)
+- Implementation of the new service getfacedefintions in order provide face labels, images and descriptions from the faces collection used for the face recognition
+- Implementation of the new service setfacedefintion in order to save face descriptors created from the source face images
+- Implementation of the new JS function hcms_syncajaxService in main.js for the support of synchronous AJAX request
+- Implementation of the new JS functions createFaceMarkerOnImage and createFaceMarkerOnVideo in the template engine
+- Modifications in various JS functions in the template engine in order to support face recognition
+- Modifications in JS functions hcms_ajaxService and hcms_syncajaxService in main.js in order to support the override of the mime-type
+- Modifications in createtables.sql in DB Connect in order to add the new column analyzed to the media table
+- Modifications in function rdbms_setmedia in DB Connect in order to support the new analyzed parameter used for face recognition
+- Implementation of the new function rdbms_resetanalyzed in DB Connect in order to reset the analyzed attribute if a new face label has been defined
+- Implementation of the new function update_database_v910 in DB Connect in order to add the new analyzed attribute to table media 
+- Implementation of the new service recognizefaces
+- Modifications in function buildview in template engine in order to support the new input parameter and service recognizefaces
+- Modifications in function showmedia in order to support the new input parameter and service recognizefaces
+- Modifications in frameset_main in order to support the service recognizefaces
+- Design modifications in frameset_main in order to apply CSS class hcmsWorkplaceObjectlist to the body element
+- Implementation of face recognition for videos
+- Modifications in JS function detectFaceOnVideo in the template engine in order to support face recognition for videos
+- Modifications in JS function createFaceMarkerOnVideo in the template engine in order to support face recognition for videos
+- Modifications in JS function captureImageFromVideo in the template engine in order to support face recognition for videos
+- Implementation of the new JS function recognizeFacesOnVideoService in order to recognize faces on videos (used as a service)
+- Modifications in function createfilename in Main API in order to exclude multimedia file names from the correction 
+- Modifications in function hcms_encrypt and hcms_decrypt in Security API in order to use OpenSSL AES 128bit encryption as the Standard method with fallback to Mcrypt
+- Modifications in function createobject in Main API in order to unlock contentcount.dat after the time limit of function loadlockfile
+- Modifications in function getbrowserinfo in Get API in order to set "msedge" as browser name for MS Edge
+- Modifications in home box server_load, framset_main, function showmedia in UI API and function buildview in the template engine in order to disable face recognition if MS IE is used as browser
+- Modifications in annotate.js in order to verify the JS face detection and recognition functions since they will not be available for MS IE
+- Modifications in annotate.js and function buildview in template engine in order to resize the face markers if the zoom of the annotation image has been changed
+- Implementation of the new JS function resizeFaces in template engine in order to resize face and object markers according to the zoom level
+- Implementation of the new JS function hcms_arrayRemoveValue in main.js
+- Modifications in template engine in order to save face positions as float values instead of integer values due to rerquired precission for the scaling of face markers 
+- Modifications in function rdbms_setpublicationtaxonomy in order to verify publication names for the query
+- Implementation of the new function showhelpbutton in UI API
+- Modifications in all controls (toolbars with help button) in order to implement the new function showhelpbutton
+- Design modifications in all design themes in order to provide styles for a custom scrollbar
+- Modifications in function buildview in template engine and function showinlineeditor in UI API in order to use day design theme (dark icon) for the signature delete button
+- Modifications in function deletemediafiles in Main API in order to delete the target media file of a symbolic link
+- Implementation of the new face recognition management plugin in order to manage the labelled faces used for face recognition
+- Implementation of the new function registerservice in Security API in order to register a service for a user
+- Implementation of the new function registerserviceuser in Security API in order to register a system service user in a new service session
+- Modifications in function registerinstance in Security API in order to return the result of function setsession
+- Modifications in function buildview in template engine in order to provide information for service savecontent required by the face recognition service
+- Modifications in function userlogin in security API in order to replace parts of the code for hidden folders by function splitstring
+- Modifications in userlogout in order to remove the users session file
+- Modifications in function killsession in Security API in order to remove session files of the user
+- Modifications in service savecontent and function showmedia in UI API in order to set the localpermission for the facerecognition service users
+- Modifications in include/session.inc.php in order to add the new services session parameter
+- Modifications in service savecontent in order to exclude content if the face recognition service provided the content
+- Design modifications in Plugins
+- Added support for MOV video conversion to the main configuration file in the install directory
+- Modifications in function showmedia in UI API in order to reduce the video player height for portrait videos with a height greater than 720 pixels
+- Implementation of the new function createCORSheader in Main API in order to support CORS for cross-domain services
+- Modifications in function setlocalpermission in Security API in order to set required permissions for the recognizefaces service user
+- Modifications in function showaudioplayer, showvideoplayer, showaudioplayer_head, and showvideoplayer_head in UI API in order to support the cleandomain input parameter for removing the domain names in video sources and poster
+- Modifications in explorer_objectview, explorer_preview, media_playerconfig, version_contentcompare, text_edit_format, text_media_select, and videoplayer
+- Modifications in function buildview in the template engine in order to allow a position tolerance of 6 pixels (+/-3px) for the comparison of existing faces in images and videos
+- Removed old face detection feature from all system components 
+- Modifications in function createtaxonomy in Meta API in order to allow any brackets in the keyword and to escape commas that will otherwise be considered as separator for keywords by the keyword text editor
+- Modifications in function showtaxonomytree in UI API in order to escape commas that will otherwise be considered as separator for keywords by the keyword text editor
+- Modifications in service getkeywords in order to escape commas that will otherwise be considered as separator for keywords by the keyword text editor
+- Modifications in service savecontent in order to read the main input parameters before characterset conversion
+- Modifications in function createsession in Security API in order to support the session name input parameter
+- Modifications in home boxes, controls, and list views in order to apply new popup window height of 220px instead of 180px and set attributes due to Chrome and MS Edge display issues
+- Modifications in contextmenu.js in order to apply new popup window height of 220px instead of 180px and set attributes due to Chrome and MS Edge display issues
+- Modifications in JS function hcms_translateText in main.js in order to return text if it the same as the source text
+- Design modifications in site_edit_form
+- Design modifications in function showmessage in UI API
+- Modifications in function getrequest in Get API in order to set default value for "array" to array and not an empty string
+- Modifications in explorer_preview in order to hide base64 encoded images
+- Modifications in function showmetadata in UI API in order to display base64 encoded signature images
+- Bug fix: message_objectlist used wrong column index that lead to a misbehaviour when changing the columns width
+- Bug fix: Service savecontent changed the character set of multimedia objects based on the publication setting of the character set
+- Bug fix: JS function detectFaceOnImage in template engine did use not use the style height of the image for calculating the ratio
+- Bug fix: Function userlogin in Security API did not use $mgmt_config['passwordexpires'] for the password expiration
+- Bug fix: Function userlogin in Security API did not use the function password_verify for the verification of the new password with the old passwords 
+- Bug fix: Media form elements have not been displayed in the template engine
+- Bug fix: Renamed tag id from annotation to facemarker in function showmedia in UI API in order to solve issues with the face marker positioning if annotations are disabled
+- Bug fix: Removed click event on non existing element in control_content_menu
+- Bug fix: Function createmedia in Media API did not save the new media information of a modified original media file (image or video) since the setmediainfo input parameter has been set to false
+- Bug fix: Modifications in media_rendering in order to fix issues with the display of the save layer
+- Bug fix: Service savecontent did not verify the media file attribute of the object before the character set definition for the XML container
+- Bug fix: Chrome and MS Edge loses the session ID of the facerecognition service. Fixed by providing the session ID using the PHPSESSID parameter for all service calls
+- Bug fix: Function getlistelements in Get API did not set the provided language code of a taxonomy path
+- Bug fix: media_taxonomy did not verify the selectedlang_temp variable as array
+- Bug fix: control_objectlist_menu did not allow the ZIP compression of folders only
+- Bug fix: Function setfilter in UI API did not remove filters if no filter has been selected/defined
+- Bug fix: The YouTube connector did not verify the object if the YouTube token acquire was active  

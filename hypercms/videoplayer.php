@@ -149,8 +149,8 @@ if (is_array ($config))
   // config version 2.0 and up
   if (intval ($config['version']) >= 2) 
   {
-    if ($audio) $playercode = showaudioplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $autoplay, $loop, $controls, false);
-    else $playercode = showvideoplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $title, $autoplay, $fullscreen, $loop, $muted, $controls, true);
+    if ($audio) $playercode = showaudioplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $autoplay, $loop, $controls, false, false);
+    else $playercode = showvideoplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $title, $autoplay, $fullscreen, $loop, $muted, $controls, true, false);
   }
   // player code is embedded in config
   else
@@ -182,8 +182,8 @@ if ($playercode != "")
     <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>theme/night/css/main.css" />
     <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']."theme/night/css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
     <?php
-    if ($audio) echo showaudioplayer_head (false);
-    else echo showvideoplayer_head (false, $fullscreen);
+    if ($audio) echo showaudioplayer_head (false, false);
+    else echo showvideoplayer_head (false, $fullscreen, false);
     ?>
     <script type="text/javascript">
 

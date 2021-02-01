@@ -23,7 +23,7 @@ $mgmt_maxsizepreview = array();
 // Please note: use always slash (/) in path settings
 
 // Depending how the user accessed our page we are setting our protocol
-$mgmt_config['url_protocol'] = (!empty($_SERVER['HTTPS'])) ? 'https://' : 'http://';
+$mgmt_config['url_protocol'] = !empty ($_SERVER['HTTPS']) ? 'https://' : 'http://';
 
 // URL and asolute path to hyperCMS on your webserver
 $mgmt_config['url_path_cms'] = $mgmt_config['url_protocol']."%url_path_cms%";
@@ -229,11 +229,22 @@ $mgmt_config['chat_type'] = "public";
 // Define support user name for chat that will always be present for chat or leave empty
 $mgmt_config['chat_support'] = "";
 
-// Define if annotations for images and documents should be enabled (true) or disabled (false)
+// Define if markers for images and videos and annotations for images and documents should be enabled (true) or disabled (false)
 $mgmt_config['annotation'] = false;
 
-// Define if face detection for images and videos should be enabled (true) or disabled (false)
-$mgmt_config['facedetection'] = false;
+// Define if face detection and recognition for images and videos should be enabled (true) or disabled (false)
+$mgmt_config['facerecognition'] = false;
+
+// Define URL of your system using a different subdomain or domain in order to run the service indepenendtly (non-blocking)
+// Otherwise the client service will be operated in the same domain as the users client session (blocking)
+// Use SSL for the service if your installation uses SSL. Do not mix HTTP and HTTPS since the browsers will block mixed content.
+$mgmt_config['facerecognition_service_url'] = "";
+
+// Run the face recognition service on the clients of the defined users (use ; as separator for the user names) in the background or leave empty for all user clients
+$mgmt_config['facerecognition_service_users'] = "";
+
+// Exclude assets of publications from the face recognition service (use ; as separator for the publication names) or leave empty for all publications
+$mgmt_config['facerecognition_service_exclude'] = "";
 
 // Define standard mail link type ("access" = access-link; "download" = download-link)
 $mgmt_config['maillink'] = "download";
@@ -251,7 +262,7 @@ $mgmt_config['wallpaper'] = "";
 // Show (true) or hide (false) information boxes to provide additional information to the user
 $mgmt_config['showinfobox'] = true;
 
-// Define home boxes to show for each user if no indiviual selection has been made (use ; as seperarator)
+// Define home boxes to show for each user if no indiviual selection has been made (use ; as separator)
 // Home boxes are located in directory hypercms/box/
 $mgmt_config['homeboxes'] = "search;news;tasks;recent_objects;up_and_downloads;recent_downloads;recent_uploads";
 
@@ -809,7 +820,7 @@ $mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
 $mgmt_imagepreview['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
 
 // If an image file is uploaded hyperCMS will try to generate a thumbnail file for preview:
-$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 260x220 -q 95 -f jpg";
+$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 280x220 -q 95 -f jpg";
 
 // Define the supported target formats for image editing:
 $mgmt_imageoptions['.bmp']['original'] = "-f bmp";
@@ -862,6 +873,7 @@ $mgmt_mediaoptions['autorotate-video'] = true;
 // Define the supported target formats for video/audio editing (please use the variables %videobitrate%, %audiobitrate%, %width%, %height%)
 // Video formats:
 $mgmt_mediaoptions['.flv'] = "-b:v %videobitrate% -s:v %width%x%height% -f flv -c:a libmp3lame -b:a %audiobitrate% -ac 2 -ar 22050";
+$mgmt_mediaoptions['.mov'] = "-b:v %videobitrate% -s:v %width%x%height% -f mov";
 $mgmt_mediaoptions['.mp4'] = "-b:v %videobitrate% -s:v %width%x%height% -f mp4 -c:a libfdk_aac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
 $mgmt_mediaoptions['.mpeg'] = "-b:v %videobitrate% -s:v %width%x%height% -f mpeg -c:a aac -b:a %audiobitrate% -ac 2";
 $mgmt_mediaoptions['.ogv'] = "-b:v %videobitrate% -s:v %width%x%height% -f ogg -c:a libvorbis -b:a %audiobitrate% -ac 2";
@@ -947,8 +959,8 @@ $mgmt_config['restore_exported_media'] = true;
 
 // --------------------------------------- App Keys --------------------------------------------
 
-// Youtube integration (requires Connector module)
-// Please provide Google API credentials in order to upload videos to Youtube
+// YouTube integration (requires Connector module)
+// Please provide Google API credentials in order to upload videos to YouTube
 $mgmt_config['youtube_oauth2_client_id'] = "";
 $mgmt_config['youtube_oauth2_client_secret'] = "";
 $mgmt_config['youtube_appname'] = "";

@@ -726,7 +726,10 @@ function createtaxonomy ($site_name="", $recreate=false)
               else
               {
                 // clean text
-                $label = str_replace (array("\"", "(", ")", "[", "]", "{", "}"), array(""), $label);
+                $label = str_replace (array("\""), array(""), $label);
+
+                // escape commas
+                $label = str_replace (",", "¸", $label);
 
                 // create array element
                 $result[] = "\$taxonomy['".$lang."']['".$path."/".$id."/'] = \"".trim ($label)."\";";
@@ -2207,7 +2210,7 @@ function iptc_getcharset ($tag)
 // description:
 // Convert the IPTC tag to binary code
 
-function iptc_maketag ($record=2, $tag, $value)
+function iptc_maketag ($record=2, $tag=0, $value="")
 {
   if ($record >= 0 && $tag != "")
   {
@@ -2887,7 +2890,7 @@ function metadata_exists ($mapping, $text_array)
 // Saves meta data of a multimedia file using a provided mapping in the proper fields of the content container. 
 // If no mapping is given a default mapping will be used.
 
-function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="", $containerdata="", $user, $savecontainer=true)
+function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="", $containerdata="", $user="", $savecontainer=true)
 {
   global $eventsystem, $mgmt_config, $hcms_ext;
 

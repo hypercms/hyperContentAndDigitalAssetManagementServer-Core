@@ -42,7 +42,7 @@ $portal = getrequest ("portal");
 // input parameters (asset browser)
 $userhash = getrequest ("userhash");
 $objecthash = url_encode (getrequest ("objecthash"));
-$filter = getrequest ("filter"); 
+$filter = getrequest ("filter");
 // deprecated since version 5.6.1 but still supported:
 // input parameters (mail-link logon)
 $hcms_user = getrequest ("hcms_user");
@@ -57,7 +57,7 @@ $hcms_id_token = getrequest ("hcms_id_token");
 $al = getrequest ("al");
 $oal = getrequest ("oal");
 
-// initalize
+// initialize
 $ignore_password = false;
 $hcms_objformats = false;
 $accesslink = false;

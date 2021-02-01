@@ -46,6 +46,12 @@ checkusersession ($user, false);
 <!-- JQuery used for AJAX viewport set request -->
 <script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
 
+<?php if (is_facerecognitionservice ("sys")) { ?>
+<!-- face recognition -->
+<script defer src="javascript/facerecognition/face-api.min.js"></script>
+<script defer src="javascript/facerecognition/face-init.js"></script>
+<?php } ?>
+
 <?php
 // invert colors
 if (!empty ($hcms_themeinvertcolors))
@@ -104,7 +110,7 @@ function setviewport ()
 
 function openInfo()
 {
-  hcms_openWindow('top_info.php', 'help', 'resizable=no,scrollbars=no', '640', '400');
+  hcms_openWindow('top_info.php', 'help', 'location=no,menubar=no,toolbar=no,titlebar=no,resizable=no,scrollbars=no', '640', '400');
 }
 
 function showHome ()
@@ -380,7 +386,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 </script>
 </head>
 
-<body onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>" onbeforeunload="return showwarning();">
+<body class="hcmsWorkplaceObjectlist" onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>" onbeforeunload="return showwarning();">
 
 <!-- popup for preview/live-view and forms (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="objectviewMainLayer" style="display:none; z-index:20;">
@@ -499,6 +505,29 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
 <!-- uploads -->
 <div id="uploadsLayer" style="position:fixed; bottom:0; right:0; max-width:100%; max-height:36px; margin:0; padding:0; z-index:10;"></div>
+
+<?php if (is_facerecognitionservice ($user)) {
+// Syntax: <iframe sandbox="value">
+//
+// Values:
+// (no value) ... Applies all restrictions
+// allow-forms ... Allows form submission
+// allow-modals ...	Allows to open modal windows
+// allow-orientation-lock ...	Allows to lock the screen orientation
+// allow-pointer-lock ...	Allows to use the Pointer Lock API
+// allow-popups ... Allows popups
+// allow-popups-to-escape-sandbox ... Allows popups to open new windows without inheriting the sandboxing
+// allow-presentation ... Allows to start a presentation session
+// allow-same-origin ... Allows the iframe content to be treated as being from the same origin
+// allow-scripts ... Allows to run scripts
+// allow-top-navigation ... Allows the iframe content to navigate its top-level browsing context
+// allow-top-navigation-by-user-activation ... Allows the iframe content to navigate its top-level browsing context, but only if initiated by user
+?>
+<!-- recognize faces service -->
+<div id="recognizefacesLayer" style="position:fixed; bottom:0; right:22px; width:1200px; height:620px; margin:0; padding:0; z-index:-10; visibility:hidden;">
+  <iframe src="<?php echo createfacerecognitionservice ($user); ?>" sandbox="allow-same-origin allow-scripts allow-forms" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
+</div>
+<?php } ?>
 
 </body>
 </html>

@@ -129,7 +129,7 @@ function getallusers ($site)
 {
   global $mgmt_config, $groupdata, $userdata, $allgroup_array, $alluseritem_array, $alluser_array, $allemail_array, $allrealname_array;
 
-  // reinitalize (important!)
+  // reinitialize (important!)
   $allgroup_array = array();
   $alluseritem_array = array();
   $alluser_array = array();
@@ -173,7 +173,7 @@ function getallusers ($site)
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
+// initialize
 $error = array();
 $add_onload = "";
 $groupdata = "";

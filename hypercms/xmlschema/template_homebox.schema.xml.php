@@ -29,7 +29,7 @@ if (!empty ("[hyperCMS:components id='Link' onEdit='hidden']"))
     // create secure token
     $token = createtoken ($user);
 
-    if ($linktype == "Open asset") $link = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".getpublication ($complink)."&cat=comp&location=".getlocation ($complink)."&page=".getobject ($complink)."&token=".$token."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
+    if ($linktype == "Open asset") $link = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".getpublication ($complink)."&cat=comp&location=".getlocation ($complink)."&page=".getobject ($complink)."&token=".$token."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
     if ($linktype == "Display in browser") $link = "location.hypercms_href='".createwrapperlink (getpublication ($complink), getlocation ($complink), getobject ($complink), "comp")."';";
     if ($linktype == "Download") $link = "location.hypercms_href='".createdownloadlink (getpublication ($complink), getlocation ($complink), getobject ($complink), "comp")."';";
   }

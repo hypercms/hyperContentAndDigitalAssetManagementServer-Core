@@ -133,16 +133,20 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     
     foreach ($metadata_array as $key => $value)
     {
-      $rows .= "
-    <tr>
-      <td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".showshorttext ($value, 280)."</td>
-    </tr>";
+      // don't display base64 encoded images
+      if (strpos ($key, ":image") < 1 && strpos ("_".$value, "image/gif;base64") < 1 && strpos ("_".$value, "image/png;base64") < 1 && strpos ("_".$value, "image/jpeg;base64") < 1 &&  strpos ("_".$value, "image/svg;base64") < 1 && strpos ("_".$value, "image/webp;base64") < 1)
+      {
+        $rows .= "
+      <tr>
+        <td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".showshorttext ($value, 280)."</td>
+      </tr>";
+      }
+      
+      if ($rows != "") $metadata = "
+      <hr />
+      <table class=\"hcmsTableStandard\">\n".$rows."</table>
+      ";
     }
-    
-    if ($rows != "") $metadata = "
-    <hr />
-    <table class=\"hcmsTableStandard\">\n".$rows."</table>
-    ";
   }
 
   //--------------------------------- related assets (only childs) --------------------------------- 
@@ -223,8 +227,8 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
-<?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false); ?>
-<?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false, false); ?>
+<?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false, true); ?>
+<?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false, false, true); ?>
 </head>
 
 <body class="hcmsWorkplaceGeneric">

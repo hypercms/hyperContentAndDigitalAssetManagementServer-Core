@@ -175,8 +175,8 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <?php 
-if (is_audio ($page)) echo showaudioplayer_head (false);
-else echo showvideoplayer_head (false, false);
+if (is_audio ($page)) echo showaudioplayer_head (false, true);
+else echo showvideoplayer_head (false, false, true);
 ?>
 </head>
 

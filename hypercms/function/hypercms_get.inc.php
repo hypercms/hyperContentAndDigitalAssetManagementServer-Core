@@ -177,7 +177,7 @@ function getrequest ($variable, $force_type=false, $default="")
     if ($result != "" && ($force_type == "numeric" || $force_type == "array" || $force_type == "publicationname" || $force_type == "locationname" || $force_type == "objectname" || $force_type == "url" || $force_type == "bool"))
     {
       if ($force_type == "numeric" && !is_numeric ($result)) $result = $default;
-      elseif ($force_type == "array" && !is_array ($result)) $result = $default;
+      elseif ($force_type == "array" && !is_array ($result) && $default == "") $result = array();
       elseif ($force_type == "publicationname" && !valid_publicationname ($result)) $result = $default;
       elseif ($force_type == "locationname" && !valid_locationname ($result)) $result = $default;
       elseif ($force_type == "objectname" && !valid_objectname ($result)) $result = $default;
@@ -572,7 +572,7 @@ function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
 // The expression can be a taxonomy path in the form of %taxonomy%/site/language-code/taxonomy-ID/taxonomy-child-levels (use "all" for all languages and "0" for all taxonomy-IDs on first level).
 // The global variable $taxonomy can be used to pass the taxonomy as array.
 
-function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $id_only=true, $id_path=false)
+function gettaxonomy_childs ($site, $lang, $expression, $childlevels=1, $id_only=true, $id_path=false)
 {
   global $mgmt_config, $taxonomy;
 
@@ -1280,7 +1280,8 @@ function getlistelements ($list_sourcefile)
 
       // set user language as default
       if ((empty ($language) || strtolower ($language) == "all") && !empty ($lang)) $language = $lang;
-      else $language = "en";
+      // use default language
+      elseif (empty ($language)) $language = "en";
 
       // reset source file to service/getkeywords
       if (!empty ($publication) && !empty ($language) && isset ($taxonomy_id))
@@ -2356,7 +2357,7 @@ function getthemelocation ($theme="")
 // description:
 // Evaluates the category ['page, comp'] of a location
 
-function getcategory ($site="", $location)
+function getcategory ($site, $location)
 {
   global $mgmt_config, $publ_config;
 
@@ -4719,7 +4720,7 @@ function getbrowserinfo ()
     // MS Edge
     elseif (preg_match ('/Edge/i', $u_agent))
     {
-      $bname = 'msie';
+      $bname = 'msedge';
       $ub = "Edge";
     }
     elseif (preg_match ('/Firefox/i', $u_agent))
@@ -5214,7 +5215,7 @@ function getclipboard ($output="path", $return_text_id=array())
 
   if (getsession ("hcms_temp_clipboard"))
   {
-    // initalize
+    // initialize
     $object_id_array = array();
     $object_path_array = array();
 

@@ -196,7 +196,7 @@ else
   $media_size = getmediasize ($media_root.$mediafile);
 }
 
-// initalize thumb width and height
+// initialize thumb width and height
 $thumb_size = array();
 $thumb_size['width'] = 740;
 $thumb_size['height'] = "";

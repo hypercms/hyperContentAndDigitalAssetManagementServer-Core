@@ -193,7 +193,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     <input type="hidden" name="db_connect" value="<?php echo $db_connect; ?>" />
     <input type="hidden" name="artid" value="<?php echo $artid; ?>" />
     <input type="hidden" name="tagname" value="<?php echo $tagname; ?>" />
-    <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
     <table class="hcmsTableStandard">
       <tr>

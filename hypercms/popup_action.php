@@ -73,7 +73,7 @@ if ($action != "publish")
   while (@ob_end_flush());
 }
 
-// initalize
+// initialize
 $show = "";
 $add_onload = "";
 $multiobject_array = array();

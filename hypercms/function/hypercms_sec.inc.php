@@ -52,7 +52,7 @@ function rootpermission ($site_name, $site_admin, $permission_str)
 
   if (is_array ($permission_str) && valid_publicationname ($site_name))
   {
-    // initalize
+    // initialize
     if (!isset ($rootpermission)) $rootpermission = array();
 
     if (!isset ($rootpermission['desktop'])) $rootpermission['desktop'] = 0;
@@ -128,7 +128,7 @@ function globalpermission ($site_name, $permission_str)
 {
   if (is_array ($permission_str) && valid_publicationname ($site_name))
   {
-    // initalize
+    // initialize
     $globalpermission = array();
     $globalpermission[$site_name] = array();
 
@@ -276,7 +276,7 @@ function localpermission ($site_name, $permission_str)
         // get permissions from string
         parse_str ($value, $permission_array);
 
-        // initalize
+        // initialize
         $localpermission = array();
         $localpermission[$site_name] = array();
         $localpermission[$site_name][$group_name] = array();
@@ -429,7 +429,7 @@ function accesspermission ($site, $location, $cat)
 
   if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
   {
-    // initalize
+    // initialize
     $points = array();
     $groups = array();
     $result = array();
@@ -911,7 +911,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       'labels' => array()
       );
 
-  // initalize
+  // initialize
   $linking_auth = true;
   $ldap_auth = true;
   $auth = false;
@@ -1020,7 +1020,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         list ($log_date, $log_password) = explode ("|", end ($log_array));
 
         // expiration UNIX timestamp
-        $pw_expires = strtotime ($log_date) + intval ($mgmt_config['resetpassword']) * 24 * 60 * 60;
+        $pw_expires = strtotime ($log_date) + intval ($mgmt_config['passwordexpires']) * 24 * 60 * 60;
 
         // if password is expired
         if (time() > $pw_expires) $result['resetpassword'] = true;
@@ -1420,27 +1420,18 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
 
                 $site_collection .= "|".$site_name;
 
-                if (!isset ($result['hiddenfolder'][$site_name])) $result['hiddenfolder'][$site_name] = false;
+                if (!isset ($result['hiddenfolder'][$site_name])) $result['hiddenfolder'][$site_name] = array();
 
                 // define array of excluded/hidden folders
                 if (!empty ($mgmt_config[$site_name]['exclude_folders']))
                 {
-                  if (substr ($mgmt_config[$site_name]['exclude_folders'], strlen ($mgmt_config[$site_name]['exclude_folders']) - 1, 1) == ";")
+                  if (substr_count ($mgmt_config[$site_name]['exclude_folders'], ";") > 0)
                   {
-                    $excludefolders = substr ($mgmt_config[$site_name]['exclude_folders'], 0, strlen ($mgmt_config[$site_name]['exclude_folders']) - 1);
+                    $result['hiddenfolder'][$site_name] = splitstring ($mgmt_config[$site_name]['exclude_folders']);
                   }
                   else
                   {
-                    $excludefolders = $mgmt_config[$site_name]['exclude_folders'];
-                  }
-
-                  if (substr_count ($excludefolders, ";") > 0)
-                  {
-                    $result['hiddenfolder'][$site_name] = explode (";", $excludefolders);
-                  }
-                  else
-                  {
-                    $result['hiddenfolder'][$site_name] = array ($excludefolders);
+                    $result['hiddenfolder'][$site_name] = array ($mgmt_config[$site_name]['exclude_folders']);
                   }
                 }
               }
@@ -1520,27 +1511,18 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               {
                 require_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
 
-                if (!isset ($result['hiddenfolder'][$site_name])) $result['hiddenfolder'][$site_name] = false;
+                if (!isset ($result['hiddenfolder'][$site_name])) $result['hiddenfolder'][$site_name] = array();
 
                 // define array of excluded/hidden folders
                 if (!empty ($mgmt_config[$site_name]['exclude_folders']))
                 {
-                  if (substr ($mgmt_config[$site_name]['exclude_folders'], strlen ($mgmt_config[$site_name]['exclude_folders']) - 1, 1) == ";")
+                  if (substr_count ($mgmt_config[$site_name]['exclude_folders'], ";") > 0)
                   {
-                    $excludefolders = substr ($mgmt_config[$site_name]['exclude_folders'], 0, strlen ($mgmt_config[$site_name]['exclude_folders']) - 1);
+                    $result['hiddenfolder'][$site_name] = explode (";", $mgmt_config[$site_name]['exclude_folders']);
                   }
                   else
                   {
-                    $excludefolders = $mgmt_config[$site_name]['exclude_folders'];
-                  }
-
-                  if (substr_count ($excludefolders, ";") > 0)
-                  {
-                    $result['hiddenfolder'][$site_name] = explode (";", $excludefolders);
-                  }
-                  else
-                  {
-                    $result['hiddenfolder'][$site_name] = array ($excludefolders);
+                    $result['hiddenfolder'][$site_name] = array ($mgmt_config[$site_name]['exclude_folders']);
                   }
                 }
 
@@ -2067,15 +2049,79 @@ function registerinstance ($instance, $load_config=true)
 
     if (valid_publicationname ($instance) && is_file ($mgmt_config['instances'].$instance.".inc.php"))
     {
-      setsession ('hcms_instance', $instance);
-
       // load management configuration of instance
       if ($load_config) require ($mgmt_config['instances'].$instance.".inc.php");
 
-      return true;
+      return setsession ('hcms_instance', $instance);
     }
-    else return false;
   }
+
+  return false;
+}
+
+// ---------------------- registerservice -----------------------------
+// function: registerservice()
+// input: service name [string], user name [string]
+// output: service hash as string / false on error
+// requires: hypercms_api.inc.php
+
+// description:
+// Registers the service of a standard user and returns the service hash.
+
+function registerservice ($servicename, $user)
+{
+  global $mgmt_config;
+
+  if (valid_objectname ($servicename) && valid_objectname ($user))
+  {
+    // create unique hash
+    $servicehash = createuniquetoken (16);
+
+    // save service file
+    $data = $mgmt_config['today']."|".$servicename."|".$user;
+    
+    if (savefile ($mgmt_config['abs_path_data']."session/", $servicename.".".$servicehash.".dat", $data))
+    {
+      // create session if it does not exist
+      createsession ();
+
+      // save service in users session
+      setsession ('hcms_services', array($servicename => array($servicehash)));
+
+      return $servicehash;
+    }
+  }
+
+  return false;
+}
+
+// ------------------------- registerserviceuser -----------------------------
+// function: registerserviceuser()
+// input: service name [string], 16 digits service hash [string]
+// output: system service user name / false
+
+// description:
+// Registers a system service user "sys:service-name:16-digit-servicehash" in the session. 
+
+function registerserviceuser ($servicename, $servicehash)
+{
+  global $mgmt_config;
+
+  if ($servicename != "" && $servicehash != "")
+  {
+    // create session if it does not exist
+    createsession ();
+
+    // create system service user name "sys:service-name:16-digit-servicehash"
+    $user = "sys:".$servicename.":".$servicehash;
+
+    // register user name and the IP address
+    setsession ('hcms_user', $user);
+    setsession ('hcms_user_ip', getuserip());
+
+    return $user;
+  }
+  else return false;
 }
 
 // ---------------------- registeruser -----------------------------
@@ -2087,7 +2133,7 @@ function registerinstance ($instance, $load_config=true)
 // description:
 // Registers all user related paramaters in the session. Access links can be provided with the login result or alternatively as the seperate accesslink parameter.
 
-function registeruser ($instance="", $login_result, $accesslink=false, $hcms_objformats=false, $is_mobile=0, $is_iphone=0, $html5support=1)
+function registeruser ($instance="", $login_result=array(), $accesslink=false, $hcms_objformats=false, $is_mobile=0, $is_iphone=0, $html5support=1)
 {
   global $mgmt_config, $hcms_lang, $lang;
 
@@ -2388,16 +2434,17 @@ function writesessiondata ()
 
 // ------------------------- createsession -----------------------------
 // function: createsession()
-// input: %
+// input: session name [string] (optional)
 // output: true
 
 // description:
-// Checks if session data of a user is available. This function does access session variables directly.
+// Creates a session for the user. This function accesses session variables directly.
 
-function createsession ()
+function createsession ($name="hyperCMS")
 {
   global $mgmt_config;
 
+  // initalize
   $error = array();
 
   // check user session and set session ID if required
@@ -2407,9 +2454,9 @@ function createsession ()
   }
 
   // start session
-  if (session_id() == "" || !isset ($_SESSION) || session_name() != "hyperCMS")
+  if (session_id() == "" || !isset ($_SESSION) || session_name() != $name)
   {
-    session_name ("hyperCMS");
+    session_name ($name);
     session_start ();
   }
 
@@ -2468,7 +2515,7 @@ function createsession ()
 // requires: hypercms_api.inc.php
 
 // description:
-// Destroys session data of a user.
+// Destroys the session data of a user.
 
 function killsession ($user="", $destroy_php=true, $remove=false)
 {
@@ -2523,6 +2570,23 @@ function killsession ($user="", $destroy_php=true, $remove=false)
   deletefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", 0);
   deletefile ($mgmt_config['abs_path_temp'], session_id().".dat", 0);
   deletefile ($mgmt_config['abs_path_temp'], session_id().".js", 0);
+
+  // delete service files
+  $services = getsession ("hcms_services");
+
+  if (is_array ($services) && sizeof ($services) > 0)
+  {
+    foreach ($services as $servicename => $hash_array)
+    {
+      if (is_array ($hash_array) && sizeof ($hash_array) > 0)
+      {
+        foreach ($hash_array as $hash)
+        {
+          deletefile ($mgmt_config['abs_path_data']."session/", $servicename.".".$hash.".dat", 0);
+        }
+      }
+    }
+  }
 
   // get client IP address
   $client_ip = getuserip();
@@ -2728,9 +2792,6 @@ function checkpassword ($password, $user="")
 
       if ($log_array != false && sizeof ($log_array) > 0)
       {
-        // crypt password
-        $password_hash = password_hash ($password, PASSWORD_BCRYPT);
-
         // reverse array
         $log_array = array_reverse ($log_array);
 
@@ -2739,13 +2800,18 @@ function checkpassword ($password, $user="")
 
         foreach ($log_array as $log)
         {
-          if (strpos ($log, $password_hash) > 0)
+          if (strpos ($log, "|") > 0)
           {
-            $error[] = $hcms_lang['password-must-not-be-used'][$lang]." (Password history: ".intval ($mgmt_config['passwordhistory']).")";
-          }
+            list ($date, $hash) = explode ("|", $log);
 
-          if ($i <= intval ($mgmt_config['passwordhistory'])) break;
-          $i++;
+            if (password_verify ($password, $hash))
+            {
+              $error[] = $hcms_lang['password-must-not-be-used'][$lang]." (Password history: ".intval ($mgmt_config['passwordhistory']).")";
+            }
+
+            if ($i <= intval ($mgmt_config['passwordhistory'])) break;
+            $i++;
+          }
         }
       }
     }
@@ -2884,7 +2950,7 @@ function checkuserrequests ($user="sys")
         // warning
         $client_ip = getuserip ();
         $errcode = "00109";
-        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|user $user with client IP $client_ip is banned due to a possible CSRF attack";
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|user '".$user."' with client IP ".$client_ip." is banned due to a possible CSRF attack";
 
         savelog (@$error);
         killsession ($user);
@@ -2925,24 +2991,48 @@ function recreateusersession ()
 
 // ------------------------- checkusersession -----------------------------
 // function: checkusersession()
-// input: user name [string] (optional), include CSRF detection [boolean]
+// input: user name or service identifier [string] (optional), include CSRF detection [boolean]
 // output: true / html-output followed by termination
 // requires config.inc.php
 
 // description:
 // Checks if the session data of a user is valid. This function does access session variables directly.
+// If a system service is used the service identifier in the form of "sys:service-name:service-hash" can be provided. 
 
 function checkusersession ($user="sys", $CSRF_detection=true)
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $alarm = true;
+  $error = array();
 
   // add CSRF detection
   if ($CSRF_detection == true) checkuserrequests ($user); 
 
-  if (valid_objectname ($user) && is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && !empty ($_SESSION['hcms_siteaccess']) && is_array ($_SESSION['hcms_siteaccess']) && !empty ($_SESSION['hcms_rootpermission']) && is_array ($_SESSION['hcms_rootpermission']))
+  // check system service "sys:service-name:16-digit-servicehash"
+  if (substr ($user, 0, 4) == "sys:" && substr_count ($user, ":") == 2)
+  {
+    list ($sys, $servicename, $servicehash) = explode (":", $user);
+
+    // get users client IP address
+    $client_ip = getuserip ();
+
+    // service session file must exist
+    if (is_file ($mgmt_config['abs_path_data']."session/".$servicename.".".$servicehash.".dat"))
+    {
+      // verify IP address of  system service user
+      if (getsession ('hcms_user_ip') == $client_ip) $alarm = false;
+    }
+    else
+    {
+      // error
+      $errcode = "10119";
+      $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|".$errcode."|service session for user '".$user."' with client IP ".$client_ip." is missing";
+    }
+  }
+  // check standard user
+  elseif (valid_objectname ($user) && is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && !empty ($_SESSION['hcms_siteaccess']) && is_array ($_SESSION['hcms_siteaccess']) && !empty ($_SESSION['hcms_rootpermission']) && is_array ($_SESSION['hcms_rootpermission']))
   {
     $session_array = @file ($mgmt_config['abs_path_data']."session/".$user.".dat");
 
@@ -2955,19 +3045,25 @@ function checkusersession ($user="sys", $CSRF_detection=true)
           list ($regsessionid, $regsessiontime, $regpasswd, $regchecksum) = explode ("|", trim ($session));
 
           // session is correct if session ID in session and hypercms session file are equal, MD5 crypted passwords are equal, permission checksums are equal
-          if ($regsessionid == session_id() && $regpasswd == $_SESSION['hcms_passwd'] && $regchecksum == createchecksum ()) $alarm = false;
+          if ($regsessionid == session_id() && $regpasswd == $_SESSION['hcms_passwd'] && $regchecksum == createchecksum ())
+          {
+            $alarm = false;
+          }
         }
       }
     }
   }
 
-  // unauth. access
+  // save log
+  savelog (@$error);
+
+  // unauthorized access
   if ($alarm == true)
   {
     echo showinfopage ("Unauthorized Access!", "en", "top.location='".cleandomain ($mgmt_config['url_path_cms'])."userlogout.php';");
     exit;
   }
-  // auth. access
+  // authorized access
   else return true; 
 }
 
@@ -2984,6 +3080,7 @@ function allowuserip ($site)
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   // publication management config
@@ -3405,7 +3502,7 @@ function scriptcode_clean_functions ($content, $type=4, $application="PHP")
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $disabled_functions = array();
   $file_functions = array();
   $include_functions = array();
@@ -3794,7 +3891,7 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
         $hash = openssl_encrypt ($string, $method, $key, OPENSSL_RAW_DATA, $iv);
         $hash = $iv.$hash;
       }
-      // use PHP Mcrypt with AES 256 encryption (requires a key with 32 digits)
+      // deprecated since PHP 7: use PHP Mcrypt with AES 256 encryption (requires a key with 32 digits)
       elseif (function_exists ("mcrypt_get_iv_size"))
       {
         // base 64 encode binary data to be binary-safe
@@ -3809,13 +3906,30 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
       }
     }
     // standard
-    elseif ($crypt_level == "standard" && function_exists ("mcrypt_get_iv_size"))
+    elseif ($crypt_level == "standard" && (function_exists ("openssl_decrypt") || function_exists ("mcrypt_get_iv_size")))
     {
-      // MCRYPT_MODE_ECB (electronic codebook) 
+      // use OpenSSL if available with AES 128 encryption (requires a key with 32 digits)
+      if (function_exists ("openssl_encrypt"))
+      {
+        $method = "aes-128-cbc";
+        $ivsize = openssl_cipher_iv_length ($method);
+        $iv = openssl_random_pseudo_bytes ($ivsize);
+
+        // Encrypt $data using aes-256-cbc cipher with the given encryption key and 
+        // initialization vector. The 0 gives us the default options, but can
+        // be changed to OPENSSL_RAW_DATA or OPENSSL_ZERO_PADDING
+        $hash = openssl_encrypt ($string, $method, $key, OPENSSL_RAW_DATA, $iv);
+        $hash = $iv.$hash;
+      }
+      // deprecated since PHP 7: MCRYPT_MODE_ECB (electronic codebook) 
       // is suitable for random data, such as encrypting other keys. Since data there is short and random, the disadvantages of ECB have a favorable negative effect.
-      $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
-      $iv = mcrypt_create_iv ($ivsize, MCRYPT_RAND);
-      $hash = mcrypt_encrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB, $iv);
+      // use PHP Mcrypt with AES 256 encryption (requires a key with 32 digits)
+      elseif (function_exists ("mcrypt_get_iv_size"))
+      {
+        $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+        $iv = mcrypt_create_iv ($ivsize, MCRYPT_RAND);
+        $hash = mcrypt_encrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB, $iv);
+      }
     }
     // weak
     // main purpose is to gain a short encrypted string, please don't use it for sensitive data or files!
@@ -3917,7 +4031,7 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
       }
       elseif (function_exists ("mcrypt_get_iv_size"))
       {
-        // MCRYPT_MODE_CBC (cipher block chaining) 
+        // deprecated since PHP 7: MCRYPT_MODE_CBC (cipher block chaining) 
         // is especially suitable for encrypting files where the security is increased over ECB significantly.
         $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
         if (strlen ($string) < $ivsize) return false;
@@ -3933,12 +4047,25 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
     // standard
     elseif ($crypt_level == "standard" && function_exists ("mcrypt_get_iv_size"))
     {
-      // MCRYPT_MODE_ECB (electronic codebook) 
+      // use OpenSSL if available with AES 256 decryption (requires a key with 32 digits)
+      if (function_exists ("openssl_decrypt"))
+      {
+        $method = "aes-128-cbc";
+        $ivsize = openssl_cipher_iv_length ($method);
+        $iv = mb_substr ($string, 0, $ivsize, '8bit');
+        $string = mb_substr ($string, $ivsize, null, '8bit');
+
+        $hash_decrypted = openssl_decrypt ($string, $method, $key, OPENSSL_RAW_DATA, $iv);
+      }
+      // deprecated since PHP 7: MCRYPT_MODE_ECB (electronic codebook) 
       // is suitable for random data, such as encrypting other keys. Since data there is short and random, the disadvantages of ECB have a favorable negative effect.
-      $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
-      $iv = mcrypt_create_iv ($ivsize, MCRYPT_RAND);
-      $hash_decrypted = mcrypt_decrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB, $iv);
-      $hash_decrypted = rtrim ($hash_decrypted, "\0");
+      elseif (function_exists ("mcrypt_get_iv_size"))
+      {
+        $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+        $iv = mcrypt_create_iv ($ivsize, MCRYPT_RAND);
+        $hash_decrypted = mcrypt_decrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB, $iv);
+        $hash_decrypted = rtrim ($hash_decrypted, "\0");
+      }
     }
     // weak
     else

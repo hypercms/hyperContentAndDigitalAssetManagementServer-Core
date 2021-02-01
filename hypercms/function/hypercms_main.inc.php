@@ -407,7 +407,7 @@ function specialchr_decode ($expression)
 // description:
 // This function converts a date to a different time zone and format.
 
-function convertdate ($date, $timezone1, $dateformat1="Y-m-d H:i:s", $timezone2, $dateformat2="Y-m-d H:i:s")
+function convertdate ($date, $timezone1="", $dateformat1="Y-m-d H:i:s", $timezone2="", $dateformat2="Y-m-d H:i:s")
 {
   // recreate date 
   $date = date ($dateformat1, strtotime ($date));
@@ -1255,7 +1255,6 @@ function is_iOS ()
   else return false;
 }
 
-
 // -------------------------------- is_activelanguage --------------------------------
 // function: is_activelanguage()
 // input: publication name [string], 2-digits language code [string]
@@ -1279,6 +1278,95 @@ function is_activelanguage ($site, $langcode)
     else return false;
   }
   else return false;
+}
+
+// -------------------------------- is_facerecognitionservice --------------------------------
+// function: is_facerecognitionservice()
+// input: user or service user name [string]
+// output: true / false
+
+// description:
+// This function determines if the face recognition service has been enabled for the automatic face recognition.
+// Provide system user "sys" for general verification of the face recognition feature (if enabled and is supported by the browser).
+
+function is_facerecognitionservice ($user)
+{
+  global $mgmt_config;
+
+  // verify browser
+  $user_client = getbrowserinfo ();
+
+  if ($user != "" && !empty ($mgmt_config['facerecognition']) && is_dir ($mgmt_config['abs_path_cms']."javascript/facerecognition") && empty ($user_client['msie']))
+  {
+    // system user
+    if ($user == "sys")
+    {
+      return true;
+    }
+    // verify system service "sys:service-name:16-digit-servicehash"
+    elseif (substr ($user, 0, 4) == "sys:" && substr_count ($user, ":") == 2)
+    {
+      // verify that service is registered
+      list ($sys, $servicename, $servicehash) = explode (":", $user);
+
+      if (is_file ($mgmt_config['abs_path_data']."session/".$servicename.".".$servicehash.".dat"))
+      {
+        return true;
+      }
+    }
+    // verify standard user
+    elseif (empty ($mgmt_config['facerecognition_service_users']) || strpos ("_;".$mgmt_config['facerecognition_service_users'].";", ";".$user.";") > 0)
+    {
+      // verify that user is logged in
+      if (is_file ($mgmt_config['abs_path_data']."session/".$user.".dat"))
+      {
+        return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
+// -------------------------------- createfacerecognitionservice --------------------------------
+// function: createfacerecognitionservice()
+// input: user name [string]
+// output: URL of face recognition service / false
+
+// description:
+// This function registers the face recognition service and creates the service URL.
+
+function createfacerecognitionservice ($user)
+{
+  global $mgmt_config;
+
+  if (is_facerecognitionservice ($user))
+  {
+    // register servive for user
+    $servicehash = registerservice ("recognizefaces", $user);
+
+    // create token
+    $timetoken = createtimetoken (10, 3);
+
+    // define service URL root
+    if (!empty ($mgmt_config['facerecognition_service_url']))
+    {
+      $serviceurl = $mgmt_config['facerecognition_service_url'];
+
+      // add slash if missing
+      if (substr ($serviceurl, -1) != "/") $serviceurl = $serviceurl."/";
+    }
+    // use default (blocking service)
+    else $serviceurl = $mgmt_config['url_path_cms'];
+
+    // return service link
+    if ($serviceurl != "" && $servicehash != "" && $timetoken != "")
+    {
+      return $serviceurl."frameset_recognizefaces.php?servicehash=".urlencode($servicehash)."&token=".urlencode($timetoken);
+    }
+  }
+  
+  return false;
 }
 
 // -------------------------------- copyrecursive --------------------------------
@@ -1393,8 +1481,15 @@ function createfilename ($filename)
 
   $error = array();
 
-  if (valid_objectname ($filename))
+  // multimedia file name
+  if (strpos ($filename, "_hcm") > 0)
   {
+    return $filename;
+  }
+  // object name
+  elseif (valid_objectname ($filename))
+  {
+    // default value
     if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
 
     // check if filename includes special characters
@@ -1429,14 +1524,14 @@ function createfilename ($filename)
       // if (substr_count ($filename_new, "~") % 2 != 0) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
 
       // verify string and cut off last escaped character in order to correct the string (3 times)
-      if (strpos ("_".$filename, specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
-      if (strpos ("_".$filename, specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
-      if (strpos ("_".$filename, specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
+      if (strpos ("_".specialchr_decode ($filename), specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
+      if (strpos ("_".specialchr_decode ($filename), specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
+      if (strpos ("_".specialchr_decode ($filename), specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
 
       $filename_new = $filename_new.$file_ext;
 
       $errcode = "00911";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|object name '".$filename."' has been truncated to '".specialchr_decode ($filename_new)."'";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|object name '".specialchr_decode ($filename)."' has been truncated to '".specialchr_decode ($filename_new)."'";
 
       savelog (@$error);
 
@@ -2056,7 +2151,7 @@ function createportallink ($site, $portal)
 // description:
 // Creates an access link to any object based on the permissions of the provided user account.
 
-function createaccesslink ($site, $location="", $object="", $cat="", $object_id="", $login, $type="al", $lifetime=0, $formats="")
+function createaccesslink ($site, $location="", $object="", $cat="", $object_id="", $login="", $type="al", $lifetime=0, $formats="")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
@@ -2277,7 +2372,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
       $object = trim ($object, "/");
       if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
 
-      if (@is_dir ($location.$object))
+      if (is_dir ($location.$object))
       {
         $location = $location.$object."/";
         $object = ".folder";
@@ -2546,7 +2641,7 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
 // Case 1: multiobject (min. 2 objects or object is a folder) without the support of file conversion
 // Case 2: multiobject with only one object (must not be a folder) with support of file conversion
 
-function createmultidownloadlink ($site, $multiobject, $name="", $user, $type="", $mediacfg="", $linktype="download", $flatzip=false)
+function createmultidownloadlink ($site, $multiobject, $name="", $user="", $type="", $mediacfg="", $linktype="download", $flatzip=false)
 {
   global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
 
@@ -4279,14 +4374,24 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
       // define media location of original file (may have been exported)
       $medialocation_orig = getmedialocation ($site, $mediafile, "abs_path_media");
 
-      // local media file
+      // symbol link is used
+      if (is_link ($medialocation_orig.$site."/".$mediafile))
+      {
+        $target = readlink ($medialocation_orig.$site."/".$mediafile);
+        if (is_file ($target)) unlink ($target);
+      }
+
+      // local media file or symbolic link to media file (due to import/export)
       $deletefile = deletefile ($medialocation_orig.$site."/", $mediafile, false);
+
       // remove symbolic link of exported media file (deprecated since version 7.0.7)
       // if ($deletefile && is_link ($medialocation.$site."/".$mediafile)) unlink ($medialocation.$site."/".$mediafile);
       // cloud storage
       if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile, $user);
+
       // remote client
       remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile, "");
+
       // delete media file in temp/view as well (copied by 360 viewer)
       if (is_file ($mgmt_config['abs_path_view'].$mediafile)) deletefile ($mgmt_config['abs_path_view'], $mediafile, 0);
     }
@@ -4801,13 +4906,13 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 
 // ----------------------------------------- loadcontainer ---------------------------------------------
 // function: loadcontainer()
-// input: container file name or container id (working container will be loaded by default) [string], optional container type [published,work,version], user name [string]
+// input: container file name or container id (working container will be loaded by default) [string], container type [published,work,version] (optional), user name [string]
 // output: XML content of container / false on error
 
 // description:
 // This functions loads a content container
 
-function loadcontainer ($container, $type="work", $user)
+function loadcontainer ($container, $type="work", $user="")
 {
   global $mgmt_config, $hcms_lang, $lang;
 
@@ -4951,7 +5056,7 @@ function loadcontainer ($container, $type="work", $user)
 // description:
 // Saves data into existing content container by default. Only if $init is set to true it will initally save a non existing container.
 
-function savecontainer ($container, $type="work", $data, $user, $init=false)
+function savecontainer ($container, $type="work", $data="", $user="", $init=false)
 {
   global $mgmt_config, $hcms_lang, $lang;
 
@@ -5030,7 +5135,7 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
 // 4 ... read + edit + publish 
 // 5 ... no workflow  (users permissions apply)
 
-function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $contentdata="", $buildview="cmsview", $viewstore="", $user)
+function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $contentdata="", $buildview="cmsview", $viewstore="", $user="")
 {
   global $mgmt_config;
 
@@ -6264,7 +6369,7 @@ function createpublication ($site_name, $user="sys")
 {
   global $siteaccess, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $error = array();
   $result_ok = false;
   $add_onload = "";
@@ -6730,7 +6835,7 @@ function editpublication ($site_name, $setting, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -7528,7 +7633,7 @@ function editpublicationsetting ($site_name, $setting, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -7646,7 +7751,7 @@ function deletepublication ($site_name, $user="sys")
 {
   global $mgmt_config, $eventsystem, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $error = array();
   $result_ok = false;
   $add_onload = "";
@@ -7954,7 +8059,7 @@ function createpersonalization ($site, $pers_name, $cat)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $result_ok = false;
 
   // set default language
@@ -8040,7 +8145,7 @@ function deletepersonalization ($site, $pers_name, $cat)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
-  // initalize
+  // initialize
   $result_ok = false;
 
   // set default language
@@ -8148,7 +8253,7 @@ function loadtemplate ($site, $template)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $result = array();
 
   if (valid_publicationname ($site) && valid_objectname ($template))
@@ -8263,7 +8368,7 @@ function createtemplate ($site, $template, $cat)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -8363,7 +8468,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $result_save = false;
   $add_onload = "";
   $show = "";
@@ -8455,7 +8560,7 @@ function deletetemplate ($site, $template, $cat)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $result_ok = false;
 
   // set default language
@@ -8628,7 +8733,7 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
-  // initalize
+  // initialize
   $result_save = false;
   $add_onload = "";
   $show = "";
@@ -8832,7 +8937,7 @@ function deleteportal ($site, $template)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
-  // initalize
+  // initialize
   $result_ok = false;
 
   // set default language
@@ -8897,11 +9002,11 @@ function deleteportal ($site, $template)
 // description:
 // This function creates a new user. Use *Null* for publication name to remove access to all publications.
 
-function createuser ($site="", $login, $password, $confirm_password, $user="sys")
+function createuser ($site, $login, $password, $confirm_password, $user="sys")
 {
   global $eventsystem, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_lang, $lang;
  
-  // initalize
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
@@ -9059,7 +9164,7 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
             $errcode = "00010";
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|new user '".$login."' has been created by user '".$user."' (".getuserip().")";
 
-            if (!empty ($mgmt_config['user_newwindow'])) $add_onload = "window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes,width=520,height=680'); parent.frames['mainFrame'].location.reload(); ";
+            if (!empty ($mgmt_config['user_newwindow'])) $add_onload = "window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,width=520,height=680'); parent.frames['mainFrame'].location.reload(); ";
             else $add_onload = "parent.openPopup('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."'); ";
 
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-user-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-user'][$lang]."<br />\n";
@@ -9119,11 +9224,11 @@ function createuser ($site="", $login, $password, $confirm_password, $user="sys"
 // description:
 // This function edits a user. Use *Leave* as input if a value should not be changed. Use *Null* for publication name to remove access to all publications. Use *Null* for user group to remove user from all user groups of the publication.
 
-function edituser ($site="", $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="*Leave*", $language="en", $timezone="*Leave*", $theme="*Leave*", $email="*Leave*", $phone="*Leave*", $signature="*Leave*", $usergroup="*Leave*", $usersite="*Leave*", $validdatefrom="*Leave*", $validdateto="*Leave*", $user="sys")
+function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="*Leave*", $language="en", $timezone="*Leave*", $theme="*Leave*", $email="*Leave*", $phone="*Leave*", $signature="*Leave*", $usergroup="*Leave*", $usersite="*Leave*", $validdatefrom="*Leave*", $validdateto="*Leave*", $user="sys")
 {
   global $eventsystem, $login_cat, $group, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
@@ -9560,7 +9665,7 @@ function deleteuser ($site, $login, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $add_onload = "";
   $show = "";
 
@@ -9719,7 +9824,7 @@ function creategroup ($site, $groupname, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
@@ -9938,7 +10043,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $add_onload = "";
   $show = "";
 
@@ -10217,7 +10322,7 @@ function deletegroup ($site, $groupname, $user)
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
@@ -11126,7 +11231,7 @@ function createfolder ($site, $location, $folder, $user)
 
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
 
-  // initalize
+  // initialize
   $add_onload = "";
   $show = "";
   $folder_orig = "";
@@ -11494,7 +11599,7 @@ function deletefolder ($site, $location, $folder, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
  
-  // initalize
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
@@ -11966,7 +12071,7 @@ function createobject ($site, $location, $page, $template, $user)
 
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
 
-  // initalize
+  // initialize
   $error = array();
   $show = "";
   $add_onload = "";
@@ -12128,6 +12233,18 @@ function createobject ($site, $location, $page, $template, $user)
 
           // load content count file and add the new page
           $filedata = loadlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
+
+          // try to unlock file
+          if (empty ($filedata))
+          {
+            unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
+
+            // load content count file and add the new page
+            $filedata = loadlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
+
+            $errcode = "00886";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|contentcount.dat has been unlocked for user '$user' ($site, $location_esc, $page)";
+          }
 
           if ($filedata != "")
           {
@@ -12505,7 +12622,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
   }
   else $session_id = createuniquetoken ();
 
-  //initalize
+  //initialize
   $error = array();
   $show = "";
   $show_command = "";
@@ -12796,7 +12913,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             $dup_location = getlocation ($duplicate['objectpath']);
             $dup_object = getobject ($duplicate['objectpath']);
             $dup_name = specialchr_decode ($dup_object);
-            $links[] = '<a href="javascript:void(0);" onclick="hcms_openWindow(\''.$mgmt_config['url_path_cms'].'frameset_content.php?site='.$site.'&ctrlreload=yes&cat=comp&location='.urlencode($dup_location).'&page='.urlencode($dup_object).'\', \''.uniqid().'\', \'status=yes,scrollbars=no,resizable=yes\', '.windowwidth ("object").', '.windowheight ("object").');">'.$dup_name.'</a>';
+            $links[] = '<a href="javascript:void(0);" onclick="hcms_openWindow(\''.$mgmt_config['url_path_cms'].'frameset_content.php?site='.$site.'&ctrlreload=yes&cat=comp&location='.urlencode($dup_location).'&page='.urlencode($dup_object).'\', \''.uniqid().'\', \'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes\', '.windowwidth ("object").', '.windowheight ("object").');">'.$dup_name.'</a>';
           }
         }
 
@@ -13052,7 +13169,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               // create thumbnail on success
               if ($result_upload == true)
               {
-                $result_createthumb = createmedia ($site, $temp_dir, getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/", $file_name.$file_ext, "jpg", "thumbnail");
+                $result_createthumb = createmedia ($site, $temp_dir, getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/", $file_name.$file_ext, "jpg", "thumbnail", true, true);
 
                 // if thumbnail creation failed use uploaded image as thumbnail image
                 if ($result_createthumb == false)
@@ -13508,7 +13625,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           else
           {
             // create preview
-            createmedia ($site, $medialocation, $medialocation, $mediafile, "", "origthumb", false);
+            createmedia ($site, $medialocation, $medialocation, $mediafile, "", "origthumb", false, true);
           }
 
           // remote client
@@ -13690,7 +13807,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 // description:
 // This function mainly uses function createmedia to render the objects media, but at the same time takes care of versioning and the object name, if the file extension has been changed
 
-function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbnail", $mediadata="", $user)
+function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbnail", $mediadata="", $user="")
 {
   global $wf_token, $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $hcms_lang, $lang;
 
@@ -17514,7 +17631,7 @@ function unpublishobject ($site, $location, $page, $user)
 // In order to process all objects recursively a folder name need to be provided and not the .folder file.
 // This function should not be used for the graphical user interface since it does not provide feedback about the process state!
 
-function processobjects ($action, $site, $location, $file, $published_only=false, $user)
+function processobjects ($action, $site, $location, $file, $published_only=false, $user="")
 {
   global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
@@ -17726,7 +17843,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
 // This function is used to perform actions on multiple objects and is mainly used by popup_status.php.
 // This function should only be used in connection with the GUI of the system.
 
-function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user, $tempfile="", $maxitems=10)
+function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $tempfile="", $maxitems=10)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
 
@@ -18288,7 +18405,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
 // description:
 // Creates a new item in the queue
 
-function createqueueentry ($action, $object, $date, $published_only, $data="", $user)
+function createqueueentry ($action, $object, $date, $published_only, $data="", $user="")
 {
   global $mgmt_config;
 
@@ -18351,7 +18468,7 @@ function createqueueentry ($action, $object, $date, $published_only, $data="", $
 // description:
 // Saves the data of a sent e-mail message.
 
-function savemessage ($data, $type="mail", $user)
+function savemessage ($data, $type="mail", $user="")
 {
   global $mgmt_config;
 
@@ -19690,7 +19807,7 @@ function html_diff ($old, $new)
 // input: publication name [string] (optional), location [string] (optional), object name [string] (optional), identifier (object ID, object hash) [string] (optional), user name [string]
 // output: true / false
 
-function createfavorite ($site="", $location="", $page="", $id="", $user)
+function createfavorite ($site="", $location="", $page="", $id="", $user="")
 {
   global $mgmt_config;
 
@@ -19760,7 +19877,7 @@ function createfavorite ($site="", $location="", $page="", $id="", $user)
 // input: publication name [string] (optional), location [string] (optional), object name [string] (optional), identifier (object ID, object hash) [string] (optional), user name [string]
 // output: true / false
 
-function deletefavorite ($site="", $location="", $page="", $id="", $user)
+function deletefavorite ($site="", $location="", $page="", $id="", $user="")
 {
   global $mgmt_config;
 
@@ -19964,6 +20081,8 @@ function rewrite_homepage ($site, $rewrite_type="forward")
   else return false;
 }
 
+// ========================================== CSV =======================================
+
 // --------------------------------------- load_csv -------------------------------------------
 // function: load_csv ()
 // input: path to CSV file [string], delimiter [string] (optional), enclosure [string] (optional), character set of the source data [string] (optional), character set of the output data [string] (optional)
@@ -19976,7 +20095,7 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8",
 {
   global $mgmt_config, $eventsystem;
 
-  // initalize
+  // initialize
   $temp_file = false;
 
   // define possible delimiters and enclosures
@@ -20217,6 +20336,8 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
   else return false;
 }
 
+// ========================================== MESSAGING =======================================
+
 // ---------------------------------------------- sendmessage ----------------------------------------------
 // function: sendmessage()
 // input: from user name [string] (optional), to user name [string], title [string], message [string], object ID or object path [string] (optional), publication name [string] (optional)
@@ -20226,7 +20347,7 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
 // description:
 // Sends a message via e-mail to a user.
 
-function sendmessage ($from_user="", $to_user, $title, $message, $object_id="", $site="")
+function sendmessage ($from_user="", $to_user="", $title="", $message="", $object_id="", $site="")
 {
   global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
 
@@ -20451,7 +20572,7 @@ function linking_objects ($return_text_id=array())
 // description:
 // Verifies if the provided location path is in the scope of the access linking.
 
-function linking_inscope ($site="", $location, $page="", $cat="")
+function linking_inscope ($site, $location, $page="", $cat="")
 {
   global $mgmt_config, $hcms_linking;
 
@@ -20508,7 +20629,8 @@ function linking_inscope ($site="", $location, $page="", $cat="")
 // requires: config.inc.php
 
 // description:
-// Saves the provided content for a specific object. Only the provided content based on its ID will be saved. Existing content with a different ID will not be deleted. 
+// Saves the provided content for a specific object. Only the provided content based on its ID will be saved. Existing content with a different ID will not be deleted.
+// This is a simplified version of the service savecontent that is used by the multiedit feature and the OpenAPI (SOAP Webservice).
 // Example of a page content array as content input:
 // array(
 //   array(
@@ -20546,7 +20668,7 @@ function linking_inscope ($site="", $location, $page="", $cat="")
 //   )
 // )
 
-function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user, $db_connect="")
+function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user="", $db_connect="")
 {  
   global $mgmt_config, $lang, $hcms_lang, $eventsystem,
          $rootpermission, $globalpermission, $localpermission,
@@ -20916,5 +21038,44 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
     else return false;
   }
   else return false;
+}
+
+// ========================================== CORS =======================================
+
+// ---------------------------------------------- createCORSheader ----------------------------------------------
+// function: createCORSheader()
+// input: allowed origin [string]
+// output: CORS http headers
+// requires: config.inc.php
+
+// description:
+// Create the CORS HTTP header required for cross-domain services. It will allow any GET, POST, or OPTIONS requests from any allowed origin.
+
+function createCORSheader ($allow_origins)
+{
+  // allow from any origin
+  if (isset ($_SERVER['HTTP_ORIGIN']) && is_array ($allow_origins) && in_array ($_SERVER['HTTP_ORIGIN'], $allow_origins))
+  {
+    // if the origin in $_SERVER['HTTP_ORIGIN'] is one to allow, and if so:
+    header ("Access-Control-Allow-Origin: ".$_SERVER['HTTP_ORIGIN']);
+    header ('Access-Control-Allow-Credentials: true');
+    // cache for 1 day
+    header ('Access-Control-Max-Age: 86400');
+    
+    // Access-Control headers are received during OPTIONS requests
+    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+    {    
+      if (isset ($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+      {
+        // may also be using PUT, PATCH, HEAD etc
+        header ("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+      }    
+      
+      if (isset ($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+      {
+        header ("Access-Control-Allow-Headers: ".$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
+      }
+    }
+  }
 }
 ?>

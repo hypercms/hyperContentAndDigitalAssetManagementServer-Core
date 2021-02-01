@@ -94,7 +94,7 @@ if ($force == "start" && substr_count ($action, "->") == 1)
 
   // --------------------------------- logic section ----------------------------------
 
-  // initalize
+  // initialize
   $result = array();
 
   // execute action
@@ -180,7 +180,7 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
+// initialize
 $add_javascript = "window.focus();";
 $count = 0;
 

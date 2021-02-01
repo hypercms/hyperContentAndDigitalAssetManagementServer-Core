@@ -281,8 +281,10 @@ function submitMediaConfig ()
     {
       if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang]); ?>"))) return false;
     }
-  
-    hcms_showHideLayers('savelayer','','show');
+
+    // saving screen
+    if (document.getElementById('savelayer')) document.getElementById('savelayer').style.display = 'block';
+
     document.forms['mediaconfig'].submit();
   }
 }

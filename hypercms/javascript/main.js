@@ -1,5 +1,11 @@
 // ------------------------ default values ----------------------------
 
+// client service
+if (typeof hcms_service === 'undefined')
+{
+  var hcms_service = false;
+}
+
 // mobile browser
 if (localStorage.getItem('is_mobile') !== null && localStorage.getItem('is_mobile') == 'false')
 {
@@ -108,6 +114,18 @@ function hcms_extractDomain (url)
   else return false;
 }
 
+// ------------------------ verify remote file ----------------------------
+
+function hcms_remoteFileExists (url)
+{
+  var http = new XMLHttpRequest();
+
+  http.open('HEAD', url, false);
+  http.send();
+
+  return http.status != 404;
+}
+
 // ------------------------ download base64 encoded data URI ----------------------------
 
 function hcms_downloadURI (uri, filename)
@@ -163,10 +181,11 @@ function hcms_convertGet2Post (link)
   return false;
 }
 
-// ----------------------------- standard async AJAX request --------------------------------
+// ----------------------------- async AJAX request --------------------------------
 
-function hcms_ajaxService (url)
+function hcms_ajaxService (url, mimetype)
 {
+  mimetype = (typeof mimetype !== 'undefined') ? mimetype : '';
   var xmlhttp;
 
   // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -180,17 +199,27 @@ function hcms_ajaxService (url)
     xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
   }
 
+  // true makes the request asynchronous
   xmlhttp.open('GET', url, true);
+  
+  // set mime-type
+  if (mimetype != null)
+  {
+    if (xmlhttp.overrideMimeType)
+    {
+      xmlhttp.overrideMimeType(mimetype);
+    }
+  }
   
   xmlhttp.onreadystatechange = function()
   {
-    if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
+    if (this.readyState == 4 && this.status == 200)
     {
-      return xmlhttp.responseText;
+      return this.responseText;
     }
     else
     {
-      console.error (xmlhttp.statusText);
+      console.error (this.statusText);
     }
   }
 
@@ -199,6 +228,49 @@ function hcms_ajaxService (url)
   };
 
   xmlhttp.send();
+}
+
+// ----------------------------- sync AJAX request --------------------------------
+
+function hcms_syncajaxService (url, mimetype)
+{
+  mimetype = (typeof mimetype !== 'undefined') ? mimetype : '';
+  var xmlhttp;
+
+  // code for IE7+, Firefox, Chrome, Opera, Safari
+  if (window.XMLHttpRequest)
+  {
+    xmlhttp = new XMLHttpRequest();
+  }
+  // code for IE6, IE5
+  else
+  {
+    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+  }
+
+  // false makes the request synchronous
+  xmlhttp.open('GET', url, false);
+
+  // set mime-type
+  if (mimetype != null)
+  {
+    if (xmlhttp.overrideMimeType)
+    {
+      xmlhttp.overrideMimeType(mimetype);
+    }
+  }
+
+  xmlhttp.send(null);
+
+  if (xmlhttp.status == 200 && xmlhttp.readyState == 4)
+  {
+    return xmlhttp.responseText;
+  }
+  else
+  {
+    console.error (this.statusText);
+    return false;
+  }
 }
 
 // ------------------------- loading content from iframe to div ---------------------------
@@ -315,7 +387,7 @@ function hcms_translateText (sourceText, sourceLang, targetLang)
       }
     }
 
-    if (translatedText != "" && translatedText != sourceText) return translatedText;
+    if (translatedText != "") return translatedText;
     else return false;
   }
   else return false;
@@ -509,6 +581,20 @@ function hcms_getImageSize (imgSrc)
   newImg.src = imgSrc;
 }
 
+// remove element form array
+function hcms_arrayRemoveValue (array, value)
+{
+  var index = array.indexOf(value);
+
+  if (index !== -1)
+  {
+    array.splice(index, 1);
+  }
+
+  return array;
+}
+
+// unique array
 function hcms_arrayUnique_helper (value, index, self)
 { 
   return self.indexOf(value) === index;
@@ -2006,5 +2092,10 @@ function hcms_stringifyVTTrecords ()
   else return false;
 }
 
-// for alert in iframe
-window.alert = top.alert;
+// for alert, confirm, and prompt in iframe
+if (hcms_service == false)
+{
+  window.alert = top.alert;
+  window.confirm = top.confirm;
+  window.prompt = top.prompt;
+}

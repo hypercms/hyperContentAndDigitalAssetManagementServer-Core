@@ -40,7 +40,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initalize
 $show = "";
+if (empty ($selectedlang)) $selectedlang = array();
 $selectedlang_temp = $selectedlang;
 
 // create secure token
@@ -311,16 +313,20 @@ function settext (e)
 }
 
 $(document).ready(function(){
-    $(".up,.down").click(function(){
-        var row = $(this).parents("tr:first");
-        if ($(this).is(".up")) {
-            row.insertBefore(row.prev());
-            changed = true;
-        } else {
-            row.insertAfter(row.next());
-            changed = true;
-        }
-    });
+  $(".up,.down").click(function(){
+    var row = $(this).parents("tr:first");
+
+    if ($(this).is(".up"))
+    {
+      row.insertBefore(row.prev());
+      changed = true;
+    }
+    else
+    {
+      row.insertAfter(row.next());
+      changed = true;
+    }
+  });
 });
 </script>
 </head>
@@ -416,7 +422,10 @@ foreach ($result as $row => $temp_array)
     foreach ($activelanguage as $langcode => $langname)
     {
       // memorize selected languages initially
-      if (empty ($selectedlang_temp)) $selectedlang[$langcode] = $langcode;
+      if (empty ($selectedlang_temp) || (is_array ($selectedlang_temp) && sizeof ($selectedlang_temp) < 1))
+      {
+        $selectedlang[$langcode] = $langcode;
+      }
 
       // text
       if (!empty ($result[$row][$langcode])) $text = $result[$row][$langcode];
@@ -462,7 +471,7 @@ foreach ($result as $row => $temp_array)
     foreach ($activelanguage as $langcode => $langname)
     {
       echo "
-            <label style=\"display:inline-block; width:200px;\"><input type=\"checkbox\" id=\"".$langcode."\" name=\"selectedlang[".$langcode."]\" value=\"".$langcode."\" onclick=\"switchlanguage(this);\" ".(!empty ($selectedlang[$langcode]) ? "checked" : "")."> ".$languages[$langcode]."</label>";
+      <label style=\"display:inline-block; width:200px;\"><input type=\"checkbox\" id=\"".$langcode."\" name=\"selectedlang[".$langcode."]\" value=\"".$langcode."\" onclick=\"switchlanguage(this);\" ".(!empty ($selectedlang[$langcode]) ? "checked" : "")."> ".$languages[$langcode]."</label>";
     }
     
     echo "

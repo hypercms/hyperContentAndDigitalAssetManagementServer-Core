@@ -180,6 +180,7 @@ CREATE TABLE `media` (
   `colorkey` char(8) NOT NULL,
   `imagetype` char(20) NOT NULL,
   `md5_hash` char(32) NOT NULL,
+  `analyzed` tinyint(1) NOT NULL default '0',
   PRIMARY KEY (`id`),
   KEY `media` (`filesize`,`filetype`,`width`,`height`,`colorkey`,`imagetype`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

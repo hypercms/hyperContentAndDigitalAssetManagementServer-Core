@@ -392,7 +392,7 @@ function goToURL()
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ";
 
-             if (!empty ($mgmt_config['user_newwindow'])) echo "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'status=yes,scrollbars=yes,resizable=yes', 560, 880);\" ";
+             if (!empty ($mgmt_config['user_newwindow'])) echo "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes', 560, 880);\" ";
              else echo "onClick=\"parent.openPopup('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."');\" ";
  
       echo "name=\"media_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
@@ -561,16 +561,7 @@ function goToURL()
     </div>
   </div>
   <div class="hcmsToolbarBlock">
-    <?php
-    if (file_exists ("help/adminguide_".$hcms_lang_shortcut[$lang].".pdf"))
-    {
-      echo "<img onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";
-    }
-    elseif (file_exists ("help/adminguide_en.pdf"))
-    {
-      echo "<img onClick=\"hcms_openWindow('help/adminguide_en.pdf','help','scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";
-    }
-    ?>
+    <?php echo showhelpbutton ("adminguide", true, $lang, ""); ?>
   </div>
 </div>
 

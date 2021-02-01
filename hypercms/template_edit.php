@@ -94,7 +94,7 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
     
     if (!empty ($result_save['result']) && $preview == "yes")
     {
-      $add_onload = " hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."template_view.php?site=".url_encode($site)."&cat=".$cat."&template=".url_encode($template)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
+      $add_onload = " hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."template_view.php?site=".url_encode($site)."&cat=".$cat."&template=".url_encode($template)."', 'preview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
     }
     elseif (empty ($result_save['result']))
     {
@@ -157,27 +157,27 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 
 function openHelp ()
 {
-  hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help_template_edit', 'resizable=yes,scrollbars=yes', 750, 680);
+  hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help_template_edit', 'location=no,menubar=no,toolbar=no,titlebar=no,resizable=yes,scrollbars=yes', 750, 680);
 }
 
 function openmetaInfo ()
 {  
-  hcms_openWindow('template_edit_metainfo.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', 450, 150);
+  hcms_openWindow('template_edit_metainfo.php?site=<?php echo $site; ?>', 'constraint', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 450, 180);
 }
 
 function openLanguageInfo ()
 {  
-  hcms_openWindow('template_edit_language.php?site=<?php echo $site; ?>', 'language', 'scrollbars=no,resizable=no', 450, 150);
+  hcms_openWindow('template_edit_language.php?site=<?php echo $site; ?>', 'language', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 450, 180);
 }
 
 function openConstraints ()
 {  
-  hcms_openWindow('template_edit_constraints.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', 450, 250);
+  hcms_openWindow('template_edit_constraints.php?site=<?php echo $site; ?>', 'constraint', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 450, 250);
 }
 
 function openmediaType ()
 {  
-  hcms_openWindow('template_edit_mediatype.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', 350, 150);
+  hcms_openWindow('template_edit_mediatype.php?site=<?php echo $site; ?>', 'constraint', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 350, 180);
 }
 
 function checkForm_chars (text, exclude_chars)

@@ -47,7 +47,7 @@ $search_execute = getrequest ("search_execute");
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
+// initialize
 $error = array();
 $cat = "";
 $object_array = array();
@@ -640,7 +640,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if (!$is_mobile)
               {
                 $listview .= "
-                              <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; \">".$item_location."</div></td>";
+                              <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; \">".$item_location."</div></td>";
   
                 if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
                 {
@@ -687,7 +687,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                       }
                       
                       $listview .= "
-                              <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"padding-left:3px; ".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
+                              <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
                       
                       $i++;
                     }
@@ -851,7 +851,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             }
   
             // open on double click
-            if ($action != "recyclebin") $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
+            if ($action != "recyclebin") $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
             else $openObject = "";
 
             // onclick for marking objects
@@ -882,7 +882,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             
             $listview .= "
                          <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
-                           <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"padding-left:3px; width:280px;\">
+                           <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                              <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">
                                ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end."
                              </div>
@@ -891,7 +891,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             if (!$is_mobile)
             {
               $listview .= "
-                           <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"padding-left:3px; width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block;\">".$item_location."</div></td>";
+                           <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block;\">".$item_location."</div></td>";
   
               if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
               {
@@ -938,7 +938,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     }
 
                     $listview .= "
-                            <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"padding-left:3px; ".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
+                            <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
                   
                     $i++;
                   }
@@ -1049,7 +1049,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             if ($is_mobile && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
             {   
               $linking_buttons .= "
-              <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
+              <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
             }
             
             // if assetbrowser is used display edit button
@@ -1156,11 +1156,19 @@ else $objects_counted = 0;
   text-overflow: ellipsis;
 }
 
+.hcmsHead
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .hcmsCell
 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-left: 3px; 
 }
 
 .hcmsThumbnailWidthlarge img
@@ -1347,7 +1355,7 @@ function resizecols ()
   }
 }
 
-function initalize ()
+function initialize ()
 {
   // set view
   toggleview (explorerview);
@@ -1510,12 +1518,12 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 <div id="tableHeadLayer" style="position:fixed; top:0; left:0; margin:0; padding:0; width:100%; z-index:2; visibility:visible;">
   <table id="objectlist_head" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;">
     <tr>
-      <td id="c0" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsCell" style="width:280px;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
+      <td id="c0" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:280px;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
     <?php
     if (!$is_mobile)
     {
     ?>
-      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsCell" style="width:250px;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
+      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:250px;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
     <?php
       if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
       {
@@ -1566,7 +1574,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
             }
             
             echo "
-      <td id=\"c".$i."\" onClick=\"hcms_sortTable(".$i.$sortnumeric.");\" class=\"hcmsTableHeader hcmsCell\" style=\"".$style_td."\">&nbsp;".$title."&nbsp;</td>";
+      <td id=\"c".$i."\" onClick=\"hcms_sortTable(".$i.$sortnumeric.");\" class=\"hcmsTableHeader hcmsHead\" style=\"".$style_td."\">&nbsp;".$title."&nbsp;</td>";
 
             $i++;
           }
@@ -1646,9 +1654,9 @@ else
 }
 ?>
 
-<!-- initalize -->
+<!-- initialize -->
 <script type="text/javascript">
-initalize();
+initialize();
 </script>
 
 <?php includefooter(); ?>

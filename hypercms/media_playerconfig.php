@@ -56,7 +56,7 @@ $pagefile_info = getfileinfo ($site, $page, $cat);
 $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
 $file_info = getfileinfo ($site, $mediafile, "");
 
-// initalize
+// initialize
 $audio = false;
 $preview = false;
 $url = "";
@@ -135,7 +135,7 @@ if ($config && is_array ($config))
   // older versions
   else
   {
-    $head = showvideoplayer_head (false);
+    $head = showvideoplayer_head (false, true, false);
     $playercode = $config['data'];
   }
 

@@ -129,7 +129,7 @@ else
 if ($object_id != "" && !empty ($mgmt_config['db_connect_rdbms']))
 { 
   $media = "";
-	$objectpath_esc = rdbms_getobject ($object_id);
+  $objectpath_esc = rdbms_getobject ($object_id);
 }
 
 // ---------------------------------- define media -----------------------------------

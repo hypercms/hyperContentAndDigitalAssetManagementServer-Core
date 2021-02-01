@@ -35,7 +35,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
+// initialize
 $show = "";
 $parent_array = array();
 

@@ -35,7 +35,18 @@ if ($id >= 0)
   
   $keywords_array = gettaxonomy_childs ($site, $lang, $id, $levels);
 
-  if (is_array ($keywords_array) && sizeof ($keywords_array) > 0) echo implode (",", array_unique ($keywords_array));
+  if (is_array ($keywords_array) && sizeof ($keywords_array) > 0)
+  {
+    $keywords_array = array_unique ($keywords_array);
+
+    // escape commas
+    foreach ($keywords_array as &$keyword)
+    {
+      $keyword = str_replace (",", "¸", $keyword);
+    }
+
+    echo implode (",", $keywords_array);
+  }
   else echo "";
 }
 else echo "";

@@ -408,7 +408,7 @@ function link_db_save ($site, $link_db, $user)
 // link_new = "": delete current link in use (just one link matching given category)
 // link_curr & link_new are not empty and not equal: update current link with the new one
 
-function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", $link_curr="", $link_new="", $option)
+function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", $link_curr="", $link_new="", $option="unique")
 {
   global $mgmt_config;
 

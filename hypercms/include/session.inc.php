@@ -22,6 +22,9 @@ $passwd = getsession ("hcms_passwd");
 $lang = getsession ("hcms_lang", "en");
 $timezone = getsession ("hcms_timezone");
 
+// service parameter for the registered services by a user (array)
+$services = getsession ("hcms_services");
+
 // access parameter (array)
 $siteaccess = getsession ("hcms_siteaccess");
 $pageaccess = getsession ("hcms_pageaccess");

@@ -574,7 +574,7 @@ function hcms_createContextmenuItem (action)
         document.forms['contextmenu_object'].attributes['action'].value = URLfile;
         document.forms['contextmenu_object'].elements['action'].value = action;
         document.forms['contextmenu_object'].elements['force'].value = 'start';
-        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no', 400, 180);
+        hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no', 400, 220);
       }
       else if (action == "delete")
       {
@@ -588,14 +588,14 @@ function hcms_createContextmenuItem (action)
           document.forms['contextmenu_object'].attributes['action'].value = URLfile;
           document.forms['contextmenu_object'].elements['action'].value = action;
           document.forms['contextmenu_object'].elements['force'].value = 'start';
-          hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no', 400, 180);
+          hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,status=no,scrollbars=no,resizable=no', 400, 220);
         }
       }
       else if (action == "cut" || action == "copy" || action == "linkcopy")
       {
         document.forms['contextmenu_object'].attributes['action'].value = 'popup_action.php';
         document.forms['contextmenu_object'].elements['action'].value = action;
-        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no', 400, 180);
+        hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no', 400, 220);
       }
       else if (action == "paste")
       {
@@ -608,27 +608,27 @@ function hcms_createContextmenuItem (action)
         document.forms['contextmenu_object'].attributes['action'].value = URLfile;
         document.forms['contextmenu_object'].elements['action'].value = action;
         document.forms['contextmenu_object'].elements['force'].value = 'start';
-        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no', 400, 400);
+        hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no', 400, 400);
       }
       else if (action == "favorites_create")
       {
         document.forms['contextmenu_object'].attributes['action'].value = "popup_action.php";
         document.forms['contextmenu_object'].elements['action'].value = "page_favorites_create";
-        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no' ,400, 180);
+        hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no' ,400, 220);
         allow_tr_submit = false;
       }
       else if (action == "favorites_delete")
       {
         document.forms['contextmenu_object'].attributes['action'].value = "popup_action.php";
         document.forms['contextmenu_object'].elements['action'].value = "page_favorites_delete";
-        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no' ,400, 180);
+        hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no' ,400, 220);
         allow_tr_submit = false;
       }
       else if (action == "checkin")
       {
         document.forms['contextmenu_object'].attributes['action'].value = "popup_action.php";
         document.forms['contextmenu_object'].elements['action'].value = "page_unlock";
-        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no', 400, 180);
+        hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no', 400, 220);
         allow_tr_submit = false;
       }
       else if (action != "")

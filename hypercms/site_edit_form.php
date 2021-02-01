@@ -249,7 +249,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     $formaction = "";
   }
   
-  // initalize
+  // initialize
   $mgmt_config[$site_name] = array();
 
   // load publication config file of management system
@@ -487,7 +487,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
           <tr>
             <td>
               <?php echo getescapedtext ($hcms_lang['available-languages'][$lang]); ?><br />
-              <select multiple size="6" name="list1" style="width:150px;">
+              <select multiple name="list1" style="width:150px; height:120px;">
               <?php
               // get languages
               $langcode_array = getlanguageoptions();
@@ -519,7 +519,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
             </td>
             <td>
               <?php echo getescapedtext ($hcms_lang['selected-languages'][$lang]); ?><br />
-              <select multiple size="6" name="list2" style="width:150px;">
+              <select multiple name="list2" style="width:150px; height:120px;">
               <?php
               if (!empty ($list2_array) && sizeof ($list2_array) > 0)
               {
@@ -545,7 +545,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
           <tr>
             <td>
               <?php echo getescapedtext ($hcms_lang['available-languages'][$lang]); ?><br />
-              <select multiple size="4" name="ocr1" style="width:150px;">
+              <select multiple name="ocr1" style="width:150px; height:120px;">
               <?php
               // get languages
               $langcode_array = getlanguageoptions();
@@ -577,7 +577,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
             </td>
             <td>
               <?php echo getescapedtext ($hcms_lang['selected-languages'][$lang]); ?><br />
-              <select multiple size="4" name="ocr2" style="width:150px;">
+              <select multiple name="ocr2" style="width:150px; height:120px;">
               <?php
               if (!empty ($ocr2_array) && sizeof ($ocr2_array) > 0)
               {

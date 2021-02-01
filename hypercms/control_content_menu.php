@@ -256,7 +256,7 @@ function submitToWindow (url, action, windowname, features, width, height)
   {
     if (features == undefined) features = 'scrollbars=no,resizable=no';
     if (width == undefined) width = 400;
-    if (height == undefined) height = 180;
+    if (height == undefined) height = 220;
     if (windowname == '') windowname = Math.floor(Math.random()*9999999);
     
     hcms_openWindow('', windowname, features, width, height);
@@ -591,7 +591,7 @@ else
     if (!empty ($page) && !empty ($media) && $perm_rendering && $lock_rendering && ($doc_rendering || $img_rendering || $vid_rendering || $dropbox_rendering))
     {
       echo "
-      <div class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"hcms_switchSelector('select_obj_convert');\">
+      <div id=\"button_obj_convert\" class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"hcms_switchSelector('select_obj_convert');\">
         <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_convert\" name=\"pic_obj_convert\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /><img src=\"".getthemelocation($hcms_themeinvertcolors)."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" />
         
         <div id=\"select_obj_convert\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:36px; visibility:hidden; z-index:999; width:180px; max-height:".($is_mobile ? "50" : "72")."px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
@@ -601,7 +601,7 @@ else
       {
         // function imgConvert must be used in order to reset the rendering options
         echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"imgConvert ('',''); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"imgConvert ('','');\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['original'][$lang])."</div>";
       }
 
       // document download options
@@ -618,7 +618,7 @@ else
             if ((empty ($downloadformats) || !empty ($downloadformats['document'][$doc_type])) && in_array ($ext, $mgmt_docconvert[$media_info['ext']]))
             {
               echo "
-        <div class=\"hcmsSelectorItem\" onclick=\"docConvert('".$doc_type."'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$doc_info['icon']."\" class=\"hcmsIconList\" /> ".$doc_info['type']." (".strtoupper($doc_type).")</div>";
+        <div class=\"hcmsSelectorItem\" onclick=\"docConvert('".$doc_type."');\"><img src=\"".getthemelocation()."img/".$doc_info['icon']."\" class=\"hcmsIconList\" /> ".$doc_info['type']." (".strtoupper($doc_type).")</div>";
             }
           }
         }
@@ -640,7 +640,7 @@ else
               if ((empty ($downloadformats) || !empty ($downloadformats['image'][$image_type][$config_name])) && $config_name != "thumbnail" && $config_name != "original") 
               {
                 echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"imgConvert('".$image_type."', '".$config_name."'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/".$img_info['icon']."\" class=\"hcmsIconList\" /> ".strtoupper($image_type)." ".$config_name."</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"imgConvert('".$image_type."', '".$config_name."');\"><img src=\"".getthemelocation()."img/".$img_info['icon']."\" class=\"hcmsIconList\" /> ".strtoupper($image_type)." ".$config_name."</div>";
               }
             }
           }
@@ -651,20 +651,20 @@ else
       if ($vid_rendering && is_video ($media))
       {
         if (empty ($downloadformats) || !empty ($downloadformats['video']['origthumb'])) echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('origthumb'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['preview'][$lang])."</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('origthumb');\"><img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['preview'][$lang])."</div>";
           
         if (empty ($downloadformats) || !empty ($downloadformats['video']['jpg'])) echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('jpg'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (JPG)</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('jpg');\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (JPG)</div>";
           
         if (empty ($downloadformats) || !empty ($downloadformats['video']['png'])) echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (PNG)</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png');\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (PNG)</div>";
       }
       
-      //save to dropbox
+      // save to dropbox
       if ($dropbox_rendering)
       {
         echo "
-          <div class=\"hcmsSelectorItem\" onclick=\"submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'status=yes,scrollbars=yes,resizable=yes,width=600,height=400', '600', '400'); document.getElementById('button_obj_convert').click();\"><img src=\"".getthemelocation()."img/file_dropbox.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['dropbox'][$lang])."</div>";
+          <div class=\"hcmsSelectorItem\" onclick=\"submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes,width=600,height=400', '600', '400');\"><img src=\"".getthemelocation()."img/file_dropbox.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['dropbox'][$lang])."</div>";
       }
       
       echo "
@@ -693,7 +693,7 @@ else
         echo "
         <img class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" ";
         
-        if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'scrollbars=yes,resizable=no', 540, 800);\" ";
+        if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=no', 540, 800);\" ";
         else echo "onClick=\"submitToFrame('user_sendlink.php', 'sendlink');\" ";
         
         echo "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_sendlink.png\" ".
@@ -785,7 +785,7 @@ else
         if ($mgmt_config['db_connect_rdbms'] != "") echo "popup_publish.php";
         else echo "popup_action.php";
         
-        echo "?action=publish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."', '".$object_id."', 'location=no,scrollbars=no,resizable=no,titlebar=no', 400, 400);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_publish\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" alt=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" />";
+        echo "?action=publish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."', '".$object_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 400);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_publish\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" alt=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" />";
       }
       else echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
   
@@ -794,9 +794,11 @@ else
       {
         echo "
         <img onClick=\"if (locklayer == false) hcms_openWindow('";
+
         if ($mgmt_config['db_connect_rdbms'] != "") echo "popup_publish.php";
-        else echo "popup_action.php";        
-        echo "?action=unpublish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."', '".$object_id."', 'location=no,scrollbars=no,resizable=no,titlebar=no', 400, 400);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unpublish\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" alt=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" />";
+        else echo "popup_action.php";
+
+        echo "?action=unpublish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."', '".$object_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 400);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unpublish\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" alt=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" />";
       }
       else echo "
       <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
@@ -817,18 +819,7 @@ else
     ?>    
   </div>
   <div class="hcmsToolbarBlock">
-    <?php
-    if (file_exists ($mgmt_config['abs_path_cms']."help/usersguide_".$hcms_lang_shortcut[$lang].".pdf") && $setlocalpermission['root'] == 1)
-    {
-      echo "
-      <img onClick=\"hcms_openWindow('help/usersguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'location=no,scrollbars=no,resizable=yes,titlebar=no', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />";
-    }
-    elseif (file_exists ($mgmt_config['abs_path_cms']."help/usersguide_en.pdf") && $setlocalpermission['root'] == 1)
-    {
-      echo "
-      <img onClick=\"hcms_openWindow('help/usersguide_en.pdf', 'help', 'location=no,scrollbars=no,resizable=yes,titlebar=no', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />";
-    }
-    ?>
+    <?php echo showhelpbutton ("usersguide", $setlocalpermission['root'], $lang, ""); ?>
   </div>
 </div>
 

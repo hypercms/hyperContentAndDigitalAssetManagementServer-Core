@@ -43,7 +43,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
+// initialize
 $show = "";
 $add_onload = "";
 $multiobject_array = array();
@@ -249,7 +249,7 @@ function jumpTo (target)
     {
       if (!empty ($mgmt_config['object_newwindow']))
       {
-        $openlink = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
+        $openlink = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
       }
       else
       {
@@ -266,7 +266,7 @@ function jumpTo (target)
     {
       if (!empty ($mgmt_config['object_newwindow']))
       {
-        $openlink = "hcms_openWindow('user_sendlink.php?mailfile=".url_encode($page)."&token=".$token_new."', '', 'status=yes,scrollbars=no,resizable=yes', 600, 800);";
+        $openlink = "hcms_openWindow('user_sendlink.php?mailfile=".url_encode($page)."&token=".$token_new."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', 600, 800);";
       }
       else
       {
@@ -379,13 +379,8 @@ function jumpTo (target)
     <?php } ?>
     
   </div>
-  <div class="hcmsToolbarBlock">  
-    <?php
-    if (file_exists ($mgmt_config['abs_path_cms']."help/adminguide_".$hcms_lang_shortcut[$lang].".pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
-    {echo "<img  onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
-    elseif (file_exists ($mgmt_config['abs_path_cms']."help/adminguide_en.pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
-    {echo "<img  onClick=\"hcms_openWindow('help/adminguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
-    ?>      
+  <div class="hcmsToolbarBlock">
+    <?php echo showhelpbutton ("usersguide", (checkrootpermission ('user') || checkglobalpermission ($site, 'user')), $lang, ""); ?>    
   </div>
   </form>
 </div>

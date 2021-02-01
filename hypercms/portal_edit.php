@@ -125,7 +125,7 @@ else
 {
   $templatedata = loadfile ($mgmt_config['abs_path_template'].$site."/", $template);
   
-  // initalize
+  // initialize
   $designtheme = "";
   $primarycolor = "";
   $hcms_themeinvertcolors = "";

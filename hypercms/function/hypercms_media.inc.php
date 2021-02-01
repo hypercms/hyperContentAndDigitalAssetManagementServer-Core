@@ -242,7 +242,7 @@ function ocr_extractcontent ($site, $location, $file)
 // The given charset of the publication (not set by default), container or publication (not set by default) will be used.
 // The default character set of default.meta.tpl is UTF-8, so all content should be saved in UTF-8.
 
-function indexcontent ($site, $location, $file, $container="", $container_content="", $user, $return_content=false)
+function indexcontent ($site, $location, $file, $container="", $container_content="", $user="", $return_content=false)
 {
   global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, $hcms_lang, $lang;
 
@@ -2467,7 +2467,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // -------------------- convert image using GD-Library (no watermarking supported) -----------------------
                 elseif ($imagewidth_orig > 0 && $imageheight_orig > 0 && (empty ($mgmt_imagepreview[$imagepreview_ext]) || $mgmt_imagepreview[$imagepreview_ext] == "GD") && in_array (strtolower($file_ext), $GD_allowed_ext))
                 {
-                  // initalize
+                  // initialize
                   $temp_file = $path_source;
 
                   // auto rotate image based on the orientation
@@ -2633,7 +2633,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // rotate image
                     if ($type != "thumbnail" && $imagerotation != "") $result = rotateimage ($site, $location_dest.$newfile, $imagerotation, $format_set);
 
-                    if ($type == "thumbnail" || $type == "origthumb" ||$type == "original")
+                    if ($type == "thumbnail" || $type == "origthumb" || $type == "original")
                     {
                       // save in cloud storage
                       if (function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
@@ -2664,10 +2664,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   }
                 }
 
-                // create thumbnail (new preview of original image)
-                if ($converted == true && $type == "original")
+                // create new thumbnail (new preview of original image)
+                if (!empty ($converted) && $type == "original")
                 {
-                  createmedia ($site, $location_dest, $location_dest, $newfile, "jpg", "thumbnail", true, false);
+                  createmedia ($site, $location_dest, $location_dest, $newfile, "jpg", "thumbnail", true, true);
                 }
               } 
             }
@@ -3429,10 +3429,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $mediawidth_orig, $mediaheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagetype_orig, $md5_hash);
                   }
 
-                  // create preview (new preview for video/audio file)
+                  // create new preview (new preview for video/audio file)
                   if ($type == "original")
                   {
-                    createmedia ($site, $location_dest, $location_dest, $newfile, "", "origthumb", true, false);
+                    createmedia ($site, $location_dest, $location_dest, $newfile, "", "origthumb", true, true);
                   }
                 }
 
@@ -4913,7 +4913,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
 // description:
 // Unpacks ZIP file and creates media files in destination location for components or unzips files directly for pages (not recommended due to securoty risks by uplaoding unsecured files).
 
-function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $user)
+function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $user="")
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions;
 
@@ -5205,7 +5205,7 @@ function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
 // description:
 // Compresses all media files and includes their folder structure in a ZIP file.
 
-function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $user, $activity="", $flatzip=false)
+function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", $user="", $activity="", $flatzip=false)
 {
   global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
 

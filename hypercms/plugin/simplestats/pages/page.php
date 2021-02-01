@@ -60,7 +60,7 @@ echo showtopbar ($hcms_lang['simple-statistics'][$lang], $lang);
 while (@ob_end_flush());
 ?>
 
-<div class="hcmsWorkplaceFrame" style="padding:0; width:100%; height:100%; overflow:auto;">
+<div class="hcmsWorkplaceFrame" style="position:fixed; top:42px; bottom:0; left:0; right:0; overflow:auto;">
 
   <table class="hcmsTableStandard" style="margin:10px;">
  	  <tr style="text-align:left; vertical-align:top;">
@@ -145,7 +145,7 @@ while (@ob_end_flush());
             $ownergroup = accesspermission ($site, $location_esc, $cat);
             $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
             
-            if ($setlocalpermission['root']) $link = "<a href=\"#\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">".$info['name']."</a>";
+            if ($setlocalpermission['root']) $link = "<a href=\"#\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">".$info['name']."</a>";
             else $link = $info['name'];
 
             // define row color
@@ -153,7 +153,7 @@ while (@ob_end_flush());
             else $rowcolor = "hcmsRowData1";
                
             $show .= "
-        <tr class=\"hcmsButtonTiny ".$rowcolor."\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
+        <tr class=\"hcmsButtonTiny ".$rowcolor."\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
           <td><img src=\"".getthemelocation()."img/".$info['icon']."\" class=\"hcmsIconList\" /> ".$info['name']."</td>
           <td style=\"text-align:right;\">".$row['count']."</td>
           <td style=\"text-align:right;\">".number_format ($row['filesize'], 0, ",", ".")."</td>
@@ -242,7 +242,7 @@ while (@ob_end_flush());
   
 </div>
 
-<!-- initalize -->
+<!-- initialize -->
 <script type="text/javascript">
 // load screen
 if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';

@@ -43,7 +43,7 @@ checkusersession ($user);
     <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?></td>
   </tr>
   <?php
-  // initalize
+  // initialize
   $color = true;
 
   // load code page index file

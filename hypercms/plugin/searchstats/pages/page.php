@@ -170,7 +170,7 @@ if (is_file ($keywordfile))
 <?php echo showtopbar ($hcms_lang['search-expression-analysis'][$lang], $lang); ?>
 
 
-<div id="scrollFrame" style="width:98%; height:95%; overflow:auto;">
+<div class="hcmsWorkplaceFrame" style="position:fixed; top:42px; bottom:0; left:0; right:0; overflow:auto;">
   <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
   <?php
   if (!is_file ($mgmt_config['abs_path_data']."log/search.log")) $show = getescapedtext ($hcms_lang['search-expression-log-is-not-available'][$lang]);
