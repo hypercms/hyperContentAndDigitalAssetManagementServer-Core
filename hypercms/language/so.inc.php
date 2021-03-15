@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['so'] = "madow";
 $hcms_lang['text-and-icons']['so'] = "Qoraalada iyo sheekooyinka";
 $hcms_lang['logo']['so'] = "Logo";
 $hcms_lang['wallpaper']['so'] = "Sawirka hore";
+$hcms_lang['youtube-sign-out']['so'] = "Waxaad u baahan tahay inaad ka baxdo koontadaada Google/YouTube kahor intaadan kudarin koonto cusub";
 ?>

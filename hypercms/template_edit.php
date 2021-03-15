@@ -608,7 +608,7 @@ function savetemplate(mode)
 <!-- saving --> 
 <div id="savelayer" class="hcmsLoadScreen"></div>
 
-<?php echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"); ?>
+<?php echo showmessage ($show, 650, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 

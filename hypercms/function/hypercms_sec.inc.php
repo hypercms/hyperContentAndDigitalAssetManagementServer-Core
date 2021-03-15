@@ -3024,12 +3024,6 @@ function checkusersession ($user="sys", $CSRF_detection=true)
       // verify IP address of  system service user
       if (getsession ('hcms_user_ip') == $client_ip) $alarm = false;
     }
-    else
-    {
-      // error
-      $errcode = "10119";
-      $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|".$errcode."|service session for user '".$user."' with client IP ".$client_ip." is missing";
-    }
   }
   // check standard user
   elseif (valid_objectname ($user) && is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && !empty ($_SESSION['hcms_siteaccess']) && is_array ($_SESSION['hcms_siteaccess']) && !empty ($_SESSION['hcms_rootpermission']) && is_array ($_SESSION['hcms_rootpermission']))

@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['it'] = "buio";
 $hcms_lang['text-and-icons']['it'] = "Testi e icone";
 $hcms_lang['logo']['it'] = "Logo";
 $hcms_lang['wallpaper']['it'] = "Immagine di sfondo";
+$hcms_lang['youtube-sign-out']['it'] = "Devi uscire dal tuo account Google/YouTube prima di aggiungere un nuovo account";
 ?>

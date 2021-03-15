@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['tr'] = "karanlık";
 $hcms_lang['text-and-icons']['tr'] = "Metinler ve simgeler";
 $hcms_lang['logo']['tr'] = "Logo";
 $hcms_lang['wallpaper']['tr'] = "Arka plan görüntüsü";
+$hcms_lang['youtube-sign-out']['tr'] = "Yeni bir hesap eklemeden önce Google/YouTube hesabınızdan çıkış yapmanız gerekiyor";
 ?>

@@ -174,7 +174,7 @@ function jumpTo (target)
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
-<?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
+<?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
@@ -303,12 +303,11 @@ function jumpTo (target)
     <?php
     echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />\n";
     ?>
-    
   </div>
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
-      <select name="site" onChange="jumpTo('parent.frames[\'mainFrame\']')" style="<?php if ($is_mobile) echo "40%"; else echo "220px"; ?>" title="<?php  echo getescapedtext ($hcms_lang['publication'][$lang]); ?> ">
+      <select name="site" onChange="jumpTo('parent.frames[\'mainFrame\']')" style="width:<?php if ($is_mobile) echo "40%"; else echo "220px"; ?>;" title="<?php  echo getescapedtext ($hcms_lang['publication'][$lang]); ?> ">
         <option value=""><?php echo getescapedtext ($hcms_lang['all-publications'][$lang]); ?></option>
         <?php
           // select publication

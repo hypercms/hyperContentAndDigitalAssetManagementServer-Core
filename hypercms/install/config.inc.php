@@ -96,13 +96,12 @@ $mgmt_config['url_path_plugin'] = $mgmt_config['url_path_cms']."plugin/";
 $mgmt_config['abs_path_plugin'] = $mgmt_config['abs_path_cms']."plugin/";
 
 // URL and absolute path to the content media repository
-// For media mass storage over multiple harddisks the multimedia files can be
-// distributed on the given devices (max. 10 devices).
+// For media mass storage of the multimedia files on multiple HDDs/SSDs an array can be defined
+// for max. 10 devices.
 // Special rules can be defined in $mgmt_config['abs_path_data']/media/getmedialocation.inc.php
-// The configuration of hyperCMS for multiple storage devices will effect
-// the development of templates in terms of referring to multimedia files.
-// It is therefore recommended to configure getmedialocation to save all
-// digital assests of a website on one harddisk.
+// Be aware that the configuration for multiple storage devices will effect the development of 
+// templates in terms of referring to multimedia files.
+// It is therefore recommended to configure getmedialocation to save all digital assests of a website on one harddisk.
 // (e.g. http://www.yourdomain.com/data/media_cnt/)
 // (e.g. /home/domain/data/media_cnt/)
 $mgmt_config['url_path_media'] = $mgmt_config['url_path_rep']."media_cnt/";
@@ -157,6 +156,14 @@ $mgmt_config['azure_container'] = "";
 // Define daily synchronization for delayed saving of media files in cloud storage (true) or save media files immediately (false)
 // If the daily synchronization has been enabled the media files will not be saved in the cloud storage immediately!
 $mgmt_config['storage_dailycloudsnyc'] = false;
+
+// Define a time frame in hours for the synchronization with the cloud storage in order to keep/store media files locally based on their age
+$mgmt_config['storage_synctime']  = 24;
+
+// Keep the temporary preview images (true) or delete the images after 24 hours of age (false)
+// In order to reduce read and transfer activities with the Cloud Storage it might be useful to keep the preview miages locally,
+// especially if you use the face recognition service.
+$mgmt_config['keep_previews'] = false;
 
 // ------------------------------------ Load balancing settings ----------------------------------------
 
@@ -1038,6 +1045,11 @@ $mgmt_config['ldap_user_attributes'] = array('memberof', 'givenname', 'sn', 'tel
 // Delete the user if it does not exist in the LDAP/AD directory (true) or leave user (false)
 $mgmt_config['ldap_delete_user'] = false;
 
+// Keep existing group memberships of user (true) or not (false)
+// Enable this setting if groups are defined manually and by LDAP/AD (mix of groups)
+// Keep in mind that enabling this setting has security implications, since LDAP/AD groups will not be removed anymore once assigned 
+$mgmt_config['ldap_keep_groups'] = false;
+
 // Synchronize AD/LDAP groups with publications of the user
 // Define mapping based on a search string that defines the users publication membership
 // Mapping: "LDAP search string" => "Publication name"
@@ -1047,7 +1059,8 @@ $mgmt_config['ldap_sync_publications_mapping'] = array();
 // Synchronize AD/LDAP groups with user groups of the user
 // Define mapping based on a search string that defines the users group membership
 // Mapping: "LDAP search string" => "Group name"
-// Example: $mgmt_config['ldap_sync_groups_mapping'] = array("OU=MANAGER GROUP"=>"ChiefEditor", "OU=ALL GROUPS"=>"Editor");
+// Example for general groups for all publications: $mgmt_config['ldap_sync_groups_mapping'] = array("OU=MANAGER GROUP"=>"ChiefEditor", "OU=ALL GROUPS"=>"Editor");
+// Example for specific groups per publication: $mgmt_config['ldap_sync_groups_mapping'] = array("OU=MANAGER GROUP"=>"Publication/ChiefEditor", "OU=ALL GROUPS"=>"Publication/Editor");
 $mgmt_config['ldap_sync_groups_mapping'] = array();
 
 // Signature template

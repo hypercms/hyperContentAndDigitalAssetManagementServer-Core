@@ -321,7 +321,7 @@ else
   <input type="hidden" name="permission[default]" value="dummy">
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>">
   
-  <table class="hcmsTableStandard">
+  <table class="hcmsTableStandard" style="min-width:320px;">
     <tr>
       <td style="text-align:center;"><input type="checkbox" name="selectall" onClick="checkMark();" /></td>
       <td><?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></td>
@@ -332,7 +332,7 @@ else
     </tr>
     <tr class="hcmsRowHead1">
       <td style="text-align:center;"><input type="checkbox" name="permission[desktopglobal]" value="1" <?php if ($desktopglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
-      <td style="white-space:nowrap;"><b><img src="<?php echo getthemelocation(); ?>img/desk.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-desktop-management'][$lang]); ?></b></td>
+      <td style="white-space:nowrap;"><b><img src="<?php echo getthemelocation(); ?>img/desk.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-desktop-management'][$lang]." / ".$hcms_lang['plugins'][$lang]); ?> &nbsp;</b></td>
     </tr>
     <tr class="hcmsRowData1">
       <td style="text-align:center;"><input type="checkbox" name="permission[desktopsetting]" value="1" <?php if ($desktopsetting==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>

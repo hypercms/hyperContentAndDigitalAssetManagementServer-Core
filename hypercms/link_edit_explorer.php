@@ -87,6 +87,7 @@ $location_name = getlocationname ($site, $dir_esc, "page", "path");
 <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
 <script type="text/javascript">
+
 function sendInput(text, value)
 {
   parent.frames['mainFrame2'].document.forms['link'].elements['link_name'].value = text;
@@ -134,12 +135,12 @@ $(document).ready(function()
       <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="text" name="search_expression" id="search_expression" placeholder="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" value="<?php if (!empty ($search_expression)) echo html_encode ($search_expression); ?>" 
-      style="width:174px;" maxlength="2000" /><img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+      style="width:184px;" maxlength="2000" /><img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
     </form>
   </div>
   <?php } ?>
 
-  <table class="hcmsTableNarrow" style="width:90%;">
+  <table class="hcmsTableNarrow" style="table-layout:auto; min-width:218px;">
 <?php
 if (!empty ($dir) && !empty ($site))
 {  
@@ -265,7 +266,7 @@ if (!empty ($dir) && !empty ($site))
           echo "
       <tr>
         <td style=\"text-align:left; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 24)."</a></td>
-        <td style=\"text-align:right;\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+        <td style=\"width:20px; text-align:right;\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
       </tr>";
         }
       }

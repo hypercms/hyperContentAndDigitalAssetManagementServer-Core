@@ -415,7 +415,7 @@ if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php"))
 <!-- top bar -->
 <?php echo showtopbar ($hcms_lang['translate'][$lang], $lang); ?>
 
-<?php echo showmessage ($show, 460, 70, $lang, "position:fixed; left:15px; top:35px;"); ?>  
+<?php echo showmessage ($show, 460, 70, $lang, "position:fixed; left:10px; top:35px;"); ?>  
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
   <b>Order professional translations</b><br/>
@@ -432,7 +432,7 @@ if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php"))
 }
 
 // =============== define company/billing information if undefined ===============
-if (!is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php"))
+if (!is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php") && checkrootpermission ('desktop'))
 {
 ?>
 <!DOCTYPE html>
@@ -445,6 +445,7 @@ if (!is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php")
 <script type="text/javascript" src="../../../javascript/main.min.js"></script>
 <script type="text/javascript" src="../../../javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function checkForm()
 { 
   var form = document.forms['nativy'];
@@ -468,7 +469,7 @@ function checkForm()
 <!-- top bar -->
 <?php echo showtopbar ($hcms_lang['translate'][$lang], $lang); ?>
 
-<?php echo showmessage ($show, 460, 70, $lang, "position:fixed; left:15px; top:35px;"); ?>  
+<?php echo showmessage ($show, 460, 70, $lang, "position:fixed; left:10px; top:35px;"); ?>  
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
   <b>Order professional translations</b><br/>

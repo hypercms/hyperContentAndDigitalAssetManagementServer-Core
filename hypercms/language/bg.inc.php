@@ -1430,4 +1430,5 @@ $hcms_lang['dark']['bg'] = "тъмен";
 $hcms_lang['text-and-icons']['bg'] = "Текстове и икони";
 $hcms_lang['logo']['bg'] = "Logo";
 $hcms_lang['wallpaper']['bg'] = "тапети";
+$hcms_lang['youtube-sign-out']['bg'] = "Трябва да излезете от профила си в Google / YouTube, преди да добавите нов акаунт";
 ?>

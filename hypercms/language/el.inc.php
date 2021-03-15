@@ -1431,4 +1431,5 @@ $hcms_lang['dark']['el'] = "σκοτάδι";
 $hcms_lang['text-and-icons']['el'] = "Κείμενα και εικονίδια";
 $hcms_lang['logo']['el'] = "Λογότυπο";
 $hcms_lang['wallpaper']['el'] = "εικόνα φόντου";
+$hcms_lang['youtube-sign-out']['el'] = "Πρέπει να αποσυνδεθείτε από τον λογαριασμό σας Google/YouTube πριν προσθέσετε έναν νέο λογαριασμό";
 ?>

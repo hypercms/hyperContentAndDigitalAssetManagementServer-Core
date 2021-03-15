@@ -18,9 +18,9 @@ require ("version.inc.php");
 
 
 // plugin config
-if (file_exists ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
+if (file_exists ($mgmt_config['abs_path_data']."config/plugin.global.php"))
 {
-  require ($mgmt_config['abs_path_data']."config/plugin.conf.php");
+  require ($mgmt_config['abs_path_data']."config/plugin.global.php");
 }
 else $mgmt_plugin = array();
 
@@ -897,7 +897,8 @@ else
   }
 
   // ----------------------------------------- plugins ----------------------------------------------
-  if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin))
+  // Plugins require Desktop permission since version 9.1.1
+  if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin) && checkrootpermission ('desktop'))
   { 
     foreach ($mgmt_plugin as $key => $data)
     {
@@ -1207,7 +1208,8 @@ else
           }
 
           // ----------------------------------------- plugins ----------------------------------------------
-          if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin))
+          // Plugins require Desktop permission since version 9.1.1
+          if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin) && checkrootpermission ('desktop'))
           { 
             foreach ($mgmt_plugin as $key => $data)
             {

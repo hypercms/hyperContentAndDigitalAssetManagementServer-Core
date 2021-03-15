@@ -242,7 +242,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
         <img src="<?php echo getthemelocation(); ?>img/button_search.png" <?php if (!empty ($mgmt_config['db_connect_rdbms']) && linking_valid() == false) echo "onclick=\"if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();\""; ?> class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
       </form>
     </div>
-    <div id="navContainer" style="width:100%; height:calc(100% - 36px); margin:0; padding:0; overflow:auto; -webkit-overflow-scrolling:touch;">
+    <div id="navContainer" style="width:100%; height:calc(100% - 76px); margin:0; padding:0; overflow:visible; -webkit-overflow-scrolling:touch;">
       <iframe id="navFrame" src="explorer.php" frameborder="0" style="margin:0; padding:0; border:0; width:100%; height:100%;"></iframe>
     </div>
   </div>
@@ -267,7 +267,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   
   <!-- chat panel -->
   <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
-  <div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:36px; right:-320px; bottom:0; width:300px; z-index:100; overflow:auto; -webkit-overflow-scrolling:touch;">
+  <div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:36px; right:-320px; bottom:0; width:300px; z-index:100; overflow:visible; -webkit-overflow-scrolling:touch;">
     <iframe id="chatFrame" src="chat.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
   </div>  
   <?php } ?>

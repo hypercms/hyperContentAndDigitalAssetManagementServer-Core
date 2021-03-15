@@ -1430,4 +1430,5 @@ $hcms_lang['dark']['he'] = "אפל";
 $hcms_lang['text-and-icons']['he'] = "טקסטים וסמלים";
 $hcms_lang['logo']['he'] = "לוגו";
 $hcms_lang['wallpaper']['he'] = "תמונת רקע";
+$hcms_lang['youtube-sign-out']['he'] = "עליך לצאת מחשבון Google/YouTube שלך לפני שתוסיף חשבון חדש";
 ?>

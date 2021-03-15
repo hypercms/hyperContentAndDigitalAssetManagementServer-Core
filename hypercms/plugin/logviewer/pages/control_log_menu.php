@@ -54,7 +54,7 @@ if (!empty ($hcms_themeinvertcolors))
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
-<?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
+<?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <div class="hcmsLocationBar">
   <table class="hcmsTableNarrow">

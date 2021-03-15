@@ -52,7 +52,7 @@ Add PHP code according to the existing file.
 8. Add close button:
 <!-- top bar close button -->
 <?php
-echo "<div style=\"position:fixed; top:0px; right:0px; width:36px; padding:0; margin:0; z-index:1000;\"><a href=\"javascript:closeminipaint();\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_button','','".getthemelocation()."img/button_close_over.png',1);\"><img name=\"close_button\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" /></a></div>\n";
+echo "<div style=\"position:fixed; top:0px; right:0px; width:36px; padding:0; margin:0; z-index:1000;\"><a href=\"javascript:closeminipaint();\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_button','','".getthemelocation()."img/button_close_over.png',1);\"><img name=\"close_button\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" /></a></div>\n";
 ?>
 
 9. Add save JS code at the end including the invisible img tag:

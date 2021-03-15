@@ -1237,13 +1237,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
     $ownergroup = accesspermission ($site, $location, $cat);
     $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
-  }
 
-  // set required permissions for the service user (required for service savecontent, function buildview and function showmedia)
-  if (!empty ($recognizefaces_service) && !empty ($user) && is_facerecognitionservice ($user))
-  {
-    $setlocalpermission['root'] = 1;
-    $setlocalpermission['create'] = 1;
+    // set required permissions for the service user (required for service savecontent, function buildview and function showmedia)
+    if (!empty ($recognizefaces_service) && !empty ($user) && is_facerecognition ($user))
+    {
+      $setlocalpermission['root'] = 1;
+      $setlocalpermission['create'] = 1;
+    }
   }
 
   // get browser info
@@ -1757,7 +1757,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // ============================================ workflow ================================================
 
     // no service
-    if (empty ($recognizefaces_service))
+    if (empty ($recognizefaces_service) && $buildview != "template")
     {
       $result_workflow = checkworkflow ($site, $location, $page, $cat, $contentfile, $contentdata, $buildview, $viewstore, $user);
 
@@ -4448,7 +4448,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             if (!isset ($onpublish_width[$id][$tagid])) $onpublish_width[$id][$tagid] = "";
             if (!isset ($onpublish_height[$id][$tagid])) $onpublish_height[$id][$tagid] = "";
             if (!isset ($onedit_file[$id][$tagid])) $onedit_file[$id][$tagid] = "";
-            if (!isset ($hypertag_file[$id][$tagid])) $hypertag_file[$id][$tagid] = "";
             if (!isset ($language_info[$id])) $language_info[$id] = "";
 
             // collect unique id's and set position/key of hypertag
@@ -4776,7 +4775,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                 if (
                      checklanguage ($language_sessionvalues_array, $language_info[$id]) && $groupaccess == true &&
-                     isset ($hypertag_file[$id][$tagid]) && $onedit_file[$id][$tagid] != "hidden" &&
+                     !empty ($hypertag_file[$id][$tagid]) && $onedit_file[$id][$tagid] != "hidden" &&
                      (
                        (
                         (
@@ -4795,7 +4794,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
 
-                  while (@substr_count ($viewstore_offset, $hypertag_file[$id][$tagid]) > 0)
+                  while (substr_count ($viewstore_offset, $hypertag_file[$id][$tagid]) > 0)
                   {
                     if ($searchtag == "media")
                     {
@@ -5086,7 +5085,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $repl_len = strlen ($imgtag);
 
                         // replace tag
-                        $viewstore = substr_replace ($viewstore, $imgtag_new, $repl_start, $repl_len);
+                        $viewstore = substr_replace ($viewstore, "", $repl_start, $repl_len);
                       }
 
                       // insert taglink
@@ -5099,12 +5098,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 }
                 // --------------------------- publish / insert content ----------------------------
                 // insert article time management code
-                elseif ($buildview == "publish" && $searchtag == "artmedia" && isset ($hypertag_file[$id][$tagid]) && $onpublish_file[$id][$tagid] != "hidden")
+                elseif ($buildview == "publish" && $searchtag == "artmedia" && !empty ($hypertag_file[$id][$tagid]) && $onpublish_file[$id][$tagid] != "hidden")
                 {
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
 
-                  while (@substr_count ($viewstore_offset, $hypertag_file[$id][$tagid]) >= 1)
+                  while (substr_count ($viewstore_offset, $hypertag_file[$id][$tagid]) > 0)
                   {
                     // get full HTML media-tag
                     $imgtag = gethtmltag ($viewstore_offset, $hypertag_file[$id][$tagid]);
@@ -5148,7 +5147,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   if ($buildview == "publish") $url_media = $publ_config['url_publ_tplmedia'].$templatesite."/";
                   else $url_media = $mgmt_config['url_path_tplmedia'].$templatesite."/";
                 }
-                // define media file to present
+                // define media file
                 else
                 {
                   // if pathytpe == file (absolute path in filesystem)
@@ -7125,7 +7124,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
       $faces_json = "''";
 
-      if (is_facerecognitionservice ("sys") || !empty ($mgmt_config['annotation']))
+      if (is_facerecognition ("sys") || is_annotation ())
       {
         // get content
         $bufferarray = selectcontent ($contentdata, "<text>", "<text_id>", "Faces-JSON");
@@ -7991,7 +7990,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   $viewstore .= "
   <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/main.min.js\" type=\"text/javascript\"></script>
-  <!-- JQuery -->
+  <!-- JQuery and JQuery UI -->
   <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery/jquery-3.5.1.min.js\" type=\"text/javascript\"></script>
   <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
   <link  rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery-ui/jquery-ui-1.12.1.min.css\" type=\"text/css\" />
@@ -9102,6 +9101,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         'id': 'hcmsFace' + face_id,
         'class': 'hcmsFace',
         'onclick': dragresizable + ' switchFaceName(\"hcmsFaceName' + face_id + '\")',
+        'onresize': 'resizeFaceName(\"' + face_id + '\");',
+        'ondrag': 'resizeFaceName(\"' + face_id + '\");',
         'css': {
           'position': 'absolute',
           'left': x + 'px',
@@ -9179,6 +9180,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         'id': 'hcmsFace' + face_id,
         'class': 'hcmsFace',
         'onclick': dragresizable + ' switchFaceName(\"hcmsFaceName' + face_id + '\")',
+        'onresize': 'resizeFaceName(\"' + face_id + '\");',
+        'ondrag': 'resizeFaceName(\"' + face_id + '\");',
         'css': {
           'visibility': visibility,
           'position': 'absolute',
@@ -9368,7 +9371,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           var marker = createFaceMarkerOnVideo (video_id, id, faces[i].time, (faces[i].x * scale), (faces[i].y * scale), (faces[i].width * scale), (faces[i].height * scale), faces[i].label, '', 'show', true, false);
           if (marker == true && faces[i].label != '') savemarker = true;
 
-          if (hcms_consolelog) console.log('recognized \"' + faces[i].label + '\" (ID:' + id + ') on video with coordinates x:' + (faces[i].x * scale) + ' y:' + (faces[i].y * scale));
+          if (hcms_consolelog) console.log('recognized \"' + faces[i].label + '\" (ID:' + id + ') with a distance of ' + faces[i].distance + ' on video with coordinates x:' + (faces[i].x * scale) + ' y:' + (faces[i].y * scale));
         }
       }
 
@@ -9499,7 +9502,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (hcms_consolelog) console.log('scale of detected face = ' + parseInt(mediawidth) + ' / ' + parseInt(document.getElementById('hcms_mediaplayer_asset').naturalWidth) + ' = ' + scale);
       ";
 
-      if (is_facerecognitionservice ("sys")) $viewstore .= "
+      if (is_facerecognition ("sys")) $viewstore .= "
       // recognize faces
       var element = document.getElementById('hcms_mediaplayer_asset');
 
@@ -9521,7 +9524,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             var marker = createFaceMarkerOnImage ('hcms_mediaplayer_asset', j, (faces[i].x * scale), (faces[i].y * scale), (faces[i].width * scale), (faces[i].height * scale), faces[i].label, true, false);
             if (marker == true && faces[i].label != '') savemarker = true;
 
-            if (hcms_consolelog) console.log('recognized \"' + faces[i].label + '\" (ID:' + j + ') on image with coordinates x:' + (faces[i].x * scale) + ' y:' + (faces[i].y * scale));
+            if (hcms_consolelog) console.log('recognized \"' + faces[i].label + '\" (ID:' + j + ') with a distance of ' + faces[i].distance + ' on image with coordinates x:' + (faces[i].x * scale) + ' y:' + (faces[i].y * scale));
           }
 
           // save without input verification
@@ -9674,7 +9677,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       var time_id = time.toString().replace ('.', '_');
       ";
 
-      if (is_facerecognitionservice ("sys")) $viewstore .= "
+      if (is_facerecognition ("sys")) $viewstore .= "
       // recognize faces
       var element = document.getElementById(videotag_id);
 
@@ -9695,7 +9698,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             var marker = createFaceMarkerOnVideo (videotag_id, id, time, (faces[i].x * scale), (faces[i].y * scale), (faces[i].width * scale), (faces[i].height * scale), faces[i].label, '', 'show', false, false);
             if (marker == true && faces[i].label != '') savemarker = true;
 
-            if (hcms_consolelog) console.log('recognized \"' + faces[i].label + '\" (ID:' + id + ') on video with coordinates x:' + (faces[i].x * scale) + ' y:' + (faces[i].y * scale));
+            if (hcms_consolelog) console.log('recognized \"' + faces[i].label + '\" (ID:' + id + ') with a distance of ' + faces[i].distance + ' on video with coordinates x:' + (faces[i].x * scale) + ' y:' + (faces[i].y * scale));
           }
 
           // save without input verification
@@ -9839,6 +9842,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             'id': 'hcmsFace' + id,
             'class': 'hcmsFace',
             'onclick': '$(\"#hcmsFace' + id + '\").draggable().resizable(); switchFaceName(\"hcmsFaceName' + id + '\")',
+            'onresize': 'resizeFaceName(\"' + id + '\");',
+            'ondrag': 'resizeFaceName(\"' + id + '\");',
             'css': {
               'position': 'absolute',
               'left': pos_x + 'px',
@@ -9909,6 +9914,28 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           createFaceMarkerOnVideo (videotag_id, '', time, pos_x, pos_y, markerwidth, markerheight, '', '', 'show', false, true);
         }
       }
+    }
+  }
+  
+  // resize/reposition face name
+  function resizeFaceName (id)
+  {
+    if (typeof zoommemory !== 'undefined' && zoommemory > 0) var scale = 1 / zoommemory;
+    else var scale = 1;
+
+    var faceframe = document.getElementById('hcmsFace' + id);
+    var facename = document.getElementById('hcmsFaceName' + id);
+
+    if (faceframe && facename)
+    {
+      var x = faceframe.offsetLeft * scale;
+      var y = faceframe.offsetTop * scale;
+      var markerwidth = faceframe.clientWidth * scale;
+      var markerheight = faceframe.clientHeight * scale;
+      var offset = (216 - markerwidth) / 2;
+
+      facename.style.top = y + markerheight + 6 + 'px';
+      facename.style.left = x - offset + 'px';
     }
   }
 
@@ -10031,8 +10058,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
     var elements = document.getElementsByClassName('hcmsFaceName');
 
-    if (typeof variable !== 'undefined' && zoommemory > 0) var scale = 1 / zoommemory;
-    else scale = 1;
+    if (typeof zoommemory !== 'undefined' && zoommemory > 0) var scale = 1 / zoommemory;
+    else var scale = 1;
 
     if (elements.length > 0)
     {
@@ -10061,8 +10088,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             if (faceframe)
             {
               var facedetails = $('#facedetails' + videoface_id[i]).val() + ', \"x\":' + (faceframe.offsetLeft * scale) + ', \"y\":' + faceframe.offsetTop + ', \"width\":' + (faceframe.clientWidth * scale) + ', \"height\":' + (faceframe.clientHeight * scale);
-              var facename = $('#facename' + videoface_id[i]).val();
-              var facelink = $('#facelink' + videoface_id[i]).val();
+              var facename = $('#facename' + videoface_id[i]).val().trim();
+              var facelink = $('#facelink' + videoface_id[i]).val().trim();
               faces[j] = '{\"videowidth\":' + videowidth + ', \"videoheight\":' + videoheight + ', ' + facedetails + ', \"name\":' + JSON.stringify(facename) + ', \"link\":' + JSON.stringify(facelink) + '}';
 
               j++;
@@ -10102,7 +10129,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             if (faceframe)
             {
               var facedetails = $('#facedetails' + imageface_id[i]).val() + ', \"x\":' + (faceframe.offsetLeft * scale) + ', \"y\":' + (faceframe.offsetTop * scale) + ', \"width\":' + (faceframe.clientWidth * scale) + ', \"height\":' + (faceframe.clientHeight * scale);
-              var facename = $('#facename' + imageface_id[i]).val();
+              var facename = $('#facename' + imageface_id[i]).val().trim();
               faces[j] = '{\"imagewidth\":' + imagewidth + ', \"imageheight\":' + imageheight + ', ' + facedetails + ', \"name\":' + JSON.stringify(facename) + '}';
 
               j++;
@@ -10174,7 +10201,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   // face detection for images (no mobile support, no support of MS IE)
   $add_facedetection = "";
 
-  if (!$is_mobile && !empty ($mediafile) && (is_facerecognitionservice ("sys") || !empty ($mgmt_config['annotation'])))
+  if (!empty ($mediafile) && (is_facerecognition ("sys") || is_annotation ()))
   {
     // delay for image to load and be displayed
     if (is_image ($mediafile)) $add_facedetection .= "
@@ -10287,7 +10314,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         if (($mediafile == false || $mediafile == "" || $application == "generator") && $page != ".folder" && $objectview != "formedit" && $objectview != "formmeta" && $objectview != "formlock" || $buildview != "formedit")
         {
           if ($buildview == "formlock") $viewstore .= "<td style=\"width:32px; text-align:right; vertical-align:middle; padding-right:2px;\"><img name=\"mediaClose\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" /></td>\n";
-          else $viewstore .= "<td style=\"width:32px; text-align:right; vertical-align:middle; padding-right:2px;\"><a href=\"".cleandomain ($mgmt_config['url_path_cms'])."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('mediaClose','','".getthemelocation()."img/button_close_over.png',1);\"><img name=\"mediaClose\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $charset, $lang)."\" /></a></td>\n";
+          else $viewstore .= "<td style=\"width:32px; text-align:right; vertical-align:middle; padding-right:2px;\"><a href=\"".cleandomain ($mgmt_config['url_path_cms'])."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('mediaClose','','".getthemelocation()."img/button_close_over.png',1);\"><img name=\"mediaClose\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $charset, $lang)."\" /></a></td>\n";
         }
 
         $viewstore .= "
@@ -10301,7 +10328,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         {
           $sharelink = createwrapperlink ($site, $location, $page, "comp");
 
-          $viewstore .= showsharelinks ($sharelink, $mediafile, $lang, "position:fixed; top:50px; right:12px; width:36px;");
+          $viewstore .= showsharelinks ($sharelink, $mediafile, $lang, "position:fixed; top:50px; right:12px; width:46px;");
         }
 
         // table for form

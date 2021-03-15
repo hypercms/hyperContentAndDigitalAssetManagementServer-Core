@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['nl'] = "donker";
 $hcms_lang['text-and-icons']['nl'] = "Teksten en pictogrammen";
 $hcms_lang['logo']['nl'] = "Logo";
 $hcms_lang['wallpaper']['nl'] = "Achtergrond afbeelding";
+$hcms_lang['youtube-sign-out']['nl'] = "U moet zich afmelden bij uw Google/YouTube-account voordat u een nieuw account toevoegt";
 ?>

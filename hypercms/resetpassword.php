@@ -258,7 +258,7 @@ function blurbackground (blur)
   </div>
 
   <?php
-  echo showmessage ($show, 460, 70, $lang, "position:fixed; left:15px; top:95px;");
+  echo showmessage ($show, 460, 70, $lang, "position:fixed; left:10px; top:95px;");
   ?>
 
   <!-- reset password form -->

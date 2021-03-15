@@ -234,7 +234,7 @@ function move (fbox, tbox)
 
 <?php
 // show message
-echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:15px;");
+echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:10px;");
 
 if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 {

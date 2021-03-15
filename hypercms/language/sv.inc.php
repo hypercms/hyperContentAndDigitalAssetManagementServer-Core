@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['sv'] = "mörk";
 $hcms_lang['text-and-icons']['sv'] = "Texter och ikoner";
 $hcms_lang['logo']['sv'] = "Logotyp";
 $hcms_lang['wallpaper']['sv'] = "Bakgrundsbild";
+$hcms_lang['youtube-sign-out']['sv'] = "Du måste logga ut från ditt Google/YouTube-konto innan du lägger till ett nytt konto";
 ?>

@@ -320,7 +320,7 @@ hr
 </style>
 </head>
 
-<body onload="centercontainer(); initialize();">
+<body class="hcmsWorkplaceWorkflow" onload="centercontainer(); initialize();">
 
 <!-- toolbar -->
 <div id="toolbar" style="position:fixed; top:5px; left:5px; text-align:left; z-index:30;">

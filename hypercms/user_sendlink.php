@@ -545,7 +545,7 @@ $token_new = createtoken ($user);
   
   <!-- message -->
   <?php
-  if (isset ($multiobject_array) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 500) echo showmessage ($hcms_lang['storage-limit-exceeded'][$lang]." (max. 500)", 540, 200, $lang, "position:fixed; left:5px; top:55px;");
+  if (isset ($multiobject_array) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 500) echo showmessage ($hcms_lang['storage-limit-exceeded'][$lang]." (max. 500)", 540, 200, $lang, "position:fixed; left:10px; top:55px;");
   
   if (!empty ($mail_error) || !empty ($mail_success) || !empty ($general_error))
   {
@@ -584,7 +584,7 @@ $token_new = createtoken ($user);
 
     $show .= "</div>";
           
-    echo showmessage ($show, 540, 200, $lang, "position:fixed; left:5px; top:55px;");
+    echo showmessage ($show, 540, 200, $lang, "position:fixed; left:10px; top:55px;");
   }
   ?>
   

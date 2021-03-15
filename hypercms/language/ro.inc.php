@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['ro'] = "întuneric";
 $hcms_lang['text-and-icons']['ro'] = "Texte și icoane";
 $hcms_lang['logo']['ro'] = "Siglă";
 $hcms_lang['wallpaper']['ro'] = "Imagine de fundal";
+$hcms_lang['youtube-sign-out']['ro'] = "Trebuie să vă deconectați de la contul dvs. Google/YouTube înainte de a adăuga un cont nou";
 ?>-

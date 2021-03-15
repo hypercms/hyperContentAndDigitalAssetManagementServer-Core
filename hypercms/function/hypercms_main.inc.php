@@ -936,6 +936,30 @@ function is_thumbnail ($media, $images_only=true)
   else return false;
 }
 
+// -------------------------------------- is_preview -------------------------------------------
+// function: is_preview()
+// input: file name or path [string]
+// output: if file is a preview file true / false on error
+
+// description:
+// This function checks if the provided file name is a preview file
+
+function is_preview ($media)
+{
+  if ($media != "")
+  {
+    $container_id = getmediacontainerid ($media);
+
+    if ($container_id != "")
+    {
+      if (substr_count ($media, "hcm".$container_id.".preview.") > 0) return true;
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // -------------------------------------- is_config -------------------------------------------
 // function: is_config()
 // input: file name or path [string]
@@ -1280,23 +1304,42 @@ function is_activelanguage ($site, $langcode)
   else return false;
 }
 
-// -------------------------------- is_facerecognitionservice --------------------------------
-// function: is_facerecognitionservice()
+// -------------------------------- is_annotation --------------------------------
+// function: is_annotation()
+// input: %
+// output: true / false
+
+// description:
+// This function determines if the annotation feature has been enabled and is installed.
+
+function is_annotation ()
+{
+  global $mgmt_config;
+
+  if (!empty ($mgmt_config['annotation']) && is_dir ($mgmt_config['abs_path_cms']."workflow/") && is_file ($mgmt_config['abs_path_cms']."javascript/annotate/annotate.css"))
+  {
+    return true;
+  }
+  else return false;
+}
+
+// -------------------------------- is_facerecognition --------------------------------
+// function: is_facerecognition()
 // input: user or service user name [string]
 // output: true / false
 
 // description:
-// This function determines if the face recognition service has been enabled for the automatic face recognition.
+// This function determines if the face recognition feature and service has been enabled for the automatic face recognition.
 // Provide system user "sys" for general verification of the face recognition feature (if enabled and is supported by the browser).
 
-function is_facerecognitionservice ($user)
+function is_facerecognition ($user)
 {
-  global $mgmt_config;
+  global $mgmt_config, $is_mobile;
 
   // verify browser
   $user_client = getbrowserinfo ();
 
-  if ($user != "" && !empty ($mgmt_config['facerecognition']) && is_dir ($mgmt_config['abs_path_cms']."javascript/facerecognition") && empty ($user_client['msie']))
+  if ($user != "" && empty ($is_mobile) && !empty ($mgmt_config['facerecognition']) && is_dir ($mgmt_config['abs_path_cms']."javascript/facerecognition") && empty ($user_client['msie']))
   {
     // system user
     if ($user == "sys")
@@ -1340,7 +1383,7 @@ function createfacerecognitionservice ($user)
 {
   global $mgmt_config;
 
-  if (is_facerecognitionservice ($user))
+  if (is_facerecognition ($user))
   {
     // register servive for user
     $servicehash = registerservice ("recognizefaces", $user);
@@ -4867,10 +4910,10 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 
     // --------------------------------- write statistics ---------------------------------
     // write stats for partial file download (range has been provided) only if start of file or end of file has been requested 
-    if (!is_thumbnail ($location.$media) && (($range && ($start == 0 || $end == ($size - 1))) || !$range))
+    if (!is_thumbnail ($location.$media) && substr ($user, 0, 4) != "sys:" && (($range && ($start == 0 || $end == ($size - 1))) || !$range))
     {
       if ($user == "sys") $user_stats = getuserip();
-      else $user_stats = $user;
+      $user_stats = $user;
 
       // get temp file for statistics of ZIP file contents
       if (is_file ($mgmt_config['abs_path_temp'].$media.".dat")) $container_id = file ($mgmt_config['abs_path_temp'].$media.".dat");
@@ -6398,9 +6441,6 @@ function createpublication ($site_name, $user="sys")
 
   // forbidden publication names since used for main config settings
   if (is_array ($mgmt_config)) $forbidden = array_keys ($mgmt_config);
-
-  // plugin.conf.php is the configuration file for the plugins and is saved in the same config-directory
-  $forbidden[] = "plugin";
 
   // IMPORTANT: siteaccess must be empty, otherwise valid_publicationname will return false
   $siteaccess = "";
@@ -9222,14 +9262,17 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 // output: result array
 
 // description:
-// This function edits a user. Use *Leave* as input if a value should not be changed. Use *Null* for publication name to remove access to all publications. Use *Null* for user group to remove user from all user groups of the publication.
+// This function edits a user. Use *Leave* as input if a value should not be changed. 
+// Use *Null* for the publication membership to remove access to all publications.
+// Use *Null* for the user group membership to remove user from all user groups of the publication.
 
-function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="*Leave*", $language="en", $timezone="*Leave*", $theme="*Leave*", $email="*Leave*", $phone="*Leave*", $signature="*Leave*", $usergroup="*Leave*", $usersite="*Leave*", $validdatefrom="*Leave*", $validdateto="*Leave*", $user="sys")
+function edituser ($site="*Null*", $login="", $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="*Leave*", $language="en", $timezone="*Leave*", $theme="*Leave*", $email="*Leave*", $phone="*Leave*", $signature="*Leave*", $usergroup="*Leave*", $usersite="*Leave*", $validdatefrom="*Leave*", $validdateto="*Leave*", $user="sys")
 {
   global $eventsystem, $login_cat, $group, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
   $error = array();
+  $update = false;
   $add_onload = "";
   $show = "";
 
@@ -9267,22 +9310,49 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       else $theme = "standard";
     }
 
+    // get saved user data for comparison
     if (!empty ($userdata))
     {
-      // check if password was changed
-      if (!empty ($userdata) && $password != "" && $password != "*Leave*")
-      {
-        // check if submitted old password is valid if user changes his own password
-        if ($login == $user)
-        {
-          // get user information
-          $usernode = selectcontent ($userdata, "<user>", "<login>", $login);
-          $userpasswd = getcontent ($usernode[0], "<password>");
-          $usersuperadmin = getcontent ($usernode[0], "<admin>");
-        }
+      // get user node
+      $temp = selectcontent ($userdata, "<user>", "<login>", $login);
 
-        // check old password (only for logged in user)
-        if ($login == $user && !empty ($userpasswd[0]) && !password_verify ($old_password, $userpasswd[0]) && crypt ($old_password, substr ($old_password, 1, 2)) != $userpasswd[0])
+      if (!empty ($temp[0]))
+      {
+        // get user information
+        $password_saved = getcontent ($temp[0], "<password>");
+        $hashcode_saved = getcontent ($temp[0], "<hashcode>");
+        $superadmin_saved = getcontent ($temp[0], "<admin>");
+        $language_saved = getcontent ($temp[0], "<language>");
+        $realname_saved = getcontent ($temp[0], "<realname>");
+        $timezone_saved = getcontent ($temp[0], "<timezone>");
+        $theme_saved = getcontent ($temp[0], "<theme>");
+        $email_saved = getcontent ($temp[0], "<email>");
+        $phone_saved = getcontent ($temp[0], "<phone>");
+        $signature_saved = getcontent ($temp[0], "<signature>");
+        $validdatefrom_saved = getcontent ($temp[0], "<validdatefrom>");
+        $validdateto_saved = getcontent ($temp[0], "<validdateto>");
+      }
+
+      if (empty ($password_saved[0])) $password_saved[0] = "";
+      if (empty ($hashcode_saved[0])) $hashcode_saved[0] = "";
+      if (empty ($superadmin_saved[0])) $superadmin_saved[0] = "";
+      if (empty ($language_saved[0])) $language_saved[0] = "";
+      if (empty ($timezone_saved[0])) $timezone_saved[0] = "";
+      if (empty ($theme_saved[0])) $theme_saved[0] = "";
+      if (empty ($email_saved[0])) $email_saved[0] = "";
+      if (empty ($phone_saved[0])) $phone_saved[0] = "";
+      if (empty ($signature_saved[0])) $signature_saved[0] = "";
+      if (empty ($validdatefrom_saved[0])) $validdatefrom_saved[0] = "";
+      if (empty ($validdateto_saved[0])) $validdateto_saved[0] = "";
+    }
+
+    if (!empty ($userdata))
+    {
+      // ---------------- password ----------------
+      if ($password != "" && $password != "*Leave*")
+      {
+        // check if submitted old password is valid if user changes his own password (only for logged in user)
+        if ($login == $user && !empty ($password_saved[0]) && !password_verify ($old_password, $password_saved[0]) && crypt ($old_password, substr ($old_password, 1, 2)) != $password_saved[0])
         {
           //unlock file
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
@@ -9335,115 +9405,160 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           // delete temp file for the password reset after login
           deletefile ($mgmt_config['abs_path_temp'], $login.".resetpassword.dat");
 
-          // insert values into xml schema
-          $userdata = setcontent ($userdata, "<user>", "<password>", $password, "<login>", $login); 
+          if ($password_saved[0] != $password)
+          {
+            // insert values into xml schema
+            $userdata = setcontent ($userdata, "<user>", "<password>", $password, "<login>", $login);
+            $update = true;
+          }
 
-          // insert values into xml schema )
-          $userdata = setcontent ($userdata, "<user>", "<hashcode>", $hashcode, "<login>", $login);
+          if ($hashcode_saved[0] != $hashcode)
+          {
+            // insert values into xml schema
+            $userdata = setcontent ($userdata, "<user>", "<hashcode>", $hashcode, "<login>", $login);
+            $update = true;
+          }
         }
       }
 
-      // check if super admin was changed
-      if (!empty ($userdata) && ($superadmin == "1" || $superadmin == "0") && $superadmin != "*Leave*" && $show == "")
+      // ---------------- super admin ----------------
+      if (!empty ($userdata) && ($superadmin == "1" || $superadmin == "0") && $superadmin != "*Leave*" && $show == "" && intval ($superadmin) != intval ($superadmin_saved[0]))
       {
         // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<admin>", $superadmin, "<login>", $login); 
+        $userdata = setcontent ($userdata, "<user>", "<admin>", $superadmin, "<login>", $login);
+        $update = true;
       } 
 
-      // check if realname was changed
+      // ---------------- realname ----------------
       if (!empty ($userdata) && isset ($realname) && $realname != "*Leave*" && $show == "")
       {
         // escape special characters
         $realname = strip_tags ($realname);
         $realname = html_encode ($realname);
 
-        // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<realname>", "<![CDATA[".$realname."]]>", "<login>", $login);
+        if ($realname != $realname_saved[0])
+        {
+          // insert values into xml schema
+          $userdata = setcontent ($userdata, "<user>", "<realname>", "<![CDATA[".$realname."]]>", "<login>", $login);
+          $update = true;
+        }
       }
 
-      // check if lanuage was changed
+      // ---------------- language ----------------
       if (!empty ($userdata) && valid_objectname ($language) && $language != "*Leave*" && $show == "")
       {
         // escape special characters
         $language = strip_tags ($language);
         $language = html_encode ($language);
 
-        // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<language>", $language, "<login>", $login);
+        if ($language != $language_saved[0])
+        {
+          // insert values into xml schema
+          $userdata = setcontent ($userdata, "<user>", "<language>", $language, "<login>", $login);
+          $update = true;
+        }
       }
 
-      // check if phone was changed
+      // ---------------- timezone ----------------
       if (!empty ($userdata) && isset ($timezone) && $timezone != "*Leave*" && $show == "")
       {
         // escape special characters
         $timezone = strip_tags ($timezone);
 
-        // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<timezone>", "<![CDATA[".$timezone."]]>", "<login>", $login);
+        if ($timezone != $timezone_saved[0])
+        {
+          // insert values into xml schema
+          $userdata = setcontent ($userdata, "<user>", "<timezone>", "<![CDATA[".$timezone."]]>", "<login>", $login);
+          $update = true;
+        }
       }
 
-      // check if theme was changed
+      // ---------------- design theme ----------------
       if (!empty ($userdata) && valid_objectname ($theme) && $theme != "*Leave*" && $show == "")
       {
         // escape special characters
         $theme = strip_tags ($theme);
         $theme = html_encode ($theme);
 
-        // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<theme>", $theme, "<login>", $login);
+        if ($theme != $theme_saved[0])
+        {
+          // insert values into xml schema
+          $userdata = setcontent ($userdata, "<user>", "<theme>", $theme, "<login>", $login);
+          $update = true;
+        }
       }
 
-      // check if email was changed
+      // ---------------- email ----------------
       if (!empty ($userdata) && isset ($email) && $email != "*Leave*" && $show == "")
       {
         // escape special characters
         $email = strip_tags ($email);
 
-        // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<email>", "<![CDATA[".$email."]]>", "<login>", $login);
+        if ($email != $email_saved[0])
+        {
+          // insert values into xml schema
+          $userdata = setcontent ($userdata, "<user>", "<email>", "<![CDATA[".$email."]]>", "<login>", $login);
+          $update = true;
+        }
       }
 
-      // check if phone was changed
+      // ---------------- phone ----------------
       if (!empty ($userdata) && isset ($phone) && $phone != "*Leave*" && $show == "")
       {
         // escape special characters
         $phone = strip_tags ($phone);
 
-        // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<phone>", "<![CDATA[".$phone."]]>", "<login>", $login);
+        if ($phone != $phone_saved[0])
+        {
+          // insert values into xml schema
+          $userdata = setcontent ($userdata, "<user>", "<phone>", "<![CDATA[".$phone."]]>", "<login>", $login);
+          $update = true;
+        }
       }
 
-      // check if email was changed
+      // ---------------- signature ----------------
       if (!empty ($userdata) && isset ($signature) && $signature != "*Leave*" && $show == "")
       {
         // escape special characters
         $signature = strip_tags ($signature);
 
-        // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<signature>", "<![CDATA[".$signature."]]>", "<login>", $login);
+        if ($signature != $signature_saved[0])
+        {
+          // insert values into xml schema
+          $userdata = setcontent ($userdata, "<user>", "<signature>", "<![CDATA[".$signature."]]>", "<login>", $login);
+          $update = true;
+        }
       }
 
-      // check if valid date was changed
+      // ---------------- valid date start ----------------
       if (!empty ($userdata) && isset ($validdatefrom) && $validdatefrom != "*Leave*" && $show == "")
       {
         // escape special characters
         $validdatefrom = strip_tags ($validdatefrom);
 
-        // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<validdatefrom>", $validdatefrom, "<login>", $login);
+        if ($validdatefrom != $validdatefrom_saved[0])
+        {
+          // insert values into xml schema
+          $userdata = setcontent ($userdata, "<user>", "<validdatefrom>", $validdatefrom, "<login>", $login);
+          $update = true;
+        }
       }
 
-      // check if valid date was changed
+      // ---------------- valid date end ----------------
       if (!empty ($userdata) && isset ($validdateto) && $validdateto != "*Leave*" && $show == "")
       {
         // escape special characters
         $validdateto = strip_tags ($validdateto);
 
-        // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<validdateto>", $validdateto, "<login>", $login);
+        if ($validdateto != $validdateto_saved[0])
+        {
+          // insert values into xml schema
+          $userdata = setcontent ($userdata, "<user>", "<validdateto>", $validdateto, "<login>", $login);
+          $update = true;
+        }
       }
 
-      // check if usersite was changed
+      // ---------------- user publication access ----------------
       if (!empty ($userdata) && !empty ($usersite) && (is_array ($usersite) || $usersite != "*Leave*") && $show == "")
       {
         if ($usersite == "*Null*") 
@@ -9473,7 +9588,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         // load memberof schema
         $memberof_schema_xml = loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "memberof.schema.xml.php");
 
-        // remove site access of user
+        // remove publication access
         if ($set_memberof_array != false)
         {
           foreach ($set_memberof_array as $set_memberof_node)
@@ -9488,7 +9603,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           }
         }
 
-        // membership of publications
+        // assign publication access
         $memberof_node = "";
 
         foreach ($new_usersite as $temp)
@@ -9500,16 +9615,20 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         }
 
         // insert new site access of user
-        if ($memberof_node != "") $user_node_new = insertcontent ($user_node_new, $memberof_node, "<user>");
+        if ($memberof_node != "")
+        {
+          $user_node_new = insertcontent ($user_node_new, $memberof_node, "<user>");
+        }
 
         // update user node
-        if ($user_node_new != false) 
+        if (!empty ($user_node_new) && trim ($user_node) != trim ($user_node_new)) 
         {
           $userdata = updatecontent ($userdata, $user_node, $user_node_new);
+          $update = true;
         }
       }
 
-      // check if usergroup was changed
+      // ---------------- usergroup membership ----------------
       if (!empty ($userdata) && isset ($usergroup) && (valid_objectname ($usergroup) || is_array ($usergroup)) && $usergroup != "*Leave*" && $show == "")
       {
         if ($usergroup == "*Null*")
@@ -9539,29 +9658,38 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         // insert values into user node
         if (!empty ($user_node[0]))
         {
-          $user_node = $user_node[0];
+          $user_node = $user_node_new = $user_node[0];
 
           // for all publications provided
           if (!empty ($new_usersite) && is_array ($new_usersite) && sizeof ($new_usersite) > 0)
           {
             foreach ($new_usersite as $temp)
             {
-              if (valid_publicationname ($temp)) $user_node = setcontent ($user_node, "<memberof>", "<usergroup>", $usergroup, "<publication>", $temp);
+              if (valid_publicationname ($temp)) $user_node_new = setcontent ($user_node_new, "<memberof>", "<usergroup>", $usergroup, "<publication>", $temp);
             }
 
-            if (!empty ($user_node)) $userdata = setcontent ($userdata, "<user>", "<user>", $user_node, "<login>", $login);
+            if (!empty ($user_node_new) && trim ($user_node) != trim ($user_node_new))
+            {
+              $userdata = setcontent ($userdata, "<user>", "<user>", $user_node_new, "<login>", $login);
+              $update = true;
+            }
           }
           // for one publication
           elseif (valid_publicationname ($site))
           {
-            $user_node = setcontent ($user_node, "<memberof>", "<usergroup>", $usergroup, "<publication>", $site);
-            if (!empty ($user_node)) $userdata = setcontent ($userdata, "<user>", "<user>", $user_node, "<login>", $login);
+            $user_node_new = setcontent ($user_node_new, "<memberof>", "<usergroup>", $usergroup, "<publication>", $site);
+
+            if (!empty ($user_node_new) && trim ($user_node) != trim ($user_node_new))
+            {
+              $userdata = setcontent ($userdata, "<user>", "<user>", $user_node_new, "<login>", $login);
+              $update = true;
+            }
           }
         }
       }
 
-      // save user xml file
-      if (!empty ($userdata) && $show == "")
+      // save user xml file if changes have been made
+      if (!empty ($userdata) && $show == "" && $update == true)
       {
         // eventsystem
         if ($eventsystem['onsaveuser_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
@@ -9586,7 +9714,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         }
         else
         {
-          //unlock file
+          // unlock file
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
 
           // log
@@ -9598,9 +9726,9 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         }
       }
       // error in XML manipulation
-      elseif ($show == "")
+      elseif ($show == "" && $update == true)
       {
-        //unlock file
+        // unlock file
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
 
         // log
@@ -9609,6 +9737,15 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
 
         $add_onload = "";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['an-error-occurred-in-xml-manipulation'][$lang]."</span><br />\n";
+      }
+      // nothing has been changed
+      else
+      {
+        // unlock file
+        unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
+
+        $add_onload = "";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-information-was-saved-successfully'][$lang]."</span>";
       }
 
       // check if lanuage was changed and register new language
@@ -9619,9 +9756,9 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         $_SESSION['hcms_lang'] = $lang;
       }
     }
-    else
+    elseif ($show == "")
     {
-      //unlock file
+      // unlock file
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
 
       // log
@@ -11164,12 +11301,7 @@ function deletefrommediacat ($site, $mediafile)
       
         $add_onload = "goToURL('parent.frames[\'mainFrame2\']','".cleandomain ($mgmt_config['url_path_cms'])."empty.php'); return document.returnValue; ";
 
-        $show = "
-      <table style=\"width:400px;\" class=\"hcmsMessage hcmsTableStandard\">
-        <tr>
-         <td><span class=\"hcmsHeadline\">".$hcms_lang['the-selected-media-file-was-removed'][$lang]."</span></td>
-        </tr>
-      </table>";
+        $show = $hcms_lang['the-selected-media-file-was-removed'][$lang];
       }
       else
       {
@@ -11177,36 +11309,21 @@ function deletefrommediacat ($site, $mediafile)
 
         $add_onload = "parent.frames['mainFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php?site=".url_encode($site)."'; ";
 
-        $show = "
-      <table style=\"width:400px;\" class=\"hcmsMessage hcmsTableStandard\">
-        <tr>
-         <td><span class=\"hcmsHeadline\">".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
-        </tr>
-      </table>";
+        $show = $hcms_lang['the-selected-media-file-could-not-be-removed'][$lang];
       }
     }
     else
     {
       $add_onload = "";
 
-      $show = "
-      <table style=\"width:400px;\" class=\"hcmsMessage hcmsTableStandard\">
-        <tr>
-         <td><span class=\"hcmsHeadline\">".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
-        </tr>
-      </table>";
+      $show = $hcms_lang['the-selected-media-file-could-not-be-removed'][$lang];
     }
   }
   else
   {
     $add_onload = "";
 
-    $show = "
-    <table style=\"width:400px;\" class=\"hcmsMessage hcmsTableStandard\">
-      <tr>
-       <td><span class=\"hcmsHeadline\">".$hcms_lang['the-selected-media-file-was-removed'][$lang]." '".$mediafile."' ".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
-      </tr>
-    </table>";
+    $show = $hcms_lang['the-selected-media-file-was-removed'][$lang]." '".$mediafile."' ".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang];
   }
 
   $result['add_onload'] = $add_onload;
@@ -12320,7 +12437,7 @@ function createobject ($site, $location, $page, $template, $user)
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentxmlschema>", "object/".$cat, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentorigin>", $contentorigin, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentobjects>", $contentorigin."|", "", "");
-            if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentuser>", $user, "", "");
+            if ($page_box_xml != false && substr ($user, 0, 4) != "sys:") $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentuser>", $user, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentcreated>", $date, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentdate>", $date, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentstatus>", "active", "", "");
@@ -14702,7 +14819,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           rdbms_setcontent ($site, $container_id, "", "", $user, true, false);
 
           // insert user into content file
-          $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentuser>", $user, "", "");
+          if ($user != "sys" && substr ($user, 0, 4) != "sys:") $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentuser>", $user, "", "");
 
           // insert new date into content file
           $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentdate>", $date, "", "");
@@ -15266,7 +15383,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentcontainer>", $contentfile_new, "", "");
 
           // insert user into content container
-          if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentuser>", $user, "", "");
+          if ($bufferdata != false && $user != "sys" && substr ($user, 0, 4) != "sys:")  $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentuser>", $user, "", "");
 
           // insert new date into content container
           if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentdate>", $date, "", ""); 

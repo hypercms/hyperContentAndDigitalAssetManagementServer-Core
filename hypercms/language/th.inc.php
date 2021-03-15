@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['th'] = "มืด";
 $hcms_lang['text-and-icons']['th'] = "ตำราและไอคอน";
 $hcms_lang['logo']['th'] = "เครื่องหมาย";
 $hcms_lang['wallpaper']['th'] = "ภาพพื้นหลัง";
+$hcms_lang['youtube-sign-out']['th'] = "คุณต้องออกจากระบบบัญชี Google/YouTube ของคุณก่อนที่จะเพิ่มบัญชีใหม่";
 ?>

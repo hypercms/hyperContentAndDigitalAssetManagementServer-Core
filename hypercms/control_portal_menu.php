@@ -168,9 +168,9 @@ function checkForm_tpl_create()
 
 <body class="hcmsWorkplaceControlWallpaper" onLoad="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:10px;"); ?>
 
-<?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
+<?php echo showmessage ($show, 670, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
@@ -235,18 +235,18 @@ function checkForm_tpl_create()
   </div>
 </div>
 
-<div id="createtplLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden;">
+<div id="createtplLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden;">
   <form name="tpl_create" action="" method="post">
     <input type="hidden" name="action" value="tpl_create" />
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
-    <table class="hcmsTableStandard" style="width:100%; height:60px;">
+    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
       <tr>
         <td>
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span> <span class="hcmsTextSmall">(<?php echo getescapedtext ($hcms_lang['name-without-ext'][$lang]); ?>)</span><br />
           <span style="white-space:nowrap;">
-            <input type="text" name="template" maxlength="100" style="width:160px;" placeholder="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>"/>
+            <input type="text" name="template" maxlength="100" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>"/>
             <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_tpl_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
           </span>
         </td>

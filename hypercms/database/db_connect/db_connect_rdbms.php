@@ -951,9 +951,9 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
 function rdbms_setpublicationtaxonomy ($site="", $recreate=false) 
 {
   global $mgmt_config;
- 
+
   $site_array = array();
-  
+
   if (valid_publicationname ($site))
   {
     $site_array[0] = $site; 
@@ -961,12 +961,12 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
   elseif ($site == "")
   {
     $inherit_db = inherit_db_read ();
-    
+
     if (is_array ($inherit_db) && sizeof ($inherit_db) > 0)
     {
       foreach ($inherit_db as $site => $array)
       {
-        if ($site != "") $site_array[] = trim ($site);            
+        if ($site != "") $site_array[] = trim ($site);
       }
     }
   }
@@ -994,44 +994,47 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
         $site = $db->rdbms_escape_string ($site);
 
         // select containers of publication
-        if ($recreate == true)
+        if (trim ($site) != "")
         {
-          $sql = 'SELECT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin';
-        }
-        else
-        {
-          $sql = 'SELECT object.id FROM object INNER JOIN textnodes ON textnodes.id=object.id LEFT JOIN taxonomy ON taxonomy.id=object.id WHERE (object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin) AND textnodes.textcontent!="" AND taxonomy.id IS NULL';
-        }
-
-        $errcode = "50353";
-        $containers = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'containers');
-
-        if ($containers)
-        {
-          // load taxonomy of publication
-          if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+          if ($recreate == true)
           {
-            include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+            $sql = 'SELECT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin';
           }
-          // load default taxonomy
-          elseif (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+          else
           {
-            include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
+            $sql = 'SELECT object.id FROM object INNER JOIN textnodes ON textnodes.id=object.id LEFT JOIN taxonomy ON taxonomy.id=object.id WHERE (object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin) AND textnodes.textcontent!="" AND taxonomy.id IS NULL';
           }
 
-          while ($row = $db->rdbms_getresultrow ('containers'))
+          $errcode = "50353";
+          $containers = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'containers');
+
+          if ($containers)
           {
-            // set taxonomy for container
-            if (!empty ($row['id'])) settaxonomy ($site, $row['id'], "", $taxonomy);
+            // load taxonomy of publication
+            if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+            {
+              include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+            }
+            // load default taxonomy
+            elseif (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+            {
+              include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
+            }
+
+            while ($row = $db->rdbms_getresultrow ('containers'))
+            {
+              // set taxonomy for container
+              if (!empty ($row['id'])) settaxonomy ($site, $row['id'], "", $taxonomy);
+            }
           }
         }
       }
-      
+
       // save log
       savelog ($db->rdbms_geterror ());    
       $db->rdbms_close();
     }
- 
+
     return true;
   }
   else return false;
@@ -1049,7 +1052,7 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
 function rdbms_gettaxonomy ($container_id, $text_id)
 {
   global $mgmt_config;
-  
+
   // taxonomy is enabled
   if (intval ($container_id) > 0 && $text_id != "")
   {
@@ -1057,9 +1060,9 @@ function rdbms_gettaxonomy ($container_id, $text_id)
 
     $container_id = intval ($container_id);
     $text_id = $db->rdbms_escape_string ($text_id);
-    
+
     $sql = 'SELECT * FROM taxonomy WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
-          
+    
     $errcode = "50203";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'taxonomy');
 
@@ -1078,7 +1081,7 @@ function rdbms_gettaxonomy ($container_id, $text_id)
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-  
+
     return $result;
   }
   return false;
@@ -1101,23 +1104,23 @@ function rdbms_settemplate ($object, $template)
   {    
     // correct object name 
     if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
-      
+
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
     $object = $db->rdbms_escape_string ($object);
     $template = $db->rdbms_escape_string ($template);
 
     // update object
     $sql = 'UPDATE object SET template="'.$template.'" WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin'; 
-    
+
     $errcode = "50007";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-        
+ 
     return true;
   }
   else return false;
@@ -1145,14 +1148,14 @@ function rdbms_setmedianame ($id, $media)
 
     // update object
     $sql = 'UPDATE object SET media="'.$media.'" WHERE id='.$id; 
-    
+
     $errcode = "50308";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-        
+ 
     return true;
   }
   else return false;
@@ -1174,9 +1177,8 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
   
   if ($id != "" && ($filesize != "" || $filetype != "" || $width != "" || $height != "" || $red != "" || $green != "" || $blue != "" || $colorkey != "" || $imagetype != "" || $md5_hash != "" || $analyzed == true || $analyzed == false))
   {    
-    
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     if ($filesize != "") $filesize = $db->rdbms_escape_string ($filesize);
     if ($width != "") $width = $db->rdbms_escape_string ($width);
     if ($height != "") $height = $db->rdbms_escape_string ($height);
@@ -1188,7 +1190,7 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
     if ($md5_hash != "") $md5_hash = $db->rdbms_escape_string ($md5_hash);
     if ($analyzed === true) $analyzed = 1;
     elseif ($analyzed === false) $analyzed = 0;
-        
+
     // check for existing record
     $sql = 'SELECT id FROM media WHERE id='.intval($id); 
     
@@ -1237,7 +1239,7 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-        
+ 
     return true;
   }
   else return false;
@@ -1290,17 +1292,17 @@ function rdbms_getmedia ($container_id, $extended=false)
   if (intval ($container_id) > 0)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     // clean input
     $container_id = intval ($container_id);  
-    
+
     // get media info
     if ($extended == true) $sql = 'SELECT med.*, cnt.createdate, cnt.date, cnt.publishdate, cnt.latitude, cnt.longitude, cnt.user FROM media AS med RIGHT JOIN container AS cnt ON med.id=cnt.id WHERE cnt.id='.$container_id;   
     else $sql = 'SELECT * FROM media WHERE id='.$container_id;   
 
     $errcode = "50067";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
-    
+
     if ($done && $row = $db->rdbms_getresultrow ())
     {
       $media = $row;   
@@ -1309,7 +1311,7 @@ function rdbms_getmedia ($container_id, $extended=false)
     // save log
     savelog ($db->rdbms_geterror());    
     $db->rdbms_close();
-         
+   
     if (!empty ($media) && is_array ($media)) return $media;
     else return false;
   }
@@ -1332,19 +1334,19 @@ function rdbms_getduplicate_file ($site, $md5_hash)
   if ($site != "" && $md5_hash != "")
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     // clean input
     $md5_hash = $db->rdbms_escape_string ($md5_hash);
     $site = $db->rdbms_escape_string ($site);
-    
+
     // get media info
     $sql = 'SELECT * FROM media INNER JOIN object ON object.id=media.id WHERE media.md5_hash="'.$md5_hash.'" AND object.objectpath LIKE "*comp*/'.$site.'/%" AND object.deleteuser=""';
 
     $errcode = "50067";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'main');
-    
+
     $media = array();
-    
+
     if ($done)
     {
       while ($row = $db->rdbms_getresultrow ('main'))
@@ -1356,11 +1358,11 @@ function rdbms_getduplicate_file ($site, $md5_hash)
         }
       }
     }
-    
+
     // save log
     savelog ($db->rdbms_geterror());    
     $db->rdbms_close();      
-         
+   
     if (is_array ($media) && !empty($media)) return $media;
     else return false;
   }
@@ -1379,35 +1381,35 @@ function rdbms_getduplicate_file ($site, $md5_hash)
 function rdbms_renameobject ($object_old, $object_new)
 {
   global $mgmt_config;
-  
+
   if ($object_old != "" && $object_new != "" && (substr_count ($object_old, "%page%") > 0 || substr_count ($object_old, "%comp%") > 0) && (substr_count ($object_new, "%page%") > 0 || substr_count ($object_new, "%comp%") > 0))
   {
     // correct object names
     if (strtolower (strrchr ($object_old, ".")) == ".off") $object_old = substr ($object_old, 0, -4);
     if (strtolower (strrchr ($object_new, ".")) == ".off") $object_new = substr ($object_new, 0, -4);
-    
+
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     // remove separator
     $object_old = str_replace ("|", "", $object_old);
     $object_new = str_replace ("|", "", $object_new); 
-    
+
     $object_old = $db->rdbms_escape_string ($object_old);
     $object_new = $db->rdbms_escape_string ($object_new);
-       
+
     // replace %
     $object_old = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object_old);
     $object_new = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object_new);
-    
+
     // query
     $sql = 'SELECT object_id, id, objectpath FROM object '; 
     $sql .= 'WHERE objectpath LIKE _utf8"'.$object_old.'%" COLLATE utf8_bin';
-    
+
     $errcode = "50010";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
 
     $i = 1;
-    
+
     if ($done)
     {
       while ($row = $db->rdbms_getresultrow ('select'))
@@ -1420,10 +1422,10 @@ function rdbms_renameobject ($object_old, $object_new)
           $object = str_replace ($object_old, $object_new, $object);
           $fileext = strrchr ($object, ".");
           $filetype = getfiletype ($fileext);
-  
+
           // update object 
           $sql = 'UPDATE object SET objectpath="'.$object.'" WHERE object_id='.$object_id.'';
-          
+
           $errcode = "50011";
           $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);        
           
@@ -1431,18 +1433,18 @@ function rdbms_renameobject ($object_old, $object_new)
           if ($filetype != "")
           {
             $sql = 'UPDATE media SET filetype="'.$filetype.'" WHERE id='.$container_id;
-    
+
             $errcode = "50012";
             $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);
           }
         }
       }
     }
-    
+
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-         
+ 
     return true;
   }
   else return false;
@@ -1468,28 +1470,28 @@ function rdbms_deleteobject ($object="", $object_id="")
   {
     // correct object name 
     if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
-    
+
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     if ($object != "")
     {
       $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
       $object = $db->rdbms_escape_string ($object);
     }
-    
+
     // query
     $sql = 'SELECT id FROM object ';
-    
+
     if ($object != "") $sql .= 'WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
     elseif ($object_id > 0) $sql .= 'WHERE object_id='.intval ($object_id).'';
-       
+  
     $errcode = "50012";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select1');
-    
+
     if ($done)
     {
       $row = $db->rdbms_getresultrow('select1');
-    
+
       if ($row)
       {
         $container_id = intval ($row['id']); 
@@ -1499,13 +1501,13 @@ function rdbms_deleteobject ($object="", $object_id="")
 
         $errcode = "50013";
         $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select2');
-        
+
         if ($done)
         {
           $row_id = $db->rdbms_getresultrow ('select2');
           $num_rows = $db->rdbms_getnumrows ('select2');
         }
-        
+
         // delete all entries for this id since no connected objects exists
         if ($row_id && $num_rows == 1)
         {
@@ -1583,13 +1585,13 @@ function rdbms_deleteobject ($object="", $object_id="")
 
         $errcode = "50021";
         $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete11');
-        
+
         // delete notification
         $sql = 'DELETE FROM notify WHERE object_id='.$row_id['object_id'];   
 
         $errcode = "50022";
         $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete12');
-        
+
         // delete/update textnodes (object_id for link)
         $sql = 'UPDATE textnodes SET object_id=NULL WHERE object_id='.$row_id['object_id'];   
 
@@ -1601,7 +1603,7 @@ function rdbms_deleteobject ($object="", $object_id="")
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-         
+
     return true;
   }
   else return false;
@@ -1619,30 +1621,30 @@ function rdbms_deleteobject ($object="", $object_id="")
 function rdbms_deletecontent ($site, $container_id, $text_id)
 {
   global $mgmt_config;
-  
+
   if (intval ($container_id) > 0 && $text_id != "")
   {   
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     $container_id = intval ($container_id);
     $text_id = $db->rdbms_escape_string ($text_id);
-    
+
     // delete textnodes
     $sql = 'DELETE FROM textnodes WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
-       
+
     $errcode = "50021";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
-    
+
     // delete taxonomy
     $sql = 'DELETE FROM taxonomy WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
-       
+
     $errcode = "50028";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
-    
+
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-        
+
     return true;
   }
   else return false;
@@ -1665,15 +1667,15 @@ function rdbms_deletepublicationkeywords ($site)
   if (valid_publicationname ($site))
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+  
     $site = $db->rdbms_escape_string ($site);
-    
+  
     // select containers of publication
     $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin';
-       
+
     $errcode = "50053";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
-    
+
     if ($done)
     {
       while ($row = $db->rdbms_getresultrow ('select'))
@@ -1682,17 +1684,17 @@ function rdbms_deletepublicationkeywords ($site)
         {
           // delete taxonomy
           $sql = 'DELETE FROM keywords_container WHERE id="'.$row['id'].'"';
-             
+ 
           $errcode = "50054";
           $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
         }
       }
     }
-    
+
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-        
+
     return true;
   }
   else return false;
@@ -1710,7 +1712,7 @@ function rdbms_deletepublicationkeywords ($site)
 function rdbms_deletepublicationtaxonomy ($site, $force=false)
 {
   global $mgmt_config;
-  
+
   // load publication management config
   if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['taxonomy']))
   {
@@ -1721,15 +1723,15 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
   if (empty ($mgmt_config[$site]['taxonomy']) || $force == true)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     $site = $db->rdbms_escape_string ($site);
-    
+
     // select containers of publication
     $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin';
 
     $errcode = "50053";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
-    
+
     if ($done)
     {
       while ($row = $db->rdbms_getresultrow ('select'))
@@ -1738,7 +1740,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
         {
           // delete taxonomy
           $sql = 'DELETE FROM taxonomy WHERE id="'.$row['id'].'"';
-  
+
           $errcode = "50054";
           $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
         }
@@ -1748,7 +1750,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
     // save log
     savelog ($db->rdbms_geterror ());    
     $db->rdbms_close();
-        
+
     return true;
   }
   else return false;
@@ -1771,7 +1773,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 {
   // user will be provided as global for search expression logging
   global $mgmt_config, $lang, $user;
- 
+
   // enable search log by default if not set
   if (!isset ($mgmt_config['search_log'])) $mgmt_config['search_log'] = true;
 
@@ -1798,7 +1800,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     {
       // look for the exact expression
       $mgmt_config['search_exact'] = true;
-      
+
       // analyze hierarchy URL
       $domain = $hierarchy_array[0];
       $site = $hierarchy_array[1];
@@ -2199,7 +2201,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   
                   $synonym_expression = trim ($synonym_expression);
                   $synonym_expression = html_decode ($synonym_expression, convert_dbcharset ($mgmt_config['dbcharset']));
-                  $synonym_expression = $db->rdbms_escape_string ($synonym_expression);
 
                   // if LIKE query
                   if (strtolower ($mgmt_config['search_query_match']) == "like")
@@ -2216,6 +2217,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                     // remove double quotes
                     $synonym_expression = str_replace ("\"", "", $synonym_expression);
                   }
+
+                  $synonym_expression = $db->rdbms_escape_string ($synonym_expression);
 
                   // use OR for synonyms
                   if ($r > 0) $sql_expr_advanced[$i] .= ' OR ';

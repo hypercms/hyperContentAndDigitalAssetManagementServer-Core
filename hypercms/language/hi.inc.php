@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['hi'] = "अंधेरा";
 $hcms_lang['text-and-icons']['hi'] = "ग्रंथ और चिह्न";
 $hcms_lang['logo']['hi'] = "प्रतीक चिन्ह";
 $hcms_lang['wallpaper']['hi'] = "पृष्ठभूमि छवि";
+$hcms_lang['youtube-sign-out']['hi'] = "नया खाता जोड़ने से पहले आपको अपने Google/YouTube खाते से साइन आउट करना होगा";
 ?>

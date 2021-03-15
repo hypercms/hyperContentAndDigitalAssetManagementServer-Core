@@ -705,7 +705,9 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
             // set modified date in container
             $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $date, "", "");
-            if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
+
+            // set owner (if not a system user)
+            if ($container_content != false && $user != "sys" && substr ($user, 0, 4) != "sys:") $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
 
             // save container
             if ($container_contentnew != false)
@@ -726,7 +728,9 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
           // set modified date in container
           $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $date, "", "");
-          if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
+
+          // set owner (if not a system user)
+          if ($container_content != false && $user != "sys" && substr ($user, 0, 4) != "sys:") $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
 
           // save container
           if ($container_content != false)

@@ -108,6 +108,11 @@ function submitLink (url)
   
   <!-- top bar -->
   <?php echo showtopbar ($hcms_lang['select-object'][$lang], $lang); ?>
+
+  <!-- message -->
+  <?php
+  if ($site == "") echo showmessage ($hcms_lang['required-input-is-missing'][$lang], 600, 70, $lang, "position:absolute; left:10px; top:10px;");
+  ?>
   
   <div class="hcmsWorkplaceFrame">
     <span class="hcmsHeadlineTiny" style="padding:0px 0px 5px 0px; display:block;"><?php echo $location_name; ?></span>
@@ -134,7 +139,7 @@ function submitLink (url)
         
         echo "
       <tr>
-        <td><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".$hcms_lang['back'][$lang]."</a></td>
+        <td><a href=\"?dir=".url_encode($updir_esc)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".$hcms_lang['back'][$lang]."</a></td>
       </tr>";
       }
 
@@ -216,7 +221,7 @@ function submitLink (url)
             {    
               echo "
           <tr>
-            <td><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".showshorttext($folder_info['name'], 44)."</a></td>
+            <td><a href=\"?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".showshorttext($folder_info['name'], 44)."</a></td>
           </tr>";
             }
           }
@@ -253,10 +258,6 @@ function submitLink (url)
     ?>
   </table>
   </div>
-
-  <?php
-  if ($site == "") echo showmessage ($hcms_lang['required-input-is-missing'][$lang], 600, 70, $lang, "position:absolute; left:20px; top:20px;");
-  ?>
 
 </body>
 </html>

@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['fi'] = "tumma";
 $hcms_lang['text-and-icons']['fi'] = "Tekstit ja kuvakkeet";
 $hcms_lang['logo']['fi'] = "Logo";
 $hcms_lang['wallpaper']['fi'] = "Taustakuva";
+$hcms_lang['youtube-sign-out']['fi'] = "Sinun on kirjauduttava ulos Google/YouTube-tililtäsi ennen uuden tilin lisäämistä";
 ?>

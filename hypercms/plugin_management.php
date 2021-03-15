@@ -14,17 +14,11 @@ require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
 
-
-// plugin file
-if (is_file ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
-{
-  require ($mgmt_config['abs_path_data']."config/plugin.conf.php");
-}
-else $mgmt_plugin = array();
   
 // input parameters
 $action = getrequest ("action");
 $active = getrequest ("active", "array");
+$token = getrequest ("token");
 
 // ------------------------------ permission section --------------------------------
 
@@ -36,35 +30,41 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 
-if ($action)
+// load plugin file
+if (is_file ($mgmt_config['abs_path_data']."config/plugin.global.php"))
 {
-  switch ($action)
+  require ($mgmt_config['abs_path_data']."config/plugin.global.php");
+}
+else $mgmt_plugin = array();
+
+// reparse plugins
+if ($action == "reparse" && checktoken ($token, $user))
+{
+  $mgmt_plugin = plugin_parse ($mgmt_plugin);
+  plugin_saveconfig ($mgmt_plugin);
+  avoidfilecollision ("temp", true);
+  
+  // reload
+  require ($mgmt_config['abs_path_data']."config/plugin.global.php");
+}
+// activate plugins
+elseif ($action == "change" && checktoken ($token, $user))
+{
+  if (!is_array ($mgmt_plugin)) $show = getescapedtext ($hcms_lang['could-not-determine-which-addons-to-activate'][$lang]);
+
+  foreach ($mgmt_plugin as $key => &$data)
   {
-    case "reparse":
-      $mgmt_plugin = plugin_parse ($mgmt_plugin);
-      plugin_saveconfig ($mgmt_plugin);
-      avoidfilecollision ("temp", true);
-      break;
-      
-    case "change":
-      if (!is_array ($mgmt_plugin)) $show = getescapedtext ($hcms_lang['could-not-determine-which-addons-to-activate'][$lang]);
-
-      foreach ($mgmt_plugin as $key => &$data)
-      {
-        $data['active'] = (is_array ($active) && array_key_exists ($key, $active) && $active[$key] == "1"); 
-      }
-
-      plugin_saveconfig ($mgmt_plugin);
-      avoidfilecollision ("temp", true);
-
-      break;
-      
-    default:
-      $show  = getescapedtext ($hcms_lang['this-action-is-not-supported'][$lang]);
-      break;    
+    $data['active'] = (is_array ($active) && array_key_exists ($key, $active) && $active[$key] == "1"); 
   }
+
+  plugin_saveconfig ($mgmt_plugin);
+  avoidfilecollision ("temp", true);
+
+  // reload
+  require ($mgmt_config['abs_path_data']."config/plugin.global.php");
 }
 ?>
 <!DOCTYPE html>
@@ -85,7 +85,7 @@ if ($action)
   $help = showhelpbutton ("pluginguide", true, $lang, "");
 
   echo showtopbar ($hcms_lang['plugin-management'][$lang], $lang, "", "", $help);
-  echo showmessage ($show, 500, 40, $lang, "position:fixed; left:15px; top:40px;");
+  echo showmessage ($show, 500, 50, $lang, "position:fixed; left:10px; top:40px;");
   ?>
     
   <!-- content -->
@@ -93,6 +93,7 @@ if ($action)
     <div class="hcmsWorkplaceFrame">
     <form action="" method="POST" name="editplugins">
       <input type="hidden" name="action" value="change" />
+      <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
       
       <table class="hcmsTableStandard" style="width:98%; table-layout:auto;">
         <tbody>
@@ -113,7 +114,7 @@ if ($action)
           {
             $cnt++;
           ?>
-          <tr class="hcmsRowData<?php echo ($cnt%2)+1; ?>">
+          <tr class="hcmsRowData<?php echo ($cnt % 2) + 1; ?>">
             <td style="text-align:center;"><?php echo $cnt; ?></td>
             <td><?php echo $temp_array['name']; ?></td>
             <td><?php echo $temp_array['author']; ?></td>
@@ -145,6 +146,6 @@ if ($action)
     </div>
   </div>
 
-<?php includefooter(); ?>   
+  <?php includefooter(); ?>   
 </body>
 </html>

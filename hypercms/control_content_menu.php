@@ -824,7 +824,7 @@ else
 </div>
 
 <?php
-echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
+echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px; ");
 ?>
 
 <!-- form used by send_link function -->
@@ -840,60 +840,60 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" >
 </form>
 
-<div id="objcreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "95%"; else echo "700px"; ?>; height:76px; z-index:4; left:15px; top:10px; visibility:<?php if ($page != "") echo "hidden"; else echo "visible"; ?>">
-<form name="page_create" action="" method="post" onsubmit="return checkForm_page_create();">
-  <input type="hidden" name="site" value="<?php echo $site; ?>" />
-  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
-  <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
-  <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>" />
-  <input type="hidden" name="wf_role" value="<?php echo $wf_role; ?>" />
-  <input type="hidden" name="contentfile" value="<?php echo $contentfile; ?>" />
-  <input type="hidden" name="action" value="page_create" />
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>">
-  
-  <table class="hcmsTableStandard" style="width:100%; height:76px;">
-    <tr>
-      <td>
-        <?php
-        if ($is_mobile) echo getescapedtext ($hcms_lang['new-object'][$lang]);
-        else echo getescapedtext ($hcms_lang['new-object'][$lang]." (".$hcms_lang['name-without-ext'][$lang].")");
-        ?> 
-      </td>
-      <td style="white-space:nowrap">
-        <input type="text" name="page" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:180px;"  title="<?php echo getescapedtext ($hcms_lang['new-object'][$lang]); ?>"/>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <?php echo getescapedtext ($hcms_lang['template-auto-preview'][$lang]); ?> 
-      </td>
-      <td style="white-space:nowrap">
-        <select name="template" onChange="hcms_jumpMenu('parent.frames[\'objFrame\']',this,0)" style="width:180px;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>">
-          <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select-template'][$lang]); ?></option>
+<div id="objcreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "95%"; else echo "700px"; ?>; height:80px; left:10px; top:10px; visibility:<?php if ($page != "") echo "hidden"; else echo "visible"; ?>">
+  <form name="page_create" action="" method="post" onsubmit="return checkForm_page_create();">
+    <input type="hidden" name="site" value="<?php echo $site; ?>" />
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
+    <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>" />
+    <input type="hidden" name="wf_role" value="<?php echo $wf_role; ?>" />
+    <input type="hidden" name="contentfile" value="<?php echo $contentfile; ?>" />
+    <input type="hidden" name="action" value="page_create" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+    
+    <table class="hcmsTableNarrow" style="width:100%;">
+      <tr>
+        <td style="width:30%;">
           <?php
-          $template_array = gettemplates ($site, $cat);
-          
-          if (is_array ($template_array))
-          {
-            foreach ($template_array as $value)
+          if ($is_mobile) echo getescapedtext ($hcms_lang['new-object'][$lang]);
+          else echo getescapedtext ($hcms_lang['new-object'][$lang]." (".$hcms_lang['name-without-ext'][$lang].")");
+          ?> 
+        </td>
+        <td style="white-space:nowrap;">
+          <input type="text" name="page" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:<?php if ($is_mobile) echo "180px"; else echo "80%"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <?php echo getescapedtext ($hcms_lang['template-auto-preview'][$lang]); ?> 
+        </td>
+        <td style="white-space:nowrap;">
+          <select name="template" onChange="hcms_jumpMenu('parent.frames[\'objFrame\']',this,0)" style="width:<?php if ($is_mobile) echo "180px"; else echo "80%"; ?>;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>">
+            <option value="empty.php"><?php echo getescapedtext ($hcms_lang['select-template'][$lang]); ?></option>
+            <?php
+            $template_array = gettemplates ($site, $cat);
+            
+            if (is_array ($template_array))
             {
-              if ($value != "")
+              foreach ($template_array as $value)
               {
-                if ($cat == "page" || strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"));
-                elseif ($cat == "comp" || strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"));
-              
-                echo "
-                <option value=\"template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($value)."\">".$tpl_name."</option>";
+                if ($value != "")
+                {
+                  if ($cat == "page" || strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"));
+                  elseif ($cat == "comp" || strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"));
+                
+                  echo "
+              <option value=\"template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($value)."\">".$tpl_name."</option>";
+                }
               }
-            }
-          }          
-          ?>
-        </select>
-        <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_page_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-      </td>
-    </tr>
-  </table>
-</form>
+            }          
+            ?>
+          </select>
+          <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_page_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+        </td>
+      </tr>
+    </table>
+  </form>
 </div>
 
 <?php
@@ -929,7 +929,7 @@ if ($page != "")
 }
 ?>
 
-<div id="downloadLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; height:60px; z-index:5; left:15px; top:10px; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
+<div id="downloadLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
   <form name="download" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
     <input type="hidden" name="action" value="download" />
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -938,7 +938,7 @@ if ($page != "")
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
 
-    <table class="hcmsTableStandard" style="width:100%; height:60px;">
+    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
       <tr>
         <td>
           <div style="overflow:auto;">
@@ -988,7 +988,7 @@ setTimeout('downloadFile()', 1000);
   // download failed (zip file could not be created)
   else
   {
-    echo showmessage (str_replace ("%filesize%", $mgmt_config['maxzipsize'], $hcms_lang['download-failed-max'][$lang]), 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
+    echo showmessage (str_replace ("%filesize%", $mgmt_config['maxzipsize'], $hcms_lang['download-failed-max'][$lang]), 660, 70, $lang, "position:fixed; left:10px; top:10px; ");
   }
 }
 ?>

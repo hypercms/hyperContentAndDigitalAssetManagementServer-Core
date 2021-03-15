@@ -222,7 +222,8 @@ if (sizeof ($config_files) > 0)
         {
           if ($file != "." && $file != ".." && $file != "" && strtolower ($file) != ".htaccess" && strtolower ($file) != "web.config" && strtolower ($file) != "view")
           {
-            if (filemtime ($location.$file) + $timespan < time())
+            // check media file age and keep_previews setting
+            if (filemtime ($location.$file) + $timespan < time() && (empty ($mgmt_config['keep_previews']) || !is_preview ($file)))
             {
               deletefile ($location, $file, 1);
             }      

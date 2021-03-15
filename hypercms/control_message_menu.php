@@ -148,9 +148,9 @@ function submitTo (url, action, target, features, width, height)
 
 <body class="hcmsWorkplaceControlWallpaper" onLoad="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:15px;"); ?>
 
-<?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
+<?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>

@@ -1205,7 +1205,7 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag="", $condvalue="
 //
 // Wild card character "*" can be used at begin and end of $condvalue.
 
-function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
+function setcontent ($xmldata, $startparenttagname="", $starttagname="", $contentnew="", $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
   if (!valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
@@ -1290,8 +1290,7 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
 // $condvalue = value of the condition
 //
 // Wild card character "*" can be used at begin and end of $condvalue. 
-
-function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag, $condvalue)
+function seticontent ($xmldata, $startparenttagname="", $starttagname="", $contentnew="", $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
   if (!valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
@@ -1381,7 +1380,7 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
 //
 // Wild card character "*" can be used at begin and end of $condvalue.
 
-function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
+function setcontent_fast ($xmldata, $startparenttagname="", $starttagname="", $contentnew="", $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
   if (!valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))

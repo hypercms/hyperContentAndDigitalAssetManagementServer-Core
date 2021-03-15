@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['sr'] = "tamno";
 $hcms_lang['text-and-icons']['sr'] = "Tekstovi i ikone";
 $hcms_lang['logo']['sr'] = "Logo";
 $hcms_lang['wallpaper']['sr'] = "Pozadinska slika";
+$hcms_lang['youtube-sign-out']['sr'] = "Morate da se odjavite sa Google/YouTube naloga pre nego što dodate novi nalog";
 ?>

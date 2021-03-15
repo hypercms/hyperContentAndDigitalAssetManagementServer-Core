@@ -358,7 +358,7 @@ table.TableNarrow th, table.TableNarrow td
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
   <?php
-  echo showmessage ($show, 650, 30, $lang, "position:fixed; left:15px; top:100px;")
+  echo showmessage ($show, 650, 30, $lang, "position:fixed; left:10px; top:10px;")
   ?>
 
   <!-- form  -->

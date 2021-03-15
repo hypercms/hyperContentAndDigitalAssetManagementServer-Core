@@ -140,7 +140,7 @@ if (is_file ($keywordfile) && filemtime ($keywordfile) > $limit) $regenerate = f
 else $regenerate = true;
 
 // load keywords
-if (is_file ($keywordfile))
+if (is_file ($keywordfile) && checkrootpermission ('desktop'))
 {
   $expressions = array();
   
@@ -175,7 +175,7 @@ if (is_file ($keywordfile))
   <?php
   if (!is_file ($mgmt_config['abs_path_data']."log/search.log")) $show = getescapedtext ($hcms_lang['search-expression-log-is-not-available'][$lang]);
   
-  echo showmessage ($show, 560, 120, $lang, "position:absolute; left:15px; top:15px;");
+  echo showmessage ($show, 560, 120, $lang, "position:absolute; left:10px; top:10px;");
   ?>
   
   <?php if ($regenerate && is_file ($mgmt_config['abs_path_data']."log/search.log")) { ?>

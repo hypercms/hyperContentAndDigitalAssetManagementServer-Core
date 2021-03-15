@@ -1479,6 +1479,38 @@ function update_database_v910 ()
   else return false;
 }
 
+// ------------------------------------------ update_plugin_v911 ----------------------------------------------
+// function: update_plugin_v911()
+// input: %
+// output: true / false
+
+// description: 
+// Rename the plugin configuration file for version 9.1.1
+
+function update_plugin_v911 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  $logdata = loadlog ("update", "string");
+
+  if (empty ($logdata) || strpos ($logdata, "|9.1.1|") < 1)
+  { 
+    // update plugin management file name for version 9.1.1 
+    if (is_file ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
+    {
+      rename ($mgmt_config['abs_path_data']."config/plugin.conf.php", $mgmt_config['abs_path_data']."config/plugin.global.php");
+    }
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.1.0|updated to version 9.1.1"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -1511,5 +1543,6 @@ function updates_all ()
   update_database_v805 ();
   update_database_v903 ();
   update_database_v910 ();
+  update_plugin_v911 ();;
 }
 ?>

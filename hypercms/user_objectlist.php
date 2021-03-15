@@ -245,14 +245,14 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
         $listview .= "
               <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
-                <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:180px;\">
+                <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:140px;\">
                   <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">
                     <a data-objectpath=\"".$object_array['login'][$key]."\" data-href=\"javascript:void(0);\">
                       <img src=\"".getthemelocation()."img/user.png\" class=\"hcmsIconList\" /> ".$object_array['login'][$key]."
                     </a>
                   </div>
                 </td>
-                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:180px;\"><span ".$setContext."> ".$object_array['name'][$key]."</span></td>";
+                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:160px;\"><span ".$setContext."> ".$object_array['name'][$key]."</span></td>";
 
         if (!$is_mobile) $listview .= "
                 <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:300px;\"><span ".$setContext."> ".$object_array['email'][$key]."</span></td>
@@ -394,10 +394,10 @@ function initialize ()
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:32px; width:100%; z-index:1; visibility:visible; overflow-x:hidden; overflow-y:hidden;">
   <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:180px;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:140px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;
       </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:180px;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:160px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;
       </td>
       <?php if (!$is_mobile) { ?>
@@ -461,7 +461,7 @@ else
   else $next_start = 0;
 ?>
 <!-- status bar -->
-<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
+<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
   <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".number_format ($objects_total, 0, ".", " ")." ".(!$is_mobile ? getescapedtext ($hcms_lang['users'][$lang]) : ""); ?></div>
 </div>
 <?php

@@ -203,7 +203,7 @@ else
   $file_array = ftp_filelist ($conn_id, $path);
 
   // show messages
-  echo showmessage ($show, 360, 70, $lang, "position:fixed; left:15px; top:15px;");
+  echo showmessage ($show, 360, 70, $lang, "position:fixed; left:10px; top:10px;");
 ?>
 <div class="hcmsWorkplaceObjectlist" style="width:100%; height:100%;">
   <form name="publish" method="post" action="">

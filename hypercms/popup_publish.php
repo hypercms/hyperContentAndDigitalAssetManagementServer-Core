@@ -206,7 +206,7 @@ elseif ($action == "unpublish") echo $headline = getescapedtext ($hcms_lang['unp
 
 echo showtopbar ($headline, $lang);
 
-echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px;");
+echo showmessage ($message, 360, 70, $lang, "position:fixed; left:10px; top:10px;");
 ?>
 
 <div class="hcmsWorkplaceFrame">

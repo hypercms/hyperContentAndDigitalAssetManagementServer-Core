@@ -244,7 +244,7 @@ function setlevel (e)
 <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang]); ?></p>
 
 <?php
-echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
+echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:50px;");
 ?>
 
 <form name="hierarchyform" action="" method="post">

@@ -318,19 +318,19 @@ function plugin_generatedefinition ($arrayName, $array)
 
 // description:
 // Saves the plugin configuration $configuration into the configuration file.
-// The configuration file is located in the data/config directory and is named plugin.conf.php.
+// The configuration file is located in the data/config directory and is named plugin.global.php.
 
 function plugin_saveconfig ($configuration)
 {
   global $mgmt_config;
 
-  $file = "plugin.conf.php";
+  $file = "plugin.global.php";
 
   $save = "<?php\n";
   $save .= plugin_generatedefinition ('mgmt_plugin', $configuration);
   $save .= "?>";
 
-  return savefile ($mgmt_config['abs_path_data']."config", $file, $save);
+  return savefile ($mgmt_config['abs_path_data']."config/", $file, $save);
 }
 
 // --------------------------------------- plugin_generatelink -------------------------------------------

@@ -169,12 +169,13 @@ $token_new = createtoken ($user);
           </select>
           <?php if ($object == ".folder") echo "&nbsp;&nbsp;<label><input type=\"checkbox\" name=\"type\" value=\"all\" /> ".getescapedtext ($hcms_lang['all'][$lang]." ".$hcms_lang['objects'][$lang])."</label>&nbsp;&nbsp;"; ?>
           <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['template_change'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
-          </td>
+        </td>
       </tr>
     </table>
   </form>
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['ja'] = "ダーク";
 $hcms_lang['text-and-icons']['ja'] = "テキストとアイコン";
 $hcms_lang['logo']['ja'] = "ロゴ";
 $hcms_lang['wallpaper']['ja'] = "背景イメージ";
+$hcms_lang['youtube-sign-out']['ja'] = "新しいアカウントを追加する前に、Google/YouTubeアカウントからサインアウトする必要があります";
 ?>

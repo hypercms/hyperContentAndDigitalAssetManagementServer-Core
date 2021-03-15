@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['sq'] = "i errët";
 $hcms_lang['text-and-icons']['sq'] = "Tekste dhe ikona";
 $hcms_lang['logo']['sq'] = "Logo";
 $hcms_lang['wallpaper']['sq'] = "Imazhi i sfondit";
+$hcms_lang['youtube-sign-out']['sq'] = "Duhet të dilni nga llogaria juaj e Google/YouTube përpara se të shtoni një llogari të re";
 ?>

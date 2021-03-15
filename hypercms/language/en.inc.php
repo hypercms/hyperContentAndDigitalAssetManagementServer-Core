@@ -248,7 +248,7 @@ $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['en'
 $hcms_lang['category']['en'] = "Category";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['en'] = "The Youtube upload is not activated for your Account. Please contact your system administrator.";
 $hcms_lang['tags']['en'] = "Tags";
-$hcms_lang['private-video']['en'] = "Private video";
+$hcms_lang['private-video']['en'] = "YouTube Visibility";
 $hcms_lang['upload']['en'] = "Upload";
 $hcms_lang['error-couldnt-get-object']['en'] = "Error: Couldn't get object";
 $hcms_lang['error-not-enough-data-available']['en'] = "Error: Not enough data available";
@@ -1430,4 +1430,6 @@ $hcms_lang['dark']['en'] = "dark";
 $hcms_lang['text-and-icons']['en'] = "Texts and icons";
 $hcms_lang['logo']['en'] = "Logo";
 $hcms_lang['wallpaper']['en'] = "Wallpaper";
+$hcms_lang['youtube-sign-out']['en'] = "You need to sign out from your Google/YouTube account before adding a new account";
+$hcms_lang['youtube-sign-out'][''] = "";
 ?>

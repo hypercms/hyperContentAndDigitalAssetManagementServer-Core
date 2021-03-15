@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['ko'] = "어두운";
 $hcms_lang['text-and-icons']['ko'] = "텍스트 및 아이콘";
 $hcms_lang['logo']['ko'] = "심벌 마크";
 $hcms_lang['wallpaper']['ko'] = "배경 이미지";
+$hcms_lang['youtube-sign-out']['ko'] = "새 계정을 추가하기 전에 Google/YouTube 계정에서 로그 아웃해야합니다";
 ?>

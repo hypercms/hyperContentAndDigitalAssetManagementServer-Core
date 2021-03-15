@@ -342,7 +342,7 @@ $(document).ready(function(){
 <hr />
 
 <?php
-echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
+echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:50px;");
 
 // load languages
 $languages = getlanguageoptions ();

@@ -33,8 +33,17 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initalize
 $show = "";
 $add_onload = "";
+
+// delete media file
+if ($action == "delete" && checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediadelete'))
+{
+  $result = deletefrommediacat ($site, $mediafile);
+  $add_onload = $result['add_onload'];
+  $show = $result['message'];
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -46,6 +55,7 @@ $add_onload = "";
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function warning_media_delete ()
 {
   var form = document.forms['media'];
@@ -54,7 +64,6 @@ function warning_media_delete ()
   {
     check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['the-selected-file-will-be-removed'][$lang]); ?>"));
     if (check == true) form.submit();
-    return check;
   }
   else return false;
 }
@@ -67,33 +76,32 @@ function goToURL ()
 }
 </script>
 </head>
-<?php
-if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediadelete') && $action == "delete")
-{
-  $result = deletefrommediacat ($site, $mediafile);
-  $add_onload = $result['add_onload'];
-  $show = $result['message'];
-}
-?>
-<body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png');">
-  <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete-media-file'][$lang]); ?></p>
-  <form name="media" action="">
-    <input type="hidden" name="site" value="<?php echo $site; ?>" />
-    <input type="hidden" name="mediafile" value="" />
-    <input type="hidden" name="action" value="delete" />
-    
-    <table class="hcmsTableStandard">
-      <tr>
-        <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
-        <td>
-          <input type="text" style="width:300px;" name="media_name" />
-          <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_media_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
-        </td>
-      </tr>
-    </table><br />
-  </form>
-  <?php echo $show; ?>
 
-<?php includefooter(); ?>
+<body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png');">
+
+  <div class="hcmsWorkplaceFrame">
+    <div class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete-media-file'][$lang]); ?></div>
+    <form name="media" action="">
+      <input type="hidden" name="site" value="<?php echo $site; ?>" />
+      <input type="hidden" name="mediafile" value="" />
+      <input type="hidden" name="action" value="delete" />
+      
+      <table class="hcmsTableStandard">
+        <tr>
+          <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
+          <td>
+            <input type="text" style="width:300px;" name="media_name" />
+            <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_media_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
+          </td>
+        </tr>
+      </table><br />
+    </form>
+    <hr/>
+
+    <?php echo showmessage ($show, 450, 40, $lang); ?>
+  </div>
+
+  <?php includefooter(); ?>
+
 </body>
 </html>

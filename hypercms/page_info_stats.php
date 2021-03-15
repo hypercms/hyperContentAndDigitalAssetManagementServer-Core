@@ -108,7 +108,7 @@ function closePopup ()
 <div id="popupLayer" class="hcmsInfoBox" style="position:fixed; left:50%; bottom:0px; z-index:-1; overflow:hidden; width:0px; height:0px; visibility:hidden;">
   <div style="display:block; padding-bottom:5px;">
     <div id="popupTitle" class="hcmsHeadline" style="float:left; margin:6px;"></div>
-    <div style="float:right;"><img name="closedailystatsviewer" src="<?php echo getthemelocation(); ?>img/button_close.png" onClick="closePopup();" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closedailystatsviewer','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" /></div>
+    <div style="float:right;"><img name="closedailystatsviewer" src="<?php echo getthemelocation(); ?>img/button_close.png" onClick="closePopup();" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closedailystatsviewer','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" /></div>
   </div>
   <div style="width:100%; height:calc(100% - 42px);">
     <iframe id="popupViewer" src="<?php echo $mgmt_config['url_path_cms']; ?>loading.php" style="width:100%; height:100%; border:1px solid #000000;"></iframe>

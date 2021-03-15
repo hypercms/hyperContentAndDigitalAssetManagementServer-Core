@@ -70,6 +70,7 @@ if (trim ($mediacat_data) != "")
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function sendInput(file)
 {
   parent.frames['controlFrame2'].document.forms['media'].elements['mediafile'].value = file;
@@ -145,7 +146,7 @@ function goToURL()
           </tr>
           <tr>
             <td>
-            <input type="text" name="imagesearch" style="width:170px;" />
+            <input type="text" name="imagesearch" style="width:174px;" />
             <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['imagesearch'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" />
             </td>
           </tr>
@@ -240,7 +241,7 @@ if ($sender == "search")
 
           if ($file_info != false && $file != "Null_media.png")
           {
-            echo "<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /><a href=\"javascript:void(0);\" onClick=\"sendInput('".$site."/".$file."'); goToURL('parent.frames[\'mainFrame2\']','media_view.php?site=".url_encode($site)."&mediacat=tpl&mediafile=".url_encode($site."/".$file)."'); return document.returnValue;\"> ".$file_info['name']."</a><br />\n";
+            echo "<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /><a href=\"javascript:void(0);\" onClick=\"sendInput('".$site."/".$file."'); goToURL('parent.frames[\'mainFrame2\']','media_view.php?site=".url_encode($site)."&mediacat=tpl&mediafile=".url_encode($site."/".$file)."'); return document.returnValue;\"> ".showshorttext($file_info['name'], 24)."</a><br />\n";
           }
 
           $c++;

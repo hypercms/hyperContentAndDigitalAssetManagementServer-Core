@@ -1430,4 +1430,5 @@ $hcms_lang['dark']['fr'] = "foncé";
 $hcms_lang['text-and-icons']['fr'] = "Textes et Icônes";
 $hcms_lang['logo']['fr'] = "Logo";
 $hcms_lang['wallpaper']['fr'] = "Fond d'écran";
+$hcms_lang['youtube-sign-out']['fr'] = "Vous devez vous déconnecter de votre compte Google/YouTube avant d'ajouter un nouveau compte";
 ?>

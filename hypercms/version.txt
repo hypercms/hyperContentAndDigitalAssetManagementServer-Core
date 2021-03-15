@@ -4914,4 +4914,91 @@ Release 01/2021
 - Bug fix: media_taxonomy did not verify the selectedlang_temp variable as array
 - Bug fix: control_objectlist_menu did not allow the ZIP compression of folders only
 - Bug fix: Function setfilter in UI API did not remove filters if no filter has been selected/defined
-- Bug fix: The YouTube connector did not verify the object if the YouTube token acquire was active  
+- Bug fix: The YouTube connector did not verify the object if the YouTube token acquire was active
+
+Version 9.1.1
+Release 03/2021
+- Implementation of the new function is_annotation in Main API in order to verify the annotation feature
+- Modifications in all system components that use the annotation feature
+- Design modifications in the face management plugin
+- Renamed function is_facerecognitionservice to is_facerecognition in Main API
+- Replaced "Linus Torvald" by "Albert Einstein" face definition
+- Modifications in function checkusersession in Security API in order to remove the error event number 10119
+- Modifications in JS function collectFaces in template engine in order to trim face/label names
+- Implementation of the new JS function resizefacename in the template engine
+- Modifications in the template engine in order to reposition face names with the resizes face frame
+- Modifications in JS function loadLabeledImages in face-init.js in order to verify the array length
+- Code optimizations in the plugin management and implementation of a security token
+- Modifications in frameset_recognizefaces in order to reduce delay from 10 to 3 seconds for loading the face definitions
+- Added CSS class hcmsWorkplaceWorkflow to explorer_objectview
+- Design modifications in all design themes (removed CSS class hcmsButtonBlank)
+- Replaced CSS class hcmsButtonBlank by hcmsButtonTiny in various system components
+- Replaced CSS class hcmsButtonBlank by hcmsButton in annotation.js
+- Modifications in function rdbms_searchcontent in DB Connect in order to escape synonym expression after the transformation of wildcard characters
+- Implementation of the user name picker for licensenotification_form
+- Implementation of the user name picker for control_log_menu
+- Implementation of the user name picker for control_user_menu
+- Added cleandomain function call to the framesets of the Import/Export Connector module
+- Design modifications in user_objectlist
+- Modifications in template engine in order to exclude permissions for template view
+- Modifications in template engine in order to verify that the media file tag is not empty before searching for the tag in the template
+- Design modifications in the Report Management module
+- Design modifications in function showcompexplorer in UI API
+- Design modifications in group_access_explorer
+- Design modifications in folder_explorer
+- Design modifications in link_edit_explorer
+- Design modifications in text_link_explorer
+- Design modifications in media_edit_explorer
+- Design modifications in media_delete
+- Design modifications in function showmessage and showinfobox in UI API
+- Design modifications in all controls
+- Design modifications in Project Management module
+- Modifications in function deletemediacat in Main API in order to remove HTML table code from the messages
+- Modifications in function showsharelinks in UI API in order to set a default width
+- Modifications in the Plugin Management in order to update the plugin configuration file name
+- Renamed plugin configuration file name form "plugin.conf.php" to "plugin.global.php" in all system components which use the plugin configuration
+- Modifications in function createpublication in the Main API in order to allow the publication name "plugin"
+- Implementation of the function update_plugin_v911 in the Update API
+- Modifications in the German language file
+- Implementation of the main configuration setting $mgmt_config['storage_synctime'] for the time frame in hours for synchronization with the cloud storage
+- Implementation of the new function is_preview in the Main API
+- Implementation of the main configuration setting $mgmt_config['keep_previews'] in order to keep or delete preview images
+- Modifications in daily job in order to support the new main configuration setting $mgmt_config['keep_previews']
+- Implementation of the status of analyzed images and videos in the face management plugin
+- Implementation of a refresh button in the face management plugin
+- Modifications in function downloadfile in Main API in order to exclude service users from the statistics
+- Implementation of the new main configuration setting $mgmt_config['ldap_keep_groups'] in order to allow a mix of manually assigned group memberships and the sync with LDAP/AD
+- Modifications in the LDAP/AD Connector in order to support the new main configuration setting $mgmt_config['ldap_keep_groups'] and merge the group memberships of a user
+- Implementation of the publication specific group mapping in the LDAP/AD Connector
+- Modifications in function edituser in Main API in order to save user data only if it has been changed (compare saved with new user data)
+- Modifications in function rdbms_setpublicationtaxonomy in DB Connect in order to verify that the publication name is not empty after escaping it
+- Modifications in function indexcontent in Media API in order to exclude the system and system service user as owner
+- Modifications in function createobject and manipulateobject in Main API in order to exclude the system user and system service user as owner
+- Modifications in face-init in order to define the new variable maxDescriptorDistance with a value of 0.51
+- Modifications in template engine in order to log the distance in the console for recognized faces
+- Modifications in explorer in order to require the Desktop permission in order to access any Plugin
+- Modifications in face recognition, search statistics, and nativy plugins in order to require Desktop permission for the usage
+- Modifications in group_edit_form in order to add Plugins title to the Desktop management permissions
+- Modifications in the YouTube Connector (new YouTube API)
+- Implementation of multiple YouTube account support per publication
+- Modifications in the function get_youtube_client in the YouTube API
+- Renamed YouTube token file name in YouTube Connector
+- Renamed parameter youtube_private to youtube_visibility in the YouTube Connector
+- Modifications in function showmedia in the UI API in order to remove path parameter from YouTube upload link
+- Implementation of a delete function for YouTube targets
+- Updates in all language files
+- Update of the Administrators Guide regarding the Plugin permissions
+- Update of the Connector Guide in order to add a new chapter for the configuration of OpenLDAP and Apache for the usage of LDAP/AD Connector
+- Update of the Users Guide regarding the YouTube Connector
+- Bug fix: Function is_facerecognitionservice in Main API did not verify the Mobile Edition (is_mobile)
+- Bug fix: The face management plugin did not align the faces if face images have been provided manually and by the system
+- Bug fix: Service savecontent did not trim the face names
+- Bug fix: Service getfacedefinitions did not verify if a face label directory actually includes face definitions
+- Bug fix: JS function collectfaces in template engine did not verify variable zoommemory
+- Bug fix: Plugin management did not reload a modified plugin configuration
+- Bug fix: CSS class hcmsWorkplaceObjectlist has been defined twice in some design themes
+- Bug fix: frameset_instance did not use the full path to main.min.js
+- Bug fix: frameset_mobile did not provide the correct height for the navigator frame
+- Bug fix: page_info used the old name of the YouTube API
+- Bug fix: The user filter in the LDAP/AD Connector has not been correct
+- Bug fix: The array element key for the publication mapping has not been correct in the LDAP/AD Connector

@@ -42,6 +42,7 @@ checkusersession ($user, false);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function sendOption(folder_name, folder_location)
 {
   parent.mainFrame2.insertOption(folder_name, folder_location);
@@ -59,7 +60,7 @@ function sendOption(folder_name, folder_location)
 <div id="Navigator" class="hcmsWorkplaceFrame">
   <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['select-folder'][$lang]); ?></span>
 
-  <table class="hcmsTableNarrow" style="width:90%;">
+  <table class="hcmsTableNarrow" style="table-layout:auto; min-width:218px;">
   <?php
   if ($cat == "page" || $cat == "comp")
   {  
@@ -89,7 +90,7 @@ function sendOption(folder_name, folder_location)
     {
       echo "
       <tr>
-        <td style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".png\" class=\"hcmsIconList\" /> ".$folder_name."</a></td>
+        <td style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".png\" class=\"hcmsIconList\" /> ".showshorttext($folder_name, 24)."</a></td>
         <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:sendOption('/".$site."/', '%".$cat."%/".$site."/')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" /></a></td>
       </tr>";
     }
@@ -123,6 +124,11 @@ function sendOption(folder_name, folder_location)
           <td colspan=\"2\" style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang])."</a></td>
         </tr>";
         }
+
+        echo "
+        </table>
+        
+        <table class=\"hcmsTableNarrow\" style=\"table-layout:auto; min-width:218px;\">";
         
         // get all files in dir
         $scandir = scandir ($dir);
@@ -163,8 +169,8 @@ function sendOption(folder_name, folder_location)
                 {
                   echo "
         <tr>
-          <td style=\"width:90%; text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" /> ".$folder_name."</a></td>
-          <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" title=\"OK\" alt=\"OK\" /></a></td>
+          <td style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" /> ".showshorttext($folder_name, 24)."</a></td>
+          <td style=\"width:20px; text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" title=\"OK\" alt=\"OK\" /></a></td>
         </tr>";
                 }
               }

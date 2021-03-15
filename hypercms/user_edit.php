@@ -389,7 +389,7 @@ function setHomeBoxes ()
 <div id="savelayer" class="hcmsLoadScreen"></div>
 
 <?php
-echo showmessage ($show, 460, 70, $lang, "position:fixed; left:15px; top:15px;");
+echo showmessage ($show, 460, 70, $lang, "position:fixed; left:10px; top:10px;");
 ?>  
 
 <?php

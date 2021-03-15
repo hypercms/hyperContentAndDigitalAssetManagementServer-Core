@@ -65,7 +65,8 @@ while (@ob_end_flush());
   <table class="hcmsTableStandard" style="margin:10px;">
  	  <tr style="text-align:left; vertical-align:top;">
       <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['total-disk-space'][$lang]); ?> &nbsp;&nbsp;</td>
-      <td style="text-align:right;"><?php
+      <td style="text-align:right;">
+      <?php
       $space_total = disk_total_space ($mgmt_config['abs_path_cms']);
       
       if ($space_total > 0)
@@ -86,7 +87,8 @@ while (@ob_end_flush());
         echo number_format (($space_free/1024/1024/1024), 2, ",", ".")." GB";
       }
       else echo "not available";
-      ?></td>
+      ?>
+      </td>
     </tr>
   </table>
   

@@ -1319,7 +1319,7 @@ echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name
     <div <?php if ($is_mobile) echo "class=\"hcmsTextSmall\""; ?>>
       <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
       <div class="row">
-        <label><input type="checkbox" name="unzip" id="unzip" value="unzip" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?><span class="">(<?php echo getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang]); ?>)</span></label>
+        <label><input type="checkbox" name="unzip" id="unzip" value="unzip" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?> (<?php echo getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang]); ?>)</label>
       </div>
       <?php } ?> 
       <?php if ($uploadmode == "multi" && is_array ($mgmt_compress) && sizeof ($mgmt_compress) > 0) { ?>

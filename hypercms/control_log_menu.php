@@ -34,6 +34,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initalize
 $show = "";
 $add_onload = "";
 
@@ -45,7 +46,7 @@ if ((checkrootpermission ('site') || checkrootpermission ('user')) && checktoken
     if (valid_publicationname ($site)) $result = deletelog ($site.".publication");
     else $result = deletelog ();
   
-    $add_onload =  $result['add_onload'];
+    $add_onload .= $result['add_onload'];
     $show = $result['message'];
   }
   // notification settings
@@ -54,16 +55,25 @@ if ((checkrootpermission ('site') || checkrootpermission ('user')) && checktoken
     $settings = array('eventlog_notify'=>$eventlog_notify);
     
     $result = editpublicationsetting ($site, $settings, $user);
-    
+
     // reload publication management config
-    if (!empty ($result['result']) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
-    {
-      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-    }
-    
-    $add_onload = $result['add_onload'];
-    $show = $result['message'];  
+    if (!empty ($result['result']) && valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+
+    $add_onload .= $result['add_onload'];
+    $show = $result['message'];
   }
+}
+
+// get user names
+$user_array = getuserinformation ();
+
+if (!empty ($user_array[$site]) && is_array ($user_array[$site]) && sizeof ($user_array[$site]) > 0)
+{
+  $username_array = array_keys ($user_array[$site]);
+  $usernames = "['".implode ("', '", $username_array)."']";
+  $tagit = "availableTags:".$usernames.", beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$usernames.") == -1) { return false; } }, ";
+
+  $add_onload .= " $('#users').tagit({".$tagit."readOnly:false, singleField:true, allowSpaces:false, singleFieldDelimiter:',', singleFieldNode:$('#users')});";
 }
 
 // security token
@@ -78,6 +88,14 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
+<!-- JQuery and JQuery UI -->
+<script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
+<!-- Tagging -->
+<script type="text/javascript" src="javascript/tag-it/tag-it.min.js"></script>
+<link rel="stylesheet" type="text/css" href="javascript/tag-it/jquery.tagit.css" />
+<link rel="stylesheet" type="text/css" href="javascript/tag-it/tagit.ui-zendesk.css" />
 <?php
 // invert colors
 if (!empty ($hcms_themeinvertcolors))
@@ -87,6 +105,13 @@ if (!empty ($hcms_themeinvertcolors))
   echo "</style>";
 }
 ?>
+<style>
+ul.tagit
+{
+  width: 280px;
+  height: 28px;
+}
+</style>
 <script type="text/javascript">
 
 function warning_delete()
@@ -103,9 +128,9 @@ function warning_delete()
 
 <body class="hcmsWorkplaceControlWallpaper" onload="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:10px;"); ?>
 
-<?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
+<?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
@@ -150,21 +175,27 @@ function warning_delete()
   </div>
 </div>
 
-<div id="notificationLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:4; left:15px; top:4px; visibility:hidden;">
+<div id="notificationLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; left:15px; top:4px; visibility:hidden;">
 <form name="registrationform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="notification" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table class="hcmsTableStandard" style="width:100%; height:80px;">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr>
       <td>
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." (".$hcms_lang['error'][$lang].", ".$hcms_lang['warning'][$lang].")"); ?></span><br />
-        <?php if (!$is_mobile) echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?>&nbsp;
-        <span style="white-space:nowrap;">
-          <input name="eventlog_notify" value="<?php if (!empty ($mgmt_config[$site]['eventlog_notify'])) echo $mgmt_config[$site]['eventlog_notify']; ?>" style="width:180px;" tabindex="1" placeholder="<?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?>" />
-          <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['registrationform'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" tabindex="2" />
-        </span>
+        <table class="hcmsTableNarrow">
+          <tr>
+            <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['notify-users'][$lang])."&nbsp;</td>"; ?>
+            <td style="width:280px; white-space:nowrap;">
+              <input id="users" name="eventlog_notify" value="<?php if (!empty ($mgmt_config[$site]['eventlog_notify'])) echo $mgmt_config[$site]['eventlog_notify']; ?>" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" tabindex="1" placeholder="<?php echo getescapedtext ($hcms_lang['notify-users'][$lang]); ?>" />
+            </td>
+            <td style="white-space:nowrap;">
+              &nbsp;<img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['registrationform'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" tabindex="4" />
+            </td>
+          </tr>
+        </table>
       </td>
       <td style="width:38px; text-align:right; vertical-align:top;">
         <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('notificationLayer','','hide');" />

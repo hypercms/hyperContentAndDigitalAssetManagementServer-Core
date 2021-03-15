@@ -765,9 +765,9 @@ function sendtochat (text)
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:none;"></div>
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:10px;"); ?>
 
-<?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
+<?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <?php
 // define location name
@@ -1603,128 +1603,128 @@ else
 </div>
 <?php } ?>
 
-<div id="foldercreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:1; left:15px; top:15px; visibility:hidden">
-<form name="folder_create" action="" method="post" onsubmit="return checkForm_folder_create();">
-  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
-  <input type="hidden" name="action" value="folder_create" />
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>">
-  
-  <table class="hcmsTableStandard" style="width:100%; height:60px;">
-    <tr>
-      <td>
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-folder'][$lang]); ?></span><br />
-        <span style="white-space:nowrap;">
-          <input type="text" name="foldernew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:160px;" />
-          <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-        </span>
-      </td>
-      <td style="width:38px; text-align:right; vertical-align:top;">
-        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('foldercreateLayer','','hide');" />
-      </td>      
-    </tr>
-  </table>
-</form>
+<div id="foldercreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; z-index:1; left:10px; top:10px; visibility:hidden">
+  <form name="folder_create" action="" method="post" onsubmit="return checkForm_folder_create();">
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="action" value="folder_create" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+    
+    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
+      <tr>
+        <td>
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-folder'][$lang]); ?></span><br />
+          <span style="white-space:nowrap;">
+            <input type="text" name="foldernew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>" />
+            <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+          </span>
+        </td>
+        <td style="width:38px; text-align:right; vertical-align:top;">
+          <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('foldercreateLayer','','hide');" />
+        </td>      
+      </tr>
+    </table>
+  </form>
 </div>
 
-<div id="folderrenameLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:2; left:15px; top:15px; visibility:hidden;">
-<form name="folder_rename" action="" method="post" onsubmit="return checkForm_folder_rename();">
-  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
-  <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
-  <input type="hidden" name="action" value="folder_rename" />
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>">
-  
-  <table class="hcmsTableStandard" style="width:100%; height:60px;">
-    <tr>
-      <td>
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['rename-folder'][$lang]); ?></span><br />
-        <span style="white-space:nowrap;">
-          <input type="text" name="foldernew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:160px;" value="<?php echo $pagename; ?>" />
-          <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-        </span>
-      </td>
-      <td style="width:38px; text-align:right; vertical-align:top;">
-        <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('folderrenameLayer','','hide');" />
-      </td>        
-    </tr>
-  </table>
-</form>
+<div id="folderrenameLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; z-index:2; left:10px; top:10px; visibility:hidden;">
+  <form name="folder_rename" action="" method="post" onsubmit="return checkForm_folder_rename();">
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
+    <input type="hidden" name="action" value="folder_rename" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+    
+    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
+      <tr>
+        <td>
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['rename-folder'][$lang]); ?></span><br />
+          <span style="white-space:nowrap;">
+            <input type="text" name="foldernew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" value="<?php echo $pagename; ?>" />
+            <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+          </span>
+        </td>
+        <td style="width:38px; text-align:right; vertical-align:top;">
+          <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('folderrenameLayer','','hide');" />
+        </td>        
+      </tr>
+    </table>
+  </form>
 </div>
 
-<div id="objrenameLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:3; left:15px; top:15px; visibility:hidden">
-<form name="page_rename" action="" onsubmit="return checkForm_folder_rename();">
-  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
-  <input type="hidden" name="page" value="<?php echo $page; ?>" />
-  <input type="hidden" name="action" value="page_rename" />
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>">
-  
-  <table class="hcmsTableStandard" style="width:100%; height:60px;">
-    <tr>
-      <td>
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['rename'][$lang]);  if ($filetype == "Page" || $filetype == "Component") echo " (".getescapedtext ($hcms_lang['name-without-ext'][$lang]).")"; ?></span><br />
-        <span style="white-space:nowrap;">
-          <input type="text" name="pagenew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:160px;" value="<?php echo substr ($pagename, 0, strrpos ($pagename, ".")); ?>" />
-          <img name="Button5" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_page_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button5','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-        </span>
-      </td>
-      <td style="width:38px; text-align:right; vertical-align:top;">
-        <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('objrenameLayer','','hide');" />
-      </td>      
-    </tr>
-  </table>
-</form>
+<div id="objrenameLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; z-index:3; left:10px; top:10px; visibility:hidden">
+  <form name="page_rename" action="" onsubmit="return checkForm_folder_rename();">
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="page" value="<?php echo $page; ?>" />
+    <input type="hidden" name="action" value="page_rename" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+    
+    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
+      <tr>
+        <td>
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['rename'][$lang]);  if ($filetype == "Page" || $filetype == "Component") echo " (".getescapedtext ($hcms_lang['name-without-ext'][$lang]).")"; ?></span><br />
+          <span style="white-space:nowrap;">
+            <input type="text" name="pagenew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" value="<?php echo substr ($pagename, 0, strrpos ($pagename, ".")); ?>" />
+            <img name="Button5" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_page_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button5','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+          </span>
+        </td>
+        <td style="width:38px; text-align:right; vertical-align:top;">
+          <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('objrenameLayer','','hide');" />
+        </td>      
+      </tr>
+    </table>
+  </form>
 </div>
 
-<div id="zipLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden">
-<form name="page_zip" action="">
-  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
-  <input type="hidden" name="page" value="<?php echo $page; ?>" />
-  <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
-  <input type="hidden" name="action" value="zip" />
-  <input type="hidden" name="multiobject" value="<?php echo $multiobject ?>" />
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
-  
-  <table class="hcmsTableStandard" style="width:100%; height:60px;">
-    <tr>
-      <td>
-        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-zip-file-without-ext'][$lang]); ?></span><br />
-        <span style="white-space:nowrap;">
-          <input type="text" name="pagenew" maxlength="100" style="width:160px;" value="<?php echo substr ($pagename, 0, strrpos ($pagename, ".")); ?>" />
-          <img name="Button6" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="checkForm_zip();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button6','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-        </span>
-      </td>
-      <td style="width:38px; text-align:right; vertical-align:top;">
-        <img name="hcms_mediaClose4" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose4','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('zipLayer','','hide');" />
-      </td>       
-    </tr>
-  </table>
-</form>
+<div id="zipLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden">
+  <form name="page_zip" action="">
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="page" value="<?php echo $page; ?>" />
+    <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
+    <input type="hidden" name="action" value="zip" />
+    <input type="hidden" name="multiobject" value="<?php echo $multiobject ?>" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+    
+    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
+      <tr>
+        <td>
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-zip-file-without-ext'][$lang]); ?></span><br />
+          <span style="white-space:nowrap;">
+            <input type="text" name="pagenew" maxlength="100" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" value="<?php echo substr ($pagename, 0, strrpos ($pagename, ".")); ?>" />
+            <img name="Button6" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="checkForm_zip();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button6','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+          </span>
+        </td>
+        <td style="width:38px; text-align:right; vertical-align:top;">
+          <img name="hcms_mediaClose4" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose4','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('zipLayer','','hide');" />
+        </td>       
+      </tr>
+    </table>
+  </form>
 </div>
 
-<div id="importLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "850px"; ?>; height:75px; z-index:1; left:15px; top:10px; visibility:hidden">
-<form name="import" action="" method="post" enctype="multipart/form-data" onsubmit="return checkForm_import();">
-  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
-  <input type="hidden" name="action" value="import" />
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>">
-  
-  <table class="hcmsTableStandard" style="width:100%; height:75px;">
-    <tr>
-      <td>
-        <span class="hcmsHeadline"><?php echo str_replace ("(", "<br/>(", getescapedtext ($hcms_lang['upload-csv-file'][$lang])); ?></span><br />
-        <span style="white-space:nowrap;">
-          <input name="importfile" type="file" style="width:160px;" accept="text/*" />
-          <img name="Button7" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_import();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button7','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-        </span>
-      </td>
-      <td style="width:38px; text-align:right; vertical-align:top;">
-        <img name="hcms_mediaClose7" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose7','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('importLayer','','hide');" />
-      </td>      
-    </tr>
-  </table>
-</form>
+<div id="importLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "850px"; ?>; height:85px; z-index:1; left:10px; top:10px; visibility:hidden">
+  <form name="import" action="" method="post" enctype="multipart/form-data" onsubmit="return checkForm_import();">
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="action" value="import" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+    
+    <table class="hcmsTableNarrow" style="width:100%; height:75px;">
+      <tr>
+        <td>
+          <span class="hcmsHeadline"><?php echo str_replace ("(", "<br/>(", getescapedtext ($hcms_lang['upload-csv-file'][$lang])); ?></span><br />
+          <span style="white-space:nowrap;">
+            <input name="importfile" type="file" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" accept="text/*" />
+            <img name="Button7" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_import();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button7','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+          </span>
+        </td>
+        <td style="width:38px; text-align:right; vertical-align:top;">
+          <img name="hcms_mediaClose7" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose7','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('importLayer','','hide');" />
+        </td>      
+      </tr>
+    </table>
+  </form>
 </div>
 
-<div id="downloadLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; height:60px; z-index:15; left:15px; top:15px; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
-  <table class="hcmsTableStandard" style="width:100%; height:60px;">
+<div id="downloadLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; height:70px; z-index:15; left:10px; top:10px; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
+  <table class="hcmsTableNarrow" style="width:100%; height:60px;">
     <tr>
       <td>
         <div style="width:100%; height:100%; overflow:auto;">
@@ -1780,7 +1780,7 @@ setTimeout('downloadFile()', 1000);
   // download failed (zip file could not be created)
   else
   {
-    echo showmessage (str_replace ("%filesize%", $mgmt_config['maxzipsize'], $hcms_lang['download-failed-max'][$lang]), 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
+    echo showmessage (str_replace ("%filesize%", $mgmt_config['maxzipsize'], $hcms_lang['download-failed-max'][$lang]), 660, 70, $lang, "position:fixed; left:10px; top:10px;");
   }
 }
 ?>

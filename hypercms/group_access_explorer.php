@@ -43,6 +43,7 @@ checkusersession ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function sendOption(folder_name, folder_location)
 {
   parent.mainFrame2.insertOption(folder_name, folder_location);
@@ -58,7 +59,7 @@ function sendOption(folder_name, folder_location)
 </div>
 
 <div id="Navigator" class="hcmsWorkplaceFrame">
-  <table class="hcmsTableNarrow" style="table-layout:auto; width:90%;">
+  <table class="hcmsTableNarrow" style="table-layout:auto; min-width:218px;">
     <tr>
       <td class="hcmsHeadline" colspan="2" style="text-align:left; padding-bottom:8px;"><?php echo getescapedtext ($hcms_lang['access-to-folders'][$lang]); ?></td>
     </tr>
@@ -91,7 +92,7 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
   {
     echo "
     <tr>
-      <td style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."&group_name=".url_encode($group_name)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".png\" class=\"hcmsIconList\"> ".$folder_name."</a></td>
+      <td style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."&group_name=".url_encode($group_name)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".png\" class=\"hcmsIconList\"> ".showshorttext($folder_name, 24)."</a></td>
       <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:sendOption('/".$site."/', '%".$cat."%/".$site."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
     </tr>";
   }
@@ -122,6 +123,11 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
       <td colspan=\"2\" style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&group_name=".url_encode($group_name)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang])."</a></td>
     </tr>";
     }
+
+    echo "
+    </table>
+    
+    <table class=\"hcmsTableNarrow\" style=\"table-layout:auto; min-width:218px;\">";
   
     // get all files in dir
     $outdir = @dir ($dir);
@@ -172,8 +178,8 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
     
             echo "
     <tr>
-      <td style=\"width:90%; text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&group_name=".url_encode($group_name)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" /> ".$folder_name."</a></td>
-      <td style=\"text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+      <td style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&group_name=".url_encode($group_name)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" /> ".showshorttext($folder_name, 24)."</a></td>
+      <td style=\"width:20px; text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
     </tr>";
           }
         }

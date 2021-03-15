@@ -39,24 +39,25 @@ checkusersession ($user, false);
 
 <body class="hcmsWorkplaceGeneric">
 
-<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
-  <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media-file-view'][$lang]); ?></p>
-  <form name="media">
-    <input type="hidden" name="site" value="<?php echo $site; ?>" />
-    <input type="hidden" name="media_name" />
-    
-    <table class="hcmsTableStandard">
-      <tr>
-        <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
-        <td>
-          <input type="text" style="width:300px" name="mediafile" />
-        </td>
-      </tr>
-    </table>
-  </form>
-  <hr/>
-</div>
+  <div class="hcmsWorkplaceFrame">
+    <div class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media-file-view'][$lang]); ?></div>
+    <form name="media">
+      <input type="hidden" name="site" value="<?php echo $site; ?>" />
+      <input type="hidden" name="media_name" />
+      
+      <table class="hcmsTableStandard">
+        <tr>
+          <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
+          <td>
+            <input type="text" style="width:300px" name="mediafile" />
+          </td>
+        </tr>
+      </table>
+    </form>
+    <hr/>
+  </div>
 
-<?php includefooter(); ?>
+  <?php includefooter(); ?>
+  
 </body>
 </html>

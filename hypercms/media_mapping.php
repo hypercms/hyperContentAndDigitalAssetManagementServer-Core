@@ -130,7 +130,7 @@ if (valid_publicationname ($site) && $save == "reindex" && checktoken ($token, $
 <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['meta-data-mapping'][$lang]); ?></p>
 
 <?php
-echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
+echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:50px;");
 ?>
 
 <form id="editor" name="editor" action="" method="post" style="margin-top:10px; padding:2px;">

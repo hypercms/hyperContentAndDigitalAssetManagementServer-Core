@@ -305,7 +305,7 @@ if ($pagestore != false)
     if ($cat == "comp" && is_dir ($mgmt_config['abs_path_cms']."connector/youtube"))
     {
       // YouTube functions
-      require_once ($mgmt_config['abs_path_cms']."connector/youtube/functions.inc.php");
+      require_once ($mgmt_config['abs_path_cms']."connector/youtube/youtube_api.inc.php");
 
       // get youtube video ID
       $temp = selectcontent ($contentdata, "<text>", "<text_id>", "Youtube-ID");

@@ -223,7 +223,7 @@ function submitForm ()
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
-echo showmessage ($show, 500, 70, $lang, "position:fixed; left:15px; top:15px;");
+echo showmessage ($show, 500, 70, $lang, "position:fixed; left:10px; top:10px;");
 ?>
 
 <?php

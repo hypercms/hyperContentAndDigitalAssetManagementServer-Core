@@ -248,7 +248,7 @@ $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['es'
 $hcms_lang['category']['es'] = "Categoría";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['es'] = "Cargar en Youtube no está activado para su cuenta. Póngase en contacto con el administrador del sistema";
 $hcms_lang['tags']['es'] = "Etiquetas";
-$hcms_lang['private-video']['es'] = "Vídeo Privado";
+$hcms_lang['private-video']['es'] = "YouTube visibilidad";
 $hcms_lang['upload']['es'] = "Cargar";
 $hcms_lang['error-couldnt-get-object']['es'] = "Error: no se ha podido obtener el objeto";
 $hcms_lang['error-not-enough-data-available']['es'] = "Error: No hay suficiente información disponible";
@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['es'] = "oscuro";
 $hcms_lang['text-and-icons']['es'] = "Textos e iconos";
 $hcms_lang['logo']['es'] = "Logo";
 $hcms_lang['wallpaper']['es'] = "Imagen de fondo";
+$hcms_lang['youtube-sign-out']['es'] = "Debe cerrar sesión en su cuenta de Google/YouTube antes de agregar una nueva cuenta";
 ?>

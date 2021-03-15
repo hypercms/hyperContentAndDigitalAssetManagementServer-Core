@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['cz'] = "temný";
 $hcms_lang['text-and-icons']['cz'] = "Texty a ikony";
 $hcms_lang['logo']['cz'] = "Logo";
 $hcms_lang['wallpaper']['cz'] = "Tapeta na zeď";
+$hcms_lang['youtube-sign-out']['cz'] = "Před přidáním nového účtu se musíte odhlásit ze svého účtu Google/YouTube";
 ?>

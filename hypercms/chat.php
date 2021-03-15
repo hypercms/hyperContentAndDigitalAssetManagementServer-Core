@@ -184,7 +184,7 @@ function getusersonline ()
       </td>
       <td style="width:38px; text-align:center;">
         <?php if (!$is_mobile) { ?>
-        <img name="closechat" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closechat','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="parent.hcms_openChat();" />
+        <img name="closechat" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closechat','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="parent.hcms_openChat();" />
         <?php } ?>
       </td>
     </tr>

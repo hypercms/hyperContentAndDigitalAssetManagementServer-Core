@@ -22,9 +22,9 @@ $control = getrequest ("control", "locationname", false);
 $site = getrequest ("site", "publicationname");
 
 // load plugin config file
-if (file_exists ($mgmt_config['abs_path_data'].'config/plugin.conf.php'))
+if (file_exists ($mgmt_config['abs_path_data'].'config/plugin.global.php'))
 {
-  require ($mgmt_config['abs_path_data'].'config/plugin.conf.php');
+  require ($mgmt_config['abs_path_data'].'config/plugin.global.php');
 }
 else $mgmt_plugin = array();
 
@@ -112,7 +112,7 @@ else
 
 <body class="hcmsWorkplaceGeneric">
   <?php 
-  echo showmessage ($hcms_lang['couldnt-find-the-requested-page-in-this-plugin'][$lang], 500, 40, $lang, "position:fixed; left:15px; top:40px;");
+  echo showmessage ($hcms_lang['couldnt-find-the-requested-page-in-this-plugin'][$lang], 500, 40, $lang, "position:fixed; left:10px; top:40px;");
   ?>
 </body>
 </html>

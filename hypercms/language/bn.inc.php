@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['bn'] = "অন্ধকার";
 $hcms_lang['text-and-icons']['bn'] = "টেক্সট এবং আইকন";
 $hcms_lang['logo']['bn'] = "লোগো";
 $hcms_lang['wallpaper']['bn'] = "ওয়ালপেপার";
+$hcms_lang['youtube-sign-out']['bn'] = "নতুন অ্যাকাউন্ট যুক্ত করার আগে আপনাকে আপনার গুগল / ইউটিউব অ্যাকাউন্ট থেকে সাইন আউট করতে হবে";
 ?>

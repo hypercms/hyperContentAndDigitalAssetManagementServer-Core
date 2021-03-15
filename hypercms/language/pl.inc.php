@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['pl'] = "ciemny";
 $hcms_lang['text-and-icons']['pl'] = "Teksty i ikony";
 $hcms_lang['logo']['pl'] = "Logo";
 $hcms_lang['wallpaper']['pl'] = "Zdjęcie w tle";
+$hcms_lang['youtube-sign-out']['pl'] = "Musisz wylogować się z konta Google/YouTube przed dodaniem nowego konta";
 ?>

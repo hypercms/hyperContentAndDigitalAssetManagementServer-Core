@@ -196,7 +196,7 @@ function openHelp ()
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-<?php echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"); ?>
+<?php echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <p class="hcmsHeadline"><?php echo $regpro; ?>: <?php echo getescapedtext ($pers_name); ?></p>
 <hr />

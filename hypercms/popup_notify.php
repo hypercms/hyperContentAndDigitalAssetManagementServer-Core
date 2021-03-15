@@ -159,7 +159,7 @@ function submitform ()
 echo showtopbar ($hcms_lang['notify-me-on-these-events'][$lang], $lang);
 ?>
 
-<?php echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px;"); ?>
+<?php echo showmessage ($message, 360, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <div class="hcmsWorkplaceFrame">
 

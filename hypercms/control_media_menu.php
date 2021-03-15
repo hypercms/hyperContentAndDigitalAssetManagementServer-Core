@@ -253,9 +253,9 @@ function insertmediacat ()
 
 <body class="hcmsWorkplaceControlWallpaper" onLoad="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:10px;"); ?>
 
-<?php echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; "); ?>
+<?php echo showmessage ($show, 660, 80, $lang, "position:fixed; left:10px; top:5px;"); ?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
@@ -324,18 +324,18 @@ function insertmediacat ()
   </div>
 </div>
 
-<div id="createmediacatLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; z-index:1; left:15px; top:15px; visibility:hidden;">
+<div id="createmediacatLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:1; left:10px; top:10px; visibility:hidden;">
 <form name="mediacat_create" action="control_media_menu.php" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="mediacat_create" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table class="hcmsTableStandard" style="width:100%; height:70px;">
+  <table class="hcmsTableNarrow" style="width:100%; height:70px;">
     <tr>
       <td style="overflow:auto;">
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-media-category'][$lang]); ?></span><br />
         <span style="white-space:nowrap;">
-          <input type="text" name="mediacat_name" maxlength="100" style="width:150px;" placeholder="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>" />
+          <input type="text" name="mediacat_name" maxlength="100" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" placeholder="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>" />
           <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" value="Submit" onclick="checkForm_mediacat_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
@@ -347,18 +347,18 @@ function insertmediacat ()
 </form>
 </div>
 
-<div id="renamemediacatLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; z-index:2; left:15px; top:15px; visibility:hidden;">
+<div id="renamemediacatLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:2; left:10px; top:10px; visibility:hidden;">
 <form name="mediacat_rename" action="control_media_menu.php" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="mediacat_rename" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table class="hcmsTableStandard" style="width:100%; height:70px;">
+  <table class="hcmsTableNarrow" style="width:100%; height:70px;">
     <tr>
       <td style="overflow:auto;">
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['rename-media-category'][$lang]); ?></span><br />
         <span style="white-space:nowrap;">
-          <select name="mediacat_name_curr" onChange="insertmediacat()" style="width:150px;" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>">
+          <select name="mediacat_name_curr" onChange="insertmediacat()" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>">
             <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
             <?php
             if (!empty ($mediacat_array) && is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
@@ -375,7 +375,7 @@ function insertmediacat ()
             }
             ?>
           </select>
-          <input type="text" name="mediacat_name" maxlength="100" style="width:150px;" placeholder="<?php echo getescapedtext ($hcms_lang['rename-selected-category'][$lang]); ?> " />
+          <input type="text" name="mediacat_name" maxlength="100" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" placeholder="<?php echo getescapedtext ($hcms_lang['rename-selected-category'][$lang]); ?> " />
           <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_mediacat_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
@@ -387,18 +387,18 @@ function insertmediacat ()
 </form>
 </div>
 
-<div id="deletemediacatLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; z-index:2; left:15px; top:15px; visibility:hidden;">
+<div id="deletemediacatLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:2; left:10px; top:10px; visibility:hidden;">
 <form name="mediacat_delete" action="control_media_menu.php" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="mediacat_delete" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table class="hcmsTableStandard" style="width:100%; height:70px;">
+  <table class="hcmsTableNarrow" style="width:100%; height:70px;">
     <tr>
       <td style="overflow:auto;">
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete-media-category'][$lang]); ?></span><br />
         <span style="white-space:nowrap;">
-          <select name="mediacat_name" style="width:150px;" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>">
+          <select name="mediacat_name" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>">
             <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
             <?php  
             if (!empty ($mediacat_array) && is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
@@ -426,19 +426,19 @@ function insertmediacat ()
 </form>
 </div>
 
-<div id="uploadmediaLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; z-index:3; left:15px; top:15px; visibility:hidden;">
+<div id="uploadmediaLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:3; left:10px; top:10px; visibility:hidden;">
 <form name="mediafile_upload" method="post" action="control_media_menu.php" enctype="multipart/form-data">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="mediafile_upload" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table class="hcmsTableStandard" style="width:100%; height:70px;">
+  <table class="hcmsTableNarrow" style="width:100%; height:70px;">
     <tr>
       <td style="overflow:auto;">
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['upload-media-file'][$lang]); ?></span><br />
         <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>
         <span style="white-space:nowrap;">
-          <select name="mediacat_name" style="width:150px;" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>">
+          <select name="mediacat_name" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>">
             <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
             <?php
             if (!empty ($mediacat_array) && is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
@@ -455,12 +455,12 @@ function insertmediacat ()
             }
             ?>
           </select>
-          <input type="file" name="file" style="width:150px;" />
+          <input type="file" name="file" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" />
           <img name="Button4" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_mediafile_upload();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button4','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
       <td style="width:38px; text-align:right; vertical-align:top;">
-        <img name="hcms_mediaClose4" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose4','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('uploadmediaLayer','','hide');" />
+        <img name="hcms_mediaClose4" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose4','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('uploadmediaLayer','','hide');" />
       </td>        
     </tr>
   </table>

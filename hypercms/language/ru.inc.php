@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['ru'] = "темно";
 $hcms_lang['text-and-icons']['ru'] = "Тексты и значки";
 $hcms_lang['logo']['ru'] = "логотип";
 $hcms_lang['wallpaper']['ru'] = "Изображение на заднем плане";
+$hcms_lang['youtube-sign-out']['ru'] = "Вам необходимо выйти из своей учетной записи Google/YouTube перед добавлением новой учетной записи";
 ?>

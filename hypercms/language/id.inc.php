@@ -1430,4 +1430,5 @@ $hcms_lang['dark']['id'] = "gelap";
 $hcms_lang['text-and-icons']['id'] = "Teks dan ikon";
 $hcms_lang['logo']['id'] = "Logo";
 $hcms_lang['wallpaper']['id'] = "Gambar latar belakang";
+$hcms_lang['youtube-sign-out']['id'] = "Anda harus keluar dari akun Google/YouTube Anda sebelum menambahkan akun baru";
 ?>

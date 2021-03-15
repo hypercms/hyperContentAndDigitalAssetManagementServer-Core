@@ -46,7 +46,7 @@ checkusersession ($user, false);
 <!-- JQuery used for AJAX viewport set request -->
 <script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
 
-<?php if (is_facerecognitionservice ("sys")) { ?>
+<?php if (is_facerecognition ("sys")) { ?>
 <!-- face recognition -->
 <script defer src="javascript/facerecognition/face-api.min.js"></script>
 <script defer src="javascript/facerecognition/face-init.js"></script>
@@ -506,7 +506,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 <!-- uploads -->
 <div id="uploadsLayer" style="position:fixed; bottom:0; right:0; max-width:100%; max-height:36px; margin:0; padding:0; z-index:10;"></div>
 
-<?php if (is_facerecognitionservice ($user)) {
+<?php if (is_facerecognition ($user)) {
 // Syntax: <iframe sandbox="value">
 //
 // Values:

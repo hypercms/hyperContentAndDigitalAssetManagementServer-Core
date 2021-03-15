@@ -1428,4 +1428,5 @@ $hcms_lang['dark']['sl'] = "temno";
 $hcms_lang['text-and-icons']['sl'] = "Besedila in ikone";
 $hcms_lang['logo']['sl'] = "Logotip";
 $hcms_lang['wallpaper']['sl'] = "Slika ozadja";
+$hcms_lang['youtube-sign-out']['sl'] = "Pred dodajanjem novega računa se morate odjaviti iz računa Google/YouTube";
 ?>

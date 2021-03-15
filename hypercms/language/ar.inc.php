@@ -1428,4 +1428,5 @@ $hcms_lang['dark']['ar'] = "داكن";
 $hcms_lang['text-and-icons']['ar'] = "النصوص والرموز";
 $hcms_lang['logo']['ar'] = "شعار";
 $hcms_lang['wallpaper']['ar'] = "ورق الجدران";
+$hcms_lang['youtube-sign-out']['en'] = "تحتاج إلى تسجيل الخروج من حساب Google/YouTube الخاص بك قبل إضافة حساب جديد";
 ?>

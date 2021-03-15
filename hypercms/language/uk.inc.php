@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['uk'] = "темний";
 $hcms_lang['text-and-icons']['uk'] = "Тексти та іконки";
 $hcms_lang['logo']['uk'] = "Логотип";
 $hcms_lang['wallpaper']['uk'] = "Фонове зображення";
+$hcms_lang['youtube-sign-out']['uk'] = "Вам потрібно вийти зі свого облікового запису Google/YouTube, перш ніж додавати новий";
 ?>

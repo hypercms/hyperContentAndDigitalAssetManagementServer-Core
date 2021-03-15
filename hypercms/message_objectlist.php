@@ -359,7 +359,7 @@ else
   else $next_start = 0;
 ?>
 <!-- status bar -->
-<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
+<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
   <div style="margin:auto; padding:8px; float:left;"><?php echo $next_start." / ".$objects_total." ".(!$is_mobile ? getescapedtext ($hcms_lang['objects'][$lang]) : ""); ?></div>
 </div>
 <?php

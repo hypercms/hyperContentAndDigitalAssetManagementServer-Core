@@ -35,7 +35,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initalize
 $show = "";
+$add_onload = "";
 
 // save file
 if ($save == "yes" && valid_publicationname ($site) && in_array ($cat, array("page","comp")) && checktoken ($token, $user))
@@ -49,6 +51,18 @@ if ($save == "yes" && valid_publicationname ($site) && in_array ($cat, array("pa
   else $show = getescapedtext ($hcms_lang['notification-settings-were-saved-successfully'][$lang]);
 }
 
+// get user names
+$user_array = getuserinformation ();
+
+if (!empty ($user_array[$site]) && is_array ($user_array[$site]) && sizeof ($user_array[$site]) > 0)
+{
+  $username_array = array_keys ($user_array[$site]);
+  $usernames = "['".implode ("', '", $username_array)."']";
+  $tagit = "availableTags:".$usernames.", beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$usernames.") == -1) { return false; } }, ";
+
+  $add_onload .= "$('#users').tagit({".$tagit."readOnly:false, singleField:true, allowSpaces:false, singleFieldDelimiter:',', singleFieldNode:$('#users')});";
+}
+
 // create secure token
 $token_new = createtoken ($user);
 ?>
@@ -60,8 +74,20 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.min.js"></script>
-<script type="text/javascript" src="javascript/click.min.js"></script>
+<!-- JQuery and JQuery UI -->
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
+<!-- Tagging -->
+<script type="text/javascript" src="javascript/tag-it/tag-it.min.js"></script>
+<link rel="stylesheet" type="text/css" href="javascript/tag-it/jquery.tagit.css" />
+<link rel="stylesheet" type="text/css" href="javascript/tag-it/tagit.ui-zendesk.css" />
+<style>
+ul.tagit
+{
+  width: 348px;
+}
+</style>
 <script type="text/javascript">
 function replace (string, text, by) 
 {
@@ -167,7 +193,7 @@ function selectAll (form_name, select_name, input_name)
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png')">
+<body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png'); <?php echo $add_onload; ?>">
 
 <?php
 echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;");
@@ -190,23 +216,23 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
     </tr>
     <tr>
       <td style="white-space:nowrap;"><input type="text" name="text_id" value="" style="width:360px;" /></td>
-    </tr> 
+    </tr>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['date-format-eg'][$lang]); ?> </td>
     </tr>
     <tr>
       <td style="white-space:nowrap;"><input type="text" name="format" value="%Y-%m-%d" style="width:360px;" /></td>
-    </tr> 
-    <tr>
-      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['notify-users'][$lang]." ".$hcms_lang['comma-seperated'][$lang]); ?> </td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;"><input type="text" name="users" value="" style="width:360px;" /></td>
-    </tr>    
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['notify-users'][$lang]); ?> </td>
+    </tr>
+    <tr>
+      <td style="white-space:nowrap;"><input type="text" id="users" name="users" value="" style="width:360px;" /></td>
+    </tr>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['select-period'][$lang]); ?> </td>
     </tr>
-    <tr> 
+    <tr>
       <td>
         <select name="period" style="width:360px;">
           <option value="monthly"><?php echo getescapedtext ($hcms_lang['monthly'][$lang]); ?></option>
@@ -214,10 +240,10 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
           <option value="daily"><?php echo getescapedtext ($hcms_lang['daily'][$lang]); ?></option>
         </select>
       </td>
-    </tr>   
+    </tr>
     <tr>
       <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['applied-settings-on-selected-folders'][$lang]); ?> </td>          
-    </tr>     
+    </tr>  
     <tr>
       <td>
         <table class="hcmsTableNarrow">

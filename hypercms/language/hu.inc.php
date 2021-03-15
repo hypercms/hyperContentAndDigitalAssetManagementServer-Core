@@ -1429,4 +1429,5 @@ $hcms_lang['dark']['hu'] = "sötét";
 $hcms_lang['text-and-icons']['hu'] = "Szövegek és ikonok";
 $hcms_lang['logo']['hu'] = "Logo";
 $hcms_lang['wallpaper']['hu'] = "Háttérkép";
+$hcms_lang['youtube-sign-out']['hu'] = "Új fiók hozzáadása előtt ki kell jelentkeznie Google/YouTube-fiókjából";
 ?>

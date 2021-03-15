@@ -68,7 +68,7 @@ $component = "";
 $component_curr = "";
 
 // read content using db_connect
-if (!empty ($db_connect) && valid_objectname ($db_connect) && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
 {
   include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
   

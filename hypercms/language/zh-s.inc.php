@@ -1430,4 +1430,5 @@ $hcms_lang['dark']['zh-s'] = "暗";
 $hcms_lang['text-and-icons']['zh-s'] = "文本和图标";
 $hcms_lang['logo']['zh-s'] = "商标";
 $hcms_lang['wallpaper']['zh-s'] = "背景图片";
+$hcms_lang['youtube-sign-out']['zh-s'] = "您需要先从Google/YouTube帐户注销，然后再添加新帐户";
 ?>

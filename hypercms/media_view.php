@@ -105,7 +105,7 @@ if ($save == "yes" && valid_objectname ($mediafile) && checktoken ($token, $user
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
-echo showmessage ($show, 500, 70, $lang, "position:fixed; left:15px; top:50px;")
+echo showmessage ($show, 500, 70, $lang, "position:fixed; left:10px; top:50px;")
 ?>
 
 <?php

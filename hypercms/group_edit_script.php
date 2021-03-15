@@ -111,7 +111,7 @@ elseif ($sender == "access" && checktoken ($token, $user))
 
 <body class="hcmsWorkplaceGeneric" <?php if ($add_onload != "") echo "onLoad=\"".$add_onload."\""; ?>>
 <?php
-echo showmessage ($show, 600, 70, $lang, "position:fixed; left:20px; top:20px;");
+echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:10px;");
 ?>
 <?php includefooter(); ?>
 </body>

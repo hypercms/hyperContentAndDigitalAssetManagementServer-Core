@@ -177,7 +177,7 @@ if (is_array ($content_array))
   // output results
   if ($result != "") echo $result;
 }
-else showmessage ($hcms_lang['error-occured-no-text-based-content-could-be-found'][$lang], 600, 70, $lang, "position:fixed; left:5px; top:100px;");
+else showmessage ($hcms_lang['error-occured-no-text-based-content-could-be-found'][$lang], 600, 70, $lang, "position:fixed; left:10px; top:10px;");
 ?>
 </div>
 
