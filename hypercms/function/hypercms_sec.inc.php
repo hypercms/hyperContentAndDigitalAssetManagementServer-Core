@@ -419,7 +419,7 @@ function accessgeneral ($site, $location, $cat)
 // requires: accessgeneral
 
 // description:
-// Evaluates page and component access permissions and returns group(s). Since version 8.0.0 this function does not evaluate the access based on access links anymore since explorer_objectlist verifies the access linking.
+// Evaluates page and asset/component access permissions and returns the group(s). Since version 8.0.0 this function does not evaluate the access based on access links anymore since explorer_objectlist verifies the access linking.
 
 function accesspermission ($site, $location, $cat)
 {
@@ -473,21 +473,20 @@ function accesspermission ($site, $location, $cat)
       if ($cat == "page" && isset ($pageaccess[$site]) && is_array ($pageaccess[$site]) && @substr_count ($location, $mgmt_config['abs_path_rep']) == 0) 
       {
         reset ($pageaccess);
-        $thisaccess = $pageaccess[$site];
-        
+        $thisaccess = $pageaccess[$site];        
         $i = 0;
 
         // groups
         foreach ($thisaccess as $group => $value)
         {
           // split access-string into an array
-          $value = substr ($value, 0, strlen ($value)-1);
+          $value = trim ($value, "|");
           $value_array = explode ("|", $value);
 
           // access locations
           foreach ($value_array as $value)
           {
-            if (@substr_count ($location, $value) > 0)
+            if ($value != "" && substr_count ($location, $value) > 0)
             {
               $points[$i] = strlen ($value);
               $groups[$i] = $group;
@@ -507,13 +506,13 @@ function accesspermission ($site, $location, $cat)
         foreach ($thisaccess as $group => $value)
         {
           // split access-string into an array
-          $value = substr ($value, 0, strlen ($value)-1);
+          $value = trim ($value, "|");
           $value_array = explode ("|", $value);
 
           // access locations
           foreach ($value_array as $value)
           {
-            if (@substr_count ($location, $value) > 0)
+            if ($value != "" && substr_count ($location, $value) > 0)
             {
               $points[$i] = strlen ($value);
               $groups[$i] = $group;
@@ -560,7 +559,7 @@ function accesspermission ($site, $location, $cat)
 
 function setlocalpermission ($site, $group_array, $cat)
 {
-  global $localpermission;
+  global $localpermission, $user;
 
   // try to get localpermission from session
   if ((!isset ($localpermission) || !is_array ($localpermission)) && isset ($_SESSION['hcms_localpermission']) && is_array ($_SESSION['hcms_localpermission']))
@@ -590,7 +589,7 @@ function setlocalpermission ($site, $group_array, $cat)
 
     foreach ($group_array as $group)
     {
-      // component permissions
+      // asset/component permissions
       if ($cat == "comp")
       {
         if ($setlocalpermission['root'] == 0 && @$localpermission[$site][$group]['component'] == 1) $setlocalpermission['root'] = 1;
@@ -605,7 +604,7 @@ function setlocalpermission ($site, $group_array, $cat)
         if ($setlocalpermission['rename'] == 0 && @$localpermission[$site][$group]['comprename'] == 1) $setlocalpermission['rename'] = 1;
         if ($setlocalpermission['publish'] == 0 && @$localpermission[$site][$group]['comppublish'] == 1) $setlocalpermission['publish'] = 1;
       }
-      // content permissions
+      // page permissions
       elseif ($cat == "page")
       {
         if ($setlocalpermission['root'] == 0 && @$localpermission[$site][$group]['page'] == 1) $setlocalpermission['root'] = 1;
@@ -627,11 +626,11 @@ function setlocalpermission ($site, $group_array, $cat)
 
 // ------------------------- checkpublicationpermission -----------------------------
 // function: checkpublicationpermission()
-// input: publication name [string], strictly limited to siteaccess only without inheritance [boolean] (optional)
+// input: publication name [string], strictly limited to publication access without inheritance [boolean] (optional)
 // output: "direct" for direct access via group permission / "inherited" for access through inheritance / false
 
 // description:
-// Checks the access to a publication based on the site access and inheritance settings
+// Checks the access to a publication based on the publication access and inheritance settings
 
 function checkpublicationpermission ($site, $strict=true)
 {
@@ -883,8 +882,8 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       'hcms_linking' => array(),
       'globalpermission' => array(),
       'localpermission' => array(),
-      'pageaccess' => array(),
       'siteaccess' => array(),
+      'pageaccess' => array(),
       'compaccess' => array(),
       'hiddenfolder' => array(),
       'auth' => false,
@@ -924,7 +923,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   $usergroups = array();
 
   // eventsystem
-  if ($eventsystem['onlogon_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+  if (!empty ($eventsystem['onlogon_pre']) && empty ($eventsystem['hide']))
   {
     onlogon_pre ($user);
   }
@@ -1439,7 +1438,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               // access permissions to publications
               $result['siteaccess'][] = $site_name;
 
-              // access permissions to asset folders
+              // access permissions to asset/component folders
               if (valid_publicationname ($site_name) && !empty ($group_name_admin))
               {
                 if (!isset ($result['compaccess'][$site_name])) $result['compaccess'][$site_name] = array();
@@ -1979,7 +1978,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   $result['checksum'] = createchecksum (array ($result['instance'], $result['superadmin'], $result['siteaccess'], $result['pageaccess'], $result['compaccess'], $result['rootpermission'], $result['globalpermission'], $result['localpermission']));
 
   // eventsystem
-  if ($eventsystem['onlogon_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+  if (!empty ($eventsystem['onlogon_post']) && empty ($eventsystem['hide']))
   {
     $temp = onlogon_post ($user, $result);
     if (is_array ($temp)) $result = $temp;

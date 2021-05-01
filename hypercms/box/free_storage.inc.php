@@ -12,7 +12,7 @@ if (function_exists ("disk_total_space") && function_exists ("disk_free_space"))
     <hr />
     <div style=\"text-align:right; padding:20px;\">";
   
-      $space_total = disk_total_space ($mgmt_config['abs_path_cms']);
+      $space_total = disk_total_space ($mgmt_config['abs_path_rep']);
       
       if ($space_total > 0)
       {
@@ -27,7 +27,7 @@ if (function_exists ("disk_total_space") && function_exists ("disk_free_space"))
       
       echo "<br /><br />";
 
-      $space_free = disk_free_space ($mgmt_config['abs_path_cms']);
+      $space_free = disk_free_space ($mgmt_config['abs_path_rep']);
       
       if ($space_free)
       {

@@ -407,10 +407,10 @@ function format_tag_attr (format)
 
     if (list != "")
     {
-      list = list.replace (';', '|');
-      list = list.replace ('&', '&amp;');
-      list = list.replace ('<', '&lt;');
-      list = list.replace ('>', '&gt;');
+      list = list.replace (/;/g, '|');
+      list = list.replace (/&/g, '&amp;');
+      list = list.replace (/</g, '&lt;');
+      list = list.replace (/>/g, '&gt;');
     }  
   
     if (artid == "")
@@ -502,7 +502,7 @@ function language ()
   var language_sessionvar = document.forms['template_edit'].elements['language_sessionvar'].value;
   var language_sessionvalues = document.forms['template_edit'].elements['language_sessionvalues'].value;
   
-  var list = language_sessionvalues.replace (';', '|');
+  var list = language_sessionvalues.replaceAll (/;/g, '|');
   
   var code = "[hyperCMS:language name='"+language_sessionvar+"' list='"+list+"']";
   insertAtCaret (code, '');
@@ -749,18 +749,21 @@ function savetemplate(mode)
              <img onClick=\"format_tag('texts')\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_signature.png\" alt=\"".getescapedtext ($hcms_lang['signature'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['signature'][$lang], $charset, $lang)."\" />
            </div>";
            
-              if ($cat == "meta") echo "
-              <div class=\"hcmsToolbarBlock\">
-                <img onClick=\"format_tag('watermark');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.png\" alt=\"".getescapedtext ($hcms_lang['watermark-options-for-images'][$lang].", ".$hcms_lang['watermark-options-for-vidoes'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['watermark-options-for-images'][$lang].", ".$hcms_lang['watermark-options-for-vidoes'][$lang], $charset, $lang)."\" />
-              </div>";
-              else echo "
+            if ($cat == "meta") echo "
+            <div class=\"hcmsToolbarBlock\">
+              <img onClick=\"format_tag('watermark');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.png\" alt=\"".getescapedtext ($hcms_lang['watermark-options-for-images'][$lang].", ".$hcms_lang['watermark-options-for-vidoes'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['watermark-options-for-images'][$lang].", ".$hcms_lang['watermark-options-for-vidoes'][$lang], $charset, $lang)."\" />
+            </div>";
+
+            else echo "
             <div class=\"hcmsToolbarBlock\">
               <img onClick=\"openmediaType();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.png\" alt=\"".getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang)."\" />
               <img onClick=\"format_tag('mediaalign');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediaalign.png\" alt=\"".getescapedtext ($hcms_lang['media-alignment'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-alignment'][$lang], $charset, $lang)."\" />
               <img onClick=\"format_tag('mediawidth');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediawidth.png\" alt=\"".getescapedtext ($hcms_lang['media-width'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-width'][$lang], $charset, $lang)."\" />
               <img onClick=\"format_tag('mediaheight');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediaheight.png\" alt=\"".getescapedtext ($hcms_lang['media-height'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-height'][$lang], $charset, $lang)."\" />
              <img onClick=\"format_tag('mediaalttext');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediaalttext.png\" alt=\"".getescapedtext ($hcms_lang['media-alternative-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-alternative-text'][$lang], $charset, $lang)."\" />
-            </div>
+            </div>";
+            
+            if (empty ($mgmt_config[$site]['dam'])) echo "
             <div class=\"hcmsToolbarBlock\">
               <img onClick=\"format_tag('linkhref');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_link.png\" alt=\"".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."\" />
               <img onClick=\"format_tag_attr('linktarget');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_linktarget.png\" alt=\"".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang)."\" />

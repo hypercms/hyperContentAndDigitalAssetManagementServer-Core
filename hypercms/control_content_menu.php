@@ -58,6 +58,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 $add_onload = "";
 $usedby = "";
@@ -66,6 +67,10 @@ $wf_id = "";
 $wf_role = "";
 $contentfile = "";
 $application = "";
+$media_info['ext'] = "";
+$doc_rendering = false;
+$img_rendering = false;
+$vid_rendering = false;
 
 // get workflow id and release
 if ($wf_token != "")
@@ -93,10 +98,10 @@ if (!empty ($template))
 {
   $result = loadtemplate ($site, $template);
   
-  if (is_array ($result))
+  if (!empty ($result['content']))
   {
-    $bufferdata = getcontent ($result['content'], "<application>");
-    $application = $bufferdata[0];
+    $temp = getcontent ($result['content'], "<application>");
+    if (!empty ($temp[0])) $application = $temp[0];
   }
 }
 
@@ -546,43 +551,41 @@ else
     <?php
     // Download/Convert Button (also for folders) 
     // get media file extension
-    if (!empty ($media))
+    if (!empty ($media) && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
     {
       $media_info = getfileinfo ($site, $media, $cat);
-    }
-    else $media_info = Null;
     
-    $doc_rendering = false;
-    $img_rendering = false;
-    $vid_rendering = false;
-    
-    $doc_rendering = is_supported ($mgmt_docpreview, $media_info['ext']) && is_array ($mgmt_docconvert) && array_key_exists ($media_info['ext'], $mgmt_docconvert);
-    
-    foreach ($mgmt_imagepreview as $imgpreview_ext => $imgpreview)
-    {
-      // check file extension
-      if (substr_count (strtolower ($imgpreview_ext).".", $media_info['ext'].".") > 0 && trim ($imgpreview) != "")
+      if (!empty ($media_info['ext']))
       {
-        // check if there are more options for providing the image in other formats
-        if (is_array ($mgmt_imageoptions) && !empty ($mgmt_imageoptions))
-        {	
-          foreach ($mgmt_imageoptions as $config_fileext => $config_array) 
+        $doc_rendering = is_supported ($mgmt_docpreview, $media_info['ext']) && is_array ($mgmt_docconvert) && array_key_exists ($media_info['ext'], $mgmt_docconvert);
+        
+        foreach ($mgmt_imagepreview as $imgpreview_ext => $imgpreview)
+        {
+          // check file extension
+          if (substr_count (strtolower ($imgpreview_ext).".", $media_info['ext'].".") > 0 && trim ($imgpreview) != "")
           {
-            foreach ($config_array as $config_name => $value) 
-            {
-              if ($config_name != "thumbnail" && $config_name != "original") 
+            // check if there are more options for providing the image in other formats
+            if (is_array ($mgmt_imageoptions) && !empty ($mgmt_imageoptions))
+            {	
+              foreach ($mgmt_imageoptions as $config_fileext => $config_array) 
               {
-                $img_rendering = true;
-                break 3;
+                foreach ($config_array as $config_name => $value) 
+                {
+                  if ($config_name != "thumbnail" && $config_name != "original") 
+                  {
+                    $img_rendering = true;
+                    break 3;
+                  }
+                }	
               }
-            }	
-          }
+            }
+          }      
         }
-      }      
+      
+        $vid_rendering = is_supported ($mgmt_mediapreview, $media_info['ext']);
+      }
     }
-    
-    $vid_rendering = is_supported ($mgmt_mediapreview, $media_info['ext']);
-    
+
     // rendering options
     $perm_rendering = $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1;
     $lock_rendering = ($usedby == "" || $usedby == $user);
@@ -718,8 +721,11 @@ else
       else echo "
       <img onClick=\"if (locklayer == false) location='control_content_menu.php?action=page_favorite_delete&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unlock\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_favorites_new.png\" alt=\"".getescapedtext ($hcms_lang['delete-favorite'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete-favorite'][$lang])."\" />";
     }
-    else echo "
-    <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_favorites_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+    else
+    {
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_favorites_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+    }
     ?>
     
     <?php
@@ -737,6 +743,11 @@ else
       <img onClick=\"if (locklayer == false) location='control_content_menu.php?action=page_unlock&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unlock\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_lock.png\" alt=\"".getescapedtext ($hcms_lang['check-in'][$lang])."\" title=\"".getescapedtext ($hcms_lang['check-in'][$lang])."\" />";
       }
       else echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_lock.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";
+    }
+    else
+    {
+      echo "
       <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_lock.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";
     }
     ?>    
@@ -766,8 +777,8 @@ else
     else
     {
       echo "
-    <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_accept.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />
-    <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_reject.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_accept.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_reject.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
     ?>    
   </div>

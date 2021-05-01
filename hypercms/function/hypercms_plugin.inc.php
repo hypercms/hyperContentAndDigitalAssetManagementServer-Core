@@ -250,13 +250,16 @@ function plugin_parse ($oldData=array())
         $return[$file]['author'] = $author;
         $return[$file]['version'] = $version;
         $return[$file]['description'] = $description;
+        
         // active is always taken from old data
         $return[$file]['active'] = $oldData[$file]['active'];
         $return[$file]['folder'] = $mgmt_config['abs_path_plugin'].$file."/";
         $return[$file]['menu'] = array();
+
         // navigation tree
         if (!empty ($mainmenu)) $return[$file]['menu']['main'] = $mainmenu;
         if (!empty ($publicationmenu)) $return[$file]['menu']['publication'] = $publicationmenu;
+
         // context menu entry
         if (!empty ($contextmenu)) $return[$file]['menu']['context'] = $contextmenu;
       }

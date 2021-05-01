@@ -1564,25 +1564,55 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
 
 // ---------------------- getmetadata_multiobjects -----------------------------
 // function: getmetadata_multiobjects()
-// input: converted path of multiple objects [array], user name [string]
+// input: converted path of multiple objects [array], user name [string], include content of subfolders [boolean] (optional)
 // output: assoziatve array with all text content and meta data / false
 
 // description:
 // Extracts all metadata including media information for a provided list of objects.
 // This function is used for the CSV export in the objectlist views and also evaluates the access permissions of the user.
 
-function getmetadata_multiobjects ($multiobject_array, $user)
+function getmetadata_multiobjects ($multiobject_array, $user, $include_subfolders=false)
 {
   global $mgmt_config, $siteaccess, $pageaccess, $compaccess, $hiddenfolder, $adminpermission, $localpermission;
 
-  // exclude attributes from result (always exclude 'id')
-  $exclude_attributes = array ("id", "object_id", "hash", "container", "deleteuser", "deletedate", "deathtime", "media");
-
   if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 0 && $user != "")
   {
+    // initialze
     $result = array();
     $text_ids = array();
     $intermediate = array();
+
+    // include content of subfolders
+    if (!empty ($include_subfolders))
+    {
+      foreach ($multiobject_array as $multiobject)
+      {
+        if (getobject ($multiobject) == ".folder" || is_dir (deconvertpath ($multiobject, "file")))
+        {
+          if (getobject ($multiobject) == ".folder") $folderpath = getlocation ($multiobject);
+          else $folderpath = $multiobject; 
+
+          $temp_array = rdbms_externalquery ('SELECT objectpath FROM object WHERE objectpath LIKE "'.$folderpath.'%" AND objectpath!="'.$folderpath.'.folder"');
+
+          if (is_array ($temp_array) && sizeof ($temp_array) > 0)
+          {
+            $multiobject_array_add = array();
+
+            // convert to 1 dimensional array
+            foreach ($temp_array as $temp) $multiobject_array_add[] = $temp['objectpath'];
+
+            if (is_array ($multiobject_array_add) && sizeof ($multiobject_array_add) > 0)
+            {
+              $multiobject_array = array_merge ($multiobject_array, $multiobject_array_add);
+              $multiobject_array = array_unique ($multiobject_array);
+            }
+          }
+        }
+      }
+    }
+
+    // sort
+    sort ($multiobject_array);
 
     // query for each object
     foreach ($multiobject_array as $multiobject)
@@ -1604,41 +1634,53 @@ function getmetadata_multiobjects ($multiobject_array, $user)
           // get object info
           $objectinfo = getobjectinfo ($site, $location, $object);
 
-          // for pages and components
-          if (empty ($objectinfo['media'])) $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id WHERE object.id='.intval($objectinfo['container_id']));
-          // for media assets
-          else $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id LEFT JOIN media ON object.id=media.id WHERE object.id='.intval($objectinfo['container_id']));
-
-          if (is_array ($objectdata) && sizeof ($objectdata) > 0)
+          if (!empty ($objectinfo['container_id']))
           {
-            $id = $objectdata[0]['id'];
+            $container_id = intval ($objectinfo['container_id']);
 
-            // add container ID again
-            $result[$multiobject]['Container-ID'] = $id;
+            // query
+            $query_attritbutes = 'container.id AS "Container-ID", object.objectpath AS "Objectpath", object.template AS "Template", container.createdate AS "Date created", container.date AS "Date modified", container.publishdate AS "Date published", container.user AS "Owner", container.latitude AS "Latitude", container.longitude AS "Longitude", media.filesize AS "Size in KB", media.filetype AS "File type", media.width AS "Width in PX", media.height AS "Height in PX", media.red AS "Red", media.green AS "Green", media.blue AS "Blue", media.colorkey AS "Colorkey", media.imagetype AS "Image type", media.md5_hash AS "MD5 hash", media.analyzed AS "Analyzed"';
 
-            // exclude attributes
-            foreach ($objectdata[0] as $key => $value)
+            $objectdata = rdbms_externalquery ('SELECT '.$query_attritbutes.' FROM object INNER JOIN container ON object.id=container.id LEFT JOIN media ON object.id=media.id WHERE object.id='.$container_id);
+
+            if (is_array ($objectdata) && sizeof ($objectdata) > 0)
             {
-              if (!in_array ($key, $exclude_attributes))
-              {
-                $result[$multiobject][ucfirst($key)] = $value;
-              }
-            }
+              // add container ID again
+              $result[$multiobject]['Container-ID'] = $container_id;
 
-            // query all content exluding references
-            $textnodes = rdbms_externalquery ('SELECT text_id, textcontent FROM textnodes WHERE id='.intval($id).' AND type!="file" AND type!="media" AND type!="page" AND type!="comp"');
-
-            // text content
-            if (is_array ($textnodes) && sizeof ($textnodes) > 0)
-            {
-              foreach ($textnodes as $textnode)
+              // unescape objectpath and remove .folder
+              if (!empty ($objectdata[0]['Objectpath']))
               {
-                if (is_array ($textnode))
+                $objectdata[0]['Objectpath'] = specialchr_decode ($objectdata[0]['Objectpath']);
+
+                // if folder
+                if (getobject ($objectdata[0]['Objectpath']) == ".folder")
                 {
-                  $intermediate[$multiobject][$textnode['text_id']] = strip_tags (html_entity_decode ($textnode['textcontent'], ENT_COMPAT));
+                  $objectdata[0]['Objectpath'] = getlocation ($objectdata[0]['Objectpath']);
+                }
+              }
 
-                  // collect text IDs
-                  if (!in_array ($textnode['text_id'], $text_ids)) $text_ids[] = $textnode['text_id'];
+              // prepare result array
+              foreach ($objectdata[0] as $key => $value)
+              {
+                $result[$multiobject][$key] = $value;
+              }
+
+              // query all content excluding references and file content
+              $textnodes = rdbms_externalquery ('SELECT text_id, textcontent FROM textnodes WHERE id='.$container_id.' AND type!="file" AND type!="media" AND type!="page" AND type!="comp"');
+              
+              // text content
+              if (is_array ($textnodes) && sizeof ($textnodes) > 0)
+              {
+                foreach ($textnodes as $textnode)
+                {
+                  if (is_array ($textnode))
+                  {
+                    $intermediate[$multiobject][$textnode['text_id']] = strip_tags (html_entity_decode ($textnode['textcontent'], ENT_COMPAT));
+
+                    // collect text IDs
+                    if (!in_array ($textnode['text_id'], $text_ids)) $text_ids[] = $textnode['text_id'];
+                  }
                 }
               }
             }
@@ -1647,16 +1689,16 @@ function getmetadata_multiobjects ($multiobject_array, $user)
       }
     }
 
+    // create new array with all text IDs for all objects
     if (is_array ($result) && sizeof ($result) > 0)
-    {
-      // create new array with all text IDs for proper export
-      if (is_array ($intermediate) && sizeof ($intermediate) > 0)
+    { 
+      if (is_array ($intermediate) && sizeof ($intermediate) > 0 && is_array ($text_ids) && sizeof ($text_ids) > 0)
       {
-        foreach ($intermediate as $key => $textarray)
+        foreach ($result as $key => $temp)
         {
           foreach ($text_ids as $text_id)
           {
-            if (isset ($textarray[$text_id])) $result[$key]['Content:'.$text_id] = $textarray[$text_id];
+            if (isset ($intermediate[$key][$text_id])) $result[$key]['Content:'.$text_id] = $intermediate[$key][$text_id];
             else $result[$key]['Content:'.$text_id] = "";
           }
         }
@@ -2376,31 +2418,31 @@ function getcategory ($site, $location)
     {
       if (!empty ($mgmt_config['abs_path_comp']) && !empty ($mgmt_config[$site]['abs_path_page']) && strlen ($mgmt_config['abs_path_comp']) > strlen ($mgmt_config[$site]['abs_path_page']))
       {
-        if (@substr_count ($location, $mgmt_config['abs_path_comp']) == 1) $cat = "comp";
-        elseif (@substr_count ($location, $mgmt_config[$site]['abs_path_page']) == 1) $cat = "page";
+        if (!empty ($mgmt_config['abs_path_comp']) && substr_count ($location, $mgmt_config['abs_path_comp']) == 1) $cat = "comp";
+        elseif (!empty ($mgmt_config[$site]['abs_path_page']) && substr_count ($location, $mgmt_config[$site]['abs_path_page']) == 1) $cat = "page";
       }
       else
       {
-        if (@substr_count ($location, $mgmt_config[$site]['abs_path_page']) == 1) $cat = "page";
-        elseif (@substr_count ($location, $mgmt_config['abs_path_comp']) == 1) $cat = "comp";
+        if (!empty ($mgmt_config[$site]['abs_path_page']) && substr_count ($location, $mgmt_config[$site]['abs_path_page']) == 1) $cat = "page";
+        elseif (!empty ($mgmt_config['abs_path_comp']) && substr_count ($location, $mgmt_config['abs_path_comp']) == 1) $cat = "comp";
       }
     }
     elseif (@substr_count ($location, "://") > 0 && valid_publicationname ($site))
     {
       if (!empty ($mgmt_config['abs_path_comp']) && !empty ($mgmt_config[$site]['abs_path_page']) && strlen ($mgmt_config['url_path_comp']) > strlen ($mgmt_config[$site]['url_path_page']))
       {
-        if (@substr_count ($location, $mgmt_config['url_path_comp']) == 1) $cat = "comp";
-        elseif (@substr_count ($location, $mgmt_config[$site]['url_path_page']) == 1) $cat = "page";
+        if (!empty ($mgmt_config['url_path_comp']) && substr_count ($location, $mgmt_config['url_path_comp']) == 1) $cat = "comp";
+        elseif (!empty ($mgmt_config[$site]['url_path_page']) && substr_count ($location, $mgmt_config[$site]['url_path_page']) == 1) $cat = "page";
       }
       else
       {
-        if (@substr_count ($location, $mgmt_config[$site]['url_path_page']) == 1) $cat = "page";
-        elseif (@substr_count ($location, $mgmt_config['url_path_comp']) == 1) $cat = "comp";
+        if (!empty ($mgmt_config[$site]['url_path_page']) && substr_count ($location, $mgmt_config[$site]['url_path_page']) == 1) $cat = "page";
+        elseif (!empty ($mgmt_config['url_path_comp']) && substr_count ($location, $mgmt_config['url_path_comp']) == 1) $cat = "comp";
       }
 
       if (!isset ($cat))
       {
-        if (!is_array ($publ_config) && valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
+        if (!is_array ($publ_config) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
         {
           // load ini
           $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
@@ -2408,13 +2450,13 @@ function getcategory ($site, $location)
 
         if (!empty ($url_publ_comp) && !empty ($mgmt_config[$site]['url_publ_page']) && strlen ($url_publ_comp) > strlen ($publ_config['url_publ_page']))
         {
-          if (@substr_count ($location, $publ_config['url_publ_comp']) == 1) $cat = "comp";
-          elseif (@substr_count ($location, $publ_config['url_publ_page']) == 1) $cat = "page";
+          if (!empty ($publ_config['url_publ_comp']) && substr_count ($location, $publ_config['url_publ_comp']) == 1) $cat = "comp";
+          elseif (!empty ($publ_config['url_publ_page']) && substr_count ($location, $publ_config['url_publ_page']) == 1) $cat = "page";
         }
         else
         {
-          if (@substr_count ($location, $publ_config['url_publ_page']) == 1) $cat = "page";
-          elseif (@substr_count ($location, $publ_config['url_publ_comp']) == 1) $cat = "comp";
+          if (!empty ($publ_config['url_publ_page']) && substr_count ($location, $publ_config['url_publ_page']) == 1) $cat = "page";
+          elseif (!empty ($publ_config['url_publ_comp']) && substr_count ($location, $publ_config['url_publ_comp']) == 1) $cat = "comp";
         }
       } 
     }
@@ -2438,22 +2480,23 @@ function getpublication ($path)
 {
   if ($path != "")
   {
+    // initialize
     $site = false;
 
     // extract publication from the converted path (first found path entry only!)
-    if (@substr_count ($path, "%page%") > 0) $root_var = "%page%/";
-    elseif (@substr_count ($path, "%comp%") > 0) $root_var = "%comp%/";
-    elseif (@substr_count ($path, "%media%") > 0) $root_var = "%media%/";
+    if (substr_count ($path, "%page%") > 0) $root_var = "%page%/";
+    elseif (substr_count ($path, "%comp%") > 0) $root_var = "%comp%/";
+    elseif (substr_count ($path, "%media%") > 0) $root_var = "%media%/";
     else $root_var = false;
 
-    if ($root_var != false)
+    if (!empty ($root_var) && strpos ("_".$path, $root_var) > 0)
     {
-      $pos1 = @strpos ($path, $root_var) + strlen ($root_var);
+      $pos1 = strpos ($path, $root_var) + strlen ($root_var);
 
-      if ($pos1 != false) $pos2 = @strpos ($path, "/", $pos1);
+      if ($pos1 > 0) $pos2 = strpos ($path, "/", $pos1);
       else $pos2 = false;
 
-      if ($pos1 != false && $pos2 != false) $site = @substr ($path, $pos1, $pos2-$pos1);
+      if ($pos1 > 0 && $pos2 > 0) $site = substr ($path, $pos1, $pos2-$pos1);
       else $site = false;
     }
     // extract publication from the absolute path (requires media file name with hcm-ID)
@@ -4863,15 +4906,16 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
       // if media repository path is available
       if (!empty ($mgmt_config[$type]))
       {
-        // multiple media harddisk/mountpoint support
+        // ----------- multiple media harddisk/mountpoint support -----------
         if (is_array ($mgmt_config[$type]))
         {
           // get container id as integer
           $container_id = intval (getmediacontainerid ($file));
 
           // get last digit of container id
-          $no = substr ($container_id, -1);
+          $last_number = substr ($container_id, -1);
 
+          // media location rule
           if (function_exists ("getmedialocation_rule"))
           {
             $result = getmedialocation_rule ($site, $file, $type, $container_id);
@@ -4894,21 +4938,22 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
             }
           }
 
+          // harddisk/mountpoint array
           $hdarray_size = sizeof ($mgmt_config[$type]);
 
           if ($hdarray_size == 1)
           {
-            return $mgmt_config[$type][1];
+            if (!empty ($mgmt_config[$type][1])) return $mgmt_config[$type][1];
           }
-          elseif ($hdarray_size  > 1) 
+          elseif ($hdarray_size > 1) 
           {
             $j = 1;
 
             for ($i=1; $i<=10; $i++)
             {
-              if (substr ($i, -1) == $no)
+              if (substr ($i, -1) == $last_number)
               {
-                if ($mgmt_config[$type][$j] != "")
+                if (!empty ($mgmt_config[$type][$j]))
                 {
                   // symbolic link and NOT a dummy media file
                   if (substr ($file, 0, 6) != ".hcms." && is_link ($mgmt_config[$type][$j].$site."/".$file) && !empty ($resolve_symlink))
@@ -4926,12 +4971,13 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
                 }
               }
 
+              // reset harddisk/mountpoint array index
               if ($j == $hdarray_size) $j = 1;
               else $j++;
             }
           }
         }
-        // single media harddisk/mountpoint
+        // ----------- single media harddisk/mountpoint -----------
         else
         {
           // symbolic link and NOT a dummy media file

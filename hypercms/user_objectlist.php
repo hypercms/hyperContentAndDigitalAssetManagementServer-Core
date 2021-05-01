@@ -356,7 +356,7 @@ function initialize ()
 <div id="selectarea" class="hcmsSelectArea"></div>
 
 <!-- context menu -->
-<div id="contextLayer" style="position:absolute; min-width:150px; max-width:200px; height:80px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
+<div id="contextLayer" style="position:absolute; min-width:160px; max-width:280px; height:80px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_user" method="post" action="" target="">
     <input type="hidden" name="contextmenustatus" value="" />
     <input type="hidden" name="contextmenulocked" value="false" />
@@ -371,7 +371,7 @@ function initialize ()
 
     <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
       <tr>
-        <td>
+        <td style="white-space:nowrap;">
           <?php $tblrow = 1;  
           if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) { 
           ?>

@@ -77,6 +77,7 @@ $contentfile = "";
 $container_id = "";
 $media = "";
 $multiobject_count = 0;
+$media_info['ext'] = "";
 $doc_rendering = false;
 $img_rendering = false;
 $vid_rendering = false;
@@ -158,7 +159,6 @@ $location_down = getlocation ($location);
 $location_down_esc = getlocation ($location_esc);
 $ownergroup_down = accesspermission ($site, $location_down_esc, $cat);
 $setlocalpermission_down = setlocalpermission ($site, $ownergroup_down, $cat);
-
 
 // execute action
 if (checktoken ($token, $user))
@@ -250,7 +250,7 @@ if (checktoken ($token, $user))
     $multiobject_array = link_db_getobject ($multiobject);
   
     // get all text content/metadata as array
-    $assoc_array = getmetadata_multiobjects ($multiobject_array, $user);
+    $assoc_array = getmetadata_multiobjects ($multiobject_array, $user, false);
 
     // CSV export
     create_csv ($assoc_array, "export.csv", "php://output", ";", '"', "utf-8", "utf-8", true);
@@ -1148,32 +1148,36 @@ else
     if (!empty ($media) && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
     {
       $media_info = getfileinfo ($site, $media, $cat);
-      $doc_rendering = is_supported ($mgmt_docpreview, $media_info['ext']) && is_array ($mgmt_docconvert) && array_key_exists ($media_info['ext'], $mgmt_docconvert);
 
-      foreach ($mgmt_imagepreview as $imgpreview_ext => $imgpreview)
+      if (!empty ($media_info['ext']))
       {
-        // check file extension
-        if (substr_count ($imgpreview_ext.".", $media_info['ext'].".") > 0 && trim ($imgpreview) != "")
-        {
-          // check if there are more options for providing the image in other formats
-          if (!empty ($mgmt_imageoptions) && is_array ($mgmt_imageoptions) && !empty($mgmt_imageoptions))
-          {	
-            foreach ($mgmt_imageoptions as $config_fileext => $config_array) 
-            {
-              foreach ($config_array as $config_name => $value) 
-              {
-                if ($config_name != "thumbnail" && $config_name != "original") 
-                {
-                  $img_rendering = true;
-                  break 3;
-                }
-              }	
-            }
-          }
-        }      
-      }
+        $doc_rendering = is_supported ($mgmt_docpreview, $media_info['ext']) && is_array ($mgmt_docconvert) && array_key_exists ($media_info['ext'], $mgmt_docconvert);
 
-      if (!empty ($mgmt_mediapreview)) $vid_rendering = is_supported ($mgmt_mediapreview, $media_info['ext']);
+        foreach ($mgmt_imagepreview as $imgpreview_ext => $imgpreview)
+        {
+          // check file extension
+          if (substr_count ($imgpreview_ext.".", $media_info['ext'].".") > 0 && trim ($imgpreview) != "")
+          {
+            // check if there are more options for providing the image in other formats
+            if (!empty ($mgmt_imageoptions) && is_array ($mgmt_imageoptions) && !empty($mgmt_imageoptions))
+            {	
+              foreach ($mgmt_imageoptions as $config_fileext => $config_array) 
+              {
+                foreach ($config_array as $config_name => $value) 
+                {
+                  if ($config_name != "thumbnail" && $config_name != "original") 
+                  {
+                    $img_rendering = true;
+                    break 3;
+                  }
+                }	
+              }
+            }
+          }      
+        }
+
+        if (!empty ($mgmt_mediapreview)) $vid_rendering = is_supported ($mgmt_mediapreview, $media_info['ext']);
+      }
     }
 
     // rendering options

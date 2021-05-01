@@ -13,7 +13,6 @@ $hcms_lang['social-media-sharing']['ro'] = "Partajare social media";
 $hcms_lang['remember-me']['ro'] = "Amintește-ți de mine";
 $hcms_lang['my-recent-tasks']['ro'] = "Sarcinile Mele recente";
 $hcms_lang['my-recent-objects']['ro'] = "Obiectele mele recente";
-$hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['ro'] = "Descărcaţi/Încărcaţi statisticile pentru această lună şi pentru Publicarea";
 $hcms_lang['the-folder-was-removed']['ro'] = "Dosarul a fost demontat";
 $hcms_lang['the-folder-could-not-be-removed']['ro'] = "Dosarul nu a putut fi îndepărtat";
 $hcms_lang['the-folder-still-holds-items-please-delete-these-items']['ro'] = "Dosarul inca detine elemente, vă rugăm să ştergeţi aceste elemente";

@@ -52,7 +52,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
+$add_onload = "";
 
 // icons and default messages
 if ($action == "accept")
@@ -70,7 +72,7 @@ else
 if ($intention == "send" && ($action == "accept" || $action == "reject") && checktoken ($token, $user))
 {
   // message
-  if ($message == "") $message = $message_default;
+  if (empty ($message)) $message = $message_default;
 
   // workflow accept
   if ($action == "accept" && function_exists ("acceptobject")) 
@@ -231,5 +233,6 @@ $token_new = createtoken ($user);
 <?php } ?>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

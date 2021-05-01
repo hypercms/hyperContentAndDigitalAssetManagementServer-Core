@@ -45,7 +45,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
   if ($site_name != "")
   {
     $inherit_db = inherit_db_load ($user);
-  
+
     if ($site_parents == "*Null*") 
     {
       $parent_array[0] = "";
@@ -58,35 +58,35 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
       
       $inherit_db = inherit_db_setparent ($inherit_db, $site_name, $parent_array);
     }  
-  
+
     if ($inherit_db != false) $test = inherit_db_save ($inherit_db, $user);
     else $test = false;
-    
+
     if ($test == false)
     {
       $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-publication-information-cannot-be-accessed'][$lang])."</p>\n".getescapedtext ($hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
     }
-    
+
     // update the inheritance settings in the config file of the publication
     if (file_exists ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
     {  
       // load config file of the publication for management system
       $config_data = loadfile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php");
-      
+
       // set boolean values
       if ($inherit_obj_new == true) $inherit_obj_new = "true";
       else $inherit_obj_new = "false"; 
-         
+
       if ($inherit_comp_new == true) $inherit_comp_new = "true";
       else $inherit_comp_new = "false";
-      
+
       if ($inherit_tpl_new == true) $inherit_tpl_new = "true";
       else $inherit_tpl_new = "false";    
-      
+
       if ($config_data != false) 
       {
         $config_array = explode ("\n", trim ($config_data));
-      
+
         if ($config_array != false)
         {
           for ($i = 0; $i < sizeof ($config_array); $i++)
@@ -100,22 +100,22 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
             if (strpos ($config_array[$i], "mgmt_config['".$site_name."']['inherit_tpl']") > 0)
               $config_array[$i] = "\$mgmt_config['".$site_name."']['inherit_tpl'] = ".$inherit_tpl_new.";";
           }
-          
+
           $config_data = implode ("\n", $config_array);
-          
+
           // eventsystem
-          if ($eventsystem['onsavepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+          if (!empty ($eventsystem['onsavepublication_pre']) && empty ($eventsystem['hide']))
             onsavepublication_pre ($site_name, $config_data, "-", "-", $user);          
-          
+
           // save config file
           if ($config_data != false) $test = savefile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php", $config_data);
-          
+
           if ($test = true)
           {
             $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-publication-configuration-was-saved-successfully'][$lang])."</p>\n";  
-            
+
             // eventsystem
-            if ($eventsystem['onsavepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+            if (!empty ($eventsystem['onsavepublication_post']) && empty ($eventsystem['hide']))
               onsavepublication_post ($site_name, $config_data, "-", "-", $user);           
           }
           else

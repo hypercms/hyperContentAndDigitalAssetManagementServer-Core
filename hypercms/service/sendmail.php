@@ -113,8 +113,18 @@ if (empty ($mailfile) || $action != "sendmail")
 { 
   // check access permissions
   $ownergroup = accesspermission ($site, $location, $cat);
-  $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
-  if (empty ($mgmt_config[$site]['sendmail']) || $ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['sendlink'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location)) killsession ($user);
+  $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
+  // if a mailfile is used
+  if (!empty ($mailfile))
+  {
+    if (!valid_publicationname ($site) || empty ($mgmt_config[$site]['sendmail'])) killsession ($user);
+  }
+  // if no mailfile is used
+  elseif (empty ($mailfile))
+  {
+    if (!valid_publicationname ($site) || empty ($mgmt_config[$site]['sendmail']) || $ownergroup == false || empty ($setlocalpermission['root']) || empty ($setlocalpermission['sendlink'])) killsession ($user);
+  }
 
   // check session of user
   checkusersession ($user);

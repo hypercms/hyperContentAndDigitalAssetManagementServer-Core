@@ -20,7 +20,6 @@ class HyperMailer extends PHPMailer
     $this->IsSMTP();
     $this->SMTPAuth = true;
     $this->CharSet = $hcms_lang_codepage[$lang];
-
     $this->Host     = $mgmt_config['smtp_host'];
     $this->Username = $mgmt_config['smtp_username'];
     $this->Password = $mgmt_config['smtp_password'];

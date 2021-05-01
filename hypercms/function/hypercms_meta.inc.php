@@ -15,7 +15,7 @@
 // output: true / false
 
 // description:
-// Imports metadata form CSV file for various assets linked by name or conatiner ID. Empty rows or rows without a delimiter will be ignored.
+// Imports metadata from a CSV file for various assets linked by name or conatiner ID. Empty rows or rows without a delimiter will be ignored.
 // In order to identify an asset the file name as "Name" or the container ID as "containerID" must be provided in the first row before the content rows.
 
 function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";", $enclosure='"', $charset="utf-8")
@@ -61,7 +61,8 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
       // analyze CSV file
       if ($delimiter == "" || $enclosure == "")
       {
-        $filedata = @fread ($handle, filesize ($file));
+        if (filesize ($file) > 0) $filedata = @fread ($handle, filesize ($file));
+        else $filedata = "";
 
         if ($filedata != "")
         {
@@ -103,6 +104,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
 
               if (!empty ($temp[0])) $enclosure = $temp[0];
             }
+            else $enclosure = '"';
           }
         }
       }
@@ -303,7 +305,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                 else
                 {
                   // eventsystem
-                  if ($eventsystem['onsaveobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+                  if (!empty ($eventsystem['onsaveobject_pre']) && empty ($eventsystem['hide'])) 
                   {
                     $contentdataevent = onsaveobject_pre ($site, $cat, $location, $object, $contentfile, $contentdata_new, $user);
 
@@ -643,6 +645,7 @@ function createtaxonomy ($site_name="", $recreate=false)
   // collect and compare files
   $dir = $mgmt_config['abs_path_data']."include/";
 
+  // initialize
   $file_array = array();
   $site_memory = array();
 
@@ -833,10 +836,11 @@ function copymetadata ($file_source, $file_dest)
 {
   global $mgmt_config, $mgmt_mediametadata, $user;
   
-  $error = array();
-
-	if ($file_source != "" && $file_dest != "" && is_array ($mgmt_mediametadata))
+	if ($file_source != "" && $file_dest != "" && !empty ($mgmt_mediametadata) && is_array ($mgmt_mediametadata))
   {
+    // initialize
+    $error = array();
+
     // get source file extension
     $file_source_ext = strtolower (strrchr ($file_source, "."));
 
@@ -940,10 +944,10 @@ function extractmetadata ($file)
 {
   global $user, $mgmt_config, $mgmt_mediametadata;
 
-  $error = array();
-
   if (is_file ($file) && is_array ($mgmt_mediametadata))
   {
+    // initialize
+    $error = array();
     $result = array();
     $hide_properties = array ("version number", "file name", "directory", "file permissions", "app14 flags", "thumbnail", "xmp toolkit");
 
@@ -1128,7 +1132,11 @@ function id3_getdata ($file)
 
 	if (is_file ($file) && is_file ($mgmt_config['abs_path_cms']."library/getID3/getid3/getid3.php"))
   {
+    //initialize
+    $result = array();
+
     if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+
     // load getID3 library
     require_once ($mgmt_config['abs_path_cms']."library/getID3/getid3/getid3.php");
 
@@ -1138,13 +1146,17 @@ function id3_getdata ($file)
     // check file extension
     if (substr_count (strtolower ($hcms_ext['audio']).".", $file_info['ext'].".") == 0) return false;
 
+    // time limit
     set_time_limit (30);
+
     $file = realpath ($file);
 
     // initialize getID3 engine
     $getID3 = new getID3;
+
     // analyze file
 		$file_info = $getID3->analyze ($file);
+
     // combine all/any available tag formats in 'comments'
 		getid3_lib::CopyTagsToComments ($file_info);
 
@@ -1154,8 +1166,6 @@ function id3_getdata ($file)
     // $file_info['audio']['bitrate']           ... audio bitrate
     // $file_info['playtime_string']            ... playtime in minutes:seconds, formatted string
     // $file_info['comments']['picture'][0]['data'] ... album art
-
-    $result = array();
 
     if (is_array ($file_info))
     {
@@ -1245,9 +1255,10 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
 
   if (is_file ($file) && is_array ($id3) && is_array ($hcms_ext) && is_file ($mgmt_config['abs_path_cms']."library/getID3/getid3/getid3.php"))
   {
-    if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-
+    // initialize
     $result = false;
+
+    if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
 
     // get container ID
     $container_id = getmediacontainerid ($file);

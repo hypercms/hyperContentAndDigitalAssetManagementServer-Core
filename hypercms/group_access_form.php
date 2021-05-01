@@ -47,7 +47,7 @@ elseif ($cat == "comp")
 }
 
 // check if login is an attribute of a sent string
-if (@strpos ($group_name, ".php") > 0)
+if (strpos ($group_name, ".php") > 0)
 {
   // extract login
   $group_name = getattribute ($group_name, "group_name");
@@ -243,8 +243,8 @@ function selectAll ()
                         // get location name
                         $folder_name = getlocationname ($site, $folder_path, $cat, "path");
                         
-                        if (strlen ($folder_name) > 36) $folder_name_short = "...".substr (substr ($folder_name, -36), strpos (substr ($folder_name, -36), "/"));
-                        else $folder_name_short = $folder_name;
+                        // remove publication name
+                        $folder_name_short = substr ($folder_name, strpos ($folder_name, "/", 1));
                         
                         echo "<option value=\"".$object_id."\" title=\"".$folder_name."\">".$folder_name_short."</option>\n";
                       }

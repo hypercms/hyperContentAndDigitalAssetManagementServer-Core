@@ -26,6 +26,7 @@ $id = url_encode (getrequest ("id", "url"));
 $tagname = url_encode (getrequest ("tagname", "url"));
 $component = url_encode (getrequest ("component", "url"));
 $condition = url_encode (getrequest ("condition", "url"));
+$mediatype = url_encode (getrequest ("mediatype", "url")); 
 
 // check session of user
 checkusersession ($user);
@@ -34,8 +35,7 @@ checkusersession ($user);
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
 // define media type based on DAM setting
-if (!$mgmt_config[$site]['dam']) $mediatype = "comp";
-else $mediatype = "";
+if (empty ($mgmt_config[$site]['dam'])) $mediatype = "component";
 ?>
 <!DOCTYPE HTML>
 <html>

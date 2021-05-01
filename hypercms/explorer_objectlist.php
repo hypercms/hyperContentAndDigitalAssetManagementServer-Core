@@ -40,7 +40,7 @@ $listview = "";
 $items_row = -1;
 $thumbnailsize_small = 120;
 $thumbnailsize_medium = 160;
-$thumbnailsize_large = 160;
+$thumbnailsize_large = 180;
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -106,13 +106,11 @@ else $end = $mgmt_config['explorer_list_maxitems'];
 // define variables depending on category
 if (strtolower ($cat) == "page") 
 {
-  $icon = 'folder.png';
   $access = $pageaccess;
   $itemname = "page";
 }  
 elseif (strtolower ($cat) == "comp") 
 {
-  $icon = 'component.png';
   $access = $compaccess;
   $itemname = "component";
 }
@@ -222,7 +220,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
       $file_info = getfileinfo ($site, $location.$folder."/.folder", $cat);
       
       // eventsystem
-      if ($eventsystem['onobjectlist_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['onobjectlist_pre']) && empty ($eventsystem['hide'])) 
         onobjectlist_pre ($site, $cat, $location, $folder, $user);        
       
       // if folder exists
@@ -415,7 +413,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
                        <div id=\"t".$items_row."\" ".$selectclick." class=\"hcmsObjectUnselected\">
                           <div class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
                             $dlink_start."
-                              <div id=\"w".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnailWidth".$temp_explorerview."\" data-objectpath=\"".$location_esc.$folder."/\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"max-width:186px; max-height:186px;\" /></div>
+                              <div id=\"i".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\" data-objectpath=\"".$location_esc.$folder."/\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" /></div>
                               <div class=\"hcmsItemName\">".showshorttext($folder_name, 18, true)."</div>
                             ".$dlink_end."
                           </div>
@@ -467,7 +465,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       $usedby = "";
     
       // eventsystem
-      if ($eventsystem['onobjectlist_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['onobjectlist_pre']) && empty ($eventsystem['hide'])) 
         onobjectlist_pre ($site, $cat, $location, $object, $user);  
 
       // if object exists
@@ -580,7 +578,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         }
 
         // eventsystem
-        if ($eventsystem['onobjectlist_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+        if (!empty ($eventsystem['onobjectlist_post']) && empty ($eventsystem['hide'])) 
           onobjectlist_post ($site, $cat, $location, $object, $contentfile, $contentdata, $usedby, $user);     
 
         // open on double click
@@ -678,9 +676,6 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         $listview .= "
                       </tr>"; 
 
-        // default value
-        $ratio = "Height";
-
         // if there is a thumb file, display the thumb
         if ($mediafile != false && empty ($usedby))
         {
@@ -698,47 +693,11 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
           if (is_file ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg"))
           {
-            $size_image = "";
-
-            // use original image size from RDBMS
-            if (!empty ($container_info['width']) && !empty ($container_info['height']))
-            {
-              // calculate image ratio to define CSS for image container div-tag
-              $imgratio = $container_info['width'] / $container_info['height'];   
-              
-              // image width >= height
-              if ($imgratio >= 1) $ratio = "Width";
-              // image width < height
-              else $ratio = "Height";
-
-              // if thumbnail is smaller than defined thumbnail size
-              if ($container_info['width'] < 100 && $container_info['height'] < 100)
-              {
-                $div_id = "id=\"x".$items_row."\"";
-                $class_size = "class=\"hcmsThumbnailFrame\"";
-                $size_image = "style=\"width:".$container_info['width']."px; height:".$container_info['height']."px;\"";
-              }
-              else
-              {
-                $div_id = "id=\"".strtolower(substr($ratio, 0, 1)).$items_row."\"";
-                $class_size = "class=\"hcmsThumbnailFrame hcmsThumbnail".$ratio.$temp_explorerview."\"";
-              }
-            }
-            // no size from RDBMS available
-            else
-            {
-              // deprecated since version 8.1.3
-              // use size of thumbnail file (will increase I/O and reduce performance)
-              // $imgsize = getimagesize ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg");
-              $div_id = "id=\"b".$items_row."\"";
-              $class_size = "class=\"hcmsThumbnailFrame hcmsThumbnailWidth".$temp_explorerview." hcmsThumbnailHeight".$temp_explorerview."\"";
-            }
-
             // galleryview - view option for locked multimedia objects
             if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
             else $class_image  = "class=\"lazyload hcmsImageItem\"";
 
-            $thumbnail = "<div ".$div_id." ".$class_size."><img data-src=\"".cleandomain (createviewlink ($site, $media_info['filename'].".thumb.jpg"))."\" ".$class_image." ".$size_image." /></div>";
+            $thumbnail = "<div id=\"m".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($site, $media_info['filename'].".thumb.jpg"))."\" ".$class_image." /></div>";
           }
           // display file icon if thumbnail fails 
           else
@@ -747,7 +706,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
             else $class_image = "";
                     
-            $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
+            $thumbnail = "<div id=\"i".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /></div>";
           }           
         }
         // display file icon for non multimedia objects 
@@ -757,7 +716,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
           else $class_image = "";
                   
-          $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
+          $thumbnail = "<div id=\"i".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /></div>";
         }
 
         // if linking is used display download buttons, display edit button for mobile edition
@@ -899,44 +858,40 @@ else $objects_counted = 0;
   padding-left: 3px; 
 }
 
-.hcmsThumbnailWidthlarge img
+.hcmsIconlarge img
 {
+  width: <?php echo $thumbnailsize_large; ?>px;
   height: <?php echo $thumbnailsize_large; ?>px;
 }
 
-.hcmsThumbnailWidthmedium img
+.hcmsIconmedium img
 {
   width: <?php echo $thumbnailsize_medium; ?>px;
-}
-
-.hcmsThumbnailWidthsmall img
-{
-  width: <?php echo $thumbnailsize_small; ?>px;
-}
-
-.hcmsThumbnailWidthdetail img
-{
-  width: 124px;
-}
-
-.hcmsThumbnailHeightlarge img
-{
-  height: <?php echo $thumbnailsize_large; ?>px;
-}
-
-.hcmsThumbnailHeightmedium img
-{
   height: <?php echo $thumbnailsize_medium; ?>px;
 }
 
-.hcmsThumbnailHeightsmall img
+.hcmsIconsmall img
 {
+  width: <?php echo $thumbnailsize_small; ?>px;
   height: <?php echo $thumbnailsize_small; ?>px;
 }
 
-.hcmsThumbnailHeightdetail img
+.hcmsThumbnaillarge img
 {
-  height: 124px;
+  max-width: <?php echo ($thumbnailsize_large * 4); ?>px;
+  max-height: <?php echo $thumbnailsize_large; ?>px;
+}
+
+.hcmsThumbnailmedium img
+{
+  max-width: <?php echo $thumbnailsize_medium; ?>px;
+  max-height: <?php echo $thumbnailsize_medium; ?>px;
+}
+
+.hcmsThumbnailsmall img
+{
+  max-width: <?php echo $thumbnailsize_small; ?>px;
+  max-height: <?php echo $thumbnailsize_small; ?>px;
 }
 
 @media screen and (max-width: 360px)
@@ -984,12 +939,13 @@ function toggleview (viewoption)
   
   var style = "";
   var frames;
+  var icon;
   var thumbnail;
 
-  // thumbnail frame size definitions
+  // gallery marker frame size definitions
   if (viewoption == "large") style = "max-width:<?php echo ceil ($thumbnailsize_large * 4); ?>px; height:<?php echo ($thumbnailsize_large + 56); ?>px;";
   else if (viewoption == "medium") style = "width:<?php echo ($thumbnailsize_medium + 12); ?>px; height:<?php echo ($thumbnailsize_medium + 56); ?>px;";
-  else if (viewoption == "small") style = "width:<?php echo ($thumbnailsize_small + 28); ?>px; height:<?php echo ($thumbnailsize_small + 56); ?>px;";
+  else if (viewoption == "small") style = "width:<?php echo ($thumbnailsize_small + 28); ?>px; height:<?php echo ($thumbnailsize_small + 58); ?>px;";
 
   frames = document.getElementsByClassName('hcmsObjectGalleryMarker');
 
@@ -1001,33 +957,24 @@ function toggleview (viewoption)
     }
   }
   
+  // thumbnails and icons
   for (var i = 0; i <= <?php echo $items_row; ?>; i++)
   {
-    // width
-    thumbnail = document.getElementById('w' + i);
-    
+    // media thumbnail
+    thumbnail = document.getElementById('m' + i);
+      
     if (thumbnail)
     {
-      thumbnail.className = 'hcmsThumbnailFrame hcmsThumbnailWidth' + viewoption;
+      thumbnail.className = 'hcmsThumbnailFrame hcmsThumbnail' + viewoption;
     }
+    // standard icon
     else
     {
-      // height
-      thumbnail = document.getElementById('h' + i);
-
-      if (thumbnail)
+      icon = document.getElementById('i' + i);
+    
+      if (icon)
       {
-        thumbnail.className = 'hcmsThumbnailHeight' + viewoption;    
-      }
-      else
-      {
-        // both
-        thumbnail = document.getElementById('b' + i);
-
-        if (thumbnail)
-        {
-          thumbnail.className = 'hcmsThumbnailFrame hcmsThumbnailWidth' + viewoption + ' hcmsThumbnailHeight' + viewoption;    
-        }
+        icon.className = 'hcmsThumbnailFrame hcmsIcon' + viewoption;
       }
     }
   } 
@@ -1149,7 +1096,7 @@ function initialize ()
 <!-- contextual help --> 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang]."<br/>".$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy'][$lang], $lang, "position:fixed; top:30px; right:30px;", "hcms_infoboxKeys"); ?>
 
-<!-- Memory (for drop event) -->
+<!-- memory (for drop event) -->
 <form name="memory" action="" method="post" target="popup_explorer" style="position:absolute; width:0; height:0; z-index:-1; left:0; top:0; visibility:hidden;">
   <input type="hidden" name="action" value="" />
   <input type="hidden" name="force" value="" />
@@ -1170,7 +1117,7 @@ function initialize ()
 </form>
 
 <!-- context menu --> 
-<div id="contextLayer" style="position:absolute; min-width:150px; max-width:200px; height:320px; z-index:10; left:20px; top:20px; visibility:hidden;">
+<div id="contextLayer" style="position:absolute; min-width:180px; max-width:280px; height:320px; z-index:10; left:20px; top:20px; visibility:hidden;">
    <!-- context menu for objects -->
   <form name="contextmenu_object" action="" method="post" target="_blank" style="display:block;">
     <input type="hidden" name="contextmenustatus" value="" />
@@ -1197,7 +1144,7 @@ function initialize ()
     
     <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
       <tr>
-        <td>
+        <td style="white-space:nowrap;">
           <?php if (checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false) { ?>
           <a href="javascript:void(0);" id="href_fav_create" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_create');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_delete.png" id="img_fav_create" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['add-to-favorites'][$lang]); ?></a><br />
           <hr />        
@@ -1296,10 +1243,10 @@ function initialize ()
   <!-- context menu for colum attributes -->
   <form name="contextmenu_column" action="" method="post" style="display:none;">
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
-    <div class="hcmsContextMenu" style="max-height:640px; overflow:auto;">
-      <table class="hcmsTableStandard">
+    <div style="min-width:180px; max-width:280px; max-height:640px; overflow:auto;">
+      <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
         <tr>
-          <td>
+          <td style="white-space:nowrap;">
             <label><input onclick="setcolumns()" type="checkbox" name="column[createdate]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['createdate'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?></label><br />
             <label><input onclick="setcolumns()" type="checkbox" name="column[modifieddate]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['modifieddate'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['date-modified'][$lang]); ?></label><br />
             <label><input onclick="setcolumns()" type="checkbox" name="column[publishdate]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['publishdate'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['published'][$lang]); ?></label><br />

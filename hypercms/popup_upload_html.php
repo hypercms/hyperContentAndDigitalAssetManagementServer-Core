@@ -1181,7 +1181,7 @@ function nextEditWindow ()
   }
 }
 
-// if user closes window while still in edit mode
+// if user closes the window while still in edit mode
 function showwarning ()
 {
   if (document.getElementById('editwindow') && document.getElementById('editwindow').style.display != "none")

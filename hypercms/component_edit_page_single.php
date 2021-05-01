@@ -63,7 +63,7 @@ $file_info = getfileinfo ($site, $location.$page, $cat);
 $token = createtoken ($user);
 
 $temp = link_db_getobject ($component);
-$component = $temp[0];
+if (!empty ($temp[0])) $component = $temp[0];
 
 // convert object ID to object path
 $component = getobjectlink ($component);
@@ -71,13 +71,14 @@ $component = getobjectlink ($component);
 // get name
 $component_name = getlocationname ($site, $component, "comp", "path");
 
+// shorten path
 if (strlen ($component_name) > 36) $component_name_short = "...".substr (substr ($component_name, -36), strpos (substr ($component_name, -36), "/"));
 else $component_name_short = $component_name;
 
 if (substr_count ($tagname, "art") == 1) $art = "art";
 else $art = "";
 
-if ($label == "") $label = $id;
+if (empty ($label)) $label = $id;
 ?>
 <!DOCTYPE html>
 <html>
@@ -89,6 +90,7 @@ if ($label == "") $label = $id;
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function correctnames ()
 {
   if (document.forms['component'].elements['component']) document.forms['component'].elements['component'].name = "<?php echo $art; ?>component[<?php echo $id; ?>]";
@@ -242,5 +244,6 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

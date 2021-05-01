@@ -40,7 +40,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// initalize
+// initialize
 $show = "";
 if (empty ($selectedlang)) $selectedlang = array();
 $selectedlang_temp = $selectedlang;
@@ -291,6 +291,7 @@ function translatelanguage (sourcelang_id, targetlang_id)
               targetText[0].value = translated;
               changed = true;
             }
+            else alert (hcms_entity_decode('<?php echo $hcms_lang['error-occured'][$lang]; ?>'));
           }
         }
       }
@@ -344,6 +345,10 @@ $(document).ready(function(){
 <?php
 echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:50px;");
 
+// initialize
+$show_taxonomy = "";
+$id = $start;
+
 // load languages
 $languages = getlanguageoptions ();
 
@@ -377,75 +382,75 @@ if (empty ($result))
   }
 }
 
-$show_taxonomy = "";
-$id = $start;
-
 // create table rows
-foreach ($result as $row => $temp_array)
+if (is_array ($result))
 {
-  $show_taxonomy .= "
-          <tr style=\"height:32px;\">";
-  
-  // create table cells for each row  
-  // first column
-  if (!empty ($temp_array['level']))
+  foreach ($result as $row => $temp_array)
   {
-    $level = $temp_array['level'];
-    
     $show_taxonomy .= "
-          <td class=\"hcmsRowHead2\" style=\"text-align:left; white-space:nowrap; width:160px; box-sizing:border-box;\">
-            <select name=\"taxonomy[".$row."][level]\" class=\"hcmsRowHead1\" onchange=\"setlevel(this)\" style=\"margin-left:".(($level - 1) * 20)."px\">";
-
-    for ($l=1; $l<=5; $l++)
+            <tr style=\"height:32px;\">";
+    
+    // create table cells for each row  
+    // first column
+    if (!empty ($temp_array['level']))
     {
+      $level = $temp_array['level'];
+      
       $show_taxonomy .= "
-              <option ".($level == $l ? "selected=\"selected\"" : "").">".$l."</option>";
+            <td class=\"hcmsRowHead2\" style=\"text-align:left; white-space:nowrap; width:160px; box-sizing:border-box;\">
+              <select name=\"taxonomy[".$row."][level]\" class=\"hcmsRowHead1\" onchange=\"setlevel(this)\" style=\"margin-left:".(($level - 1) * 20)."px\">";
+
+      for ($l=1; $l<=5; $l++)
+      {
+        $show_taxonomy .= "
+                <option ".($level == $l ? "selected=\"selected\"" : "").">".$l."</option>";
+      }
+      
+      $show_taxonomy .= "
+              </select><img src=\"".getthemelocation()."img/button_arrow_right.png\" align=\"absmiddle\" class=\"hcmsButtonSizeSquare\" />
+            </td>
+            <td class=\"hcmsRowHead2\" style=\"text-align:right; width:32px; box-sizing:border-box;\"><b>".$id."</b>&nbsp;</td>
+            <td class=\"hcmsRowHead2\" style=\"text-align:right; width:92px !important; min-width:92px; box-sizing:border-box; white-space:nowrap;\">
+              <img src=\"".getthemelocation()."img/button_moveup.png\" class=\"hcmsButton hcmsIconList up\" alt=\"".getescapedtext ($hcms_lang['move-up'][$lang])."\" title=\"".getescapedtext ($hcms_lang['move-up'][$lang])."\" />
+              <img src=\"".getthemelocation()."img/button_movedown.png\" class=\"hcmsButton hcmsIconList down\" alt=\"".getescapedtext ($hcms_lang['move-down'][$lang])."\" title=\"".getescapedtext ($hcms_lang['move-down'][$lang])."\" />
+              <img src=\"".getthemelocation()."img/button_file_new.png\" class=\"hcmsButton hcmsIconList\" onclick=\"createrow(".$row.");\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
+              <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButton hcmsIconList\" onclick=\"deleterow(".$row.");\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
+            </td>";
+    }
+    
+    // language columns / input fields
+    if (!empty ($activelanguage) && is_array ($activelanguage))
+    {
+      reset ($activelanguage);
+      
+      foreach ($activelanguage as $langcode => $langname)
+      {
+        // memorize selected languages initially
+        if (!empty ($langcode) && empty ($selectedlang_temp) || (is_array ($selectedlang_temp) && sizeof ($selectedlang_temp) < 1))
+        {
+          $selectedlang[$langcode] = $langcode;
+        }
+
+        // text
+        if (!empty ($result[$row][$langcode])) $text = $result[$row][$langcode];
+        else $text = "";
+        
+        // display or hide based on selected languages
+        if (empty ($selectedlang[$langcode])) $style = "display:none;";
+        else $style = "";
+
+        $show_taxonomy .= "
+            <td class=\"".$langcode."\" style=\"".$style." box-sizing:border-box;\">
+              <input type=\"text\" name=\"taxonomy[".$row."][".$langcode."]\" value=\"".$text."\" onkeyup=\"settext(this);\" class=\"hcmsRowData1\" style=\"\" />
+            </td>";
+      }
     }
     
     $show_taxonomy .= "
-            </select><img src=\"".getthemelocation()."img/button_arrow_right.png\" align=\"absmiddle\" class=\"hcmsButtonSizeSquare\" />
-          </td>
-          <td class=\"hcmsRowHead2\" style=\"text-align:right; width:32px; box-sizing:border-box;\"><b>".$id."</b>&nbsp;</td>
-          <td class=\"hcmsRowHead2\" style=\"text-align:right; width:92px !important; min-width:92px; box-sizing:border-box; white-space:nowrap;\">
-            <img src=\"".getthemelocation()."img/button_moveup.png\" class=\"hcmsButton hcmsIconList up\" alt=\"".getescapedtext ($hcms_lang['move-up'][$lang])."\" title=\"".getescapedtext ($hcms_lang['move-up'][$lang])."\" />
-            <img src=\"".getthemelocation()."img/button_movedown.png\" class=\"hcmsButton hcmsIconList down\" alt=\"".getescapedtext ($hcms_lang['move-down'][$lang])."\" title=\"".getescapedtext ($hcms_lang['move-down'][$lang])."\" />
-            <img src=\"".getthemelocation()."img/button_file_new.png\" class=\"hcmsButton hcmsIconList\" onclick=\"createrow(".$row.");\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
-            <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButton hcmsIconList\" onclick=\"deleterow(".$row.");\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
-          </td>";
+            </tr>";
+            
+    $id++;
   }
-  
-  // language columns / input fields
-  if (!empty ($activelanguage) && is_array ($activelanguage))
-  {
-    reset ($activelanguage);
-    
-    foreach ($activelanguage as $langcode => $langname)
-    {
-      // memorize selected languages initially
-      if (empty ($selectedlang_temp) || (is_array ($selectedlang_temp) && sizeof ($selectedlang_temp) < 1))
-      {
-        $selectedlang[$langcode] = $langcode;
-      }
-
-      // text
-      if (!empty ($result[$row][$langcode])) $text = $result[$row][$langcode];
-      else $text = "";
-      
-      // display or hide based on selected languages
-      if (empty ($selectedlang[$langcode])) $style = "display:none;";
-      else $style = "";
-
-      $show_taxonomy .= "
-          <td class=\"".$langcode."\" style=\"".$style." box-sizing:border-box;\">
-            <input type=\"text\" name=\"taxonomy[".$row."][".$langcode."]\" value=\"".$text."\" onkeyup=\"settext(this);\" class=\"hcmsRowData1\" style=\"\" />
-          </td>";
-     }
-  }
-  
-  $show_taxonomy .= "
-          </tr>";
-          
-  $id++;
 }
 ?>
           
@@ -582,5 +587,6 @@ foreach ($result as $row => $temp_array)
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

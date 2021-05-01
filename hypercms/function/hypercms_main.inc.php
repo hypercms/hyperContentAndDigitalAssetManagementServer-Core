@@ -226,7 +226,32 @@ function convert_utf8 ($in)
   }
   
   return $out;
-} 
+}
+
+// ------------------------------------- convert_unicode2utf8 ------------------------------------------
+
+// function: convert_unicode2utf8 ()
+// input: expression [string]
+// output: UTF-8 converted expression / original expression on error
+
+// description:
+// This function is used to correct files names that have been encoded by ZIP.
+
+function convert_unicode2utf8 ($in)
+{
+  if (is_string ($in))
+  {
+    $out = str_replace ('#U', '\u', $in);
+    $out = str_replace ("\n", "<br>", $out);
+    $temp = json_decode ('["'.$out.'"]');
+
+    if (!empty ($temp[0])) $out = str_replace ("<br>", "\n", $temp[0]);
+    else $out = $in;
+
+    return $out;
+  }
+  else return $in;
+}
 
 // ------------------------------------- convertchars ------------------------------------------
 
@@ -257,6 +282,7 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
 
     if ($charset_from != "")
     {
+      // same character sets
       if (strtolower ($charset_from) == strtolower ($charset_to))
       {
         return $expression;
@@ -265,9 +291,25 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
       {
         if (!is_array ($expression))
         {
+          // verify character sets
+          $valid_from = true;
+          $valid_to = true;
+
+          if (function_exists ("mb_list_encodings"))
+          {
+            $valid_charsets = mb_list_encodings ();
+            $valid_charsets = array_map ('strtolower', $valid_charsets);
+
+            if (is_array ($valid_charsets))
+            {
+              $valid_from = in_array (strtolower ($charset_from), $valid_charsets);
+              $valid_to = in_array (strtolower ($charset_to), $valid_charsets);
+            }
+          }
+
           // convert
-          if (function_exists ("mb_convert_encoding")) $expression = mb_convert_encoding ($expression, $charset_to, $charset_from);
-          else $expression = iconv ($charset_from, $charset_to, $expression);
+          if (function_exists ("mb_convert_encoding") && !empty ($valid_from) && !empty ($valid_to)) $expression = mb_convert_encoding ($expression, $charset_to, $charset_from);
+          elseif (function_exists ("iconv") && !empty ($valid_from) && !empty ($valid_to)) $expression = iconv ($charset_from, $charset_to, $expression);
         }
         elseif (is_array ($expression))
         {
@@ -3494,7 +3536,10 @@ function loadfile_fast ($abs_path, $filename)
       if ($filehandle != false)
       {
         @flock ($filehandle, LOCK_EX);
-        $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
+
+        if (filesize ($abs_path.$filename) > 0) $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
+        else $filedata = "";
+
         @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
       }
@@ -3516,6 +3561,7 @@ function loadfile ($abs_path, $filename)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $filedata = false;
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
@@ -3553,7 +3599,10 @@ function loadfile ($abs_path, $filename)
       if ($filehandle != false)
       {
         @flock ($filehandle, LOCK_EX);
-        $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
+
+        if (filesize ($abs_path.$filename) > 0) $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
+        else $filedata = "";
+
         @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
       }
@@ -3579,7 +3628,10 @@ function loadfile ($abs_path, $filename)
           if ($filehandle != false)
           {
             @flock ($filehandle, LOCK_EX);
-            $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
+
+            if (filesize ($abs_path.$filename) > 0) $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
+            else $filedata = "";
+
             @flock ($filehandle, LOCK_UN);
             @fclose ($filehandle);
 
@@ -3605,12 +3657,14 @@ function loadfile ($abs_path, $filename)
 // Function loadlockfile and savelockfile includes a locking mechanismen for files.
 // Every time you want to lock a file during your operations use loadlockfile.
 // It is important to use savelockfile to save and unlock the file again.
-// savelockfile requires the file to be opened by loadlockfile before.
+// savelockfile requires the file to be opened by loadlockfile.
 
 function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
 {
   global $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
+  $error = array();
   $filedata = false;
 
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
@@ -3661,7 +3715,10 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
         if ($filehandle != false)
         {
           @flock ($filehandle, LOCK_EX);
-          $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
+
+          if (filesize ($abs_path.$filename) > 0) $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
+          else $filedata = "";
+
           @flock ($filehandle, LOCK_UN);
           @fclose ($filehandle);
         }
@@ -3672,10 +3729,10 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
         }
       }
     }
-    // if file is locked by other user
+    // if file is locked by the user
     elseif ($filename_unlocked != ".folder")
     {
-      // set default end time stamp for loading (now + 3 sec)
+      // set default end time stamp for loading (now + X sec)
       if ($force_unlock > 0 && is_int ($force_unlock)) $timestamp = $force_unlock;
       else $timestamp = 3;
 
@@ -3708,7 +3765,10 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
             if ($filehandle != false)
             {
               @flock ($filehandle, LOCK_EX);
-              $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
+
+              if (filesize ($abs_path.$filename) > 0) $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
+              else $filedata = "";
+
               @flock ($filehandle, LOCK_UN);
               @fclose ($filehandle);
 
@@ -3726,7 +3786,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
         else usleep (round (rand (0, 100) * 1000));
       }
 
-      // force unlock
+      // force unlock if locked by other user
       if ($force_unlock > 0)
       {
         $file_info = getlockedfileinfo ($abs_path, $filename_unlocked);
@@ -3735,6 +3795,9 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
         {
           // unlock file
           $result_rename = rename ($abs_path.$file_info['file'], $abs_path.$filename_unlocked);
+
+          $errcode = "00886";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|file ".$abs_path.$filename_unlocked." was locked by user '".$file_info['user']."' and has been unlocked for user '".$user."'";
 
           // load file
           if ($result_rename)
@@ -3746,6 +3809,9 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
       }
     }
   }
+
+  // save log
+  savelog ($error);
 
   return $filedata; 
 }
@@ -3785,7 +3851,7 @@ function savefile ($abs_path, $filename, $filedata)
       }
     }
 
-    // if file is locked by the same user file can be saved
+    // if file is locked by the same user
     if (is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user;
     // if file is offline
     elseif (is_file ($abs_path.$filename.".off")) $filename = $filename.".off";
@@ -4639,7 +4705,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
     $prefix = uniqid();
 
     // eventsystem
-    if ($eventsystem['onfiledownload_pre'] == 1) onfiledownload_pre ($site, $location, $media, $name, $user);
+    if (!empty ($eventsystem['onfiledownload_pre'])) onfiledownload_pre ($site, $location, $media, $name, $user);
 
     // session ID
     if (!session_id()) $add = "?PHPSESSID=".session_id();
@@ -4688,7 +4754,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
     else echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
 
     // eventsystem
-    if ($eventsystem['onfiledownload_post'] == 1) onfiledownload_post ($site, $location, $media, $name, $user);
+    if (!empty ($eventsystem['onfiledownload_post'])) onfiledownload_post ($site, $location, $media, $name, $user);
   }
   else return false;
 }
@@ -4754,7 +4820,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     }
 
     // eventsystem
-    if ($eventsystem['onfiledownload_pre'] == 1) onfiledownload_pre ($site, $location, $media, $name, $user);
+    if (!empty ($eventsystem['onfiledownload_pre'])) onfiledownload_pre ($site, $location, $media, $name, $user);
 
     // get browser information/version
     $user_client = getbrowserinfo ();
@@ -4778,6 +4844,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         header ("HTTP/1.1 500 Internal Server Error", true, 500);
         $errcode = "20602";
         $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$filepath.')';
+
         // write log
         savelog (@$error);
         exit;
@@ -4893,14 +4960,15 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       {
         $bytesToRead = $buffer;
 
-        if (($i + $bytesToRead) > $end)
+        if (($i + $bytesToRead) > $end) $bytesToRead = $end - $i + 1;
+
+        if ($bytesToRead > 0)
         {
-          $bytesToRead = $end - $i + 1;
+          $data = fread ($stream, $bytesToRead);
+          echo $data;
+          flush ();
         }
 
-        $data = fread ($stream, $bytesToRead);
-        echo $data;
-        flush ();
         $i += $bytesToRead;
       }
 
@@ -4929,7 +4997,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     }
 
     // eventsystem
-    if ($eventsystem['onfiledownload_post'] == 1) onfiledownload_post ($site, $location, $media, $name, $user);
+    if (!empty ($eventsystem['onfiledownload_post'])) onfiledownload_post ($site, $location, $media, $name, $user);
 
     // write log
     savelog (@$error);
@@ -5126,6 +5194,7 @@ function savecontainer ($container, $type="work", $data="", $user="", $init=fals
 
     if (!empty ($container_id))
     {
+      // container type
       if ($type == "published") $container = $container_id.".xml";
       elseif ($type == "work") $container = $container_id.".xml.wrk";
       elseif ($type == "version") $container = $container;
@@ -5149,10 +5218,14 @@ function savecontainer ($container, $type="work", $data="", $user="", $init=fals
         if (!empty ($data)) $data = "<!-- hyperCMS:encrypted -->".$data; 
       }
 
-      // save data
-      if ($init == true) return savefile ($location, $container, $data);
-      elseif (valid_objectname ($user) && is_file ($location.$container.".@".$user)) return savefile ($location, $container.".@".$user, $data);
+      // save data in
+      // locked container by user
+      if (valid_objectname ($user) && is_file ($location.$container.".@".$user)) return savefile ($location, $container.".@".$user, $data);
+      // unlocked container
       elseif (is_file ($location.$container)) return savefile ($location, $container, $data);
+      // new container
+      elseif ($init == true) return savefile ($location, $container, $data);
+      // on error
       else return false;
     }
     else return false;
@@ -5904,7 +5977,7 @@ function createinstance ($instance_name, $settings, $user="sys")
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // eventsystem
-  if ($eventsystem['oncreateinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+  if (!empty ($eventsystem['oncreateinstance_pre']) && empty ($eventsystem['hide'])) 
     oncreateinstance_pre ($instance_name, $settings, $user); 
 
   $error = array();
@@ -6158,7 +6231,7 @@ function createinstance ($instance_name, $settings, $user="sys")
     if ($show == "")
     {
       // eventsystem
-      if ($eventsystem['oncreateinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['oncreateinstance_pre']) && empty ($eventsystem['hide'])) 
         oncreateinstance_post ($instance_name, $settings, $user); 
 
       $result_ok = true;
@@ -6193,7 +6266,7 @@ function editinstance ($instance_name, $content, $user="sys")
   $error = array();
 
   // eventsystem
-  if ($eventsystem['onsaveinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+  if (!empty ($eventsystem['onsaveinstance_pre']) && empty ($eventsystem['hide'])) 
     onsaveinstance_pre ($instance_name, $content, $user); 
 
   $result_ok = false;
@@ -6230,7 +6303,7 @@ function editinstance ($instance_name, $content, $user="sys")
     if ($show == "")
     {
       // eventsystem
-      if ($eventsystem['onsaveinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['onsaveinstance_pre']) && empty ($eventsystem['hide'])) 
         onsaveinstance_post ($instance_name, $content, $user); 
 
       $result_ok = true;
@@ -6263,7 +6336,7 @@ function deleteinstance ($instance_name, $user="sys")
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // eventsystem
-  if ($eventsystem['ondeleteinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+  if (!empty ($eventsystem['ondeleteinstance_pre']) && empty ($eventsystem['hide'])) 
     ondeleteinstance_pre ($instance_name, $user); 
 
   $error = array();
@@ -6376,7 +6449,7 @@ function deleteinstance ($instance_name, $user="sys")
     if ($show == "")
     {
       // eventsystem
-      if ($eventsystem['ondeleteinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['ondeleteinstance_pre']) && empty ($eventsystem['hide'])) 
         ondeleteinstance_post ($instance_name, $user); 
 
       $result_ok = true;
@@ -6431,7 +6504,7 @@ function createpublication ($site_name, $user="sys")
   }
     
   // eventsystem
-  if ($eventsystem['oncreatepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+  if (!empty ($eventsystem['oncreatepublication_pre']) && empty ($eventsystem['hide'])) 
     oncreatepublication_pre ($site_name, $user); 
 
   // set default language
@@ -6762,7 +6835,7 @@ function createpublication ($site_name, $user="sys")
               createobject ($site_name, $mgmt_config['abs_path_comp'].$site_name."/", ".folder", "default.meta.tpl", "sys");
 
               // eventsystem
-              if ($eventsystem['oncreatepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+              if (!empty ($eventsystem['oncreatepublication_post']) && empty ($eventsystem['hide'])) 
                 oncreatepublication_post ($site_name, $user);
  
               $add_onload = "parent.frames['mainFrame'].location='site_edit_form.php?preview=no&site_name=".url_encode($site_name)."'; setTimeout (function(){parent.frames['controlFrame'].location='control_site_menu.php?site_name=".url_encode($site_name)."'}, 2000); ";
@@ -7119,10 +7192,16 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists('gs_access_json', $setting)) $gs_access_json_new = $setting['gs_access_json'];
     else $gs_access_json_new = "";
 
-    savefile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json", $gs_access_json_new);
-
-    if (trim ($gs_access_json_new) != "") $gs_access_json_file_new = $mgmt_config['abs_path_data']."config/".$site_name.".google_cloud_key.json";
-    else $gs_access_json_file_new = "";
+    if (trim ($gs_access_json_new) != "")
+    {
+      savefile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json", $gs_access_json_new);
+      $gs_access_json_file_new = $mgmt_config['abs_path_data']."config/".$site_name.".google_cloud_key.json";
+    }
+    else
+    {
+      deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json", false);
+      $gs_access_json_file_new = "";
+    }
 
     // set Google Speech-to-Text language code
     if (array_key_exists('gs_speech2text_langcode', $setting)) $gs_speech2text_langcode_new = trim ($setting['gs_speech2text_langcode']);
@@ -7584,7 +7663,7 @@ allow_ip = ".$allow_ip_new;
     if ($site_mgmt_config != "" && $site_publ_config_ini != "" && $site_publ_config_prop != "")
     {
       // eventsystem
-      if ($eventsystem['onsavepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+      if (!empty ($eventsystem['onsavepublication_pre']) && empty ($eventsystem['hide']))
         onsavepublication_pre ($site_name, $site_mgmt_config, $site_publ_config_ini, $site_publ_config_prop, $user);
 
       // Management Config
@@ -7626,7 +7705,7 @@ allow_ip = ".$allow_ip_new;
       if ($test == true)
       {
         // eventsystem
-        if ($eventsystem['onsavepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+        if (!empty ($eventsystem['onsavepublication_post']) && empty ($eventsystem['hide']))
           onsavepublication_post ($site_name, $site_mgmt_config, $site_publ_config_ini, $site_publ_config_prop, $user);
 
         $add_onload = "";
@@ -7703,7 +7782,7 @@ function editpublicationsetting ($site_name, $setting, $user="sys")
     $site_mgmt_config = loadfile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php");
 
     // eventsystem
-    if ($eventsystem['onsavepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+    if (!empty ($eventsystem['onsavepublication_pre']) && empty ($eventsystem['hide']))
       onsavepublication_pre ($site_name, $site_mgmt_config, "", "", $user);
 
     if ($site_mgmt_config != "")
@@ -7738,7 +7817,7 @@ function editpublicationsetting ($site_name, $setting, $user="sys")
         if ($test == true)
         {
           // eventsystem
-          if ($eventsystem['onsavepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+          if (!empty ($eventsystem['onsavepublication_post']) && empty ($eventsystem['hide']))
             onsavepublication_post ($site_name, $site_mgmt_config, "", "", $user);
 
           $add_onload = "";
@@ -7863,7 +7942,7 @@ function deletepublication ($site_name, $user="sys")
     else
     {
       // eventsystem
-      if ($eventsystem['ondeletepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['ondeletepublication_pre']) && empty ($eventsystem['hide'])) 
         ondeletepublication_pre ($site_name, $user); 
 
       // load publication list from inheritance database
@@ -8040,7 +8119,7 @@ function deletepublication ($site_name, $user="sys")
             }
 
             // eventsystem
-            if ($eventsystem['oncreatepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+            if (!empty ($eventsystem['oncreatepublication_post']) && empty ($eventsystem['hide'])) 
               ondeletepublication_post ($site_name, $user);
 
             $add_onload = "top.frames['navFrame'].location='explorer.php?refresh=1'; parent.frames['mainFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
@@ -9116,7 +9195,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
   else
   { 
     // eventsystem
-    if ($eventsystem['oncreateuser_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['oncreateuser_pre']) && empty ($eventsystem['hide'])) 
       oncreateuser_pre ($login, $user);
 
     $login = trim ($login);
@@ -9197,7 +9276,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
           if ($show == "" && $test != false)
           {
             // eventsystem
-            if ($eventsystem['oncreateuser_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+            if (!empty ($eventsystem['oncreateuser_post']) && empty ($eventsystem['hide'])) 
               oncreateuser_post ($login, $user);
 
             // log
@@ -9692,7 +9771,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       if (!empty ($userdata) && $show == "" && $update == true)
       {
         // eventsystem
-        if ($eventsystem['onsaveuser_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+        if (!empty ($eventsystem['onsaveuser_pre']) && empty ($eventsystem['hide'])) 
           onsaveuser_pre ($login, $user_node, $user);
 
         $test = savelockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", $userdata);
@@ -9700,7 +9779,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
         if ($test != false)
         {
           // eventsystem
-          if ($eventsystem['onsaveuser_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+          if (!empty ($eventsystem['onsaveuser_post']) && empty ($eventsystem['hide'])) 
             onsaveuser_post ($login, $user_node, $user);
 
           // log
@@ -9828,7 +9907,7 @@ function deleteuser ($site, $login, $user="sys")
   if ($site != "" && valid_objectname ($login) && valid_objectname ($user))
   {
     // eventsystem
-    if ($eventsystem['ondeleteuser_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['ondeleteuser_pre']) && empty ($eventsystem['hide'])) 
       ondeleteuser_pre ($login, $user);
 
     // load user xml file
@@ -9887,7 +9966,7 @@ function deleteuser ($site, $login, $user="sys")
           rdbms_deletenotification ("", "", $login);
 
           // eventsystem
-          if ($eventsystem['ondeleteuser_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+          if (!empty ($eventsystem['ondeleteuser_post']) && empty ($eventsystem['hide'])) 
             ondeleteuser_post ($login, $user);
 
           // log
@@ -9996,7 +10075,7 @@ function creategroup ($site, $groupname, $user="sys")
   else
   {
     // eventsystem
-    if ($eventsystem['oncreategroup_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['oncreategroup_pre']) && empty ($eventsystem['hide'])) 
       oncreategroup_pre ($groupname, $user);
 
     $groupname = trim ($groupname);
@@ -10036,7 +10115,7 @@ function creategroup ($site, $groupname, $user="sys")
           if ($test != false)
           {
             // eventsystem
-            if ($eventsystem['oncreategroup_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+            if (!empty ($eventsystem['oncreategroup_post']) && empty ($eventsystem['hide'])) 
               oncreategroup_post ($groupname, $user);
 
             $usergroupdata = $usergroupdatanew;
@@ -10208,7 +10287,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
   else
   {
     // eventsystem
-    if ($eventsystem['ondeletegroup_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['ondeletegroup_pre']) && empty ($eventsystem['hide'])) 
       ondeletegroup_pre ($groupname, $user); 
 
     // check if login is an attribute of a sent string and extract group name
@@ -10352,7 +10431,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
           else $object_id = $entry;
 
           // in case the database doesn't hold the object ID
-          if (!$object_id) $object_id = $entry;
+          if (empty ($object_id)) $object_id = $entry;
 
           $pageaccess_str .= convertpath ($site, $object_id, "page")."|";
         }
@@ -10376,7 +10455,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
           else $object_id = $entry;
 
           // in case the database doesn't hold the object ID
-          if (!$object_id) $object_id = $entry;
+          if (empty ($object_id)) $object_id = $entry;
 
           $compaccess_str .= convertpath ($site, $object_id, "comp")."|";
         }
@@ -10390,7 +10469,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
     if ($groupdata != false)
     {
       // eventsystem
-      if ($eventsystem['onsavegroup_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['onsavegroup_pre']) && empty ($eventsystem['hide'])) 
         onsavegroup_pre ($groupname, $groupdata, $user); 
 
       $test = savelockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php", $groupdata);
@@ -10398,7 +10477,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
       if ($test != false)
       {
         // eventsystem
-        if ($eventsystem['onsavegroup_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+        if (!empty ($eventsystem['onsavegroup_post']) && empty ($eventsystem['hide'])) 
           onsavegroup_post ($groupname, $groupdata, $user);
 
         // log
@@ -10406,7 +10485,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|group '".$groupname."' has been edited by user '".$user."' (".getuserip().")";
 
         $add_onload = "parent.location.href='group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($groupname)."&preview=no'; ";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['group-settings-were-updated'][$lang]."</span>\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['group-settings-were-updated'][$lang]."</span>\n";
         $error_switch = "no";
       }
       else
@@ -10415,7 +10494,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
 
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-information-cant-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-group-information-is-missing-or-you-have-no-write-permission'][$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-group-information-cant-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-group-information-is-missing-or-you-have-no-write-permission'][$lang]."\n";
 
       }
     }
@@ -10429,7 +10508,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|group '".$groupname."' could not be edited by user '".$user."' (".getuserip().")";
 
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-information-cant-be-accessed'][$lang]."</span><br />\n".$hcms_lang['an-error-occurred-in-function-setcontent'][$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-group-information-cant-be-accessed'][$lang]."</span><br />\n".$hcms_lang['an-error-occurred-in-function-setcontent'][$lang]."\n";
     }
   }
 
@@ -10488,7 +10567,7 @@ function deletegroup ($site, $groupname, $user)
   else
   {
     // eventsystem
-    if ($eventsystem['ondeletegroup_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['ondeletegroup_pre']) && empty ($eventsystem['hide'])) 
       ondeletegroup_pre ($groupname, $user); 
 
     // check if login is an attribute of a sent string and extract group name
@@ -10535,7 +10614,7 @@ function deletegroup ($site, $groupname, $user)
             if ($test != false)
             {
               // eventsystem
-              if ($eventsystem['ondeletegroup_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+              if (!empty ($eventsystem['ondeletegroup_post']) && empty ($eventsystem['hide'])) 
                 ondeletegroup_post ($groupname, $user); 
 
               $usergroupdata = $usergroupdatanew;
@@ -11397,7 +11476,7 @@ function createfolder ($site, $location, $folder, $user)
     $folder = createfilename ($folder);
 
     // eventsystem
-    if ($eventsystem['oncreatefolder_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['oncreatefolder_pre']) && empty ($eventsystem['hide'])) 
       oncreatefolder_pre ($site, $cat, $location, $folder, $user);
 
     // check if folder exists already
@@ -11483,7 +11562,7 @@ function createfolder ($site, $location, $folder, $user)
     }
 
     // eventsystem
-    if ($eventsystem['oncreatefolder_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
+    if (!empty ($eventsystem['oncreatefolder_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
       oncreatefolder_post ($site, $cat, $location, $folder, $user);
   }
   else
@@ -11771,7 +11850,7 @@ function deletefolder ($site, $location, $folder, $user)
     $location = correctpath ($location);
 
     // eventsystem
-    if ($eventsystem['ondeletefolder_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['ondeletefolder_pre']) && empty ($eventsystem['hide'])) 
       ondeletefolder_pre ($site, $cat, $location, $folder, $user);
 
     // folder exists
@@ -11827,7 +11906,7 @@ function deletefolder ($site, $location, $folder, $user)
     }
 
     // eventsystem
-    if ($eventsystem['ondeletefolder_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
+    if (!empty ($eventsystem['ondeletefolder_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
       ondeletefolder_post ($site, $cat, $location, $folder, $user);
   }
   else $error_switch = "yes";
@@ -11937,7 +12016,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
     else
     {
       // eventsystem
-      if ($eventsystem['onrenamefolder_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['onrenamefolder_pre']) && empty ($eventsystem['hide'])) 
         onrenamefolder_pre ($site, $cat, $location, $folder, $foldernew, $user);
 
       // if inheritance of components is used, every child publication must also be updated
@@ -12094,7 +12173,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
           remoteclient ("rename", "abs_path_".$cat, $site, $location, "", $folder, $foldernew); 
 
           // eventsystem
-          if ($eventsystem['onrenamefolder_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+          if (!empty ($eventsystem['onrenamefolder_post']) && empty ($eventsystem['hide'])) 
             onrenamefolder_post ($site, $cat, $location, $folder, $foldernew, $user);
 
           // relational DB connectivity
@@ -12174,6 +12253,83 @@ function correctcontainername ($container_id)
   else return false;
 }
 
+// ------------------------------------------ contentcount -------------------------------------------
+// function: contentcount()
+// input: user name [string]
+// output: true/false
+
+// description:
+// This functions reads and defines the contentcount for the creation of a new container
+// It will unlock the contentcoount file if it has been locked by a user
+
+function contentcount ($user)
+{
+  global $mgmt_config;
+
+  // initialize
+  $error = array();
+  $contentcount = false;
+
+  // load contentcount file and add the new page
+  $filedata = loadlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
+
+  // try to restore contentcount from table container in database
+  if (empty ($filedata))
+  {
+    $temp = rdbms_externalquery ("SELECT MAX(id) AS contentcount FROM container");
+
+    if (!empty ($temp[0]['contentcount']))
+    {
+      $filedata = $temp[0]['contentcount'];
+
+      if (intval ($filedata) > 0)
+      {
+        $errcode = "00887";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|contentcount.dat was recreated by the database with max id='".$filedata."' for user '".$user."'";
+      }
+    }
+  }
+
+  // define new contentcount / container ID
+  if (!empty ($filedata) || strval ($filedata) == "0")
+  {
+    $contentcount = intval ($filedata);
+
+    // add 1 to contentcount
+    $contentcount++;
+
+    // write to file
+    $test = savelockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", $contentcount);
+
+    // on error
+    if ($test == false)
+    {
+      // reset contentcount
+      $contentcount = false;
+
+      // unlock file
+      unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
+
+      $errcode = "20885";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|contentcount failure (contentcount.dat could not be saved for user '".$user."')";
+    }
+  }
+  // contentcount could not be loaded
+  else
+  {
+    // unlock file
+    unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
+
+    $errcode = "20886";
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|contentcount failure (contentcount.dat could not be loaded for user '".$user."')";
+  }
+
+  // save log
+  savelog ($error);
+
+  return $contentcount;
+}
+
 // ---------------------------------------- createobject --------------------------------------------
 // function: createobject()
 // input: publication name [string], location [string], object name without file extension [string], template name [string], user name [string]
@@ -12201,7 +12357,7 @@ function createobject ($site, $location, $page, $template, $user)
   $page_box_xml = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // include hypermailer class
   if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
@@ -12294,7 +12450,7 @@ function createobject ($site, $location, $page, $template, $user)
       }
 
       // eventsystem
-      if ($eventsystem['oncreateobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['oncreateobject_pre']) && empty ($eventsystem['hide'])) 
         oncreateobject_pre ($site, $cat, $location, $page, $template, $user);
 
       // define variables depending on content category
@@ -12346,54 +12502,13 @@ function createobject ($site, $location, $page, $template, $user)
           $contentstore = "";
 
           // --------------------------------- hyperCMS content ------------------------------------
-          // create the content file name:
+          // get contentcount and create the content file name
+          $contentcount = contentcount ($user);
 
-          // load content count file and add the new page
-          $filedata = loadlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
-
-          // try to unlock file
-          if (empty ($filedata))
+          if (empty ($contentcount))
           {
-            unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
-
-            // load content count file and add the new page
-            $filedata = loadlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
-
-            $errcode = "00886";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|contentcount.dat has been unlocked for user '$user' ($site, $location_esc, $page)";
-          }
-
-          if ($filedata != "")
-          {
-            $contentcount = trim ($filedata);
-
-            // add 1 to content count
-            $contentcount++;
-
-            // write
-            $test = savelockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", $contentcount);
-
-            if ($test == false)
-            {
-              unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
-
-              $add_onload = "parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
-              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
-
-              $errcode = "20885";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) due to a contentcount failure (contentcount.dat could not be saved)";
-            }
-          }
-          else
-          {
-            // unlock file
-            unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
-
             $add_onload = "parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
-
-            $errcode = "20886";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|new object could not be created by user '$user' ($site, $location_esc, $page) due to a contentcount failure (contentcount.dat could not be loaded)";
           }
         }
         else
@@ -12638,7 +12753,7 @@ function createobject ($site, $location, $page, $template, $user)
                 remoteclient ("save", "abs_path_".$cat, $site, $location, "", $pagefile, ""); 
 
                 // eventsystem
-                if ($eventsystem['oncreateobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
+                if (!empty ($eventsystem['oncreateobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
                   oncreateobject_post ($site, $cat, $location, $page, $template, $user);
 
                 // notification
@@ -12925,7 +13040,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     }
 
     // eventsystem
-    if ($eventsystem['onfileupload_pre'] == 1) onfileupload_pre ($site, $cat, $location, $global_files['Filedata']['name'], $user);
+    if (!empty ($eventsystem['onfileupload_pre'])) onfileupload_pre ($site, $cat, $location, $global_files['Filedata']['name'], $user);
 
     // error during file upload
     if (!empty ($global_files['Filedata']['error']) && $global_files['Filedata']['error'] != UPLOAD_ERR_OK)
@@ -13207,7 +13322,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       }
 
       // eventsystem
-      if ($eventsystem['onfileupload_post'] == 1) onfileupload_post ($site, $cat, $location, $page, "", "", $user);
+      if (!empty ($eventsystem['onfileupload_post'])) onfileupload_post ($site, $cat, $location, $page, "", "", $user);
     }
     // standard multimedia file upload in assets/components
     elseif ($cat == "comp")
@@ -13555,7 +13670,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           }
 
           // eventsystem
-          if ($eventsystem['onfileupload_post'] == 1) onfileupload_post ($site, $cat, $location, $page, $media_update, $contentfile, $user);
+          if (!empty ($eventsystem['onfileupload_post'])) onfileupload_post ($site, $cat, $location, $page, $media_update, $contentfile, $user);
 
           // notification
           notifyusers ($site, $location, $page, "oncreate", $user);
@@ -13595,19 +13710,21 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
 // ---------------------------------------- createmediaobject --------------------------------------------
 // function: createmediaobject()
-// input: publication name [string], destination location [string], file name [string], path to source multimedia file (uploaded file in temp directory) [string], user name [string], resize original image (100%) by percentage [integer] (optional), leave file in the directory and create a symbolic link to the file [boolean] (optional)
+// input: publication name [string], destination location [string], file name [string], path to source multimedia file (uploaded file in temp directory) [string], user name [string], resize original image (100%) by percentage [integer] (optional), 
+//        leave file in the source directory and create a symbolic link to the file [boolean] (optional), delete file in the source directory if no symbolic link is used [boolean] (optional)
 // output: result array
 
 // description:
 // This function creates an asset (multimedia object) by reading a given source file. The file name must not match any temp file pattern.
 // The metadata template is based on the template of the folder the objects resides in.
 
-function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0, $leavefile=false)
+function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0, $leavefile=false, $deletefile=true)
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, 
-            $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, 
-            $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+         $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, 
+         $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "" && !is_tempfile ($file))
@@ -13677,15 +13794,24 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           // create symbolic link
           $result_move = symlink ($path_source_file, $medialocation.$mediafile);
         }
-        // move media file to repository
+        // move or copy media file to repository
         else
         {
-          // move multimedia file to content media repository
-          // case "upload": move uploaded file from temp directory
-          $result_move = move_uploaded_file ($path_source_file, $medialocation.$mediafile);
+          // remove source file
+          if (!empty ($deletefile))
+          {
+            // move multimedia file to content media repository
+            // case "upload": move uploaded file from temp directory
+            $result_move = move_uploaded_file ($path_source_file, $medialocation.$mediafile);
 
-          // case "import": move import file from source directory 
-          if (!$result_move) $result_move = rename ($path_source_file, $medialocation.$mediafile);
+            // case "import": move import file from source directory 
+            if (!$result_move) $result_move = rename ($path_source_file, $medialocation.$mediafile);
+          }
+          // keep source file (copy file)
+          else
+          {
+            $result_move = copy ($path_source_file, $medialocation.$mediafile);
+          }
         }
 
         if ($result_move)
@@ -13762,7 +13888,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           if (is_file ($medialocation.$mediafile) && function_exists ("savecloudobject")) savecloudobject ($site, $medialocation, $mediafile, $user);
 
           // eventsystem
-          if ($eventsystem['onfileupload_post'] == 1) onfileupload_post ($site, $result['cat'], $location, $result['object'], $mediafile, $result['container'], $user);
+          if (!empty ($eventsystem['onfileupload_post'])) onfileupload_post ($site, $result['cat'], $location, $result['object'], $mediafile, $result['container'], $user);
         }
         else
         {
@@ -13809,6 +13935,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 {
   global $mgmt_config, $mgmt_imageoptions, $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   if (valid_publicationname ($site) && $location_source != "" && valid_locationname ($location_destination))
@@ -13845,15 +13972,15 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
       foreach ($scandir as $file)
       {
         // skip Mac OS files .DS_Store and ._whatever
-        if ($file != '.' && $file != '..' && !is_tempfile ($file)) 
+        if ($file != '.' && $file != '..' && !is_tempfile ($file))
         {
           // directory
           if (is_dir ($location_source.$file))
           {
             $folder = $folder_new = $file;
 
-            // correct file namens which were decoded by unzip
-            if (substr_count ($folder_new, "#U") > 0) $folder_new = json_decode (str_replace ('#U', '\u', $folder_new)); 
+            // correct file namens which were encoded by unzip to unicode escape characters
+            if (substr_count ($folder_new, "#U") > 0) $folder_new = convert_unicode2utf8 ($folder_new); 
 
             // check if folder exists already 
             if (!object_exists ($location_destination.$folder_new))
@@ -13868,6 +13995,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
               $createfolder['folder'] = createfilename ($folder_new);
             }
 
+            // create objects
             if (!empty ($createfolder['result']))
             {
               $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user);
@@ -13884,7 +14012,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             $objectname = $file;
 
             // correct file namens which were decoded by unzip
-            if (substr_count ($objectname, "#U") > 0) $objectname = json_decode (str_replace ('#U', '\u', $objectname));
+            if (substr_count ($objectname, "#U") > 0) $objectname = convert_unicode2utf8 ($objectname);
 
             // remove existing object
             if (object_exists ($location_destination.$objectname)) deleteobject ($site, $location_destination, $objectname, $user);
@@ -13928,6 +14056,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
 {
   global $wf_token, $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $hcms_lang, $lang;
 
+  // initialize
   $processresult = false;
   $show = "";
   $add_onload = "";
@@ -14156,7 +14285,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     $location = correctpath ($location);
 
       // eventsystem for paste
-    if ($action == "page_paste" && $eventsystem['onpasteobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+    if ($action == "page_paste" && $eventsystem['onpasteobject_pre'] == 1 && empty ($eventsystem['hide']))
       onpasteobject_pre ($site, $cat, $location_source, $location, $page, $user); 
  
     // get object information of the selected item
@@ -15328,86 +15457,62 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       {
         if ($contentfile_self != "")
         {
-          // load content count file and add new page
-          $contentcount = loadlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
+          // get contentcount and create the content file name
+          $contentcount = contentcount ($user);
 
-          if ($contentcount != "")
+          // on contentcount error
+          if (empty ($contentcount))
           {
-            $contentcount = trim ($contentcount);
-
-            // add 1 to content count
-            $contentcount++;
-
-            // write
-            $test = savelockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", $contentcount);
-
-            if ($test == false) 
-            {
-              // unlock file
-              unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat"); 
- 
-              exit ("severe error: contentcount save failure!");
-            }
+            $error_switch = "yes";
+            $add_onload = "";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
           }
+          // on contentcount success
           else
           {
-            // unlock file
-            unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
+            // create the name of the content container based on the unique content count value
+            $contentfile_new_id = correctcontainername ($contentcount);
+            $contentfile_new = $contentfile_new_id.".xml";
 
-            exit ("severe error: contentcount empty!");
-          }
+            // create new container folder
+            @mkdir (getcontentlocation ($contentfile_new_id, 'abs_path_content'), $mgmt_config['fspermission']); 
 
-          // create the name of the content container based on the unique content count value
-          $contentcountlen = strlen ($contentcount);
-          $zerolen = 7 - $contentcountlen;
-          $zerostring =  "";
+            // date 
+            $date = date ("Y-m-d H:i:s", time());
 
-          for ($i = 1; $i <= $zerolen; $i++)
-          {
-            $zerostring = $zerostring."0";
-          }
+            // load container from file system
+            $bufferdata = loadcontainer ($contentfile_self_wrk, "work", $user);
 
-          $contentfile_new_id = $zerostring.$contentcount;
-          $contentfile_new = $contentfile_new_id.".xml";
+            // insert content container name
+            if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentcontainer>", $contentfile_new, "", "");
 
-          // create new container folder
-          @mkdir (getcontentlocation ($contentfile_new_id, 'abs_path_content'), $mgmt_config['fspermission']); 
+            // insert user into content container
+            if ($bufferdata != false && $user != "sys" && substr ($user, 0, 4) != "sys:")  $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentuser>", $user, "", "");
 
-          // date 
-          $date = date ("Y-m-d H:i:s", time());
+            // insert new date into content container
+            if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentdate>", $date, "", ""); 
 
-          // load container from file system
-          $bufferdata = loadcontainer ($contentfile_self_wrk, "work", $user);
+            // insert new object into content container
+            if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", convertpath ($site, $location.$pagename_sec, $cat)."|", "", ""); 
 
-          // insert content container name
-          if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentcontainer>", $contentfile_new, "", "");
+            if ($bufferdata != false) 
+            {
+              // save published container 
+              $test = savecontainer ($contentfile_new_id, "published", $bufferdata, $user, true);
 
-          // insert user into content container
-          if ($bufferdata != false && $user != "sys" && substr ($user, 0, 4) != "sys:")  $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentuser>", $user, "", "");
+              // save working container 
+              $test = savecontainer ($contentfile_new_id, "work", $bufferdata, $user, true); 
 
-          // insert new date into content container
-          if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentdate>", $date, "", ""); 
+              // final container data
+              $containerdata = $bufferdata;
+            }
+            else $test = false;
 
-          // insert new object into content container
-          if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", convertpath ($site, $location.$pagename_sec, $cat)."|", "", ""); 
-
-          if ($bufferdata != false) 
-          {
-            // save published container 
-            $test = savecontainer ($contentfile_new_id, "published", $bufferdata, $user, true);
-
-            // save working container 
-            $test = savecontainer ($contentfile_new_id, "work", $bufferdata, $user, true); 
-
-            // final container data
-            $containerdata = $bufferdata;
-          }
-          else $test = false;
-
-          if ($test == false)
-          {
-            $errcode = "10206";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savecontainer failed for container ".$contentfile_new; 
+            if ($test == false)
+            {
+              $errcode = "10206";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savecontainer failed for container ".$contentfile_new; 
+            }
           }
         }
         elseif ($filetype != "cms")
@@ -15635,7 +15740,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     savelog (@$error);
 
     // eventsystem for paste
-    if ($action == "page_paste" && $eventsystem['onpasteobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
+    if ($action == "page_paste" && $eventsystem['onpasteobject_post'] == 1 && empty ($eventsystem['hide']) && $error_switch == "no") 
       onpasteobject_post ($site, $cat, $location_source, $location, $page, $user);
   }
   else $error_switch = "yes";
@@ -15701,7 +15806,7 @@ function deletemarkobject ($site, $location, $page, $user)
     $location_esc = convertpath ($site, $location, $cat);
 
     // eventsystem
-    if ($eventsystem['ondeleteobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['ondeleteobject_pre']) && empty ($eventsystem['hide'])) 
       ondeleteobject_pre ($site, $cat, $location, $page, $user);
 
     // unpublish object
@@ -15725,7 +15830,7 @@ function deletemarkobject ($site, $location, $page, $user)
     notifyusers ($site, $location, $page, "ondelete", $user);
 
     // eventsystem
-    if ($eventsystem['ondeleteobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && !empty ($result['result'])) 
+    if (!empty ($eventsystem['ondeleteobject_post']) && empty ($eventsystem['hide']) && !empty ($result['result'])) 
       ondeleteobject_post ($site, $cat, $location, $page, $user);
   }
 
@@ -15846,7 +15951,7 @@ function deleteobject ($site, $location, $page, $user)
     }
 
     // eventsystem
-    if ($eventsystem['ondeleteobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['ondeleteobject_pre']) && empty ($eventsystem['hide'])) 
       ondeleteobject_pre ($site, $cat, $location, $page, $user);
  
     $result = manipulateobject ($site, $location, $page, "", $user, "page_delete");
@@ -15855,7 +15960,7 @@ function deleteobject ($site, $location, $page, $user)
     notifyusers ($site, $location, $page, "ondelete", $user);
 
     // eventsystem
-    if ($eventsystem['ondeleteobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && !empty ($result['result'])) 
+    if (!empty ($eventsystem['ondeleteobject_post']) && empty ($eventsystem['hide']) && !empty ($result['result'])) 
       ondeleteobject_post ($site, $cat, $location, $page, $user);
 
     // return results 
@@ -15906,7 +16011,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
     }
 
     // eventsystem
-    if ($eventsystem['onrenameobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['onrenameobject_pre']) && empty ($eventsystem['hide'])) 
       onrenameobject_pre ($site, $cat, $location, $page, $pagenew, $user);
 
     // trim object name
@@ -15915,7 +16020,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
     $result = manipulateobject ($site, $location, $page, $pagenew, $user, "page_rename");
 
     // eventsystem
-    if ($eventsystem['onrenameobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && !empty ($result['result'])) 
+    if (!empty ($eventsystem['onrenameobject_post']) && empty ($eventsystem['hide']) && !empty ($result['result'])) 
       onrenameobject_post ($site, $cat, $location, $page, $pagenew, $user); 
  
     // return results 
@@ -15970,13 +16075,13 @@ function renamefile ($site, $location, $page, $pagenew, $user)
     }
 
     // eventsystem
-    if ($eventsystem['onrenameobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['onrenameobject_pre']) && empty ($eventsystem['hide'])) 
       onrenameobject_pre ($site, $cat, $location, $page, $pagenew, $user); 
 
     $result = manipulateobject ($site, $location, $page, $pagenew, $user, "file_rename");
 
     // eventsystem
-    if ($eventsystem['onrenameobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && !empty ($result['result'])) 
+    if (!empty ($eventsystem['onrenameobject_post']) && empty ($eventsystem['hide']) && !empty ($result['result'])) 
       onrenameobject_post ($site, $cat, $location, $page, $pagenew, $user); 
  
     // return results 
@@ -16047,7 +16152,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
     }
 
     // eventsystem
-    if ($eventsystem['oncutobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['oncutobject_pre']) && empty ($eventsystem['hide'])) 
       oncutobject_pre ($site, $cat, $location, $page, $user);
 
     // correct file or folder
@@ -16087,7 +16192,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
     }
 
     // eventsystem
-    if ($eventsystem['oncutobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
+    if (!empty ($eventsystem['oncutobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
       oncutobject_post ($site, $cat, $location, $page, $user);
   }
   else $error_switch = "yes";
@@ -16171,7 +16276,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
     {
       // eventsystem
-      if ($eventsystem['oncopyobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['oncopyobject_pre']) && empty ($eventsystem['hide'])) 
         oncopyobject_pre ($site, $cat, $location, $page, $user);
 
       // correct file or folder
@@ -16211,7 +16316,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
       }
 
       // eventsystem
-      if ($eventsystem['oncopyobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
+      if (!empty ($eventsystem['oncopyobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
         oncopyobject_post ($site, $cat, $location, $page, $user);
     }
     else $error_switch = "yes";
@@ -16295,7 +16400,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
     }
 
     // eventsystem
-    if ($eventsystem['oncopyconnectedobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['oncopyconnectedobject_pre']) && empty ($eventsystem['hide'])) 
       oncopyconnectedobject_pre ($site, $cat, $location, $page, $user);
 
     // check location (only components of given publication are allowed)
@@ -16338,7 +16443,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
       }
 
       // eventsystem
-      if ($eventsystem['oncopyconnectedobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
+      if (!empty ($eventsystem['oncopyconnectedobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
         oncopyconnectedobject_post ($site, $cat, $location, $page, $user);
     }
     else $error_switch = "yes";
@@ -16491,7 +16596,7 @@ function lockobject ($site, $location, $page, $user)
     }
 
     // eventsystem
-    if ($eventsystem['onlockobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['onlockobject_pre']) && empty ($eventsystem['hide'])) 
       onlockobject_pre ($site, $cat, $location, $page, $user); 
 
     // collect object info
@@ -16548,7 +16653,7 @@ function lockobject ($site, $location, $page, $user)
       } 
 
       // eventsystem
-      if ($eventsystem['onlockobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
+      if (!empty ($eventsystem['onlockobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
         onlockobject_post ($site, $cat, $location, $page, $user);
     }
     else $error_switch = "yes";
@@ -16644,7 +16749,7 @@ function unlockobject ($site, $location, $page, $user)
     }
 
     // eventsystem
-    if ($eventsystem['onunlockobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if (!empty ($eventsystem['onunlockobject_pre']) && empty ($eventsystem['hide'])) 
       onunlockobject_pre ($site, $cat, $location, $page, $user);
 
     // collect object info
@@ -16695,7 +16800,7 @@ if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
       } 
 
       // eventsystem
-      if ($eventsystem['onunlockobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
+      if (!empty ($eventsystem['onunlockobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
         onunlockobject_post ($site, $cat, $location, $page, $user);
     }
     else $error_switch = "yes";
@@ -16923,7 +17028,7 @@ function publishobject ($site, $location, $page, $user)
                 }
 
                 // eventsystem
-                if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+                if (!empty ($eventsystem['onpublishobject_pre']) && empty ($eventsystem['hide']))
                   onpublishobject_pre ($site, $cat, $location, $page, @$contentfile, @$contentdata, @$templatefile, @$templatedata, @$viewstore, $user);
 
                 // -------------------------------- publish page -------------------------------
@@ -17143,7 +17248,7 @@ function publishobject ($site, $location, $page, $user)
               }
 
               // eventsystem
-              if ($eventsystem['onpublishobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
+              if (!empty ($eventsystem['onpublishobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
                 onpublishobject_post ($site, $cat, $location, $page_new, $contentfile, $contentdata, $templatefile, $templatedata, $viewstore, $user);
             }
             // if we publish a media file we dont use the link management
@@ -17183,11 +17288,11 @@ function publishobject ($site, $location, $page, $user)
         if ($container_id) $contentdata = loadcontainer ($container_id, "work", $user);
 
         // execute eventsystem
-        if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+        if (!empty ($eventsystem['onpublishobject_pre']) && empty ($eventsystem['hide'])) 
           onpublishobject_pre ($site, $cat, $location, $page, $container, $contentdata, $template, "", "", $user);
 
         // execute eventsystem
-        if ($media != false && $application != "generator" && $eventsystem['onpublishobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+        if ($media != false && $application != "generator" && !empty ($eventsystem['onpublishobject_post']) && empty ($eventsystem['hide'])) 
           onpublishobject_post ($site, $cat, $location, $page, $container, $contentdata, $template, "", "", $user);
 
         $add_onload = "";
@@ -17451,7 +17556,7 @@ function unpublishobject ($site, $location, $page, $user)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
     { 
       // eventsystem
-      if ($eventsystem['onunpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['onunpublishobject_pre']) && empty ($eventsystem['hide'])) 
         onunpublishobject_pre ($site, $cat, $location, $page, $user);
 
       // get all connected objects
@@ -17699,7 +17804,7 @@ function unpublishobject ($site, $location, $page, $user)
       } 
 
       // eventsystem
-      if ($eventsystem['onunpublishobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && !empty ($result['result'])) 
+      if (!empty ($eventsystem['onunpublishobject_post']) && empty ($eventsystem['hide']) && !empty ($result['result'])) 
         onunpublishobject_post ($site, $cat, $location, $page, $user);
     }
     // location is not valid
@@ -18421,7 +18526,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
             if (valid_publicationname ($site) && valid_locationname ($location) && $folder != "" && is_dir ($location.$folder))
             {
               // eventsystem
-              if (isset ($eventsystem['ondeletefolder_pre']) && $eventsystem['ondeletefolder_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+              if (isset ($eventsystem['ondeletefolder_pre']) && $eventsystem['ondeletefolder_pre'] == 1 && empty ($eventsystem['hide'])) 
                 ondeletefolder_pre ($site, $cat, $location, $folder, $user);
     
               // remove all in the root folder
@@ -18431,7 +18536,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $folder, "");
 
               // eventsystem
-              if (isset ($eventsystem['ondeletefolder_post']) && $eventsystem['ondeletefolder_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && !empty ($test['result'])) 
+              if (isset ($eventsystem['ondeletefolder_post']) && $eventsystem['ondeletefolder_post'] == 1 && empty ($eventsystem['hide']) && !empty ($test['result'])) 
                 ondeletefolder_post ($site, $cat, $location, $folder, $user); 
             }
           }
@@ -18681,7 +18786,9 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
 
             if ($handle != false)
             {
-              $content = fread ($handle, filesize ($location.$page));
+              if (filesize ($location.$page) > 0) $content = fread ($handle, filesize ($location.$page));
+              else $content = "";
+
               fclose ($handle);
             }
           }
@@ -19116,13 +19223,16 @@ function loadbalancer ($type)
 // output: true / false on error
 
 // description:
-// Adds new entries to log file.
-// An error entry must be formed like:
-// date[YYYY-MM-DD hh:mm]|name of scipt file|error type: "error", "warning" or "information"|unique error code in script file|error message
+// Adds new entries to a log file.
+// A log entry must be formed like:
+// date [YYYY-MM-DD hh:mm]|name of script file [string]|type ["error", "warning" or "information"]|unique error code in script file [integer]|error message [string]
 
 function savelog ($error, $logfile="event")
 {
   global $user, $login, $site, $eventsystem, $mgmt_config, $hcms_lang, $lang;
+
+  // archive log file when it reached a certain file size in MB
+  $archive_size = 100;
 
   // verify event logging based on log level
   if (empty ($mgmt_config['loglevel']) || strtolower ($mgmt_config['loglevel']) == "all")  $log_event = true;
@@ -19158,40 +19268,52 @@ function savelog ($error, $logfile="event")
     }
 
     // save log
-    // append log data to file or remove file if the file size is too big (> 12 GB)
-    if (is_file ($mgmt_config['abs_path_data']."log/".$logfile) && filesize ($mgmt_config['abs_path_data']."log/".$logfile) < (12 * 1024 * 1024 * 1024))
+    // append log data to file or archive file if the file size is too big
+    if (is_file ($mgmt_config['abs_path_data']."log/".$logfile) && filesize ($mgmt_config['abs_path_data']."log/".$logfile) < ($archive_size * 1024 * 1024))
     { 
       $result = appendfile ($mgmt_config['abs_path_data']."log/", $logfile, implode ("\n", $error)."\n");
     }
     else
     {
+      // archive log
+      if (is_file ($mgmt_config['abs_path_data']."log/".$logfile)) copy ($mgmt_config['abs_path_data']."log/".$logfile, $mgmt_config['abs_path_data']."log/".date("Y-m-d").".".$logfile);
+
+      // start new log
       $result = savefile ($mgmt_config['abs_path_data']."log/", $logfile, implode ("\n", $error)."\n");
     }
 
     // save publication log
     if (!empty ($mgmt_config['publication_log']) && valid_publicationname ($site) && $logfile == "event.log")
     {
-      // append log data to file or remove file if the file size is too big (> 12 GB)
-      if (is_file ($mgmt_config['abs_path_data']."log/".$site.".publication.log") && filesize ($mgmt_config['abs_path_data']."log/".$site.".publication.log") < (12 * 1024 * 1024 * 1024))
+      // append log data to file or archive file if the file size is too big
+      if (is_file ($mgmt_config['abs_path_data']."log/".$site.".publication.log") && filesize ($mgmt_config['abs_path_data']."log/".$site.".publication.log") < ($archive_size * 1024 * 1024))
       { 
         appendfile ($mgmt_config['abs_path_data']."log/", $site.".publication.log", implode ("\n", $error)."\n");
       }
       else
       {
+        // archive log
+        if (is_file ($mgmt_config['abs_path_data']."log/".$site.".publication.log")) copy ($mgmt_config['abs_path_data']."log/".$site.".publication.log", $mgmt_config['abs_path_data']."log/".date("Y-m-d").".".$site.".publication.log");
+
+        // start new log
         savefile ($mgmt_config['abs_path_data']."log/", $site.".publication.log", implode ("\n", $error)."\n");
       }
     }
 
-    // save user log
-    if (!empty ($mgmt_config['user_log']) && valid_objectname ($user) && $logfile == "event.log")
+    // save user log (exclude system service users)
+    if (!empty ($mgmt_config['user_log']) && valid_objectname ($user) && substr ($user, 0, 4) != "sys:" && $logfile == "event.log")
     {
-      // append log data to file or remove file if the file size is too big (> 12 GB)
-      if (is_file ($mgmt_config['abs_path_data']."log/".$user.".user.log") && filesize ($mgmt_config['abs_path_data']."log/".$user.".user.log") < (12 * 1024 * 1024 * 1024))
+      // append log data to file or archive file if the file size is too big
+      if (is_file ($mgmt_config['abs_path_data']."log/".$user.".user.log") && filesize ($mgmt_config['abs_path_data']."log/".$user.".user.log") < ($archive_size * 1024 * 1024))
       { 
         appendfile ($mgmt_config['abs_path_data']."log/", $user.".user.log", implode ("\n", $error)."\n");
       }
       else
       {
+        // archive log
+        if (is_file ($mgmt_config['abs_path_data']."log/".$user.".user.log")) copy ($mgmt_config['abs_path_data']."log/".$user.".user.log", $mgmt_config['abs_path_data']."log/".date("Y-m-d").".".$user.".user.log");
+
+        // start new log
         savefile ($mgmt_config['abs_path_data']."log/", $user.".user.log", implode ("\n", $error)."\n");
       }
     }
@@ -20213,13 +20335,12 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8",
   global $mgmt_config, $eventsystem;
 
   // initialize
+  $result = array();
   $temp_file = false;
 
   // define possible delimiters and enclosures
   $delimiters_csv = array (",", ";", "\t", "|");
   $enclosures_csv = array ('"', "'");
-
-  $result = array();
 
   if ($file != "" && is_file ($file))
   {
@@ -20264,7 +20385,8 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8",
       // analyze CSV file
       if ($delimiter == "" || $enclosure == "")
       {
-        $filedata = @fread ($handle, filesize ($file));
+        if (filesize ($file) > 0) $filedata = @fread ($handle, filesize ($file));
+        else $filedata = "";
 
         if ($filedata != "")
         {
@@ -20983,7 +21105,7 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
         if ($contentdatanew == false) return false;
         
         // eventsystem executed after settext since the container data will be saved at the end
-        if ($eventsystem['onsaveobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+        if (!empty ($eventsystem['onsaveobject_pre']) && empty ($eventsystem['hide']))
         {
           $contentdataevent = onsaveobject_pre ($site, $cat, $location, $page, $contentfile, $contentdatanew, $user);
         }
@@ -21143,7 +21265,7 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
         }
 
         // eventsystem
-        if ($eventsystem['onsaveobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+        if (!empty ($eventsystem['onsaveobject_post']) && empty ($eventsystem['hide']))
         {
           onsaveobject_post ($site, $cat, $location, $page, $contentfile, $contentdatanew, $user);
         }

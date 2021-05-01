@@ -77,8 +77,7 @@ elseif ($sender == "access" && checktoken ($token, $user))
   // deserialize access string
   if ($access_new != "")
   {
-    if (substr ($access_new, -1) == "|") $access_new = substr ($access_new, 0, strlen ($access_new)-1);
-    $access_array = explode ("|", $access_new);
+    $access_array = explode ("|", trim ($access_new, "|"));
   }
   else $access_array[0] = "";
   

@@ -44,8 +44,9 @@ if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['
 
 // check access permissions
 $ownergroup = accesspermission ($site, $location, $cat);
-$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
-if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
+$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
+if (empty ($ownergroup) || empty ($setlocalpermission['root']) || empty ($setlocalpermission['create']) || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
 
 // check session of user
 checkusersession ($user);

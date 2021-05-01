@@ -128,10 +128,12 @@
 {
   color: black;
   transition: none 0s ease 0s;
-  border: 0px;
+  border: 0;
   text-decoration: none;
   display: flex;
   flex-direction: row;
+  width: 30px;
+  height: 30px;
   padding: 5px;
 }
 

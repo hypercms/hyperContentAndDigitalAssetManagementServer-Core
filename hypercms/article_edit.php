@@ -149,14 +149,14 @@ function cal_on_autoclose(cal)
 function submitform ()
 {
   var artdatefromcheck = document.getElementById("artdatefrom").value;
-  artdatefromcheck = artdatefromcheck.replace ("-", "");
-  artdatefromcheck = artdatefromcheck.replace (" ", "");
-  artdatefromcheck = artdatefromcheck.replace (":", "");
+  artdatefromcheck = artdatefromcheck.replace (/-/g, "");
+  artdatefromcheck = artdatefromcheck.replace (/\s/g, "");
+  artdatefromcheck = artdatefromcheck.replace (/:/g, "");
   
   var artdatetocheck = document.getElementById("artdateto").value;
-  artdatetocheck = artdatetocheck.replace ("-", "");
-  artdatetocheck = artdatetocheck.replace (" ", "");
-  artdatetocheck = artdatetocheck.replace (":", "");
+  artdatetocheck = artdatetocheck.replace (/-/g, "");
+  artdatetocheck = artdatetocheck.replace (/\s/g, "");
+  artdatetocheck = artdatetocheck.replace (/:/g, "");
   
   if (artdatetocheck < artdatefromcheck)
   {

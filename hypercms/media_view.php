@@ -51,17 +51,17 @@ if ($mediaobject != "")
   $object_info = getobjectinfo ($site, $location, $object, $user);
   
   // media file
-  $mediafile = $site."/".$object_info['media'];
+  if (!empty ($object_info['media'])) $mediafile = $site."/".$object_info['media'];
   
   // load container
-  $contentdata = loadcontainer ($object_info['content'], "work", "sys");
+  if (!empty ($object_info['content'])) $contentdata = loadcontainer ($object_info['content'], "work", "sys");
   
   // get character set and content-type
-  $charset_array = getcharset ($site, $contentdata);
+  if (!empty ($contentdata)) $charset_array = getcharset ($site, $contentdata);
   
   // set character set
   if (!empty ($charset_array['charset'])) $charset = $charset_array['charset'];
-  elseif ($site != "") $charset = $mgmt_config[$site]['default_codepage'];
+  elseif (!empty ($site)) $charset = $mgmt_config[$site]['default_codepage'];
   else $charset = "UTF-8";
   
   $hcms_charset = $charset;

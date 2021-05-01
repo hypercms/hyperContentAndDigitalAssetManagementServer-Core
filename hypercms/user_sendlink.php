@@ -1072,5 +1072,6 @@ $token_new = createtoken ($user);
   </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

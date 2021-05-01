@@ -51,6 +51,11 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
+$contentbot = false;
+$component = "";
+$component_curr = "";
+
 // load object file and get container
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
@@ -64,9 +69,6 @@ $token = createtoken ($user);
 if (substr_count ($tagname, "art") == 1) $art = "art";
 else $art = "";
 
-$component = "";
-$component_curr = "";
-
 // read content using db_connect
 if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
 {
@@ -74,20 +76,19 @@ if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_con
   
   $db_connect_data = db_read_component ($site, $contentfile, "", $id, "", $user);
   
-  if ($db_connect_data != false) $contentbot = $db_connect_data['file'];
-  else $contentbot = false;
-}  
-else $contentbot = false;
+  if (!empty ($db_connect_data['file'])) $contentbot = $db_connect_data['file'];
+}
 
 // read content from content container
-if ($contentbot == false)
+if (empty ($contentbot))
 {
   $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
 
   $filedata = loadcontainer ($container_id, "work", $user);
-  $contentarray = selectcontent ($filedata, "<component>", "<component_id>", $id);
-  $contentarray = getcontent ($contentarray[0], "<componentfiles>");
-  if (!empty ($contentarray[0])) $contentbot = $contentarray[0];
+
+  $temp = selectcontent ($filedata, "<component>", "<component_id>", $id);
+  if (!empty ($temp[0])) $temp = getcontent ($temp[0], "<componentfiles>");
+  if (!empty ($temp[0])) $contentbot = $temp[0];
 }
 
 // define current components string
@@ -106,6 +107,7 @@ $component_curr = getobjectlink ($component_curr);
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function correctnames ()
 {
   if (document.forms['component'].elements['component']) document.forms['component'].elements['component'].name = "<?php echo $art; ?>component[<?php echo $id; ?>]";
@@ -291,6 +293,7 @@ function openBrWindowComp (winName, features, type)
                     {
                       $comp_entry_name = getlocationname ($site, $comp_entry, "comp", "path");
                       
+                      // shorten path
                       if (strlen ($comp_entry_name) > 36) $comp_entry_name_short = "...".substr (substr ($comp_entry_name, -36), strpos (substr ($comp_entry_name, -36), "/"));
                       else $comp_entry_name_short = $comp_entry_name;
                                        
@@ -374,5 +377,6 @@ function openBrWindowComp (winName, features, type)
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

@@ -300,14 +300,21 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle=array(), $arts
 
   if ($contentdata != "" && is_array ($artstatus) && valid_objectname ($user) && is_array ($mgmt_config))
   {
-    // load xml schema
-    $article_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "article.schema.xml.php"));
+    // initialize
+    if (!is_array ($arttitle)) $arttitle = array();
+    if (!is_array ($artstatus)) $artstatus = array();
+    if (!is_array ($artdatefrom)) $artdatefrom = array();
+    if (!is_array ($artdateto)) $artdateto = array();
 
+    // if article user is not an array
     if (!is_array ($artuser))
     {
       $userbuffer = $artuser;
       $artuser = Null;
     }
+
+    // load xml schema
+    $article_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "article.schema.xml.php"));
 
     reset ($artstatus);
 
@@ -365,24 +372,12 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
 {
   global $mgmt_config, $publ_config;
 
-  $error = array();
-
   if (valid_publicationname ($site) && valid_objectname ($contentfile) && $contentdata != "" && is_array ($text) && (is_array ($type) || $type != "") && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
+    // initialize
+    $error = array();
     $link_db_updated = false;
-
-    // load publication config
-    if (!is_array ($publ_config)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
-
-    // publication management config
-    if (!isset ($mgmt_config[$site]['url_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
-    {
-      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-    } 
-
-    // load xml schema
-    $text_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "text.schema.xml.php"));
-    $article_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "article.schema.xml.php"));
+    $continued = false;
 
     if (!is_array ($type))
     {
@@ -402,8 +397,20 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
       $textuser = Null;
     }
 
+    // load publication config
+    if (!is_array ($publ_config)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
+
+    // publication management config
+    if (!isset ($mgmt_config[$site]['url_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    } 
+
+    // load xml schema
+    $text_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "text.schema.xml.php"));
+    $article_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "article.schema.xml.php"));
+
     reset ($text);
-    $continued = false;
 
     // loop through all text nodes
     foreach ($text as $id => $temp)
@@ -750,10 +757,22 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($mediafile) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
+    // initialize
+    $error = array();
+    if (!is_array ($mediaobject)) $mediaobject = array();
+    if (!is_array ($mediaalttext)) $mediaalttext = array();
+    if (!is_array ($mediaalign)) $mediaalign = array();
+    if (!is_array ($mediawidth)) $mediawidth = array();
+    if (!is_array ($mediaheight)) $mediaheight = array();
+
+    if (!is_array ($mediauser))
+    {
+      $userbuffer = $mediauser;
+      $mediauser = Null;
+    }
+
     // load xml schema
     $media_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "media.schema.xml.php"));
     $article_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "article.schema.xml.php"));
@@ -767,12 +786,6 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
       $art = Null;
     }
 
-    if (!is_array ($mediauser))
-    {
-      $userbuffer = $mediauser;
-      $mediauser = Null;
-    }
-
     reset ($mediafile);
 
     foreach ($mediafile as $id => $temp)
@@ -780,12 +793,12 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
       if ($id != "")
       { 
         // set values if not set
-        if (!isset ($mediafile[$id])) $mediafile[$id] = "";
-        if (!isset ($mediaobject[$id])) $mediaobject[$id] = "";
-        if (!isset ($mediaalttext[$id])) $mediaalttext[$id] = "";
-        if (!isset ($mediaalign[$id])) $mediaalign[$id] = "";
-        if (!isset ($mediawidth[$id])) $mediawidth[$id] = "";
-        if (!isset ($mediaheight[$id])) $mediaheight[$id] = ""; 
+        if (empty ($mediafile[$id])) $mediafile[$id] = "";
+        if (empty ($mediaobject[$id])) $mediaobject[$id] = "";
+        if (empty ($mediaalttext[$id])) $mediaalttext[$id] = "";
+        if (empty ($mediaalign[$id])) $mediaalign[$id] = "";
+        if (empty ($mediawidth[$id])) $mediawidth[$id] = "";
+        if (empty ($mediaheight[$id])) $mediaheight[$id] = ""; 
 
         // set array if input parameter is string
         if (!empty ($artbuffer)) $art[$id] = $artbuffer;
@@ -953,10 +966,19 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($linkhref) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
+    // initialize
+    $error = array();
+    if (!is_array ($linktarget)) $linktarget = array();
+    if (!is_array ($linktext)) $linktext = array();
+
+    if (!is_array ($linkuser))
+    {
+      $userbuffer = $linkuser;
+      $linkuser = Null;
+    }
+
     // load xml schema
     $link_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "link.schema.xml.php"));
     $article_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "article.schema.xml.php"));
@@ -968,12 +990,6 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
     {
       $artbuffer = $art;
       $art = Null;
-    }
-
-    if (!is_array ($linkuser))
-    {
-      $userbuffer = $linkuser;
-      $linkuser = Null;
     }
 
     reset ($linkhref);
@@ -1139,16 +1155,11 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($component) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
-    // load xml schema
-    $component_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "component.schema.xml.php"));
-    $article_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "article.schema.xml.php"));
-
-    // load link db
-    $link_db = link_db_load ($site, $user); 
+    // initialize
+    $error = array();
+    if (!is_array ($condition)) $condition = array();
 
     if (!is_array ($art))
     {
@@ -1161,6 +1172,13 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
       $userbuffer = $compuser;
       $compuser = Null;
     }
+
+    // load xml schema
+    $component_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "component.schema.xml.php"));
+    $article_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "article.schema.xml.php"));
+
+    // load link db
+    $link_db = link_db_load ($site, $user); 
 
     reset ($component);
 
@@ -1426,10 +1444,11 @@ function setrelation ($site, $location_1="", $object_1="", $id_1="Related", $loc
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (valid_publicationname ($site) && valid_locationname ($location_1) && valid_objectname ($object_1) && valid_locationname ($location_2) && valid_objectname ($object_2))
   {
+    // initialize
+    $error = array();
+
     // convert locations and get object IDs
     $location_1 = deconvertpath ($location_1, "file");
     $location_esc_1 = convertpath ($site, $location_1, "comp");

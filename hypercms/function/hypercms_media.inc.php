@@ -9,6 +9,31 @@
 
 // ========================================== MEDIA FUNCTIONS =======================================
 
+// ---------------------------------------- valid_jpeg --------------------------------------------
+// function: valid_jpeg()
+// input: path to multimedia file [string]
+// output: true / false
+
+// description:
+// Checks for the existence of the EOI segment header at the end of the file.
+// Mainly used to verify JPEG images extracted from older Adobe InDesign files.
+
+function valid_jpeg ($filepath)
+{
+  if (is_file ($filepath))
+  {
+    $filehandler = fopen ($filepath, "r");
+
+    if (fseek ($filehandler, -2, SEEK_END) !== 0 || fread ($filehandler, 2) !== "\xFF\xD9")
+    {
+      fclose ($filehandler);
+      return false;
+    }
+    else return true;
+  }
+  else return false;
+}
+
 // ---------------------------------------- ocr_extractcontent --------------------------------------------
 // function: ocr_extractcontent()
 // input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string]
@@ -492,24 +517,27 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
         if ($filehandle != false)
         {
-          $line = @fread ($filehandle, filesize ($location.$file));
-          $lines = explode (chr(0x0f), $line);
-
-          foreach ($lines as $thisline)
+          if (filesize ($location.$file) > 0)
           {
-            if (strpos ($thisline, chr(0x00).chr(0x00).chr(0x00)) == 1)
-            {
-              $text_line = substr ($thisline, 4);
-              $end_pos   = strpos ($text_line, chr(0x00));
-              $text_line = substr ($text_line, 0, $end_pos);
-              $text_line = preg_replace ("/[^a-zA-Z0-9Ã€ÃÃ‚ÃƒÃ„Ã…Ã†Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃÃŽÃÃÃ‘Ã’Ã“Ã”Ã•Ã–Ã™ÃšÃ›ÃœÃÃŸÃ Ã¡Ã¢Ã£Ã¤Ã¥Ã¦Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã±Ã²Ã³Ã´ÃµÃ¶Ã¹ÃºÃ»Ã¼Ã½Ã¾Ã¿\s\,\.\-\n\r\t@\/\_\(\)]/", "", $text_line);
+            $line = @fread ($filehandle, filesize ($location.$file));
+            $lines = explode (chr(0x0f), $line);
 
-              if (strlen ($text_line) > 1)
+            foreach ($lines as $thisline)
+            {
+              if (strpos ($thisline, chr(0x00).chr(0x00).chr(0x00)) == 1)
               {
-                $file_content .= substr ($text_line, 0, $end_pos)."\n";
+                $text_line = substr ($thisline, 4);
+                $end_pos   = strpos ($text_line, chr(0x00));
+                $text_line = substr ($text_line, 0, $end_pos);
+                $text_line = preg_replace ("/[^a-zA-Z0-9Ã€ÃÃ‚ÃƒÃ„Ã…Ã†Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃÃŽÃÃÃ‘Ã’Ã“Ã”Ã•Ã–Ã™ÃšÃ›ÃœÃÃŸÃ Ã¡Ã¢Ã£Ã¤Ã¥Ã¦Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã±Ã²Ã³Ã´ÃµÃ¶Ã¹ÃºÃ»Ã¼Ã½Ã¾Ã¿\s\,\.\-\n\r\t@\/\_\(\)]/", "", $text_line);
+  
+                if (strlen ($text_line) > 1)
+                {
+                  $file_content .= substr ($text_line, 0, $end_pos)."\n";
+                }
               }
             }
-          } 
+          }
         }
 
         if ($file_content != "")
@@ -914,7 +942,7 @@ function reindexcontent ($site, $container_id_array="")
 }
 
 // ---------------------- base64_to_file -----------------------------
-// function: createthumbnail_indesign()
+// function: base64_to_file()
 // input: base64 encoded [string], path to destination dir [string], file name [string]
 // output: new file name / false on error
 
@@ -957,9 +985,11 @@ function base64_to_file ($base64_string, $location, $file)
 
 function createthumbnail_indesign ($site, $location_source, $location_dest, $file)
 {
-  global $mgmt_config, $user;
+  global $mgmt_config, $mgmt_mediametadata, $user;
 
+  // initialize
   $error = array();
+  $result = "";
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
@@ -986,15 +1016,52 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
     // verify local media file
     if (!is_file ($location_source.$file)) return false;
 
+    // get file name without extension
+    $file_name = strrev (substr (strstr (strrev ($file), "."), 1));
+
+    // new file name
+    $newfile = $file_name.".thumb.jpg"; 
+
+    // get source file extension
+    $file_ext = strtolower (strrchr ($file, "."));
+
+    // try EXIFTOOL
+    if (!empty ($mgmt_mediametadata) && is_array ($mgmt_mediametadata))
+    {
+      foreach ($mgmt_mediametadata as $extensions => $executable)
+      {
+        if (substr_count ($extensions.".", $file_ext.".") > 0 && $executable != "")
+        {
+          // extract thumbnail
+          $cmd = $executable." -r -b -PageImage \"".shellcmd_encode ($location_source.$file)."\" > \"".shellcmd_encode ($location_dest.$newfile)."\"";
+
+          @exec ($cmd, $buffer, $errorCode);
+
+          // on error
+          if ($errorCode)
+          {
+            $errcode = "20141";
+            $error[] = $mgmt_config['today']."|hypercms_media.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) failed to extract thumbnail from INDD file '".$file."'";
+  
+            // save log
+            savelog (@$error);
+
+            return false;
+          }
+          // on success
+          elseif (is_file ($location_dest.$newfile) && filesize ($location_dest.$newfile) > 0)
+          {
+            return $newfile;
+          }
+        }
+      }
+    }
+
+    // try other methods
     $filedata = @file_get_contents ($location_source.$file);
 
     if ($filedata != "")
     {
-      $result = "";
-
-      // get file name without extension
-      $file_name = strrev (substr (strstr (strrev ($file), "."), 1));
-
       // try to extract data from XMP node
       // new method for XMP thumbnail extraction
       $regexp = "/<xmpGImg:image>.+<\/xmpGImg:image>/";
@@ -1013,16 +1080,16 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
       }
 
       // old method for XMP thumbnail extraction (deprecated)
-      if ($result == "")
+      if (empty ($result))
       {
         $xmpdata = getcontent ($filedata, "<xmp:PageInfo>");
 
-        if ($xmpdata != false && $xmpdata[0] != "")
+        if (!empty ($xmpdata[0]))
         {
           // get base64 encoded string from xml node
           $imgstr = getcontent ($xmpdata[0], "<xmpGImg:image>");
 
-          if ($imgstr == false || $imgstr[0] == "")
+          if (empty ($imgstr[0]))
           {
             // try attribute
             $result = getattribute ($xmpdata[0], "xmpGImg:image"); 
@@ -1032,16 +1099,16 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
       }
 
       // try to extract data from XAP node (deprecated)
-      if ($result == "")
+      if (empty ($result))
       {
         $xapdata = getcontent ($filedata, "<xap:Thumbnails>");
 
-        if ($xapdata != false && $xapdata[0] != "")
+        if (!empty ($xapdata[0]))
         {
           // get base64 encoded string from xml node
           $imgstr = getcontent ($xapdata[0], "<xapGImg:image>");
 
-          if ($imgstr == false || $imgstr[0] == "")
+          if (empty ($imgstr[0]))
           {
             // try attribute
             $result = getattribute ($xapdata[0], "xapGImg:image"); 
@@ -1054,32 +1121,39 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
       if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
 
       // save thumbnail file
-      if ($result != "")
+      if (!empty ($result))
       {
         // prepare base64 encoded image string
-        if ($result != false && $result != "")
-        {
-          $indd_thumbnail = strip_tags ($result);
-          // remove decoded Line Feed character
-          $indd_thumbnail = str_replace ("#xA;", "", $indd_thumbnail);
-        }
+        if (substr (trim ($result), 0, 1) == "<") $result = strip_tags ($result);
 
-        // new file name
-        $newfile = $file_name.".thumb.jpg"; 
+        // remove decoded Line Feed character
+        $result = str_replace ("#xA;", "", $result);
+
         $filehandler = fopen ($location_dest.$newfile, "wb");
 
-        if ($filehandler)
+        if ($filehandler && !empty ($result))
         {
-          fwrite ($filehandler, base64_decode ($indd_thumbnail));
+          fwrite ($filehandler, base64_decode ($result));
           fclose ($filehandler);
 
-          // save in cloud storage
-          if (function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
+          // remove thumbnail file if it is not a valid image
+          if (exif_imagetype ($location_dest.$newfile) != IMAGETYPE_JPEG || valid_jpeg ($location_dest.$newfile) == false)
+          {
+            unlink ($location_dest.$newfile);
 
-          // remote client
-          remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+            return false;
+          }
+          // on success
+          else
+          {
+            // save in cloud storage
+            if (function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
 
-          return $newfile;
+            // remote client
+            remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+
+            return $newfile;
+          }
         }
         else
         {
@@ -2469,7 +2543,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($type != "thumbnail" && is_file ($buffer_file)) unlink ($buffer_file);
                 }
                 // -------------------- convert image using GD-Library (no watermarking supported) -----------------------
-                elseif ($imagewidth_orig > 0 && $imageheight_orig > 0 && (empty ($mgmt_imagepreview[$imagepreview_ext]) || $mgmt_imagepreview[$imagepreview_ext] == "GD") && in_array (strtolower($file_ext), $GD_allowed_ext))
+                elseif ($imagewidth_orig > 0 && $imageheight_orig > 0 && (empty ($mgmt_imagepreview[$imagepreview_ext]) || $mgmt_imagepreview[$imagepreview_ext] == "GD") && in_array (strtolower($file_ext), $GD_allowed_ext) && function_exists ("imagecreatefromjpeg") && function_exists ("imagecreatefrompng") && function_exists ("imagecreatefromgif"))
                 {
                   // initialize
                   $temp_file = $path_source;
@@ -2532,9 +2606,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
                   }
 
-                  if ($file_ext == ".gif") $imgsource = @imagecreatefromgif ($temp_file);
-                  elseif ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @imagecreatefromjpeg ($temp_file);
+                  if ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @imagecreatefromjpeg ($temp_file);
                   elseif ($file_ext == ".png") $imgsource = @imagecreatefrompng ($temp_file);
+                  elseif ($file_ext == ".gif") $imgsource = @imagecreatefromgif ($temp_file);
                   else return false;
 
                   // crop image
@@ -4080,7 +4154,7 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
 {
   global $mgmt_config, $user;
 
-  if (valid_publicationname ($site) && valid_locationname ($filepath) && $angle <= 360 && ($imageformat == "jpg" || $imageformat == "png" || $imageformat == "gif"))
+  if (valid_publicationname ($site) && valid_locationname ($filepath) && $angle <= 360 && ($imageformat == "jpg" || $imageformat == "png" || $imageformat == "gif") && function_exists ("imagecreatefromjpeg") && function_exists ("imagecreatefrompng") && function_exists ("imagecreatefromgif"))
   {
     $file_info = getfileinfo ($site, $filepath, "comp");
     $location = getlocation ($filepath);
@@ -4103,7 +4177,7 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
     if (is_file ($filepath))
     {
       // create image from file
-      if ($file_info['ext'] == ".jpg") $image = imagecreatefromjpeg ($filepath);
+      if ($file_info['ext'] == ".jpg" || $file_info['ext'] == ".jpeg") $image = imagecreatefromjpeg ($filepath);
       elseif ($file_info['ext'] == ".png") $image = imagecreatefrompng ($filepath);
       elseif ($file_info['ext'] == ".gif") $image = imagecreatefromgif ($filepath);
 
@@ -4212,13 +4286,13 @@ function hex2rgb ($hex)
     $hex = str_replace ("#", "", $hex);
     $color = array();
  
-    if (strlen($hex) == 3)
+    if (strlen ($hex) == 3)
     {
       $color['r'] = hexdec (substr ($hex, 0, 1) . $r);
       $color['g'] = hexdec (substr ($hex, 1, 1) . $g);
       $color['b'] = hexdec (substr ($hex, 2, 1) . $b);
     }
-    elseif(strlen($hex) == 6)
+    elseif (strlen ($hex) == 6)
     {
       $color['r'] = hexdec (substr ($hex, 0, 2));
       $color['g'] = hexdec (substr ($hex, 2, 2));
@@ -4237,19 +4311,22 @@ function hex2rgb ($hex)
 
 function rgb2hex ($red, $green=0, $blue=0)
 {
-  if (is_array ($red))
+  // first parameter holds RGB color code
+  if (is_array ($red) && isset ($red['r']) && isset ($red['g']) && isset ($red['b']))
   {
-    $red = $red['r'];
-    $green = $red['g'];
-    $blue = $red['b'];
+    $rgb = $red;
+    $red = intval ($rgb['r']);
+    $green = intval ($rgb['g']);
+    $blue = intval ($rgb['b']);
   }
 
-  if ($red >= 0 && $green >= 0 && $blue >= 0)
+  // convert
+  if (intval ($red) >= 0 && intval ($green) >= 0 && intval ($blue) >= 0)
   {
     $hex = "#";
-    $hex.= str_pad (dechex ($red), 2, "0", STR_PAD_LEFT);
-    $hex.= str_pad (dechex ($green), 2, "0", STR_PAD_LEFT);
-    $hex.= str_pad (dechex ($blue), 2, "0", STR_PAD_LEFT);
+    $hex .= str_pad (dechex ($red), 2, "0", STR_PAD_LEFT);
+    $hex .= str_pad (dechex ($green), 2, "0", STR_PAD_LEFT);
+    $hex .= str_pad (dechex ($blue), 2, "0", STR_PAD_LEFT);
  
     return $hex;
   }
@@ -4263,18 +4340,21 @@ function rgb2hex ($red, $green=0, $blue=0)
 
 function rgb2cmyk ($red, $green=0, $blue=0)
 {
-  if (is_array ($red))
+  // first parameter holds RGB color code
+  if (is_array ($red) && isset ($red['r']) && isset ($red['g']) && isset ($red['b']))
   {
-    $red = $red['r'];
-    $green = $red['g'];
-    $blue = $red['b'];
+    $rgb = $red;
+    $red = intval ($rgb['r']);
+    $green = intval ($rgb['g']);
+    $blue = intval ($rgb['b']);
   }
 
-  if ($red >= 0 && $green >= 0 && $blue >= 0)
+  // convert
+  if (intval ($red) >= 0 && intval ($green) >= 0 && intval ($blue) >= 0)
   {
-    $red = $red / 255;
-    $green = $green / 255;
-    $blue = $blue / 255;
+    $red = intval ($red) / 255;
+    $green = intval ($green) / 255;
+    $blue = intval ($blue) / 255;
     $max = max ($red, $green, $blue);
     $black = 1 - $max;
 

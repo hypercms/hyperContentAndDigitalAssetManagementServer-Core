@@ -17,10 +17,6 @@ require ("../function/hypercms_api.inc.php");
 $savetype = getrequest ("savetype");
 $location = getrequest_esc ("location", "locationname");
 $page = getrequest ("page", "objectname");
-
-
-
-// input parameters
 $savetype = getrequest ("savetype");
 $autosave = getrequest ("autosave");
 $appendcontent = getrequest ("appendcontent");
@@ -73,14 +69,16 @@ if ($service == "recognizefaces" && !empty ($user) && is_facerecognition ($user)
   $setlocalpermission['create'] = 1;
 }
   
-if ($setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
+if (empty ($setlocalpermission['root']) || empty ($setlocalpermission['create']) || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $error = array();
+$usedby = "";
 
 // helper function for appending text content in multiedit mode
 function appendcontent_helper ($xmlcontent, $text, $delimiter=" ")
@@ -220,7 +218,7 @@ $mediadata = getrequest ("mediadata");
 
 // check locked by user
 $result_containername = getcontainername ($object_contentfile);
-$usedby = $result_containername['user'];
+if (!empty ($result_containername['user'])) $usedby = $result_containername['user'];
 
 // if not locked by another user, security token is available and matches the crypted location of the object (absolute path in file system is used as input for encryption!)
 if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_locationname ($location) && valid_objectname ($page))
@@ -307,8 +305,11 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
     // ----------------------------------- write content -------------------------------------- 
   
     // face detection data
-    if (isset ($faces))
+    if (!empty ($faces))
     {
+      // initialize
+      if (empty ($textu) || !is_array ($textu)) $textu = array();
+
       // remove empty entries
       $textu['Faces-JSON'] = str_replace (", , ", ", ", $faces);
     }
@@ -747,7 +748,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
       }
     
       // eventsystem
-      if ($eventsystem['onsaveobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      if (!empty ($eventsystem['onsaveobject_pre']) && empty ($eventsystem['hide'])) 
       {
         $contentdataevent = onsaveobject_pre ($site, $cat, $location, $page, $object_contentfile, $contentdatanew, $user);
 
@@ -796,7 +797,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
         rdbms_setkeywords ($site, $container_id);
 
         // eventsystem
-        if ($eventsystem['onsaveobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+        if (!empty ($eventsystem['onsaveobject_post']) && empty ($eventsystem['hide']))
         {
           $contentdataevent = onsaveobject_post ($site, $cat, $location, $page, $object_contentfile, $contentdatanew, $user);
         }

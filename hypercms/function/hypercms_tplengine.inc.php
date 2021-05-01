@@ -814,21 +814,21 @@ function followlink ($site, $follow)
     $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
 
     // absolute link (hardcoded)
-    if (@substr_count ($follow, "://") > 0)
+    if (substr_count ($follow, "://") > 0)
     {
-      if (@substr_count ($follow, $mgmt_config[$site]['url_path_page']) > 0)
+      if (!empty ($mgmt_config[$site]['url_path_page']) && substr_count ($follow, $mgmt_config[$site]['url_path_page']) > 0)
       {
         $follow = str_replace ($mgmt_config[$site]['url_path_page'], "%page%/".$site."/", $follow);
       }
-      elseif (@substr_count ($follow, $publ_config['url_publ_page']) > 0)
+      elseif (!empty ($publ_config['url_publ_page']) && substr_count ($follow, $publ_config['url_publ_page']) > 0)
       {
         $follow = str_replace ($publ_config['url_publ_page'], "%page%/".$site."/", $follow);
       }
-      elseif (@substr_count ($follow, $mgmt_config['url_path_comp']) > 0)
+      elseif (!empty ($mgmt_config['url_path_comp']) && substr_count ($follow, $mgmt_config['url_path_comp']) > 0)
       {
         $follow = str_replace ($mgmt_config['url_path_comp'], "%comp%/", $follow);
       }
-      elseif (@substr_count ($follow, $publ_config['url_publ_comp']) > 0)
+      elseif (!empty ($publ_config['url_publ_comp']) && substr_count ($follow, $publ_config['url_publ_comp']) > 0)
       {
         $follow = str_replace ($publ_config['url_publ_comp'], "%comp%/", $follow);
       }
@@ -837,12 +837,12 @@ function followlink ($site, $follow)
     elseif (substr ($follow, 0, 1) == "/")
     {
       // extract path (URI) without domain from URL
-      if (strpos ($publ_config['url_publ_page'], "://") > 0)
+      if (!empty ($publ_config['url_publ_page']) && strpos ($publ_config['url_publ_page'], "://") > 0)
       {
         $pos = strpos ($publ_config['url_publ_page'], "/", strpos ($publ_config['url_publ_page'], "://") + 3);
         $rooturl = substr ($publ_config['url_publ_page'], 0, $pos);
       }
-      elseif (substr ($publ_config['url_publ_page'], -1) == "/") $rooturl = substr ($publ_config['url_publ_page'], 0, -1);
+      elseif (!empty ($publ_config['url_publ_page']) && substr ($publ_config['url_publ_page'], -1) == "/") $rooturl = substr ($publ_config['url_publ_page'], 0, -1);
       else $rooturl = $publ_config['url_publ_page'];
 
       $follow = $rooturl.$follow;
@@ -1255,7 +1255,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini")) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
 
   // eventsystem
-  if ($eventsystem['oneditobject_pre'] == 1 && $eventsystem['hide'] == 0 && ($buildview == "cmsview" || $buildview == "inlineview"))
+  if (!empty ($eventsystem['oneditobject_pre']) && $eventsystem['hide'] == 0 && ($buildview == "cmsview" || $buildview == "inlineview"))
   {
     // include hyperCMS Event System
     @include_once ($mgmt_config['abs_path_data']."eventsystem/hypercms_eventsys.inc.php");
@@ -2221,7 +2221,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $result['objecttype'] = $filetype;
 
             return $result;
-            exit;
           }
 
           // get label text
@@ -2659,7 +2658,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $result['objecttype'] = $filetype;
 
             return $result;
-            exit;
           }
 
           // get tag name
@@ -2896,7 +2894,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $result['objecttype'] = $filetype;
 
               return $result;
-              exit;
             }
 
             // get label text
@@ -3024,25 +3021,25 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $tagc = "hyperCMS:".$searchtag."c id='".$id."'";
             $tagd = "hyperCMS:".$searchtag."d id='".$id."'";
             $tagk = "hyperCMS:".$searchtag."k id='".$id."'";
-            $tagk = "hyperCMS:".$searchtag."s id='".$id."'";
+            $tags = "hyperCMS:".$searchtag."s id='".$id."'";
 
-            $tagucount = @substr_count ($viewstore, $tagu);
-            $tagfcount = @substr_count ($viewstore, $tagf);
-            $taglcount = @substr_count ($viewstore, $tagl);
-            $tagccount = @substr_count ($viewstore, $tagc);
-            $tagdcount = @substr_count ($viewstore, $tagd);
-            $tagkcount = @substr_count ($viewstore, $tagk);
-            $tagscount = @substr_count ($viewstore, $tags);
+            $tagucount = substr_count ($viewstore, $tagu);
+            $tagfcount = substr_count ($viewstore, $tagf);
+            $taglcount = substr_count ($viewstore, $tagl);
+            $tagccount = substr_count ($viewstore, $tagc);
+            $tagdcount = substr_count ($viewstore, $tagd);
+            $tagkcount = substr_count ($viewstore, $tagk);
+            $tagscount = substr_count ($viewstore, $tags);
 
             $control_sum = 0;
 
-            if ($tagucount >= 1) $control_sum++;
-            if ($tagfcount >= 1) $control_sum++;
-            if ($taglcount >= 1) $control_sum++;
-            if ($tagccount >= 1) $control_sum++;
-            if ($tagdcount >= 1) $control_sum++;
-            if ($tagkcount >= 1) $control_sum++;
-            if ($tagscount >= 1) $control_sum++;
+            if ($tagucount > 0) $control_sum++;
+            if ($tagfcount > 0) $control_sum++;
+            if ($taglcount > 0) $control_sum++;
+            if ($tagccount > 0) $control_sum++;
+            if ($tagdcount > 0) $control_sum++;
+            if ($tagkcount > 0) $control_sum++;
+            if ($tagscount > 0) $control_sum++;
 
             // if textu, textf or textl tag have the same id => error
             if ($control_sum >= 2)
@@ -3071,7 +3068,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $result['objecttype'] = $filetype;
 
               return $result;
-              exit;
             }
             else
             {
@@ -3367,7 +3363,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $viewstore_offset = $viewstore;
 
                   // loop for unique media names for rollover effect
-                  while (@substr_count ($viewstore_offset, $hypertag) > 0)
+                  while (!empty ($hypertag) && substr_count ($viewstore_offset, $hypertag) > 0)
                   {
                     if ($searchtag == "text")
                     {
@@ -3601,7 +3597,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
 
-                  while (@substr_count ($viewstore_offset, $hypertag) > 0)
+                  while (!empty ($hypertag) && substr_count ($viewstore_offset, $hypertag) > 0)
                   {
                     if ($searchtag == "text")
                     {
@@ -3774,7 +3770,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
 
-                  while (@substr_count ($viewstore_offset, $hypertag) > 0)
+                  while (!empty ($hypertag) && substr_count ($viewstore_offset, $hypertag) > 0)
                   {
                     $list = "";
 
@@ -3921,7 +3917,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
 
-                  while (@substr_count ($viewstore_offset, $hypertag) > 0)
+                  while (!empty ($hypertag) && substr_count ($viewstore_offset, $hypertag) > 0)
                   { 
                     if ($searchtag == "text")
                     {
@@ -4008,7 +4004,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
 
-                  while (@substr_count ($viewstore_offset, $hypertag) > 0)
+                  while (!empty ($hypertag) && substr_count ($viewstore_offset, $hypertag) > 0)
                   { 
                     if ($searchtag == "text")
                     {
@@ -4093,7 +4089,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
 
-                  while (@substr_count ($viewstore_offset, $hypertag) > 0)
+                  while (!empty ($hypertag) && substr_count ($viewstore_offset, $hypertag) > 0)
                   { 
                     if ($searchtag == "text")
                     {
@@ -4429,7 +4425,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $result['objecttype'] = $filetype;
 
               return $result;
-              exit;
             }
 
             // set default values if not set
@@ -4794,7 +4789,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
 
-                  while (substr_count ($viewstore_offset, $hypertag_file[$id][$tagid]) > 0)
+                  while (!empty ($hypertag_file[$id][$tagid]) && substr_count ($viewstore_offset, $hypertag_file[$id][$tagid]) > 0)
                   {
                     if ($searchtag == "media")
                     {
@@ -5103,7 +5098,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
 
-                  while (substr_count ($viewstore_offset, $hypertag_file[$id][$tagid]) > 0)
+                  while (!empty ($hypertag_file[$id][$tagid]) && substr_count ($viewstore_offset, $hypertag_file[$id][$tagid]) > 0)
                   {
                     // get full HTML media-tag
                     $imgtag = gethtmltag ($viewstore_offset, $hypertag_file[$id][$tagid]);
@@ -5338,7 +5333,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $result['objecttype'] = $filetype;
 
               return $result;
-              exit;
             }
 
             // set default values if not set
@@ -5605,7 +5599,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
 
-                  while (@substr_count ($viewstore_offset, $hypertag_href[$id][$tagid]) >= 1)
+                  while (!empty ($hypertag_href[$id][$tagid]) && substr_count ($viewstore_offset, $hypertag_href[$id][$tagid]) > 0)
                   {
                     if ($searchtag == "link")
                     {
@@ -6028,7 +6022,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $result['objecttype'] = $filetype;
 
               return $result;
-              exit;
             }
 
             // get label text
@@ -6166,7 +6159,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $result['objecttype'] = $filetype;
 
               return $result;
-              exit;
             }
             else
             {
@@ -6279,7 +6271,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     if (!empty ($temp[0])) $contentbot = $temp[0];
                   }
 
-                  while (@substr_count ($viewstore_offset, $hypertag) > 0)  // necessary loop for unique media names for rollover effect
+                  while (!empty ($hypertag) && substr_count ($viewstore_offset, $hypertag) > 0)  // necessary loop for unique media names for rollover effect
                   {
                     if ($searchtag == "component")
                     {
@@ -6289,7 +6281,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
  
                       if ($buildview == "cmsview" || $buildview == "inlineview")
                       {
-                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" />".$compeditlink."</div>\n";
+                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."&mediatype=".url_encode($mediatype)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" />".$compeditlink."</div>\n";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6317,7 +6309,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                   <div id=\"".$hypertagname."_".$id."_controls\" style=\"display:inline-block;\">
                                     <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]'],'','location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\"> 
                                     <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['temp_".$hypertagname."_".$id."']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" />
-                                    <img onClick=\"setSaveType('form_so', '".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.png\" alt=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" />
+                                    <img onClick=\"setSaveType('form_so', '".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."&mediatype=".url_encode($mediatype)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.png\" alt=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" />
                                   </div>";
 
                         $formitem[$key] .= "
@@ -6374,7 +6366,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       if ($buildview == "cmsview" || $buildview == 'inlineview')
                       {
-                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".$db_connect."&id=".$id."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component[".$id."]=".url_encode($contentbot)."&condition[".$id."]=".url_encode($condbot)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" />".$arttaglink[$artid]."</div>\n";
+                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".$db_connect."&id=".$id."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component[".$id."]=".url_encode($contentbot)."&condition[".$id."]=".url_encode($condbot)."&mediatype[".$id."]=".url_encode($mediatype)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" />".$arttaglink[$artid]."</div>\n";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6397,7 +6389,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                   <div id=\"".$hypertagname."_".$artid."_".$elementid."_controls\" style=\"display:inline-block;\">
                                     <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]'], '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" /> 
                                     <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['temp_".$hypertagname."_".$artid."_".$elementid."']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" />
-                                    <img onClick=\"setSaveType('form_so', '".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.png\" alt=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" />
+                                    <img onClick=\"setSaveType('form_so', '".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."&mediatype=".url_encode($mediatype)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.png\" alt=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" />
                                   </div>";
 
                         // personalization/customers profiles only if not DAM
@@ -6466,14 +6458,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $viewstore_offset = $viewstore;
                   $i = 0;
 
-                  while (@substr_count ($viewstore_offset, $hypertag) >= 1)
+                  while (!empty ($hypertag) && substr_count ($viewstore_offset, $hypertag) > 0)
                   {
                     if ($searchtag == "component")
                     {
                       // create tag link for editor
                       if (($buildview == "cmsview" || $buildview == 'inlineview') && $onedit != "hidden")
                       {
-                        $taglink = "<img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; cursor:pointer; z-index:9999999;\" /><br />\n";
+                        $taglink = "<img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; cursor:pointer; z-index:9999999;\" /><br />\n";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6528,7 +6520,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                     <img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'], false)\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonUp\" src=\"".getthemelocation()."img/button_moveup.png\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" /><br />
                                     <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'], '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" /><br /> 
                                     <img onClick=\"deleteSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'])\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.png\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" /><br />
-                                    <img onClick=\"setSaveType('form_so', '".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=multi&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&condition=".url_encode($condbot)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compmulti.png\" alt=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" /><br />
+                                    <img onClick=\"setSaveType('form_so', '".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=multi&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&condition=".url_encode($condbot)."&mediatype=".url_encode($mediatype)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compmulti.png\" alt=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" /><br />
                                     <img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'], true)\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDown\" src=\"".getthemelocation()."img/button_movedown.png\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" />
                                   </div>
                                 </td>";
@@ -6586,7 +6578,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       if ($buildview == "cmsview" || $buildview == "inlineview")
                       {
-                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; margin:0; padding:0; cursor:pointer;\" />".$arttaglink[$artid]."</div>";
+                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; margin:0; padding:0; cursor:pointer;\" />".$arttaglink[$artid]."</div>";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6636,7 +6628,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                     <img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'], false)\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonUp\" src=\"".getthemelocation()."img/button_moveup.png\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" /><br />
                                     <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'], '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" /><br /> 
                                     <img onClick=\"deleteSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'])\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.png\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" /><br />
-                                    <img onClick=\"setSaveType('form_so', '".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=multi&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&condition=".url_encode($condbot)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compmulti.png\" alt=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" /><br />
+                                    <img onClick=\"setSaveType('form_so', '".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=multi&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&condition=".url_encode($condbot)."&mediatype=".url_encode($mediatype)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compmulti.png\" alt=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" /><br />
                                     <img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'], true)\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDown\" src=\"".getthemelocation()."img/button_movedown.png\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" />
                                   </div>
                                 </td>";
@@ -6896,7 +6888,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           if (($buildview == "cmsview" || $buildview == "inlineview") && $onedit != "hidden" && $icon != "hidden")
                           {
-                            $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img onClick=\"hcms_openWindowComp('', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=yes', '".str_replace ("%comp%", "", $component_link)."');\"  src=\"".getthemelocation()."img/edit_edit.png\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','delete');\" src=\"".getthemelocation()."img/edit_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','moveup');\"  src=\"".getthemelocation()."img/edit_moveup.png\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','movedown');\" src=\"".getthemelocation()."img/edit_movedown.png\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /></div>\n";
+                            $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img onClick=\"hcms_openWindowComp('', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=yes', '".str_replace ("%comp%", "", $component_link)."');\"  src=\"".getthemelocation()."img/edit_edit.png\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','delete');\" src=\"".getthemelocation()."img/edit_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','moveup');\"  src=\"".getthemelocation()."img/edit_moveup.png\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','movedown');\" src=\"".getthemelocation()."img/edit_movedown.png\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /></div>\n";
 
                             $scriptarray .= "item['".$id."'][".$i."] = '".$component_link."';\n";
                             $i++;
@@ -7147,7 +7139,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (preg_match ("/\[JavaScript:scriptbegin/i", $viewstore))
       {
         // replace hyperCMS script code
-        while (@substr_count (strtolower($viewstore), "[javascript:scriptbegin") > 0)
+        while (substr_count (strtolower($viewstore), "[javascript:scriptbegin") > 0)
         {
           $jstagstart = strpos (strtolower($viewstore), "[javascript:scriptbegin");
           $jstagend = strpos (strtolower($viewstore), "scriptend]", $jstagstart + strlen ("[javascript:scriptbegin")) + strlen ("scriptend]");
@@ -7179,10 +7171,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         else $bodytag_controlreload = "";
 
         // ==================================== scripts in template view =====================================
-        if ($buildview == "template" && $application != "")
+        if ($buildview == "template" && !empty ($application) && tpl_tagbegin ($application) != "")
         {
           // replace hyperCMS script code
-          while (@substr_count (strtolower($viewstore), "[hypercms:scriptbegin") > 0)
+          while (substr_count (strtolower($viewstore), "[hypercms:scriptbegin") > 0)
           {
             $apptagstart = strpos (strtolower($viewstore), "[hypercms:scriptbegin");
             $apptagend = strpos (strtolower($viewstore), "scriptend]", $apptagstart + strlen ("[hypercms:scriptbegin")) + strlen ("scriptend]");
@@ -7198,7 +7190,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           }
 
           // replace application script code
-          while (@substr_count ($viewstore, tpl_tagbegin($application)) > 0)
+          while (substr_count ($viewstore, tpl_tagbegin($application)) > 0)
           {
             $apptagstart = strpos ($viewstore, tpl_tagbegin($application));
             $apptagend = strpos ($viewstore, tpl_tagend($application), $apptagstart + strlen (tpl_tagbegin($application))) + strlen (tpl_tagend($application));
@@ -7302,7 +7294,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             }
 
             // execute application code (non PHP)
-            if ($application != "" && $application != "php" && isset ($mgmt_config['application'][$application]) && $mgmt_config['application'][$application] == true && @substr_count ($viewstore, tpl_tagbegin ($application)) > 0)
+            if (!empty ($application) && $application != "php" && !empty ($mgmt_config['application'][$application]) && tpl_tagbegin ($application) != "" && @substr_count ($viewstore, tpl_tagbegin ($application)) > 0)
             {
               // change directory to location to have correct hrefs
               $viewstore =  tpl_globals_extended ($application, $mgmt_config['abs_path_cms'], $mgmt_config['abs_path_rep'], $site, $location).$viewstore;
@@ -7637,6 +7629,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       <input type=\"hidden\" name=\"tagname\" value=\"\" />
       <input type=\"hidden\" name=\"component\" value=\"\" />
       <input type=\"hidden\" name=\"condition\" value=\"\" />
+      <input type=\"hidden\" name=\"mediatype\" value=\"\" />
       <input type=\"hidden\" name=\"token\" value=\"".$token."\" />
     </form>
     </div>
@@ -7670,7 +7663,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     var item = new Array();
     ".$scriptarray."
 
-    function hcms_changeitem (tagname, id, condition, pos, type)
+    function hcms_selectComponents (tagname, id, condition, mediatype, pos, type)
     {
       var component_serialized = '';
       var component_current = '';
@@ -7737,6 +7730,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         document.forms['hcms_result'].elements['tagname'].value = tagname;
         document.forms['hcms_result'].elements['component'].value = component_serialized;
         document.forms['hcms_result'].elements['condition'].value = condition;
+        document.forms['hcms_result'].elements['mediatype'].value = mediatype;
 
         if (type != 'send')
         {
@@ -8032,7 +8026,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   $viewstore .= "
   <script type=\"text/javascript\">
-  // initalize
+  // initialize
   var hcms_consolelog = true;
   ";
 
@@ -9543,7 +9537,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     ".(!empty ($recognizefaces_service) ? "recognizeFacesService();" : "")."
   }
 
-  // initalize faces on video
+  // initialize faces on video
   function initFaceOnVideo (type)
   {
     if (typeof (type) === 'undefined') type = '';
@@ -10473,7 +10467,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }
 
   // eventsystem
-  if ($eventsystem['oneditobject_post'] == 1 && $eventsystem['hide'] == 0 && ($buildview == "cmsview" || $buildview == 'inlineview'))
+  if (!empty ($eventsystem['oneditobject_post']) && $eventsystem['hide'] == 0 && ($buildview == "cmsview" || $buildview == 'inlineview'))
   {
     // include hyperCMS Event System
     @include_once ($mgmt_config['abs_path_data']."eventsystem/hypercms_eventsys.inc.php");
@@ -10616,7 +10610,6 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
             $result['objecttype'] = $filetype;
 
             return $result;
-            exit;
           }
 
           // get label

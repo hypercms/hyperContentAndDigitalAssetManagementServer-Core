@@ -263,7 +263,7 @@ function initialize ()
 <div id="selectarea" class="hcmsSelectArea"></div>
 
 <!-- context menu --> 
-<div id="contextLayer" style="position:absolute; min-width:150px; max-width:200px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
+<div id="contextLayer" style="position:absolute; min-width:160px; max-width:280px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_message" method="post" action="" target="">
     <input type="hidden" name="contextmenustatus" value="" />
     <input type="hidden" name="contextmenulocked" value="false" />
@@ -277,7 +277,7 @@ function initialize ()
     
     <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
       <tr>
-        <td>
+        <td style="white-space:nowrap;">
           <a href="javascript:void(0);" id="href_edit" onClick="if (buttonaction ('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_edit" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
           <hr />
           <a href="javascript:void(0);" id="href_delete" onClick="if (buttonaction ('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />

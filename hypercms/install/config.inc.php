@@ -96,8 +96,7 @@ $mgmt_config['url_path_plugin'] = $mgmt_config['url_path_cms']."plugin/";
 $mgmt_config['abs_path_plugin'] = $mgmt_config['abs_path_cms']."plugin/";
 
 // URL and absolute path to the content media repository
-// For media mass storage of the multimedia files on multiple HDDs/SSDs an array can be defined
-// for max. 10 devices.
+// For media mass storage of the multimedia files on multiple HDDs/SSDs an array can be defined for max. 10 devices.
 // Special rules can be defined in $mgmt_config['abs_path_data']/media/getmedialocation.inc.php
 // Be aware that the configuration for multiple storage devices will effect the development of 
 // templates in terms of referring to multimedia files.
@@ -106,6 +105,7 @@ $mgmt_config['abs_path_plugin'] = $mgmt_config['abs_path_cms']."plugin/";
 // (e.g. /home/domain/data/media_cnt/)
 $mgmt_config['url_path_media'] = $mgmt_config['url_path_rep']."media_cnt/";
 $mgmt_config['abs_path_media'] = $mgmt_config['abs_path_rep']."media_cnt/";
+// harddisk/mountpoint array (start index must be 1 and the index must not be higher than 10)
 // $mgmt_config['url_path_media'][1] = $mgmt_config['url_path_rep']."media_cnt1/";
 // $mgmt_config['abs_path_media'][1] = $mgmt_config['abs_path_rep']."media_cnt1/";
 // $mgmt_config['url_path_media'][2] = $mgmt_config['url_path_rep']."media_cnt2/";
@@ -771,7 +771,7 @@ $mgmt_compress['.zip'] = "%zip%";
 // The path to the executable is usually /usr/bin/unoconv
 $mgmt_docpreview['.bib.doc.docx.dot.ltx.odd.odt.odg.odp.ods.ppt.pptx.pxl.psw.pts.rtf.sda.sdc.sdd.sdw.sxw.txt.htm.html.xhtml.xls.xlsx'] = "%unoconv%";
 
-// Define the supported target formats for documents:
+// Define the supported target formats for documents
 $mgmt_docoptions['.pdf'] = "-f pdf";
 $mgmt_docoptions['.doc'] = "-f doc";
 $mgmt_docoptions['.csv'] = "-f csv";
@@ -785,7 +785,7 @@ $mgmt_docoptions['.jpg'] = "-f jpg";
 $mgmt_docoptions['.rtf'] = "-f pdf";
 $mgmt_docoptions['.txt'] = "-f txt";
 
-// Define the mapping of the source and target formats for documents:
+// Define the mapping of the source and target formats for documents
 $mgmt_docconvert['.doc'] = array('.png', '.pdf', '.odt');
 $mgmt_docconvert['.docx'] = array('.png', '.pdf', '.odt');
 $mgmt_docconvert['.xls'] = array('.png', '.pdf', '.csv', '.ods');
@@ -826,17 +826,17 @@ $mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
 // The path to the executable is usually /usr/bin/convert
 $mgmt_imagepreview['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
 
-// If an image file is uploaded hyperCMS will try to generate a thumbnail file for preview:
-$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 280x220 -q 95 -f jpg";
+// If a file was uploaded, the system will try to create a thumbnail image for the preview
+$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 380x220 -q 95 -f jpg";
 
-// Define the supported target formats for image editing:
+// Define the supported target formats for image editing
 $mgmt_imageoptions['.bmp']['original'] = "-f bmp";
 $mgmt_imageoptions['.gif']['original'] = "-f gif";
 $mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
 $mgmt_imageoptions['.png']['original'] = "-f png";
 $mgmt_imageoptions['.tif.tiff']['original'] = "-f tiff";
 
-// Define additional download formats besides the original image:
+// Define additional download formats besides the original image
 $mgmt_imageoptions['.jpg.jpeg']['1920x1080px'] = '-s 1920x1080 -q 95 -f jpg';
 $mgmt_imageoptions['.jpg.jpeg']['1024x768px'] = '-s 1024x768 -q 95 -f jpg';
 $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -q 95 -f jpg';
@@ -869,7 +869,7 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -q 95 -f jpg';
 // The path to the executable is usually /usr/bin/ffmpeg
 $mgmt_mediapreview['.3g2.3gp.4xm.a64.aac.ac3.act.adf.adts.adx.aea.aiff.alaw.alsa.amr.anm.apc.ape.apr.asf.asf_stream.ass.au.audio.avi.avm2.avs.bethsoftvid.bfi.bin.bink.bit.bmv.c93.caf.cavsvideo.cdg.cdxl.crc.daud.dfa.dirac.dnxhd.dsicin.dts.dv.dv1394.dvd.dxa.dwd.ea.ea_cdata.eac3.f32be.f32le.f4v.f64be.f64le.fbdev.ffm.ffmetadata.film_cpk.filmstrip.flac.flic.flv.framecrc.framemd5.g722.g723_1.g729.gsm.gxf.h261.h263.h264.hls.ico.idcin.idf.iff.ilbc.image2.image2pipe.ingenient.ipmovie.ipod.ismv.iss.iv8.ivf.jack.jacosub.jv.la.latm.lavfi.libcdio.libdc1394.lmlm4.loas.lxf.m4a.m4b.m4p.m4r.m4v.matroska.md5.mgsts.microdvd.mid.mj2.mjpeg.mkv.mlp.mm.mmf.mov.mp2.mp3.mp4.mp4v.mpc.mpc8.mpeg.mpg.mpeg1video.mpeg2video.mpegts.mpegtsraw.mpegvideo.mpjpeg.msnwctcp.mts.mtv.mulaw.mvi.mxf.mxf_d10.mxg.nc.nsv.null.nut.nuv.oga.ogg.ogm.ogv.oma.oss.ots.pac.paf.pmp.psp.psxstr.pva.qcp.r3d.ra.rawvideo.rcv.realtext.rka.rl2.rm.roq.rpl.rso.rtp.rtsp.s16be.s16le.s24be.s24le.s32be.s32le.s8.sami.sap.sbg.sdl.sdp.segment.shn.siff.smjpeg.smk.smush.sol.sox.spdif.subviewer.svcd.swa.swf.thp.tiertexseq.tmv.truehd.tta.tty.txd.u16be.u16le.u24be.u24le.u32be.u32le.u8.vc1.vc1test.vcd.vmd.vob.voc.vox.vqf.w64.wav.wc3movie.webm.webvtt.wma.wmv.wsaud.wsvqa.wtv.wv.x11grab.xa.xbin.xmv.xwma.yop.yuv4mpegpipe'] = "%ffmpeg%";
 
-// If a video or audio file is uploaded hyperCMS will try to generate a thumbnail video/audio file for preview
+// If a video or audio file was uploaded, the system will try to create a thumbnail video/audio file for the preview
 $mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 854x480 -f mp4 -c:a libfdk_aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
 $mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k";
 

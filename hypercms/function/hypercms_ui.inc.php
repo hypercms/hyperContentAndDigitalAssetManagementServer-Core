@@ -509,10 +509,10 @@ function showmessage ($show, $width="580px", $height="80px", $lang="en", $style=
 
     return "
   <div id=\"".$id."\" class=\"hcmsMessage\" style=\"".$style." width:".$width."; height:".$height.";\">
-    <table style=\"table-layout:fixed; width:100% !important; height:100% !important; padding:0; margin:0; border-spacing:0; border-collapse:collapse;\">
+    <table style=\"table-layout:fixed; width:100% !important; min-height:calc(".$height." -  10px); padding:0; margin:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
         <td style=\"text-align:left; vertical-align:top; padding:0;\">
-          <div id=\"message_text\" style=\"overflow:auto;\">".$show."</div>
+          <div id=\"message_text\" style=\"overflow:hidden;\">".$show."</div>
         </td>
         <td style=\"width:36px; text-align:right; vertical-align:top; padding:0;\">
           <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"hcms_switchFormLayer('".$id."');\" />
@@ -978,6 +978,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   // set required permissions for the service user (required for service savecontent, function buildview and function showmedia)
   if (!empty ($recognizefaces_service) && !empty ($user) && is_facerecognition ($user))
   {
+    if (!isset ($setlocalpermission)) $setlocalpermission = array();
     $setlocalpermission['root'] = 1;
     $setlocalpermission['create'] = 1;
   }
@@ -1177,7 +1178,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     }
 
     // only show details if user has permissions to edit the file or for template media files
-    if ($viewtype == "template" || ($setlocalpermission['root'] == 1 && ($setlocalpermission['create'] == 1 || $setlocalpermission['download'] == 1)))
+    if ($viewtype == "template" || (!empty ($setlocalpermission['root']) && !empty ($setlocalpermission['create']) || !empty ($setlocalpermission['download'])))
     {
       // --------------------------------------- if version ----------------------------------------
       if ($is_version && $viewtype != "template")
@@ -2343,11 +2344,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
-        if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) < 1 || $width > 854)
+        if (empty ($config['mediafiles']) || !is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) < 1 || $width > 854)
         {
           if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
           {
-            if (!is_array ($config['mediafiles'])) $config['mediafiles'] = array();
+            if (empty ($config['mediafiles']) || !is_array ($config['mediafiles'])) $config['mediafiles'] = array();
             $temp = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
             array_unshift ($config['mediafiles'], $temp);
           }
@@ -3199,7 +3200,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 // function: showcompexplorer ()
 // input: publication name [string], current explorer location [string], object location [string] (optional), object name [string] (optional), 
 //        component category [single,multi,media] (optional), search expression [string] (optional), search format [object,document,image,video,audio,watermark] (optional), 
-//        media-type [audio,video,text,flash,image,compressed,binary] (optional), view tpye [list,gallery] (optional), thumbnail size in pixel [integer]
+//        media-type [audio,binary,component,compressed,flash,image,text,video,watermark] (optional), view tpye [list,gallery] (optional), thumbnail size in pixel [integer]
 //        callback of CKEditor [string] (optional), saclingfactor for images [integer] (optional)
 // output: explorer with search / false on error
 
@@ -3214,6 +3215,9 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
   {
     // load file extension defintions
     require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+
+    // initialize
+    if (empty ($temp_complocation) || !is_array ($temp_complocation)) $temp_complocation = array();
 
     // get location in component structure from session
     if (!valid_locationname ($dir) && !empty ($temp_complocation[$site])) 
@@ -3302,10 +3306,8 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
 
     // set location in component structure in session
-    if (valid_locationname ($dir))
+    if ($site != "" && valid_locationname ($dir))
     {
-      if (!isset ($temp_complocation)) $temp_complocation = array();
-
       $temp_complocation[$site] = $dir;
 
       setsession ('hcms_temp_complocation', $temp_complocation, true);
@@ -3315,12 +3317,13 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     // only for watermark images
     if ($mediatype == "watermark") $format_ext = ".jpg.jpeg.png.gif";
     elseif ($mediatype == "audio") $format_ext = strtolower ($hcms_ext['audio']);
-    elseif ($mediatype == "video") $format_ext = strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']);
-    elseif ($mediatype == "text") $format_ext = strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']);
+    elseif ($mediatype == "binary") $format_ext = strtolower ($hcms_ext['binary']);
+    elseif ($mediatype == "component") $format_ext = strtolower ($hcms_ext['cms']);
+    elseif ($mediatype == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
     elseif ($mediatype == "flash") $format_ext = strtolower ($hcms_ext['flash']);
     elseif ($mediatype == "image") $format_ext = strtolower ($hcms_ext['image'].$hcms_ext['rawimage']);
-    elseif ($mediatype == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
-    elseif ($mediatype == "binary") $format_ext = strtolower ($hcms_ext['binary']);
+    elseif ($mediatype == "text") $format_ext = strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']);
+    elseif ($mediatype == "video") $format_ext = strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']);
     else $format_ext = "";
 
     // javascript code
@@ -3655,15 +3658,16 @@ $(document).ready(function()
             // get name
             $comp_name = getlocationname ($site, $object, "comp", "path");
 
-            //if ($compcat != "media" && strlen ($comp_name) > 50) $comp_name = "...".substr (substr ($comp_name, -50), strpos (substr ($comp_name, -50), "/")); 
+            // shorten name
+            // if ($compcat != "media" && strlen ($comp_name) > 50) $comp_name = "...".substr (substr ($comp_name, -50), strpos (substr ($comp_name, -50), "/")); 
 
             if (
-                 $comp_info != false && $comp_info['deleted'] == false && 
+                 !empty ($comp_info) && empty ($comp_info['deleted']) && 
                  $dir.$object != $location.$page && 
                  (
                    ($compcat != "media" && empty ($mgmt_config[$site]['dam']) && $comp_info['type'] == "Component") || // standard components if not DAM for component tag
-                   ($compcat != "media" && !empty ($mgmt_config[$site]['dam'])) || // any type if is DAM for component tag
-                   ($compcat == "media" && ($comp_info['type'] != "Component" || !empty ($mgmt_config[$site]['dam'])) && ($mediatype == "" || $mediatype == "comp" || substr_count ($format_ext.".", $comp_info['ext'].".") > 0)) // media assets for media tag
+                   ($compcat != "media" && !empty ($mgmt_config[$site]['dam']) && (empty ($format_ext) || substr_count ($format_ext.".", $comp_info['ext'].".") > 0)) || // any type if no mediatype is requested and if DAM for component tag
+                   ($compcat == "media" && ($comp_info['type'] != "Component" || !empty ($mgmt_config[$site]['dam'])) && ($mediatype == "" || $mediatype == "component" || substr_count ($format_ext.".", $comp_info['ext'].".") > 0)) // media assets for media tag
                  )
                )
             {
@@ -4064,7 +4068,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
   $format = getattribute ($hypertag, "format"); 
   if ($format == "") $format = "%Y-%m-%d";
 
-  if (substr($hypertagname, 0, strlen("arttext")) == "arttext")
+  if (substr ($hypertagname, 0, strlen ("arttext")) == "arttext")
   {
     // get article id
     $artid = getartid ($id);
@@ -4090,10 +4094,12 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
   {
     if (valid_publicationname ($site) && !is_array ($publ_config)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
 
-    // Building the title for the element
+    // building the title for the element
     $title = $labelname.": ";
-    // And the tag of the element containing the content
+
+    // and the tag of the element containing the content
     $tag = "span";
+
     // is the contenteditable attribute set
     $contenteditable = false;
 
@@ -4130,10 +4136,10 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 
     $defaultText = $title;
 
-    // Building the display of the content
+    // building the display of the content
     $return = "<".$tag." id=\"".$hypertagname."_".$id."\" title=\"".$title."\" class=\"hcms_editable\" ".($contenteditable ? 'contenteditable="true" ' : '').">".(empty($contentbot) ? $defaultText : $contentbot)."</".$tag.">";
 
-    // Building of the specific editor
+    // building of the specific editor
     $element = "";
 
     switch ($hypertagname)
@@ -4748,8 +4754,8 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
   global $mgmt_config;
 
   // default size
-  if ($width < 0) $width = 854;
-  if ($height < 0) $height = 480;
+  if (intval ($width) < 0) $width = 854;
+  if (intval ($height) < 0) $height = 480;
   
   // link to flash player (fallback player)
   $flashplayer = $mgmt_config['url_path_cms']."javascript/video/jarisplayer.swf";
@@ -5126,7 +5132,7 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true, $cleandomain=
   global $mgmt_config;
 
   // VIDEO.JS Player (Standard)
-  if (is_dir ($mgmt_config['abs_path_cms']."javascript/video-js/"))
+  if (is_dir ($mgmt_config['abs_path_cms']."javascript/video-js/") && !empty ($mgmt_config['url_path_cms']))
   {
     // remove domain name
     if (!empty ($cleandomain)) $source_url = cleandomain ($mgmt_config['url_path_cms']);
@@ -5159,8 +5165,8 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
 {
   global $mgmt_config;
 
-  if ($width < 0) $width = 320;
-  if ($height < 0) $height = 320;
+  if (intval ($width) < 0) $width = 320;
+  if (intval ($height) < 0) $height = 320;
 
   if (valid_publicationname ($site) && is_array ($audioArray) && $width != "" && $height != "")
   {
@@ -5195,7 +5201,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
           if ($value != "") $type = "type=\"".getmimetype ($value)."\" ";
           else $type = "";
 
-          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($value).$ts;
+          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($value).$ts;
         }
         // version 2.1 (media reference and mimetype is given)
         elseif (strpos ($value, ";") > 0)
@@ -5203,7 +5209,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
           list ($media, $type) = explode (";", $value);
 
           $type = "type=\"".$type."\" ";
-          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media).$ts;
+          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($media).$ts;
         }
         else $url = "";
       }
@@ -5304,7 +5310,7 @@ function showaudioplayer_head ($secureHref=true, $cleandomain=false)
   global $mgmt_config;
 
   // VIDEO.JS Player (Standard)
-  if (is_dir ($mgmt_config['abs_path_cms']."javascript/video-js/"))
+  if (is_dir ($mgmt_config['abs_path_cms']."javascript/video-js/") && !empty ($mgmt_config['url_path_cms']))
   {
     // remove domain name
     if (!empty ($cleandomain)) $source_url = cleandomain ($mgmt_config['url_path_cms']);
@@ -5330,50 +5336,51 @@ function showaudioplayer_head ($secureHref=true, $cleandomain=false)
 
 function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFunctions=array())
 {
-  if(!is_array($ignoreFunctions)) $ignoreFunctions = array();
-
+  // initialize
+  if (!is_array ($ignoreFunctions)) $ignoreFunctions = array();
   $ignoreFunctions[] = 'debug_getbacktracestring';
   $trace = debug_backtrace();
   $msg = array();
 
   if (is_array ($trace))
   {
-    //Running through the Stack
+    // running through the Stack
     foreach ($trace as $stack)
     {
-      // We don't need to export the debug functions
+      // no need to export the debug functions
       if (!is_array ($stack) || in_array ($stack['function'], $ignoreFunctions ))
       {
         continue;
       }
 
       $specialcount = 1;
-      //Building String for Function Variables
+
+      // building String for Function Variables
       $arguments = array();
       $add = array();
 
-      if (!empty ($stack['args']) && is_array($stack['args']))
+      if (!empty ($stack['args']) && is_array ($stack['args']))
       {
         foreach ($stack['args'] as $arg)
         {
-          if (is_array($arg) || is_object($arg))
+          if (is_array ($arg) || is_object ($arg))
           {
             $arguments[] = 'Arg#'.$specialcount;
-            $add[] = 'Arg#'.($specialcount++).var_export($arg, true);
+            $add[] = 'Arg#'.($specialcount++).var_export ($arg, true);
           }
-          else $arguments[] = var_export($arg, true);
+          else $arguments[] = var_export ($arg, true);
         }
       } 
 
-      // When $stack['class'] exists we can use $stack['type'] else it was not a class function and we don't ouput a class
-      if (!isset($stack['class'])) $stack['class'] = "";
+      // when $stack['class'] exists we can use $stack['type'] else it was not a class function and we don't ouput a class
+      if (!isset ($stack['class'])) $stack['class'] = "";
       else $stack['class'] .= $stack['type'];
 
-      // Building the arguments and the additional information
-      $arguments = implode($valueSeparator, $arguments);
+      // building the arguments and the additional information
+      $arguments = implode ($valueSeparator, $arguments);
 
-      // We only put out add information when there is something to output
-      if (!empty($add)) $add = $rowSeparator."Objects/Arrays:".$rowSeparator.implode($rowSeparator, $add);
+      // only add information when there is something to output
+      if (!empty ($add)) $add = $rowSeparator."Objects/Arrays:".$rowSeparator.implode ($rowSeparator, $add);
       else $add = "";
 
       $msg[] = 'In '.@$stack['file'].' at Line '.@$stack['line'].'. Function called: '.@$stack['class'].@$stack['function'].'('.$arguments.')'.$add;
@@ -5381,11 +5388,11 @@ function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFuncti
   }
   else
   {
-    $msg[] = 'Trace was not an Array! ('.var_export($trace, true).')';
+    $msg[] = 'Trace was not an Array! ('.var_export ($trace, true).')';
   }
 
-  // We only return something when we have anything
-  if (empty($msg)) return "";
+  // only return something when we have anything
+  if (empty ($msg)) return "";
   else return implode ($rowSeparator, $msg).$rowSeparator;
 }
 
@@ -5408,15 +5415,16 @@ function showAPIdocs ($file, $return="html", $html_hr=true, $html_description=tr
 
     if (is_array ($data))
     {
+      // initialize
       $name = "";
       $open = "";
+      $function = array();
       $input = array();
       $output = array();
-      $description = array();
       $requires = array();
-      $function = array();
       $global = array();
 
+      $description = array();
       // collect
       foreach ($data as $line)
       {
@@ -5526,7 +5534,7 @@ function showAPIdocs ($file, $return="html", $html_hr=true, $html_description=tr
       }
 
       // return as HTML code segment
-      if ($return == "html" && !empty ($function) && sizeof ($function) > 0)
+      if ($return == "html" && !empty ($function) && is_array ($function) && sizeof ($function) > 0)
       {
         $result = "";
 
@@ -5598,7 +5606,6 @@ function showAPIdocs ($file, $return="html", $html_hr=true, $html_description=tr
       else
       {
         $result = array();
-
         $result['function'] = $function;
         $result['input'] = $input;
         $result['global'] = $global;
@@ -5628,14 +5635,14 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
   {
     $xmldata = getobjectcontainer ($site, $docroot, $object, $user);
 
-    if ($xmldata != false)
+    if (!empty ($xmldata))
     {
       // if show/hide navigation text_id has been defined
       if (!empty ($navi_config['hide_text_id']))
       {
         $hidenode = selectcontent ($xmldata, "<text>", "<text_id>", $navi_config['hide_text_id']);
 
-        if ($hidenode != false)
+        if (!empty ($hidenode[0]))
         {
           $hide = getcontent ($hidenode[0], "<textcontent>");
 
@@ -5651,9 +5658,10 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
       {
         $sortordernode = selectcontent ($xmldata, "<text>", "<text_id>", $navi_config['sort_text_id']);
 
-        if ($sortordernode != false)
+        if (!empty ($sortordernode[0]))
         {
           $sortorder = getcontent ($sortordernode[0], "<textcontent>");
+
           if (!empty ($sortorder[0])) $sortorder_no = $sortorder[0];
           else $sortorder_no = "X";
         }
@@ -5674,7 +5682,7 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
           // get title
           $textnode = selectcontent ($xmldata, "<text>", "<text_id>", $value);
 
-          if ($textnode != false)
+          if (!empty ($textnode[0]))
           {
             $title = getcontent ($textnode[0], "<textcontent>");
 
@@ -5904,7 +5912,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
       }
     }
 
-    if (isset ($navitem) && is_array ($navitem)) return $navitem;
+    if (isset ($navitem) && is_array ($navitem) && sizeof ($navitem) > 0) return $navitem;
     else return false;
   }
   else return false;
@@ -6384,7 +6392,7 @@ function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=fal
       // default value
       else
       {
-        $style_size = "width:".$thumbsize."px;";
+        $style_size = "max-width:".$thumbsize."px; max-height:".$thumbsize."px;";
       }
 
       // base64 encode
@@ -6426,7 +6434,7 @@ function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=fal
         $image = $mediaurl.$mediainfo['icon'];
       }
 
-      $view = "<img src=\"".$image."\" style=\"width:".$thumbsize."px; ".$style."\" alt=\"".$name."\" title=\"".$name."\" />";
+      $view = "<img src=\"".$image."\" style=\"max-width:".$thumbsize."px; max-height:".$thumbsize."px; ".$style."\" alt=\"".$name."\" title=\"".$name."\" />";
     }
 
     return $view;

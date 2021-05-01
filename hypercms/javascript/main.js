@@ -1621,7 +1621,9 @@ function hcms_addTableRow (id, position, values)
 // define global arrays for the 2 tables (detailed and thumbnail view)
 var hcms_detailview = new Array(); 
 var hcms_galleryview = new Array(); 
-var is_gallery = false;
+var hcms_is_gallery = false;
+var hcms_lastSort = null;
+var hcms_objectpath = new Array();
 
 function hcms_stripHTML (_str)
 {
@@ -1638,7 +1640,7 @@ function hcms_stripHTML (_str)
   }
 
   // replace non-breaking-space
-  _str = _str.replace("&nbps;", "");
+  _str = _str.replace(/&nbps;/g, "");
 
   return _str;
 }
@@ -1655,20 +1657,23 @@ function hcms_bubbleSort (c, _ud, _isNumber)
       var _sign = _ud ? ">" : "<";
       var _yes = false;
 
+      // number
       if (_isNumber)
       {
-        _left = _left.replace(".", "");
-        _right = _right.replace(".", "");
-        _left = _left.replace(",", "");
-        _right = _right.replace(",", "");
-        _left = _left.replace(" ", "");
-        _right = _right.replace(" ", "");
+        // replace all dots, commas and spaces in numbers
+        _left = _left.replace(/\./g, "");
+        _right = _right.replace(/\./g, "");
+        _left = _left.replace(/,/g, "");
+        _right = _right.replace(/,/g, "");
+        _left = _left.replace(/\s/g, "");
+        _right = _right.replace(/\s/g, "");
         _left = parseInt(_left) || 0;
         _right = parseInt(_right) || 0;
 
         if (_ud && (_left-_right > 0)) _yes = true;
         if (!_ud && (_left-_right < 0)) _yes = true;
       }
+      // string
       else
       {
         if (_ud && _left.toLowerCase() > _right.toLowerCase()) _yes = true;
@@ -1686,7 +1691,7 @@ function hcms_bubbleSort (c, _ud, _isNumber)
         }
 
         // swap rows for thumbnail view  
-        if (is_gallery) 
+        if (hcms_is_gallery) 
         {
           _t = hcms_galleryview[i];
           hcms_galleryview[i] = hcms_galleryview[j];
@@ -1699,15 +1704,12 @@ function hcms_bubbleSort (c, _ud, _isNumber)
   return true;
 }
 
-var lastSort = null;
-var hcms_objectpath = new Array();
-
 function hcms_sortTable (_c, _isNumber)
 {
   if (typeof hcms_unselectAll == 'function') hcms_unselectAll();
   if (typeof hcms_resetContext == 'function') hcms_resetContext();
 
-  is_gallery = eval (document.getElementById("t0"));  
+  hcms_is_gallery = eval (document.getElementById("t0"));  
 
   // detailed view table
   if (hcms_detailview.length <= 0)
@@ -1731,7 +1733,7 @@ function hcms_sortTable (_c, _isNumber)
   }
   
   // thumbnail view table
-  if (hcms_galleryview.length <= 0 && is_gallery)
+  if (hcms_galleryview.length <= 0 && hcms_is_gallery)
   {
     _o = null;
     _i = 0;
@@ -1744,7 +1746,7 @@ function hcms_sortTable (_c, _isNumber)
   } 
 
   // sort both tables the same way
-  hcms_bubbleSort (_c, lastSort != _c, _isNumber);
+  hcms_bubbleSort (_c, hcms_lastSort != _c, _isNumber);
 
   // refill tables with sorted arrays
   for (var b = 0; b < hcms_detailview.length; b++)
@@ -1752,7 +1754,7 @@ function hcms_sortTable (_c, _isNumber)
     for (var c = 0; c < hcms_detailview[b].length; c++)
     {
       document.getElementById("h"+b+"_"+c).innerHTML = hcms_detailview[b][c];
-      if (is_gallery) document.getElementById("t"+b).innerHTML = hcms_galleryview[b];
+      if (hcms_is_gallery) document.getElementById("t"+b).innerHTML = hcms_galleryview[b];
 
       // save object path for viewer
       if (c == 0 && document.getElementById("h"+b+"_"+c).getElementsByTagName("A")) 
@@ -1766,8 +1768,8 @@ function hcms_sortTable (_c, _isNumber)
   // save object path array variable in parent frame
   if (hcms_objectpath) parent.hcms_objectpath = hcms_objectpath;
 
-  if (lastSort != _c) lastSort = _c;
-  else lastSort = null;
+  if (hcms_lastSort != _c) hcms_lastSort = _c;
+  else hcms_lastSort = null;
 }
 
 // ------------------------------ sort object --------------------------------

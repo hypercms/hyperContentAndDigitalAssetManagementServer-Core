@@ -22,7 +22,6 @@ $search_expression = getrequest ("search_expression");
 
 // get publication and category
 if ($dir != "") $site = getpublication ($dir);
-$cat = "page";
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -30,12 +29,17 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check access permission
-if ($mgmt_config[$site]['dam'] == true || ($dir != "" && !accessgeneral ($site, $dir, "page")) || !valid_publicationname ($site)) killsession ($user);
+if ((!empty ($dir) && !accessgeneral ($site, $dir, "page")) || !valid_publicationname ($site)) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
+
+// initialize
+$cat = "page";
+$entry_dir = array();
+$entry_file = array();
 
 // convert location
 $dir = deconvertpath ($dir, "file");
@@ -54,6 +58,7 @@ if (!valid_locationname ($dir) && !empty ($temp_pagelocation[$site]))
     setsession ('hcms_temp_pagelocation', $temp_pagelocation);
   }
 }
+// use provided page location
 elseif (valid_locationname ($dir))
 {
   if (!isset ($temp_pagelocation)) $temp_pagelocation = array();
@@ -64,7 +69,7 @@ elseif (valid_locationname ($dir))
 }
 
 // define root location if no location data is available
-if (!valid_locationname ($dir))
+if (!valid_locationname ($dir) && !empty ($mgmt_config[$site]['abs_path_page']))
 {
   $dir = $mgmt_config[$site]['abs_path_page'];
 }
@@ -155,8 +160,6 @@ if (!empty ($dir) && !empty ($site))
       <td colspan=\"2\" style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['back'][$lang])."</a></td>
     </tr>";
   }
-
-  $entry_dir = array();
   
   // search results
   if (trim ($search_expression) != "")
@@ -219,7 +222,7 @@ if (!empty ($dir) && !empty ($site))
   }
   
   // directory
-  if (!empty ($entry_dir) && sizeof ($entry_dir) > 0)
+  if (is_array ($entry_dir) && sizeof ($entry_dir) > 0)
   {
     natcasesort ($entry_dir);
     reset ($entry_dir);
@@ -246,7 +249,7 @@ if (!empty ($dir) && !empty ($site))
   }
   
   // file
-  if (!empty ($entry_file) && sizeof ($entry_file) > 0)
+  if (is_array ($entry_file) && sizeof ($entry_file) > 0)
   {
     natcasesort ($entry_file);
     reset ($entry_file);

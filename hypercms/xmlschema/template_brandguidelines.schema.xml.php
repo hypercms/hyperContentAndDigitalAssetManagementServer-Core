@@ -110,7 +110,7 @@ if (!empty ($html2pdf) && !empty ($mgmt_config['html2pdf']))
     <!-- Content -->
     <div id="workplLayer">
       <div id="contents">
-        [hyperCMS:componentm id='Pages' label='Select Pages']
+        [hyperCMS:componentm id='Pages' label='Select Pages' mediatype='component']
       </div>
     </div>
 

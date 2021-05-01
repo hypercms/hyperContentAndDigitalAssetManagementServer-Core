@@ -181,20 +181,17 @@ else
     // ---------------------------- call template engine ---------------------------    
     $result = buildview ($site, $location, $page, $user, $view, $ctrlreload);
 
-    $charset = $result['charset'];
-    $viewstore = $result['view'];
-    $contentfile = $result['container'];
-    $contentdata = $result['containerdata'];
-    $templatefile = $result['template'];
-    $templatedata = $result['templatedata'];
-    $filetype = $result['objecttype'];  
+    if (!empty ($result['charset'])) $charset = $result['charset'];
+    if (!empty ($result['view'])) $viewstore = $result['view'];
+    if (!empty ($result['container'])) $contentfile = $result['container'];
+    if (!empty ($result['template'])) $templatefile = $result['template'];
     // -----------------------------------------------------------------------------
 
     // object is managed by hyperCMS  
-    if ($contentfile != false || $templatefile != false)
+    if (!empty ($contentfile) || !empty ($templatefile))
     {
       // if template is empty
-      if ($templatefile == false || $templatefile == "")
+      if (empty ($templatefile))
       {
         echo "<!DOCTYPE html>\n";
         echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
@@ -217,7 +214,7 @@ else
       }
       
       // if content container is empty
-      if ($contentfile == false || $contentfile == "")
+      if (empty ($contentfile))
       {
         echo "<!DOCTYPE html>\n";
         echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
@@ -240,7 +237,7 @@ else
       }
     
       // check if an error occured during building view
-      if ($viewstore == false)
+      if (empty ($viewstore))
       {
         echo "<!DOCTYPE html>\n";
         echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
@@ -262,7 +259,9 @@ else
       // output view
       else
       {
-        header ('Content-Type: text/html; charset='.$charset);
+        if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
+        else header ('Content-Type: text/html; charset=UTF-8');
+
         echo $viewstore;
       }
     }

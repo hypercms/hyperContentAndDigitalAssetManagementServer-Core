@@ -286,7 +286,6 @@ class hcms_db
 }
 
 // ------------------------------------------------ ODBC escape string ------------------------------------------------
-
 // function: odbc_rdbms_escape_string()
 // input: DB connection [resource], value [string]
 // output: escaped value as string
@@ -305,7 +304,6 @@ function odbc_rdbms_escape_string ($connection, $value)
 }
 
 // ------------------------------------------------ convert dbcharset ------------------------------------------------
-
 // function: convert_dbcharset()
 // input: character set [string]
 // output: true / false
@@ -330,7 +328,6 @@ function convert_dbcharset ($charset)
 }
  
 // ------------------------------------------------ create object -------------------------------------------------
-
 // function: rdbms_createobject()
 // input: container ID [integer], object path [string], template name [string], media name [string] (optional), content container name [string] (optional), user name [string] (optional), latitude [float] (optional), longitude [float] (optional)
 // output: true / false
@@ -443,7 +440,6 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
 }
 
 // ----------------------------------------------- copy content -------------------------------------------------
-
 // function: rdbms_copycontent()
 // input: source container ID [integer], destination container ID [integer], user name [string]
 // output: true / false
@@ -545,7 +541,6 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
 }
 
 // ----------------------------------------------- set content -------------------------------------------------
-
 // function: rdbms_setcontent()
 // input: publication name [string], container ID [integer], content as array in form of array[text-ID]=text-content [array] (optional), type as array in form of array[text-ID]=type [array] (optional), 
 //        user name [string] (optional), save modified date [boolean] (optional), save published date [null,true,false] (optional)
@@ -696,7 +691,6 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
 }
 
 // ----------------------------------------------- set keywords -------------------------------------------------
-
 // function: rdbms_setkeywords()
 // input: publication name [string], container ID [integer]
 // output: true / false
@@ -822,7 +816,6 @@ function rdbms_setkeywords ($site, $container_id)
 }
 
 // ----------------------------------------------- set keywords for a publication ------------------------------------------------- 
-
 // function: rdbms_setpublicationkeywords()
 // input: publication name [string], recreate [boolean] (optional)
 // output: true / false
@@ -869,7 +862,6 @@ function rdbms_setpublicationkeywords ($site, $recreate=false)
 }
 
 // ----------------------------------------------- set taxonomy -------------------------------------------------
-
 // function: rdbms_settaxonomy()
 // input: publication name [string], container ID [integer], taxonomy array in form of array[text-ID][lang][taxonomy-ID]=keyword [array]
 // output: true / false
@@ -940,7 +932,6 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
 }
 
 // ----------------------------------------- set taxonomy for a publication --------------------------------------------
-
 // function: rdbms_setpublicationtaxonomy()
 // input: publication name [string] (optional), recreate [boolean] (optional)
 // output: true / false
@@ -1041,7 +1032,6 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
 }
 
 // ----------------------------------------------- get taxonomy -------------------------------------------------
-
 // function: rdbms_gettaxonomy()
 // input: container ID [integer], text ID [string]
 // output: result array / false
@@ -1088,7 +1078,6 @@ function rdbms_gettaxonomy ($container_id, $text_id)
 }
 
 // ----------------------------------------------- set template -------------------------------------------------
-
 // function: rdbms_settemplate()
 // input: object path [string], template file name [string]
 // output: true / false
@@ -1127,7 +1116,6 @@ function rdbms_settemplate ($object, $template)
 }
 
 // ----------------------------------------------- set media name -------------------------------------------------
-
 // function: rdbms_settemplate()
 // input: container ID [integer], media file name [string]
 // output: true / false
@@ -1162,7 +1150,6 @@ function rdbms_setmedianame ($id, $media)
 } 
 
 // ----------------------------------------------- set media attributes -------------------------------------------------
-
 // function: rdbms_setmedia()
 // input: container ID [integer], file size in KB [integer] (optional), file type [string] (optional), width in pixel [integer] (optional), heigth in pixel [integer] (optional), 
 //        red color [integer] (optional), green color [integer] (optional), blue color [integer] (optional), colorkey [string] (optional), image type [string] (optional), MD5 hash [string] (optional), analyzed [boolean] (optional)
@@ -1246,7 +1233,6 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
 }
 
 // ------------------------------------------------ get media attributes -------------------------------------------------
-
 // function: rdbms_resetanalyzed()
 // input: %
 // output: true / false
@@ -1277,7 +1263,6 @@ function rdbms_resetanalyzed ()
 }
 
 // ------------------------------------------------ get media attributes -------------------------------------------------
-
 // function: rdbms_getmedia()
 // input: container ID [integer], extended media object information [boolean] (optional)
 // output: result array with media object details / false on error
@@ -1319,7 +1304,6 @@ function rdbms_getmedia ($container_id, $extended=false)
 }
 
 // ------------------------------------------------ get duplicate file -------------------------------------------------
-
 // function: rdbms_getduplicate_file()
 // input: publication name [string], MD5 hash of the file content [string]
 // output: object path array / false
@@ -1370,7 +1354,6 @@ function rdbms_getduplicate_file ($site, $md5_hash)
 }
 
 // ----------------------------------------------- rename object -------------------------------------------------
-
 // function: rdbms_renameobject()
 // input: location path of object [string], location path of object with new object name [string]
 // output: true / false
@@ -1451,7 +1434,6 @@ function rdbms_renameobject ($object_old, $object_new)
 } 
 
 // ----------------------------------------------- delete object ------------------------------------------------- 
-
 // function: rdbms_deleteobject()
 // input: location path of object [string] (optional) OR object ID [integer] (optional)
 // output: true / false
@@ -1610,7 +1592,6 @@ function rdbms_deleteobject ($object="", $object_id="")
 }
 
 // ----------------------------------------------- delete content -------------------------------------------------
-
 // function: rdbms_deletecontent()
 // input: publication name [string], container ID [integer], text ID [string]
 // output: true / false
@@ -1651,7 +1632,6 @@ function rdbms_deletecontent ($site, $container_id, $text_id)
 }
 
 // ------------------------------------------ delete keywords of a publication --------------------------------------------
-
 // function: rdbms_deletepublicationkeywords()
 // input: publication name [string]
 // output: true / false
@@ -1701,7 +1681,6 @@ function rdbms_deletepublicationkeywords ($site)
 }
 
 // ------------------------------------------ delete taxonomy of a publication --------------------------------------------
-
 // function: rdbms_deletepublicationtaxonomy()
 // input: publication name [string], force delete if taxomoy of publication is disabled [boolean] (optional)
 // output: true / false
@@ -1757,7 +1736,6 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 }
 
 // ----------------------------------------------- search content ------------------------------------------------- 
-
 // function: rdbms_searchcontent()
 // input: location [string] (optional), exclude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
 //        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), 
@@ -2731,7 +2709,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 }
 
 // ----------------------------------------------- replace content -------------------------------------------------
-
 // function: rdbms_replacecontent()
 // input: location path [string], object-type [string] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), search expression [string], replace expression [string], user name [string] (optional)
 // output: result array with object paths of all touched objects / false
@@ -3004,7 +2981,6 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 }
 
 // ----------------------------------------------- search user ------------------------------------------------- 
-
 // function: rdbms_searchuser()
 // input: publication name [string] (optional), user name [string], max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional)
 // output: objectpath array with hashcode as key and path as value / false
@@ -3140,7 +3116,6 @@ function rdbms_searchuser ($site, $user, $maxhits=300, $return_text_id=array(), 
 }
 
 // ----------------------------------------------- search recipient ------------------------------------------------- 
-
 // function: rdbms_searchrecipient()
 // input: publication name [string], sender user name [string], recpient user name or e-mail address [string], from date [date], to date [date], max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional)
 // output: objectpath array with hashcode as key and path as value / false
@@ -3305,7 +3280,6 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
 } 
 
 // ----------------------------------------------- get content -------------------------------------------------
-
 // function: rdbms_getcontent()
 // input: publication name [string], container ID [integer], filter for text-ID [string] (optional), filter for type [string] (optional), filter for user name [string] (optional)
 // output: result array with text ID as key and content as value / false
@@ -3360,7 +3334,6 @@ function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user=""
 }
 
 // ----------------------------------------------- get keywords ------------------------------------------------- 
-
 // function: rdbms_getkeywords()
 // input: publication names as string [string] or array [array] (optional)
 // output: result array with keyword ID as key and keyword and count as value / false
@@ -3427,7 +3400,6 @@ function rdbms_getkeywords ($sites="")
 }
 
 // ----------------------------------------------- get empty keywords ------------------------------------------------- 
-
 // function: rdbms_getemptykeywords()
 // input: publication names as string [string] or array [array] (optional)
 // output: number of objects without keywords / false
@@ -3490,7 +3462,6 @@ function rdbms_getemptykeywords ($sites="")
 }
 
 // ----------------------------------------------- get hierarchy sublevel ------------------------------------------------- 
-
 // function: rdbms_gethierarchy_sublevel()
 // input: publication name [string], text ID that holds the content [string], conditions array with text ID as key and content as value [array] (optional)
 // output: array with hashcode as key and path as value / false
@@ -3599,7 +3570,6 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
 }
 
 // ----------------------------------------------- get object_id ------------------------------------------------- 
-
 // function: rdbms_getobject_id()
 // input: location path or hash of an object [string]
 // output: object ID / false
@@ -3678,7 +3648,6 @@ function rdbms_getobject_id ($object)
 }
 
 // ----------------------------------------------- get object_hash ------------------------------------------------- 
-
 // function: object_hash()
 // input: location path of an object [string] (optional) OR container ID of an object [integer] (optional)
 // output: object hash / false
@@ -3766,7 +3735,6 @@ function rdbms_getobject_hash ($object="", $container_id="")
 } 
 
 // -------------------------------------------- get object by unique id or hash ----------------------------------------------- 
-
 // function: rdbms_getobject()
 // input: object identifier (object hash OR object ID OR access hash) [string]
 // output: object path / false
@@ -3845,7 +3813,6 @@ function rdbms_getobject ($object_identifier)
 }
 
 // -------------------------------------------- get object info by unique id or hash ----------------------------------------------- 
-
 // function: rdbms_getobject_info()
 // input: object identifier (object path Or object hash OR object ID OR access hash) [string], text IDs to be returned [array] (optional)
 // output: array with object info / false
@@ -4054,7 +4021,6 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
 } 
 
 // ------------------------------------------ get objects by container_id or temlpate name -------------------------------------------- 
-
 // function: rdbms_getobjects()
 // input: container ID supports multiple values if | is used as separator [string,integer] (optional), template name [string] (optional), text IDs to be returned [array] (optional)
 // output: 2 dimensional object path array / false
@@ -4189,7 +4155,6 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
 }
 
 // ----------------------------------------------- get deleted objects ------------------------------------------------- 
-
 // function: rdbms_getdeletedobjects()
 // input: user name [string] (optional), older than date [date] (optional), max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional), return sub items [boolean] (optional)
 // output: objectpath array with hashcode as key and path as value / false
@@ -4339,7 +4304,6 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
 }
 
 // ----------------------------------------------- set deleted objects ------------------------------------------------- 
-
 // function: rdbms_setdeletedobjects()
 // input: 1 or 2 dimensional objects array [array], user name [string], mark or unmark as deleted [set,unset] (optional)
 // output: true / false
@@ -4577,7 +4541,6 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
 }
 
 // ----------------------------------------------- create accesslink -------------------------------------------------
-
 // function: rdbms_createaccesslink()
 // input: object hash [string], object-ID [string], link type [al,dl] (optional), user login name [string] (optional), token lifetime in seconds [integer] (optional), formats [string] (optional)
 // output: true / false on error
@@ -4659,7 +4622,6 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
 } 
 
 // ------------------------------------------------ get access info -------------------------------------------------
-
 // function: rdbms_getaccessinfo()
 // input: object hash [string]
 // output: result array / false on error
@@ -4723,7 +4685,6 @@ function rdbms_getaccessinfo ($hash)
 }
 
 // ------------------------------------------------ create recipient -------------------------------------------------
-
 // function: rdbms_createrecipient()
 // input: object path [string], senders user name [string], recipients user name [string], recipients e-mail [string]
 // output: result array / false on error
@@ -4782,7 +4743,6 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
 }
 
 // ------------------------------------------------ get recipients -------------------------------------------------
-
 // function: rdbms_getrecipients()
 // input: object path [string]
 // output: result array / false on error
@@ -4843,7 +4803,6 @@ function rdbms_getrecipients ($object)
 }
 
 // ----------------------------------------------- delete recipient -------------------------------------------------
-
 // function: rdbms_deleterecipient()
 // input: recipient ID [integer]
 // output: true / false on error
@@ -4877,7 +4836,6 @@ function rdbms_deleterecipient ($recipient_id)
 }
 
 // ----------------------------------------------- create queue entry -------------------------------------------------
-
 // function: rdbms_createqueueentry()
 // input: action [string], converted object path [string], execution date for the action [YYYY-MM-DD hh:mm], apply for published objects only [boolean], user name [string]
 // output: true / false on error
@@ -4929,7 +4887,6 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $user
 }
 
 // ------------------------------------------------ get queue entries -------------------------------------------------
-
 // function: rdbms_getqueueentries()
 // input: action [string], publication name [string] (optional), execution date for the action [YYYY-MM-DD hh:mm] (optional), user name [string] (optional), converted object path [string] (optional)
 // output: queue elements as array / false on error
@@ -5005,7 +4962,6 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
 }
 
 // ----------------------------------------------- delete queue entry -------------------------------------------------
-
 // function: rdbms_deletequeueentry()
 // input: queue ID [integer]
 // output: true / false on error
@@ -5059,6 +5015,12 @@ function rdbms_deletequeueentry ($queue_id)
 }
 
 // ----------------------------------------------- create notification -------------------------------------------------
+// function: rdbms_createnotification()
+// input: object ID or path [integer or string], event names [array], user name [string]
+// output: true / false on error
+
+// description:
+// Creates a new notification for the requested object and events for a user. 
 
 function rdbms_createnotification ($object, $events, $user)
 {
@@ -5067,7 +5029,7 @@ function rdbms_createnotification ($object, $events, $user)
   if ($object != "" && is_array ($events) && $user != "")
   {
     // correct object name 
-    if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
+    if (strtolower (strrchr ($object, ".")) == ".off") $object = substr ($object, 0, -4);
 
     // check object (can be path or ID)
     if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) $object_id = rdbms_getobject_id ($object);
@@ -5126,6 +5088,12 @@ function rdbms_createnotification ($object, $events, $user)
 }
 
 // ------------------------------------------------ get notifications -------------------------------------------------
+// function: rdbms_getnotification()
+// input: event name [string] (optional), object path [string] (optional), user name [string] (optional)
+// output: true / false on error
+
+// description:
+// Creates a new notification for the requested object and events for a user. 
 
 function rdbms_getnotification ($event="", $object="", $user="")
 {
@@ -5133,9 +5101,12 @@ function rdbms_getnotification ($event="", $object="", $user="")
 
   if (is_array ($mgmt_config))
   {
+    //initialize
+    $queue = array();
+
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
   
-    if (!empty($event))
+    if (!empty ($event))
     {
       $valid_events = array ("oncreate", "onedit", "onmove", "ondelete");
       if (!in_array (strtolower($event), $valid_events)) $event = "";
@@ -5172,7 +5143,7 @@ function rdbms_getnotification ($event="", $object="", $user="")
         }
 
         // get object IDs of connected objects
-        if (!empty ($container_id))
+        if (!empty ($container_id) && $container_id > 0 && !empty ($object_id))
         {
           $sql = 'SELECT DISTINCT object_id FROM object WHERE id='.$container_id.' AND object_id!="'.$object_id.'"';
 
@@ -5223,11 +5194,13 @@ function rdbms_getnotification ($event="", $object="", $user="")
     if ($done)
     {  
       $i = 0;
+
       // insert recipients
       while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['notify_id'])) 
         {
+          $queue[$i] = array();
           $queue[$i]['notify_id'] = $row['notify_id'];
           $queue[$i]['object_id'] = $row['object_id'];
           $queue[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
@@ -5246,15 +5219,21 @@ function rdbms_getnotification ($event="", $object="", $user="")
     savelog ($db->rdbms_geterror());    
     $db->rdbms_close();
 
-    if (is_array (@$queue)) return $queue;
+    if (is_array ($queue) && sizeof ($queue) > 0) return $queue;
     else return false;
   }
   else return false;
 }
 
 // ----------------------------------------------- delete notification -------------------------------------------------
+// function: rdbms_deletenotification()
+// input: notification ID [integer] (optional), object ID or path [integer or string] (optional), user name [string] (optional)
+// output: true / false on error
 
-function rdbms_deletenotification ($notify_id, $object="", $user="")
+// description:
+// Deletes a notification for the requested notification ID, object, or user. 
+
+function rdbms_deletenotification ($notify_id="", $object="", $user="")
 {
   global $mgmt_config;
 
@@ -5271,16 +5250,16 @@ function rdbms_deletenotification ($notify_id, $object="", $user="")
     }
 
     // clean input
-    if (!empty($notify_id)) $notify_id = $db->rdbms_escape_string ($notify_id);
-    elseif (!empty($object_id)) $object_id = $db->rdbms_escape_string ($object_id);
-    elseif (!empty($user)) $user = $db->rdbms_escape_string ($user);
+    if (intval ($notify_id) > 0) $notify_id = intval ($notify_id);
+    elseif (!empty ($object_id)) $object_id = $db->rdbms_escape_string ($object_id);
+    elseif (!empty ($user)) $user = $db->rdbms_escape_string ($user);
 
-    if (!empty($notify_id)) $sql = 'DELETE FROM notify WHERE notify_id="'.$notify_id.'"';
-    elseif (!empty($object_id)) $sql = 'DELETE FROM notify WHERE object_id="'.$object_id.'"';
-    elseif (!empty($user)) $sql = 'DELETE FROM notify WHERE user="'.$user.'"';
+    if (!empty ($notify_id)) $sql = 'DELETE FROM notify WHERE notify_id="'.$notify_id.'"';
+    elseif (!empty ($object_id)) $sql = 'DELETE FROM notify WHERE object_id="'.$object_id.'"';
+    elseif (!empty ($user)) $sql = 'DELETE FROM notify WHERE user="'.$user.'"';
 
     $errcode = "50092";
-    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
 
     // save log
     savelog ($db->rdbms_geterror ());    
@@ -5292,6 +5271,12 @@ function rdbms_deletenotification ($notify_id, $object="", $user="")
 }
 
 // ----------------------------------------------- license notification -------------------------------------------------
+// function: rdbms_licensenotification()
+// input: location path [string], text ID [string], date beginn [date], date end [date], date format [string]
+// output: result array / false on error
+
+// description:
+// This function looks up all objects with a date in a defined text field that has to be between the defined date limits.
 
 function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_end, $format="%Y-%m-%d")
 {
@@ -5299,6 +5284,9 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
 
   if ($folderpath != "" && $text_id != "" && $date_begin != "" && $date_end != "")
   {
+    // initialize
+    $result = array();
+
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 
     $folderpath = $db->rdbms_escape_string ($folderpath);
@@ -5317,8 +5305,7 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
     if ($done)
     {
       $i = 0;
-      $result = array();
-      
+
       while ($row = $db->rdbms_getresultrow ())
       {
         if (!empty ($row['path'])) 
@@ -5346,14 +5333,13 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
-    if (!empty ($result) && is_array ($result)) return $result;
+    if (is_array ($result) && sizeof ($result) > 0) return $result;
     else return false;
   }
   else return false;
 }
 
 // ----------------------------------------------- daily statistics -------------------------------------------------
-
 // function: rdbms_insertdailystat()
 // input: activity [string], container ID [integer,array], user name [string] (optional), include all sub objects in a folder if the container ID is not an array [boolean]
 // output: true / false on error
@@ -5474,7 +5460,6 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
 }
 
 // ----------------------------------------------- get statistics from dailystat -------------------------------------------------
-
 // function: rdbms_getmediastat()
 // input: date from [date] (optional), date to [date] (optional), activity [string] (optional), container ID [integer] (optional), object path [string] (optional), user name [string] (optional), 
 //        return file size of objects [boolean] (optional), limit returned results [integer] (optional)
@@ -5613,6 +5598,12 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
 }
 
 // ----------------------------------------------- get filesize from media -------------------------------------------------
+// function: rdbms_getfilesize()
+// input: container ID [integer] (optional), object or location path [string] (optional)
+// output: result array / false on error
+
+// description:
+// Provides the filesize and count of objects for a requested object or location.
 
 function rdbms_getfilesize ($container_id="", $objectpath="")
 {
@@ -5620,6 +5611,9 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
 
   if (intval ($container_id) > 0 || $objectpath != "")
   {
+    // initialize
+    $result = array();
+
     // mySQL connect
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 
@@ -5691,13 +5685,22 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
     savelog ($db->rdbms_geterror ());
     $db->rdbms_close();
  
-    if (isset ($result) && is_array ($result)) return $result;
+    if (is_array ($result) && sizeof ($result) > 0) return $result;
     else return false;
   } 
   else return false;
 }
 
 // ----------------------------------------------- create task -------------------------------------------------
+// function: rdbms_createtask()
+// input: object ID or object path [string], project/subproject ID if the task should be assigned to a project [integer] (optional), from user name [string], to user name [email-address] (optional), start date [yyyy-mm-dd] (optional), finish date [yyyy-mm-dd] (optional),
+//        category [link,user,workflow] (optional), task name [string], task description [string] (optional), priority [high,medium,low] (optional), planned effort in taskunit [integer] (optional)
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// Creates a new user task and send optional e-mail to user.
+// Since verion 5.8.4 the data will be stored in RDBMS instead of XML files.
 
 function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user="", $startdate="", $finishdate="", $category="", $taskname="", $description="", $priority="low", $planned="")
 {
@@ -5756,29 +5759,40 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user=""
 }
 
 // ----------------------------------------------- set task -------------------------------------------------
+// function: rdbms_settask()
+// input: task ID [integer], object ID [integer or string] (optional), project/subproject ID the task belongs to [integer or string] (optional), to_user name [string] (optional), start date [yyyy-mm-dd or string] (optional), finish date [yyyy-mm-dd or string] (optional),
+//        name of task [string] (optional), task message/description [string] (optional), sendmail [true/false], priority [high,medium,low] (optional), status in percent [0-100] (optional), 
+//        planned effort in taskunit [float] (optional), actual effort in taskunit [float] (optional)
+// output: true/false
+// requires: config.inc.php
 
-function rdbms_settask ($task_id, $object_id="", $project_id="", $to_user="", $startdate="", $finishdate="", $taskname="", $description="", $priority="", $status="", $planned="", $actual="")
+// description:
+// Saves data of a user task and send optional e-mail to user.
+// Since verion 5.8.4 the data will be stored in RDBMS instead of XML files.
+// Use *Leave* as input if a value should not be changed. 
+
+function rdbms_settask ($task_id, $object_id="*Leave*", $project_id="*Leave*", $to_user="*Leave*", $startdate="*Leave*", $finishdate="*Leave*", $taskname="*Leave*", $description="*Leave*", $priority="*Leave*", $status="*Leave*", $planned="*Leave*", $actual="*Leave*")
 {
   global $mgmt_config;
 
-  if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && $task_id != "" && ($taskname == "" || strlen ($taskname) <= 200) && ($description == "" || strlen ($description) <= 3600) && ($priority == "" || in_array (strtolower ($priority), array("low","medium","high"))))
+  if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && intval ($task_id) > 0 && ($taskname == "" || strlen ($taskname) <= 200) && ($description == "" || strlen ($description) <= 3600) && ($priority == "*Leave*" || in_array (strtolower ($priority), array("low","medium","high"))))
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // clean input
     $sql_update = array();
 
-    if ($object_id != "") $sql_update[] = 'object_id="'.intval($object_id).'"';
-    if ($project_id != "") $sql_update[] = 'project_id="'.intval($project_id).'"';
-    if ($to_user != "") $sql_update[] = 'to_user="'.$db->rdbms_escape_string ($to_user).'"';
-    if ($startdate != "") $sql_update[] = 'startdate="'.$db->rdbms_escape_string ($startdate).'"';
-    if ($finishdate != "") $sql_update[] = 'finishdate="'.$db->rdbms_escape_string ($finishdate).'"';
-    if ($taskname != "") $sql_update[] = 'task="'.$db->rdbms_escape_string ($taskname).'"';
-    if ($description != "") $sql_update[] = 'description="'.$db->rdbms_escape_string ($description).'"';
-    if ($priority != "") $sql_update[] = 'priority="'.$db->rdbms_escape_string (strtolower ($priority)).'"';
-    if ($status != "") $sql_update[] = 'status="'.intval ($status).'"';
-    if ($planned != "") $sql_update[] = 'planned="'.correctnumber($planned).'"';
-    if ($actual != "") $sql_update[] = 'actual="'.correctnumber($actual).'"';
+    if ($object_id != "*Leave*" && intval ($object_id) >= 0) $sql_update[] = 'object_id="'.intval($object_id).'"';
+    if ($project_id != "*Leave*" && intval ($project_id) >= 0) $sql_update[] = 'project_id="'.intval($project_id).'"';
+    if ($to_user != "*Leave*" && $to_user != "") $sql_update[] = 'to_user="'.$db->rdbms_escape_string ($to_user).'"';
+    if ($startdate != "*Leave*") $sql_update[] = 'startdate="'.$db->rdbms_escape_string ($startdate).'"';
+    if ($finishdate != "*Leave*") $sql_update[] = 'finishdate="'.$db->rdbms_escape_string ($finishdate).'"';
+    if ($taskname != "*Leave*" && $taskname != "") $sql_update[] = 'task="'.$db->rdbms_escape_string ($taskname).'"';
+    if ($description != "*Leave*") $sql_update[] = 'description="'.$db->rdbms_escape_string ($description).'"';
+    if ($priority != "*Leave*" && $priority != "") $sql_update[] = 'priority="'.$db->rdbms_escape_string (strtolower ($priority)).'"';
+    if ($status != "*Leave*" && intval ($status) >= 0) $sql_update[] = 'status="'.intval ($status).'"';
+    if ($planned != "*Leave*" && floatval ($planned) >= 0) $sql_update[] = 'planned="'.correctnumber($planned).'"';
+    if ($actual != "*Leave*" && floatval ($actual) >= 0) $sql_update[] = 'actual="'.correctnumber($actual).'"';
 
     // insert
     $sql = 'UPDATE task SET ';
@@ -5798,6 +5812,14 @@ function rdbms_settask ($task_id, $object_id="", $project_id="", $to_user="", $s
 }
 
 // ------------------------------------------------ get task -------------------------------------------------
+// function: rdbms_gettask()
+// input: task ID [integer] (optional), object ID [integer] (optional), project/subproject ID the task belongs to [integer] (optional), from user name [string] (optional), to user name [string] (optional), start date [yyyy-mm-dd] (optional), finish date [yyyy-mm-dd] (optional),
+//        attributes for the order by SQL statement [string] (optional)
+// output: result array / false on error
+// requires: config.inc.php
+
+// description:
+// Reads all values of a task.
 
 function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="", $to_user="", $startdate="", $finishdate="", $order_by="startdate DESC")
 {
@@ -5888,6 +5910,13 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
 }
 
 // ----------------------------------------------- delete task -------------------------------------------------
+// function: rdbms_deletetask()
+// input: task ID or array of task IDs to be deleted [integer] (optional), object ID [integer] (optional), user name [string] (optional)
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// Deletes the requested tasks.
 
 function rdbms_deletetask ($task_id="", $object_id="", $to_user="")
 {
@@ -5905,9 +5934,9 @@ function rdbms_deletetask ($task_id="", $object_id="", $to_user="")
     }
 
     // clean input
-    if (!empty ($task_id)) $task_id = intval ($task_id);
-    elseif (!empty ($object_id)) $object_id = intval ($object_id);
-    elseif (!empty ($to_user)) $to_user = $db->rdbms_escape_string ($to_user);
+    if (intval ($task_id) > 0) $task_id = intval ($task_id);
+    elseif (intval ($object_id) > 0) $object_id = intval ($object_id);
+    elseif (trim ($to_user) != "") $to_user = $db->rdbms_escape_string ($to_user);
 
     if (!empty ($task_id)) $sql = 'DELETE FROM task WHERE task_id="'.$task_id.'"';
     elseif (!empty ($object_id)) $sql = 'DELETE FROM task WHERE object_id="'.$object_id.'"';
@@ -5926,6 +5955,13 @@ function rdbms_deletetask ($task_id="", $object_id="", $to_user="")
 }
 
 // ----------------------------------------------- create project -------------------------------------------------
+// function: rdbms_createproject()
+// input: ID of main project (only if the project is a subproject) [integer], object ID or path to object [string] (optional), user name of sub/project owner [string], project name [string], project description [string] (optional)
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// This function creates a new project.
 
 function rdbms_createproject ($subproject_id, $object_id=0, $user="", $projectname="", $description="")
 {
@@ -5974,18 +6010,26 @@ function rdbms_createproject ($subproject_id, $object_id=0, $user="", $projectna
   else return false;
 }
 
-// ----------------------------------------------- set project -------------------------------------------------
+// ----------------------------------------------- edit project -------------------------------------------------
+// function: rdbms_setproject()
+// input: project ID [integer], ID of main project (only if project is a subproject) [integer or string], object ID or path to object [string] (optional), user name of sub/project owner [string] (optional), project name [string] (optional), project description [string] (optional)
+// output: true/false
+// requires: config.inc.php
 
-function rdbms_setproject ($project_id, $subproject_id=0, $object_id="", $user="", $projectname="", $description="")
+// description:
+// This function saves data of an existing project.
+// Use *Leave* as input if a value should not be changed. 
+
+function rdbms_setproject ($project_id, $subproject_id="*Leave*", $object_id="*Leave*", $user="*Leave*", $projectname="*Leave*", $description="*Leave*")
 {
   global $mgmt_config;
 
-  if (is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && $project_id > 0 && ($projectname == "" || strlen ($projectname) <= 200) && ($description == "" || strlen ($description) <= 3600))
+  if (is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && intval ($project_id) > 0 && $projectname != "" && strlen ($projectname) <= 200 && strlen ($description) <= 3600)
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 
     // try to get object_id from object path
-    if ($object_id != "" && intval ($object_id) < 1)
+    if ($object_id != "*Leave*" && intval ($object_id) < 1)
     {      
       $object_id = rdbms_getobject_id ($object_id);
     }
@@ -5993,11 +6037,11 @@ function rdbms_setproject ($project_id, $subproject_id=0, $object_id="", $user="
     // clean input
     $sql_update = array();
 
-    if ($subproject_id != "") $sql_update[] = 'subproject_id="'.intval($subproject_id).'"';
-    if ($object_id != "") $sql_update[] = 'object_id="'.intval ($object_id).'"';
-    if ($user != "") $sql_update[] = 'user="'.$db->rdbms_escape_string ($user).'"';
-    if ($projectname != "") $sql_update[] = 'project="'.$db->rdbms_escape_string ($projectname).'"';
-    if ($description != "") $sql_update[] = 'description="'.$db->rdbms_escape_string ($description).'"';
+    if ($subproject_id != "*Leave*" && intval ($subproject_id) >= 0) $sql_update[] = 'subproject_id="'.intval($subproject_id).'"';
+    if ($object_id != "*Leave*" && intval ($object_id) >= 0) $sql_update[] = 'object_id="'.intval ($object_id).'"';
+    if ($user != "*Leave*") $sql_update[] = 'user="'.$db->rdbms_escape_string ($user).'"';
+    if ($projectname != "*Leave*") $sql_update[] = 'project="'.$db->rdbms_escape_string ($projectname).'"';
+    if ($description != "*Leave*") $sql_update[] = 'description="'.$db->rdbms_escape_string ($description).'"';
 
     // insert
     $sql = 'UPDATE project SET ';
@@ -6017,6 +6061,13 @@ function rdbms_setproject ($project_id, $subproject_id=0, $object_id="", $user="
 }
 
 // ------------------------------------------------ get project -------------------------------------------------
+// function: rdbms_getproject()
+// input: task ID [integer] (optional), object ID [integer] (optional), subproject ID the task belongs to [integer] (optional), user name [string] (optional), attributes for order by SQL statement [string] (optional)    
+// output: result array / false on error
+// requires: config.inc.php
+
+// description:
+// Reads all values of a project.
 
 function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $user="", $order_by="project")
 {
@@ -6089,12 +6140,19 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
 }
 
 // ----------------------------------------------- delete project -------------------------------------------------
+// function: rdbms_deleteproject()
+// input: project ID or array of project IDs to be deleted [integer] (optional), object ID [integer] (optional), user name [string] (optional)
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// This function removes projects.
 
 function rdbms_deleteproject ($project_id="", $object_id="", $user="")
 {
   global $mgmt_config;
   
-  if (is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && $project_id != "" || $object_id != "" || $user != "")
+  if (is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && ($project_id != "" || $object_id != "" || $user != ""))
   {   
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -6105,9 +6163,9 @@ function rdbms_deleteproject ($project_id="", $object_id="", $user="")
     }
 
     // clean input
-    if (!empty ($project_id)) $project_id = intval ($project_id);
-    elseif (!empty ($object_id)) $object_id = intval ($object_id);
-    elseif (!empty ($user)) $user = $db->rdbms_escape_string ($user);
+    if (intval ($project_id) > 0) $project_id = intval ($project_id);
+    elseif (!intval ($object_id) > 0) $object_id = intval ($object_id);
+    elseif (trim ($user) != "") $user = $db->rdbms_escape_string ($user);
 
     if (!empty ($project_id)) $sql = 'DELETE FROM project WHERE project_id="'.$project_id.'"';
     elseif (!empty ($object_id)) $sql = 'DELETE FROM project WHERE object_id="'.$object_id.'"';
@@ -6126,6 +6184,13 @@ function rdbms_deleteproject ($project_id="", $object_id="", $user="")
 }
 
 // ----------------------------------------------- get table information -------------------------------------------------
+// function: rdbms_gettableinfo()
+// input: SQL table name [string]
+// output: result array / false on error
+// requires: config.inc.php
+
+// description:
+// This function provides information of all table columns.
 
 function rdbms_gettableinfo ($table)
 {
@@ -6172,6 +6237,13 @@ function rdbms_gettableinfo ($table)
 }
 
 // -----------------------------------------------  external SQL query-------------------------------------------------
+// function: rdbms_gettableinfo()
+// input: SQL statement [string], cancat by column/attribute name [string] (optional)
+// output: result array / false on error
+// requires: config.inc.php
+
+// description:
+// This function executes a SQL statement and returns the result as array.
 
 function rdbms_externalquery ($sql, $concat_by="")
 {
@@ -6199,8 +6271,10 @@ function rdbms_externalquery ($sql, $concat_by="")
 
         while ($row = $db->rdbms_getresultrow ('select'))
         {
-          // transform objectpath
+          // transform objectpath in different name variants
           if (!empty ($row['objectpath'])) $row['objectpath'] = str_replace (array("*comp*/","*page*/"), array("%comp%/","%page%/"), $row['objectpath']);
+          if (!empty ($row['Objectpath'])) $row['Objectpath'] = str_replace (array("*comp*/","*page*/"), array("%comp%/","%page%/"), $row['Objectpath']);
+          if (!empty ($row['Location'])) $row['Location'] = str_replace (array("*comp*/","*page*/"), array("%comp%/","%page%/"), $row['Location']);
         
           if ($concat_by != "" && !empty ($row[$concat_by]))
           {

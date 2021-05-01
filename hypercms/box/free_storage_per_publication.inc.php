@@ -65,7 +65,7 @@ if (is_array ($siteaccess))
   <div id=\"free_storage_per_publication\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
     <div class=\"hcmsHeadline\" style=\"margin:6px;\">Publication Storage Space</div>
     <hr />
-    <div style=\"text-align:right; padding:20px;\">";
+    <div style=\"text-align:right; padding:10px;\">";
     
       $percentage = 0;
       $space_total = 0;
@@ -98,17 +98,17 @@ if (is_array ($siteaccess))
       
       if ($space_total > 0)
       {
-        echo "Total <span style=\"font-size:32px;\">".number_format ($space_total, 2, ".", " ")." GB</span>"; 
+        echo "Total <span style=\"font-size:28px;\">".number_format ($space_total, 2, ".", " ")." GB</span>"; 
       }
-      else echo "Total <span style=\"font-size:32px;\">No Limit</span>";
+      else echo "Total <span style=\"font-size:28px;\">No Limit</span>";
       
       echo "<br /><br />";
       
       if ($space_used > 0)
       {
-        echo "Used <span style=\"font-size:32px;\">".number_format (($space_used), 2, ".", " ")." GB</span>";
+        echo "Used <span style=\"font-size:28px;\">".number_format (($space_used), 2, ".", " ")." GB</span>";
       }
-      else echo "Used <span style=\"font-size:32px;\"> 0 GB</span>";
+      else echo "Used <span style=\"font-size:28px;\"> 0 GB</span>";
       
       echo "<br /><br />";
       
@@ -117,11 +117,23 @@ if (is_array ($siteaccess))
         if ($space_free < 0) $style = "color:orange;";
         else $style = "";
         
-        echo "Free <span style=\"font-size:32px;".$style."\">".number_format (($space_free), 2, ".", " ")." GB</span>";
+        echo "Free <span style=\"font-size:28px;".$style."\">".number_format (($space_free), 2, ".", " ")." GB</span>";
       }
-      else echo "Free <span style=\"font-size:32px;\">Not available</span>";
+      else echo "Free <span style=\"font-size:28px;\">Not available</span>";
+
+      echo "<br /><br />";
+
+      $filesize_array = getfilesize ("%comp%/".$site."/.folder");
+
+      if (is_array ($filesize_array))
+      {
+        $filesize = $filesize_array['filesize'];
+        $filecount = $filesize_array['count'];
+
+        echo "Average file size <span style=\"font-size:28px;\">".number_format (($filesize / $filecount / 1024), 2, ".", " ")." MB</span>";
+      }
       
-      echo "<br /><br /><br />";
+      echo "<br /><br />";
       
       if ($space_total > 0) $percentage = round ((($space_total - $space_free) / $space_total), 4) * 100;
       if ($percentage > 100) $percentage = 100;

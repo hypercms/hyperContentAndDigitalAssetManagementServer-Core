@@ -27,7 +27,7 @@ $forward = "";
 // ----------------------- on access event ----------------------
 
 // call on access event to analyze request
-if ($eventsystem['onaccess'] == 1) onaccess ($_REQUEST);
+if (!empty ($eventsystem['onaccess'])) onaccess ($_REQUEST);
 
 // ------ login link parameters for 2 factor authentication --------
 

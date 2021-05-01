@@ -4806,7 +4806,7 @@ Release 12/2020
 - Bug fix: Function renamemediacat in Main API did not verify if the same category name exists already
 
 Version 9.1.0
-Release 01/2021
+Release 02/2021
 - Update of all user guides
 - Various modifications for the support of PHP version 8.0 (migration of functions that used required parameter followed by optional parameter)
 - Dropped support of MS IE if face detection or recognition will be used
@@ -4956,7 +4956,7 @@ Release 03/2021
 - Modifications in function deletemediacat in Main API in order to remove HTML table code from the messages
 - Modifications in function showsharelinks in UI API in order to set a default width
 - Modifications in the Plugin Management in order to update the plugin configuration file name
-- Renamed plugin configuration file name form "plugin.conf.php" to "plugin.global.php" in all system components which use the plugin configuration
+- Renamed plugin configuration file name form "plugin.conf.php" to "plugin.global.php" in all system components which use the plugin configurationf
 - Modifications in function createpublication in the Main API in order to allow the publication name "plugin"
 - Implementation of the function update_plugin_v911 in the Update API
 - Modifications in the German language file
@@ -5002,3 +5002,132 @@ Release 03/2021
 - Bug fix: page_info used the old name of the YouTube API
 - Bug fix: The user filter in the LDAP/AD Connector has not been correct
 - Bug fix: The array element key for the publication mapping has not been correct in the LDAP/AD Connector
+
+Version 9.1.2
+Release 04/2021
+- Modifications in function editpublication in Main API in order to save Google Cloud API JSON kay file only if it is not empty
+- Modifications in face management plugin in order to display face names/labels only if at least one face definition exists for the label
+- Modifications in face management plugin in order to verify the delete permissions of the user for face definitions
+- Modifications in the Plugin API
+- Modifications in service support in order to support groups
+- Minor modifications in function editgroup
+- Minor modifications in group_edit_script
+- Modifications in group_edit_form in order to display the full path without the publication name
+- Modifications in function savelog in Main API in order to exclude system service users
+- Modifications in function savelog in Main API in order to archive log file if it has reached a size of more than 100 MB
+- Modifications in function accesspermission in Security API
+- Implementation of the new service accessstats in order to render the access statistics for a provided location
+- Modifications in the up_and_download home box in order to use the new service accessstats and avoid delays when loading the home screen
+- Implementation of the new service serverload in order to render the server load statistics
+- Modifications in the server_load home box in order to use the new service serverload and avoid delays when loading the home screen
+- Modifications in the server_load home box in order to remove the browser verification and enable reloads for all browsers
+- Modifications in explorer_objectlist and search _objectlist in order to remove specific width and height CSS classes and thumbnail ratio calculations for the thumbnail dimensions
+- Implementation of new CSS classes for the thumbnail sizes in the gallery view in explorer_objectlist and search_objectlist
+- Modifications in main configuration in order to set default thumbnail frame size to 380 x 220 pixels instead of 260 x 220 pixels
+- Modifications in explorer_objectlist and search_objectlist in order to set the large thumbnail size to 180 pixels instead of 160 pixels
+- Implementation of the new function contentcount in Main API in order to get and set the contentcount (container ID) for new objects and restore the contentcount using the database if necessary
+_ Modifications in function createobject and manipulateobject in Main API in order to replace the old code with the new function contentcount
+- Modifications in function loadlockfile in Main API in order to support logging
+- Design modifications in the folder images of all design themes
+- Updates in all language files
+- Bug fix: The plugin_management did not provide the token for action "reparse"
+- Bug fix: Modifications in function showthumbnail in UI API in order to set max-width and max-height if the media dimensions are not available and fix display issues of the thumbnail
+
+Version 9.1.3
+Release 05/2021
+- Modifications in the main configuration comments
+- Preparation of all system modules for the support of PHP8
+- Modifications in import_form in the Import/Export module in order to verify if an import directory has been defined
+- Modifications in import_form in the Import/Export module in order to set the form target to the parent frame
+- Modifications in export_form in the Import/Export module in order to remove permissions for the export directory field
+- Modifications in export_form in the Import/Export module in order to verify if an export directory has been defined
+- Modifications in function createmediaobject in Main API in order to support the new input parameter deletefile (keep or delete the source file)
+- Modifications in function importmediafiles and importxmlfiles in Import/Export API in order to use the new input parameter deletefile of function createmediaobject
+- Modifications in the Import/Export API in order to report import directory and start date and time
+- Modifications in the Import/Export API in order to save the report using function savefile instead of savelog
+- Modifications in the free_storage home box in order to refer to the external repository instead of the systems root path
+- Implementation of the new function convert_unicode2utf8 in Main API in order to convert unicode characters to UTF8
+- Modifications in function createmediaobjects in Main API in order to apply function convert_unicode2utf8
+- Modifications in function savecontainer in Main API regarding the order of priority of saving the container (non-existing container will only be saved last)
+- Implementation of the new function valid_jpeg in Media API in order to verify JPEG images
+- Modifications in function createthumbnail_indesign in Media API in order to verify the create thumbnail
+- Modifications in various API function of the Main, Meta and Security API in order to verify the eventsystem settings
+- Modifications in explorer_objectlist, index, site_edit_inheritance in order to verify the eventsystem settings
+- Modifications in uploadvideo of the YouTube Connector in order to verify the eventsystem settings
+- Modifications in service savecontent in order to verify the eventsystem settings
+- Modifications in various function of the WebDAV module in order to verify that the array element or variables exists 
+- Modifications in function downloadfile in Main API in order to log error if media file can't be loaded with option "noheader"
+- Modifications in media_taxonomy in order to verify the language code of the selected languages
+- Modifications in .htaccess of the workplace Integration module in order to add -Indexes directive
+- Modifications in function getcategory in Get API in order to verify the management variables
+- Modifications in function createmedia and rotateimage in Media API in order to verify the GD library functions exist 
+- Modifications in function createmedia in Media API in order to include jpeg as file extension if the GD library is used
+- Modifications in control_content_menu and control_objectlist_menu in order to initialize the media file extension array element
+- Modifications in control_content_menu in order to display disabled lock button if the conditions are not fulfilled
+- Modifications in control_content_menu in order to verify the extracted application name from the content container
+- Modifications in various functions in Main API, Media API, and Meta API which use fread in order to verify the filesize (zero filesize for empty file)
+- Modifications in function component_edit_page_multi and component_edit_page_single in order to verify variables
+- Modifications in frameset_edit_component in order to support the mediatype filter attribute
+- Modifications in function showcompexplorer in UI API in order to initialize the variable temp_complocation
+- Modifications in function showcompexplorer in UI API in order to support the mediatype "component" as asset filter
+- Modifications in function buildview of the template engine in order to pass the mediatype attribute to frameset_edit_component
+- Modifications in function buildview of the template engine in order to rename JS function hcms_changeitem to hcms_selectComponents
+- Modifications in function buildview of the template engine in order to remove exit before the return
+- Modifications in JS function hcms_selectComponents in the template engine in order to support the mediatype parameter
+- Modifications in system template "brandguidlines" and "brandguidepage" in order to use the mediatype attribute for the component tag
+- Modifications in function followlink in the template engine in order to verify the path variables
+- Modifications in function rgb2cmyk in Media API in order to verify that the color array elements exist
+- Modifications in service savecontent in order to verify the usedby variable
+- Modifications in page_view in order to verify result of function buildview and to fallback to default character set if none has been provided in the result
+- Modifications in function showmedia in order to verify the mediafiles element of the video configuration file
+- Modifications in function setarticle, setmedia, settext, setcomplink in Set API in order to initialize input parameters of type array
+- Modifications in function getpublication in Get API in order to verify the 1st position result
+- Modifications in template_edit in order to display link buttons only for non-DAM publications
+- Modifications in link_edit_page in order to remove DAM permission verification to avoid killsession for DAM publications using a page link in a template
+- Modifications in function showmessage in UI API in order to set min-height for the inner table and hide the scrollbar due to issues with overflow:hidden style with Chrome browser
+- Modifications in function setproject of the Project Management module due to changes in the input parameter verification
+- Modifications in function rdbms_settask in DB Connect in order to verify integer input values and support *Leave* as input value to leave a value unchanged
+- Modifications in function settask in Task Management API in order to support *Leave* as input value
+- Modifications in function rdbms_setproject in DB Connect due to changes in the input parameter verification
+- Modifications in function rdbms_setproject in DB Connect in order to support *Leave* as input value to leave a value unchanged
+- Modifications in function editproject in the Project Management API in order to support *Leave* as input value to leave a value unchanged
+- Modifications in function rdbms_deleteproject in DB Connect due to changes in the verification of the input values 
+- Modifications in function importmetadata in Meta API in order to define a default enclose character if none has been provided
+- Modifications in function rdbms_getnotification in DB Connect in order to initialize the result array
+- Modifications in popup_message in order to verify the message variable
+- Modifications in function readnavigation in UI API in order to verify XML node results provided by function selectcontent
+- Modifications in function showaudioplayer and showvideoplayer in UI API in order to convert with and height to integer values
+- Modifications in function convertchars in Main API in order to verify the character sets are supported
+- Adding function descriptions as comments to all functions in DB Connect 
+- Modifications in article_edit, report_form, and template_edit in order to use regular expressions for the JS function replace search parameter
+- Modifications in JS function hcms_stripHTML in main.js and main.min.js in order to use regular expressions for the JS function replace search parameter
+- Renamed global JS variables is_gallery and lastSort to hcms_is_gallery and hcms_lastSort in main.js and main.min.js
+- Modifications in media_view in order to verify the object_info variable
+- Modifications in JS function translatelanguage in meida_taxonomy in order to provide an error message if the translation service is not available
+- Modifications in the standard design theme
+- Modifications in the CSS class download_icon of the brandguide.css
+- Implementation of the new client CPU cores verification for the face recognition service (min 4 CPU cores are required in order to use the service)
+- Modifications in explorer_objectlist, queue_objectlist, message_objectlist, search_objectlist, and user_objectlist in order to set a new min and max size of the context menu
+- Modifications in function getmetadata_multiobjects in Get API in order to unescape objectpath and remove .folder
+- Modifications in function getmetadata_multiobjects in Get API in order to support the substructure by including the content of subfolders as new input parameter
+- Modifications in function getmetadata_multiobjects in Get API in order to always include media attributes since folder, page, and assets objects can be mixed in the input parameter
+- Modifications in function getmetadata_multiobjects in Get API in order to remove exclude parameter defintion and define each single parameter for the query
+- Modifications in function rdbms_externalquery in DB Connect in order to support objectpath in different name variants
+- Modifications in config.inc.php in install directory in order to comment the HDD array support
+- Modifications in function getmedialocation in Get API in order to verify that the HDD array index exists
+- Modifications in the home box free_storage_per_publication in order to calculate and provide the average file size
+- Modifications in service sendmail in order to verify the users permissions for mailfile or non-mailfile 
+- Design modifications in the home box free_storage_per_publication 
+- Modifications in all language files
+- Updates in the Template Designers Guide
+- Bug fix: The import always tried to remove the source files due to function createmediaobject in Main API always moved the source file
+- Bug fix: Function createmediaobjects was not able to convert unicode encoded characters in directory and file names (encoded by UNZIP)
+- Bug fix: JS function openPopup has not been called correctly by service accessstats
+- Bug fix: The template engine defined a wrong variable name for the signature tag verification
+- Bug fix: The template engine did not verify the result of function tpl_tagbegin
+- Bug fix: Function createtask of the Task Management module did return wrong result if the sendmail parameter was set to false
+- Bug fix: The Task Management module did not save the project_id that a task has been assigned to and caused an unassignment of the saved tasks
+- Bug fix: Function rgb2hex and rgb2cmyk in Media API did access the reassigned red variable of type integer (used to be array)
+- Bug fix: The system template brandguidedownload opened img tag twice
+- Bug fix: Function getmetadata_multiobjects in Get API did not provide all textnodes for all result elements
+- Bug fix: Service sendmail verified the location and the users permissions for mailfiles. Since this verificatiion will fail if the permissions are not valid anymore the user will be automatically logged out.
