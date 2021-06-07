@@ -18,8 +18,8 @@ $site = getrequest_esc ("site", "publicationname");
 $dir = getrequest ("dir", "locationname");
 $CKEditorFuncNum = getrequest_esc ("CKEditorFuncNum", false, "", true);
 $search_expression = getrequest ("search_expression");
-if ($lang == "" || empty ($_REQUEST['lang'])) $lang = getrequest_esc ("langCode");
-elseif ($lang == "") $lang = getrequest_esc ("lang");
+if (empty ($lang) || empty ($_REQUEST['lang'])) $lang = getrequest_esc ("langCode");
+elseif (empty ($lang)) $lang = getrequest_esc ("lang");
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");

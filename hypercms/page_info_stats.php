@@ -83,6 +83,7 @@ if ($pagedata != false)
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function openPopup (link, title)
 {
   if (link != "")
@@ -143,7 +144,7 @@ $next_date_from = date ("Y-m-01", strtotime ("+1 month", strtotime ($date_from))
 $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 ?>
 
-<!-- forms -->
+<!-- navigation forms -->
 <form name="previousform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
@@ -164,9 +165,9 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 <!-- content -->
 <div class="hcmsWorkplaceFrame" style="width:<?php echo ($chart_width + 80); ?>px;">
 
-  <div class="hcmsHeadline" style="width:240px; margin:8px auto 0px auto; text-align:center;">
+  <div class="hcmsHeadline" style="width:240px; margin:8px auto 0px auto; text-align:center; white-space:nowrap;">
     <img src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" class="hcmsButton hcmsButtonSizeSquare" onclick="document.forms['previousform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" />
-    <div style="float:left; width:140px; padding:2px;">&nbsp;<?php echo getescapedtext ($hcms_lang['time-frame'][$lang]).":<br />".$date_month."/".$date_year; ?>&nbsp;</div>
+    <div style="float:left; width:140px; padding:2px; text-align:center;"><?php echo getescapedtext ($hcms_lang['time-frame'][$lang])."<br />&nbsp;".$date_month."/".$date_year; ?>&nbsp;</div>
     <?php if ($date_month != date ("m", time()) || $date_year != date ("Y", time())) { ?>
     <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButton hcmsButtonSizeSquare" onclick="document.forms['nextform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>"/>
     <?php } else { ?>
@@ -237,7 +238,10 @@ if (!empty ($container_id))
           // container ID for link
           if ($page == ".folder")
           { 
-            if (strpos ("|".$view_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($view_axis[$i]['onclick']) < 2000) $view_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+            if (strpos ("|".$view_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($view_axis[$i]['onclick']) < 2000)
+            {
+              $view_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+            }
           }
           
           // total
@@ -273,7 +277,10 @@ if (!empty ($container_id))
           // container ID for link
           if ($page == ".folder")
           {
-            if (strpos ("|".$download_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($download_axis[$i]['onclick']) < 2000) $download_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+            if (strpos ("|".$download_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($download_axis[$i]['onclick']) < 2000)
+            {
+              $download_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+            }
           }
           
           // total
@@ -310,7 +317,10 @@ if (!empty ($container_id))
           // container ID for link
           if ($page == ".folder")
           {
-            if (strpos ("|".$upload_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($upload_axis[$i]['onclick']) < 2000) $upload_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+            if (strpos ("|".$upload_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($upload_axis[$i]['onclick']) < 2000)
+            {
+              $upload_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+            }
           }
      
           // total

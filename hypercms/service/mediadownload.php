@@ -38,7 +38,7 @@ $options = getrequest ("options");
 if (empty ($user)) $extuser = getrequest ("user");
 
 // default language
-if ($lang == "") $lang = "en";
+if (empty ($lang)) $lang = "en";
 
 // ------------------------------ permission section --------------------------------
 

@@ -65,7 +65,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
     // break loop if maximum has been reached
     if (($items_row + 1) >= $end) break;
 
-    if ($queue['queue_id'] != "" && $queue['action'] != "" && ($queue['object_id'] > 0 || $queue['objectpath'] != "") && $queue['user'] != "")
+    if (!empty ($queue['queue_id']) && !empty ($queue['action']) && (intval ($queue['object_id']) > 0 || !empty ($queue['objectpath'])) && !empty ($queue['user']))
     {  
       $queue_id = $queue['queue_id'];
       $queue_action = $queue['action'];
@@ -121,17 +121,17 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
                   <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                     <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
                       <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
-                        <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$temp_object_name."&nbsp;
+                        <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$temp_object_name."
                       </a>
                     </div>
                   </td>";
                   
           if (!$is_mobile) $listview .= "
-                  <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_site."\">&nbsp;&nbsp;".$temp_site."</span></td>
-                  <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_location_name."\">&nbsp;&nbsp;".$temp_location_name."</span></td>
-                  <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                  <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_action."</span></td>
-                  <td id=\"h".$items_row."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queue_user."</span></td>";
+                  <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_site."\">".$temp_site."</span></td>
+                  <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_location_name."\">".$temp_location_name."</span></td>
+                  <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                  <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">".$queue_action."</span></td>
+                  <td id=\"h".$items_row."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$queue_user."</span></td>";
                   
           $listview .= "
                 </tr>";
@@ -169,14 +169,14 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
                 <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:180px;\">
                   <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject.">
                     <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
-                      <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$temp_object_name."</span>&nbsp;
+                      <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$temp_object_name."</span>
                     </a>
                   </div>
                 </td>";
                 
           if (!$is_mobile) $listview .= "
-                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
-                <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext.">&nbsp;</span></td>
+                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext."></span></td>
+                <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext."></span></td>
                 <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
                 <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">".$queue_action."</span></td>
                 <td id=\"h".$items_row."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$queue_user."</span></td>";

@@ -974,6 +974,28 @@ function base64_to_file ($base64_string, $location, $file)
   else return false; 
 }
 
+// ---------------------- exec_in_background -----------------------------
+// function: exec_in_background()
+// input: exec command [string
+// output: %
+
+// description:
+// Executes a shell command in the background
+
+function exec_in_background ($cmd)
+{
+  global $mgmt_config;
+
+  if (substr (php_uname(), 0, 7) == "Windows")
+  {
+    pclose (popen ("start /B ". $cmd, "r"));
+  }
+  else
+  {
+    exec ($cmd . " > /dev/null &");  
+  }
+}
+
 // ---------------------- createthumbnail_indesign -----------------------------
 // function: createthumbnail_indesign()
 // input: publication name [string], path to source dir [string], path to destination dir [string], file name [string]
@@ -1477,17 +1499,18 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
 // input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], 
 //        format (file extension w/o dot) [string] (optional), 
 //        type of image/video/audio file [thumbnail(for thumbnails of images),origthumb(thumbnail made from original video/audio),original(to overwrite original video/audio file),annotation(for annotation images),any other string present in $mgmt_imageoptions/$mgmt_mediaoptions,temp(for temporary files)] (optional),
-//        force the file to be not encrypted even if the content of the publication must be encrypted [boolean] (optional), set media information [boolean] (optional)
+//        force the file to be not encrypted even if the content of the publication must be encrypted [boolean] (optional), set media information [boolean] (optional), create image files in the background [boolean] (optional)
 // output: new file name / false on error
 
 // description:
 // Creates an new image or video from the original file or creates a thumbnail and transferes the generated image via remoteclient.
 // Saves original or thumbnail media file in destination location. For the thumbnail only JPEG is supported as output format.
 
-function createmedia ($site, $location_source, $location_dest, $file, $format="", $type="thumbnail", $force_no_encrypt=false, $setmediainfo=true)
+function createmedia ($site, $location_source, $location_dest, $file, $format="", $type="thumbnail", $force_no_encrypt=false, $setmediainfo=true, $exec_in_background=false)
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $user;
 
+  // initialize
   $error = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
@@ -1646,8 +1669,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             if (!empty ($file_ext) && substr_count (strtolower ($imagepreview_ext).".", $file_ext.".") > 0 && trim ($imagepreview) != "")
             {
               $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($path_source)."\" \"".shellcmd_encode ($location_dest.$file_name).".jpg\"";
-
-              @exec ($cmd, $error_array, $errorCode);
+              
+              // asynchronous shell exec
+              if (!empty ($exec_in_background)) exec_in_background ($cmd);
+              // synchronous shell exec
+              else @exec ($cmd, $error_array, $errorCode);
 
               // on error
               if ($errorCode)
@@ -1806,7 +1832,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               $thumb_width = 260;
               $thumb_height = 260;
         
-              if ($id3_data['imagewidth'] > 0 && $id3_data['imageheight'] > 0)
+              if (!empty ($id3_data['imagewidth']) && intval ($id3_data['imagewidth']) > 0 && !empty ($id3_data['imageheight']) && intval ($id3_data['imageheight']) > 0)
               {
                 $imgratio = $id3_data['imagewidth'] / $id3_data['imageheight'];
 
@@ -2327,7 +2353,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$background." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
 
-                    @exec ($cmd, $buffer, $errorCode);
+                    // asynchronous shell exec
+                    if (!empty ($exec_in_background)) exec_in_background ($cmd);
+                    // synchronous shell exec
+                    else @exec ($cmd, $buffer, $errorCode);
 
                     // on error
                     if ($errorCode)
@@ -2379,7 +2408,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
                     }
 
-                    @exec ($cmd, $buffer, $errorCode);
+                    // asynchronous shell exec
+                    if (!empty ($exec_in_background)) exec_in_background ($cmd);
+                    // synchronous shell exec
+                    else @exec ($cmd, $buffer, $errorCode);
 
                     // on error
                     if ($errorCode || !is_file ($location_dest.$newfile))
@@ -2450,7 +2482,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     {
                       $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." \"".shellcmd_encode ($location_dest.$newfile)."\" \"".shellcmd_encode ($location_temp."watermark.".$newfile)."\"";
 
-                      @exec ($cmd, $error_array, $errorCode);
+                      // asynchronous shell exec
+                      if (!empty ($exec_in_background)) exec_in_background ($cmd);
+                      // synchronous shell exec
+                      else @exec ($cmd, $error_array, $errorCode);
 
                       // on error
                       if ($errorCode)
@@ -5293,10 +5328,12 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
 {
   global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
-
-  if (empty ($lang)) $lang = "en";
   $updates = array();
+
+  // set default language
+  if (empty ($lang)) $lang = "en";
 
   if (!empty ($mgmt_compress['.zip']) && valid_publicationname ($site) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 0 && is_dir ($destination) && valid_locationname ($destination) && valid_objectname ($zipfilename) && valid_objectname ($user))
   {

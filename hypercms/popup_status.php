@@ -30,25 +30,7 @@ $published_only = getrequest_esc ("published_only");
 $tempfile = getrequest_esc ("tempfile", "locationname");
 $from_page = getrequest_esc ("from_page");
 $token= getrequest_esc ("token");
-?>
-<!DOCTYPE html>
-<html>
-<head>
-<title>hyperCMS</title>
-<meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="theme-color" content="#000000" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/click.min.js"></script>
-</head>
 
-<body class="hcmsWorkplaceGeneric">
-
-<!-- load screen --> 
-<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
-
-<?php
 // flush in order to display load screen
 // do not use it for action "publish" since the output will interfere with the session_start used in the template engine
 if ($force == "start" && $action != "publish")
@@ -398,15 +380,33 @@ else
 if ($maxcount > 0)
 {
   $progress = (($maxcount - $count) / $maxcount) * 100;
-  if ($progress == 0) $progress = 1;
+
+  if (empty ($progress)) $progress = 1;
+  else $progress = round ($progress);
 }
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>hyperCMS</title>
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="theme-color" content="#000000" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<script type="text/javascript" src="javascript/click.min.js"></script>
+</head>
 
-<div style="display:block; width:100%; text-align:center; vertical-align:middle;">
-  <p><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?></span> <span class="hcmsHeadlineTiny"><?php echo $status; ?></span></p>
+<body class="hcmsWorkplaceGeneric">
+
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
+
+<div style="display:block; width:100%; height:100%; text-align:center; vertical-align:middle;">
+  <div class="hcmsHeadline" style="margin:10px;"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?></span> <span class="hcmsHeadlineTiny"><?php echo $status; ?></div>
   
-  <?php if (!empty ($progress) && $progress >= 0) { ?>
-  <div style="display:block; width:80%; height:16px; margin:10px auto; border:1px solid #000000;">
+  <?php if (!empty ($progress) && intval ($progress) >= 0) { ?>
+  <div style="display:block; width:80%; height:16px; margin:20px auto; border:1px solid #000000;">
     <div class="hcmsRowHead1" style="width:<?php echo $progress; ?>%; height:100%;"></div>
   </div>
   <?php } ?>
@@ -423,7 +423,7 @@ if ($maxcount > 0)
     <input type="hidden" name="maxcount" value="<?php echo $maxcount; ?>" />
     <input type="hidden" name="tempfile" value="<?php echo $tempfile; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
-    <button class="hcmsButtonBlue" type="submit" /><?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?></button>
+    <button class="hcmsButtonBlue" type="submit"><?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?></button>
   </form>
 </div>
 
@@ -432,7 +432,7 @@ if ($maxcount > 0)
 if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'none';
 
 // set window height
-window.innerHeight = 120;
+window.innerHeight = 240;
 
 // reload status window
 function refreshpopup ()

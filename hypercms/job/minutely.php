@@ -11,6 +11,8 @@ require ("../config.inc.php");
 require ("../function/hypercms_api.inc.php");
 
 
+// initialize
+$error = array();
 $config_files = array();
 
 // if multiple instances are used
@@ -54,29 +56,55 @@ if (sizeof ($config_files) > 0)
     
         foreach ($queue_array as $queue)
         {
-          if ($queue['queue_id'] != "" && $queue['action'] != "" && ($queue['object_id'] != "" || $queue['objectpath'] != "") && $queue['user'] != "")
+          if (!empty ($queue['queue_id']) && !empty ($queue['action']) && (!empty ($queue['object_id']) || !empty ($queue['objectpath'])) && !empty ($queue['user']))
           {
-            // mail
-            if ($queue['action'] == "mail" && $queue['object_id'] != "")
+            // execute PHP command
+            if ($queue['action'] == "execute" && !empty ($queue['cmd']))
             {
               $queue_id = $queue['queue_id'];
+              $queue_date = $queue['date'];
+              $cmd = $queue['cmd'];
+
+              // set new exection date in order to prevent multiple exection
+              $new_date = date('Y-m-d H:i:s', strtotime($queue_date . ' +1 day'));
+              rdbms_setqueueentry ($queue_id, $new_date);
+              
+              // execute
+              eval ($cmd);
+
+              $result = true;
+            }
+            // process e-mail
+            elseif ($queue['action'] == "mail" && !empty ($queue['object_id']))
+            {
+              $queue_id = $queue['queue_id'];
+              $queue_date = $queue['date'];
               $action = $queue['action'];
               $mail_id = $queue['object_id'];
               $user = $queue['user'];
+
+              // set new exection date in order to prevent multiple exection
+              $new_date = date('Y-m-d H:i:s', strtotime($queue_date . ' +1 day'));
+              rdbms_setqueueentry ($queue_id, $new_date);
               
               // process objects
               $result = processobjects ($action, "", "", $mail_id, "", $user);
             }
-            // object
-            elseif ($queue['objectpath'] != "")
+            // process object
+            elseif ($queue['action'] != "execute" && $queue['action'] != "mail" && !empty ($queue['objectpath']))
             { 
               $queue_id = $queue['queue_id'];
+              $queue_date = $queue['date'];
               $action = $queue['action']; 
               $site = getpublication ($queue['objectpath']);
               $location = getlocation ($queue['objectpath']);
               $file = getobject ($queue['objectpath']);
               $published_only = $queue['published_only'];
               $user = $queue['user'];
+
+              // set new exection date in order to prevent multiple exection
+              $new_date = date('Y-m-d H:i:s', strtotime($queue_date . ' +1 day'));
+              rdbms_setqueueentry ($queue_id, $new_date);
       
               // if folder object remove .folder
               if ($file == ".folder")
@@ -109,17 +137,17 @@ $report = getserverload();
 
 if (!empty ($report) && is_array ($report))
 {
-  $serverload = $mgmt_config['today']."|".$report['load']."|".$report['cpu']."|".$report['memory'];
+  $serverload = array ($mgmt_config['today']."|".$report['load']."|".$report['cpu']."|".$report['memory']);
   
-  savelog (array ($serverload), "serverload");
+  savelog ($serverload, "serverload");
   
   // warning in system event log
   if ($report['load'] > 0.9)
   {
     $errcode = "00911";
-    $error = $mgmt_config['today']."|minutely.php|warning|".$errcode."|server load is ".round ($report['load'] * 100)."%";
+    $error[] = $mgmt_config['today']."|minutely.php|warning|".$errcode."|server load is ".round ($report['load'] * 100)."%";
     
-    savelog (array ($error));
+    savelog (@$error);
   }
 }
 ?>

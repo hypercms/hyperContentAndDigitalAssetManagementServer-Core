@@ -4837,17 +4837,17 @@ function rdbms_deleterecipient ($recipient_id)
 
 // ----------------------------------------------- create queue entry -------------------------------------------------
 // function: rdbms_createqueueentry()
-// input: action [string], converted object path [string], execution date for the action [YYYY-MM-DD hh:mm], apply for published objects only [boolean], user name [string]
+// input: action [string], converted object path [string], execution date for the action [YYYY-MM-DD hh:mm], apply for published objects only [boolean], PHP command [string] (optional), user name [string]
 // output: true / false on error
 
 // description:
 // Creates a new action in the queue.
 
-function rdbms_createqueueentry ($action, $object, $date, $published_only, $user)
+function rdbms_createqueueentry ($action, $object, $date, $published_only, $cmd, $user)
 {
   global $mgmt_config;
 
-  if ($action != "" && $object != "" && is_date ($date, "Y-m-d H:i") && $user != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0 || $object > 0))
+  if ($action != "" && is_date ($date, "Y-m-d H:i") && $user != "" && (($object != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0 || intval ($object) > 0)) || $cmd != ""))
   {
     // correct object name 
     if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
@@ -4866,10 +4866,11 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $user
       $date = date ("Y-m-d H:i", strtotime ($date));
       if (!empty ($published_only)) $published_only = 1;
       else $published_only = 0;
+      if (!empty ($cmd)) $cmd = $db->rdbms_escape_string ($cmd);
       $user = $db->rdbms_escape_string ($user);
 
-      $sql = 'INSERT INTO queue (object_id, action, date, published_only, user) ';    
-      $sql .= 'VALUES ('.intval ($object_id).', "'.$action.'", "'.$date.'", '.intval ($published_only).', "'.$user.'")';
+      $sql = 'INSERT INTO queue (object_id, action, date, published_only, cmd, user) ';    
+      $sql .= 'VALUES ('.intval ($object_id).', "'.$action.'", "'.$date.'", '.intval ($published_only).', "'.$cmd.'", "'.$user.'")';
 
       $errcode = "50033";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']); 
@@ -4882,6 +4883,42 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $user
       return $done;
     }
     else return false;
+  }
+  else return false;
+}
+
+// ----------------------------------------------- set date of queue entry -------------------------------------------------
+// function: rdbms_setqueueentry()
+// input: queue ID [integer], execution date for the action [YYYY-MM-DD hh:mm]
+// output: true / false on error
+
+// description:
+// Sets the new execution date for a queue entry.
+
+function rdbms_setqueueentry ($queue_id, $date)
+{
+  global $mgmt_config;
+
+  if (intval ($queue_id) > 0 && is_date ($date, "Y-m-d H:i"))
+  {   
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+
+    // clean input
+    $queue_id = intval ($queue_id);
+    $date = date ("Y-m-d H:i", strtotime ($date));
+
+    // query
+    $sql = 'UPDATE queue SET date="'.$date.'" WHERE queue_id='.$queue_id;
+
+    $errcode = "50045";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'update');
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+
+    $db->rdbms_close();
+     
+    return true;
   }
   else return false;
 }
@@ -4915,7 +4952,7 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
     if (!empty ($object_id)) $object_id = $db->rdbms_escape_string ($object_id);
 
     // get recipients
-    $sql = 'SELECT que.queue_id, que.action, que.date, que.published_only, que.user, que.object_id, obj.objectpath FROM queue AS que LEFT JOIN object AS obj ON obj.object_id=que.object_id WHERE 1=1';
+    $sql = 'SELECT que.queue_id, que.action, que.date, que.published_only, que.cmd, que.user, que.object_id, obj.objectpath FROM queue AS que LEFT JOIN object AS obj ON obj.object_id=que.object_id WHERE 1=1';
     if (!empty ($action)) $sql .= ' AND que.action="'.$action.'"';
     if (!empty ($site)) $sql .= ' AND (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
     if (!empty ($date)) $sql .= ' AND que.date<="'.$date.'"'; 
@@ -4943,6 +4980,7 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
           $queue[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
           $queue[$i]['date'] = $row['date'];
           $queue[$i]['published_only'] = $row['published_only'];
+          $queue[$i]['cmd'] = $row['cmd'];
           $queue[$i]['user'] = $row['user'];
 
           $i++;
@@ -4973,7 +5011,7 @@ function rdbms_deletequeueentry ($queue_id)
 {
   global $mgmt_config;
 
-  if ($queue_id != "")
+  if (intval ($queue_id) > 0)
   {   
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 
@@ -5520,7 +5558,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       $sqltable = "LEFT JOIN media ON dailystat.id=media.id INNER JOIN object ON dailystat.id=object.id";
       if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
       else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
-      $sqlgroup = 'GROUP BY dailystat.id, dailystat.user';
+      $sqlgroup = 'GROUP BY dailystat.date, dailystat.id, dailystat.user';
     }
     // search by container id
     elseif (intval ($container_id) > 0)

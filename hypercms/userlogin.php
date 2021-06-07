@@ -292,7 +292,7 @@ if (checkuserip (getuserip ()) == true)
   {
     $show = sendresetpassword ($sentuser, "multifactorauth");
   }
-  // login
+  // login (the provided password must not be *Null* since this value is reserved for SSO)
   else
   {
     // hcms_linking logon (since version 5.6.2)
@@ -301,7 +301,7 @@ if (checkuserip (getuserip ()) == true)
       $login_result = userlogin ($hcms_user, "", "", $hcms_objref, $hcms_objcode, $ignore_password);
     }
     // hcms_linking logon (before version 5.6.2)
-    elseif (!empty ($hcms_user) && !empty ($hcms_pass) && !empty ($hcms_objref) && !empty ($hcms_objcode))
+    elseif (!empty ($hcms_user) && !empty ($hcms_pass) && !empty ($hcms_objref) && !empty ($hcms_objcode) && $hcms_pass != "*Null*")
     {
       $login_result = userlogin ($hcms_user, $hcms_pass, "", $hcms_objref, $hcms_objcode);
     }
@@ -311,12 +311,12 @@ if (checkuserip (getuserip ()) == true)
       $login_result = userlogin ("", "", $userhash, "", "", false, true, $portal);
     }
     // standard user logon
-    elseif (!empty ($sentuser) && !empty ($sentpasswd) && checktoken ($token, "sys"))
+    elseif (!empty ($sentuser) && !empty ($sentpasswd) && checktoken ($token, "sys") && $sentpasswd != "*Null*")
     {
       $login_result = userlogin ($sentuser, $sentpasswd);
     }
     // get username and password from Basic HTTP Authentication used for SSO (if passed through)
-    elseif (!empty ($_SERVER['PHP_AUTH_USER']) && !empty ($_SERVER['PHP_AUTH_PW']))
+    elseif (!empty ($mgmt_config['sso']) && !empty ($_SERVER['PHP_AUTH_USER']) && !empty ($_SERVER['PHP_AUTH_PW']) && $_SERVER['PHP_AUTH_PW'] != "*Null*")
     {
       $sentuser = $_SERVER['PHP_AUTH_USER'];
       $sentpasswd = $_SERVER['PHP_AUTH_PW'];
@@ -326,9 +326,10 @@ if (checkuserip (getuserip ()) == true)
 
       $login_result = userlogin ($sentuser, $sentpasswd);
     }
-    // get authenticated username from webserver (if passed through)
-    elseif (!empty ($_SERVER['LOGON_USER']) || !empty ($_SERVER['REMOTE_USER']) || !empty ($_SERVER['AUTH_USER']))
+    // get authenticated username from webserver used for SSO (if passed through)
+    elseif (!empty ($mgmt_config['sso']) && (!empty ($_SERVER['LOGON_USER']) || !empty ($_SERVER['REMOTE_USER']) || !empty ($_SERVER['AUTH_USER'])) && $sentpasswd != "*Null*")
     {
+      // the result of the webserver (IIS) will be trusted
       if (!empty ($_SERVER['LOGON_USER'])) $user = $_SERVER['LOGON_USER'];
       elseif (!empty ($_SERVER['REMOTE_USER'])) $sentuser = $_SERVER['REMOTE_USER'];
       elseif (!empty ($_SERVER['AUTH_USER'])) $sentuser = $_SERVER['AUTH_USER'];
@@ -339,8 +340,9 @@ if (checkuserip (getuserip ()) == true)
       $login_result = userlogin ($sentuser, "*Null*");
     }
     // get authenticated user name from OAuth client (requires the Connector module and a general LDAP/AD user account)
-    elseif (!empty ($mgmt_config['ldap_admin_username']) && !empty ($mgmt_config['ldap_admin_password']) && function_exists ("verifyoauthclient"))
+    elseif (!empty ($mgmt_config['sso']) && !empty ($mgmt_config['ldap_admin_username']) && !empty ($mgmt_config['ldap_admin_password']) && function_exists ("verifyoauthclient") && $sentpasswd != "*Null*")
     {
+      // the result of OAuth will be trusted
       $sentuser = verifyoauthclient ();
 
       if (!empty ($sentuser))

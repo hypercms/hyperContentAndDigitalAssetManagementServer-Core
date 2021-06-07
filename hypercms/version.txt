@@ -5058,14 +5058,14 @@ Release 05/2021
 - Modifications in various function of the WebDAV module in order to verify that the array element or variables exists 
 - Modifications in function downloadfile in Main API in order to log error if media file can't be loaded with option "noheader"
 - Modifications in media_taxonomy in order to verify the language code of the selected languages
-- Modifications in .htaccess of the workplace Integration module in order to add -Indexes directive
+- Modifications in .htaccess of the Workplace Integration module in order to add -Indexes directive
 - Modifications in function getcategory in Get API in order to verify the management variables
 - Modifications in function createmedia and rotateimage in Media API in order to verify the GD library functions exist 
 - Modifications in function createmedia in Media API in order to include jpeg as file extension if the GD library is used
 - Modifications in control_content_menu and control_objectlist_menu in order to initialize the media file extension array element
 - Modifications in control_content_menu in order to display disabled lock button if the conditions are not fulfilled
 - Modifications in control_content_menu in order to verify the extracted application name from the content container
-- Modifications in various functions in Main API, Media API, and Meta API which use fread in order to verify the filesize (zero filesize for empty file)
+- Modifications in various functions in Main API, Media API, and Meta API which use fread in order to verify the file size (zero file size for empty file)
 - Modifications in function component_edit_page_multi and component_edit_page_single in order to verify variables
 - Modifications in frameset_edit_component in order to support the mediatype filter attribute
 - Modifications in function showcompexplorer in UI API in order to initialize the variable temp_complocation
@@ -5111,12 +5111,12 @@ Release 05/2021
 - Modifications in function getmetadata_multiobjects in Get API in order to unescape objectpath and remove .folder
 - Modifications in function getmetadata_multiobjects in Get API in order to support the substructure by including the content of subfolders as new input parameter
 - Modifications in function getmetadata_multiobjects in Get API in order to always include media attributes since folder, page, and assets objects can be mixed in the input parameter
-- Modifications in function getmetadata_multiobjects in Get API in order to remove exclude parameter defintion and define each single parameter for the query
+- Modifications in function getmetadata_multiobjects in Get API in order to remove exclude parameter definition and define each single parameter for the query
 - Modifications in function rdbms_externalquery in DB Connect in order to support objectpath in different name variants
 - Modifications in config.inc.php in install directory in order to comment the HDD array support
 - Modifications in function getmedialocation in Get API in order to verify that the HDD array index exists
 - Modifications in the home box free_storage_per_publication in order to calculate and provide the average file size
-- Modifications in service sendmail in order to verify the users permissions for mailfile or non-mailfile 
+- Modifications in service sendmail in order to verify the user’s permissions for mailfile or non-mailfile 
 - Design modifications in the home box free_storage_per_publication 
 - Modifications in all language files
 - Updates in the Template Designers Guide
@@ -5126,8 +5126,78 @@ Release 05/2021
 - Bug fix: The template engine defined a wrong variable name for the signature tag verification
 - Bug fix: The template engine did not verify the result of function tpl_tagbegin
 - Bug fix: Function createtask of the Task Management module did return wrong result if the sendmail parameter was set to false
-- Bug fix: The Task Management module did not save the project_id that a task has been assigned to and caused an unassignment of the saved tasks
+- Bug fix: The Task Management module did not save the project_id that a task has been assigned to and caused the saved tasks to be unassigned
 - Bug fix: Function rgb2hex and rgb2cmyk in Media API did access the reassigned red variable of type integer (used to be array)
 - Bug fix: The system template brandguidedownload opened img tag twice
 - Bug fix: Function getmetadata_multiobjects in Get API did not provide all textnodes for all result elements
-- Bug fix: Service sendmail verified the location and the users permissions for mailfiles. Since this verificatiion will fail if the permissions are not valid anymore the user will be automatically logged out.
+- Bug fix: Service sendmail verified the location and the user’s permissions for mailfiles. Since this verification will fail if the permissions are not valid anymore the user will be automatically logged out.
+
+Version 9.1.4
+Release 06/2021
+- Implementation of the support of commands in the systems queue for the asynchronous processing of multimedia files
+- Implementation of the new function exec_in_background in Media API in order to support the asynchronous execution of command in the background
+- Modifications in function createmedia in Media API in order to support the new input parameter and the asynchronous execution of the rendering process
+- Modifications in function createmediaobject in Main API in order to support the new input parameter for the execution of function createmedia in the background using a queue entry
+- Modifications in function uploadfile in Main API in order to support the new input parameter for the execution of function createmedia in the background using a queue entry
+- Modifications in the createtables.sql in order to add the new attribute cmd to table queue
+- Modifications in minutely job in order to process commands from the queue
+- Implementation of the new function update_database_v914 in Update API
+- Added function call update_database_v914 to function updates_all
+- Modifications in function createqueueentry in Main API in order to support commands as string values
+- Modifications in function rdbms_createqueueentry in DB Connect in order to support the new input parameter for the command
+- Modifications in function rdbms_getqueueentries in DB Connect in order to support the new result parameter for the command
+- Implementation of the new function rdbms_setqueueentry in DB Connect in order to set the execution date for a queue entry (to prevent multiple execution)
+- Modifications in minutely job in order to set the new execution date before execution the queue entry (to prevent multiple execution by next job call)
+- Modifications in the Workplace Integration module in order to support the new input parameter for the execution of function createmedia in the background using a queue entry (in order to avoid timeouts with WebDAV clients due to the processing time of large multimedia files)
+- Modifications in function processobjects in Main API in order to support the new action "execute"
+- Design modifications in queue_objectlist
+- Modifications in function getimageinfo in Get API in order to initialize the color values for red, green and blue
+- Modifications in public function writeSessionDataToFile of the Workplace Integration module in order to exclude the user language setting since English is loaded as the default language 
+- Modifications in link_edit_explorer in order to verify the lang variable
+- Modifications in the Report API in order to verify the lang variable in all functions
+- Modifications in the Workflow API in order to verify the lang variable in all functions
+- Modifications in service mediadownload and mediawrapper in order to verify the lang variable
+- Modifications in control_content_menu and control_objectlist_menu in order to change the height of the popup windows
+- Modifications in contextmenu.js in order to change the height of the popup windows
+- Modifications in page_multiedit in order to hide signature fields and display saving screen before data collection and hide saving screen if data has not been submitted
+- Modifications in page_multiedit in order to force a reload of the new thumbnails
+- Modifications in function sendresetpassword in Main API in order to rename the mail title
+- Design modifications in page_multiedit for the display of the thumbnails
+- Design modifications in pop_action
+- Design modifications in popup_status
+- Modifications in JS function toggleview in explorer_objectlist and search_objeclist in order to set and access the explorer view setting
+- Modifications in explorer_objectlist and search_objeclist in order to call JS function toggleview after each sort
+- Implementation of the new main configuration setting $mgmt_config['sso'] in order to enable and disable SSO
+- Implementation of the new main configuration setting $mgmt_config['sso_ip_validation'] in order to enable and disable SSO IP validation for WebDAV
+- Modifications in function userlogin in Security API in order to support the new main config parameter $mgmt_config['sso']
+- Modifications in function userlogin in Security API in order to support IP logging for SSO
+- Modifications in userlogin in order to support the new main config parameter $mgmt_config['sso']
+- Modifications in userlogin in order to verify password values used for SSO
+- Modifications in function sendresetpassword in Main API in order to save the time of the last password reset of a user for the multifactor authentication
+- Implementation of the new function sendResetPassword in the Workplace Integration module in order to support multifactor authentication
+- Implementation of the new function getUserIP in the Workplace Integration module in order to support IP validation
+- Modifications in the LDAP/AD Connector module in order to to use the provided username and password as first bind option
+- Modifications in OpenSearch Connector module in order to verify the basic HTTP authentication parameters
+- Design modifications in page_multiedit, image_rendering and page_rendering in order to set a new width and overflow for the labels
+- Modifications in page_multiedit in order to verify if audio and video rendering is supported by the main configuration and provide a warning message in the options layer
+- Modifications in control_content_menu and control_objectlist_menu in order to call function gefileninfo for the media file before the media settings verifications
+- Modifications in service renderimage in order to verify mandatory parameters and exclude error message for JSON response
+- Modifications in home box statistic_of_favorites in order to use the service accessstats
+- Modifications in service accessstats in order to exlude the click event for the statistics of single objects
+- Modifications in OpenSeach Connector module in order to verify the basic HTTP authentication parameters
+- Design modifications in service accessstats and home box statistic_of_favorites
+- Design modifications in page_info_stats
+- Implementation of page/month navigation in the service accessstats
+- Modifications in function notifyusers in Main API in order to add the e-mail address of the sender to the message
+- Minor modifications in Import/Export module
+- Renamed Programmers Guide to Developers Guide
+- Updates in the Connector, Installation, Developer, and Users Guide
+- Updates in the language files
+- Bug fix: Function update_plugin_v911 in Update API used wrong version number for the log entry
+- Bug fix: Function checkpassword in Security API did initialize the error array twice
+- Bug fix: page_multiedit did not use the correct path to the text editor JS library
+- Bug fix: Function hcms_sortTable used in explorer_objectlist and search_objectlist did not apply the explorer view setting if it has changed without a reload of the view.
+- Bug fix: Function HTTP_Proxy in Main API did not provide the error message in the response for invalid inputs
+- Bug fix: page_multiedit used wrong div end tag for the video options
+- Bug fix: page_multiedit enabled image rendering if no image edition option has been used
+- Bug fix: Function rdbms_getmediastat in DB Connect did not group by date if the file size has been requested for a location. This caused the result to include the total amount instead of the amount per day

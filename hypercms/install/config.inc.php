@@ -1084,13 +1084,22 @@ which are not confirmed by following written execution, in principle no adhesion
 // The OAuth client will provide the user ID of the authentication user in a Windows network to the server and will forward the user on success.
 // This user need to be verified using LDAP/AD. Keep in mind that a LDAP/AD user with general read permissions is required in order to verify the user, 
 // see setting $mgmt_config['ldap_admin_username'] and $mgmt_config['ldap_admin_password']
+// If SSO is activated  and all 3 OAuth settings are not empty, the multi-factor authentication will be enabled by default.
+
+// Enable (true) or disable (false) SSO
+$mgmt_config['sso'] = false;
+
+// Enable (true) or disable (false) SSO IP validation for WebDAV (do not use if users share the same IP address)
+$mgmt_config['sso_ip_validation'] = false;
 
 // Provide the OAuth consumer key
 // Example: hypercms
 $mgmt_config['oauth_consumer_key'] = "";
+
 // Provide the OAuth consumer secret
 // Example: XMB9APEytVnxoAkLcRGqKQkxptw3rVVY
 $mgmt_config['oauth_secret'] = "";
+
 // Define the default timezone for OAuth
 // Example: Europe/Vienna
 $mgmt_config['oauth_timezone'] = "";

@@ -751,6 +751,9 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
 
 <!-- rendering settings -->
 <div id="renderOptions" style="padding:5px 5px 10px 5px; width:94%; vertical-align:top; z-index:1; display:none; margin:-4px 10px 0px 10px;" class="hcmsMediaRendering">
+
+  <?php if (!empty ($mgmt_mediapreview) && is_supported ($mgmt_mediapreview, "mp4")) { ?>
+
   <form name="mediaconfig" action="service/rendervideo.php" method="post">
   	<input type="hidden" name="action" value="rendermedia" />
     <input type="hidden" name="savetype" value="editor_so">
@@ -798,34 +801,34 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
       </div>
       <div>
         <input type="checkbox" id="chbx_sharpen" name="use_sharpen" value="1" onclick="toggle_sharpen();" />
-        <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang]); ?></label>
+        <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang]); ?></label>
         <input name="sharpen" type="text" id="sharpen" size="4" value="0" />
       </div>
       <div>
         <input type="checkbox" id="chbx_gamma" name="use_gamma" value="1" onclick="toggle_gamma();" />
-        <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo getescapedtext ($hcms_lang['gamma'][$lang]); ?></label>
+        <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_gamma"><?php echo getescapedtext ($hcms_lang['gamma'][$lang]); ?></label>
         <input name="gamma" type="text" id="gamma" size="4" value="0" />
       </div>
       <div>
         <input type="checkbox" id="chbx_brightness" name="use_brightness" value="0" onclick="toggle_brightness();" />
-        <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang]); ?></label>
+        <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang]); ?></label>
         <input name="brightness" type="text" id="brightness" size="4" value="0" />
       </div>
       <div>
          <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
-        <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang]); ?></label>
+        <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang]); ?></label>
         <input name="contrast" type="text" id="contrast" size="4" value="0" />
       </div>
       <div>
         <input type="checkbox" id="chbx_saturation" name="use_saturation" value="1" onclick="toggle_saturation();" />
-        <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo getescapedtext ($hcms_lang['saturation'][$lang]); ?></label>
+        <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_saturation"><?php echo getescapedtext ($hcms_lang['saturation'][$lang]); ?></label>
         <input name="saturation" type="text" id="saturation" size="4" value="0" />
       </div>
 
       <!-- rotate -->
       <div>
         <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-        <label for="rotate" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang]); ?></label>
+        <label for="rotate" style="width:100px; display:inline-block; vertical-align:middle; overflow:hidden;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang]); ?></label>
         <select name="degree" id="degree" class="inputField">
           <option value="90" selected="selected" >90&deg;</option>
           <option value="180" >180&deg;</option>
@@ -836,7 +839,7 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
       <!-- vflip hflip -->
       <div>
         <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-        <label for="chbx_flip" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang]); ?></label>
+        <label for="chbx_flip" style="width:100px; display:inline-block; vertical-align:middle; overflow:hidden;"><?php echo getescapedtext ($hcms_lang['flip'][$lang]); ?></label>
         <select name="flip" id="flip" class="inputField">
           <?php 
             foreach ($available_flip as $value => $name)
@@ -949,8 +952,16 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
         <button type="button" class="hcmsButtonGreen" onclick="submitThumbConfig();"><img src="<?php echo getthemelocation()."img/button_media.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['create'][$lang]);?></button>
       </div>
     </div>
-
   </form>
+  <?php } ?>
+
+  <?php } else { ?>
+
+  <div class="cell" style="width:100%;">
+    <p><strong><?php echo getescapedtext ($hcms_lang['this-action-is-not-supported'][$lang]); ?></strong></p>
+    <p><?php echo getescapedtext ($hcms_lang['configuration-not-available'][$lang]); ?></p>
+  </div>
+
   <?php } ?>
 
 </div>
@@ -962,5 +973,6 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

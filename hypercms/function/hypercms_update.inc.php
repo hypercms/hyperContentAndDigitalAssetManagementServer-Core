@@ -1027,7 +1027,7 @@ function update_database_v708 ()
 
     // alter table
     $sql = "ALTER TABLE taxonomy ADD COLUMN taxonomykey_id INT NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (taxonomykey_id);";
-    $errcode = "50085";
+    $errcode = "50708";
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
@@ -1221,7 +1221,7 @@ function update_database_v800 ()
 
     // alter table
     $sql = "ALTER TABLE accesslink MODIFY object_id varchar(4000);";
-    $errcode = "50095";
+    $errcode = "50800";
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
@@ -1342,7 +1342,7 @@ function update_database_v805 ()
 
     // alter table
     $sql = "ALTER TABLE container ADD publishdate datetime AFTER date;";
-    $errcode = "50096";
+    $errcode = "50805";
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     if (!empty ($mgmt_config['abs_path_data']))
@@ -1424,7 +1424,7 @@ function update_database_v903 ()
 
     // alter table
     $sql = "ALTER TABLE textnodes MODIFY text_id CHAR(255);";
-    $errcode = "50098";
+    $errcode = "50903";
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
@@ -1463,7 +1463,7 @@ function update_database_v910 ()
 
     // alter table
     $sql = "ALTER TABLE media ADD COLUMN analyzed tinyint(1) NOT NULL default '0';";
-    $errcode = "50099";
+    $errcode = "50910";
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
@@ -1504,7 +1504,46 @@ function update_plugin_v911 ()
     }
 
     // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.1.0|updated to version 9.1.1"), "update");
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.1.1|updated to version 9.1.1"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v914 ----------------------------------------------
+// function: update_database_v914()
+// input: %
+// output: true / false
+
+// description: 
+// Adds new column cmd to table queue for support of version 9.1.4
+
+function update_database_v914 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  $logdata = loadlog ("update", "string");
+
+  if (empty ($logdata) || strpos ($logdata, "|9.1.4|") < 1)
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table
+    $sql = "ALTER TABLE queue ADD COLUMN cmd varchar(21000) DEFAULT NULL AFTER published_only;";
+    $errcode = "50914";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.1.4|updated to version 9.1.4"), "update");
 
     return true;
   }
@@ -1544,5 +1583,6 @@ function updates_all ()
   update_database_v903 ();
   update_database_v910 ();
   update_plugin_v911 ();;
+  update_database_v914 ();
 }
 ?>

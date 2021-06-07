@@ -186,7 +186,7 @@ $groups = array();
 $count = 0;
 $allTexts = array();
 $container_id_array = array();
-$thumbnailsize = 160;
+$thumbnailsize = 120;
 
 // run through each object
 foreach ($multiobject_array as $object) 
@@ -287,39 +287,30 @@ foreach ($multiobject_array as $object)
       $imgsize = getmediasize ($mediadir.$thumbnail);
       
       // calculate image ratio to define CSS for image container div-tag
-      if (!empty ($imgsize['width']) && !empty ($imgsize['height']))
+      if (!empty ($imgsize['height']))
       {
-    		$imgwidth = $imgsize['width'];
-    		$imgheight = $imgsize['height'];
-        $imgratio = $imgwidth / $imgheight;   
-        
-        // image width >= height
-        if ($imgratio >= 1) $ratio = "width:".$thumbnailsize."px;";
-        // image width < height
-        else $ratio = "height:".$thumbnailsize."px;";
+        // if thumbnail is smaller than defined thumbnail size
+        if ($imgsize['height'] < $thumbnailsize) $thumbnailsize_new = $imgsize['height'];
+        else $thumbnailsize_new = $thumbnailsize;
       }
       // default value
       else
       {
-        $ratio = "width:".$thumbnailsize."px;";
+        $thumbnailsize_new = $thumbnailsize;
       }
       
-      // if thumbnail is smaller than defined thumbnail size
-      if ($imgwidth < 100 && $imgheight < 100) $style_size = "";
-      else $style_size = $ratio;
-      
-      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo_item['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";;
+      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo_item['name'], true)."\" class=\"hcmsImageItem\" style=\"height:".$thumbnailsize_new."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";;
     }
     // no thumbnail available
     else
     {                 
-      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:".$thumbnailsize."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
+      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; height:".$thumbnailsize."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
     }
   }
   // standard thumbnail for non-multimedia objects
   else
   {                 
-    $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; width:".$thumbnailsize."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
+    $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; height:".$thumbnailsize."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
   }
 
   // collect container IDs
@@ -658,8 +649,8 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <link href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/tag-it/tagit.ui-zendesk.css" rel="stylesheet" type="text/css" />
 
 <!-- CKEditor -->
-<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>editor/ckeditor/ckeditor.js"></script>
-<script type="text/javascript"> CKEDITOR.disableAutoInline = true;</script>
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/ckeditor/ckeditor/ckeditor.js"></script>
+<script type="text/javascript"> CKEDITOR.disableAutoInline = true; </script>
 
 <!-- Richcalendar -->
 <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.css" />
@@ -972,6 +963,9 @@ function savecontent (reload)
 
   if (checkcontent == true)
   {
+    // show savelayer
+    $('#savelayer').show();
+
     // update all CKEDitor instances
     for (var instanceName in CKEDITOR.instances)
     {
@@ -1121,9 +1115,6 @@ function savecontent (reload)
       }
     }
     
-    // show savelayer across the whole page
-    $('#savelayer').show();
-    
     // save each object
     for (nr in obj) 
     {
@@ -1237,6 +1228,8 @@ function savecontent (reload)
     }
     
     if (reload == true) $('#reloadform').submit();
+    else $('#savelayer').hide();
+
     return true;
   }
   else return false;
@@ -1472,13 +1465,11 @@ function checkImageForm()
   }
   else image_checked = false;
   
-  // display warning if any image option is checked
+  // display overwrite confirmation if any image option is checked
   if (image_checked)
   {
     if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang], $charset, $lang); ?>"))) return false;
   }
-  // set image checked to enable rendering
-  else image_checked = true;
   
   return result;
 }
@@ -2145,40 +2136,41 @@ $().ready(function() {
         </div>
         <div>
           <input type="checkbox" id="percentage" name="imageresize" value="percentage" onclick="toggle_percentage();" />
-          <label style="width:80px; display:inline-block;" for="percentage"><?php echo getescapedtext ($hcms_lang['percentage'][$lang], $charset, $lang); ?></label>
+          <label style="width:100px; display:inline-block; overflow:hidden;" for="percentage"><?php echo getescapedtext ($hcms_lang['percentage'][$lang], $charset, $lang); ?></label>
           <input name="imagepercentage" type="text" id="imagepercentage" size="5" maxlength="3" value="100" /> %
         </div>
         <div>
           <input type="checkbox" id="width" name="imageresize" value="imagewidth" onclick="toggle_size_width();" />
-          <label style="width:80px; display:inline-block;" for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang); ?></label>
+          <label style="width:100px; display:inline-block; overflow:hidden;" for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang); ?></label>
           <input name="imagewidth" type="text" id="imagewidth" size="5" maxlength="5" value="" /> px
         </div>
         <div>
           <input type="checkbox" id="height" name="imageresize" value="imageheight" onclick="toggle_size_height();" />
-          <label style="width:80px; display:inline-block;" for="height"><?php echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang); ?></label>
+          <label style="width:100px; display:inline-block; overflow:hidden;" for="height"><?php echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang); ?></label>
           <input name="imageheight" type="text" id="imageheight" size="5" maxlength="5" value="" /> px
         </div>
 
-        <?php if (getimagelib () != "GD") { ?>
+        <?php if (getimagelib() != "GD") { ?>
         <!-- brigthness / contrast -->
         <div class="row">
           <strong><?php echo getescapedtext ($hcms_lang['adjust'][$lang], $charset, $lang); ?></strong>
         </div>
         <div>
           <input type="checkbox" id="chbx_brightness" name="use_brightness" value="1" onclick="toggle_brightness();" />
-          <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang], $charset, $lang); ?></label>
+          <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang], $charset, $lang); ?></label>
           <input name="brightness" type="text" id="brightness" size="4" value="0" />
         </div>
         <div>
           <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
-          <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang], $charset, $lang); ?></label>
+          <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang], $charset, $lang); ?></label>
           <input name="contrast" type="text" id="contrast" size="4" value="0" />
         </div>
+        <?php } ?>
 
         <!-- rotate -->
         <div>
           <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-          <label for="rotate" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label>
+          <label for="rotate" style="width:100px; display:inline-block; vertical-align:middle; overflow:hidden;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label>
           <select name="degree" id="degree">
             <option value="90" selected="selected" >90&deg;</option>
             <option value="180" >180&deg;</option>
@@ -2190,7 +2182,7 @@ $().ready(function() {
         <!-- flip flop -->
         <div>
           <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-          <label for="chbx_flip" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label>
+          <label for="chbx_flip" style="width:100px; display:inline-block; vertical-align:middle; overflow:hidden;"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label>
           <select name="flip" id="flip">
             <?php 
               foreach ($available_flip as $value => $name)
@@ -2205,9 +2197,8 @@ $().ready(function() {
         <?php } ?>
 
       </div>
-      <?php } ?>
       
-      <?php if (getimagelib () != "GD") { ?>
+      <?php if (getimagelib() != "GD") { ?>
       <!-- Effects -->
       <div class="cell">
         <div class="row">
@@ -2248,9 +2239,8 @@ $().ready(function() {
       </div>
       <?php } ?>
       
-      
       <div class="cell">
-        <?php if (getimagelib () != "GD") { ?>
+        <?php if (getimagelib() != "GD") { ?>
         <!-- colorspace -->
         <div class="row">
           <input type="checkbox" id="chbx_colorspace" name="colorspace" value="1" onclick="toggle_colorspace();" />
@@ -2298,7 +2288,7 @@ $().ready(function() {
     </form>
     <!-- end edit image -->
     
-    <?php } elseif (!$mixedmedia && ($is_video || $is_audio)) { ?>
+    <?php } elseif (!$mixedmedia && ($is_video || $is_audio) && !empty ($mgmt_mediapreview) && is_supported ($mgmt_mediapreview, "mp4")) { ?>
     
     <!-- start edit video/audio -->
     <form name="videooptions" action="" method="post">
@@ -2309,14 +2299,13 @@ $().ready(function() {
         <!-- video screen format -->
         <div class="row">
           <strong><?php echo getescapedtext ($hcms_lang['formats'][$lang], $charset, $lang); ?></strong>
-        </row>
-        <?php foreach ($available_formats as $format => $data) { ?>
-          <div>
-            <input type="radio" id="format_<?php echo $format; ?>" name="format" value="<?php echo $format; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> />
-            <label for="format_<?php echo $format; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
-          </div>
-        <?php } ?>
         </div>
+        <?php foreach ($available_formats as $format => $data) { ?>
+        <div>
+          <input type="radio" id="format_<?php echo $format; ?>" name="format" value="<?php echo $format; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> />
+          <label for="format_<?php echo $format; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
+        </div>
+        <?php } ?>
       
         <!-- video size -->
         <div class="row">
@@ -2324,9 +2313,9 @@ $().ready(function() {
         </div>
         <?php foreach ($available_videosizes as $videosize => $data) { ?>
         <div>
-          <input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if ($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
+          <input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>" <?php if ($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
           <?php if ($data['individual']) { ?>
-          <input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize; ?>" value="" /><span> px</span>
+          <input type="text" name="width" size="4" maxlength="4" id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength="4" id="height_<?php echo $videosize; ?>" value="" /><span> px</span>
           <?php }	?>
         </div>
         <?php }	?>
@@ -2341,27 +2330,27 @@ $().ready(function() {
         </div>
         <div>
           <input type="checkbox" id="chbx_sharpen" name="use_sharpen" value="1" onclick="toggle_sharpen();" />
-          <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang], $charset, $lang); ?></label>
+          <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang], $charset, $lang); ?></label>
           <input name="sharpen" type="text" id="sharpen" size="4" value="0" />
         </div>
         <div>
           <input type="checkbox" id="chbx_gamma" name="use_gamma" value="1" onclick="toggle_gamma();" />
-          <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo getescapedtext ($hcms_lang['gamma'][$lang], $charset, $lang); ?></label>
+          <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_gamma"><?php echo getescapedtext ($hcms_lang['gamma'][$lang], $charset, $lang); ?></label>
           <input name="gamma" type="text" id="gamma" size="4" value="0" />
         </div>
         <div>
           <input type="checkbox" id="chbx_brightness" name="use_brightness" value="0" onclick="toggle_brightness();" />
-          <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang], $charset, $lang); ?></label>
+          <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang], $charset, $lang); ?></label>
           <input name="brightness" type="text" id="brightness" size="4" value="0" />
         </div>
         <div>
             <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
-          <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang], $charset, $lang); ?></label>
+          <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang], $charset, $lang); ?></label>
           <input name="contrast" type="text" id="contrast" size="4" value="0" />
         </div>
         <div>
           <input type="checkbox" id="chbx_saturation" name="use_saturation" value="1" onclick="toggle_saturation();" />
-          <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo getescapedtext ($hcms_lang['saturation'][$lang], $charset, $lang); ?></label>
+          <label style="width:100px; display:inline-block; overflow:hidden;" for="chbx_saturation"><?php echo getescapedtext ($hcms_lang['saturation'][$lang], $charset, $lang); ?></label>
           <input name="saturation" type="text" id="saturation" size="4" value="0" />
         </div>
 
@@ -2369,7 +2358,7 @@ $().ready(function() {
         <!-- rotate -->
         <div>
           <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-          <label for="rotate" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label>
+          <label for="rotate" style="width:100px; display:inline-block; vertical-align:middle; overflow:hidden;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label>
           <select name="degree" id="degree">
             <option value="90" selected="selected" >90&deg;</option>
             <option value="180" >180&deg;</option>
@@ -2380,7 +2369,7 @@ $().ready(function() {
         <!-- vflip hflip -->
         <div>
           <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-          <label for="chbx_flip" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label>
+          <label for="chbx_flip" style="width:100px; display:inline-block; vertical-align:middle; overflow:hidden;"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label>
           <select name="flip" id="flip">
             <?php 
               foreach ($available_flip as $value => $name)
@@ -2426,11 +2415,11 @@ $().ready(function() {
         </div>
         <div id="cut_area" style="display:none;">
           <div>
-            <label for="cut_begin" style="width:80px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang); ?></label>
+            <label for="cut_begin" style="width:100px; display:inline-block; vertical-align:middle; overflow:hidden;"><?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang); ?></label>
             <input type="text" name="cut_begin" id="cut_begin" value="" placeholder="00:00:00.00" style="width:90px;" />
           </div>
           <div>
-            <label for="cut_end" style="width:80px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang); ?></label>
+            <label for="cut_end" style="width:100px; display:inline-block; vertical-align:middle; overflow:hidden;"><?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang); ?></label>
             <input type="text" name="cut_end" id="cut_end" value="" placeholder="00:00:00.00" style="width:90px;" />
           </div>
         </div>
@@ -2478,14 +2467,22 @@ $().ready(function() {
           <strong><label for="thumb_yes" onclick="checkThumb();"><?php echo getescapedtext ($hcms_lang['pick-preview-image'][$lang], $charset, $lang); ?></label></strong>
         </div>
         <div id="thumb_area" style="display:none;">
-          <label for="thumb_frame" style="width:80px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang); ?></label>
-          <input type="text" name="thumb_frame" id="thumb_frame" value="" placeholder="00:00:00.00" placeholder="" style="width:90px;" />
+          <label for="thumb_frame" style="width:100px; display:inline-block; vertical-align:middle; overflow:hidden;"><?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang); ?></label>
+          <input type="text" name="thumb_frame" id="thumb_frame" value="" placeholder="00:00:00.00" style="width:90px;" />
         </div>
       </div>
       <?php } ?>
 
     </form>
     <!-- end edit video/audio -->
+
+    <?php } else { ?>
+
+    <div class="cell" style="width:100%;">
+      <p><strong><?php echo getescapedtext ($hcms_lang['this-action-is-not-supported'][$lang], $charset, $lang); ?></strong></p>
+      <p><?php echo getescapedtext ($hcms_lang['configuration-not-available'][$lang], $charset, $lang); ?></p>
+    </div>
+
     <?php } ?>
     
   </div>
@@ -2544,12 +2541,14 @@ $().ready(function() {
         </div>
         <div class="hcmsFormRowContent <?php echo $id; ?>">
         <?php
+        // unformatted text
         if ($tagdata->type == "u") 
         {
         ?>
           <textarea id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width:<?php echo $tagdata->width; ?>px; height:<?php echo $tagdata->height; ?>px;" <?php echo $disabled; ?>><?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?></textarea>
         <?php 
         } 
+        // keywords
         elseif ($tagdata->type == "k") 
         {
           $list = "";
@@ -2618,7 +2617,8 @@ $().ready(function() {
           </div>
         <?php
           }
-        } 
+        }
+        // formatted text
         elseif ($tagdata->type == "f")
         {
           if ($tagdata->locked == false)
@@ -2630,6 +2630,7 @@ $().ready(function() {
             echo "<textarea id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:".$tagdata->width."px; height:".$tagdata->height."px;\" ".$disabled.">".$tagdata->fieldvalue."</textarea>";
           }
         }
+        // date
         elseif ($tagdata->type == "d")
         {
           // get date format
@@ -2647,7 +2648,8 @@ $().ready(function() {
           <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" <?php echo $showcalendar; ?> class="hcmsButtonTiny hcmsButtonSizeSquare" style="z-index:9999999;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" <?php echo $disabled; ?> />
         <?php
           }
-        } 
+        }
+        // text list
         elseif ($tagdata->type == "l")
         {
           $list = "";
@@ -2691,12 +2693,18 @@ $().ready(function() {
           ?>
           </select>
         <?php
-        } 
+        }
+        // checkbox
         elseif ($tagdata->type == "c")
         {
           ?>
           <input type="checkbox" name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" value="<?php echo $tagdata->value; ?>" <?php if ($tagdata->locked == false && $tagdata->value == $tagdata->fieldvalue) echo "checked"; echo $disabled; ?> /> <?php echo $tagdata->value; ?>
           <?php
+        }
+        // e-signature
+        elseif ($tagdata->type == "s")
+        {
+          // do not present signature field
         }
         else
         {
@@ -2739,7 +2747,8 @@ $().ready(function() {
   </script>
   ";
   ?>
-</body>
 
-<?php includefooter(); ?>
+  <?php includefooter(); ?>
+
+</body>
 </html>

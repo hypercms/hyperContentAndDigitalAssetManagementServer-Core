@@ -148,6 +148,7 @@ CREATE TABLE `queue` (
   `action` char(20) NOT NULL,
   `date` datetime default NULL,
   `published_only` tinyint(4) default NULL,
+  `cmd` varchar(21000) DEFAULT NULL,
   `user` char(100) default NULL,
   PRIMARY KEY  (`queue_id`),
   KEY `queue` (`date`,`user`)

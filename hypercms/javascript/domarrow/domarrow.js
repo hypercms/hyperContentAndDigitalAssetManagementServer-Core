@@ -271,7 +271,7 @@ function hcms_connections_bodyNewElement (changes)
   });
 }
 
-// initalize
+// initialize
 var hcms_connection_connectionElements = [];
 document.body && hcms_connections_create() || window.addEventListener("load", hcms_connections_create);
 

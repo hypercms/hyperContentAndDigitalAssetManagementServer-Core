@@ -3008,6 +3008,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
 {
   global $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
   $result = array();
   $result['result'] = false;
@@ -3017,6 +3018,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   $result['container_id'] = "";
   $result['message'] = "";
 
+  // set default language
   if (empty ($lang)) $lang = "en";
 
   // restore files to the media repository if requested
@@ -3182,7 +3184,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
             if (function_exists ("renamecloudobject")) renamecloudobject ($site, $thumbdir, $thumbnail_version, $thumbnail, $user);
 
             // create preview (thumbnail for images, previews for video/audio files)
-            createmedia ($site, $thumbdir, $thumbdir, $mediafile_current, "", "origthumb");
+            createmedia ($site, $thumbdir, $thumbdir, $mediafile_current, "", "origthumb", true, true);
             
             // reindex
             indexcontent ($site, $thumbdir, $mediafile_current, $container_id, "", $user);
@@ -5976,17 +5978,18 @@ function createinstance ($instance_name, $settings, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // eventsystem
-  if (!empty ($eventsystem['oncreateinstance_pre']) && empty ($eventsystem['hide'])) 
-    oncreateinstance_pre ($instance_name, $settings, $user); 
-
+  // initialize
   $error = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
 
+  // eventsystem
+  if (!empty ($eventsystem['oncreateinstance_pre']) && empty ($eventsystem['hide'])) 
+    oncreateinstance_pre ($instance_name, $settings, $user); 
+
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // check if input data is available
   if (
@@ -6263,18 +6266,18 @@ function editinstance ($instance_name, $content, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
-
+  $result_ok = false;
+  $add_onload = "";
+  $show = "";
+  
   // eventsystem
   if (!empty ($eventsystem['onsaveinstance_pre']) && empty ($eventsystem['hide'])) 
     onsaveinstance_pre ($instance_name, $content, $user); 
 
-  $result_ok = false;
-  $add_onload = "";
-  $show = "";
-
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // check if input data is available
   // check if sent data is available
@@ -6335,17 +6338,18 @@ function deleteinstance ($instance_name, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  // eventsystem
-  if (!empty ($eventsystem['ondeleteinstance_pre']) && empty ($eventsystem['hide'])) 
-    ondeleteinstance_pre ($instance_name, $user); 
-
+  // initialize
   $error = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
 
+  // eventsystem
+  if (!empty ($eventsystem['ondeleteinstance_pre']) && empty ($eventsystem['hide'])) 
+    ondeleteinstance_pre ($instance_name, $user); 
+
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // check if file name is an attribute of a sent string
   if (strpos ($instance_name, ".php?") > 0)
@@ -6508,7 +6512,7 @@ function createpublication ($site_name, $user="sys")
     oncreatepublication_pre ($site_name, $user); 
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   $forbidden = array();
 
@@ -6967,7 +6971,7 @@ function editpublication ($site_name, $setting, $user="sys")
   }
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // check if publication name is an attribute of the request string
   if (strpos ($site_name, ".php?") > 0)
@@ -7889,7 +7893,7 @@ function deletepublication ($site_name, $user="sys")
   }
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
    // check if publication name is an attribute of the request string
   if (strpos ($site_name, ".php?") > 0)
@@ -8182,7 +8186,7 @@ function createpersonalization ($site, $pers_name, $cat)
   $result_ok = false;
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_objectname ($pers_name) && strlen ($pers_name) <= 100 && ($cat == "tracking" || $cat == "profile"))
   {
@@ -8268,7 +8272,7 @@ function deletepersonalization ($site, $pers_name, $cat)
   $result_ok = false;
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_objectname ($pers_name) && ($cat == "tracking" || $cat == "profile"))
   {
@@ -8493,7 +8497,7 @@ function createtemplate ($site, $template, $cat)
   $show = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_objectname ($template) && strlen ($template) <= 100 && in_array ($cat, array("page","comp","inc","meta")))
   {
@@ -8593,7 +8597,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
   $show = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_objectname ($template) && in_array ($cat, array("page","comp","inc","meta")) && valid_objectname ($user))
   { 
@@ -8683,7 +8687,7 @@ function deletetemplate ($site, $template, $cat)
   $result_ok = false;
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_objectname ($template) && in_array ($cat, array("page","comp","inc","meta")))
   {
@@ -8763,12 +8767,13 @@ function createportal ($site, $template)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $result_ok = false;
   $add_onload = "";
   $show = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_objectname ($template) && strlen ($template) <= 100)
   {
@@ -8858,7 +8863,7 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
   $show = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // create template file name
   $tpl_name = str_replace (".portal.tpl", "", $template);
@@ -9060,7 +9065,7 @@ function deleteportal ($site, $template)
   $result_ok = false;
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // extract template file name
   if (strpos ($template, ".php?") > 0) $template = getattribute ($template, "template");
@@ -9130,6 +9135,9 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
   $add_onload = "";
   $show = "";
 
+  // set default language
+  if (empty ($lang)) $lang = "en";
+
   // set default
   if (!isset ($mgmt_config['passwordminlength'])) $mgmt_config['passwordminlength'] = 10;
 
@@ -9147,9 +9155,6 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
       return $result;
     }
   }
-
-  // set default language
-  if ($lang == "") $lang = "en";
 
   // default theme
   if ($mgmt_config['theme'] != "") $theme = $mgmt_config['theme'];
@@ -9355,7 +9360,10 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
   $add_onload = "";
   $show = "";
 
-  // set default 
+  // set default language
+  if (empty ($lang)) $lang = "en";
+
+  // set default
   if (!isset ($mgmt_config['passwordminlength'])) $mgmt_config['passwordminlength'] = 10;
 
   // check permissions
@@ -9372,9 +9380,6 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       return $result;
     }
   }
-
-  // set default language
-  if ($lang == "") $lang = "en";
 
   if (valid_objectname ($login) && valid_objectname ($user))
   { 
@@ -9885,6 +9890,9 @@ function deleteuser ($site, $login, $user="sys")
   $add_onload = "";
   $show = "";
 
+  // set default language
+  if (empty ($lang)) $lang = "en";
+
   // check permissions
   if (!empty ($mgmt_config['api_checkpermission']))
   {
@@ -9899,9 +9907,6 @@ function deleteuser ($site, $login, $user="sys")
       return $result;
     }
   }
-
-  // set default language
-  if ($lang == "") $lang = "en";
 
   // site can be *Null*, which is naot a valid publication name
   if ($site != "" && valid_objectname ($login) && valid_objectname ($user))
@@ -10045,6 +10050,9 @@ function creategroup ($site, $groupname, $user="sys")
   $add_onload = "";
   $show = "";
 
+  // set default language
+  if (empty ($lang)) $lang = "en";
+  
   // check permissions
   if (!empty ($mgmt_config['api_checkpermission']))
   {
@@ -10056,9 +10064,6 @@ function creategroup ($site, $groupname, $user="sys")
       return $result;
     }
   }
-
-  // set default language
-  if ($lang == "") $lang = "en";
 
   // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($groupname) || strlen ($groupname) > 100 || !valid_objectname ($user))
@@ -10263,6 +10268,9 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
   $add_onload = "";
   $show = "";
 
+  // set default language
+  if (empty ($lang)) $lang = "en";
+
   // check permissions
   if (!empty ($mgmt_config['api_checkpermission']))
   {
@@ -10274,9 +10282,6 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
       return $result;
     }
   }
-
-  // set default language
-  if ($lang == "") $lang = "en";
 
     // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($groupname) || !valid_objectname ($user))
@@ -10543,6 +10548,9 @@ function deletegroup ($site, $groupname, $user)
   $add_onload = "";
   $show = "";
 
+  // set default language
+  if (empty ($lang)) $lang = "en";
+
   // check permissions
   if (!empty ($mgmt_config['api_checkpermission']))
   {
@@ -10554,9 +10562,6 @@ function deletegroup ($site, $groupname, $user)
       return $result;
     }
   }
-
-  // set default language
-  if ($lang == "") $lang = "en";
 
   // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($groupname) || !valid_objectname ($user))
@@ -10887,15 +10892,16 @@ function createmediacat ($site, $mediacat_name)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  if (session_id() != "") $session_id = session_id();
-  else $session_id = createuniquetoken ();
-
+  // initialize
   $show = "";
   $add_onload = "";
   $result = array();
 
+  if (session_id() != "") $session_id = session_id();
+  else $session_id = createuniquetoken ();
+
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // verify input
   if (!valid_publicationname ($site) || $mediacat_name == "" || strlen ($mediacat_name) > 100)
@@ -10998,15 +11004,16 @@ function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  if (session_id() != "") $session_id = session_id();
-  else $session_id = createuniquetoken ();
-
+  //initialize
   $show = "";
   $add_onload = "";
   $result = array();
+  
+  if (session_id() != "") $session_id = session_id();
+  else $session_id = createuniquetoken ();
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // define media index file name
   $datafile = $site.".media.tpl.dat";
@@ -11115,14 +11122,15 @@ function deletemediacat ($site, $mediacat_name)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  if (session_id() != "") $session_id = session_id();
-  else $session_id = createuniquetoken ();
-
+  // initialize
   $show = "";
   $add_onload = "";
 
+  if (session_id() != "") $session_id = session_id();
+  else $session_id = createuniquetoken ();
+
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // check if mediacat was sent
   if (!valid_publicationname ($site) || $mediacat_name == "")
@@ -11212,14 +11220,15 @@ function uploadtomediacat ($site, $mediacat_name, $global_files)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
+  $show = "";
+  $result = array();
+
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
 
   // set default language
-  if ($lang == "") $lang = "en";
-
-  $show = "";
-  $result = array();
+  if (empty ($lang)) $lang = "en";
 
   // define variables
   $sizelim = "yes"; //do you want size limitations yes or no
@@ -11346,11 +11355,12 @@ function deletefrommediacat ($site, $mediafile)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_objectname ($mediafile))
   {
@@ -11436,7 +11446,7 @@ function createfolder ($site, $location, $folder, $user)
   $page_box_xml = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && !strpos ($folder, ".recycle") && accessgeneral ($site, $location, "") && strlen ($folder) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user) && !is_tempfile ($folder))
   {
@@ -11801,7 +11811,7 @@ function deletefolder ($site, $location, $folder, $user)
   $show = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
   {
@@ -11944,13 +11954,14 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
 
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
   $foldernew_orig = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && !strpos ($foldernew, ".recycle") && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
@@ -12833,7 +12844,8 @@ function createobject ($site, $location, $page, $template, $user)
 // ---------------------------------------- uploadfile --------------------------------------------
 // function: uploadfile()
 // input: publication name [string], destination location [string], category [page,comp], uploaded file (array as defined by PHP autoglobale $_FILES) [array], unzip/zip [%,unzip,zip], object name (only for media file update of existing object) [string], 
-//        create only a new thumbnail from the media file [1,0] (optional), resize image [percentage,null] (optional), image resize percentage value [integer] (optional), user name [string] (optional), check for duplicates [boolean] (optional), versioning of file [boolean] (optional), name of zip file [string] (optional), number of files to be compressed [integer] (optional)
+//        create only a new thumbnail from the media file [1,0] (optional), resize image [percentage,null] (optional), image resize percentage value [integer] (optional), user name [string] (optional), check for duplicates [boolean] (optional), versioning of file [boolean] (optional), 
+//        name of zip file [string] (optional), number of files to be compressed [integer] (optional), create media files in the background [boolean] (optional)
 // output: result array
 // requires: config.inc.php, $pageaccess, $compaccess, $hiddenfolder, $localpermission
  
@@ -12841,7 +12853,7 @@ function createobject ($site, $location, $page, $template, $user)
 // This function manages all file uploads, like unzip files, zip a collection of files, create media objects and resize images.
 // The container name will be extracted from the media file name for updating an existing multimedia file.
 
-function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="", $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false, $zipfilename="", $zipfilecount=0)
+function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="", $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false, $zipfilename="", $zipfilecount=0, $createmedia_in_background=false)
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_compress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $eventsystem,
          $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang;
@@ -12854,7 +12866,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
   }
   else $session_id = createuniquetoken ();
 
-  //initialize
+  // initialize
   $error = array();
   $show = "";
   $show_command = "";
@@ -12862,7 +12874,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
   $result['result'] = false;
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && $cat != "" && accessgeneral ($site, $location, $cat) && is_array ($global_files) && !is_tempfile ($global_files['Filedata']['name']) && valid_objectname ($user))
   {
@@ -13230,14 +13242,14 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         }
       }
 
-      // collect multimedia files for compression
-      if ($zipfilecount > 0 && is_dir ($temp_dir) && !is_emptyfolder ($temp_dir))
+      // ---------------------- collect multimedia files for compression ----------------------
+      if (intval ($zipfilecount) > 0 && is_dir ($temp_dir) && !is_emptyfolder ($temp_dir))
       {
         // count files (excluding . and ..)
         $filescount = count (scandir ($temp_dir)) - 2;
 
         // ZIP files
-        if ($filescount >= $zipfilecount)
+        if ($filescount >= intval ($zipfilecount))
         {
           // ZIP file name
           if ($zipfilename != "") $zipfilename = createfilename ($zipfilename).".zip";
@@ -13294,7 +13306,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         }
       }
     }
-    // standard multimedia file upload in pages
+    // ---------------------- standard multimedia file upload in pages ----------------------
     elseif ($cat == "page")
     {
       // move uploaded file
@@ -13324,7 +13336,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       // eventsystem
       if (!empty ($eventsystem['onfileupload_post'])) onfileupload_post ($site, $cat, $location, $page, "", "", $user);
     }
-    // standard multimedia file upload in assets/components
+    // ---------------------- standard multimedia file upload in assets/components ----------------------
     elseif ($cat == "comp")
     {
       // ---------------- create new multimedia object ------------------
@@ -13333,7 +13345,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         // if original image should not be resized
         if ($imageresize != "percentage") $imagepercentage = 0;
 
-        $result_createobject = createmediaobject ($site, $location, $global_files['Filedata']['name'], $global_files['Filedata']['tmp_name'], $user, $imagepercentage);
+        $result_createobject = createmediaobject ($site, $location, $global_files['Filedata']['name'], $global_files['Filedata']['tmp_name'], $user, $imagepercentage, false, true, $createmedia_in_background);
 
         // on success, add location
         if (!empty ($result_createobject['result']))
@@ -13401,7 +13413,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               // create thumbnail on success
               if ($result_upload == true)
               {
-                $result_createthumb = createmedia ($site, $temp_dir, getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/", $file_name.$file_ext, "jpg", "thumbnail", true, true);
+                // add createmedia command to queue
+                if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$temp_dir."\", \"".getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/"."\", \"".$file_name.$file_ext."\", \"jpg\", \"thumbnail\", true, true);", $user);
+                // create preview
+                else $result_createthumb = createmedia ($site, $temp_dir, getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/", $file_name.$file_ext, "jpg", "thumbnail", true, true);
 
                 // if thumbnail creation failed use uploaded image as thumbnail image
                 if ($result_createthumb == false)
@@ -13577,13 +13592,20 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
                 // -s ... size in pixels (width x height)
                 // -f ... image output format
                 $mgmt_imageoptions[$formats]['original'] = "-s ".$imagewidth."x".$imageheight." -f ".$imageformat;
-                createmedia ($site, $media_root, $media_root, $media_update, "", "original");
+                
+                // add createmedia command to queue
+                if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$media_root."\", \"".$media_root."\", \"".$media_update."\", \"\", \"original\", false, true);", $user);
+                // convert image
+                else createmedia ($site, $media_root, $media_root, $media_update, "", "original", false, true);
               }
             }
             // create preview (thumbnail for images, previews for video/audio files)
             else
             {
-              createmedia ($site, $media_root, $media_root, $media_update, "", "origthumb");
+              // add createmedia command to queue
+              if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$media_root."\", \"".$media_root."\", \"".$media_update."\", \"\", \"origthumb\", true, true);", $user);
+              // create preview
+              else createmedia ($site, $media_root, $media_root, $media_update, "", "origthumb", true, true);
             }
 
             // remote client for uploaded original image
@@ -13711,14 +13733,14 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 // ---------------------------------------- createmediaobject --------------------------------------------
 // function: createmediaobject()
 // input: publication name [string], destination location [string], file name [string], path to source multimedia file (uploaded file in temp directory) [string], user name [string], resize original image (100%) by percentage [integer] (optional), 
-//        leave file in the source directory and create a symbolic link to the file [boolean] (optional), delete file in the source directory if no symbolic link is used [boolean] (optional)
+//        leave file in the source directory and create a symbolic link to the file [boolean] (optional), delete file in the source directory if no symbolic link is used [boolean] (optional), create media files in background [boolean] (optional)
 // output: result array
 
 // description:
 // This function creates an asset (multimedia object) by reading a given source file. The file name must not match any temp file pattern.
 // The metadata template is based on the template of the folder the objects resides in.
 
-function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0, $leavefile=false, $deletefile=true)
+function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0, $leavefile=false, $deletefile=true, $createmedia_in_background=false)
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, 
          $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, 
@@ -13859,7 +13881,11 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
                   // -s ... size in pixels (width x height)
                   // -f ... image output format
                   $mgmt_imageoptions[$formats]['original'] = "-s ".$imagewidth."x".$imageheight." -f ".str_replace (".", "", $media_ext);
-                  createmedia ($site, $medialocation, $medialocation, $mediafile, str_replace (".", "", $media_ext), "original");
+                  
+                  // add createmedia command to queue
+                  if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$$file, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$medialocation."\", \"".$medialocation."\", \"".$mediafile."\", \"".str_replace (".", "", $media_ext)."\", \"original\", false, true);", $user);
+                  // convert image
+                  else createmedia ($site, $medialocation, $medialocation, $mediafile, str_replace (".", "", $media_ext), "original", false, true);
                 }
               }
             }
@@ -13867,8 +13893,10 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           // create thumbnail/preview of original media file
           else
           {
+            // add createmedia command to queue
+            if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$file, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$medialocation."\", \"".$medialocation."\", \"".$mediafile."\", \"\", \"origthumb\", true, true);", $user);
             // create preview
-            createmedia ($site, $medialocation, $medialocation, $mediafile, "", "origthumb", false, true);
+            else createmedia ($site, $medialocation, $medialocation, $mediafile, "", "origthumb", true, true);
           }
 
           // remote client
@@ -14050,7 +14078,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 // output: result array / false on error (saves original or thumbnail media file of an object, for thumbnail only jpeg format is supported as output), user name
 
 // description:
-// This function mainly uses function createmedia to render the objects media, but at the same time takes care of versioning and the object name, if the file extension has been changed
+// This function mainly uses function createmedia to render the objects media, but at the same time takes care of versioning and the object name, if the file extension has been changed.
 
 function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbnail", $mediadata="", $user="")
 {
@@ -14065,7 +14093,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
   $container = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -14110,10 +14138,11 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
       if ($file_ext_old != $file_ext_new) $mediafile_new = $mediafile_nameonly.$file_ext_new;
       else $mediafile_new = $mediafile_orig;
 
+      // write media data to file
       $result_save = base64_to_file ($mediadata, $target_location, $mediafile_new);
 
       // create new thumbnail
-      $thumbnail_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_new, "jpg", "thumbnail", true, true);
+      createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_new, "jpg", "thumbnail", true, true);
  
       // remote client
       remoteclient ("save", "abs_path_media", $site, $mediafile_location, "", $mediafile_new, "");
@@ -15779,6 +15808,7 @@ function deletemarkobject ($site, $location, $page, $user)
 {
   global $wf_token, $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
   $show = "";
   $add_onload = "";
@@ -15786,7 +15816,7 @@ function deletemarkobject ($site, $location, $page, $user)
   $result['result'] = false;
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -15859,6 +15889,7 @@ function deleteunmarkobject ($site, $location, $page, $user)
 {
   global $wf_token, $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
   $show = "";
   $add_onload = "";
@@ -15866,7 +15897,7 @@ function deleteunmarkobject ($site, $location, $page, $user)
   $result['result'] = false;
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -16103,6 +16134,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
 {
   global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
  
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
@@ -16110,7 +16142,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
   $clipboard = array();
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -16224,6 +16256,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
 {
   global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
  
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
@@ -16231,7 +16264,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
   $clipboard = array();
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -16350,6 +16383,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
 {
   global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
@@ -16357,7 +16391,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
   $clipboard = array();
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -16534,6 +16568,7 @@ function lockobject ($site, $location, $page, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
  
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
@@ -16542,7 +16577,7 @@ function lockobject ($site, $location, $page, $user)
   $filetype = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -16687,6 +16722,7 @@ function unlockobject ($site, $location, $page, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
  
+  // initialize
   $error = array();
   $add_onload = "";
   $show = "";
@@ -16695,7 +16731,7 @@ function unlockobject ($site, $location, $page, $user)
   $filetype = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -16834,6 +16870,7 @@ function publishobject ($site, $location, $page, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $ctrlreload, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
  
+  // initialize
   $error = array();
   $buffer_site = "";
   $buffer_location = "";
@@ -16849,7 +16886,7 @@ function publishobject ($site, $location, $page, $user)
   $result_save = false;
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && substr ($page, -8) != ".recycle" && valid_objectname ($user))
   {
@@ -17427,10 +17464,11 @@ function publishlinkedobject ($site, $location, $page, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $ctrlreload, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -17513,11 +17551,12 @@ function unpublishobject ($site, $location, $page, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $ctrlreload, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang; 
 
+  // initialize
   $error = array();
   $result = array();
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && substr ($page, -8) != ".recycle" && valid_objectname ($user))
   {
@@ -17845,7 +17884,7 @@ function unpublishobject ($site, $location, $page, $user)
 
 // ------------------------------------------- processobjects -------------------------------------------
 // function: processobjects()
-// input: action [publish,unpublish,delete], publication name [string], location [string], object name or mail ID [string], only published objects [boolean], user name [string]
+// input: action [publish,unpublish,delete,exec], publication name [string], location [string], object name or mail ID [string], only published objects [boolean], user name [string]
 // output: true/false
 
 // description:
@@ -17857,6 +17896,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
 {
   global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   if ($action == "mail" && is_numeric ($file) && valid_objectname ($user))
@@ -17924,10 +17964,14 @@ function processobjects ($action, $site, $location, $file, $published_only=false
       // if object
       elseif (is_file ($location.$file))
       {
-        $result = getfileinfo ($site, $file, "");
+        // initialize
+        $result = array();
+        $result['result'] = true;
+
+        $fileinfo = getfileinfo ($site, $file, "");
 
         // process object
-        if (!empty ($result['published']) || $published_only == false)
+        if (!empty ($fileinfo['published']) || $published_only == false)
         {
           if ($action == "publish")
           {
@@ -17945,7 +17989,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
             else $result = deletefolder ($site, getlocation ($location), getobject ($location), $user);
           }
 
-          // error
+          // on error
           if (empty ($result['result']))
           {
             $errcode = "20420";
@@ -18069,11 +18113,8 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
-
-  // set default language
-  if ($lang == "") $lang = "en";
-
   $result = array();
   $result['result'] = false;
   $result['maxcount'] = 0;
@@ -18082,6 +18123,9 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
   $result['message'] = "";
   $result['tempfile'] = "";
   $result['method'] = "";
+
+  // set default language
+  if (empty ($lang)) $lang = "en";
 
   // --------------------------empty recycle bin -------------------------------
   if ($action == "emptybin")
@@ -18621,7 +18665,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
 
 // ---------------------- createqueueentry -----------------------------
 // function: createqueueentry()
-// input: action [publish,unpublish,delete,mail], object path [string] or object ID [integer], date and time [YYY-MM-DD HH:MM], publish only published objects [boolean], data to be saved in queue [array] (optional), user name [string]
+// input: action [publish,unpublish,delete,mail,exec], object path [string] or object ID [integer], date and time [YYY-MM-DD HH:MM], publish only published objects [boolean], PHP command as string or data as array to be saved in the queue [string or array] (optional), user name [string]
 // output: true / false
 
 // description:
@@ -18631,9 +18675,10 @@ function createqueueentry ($action, $object, $date, $published_only, $data="", $
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
-  if ($action != "" && ($object == "" || substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0 || $object > 0) && is_date ($date, "Y-m-d H:i") && valid_objectname ($user))
+  if ($action != "" && ($object == "" || substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0 || intval ($object) > 0) && is_date ($date, "Y-m-d H:i") && valid_objectname ($user))
   {
     // correct date and time based on users time zone
     if ($date != "" && !empty ($_SESSION['hcms_timezone']) && ini_get ('date.timezone'))
@@ -18642,8 +18687,13 @@ function createqueueentry ($action, $object, $date, $published_only, $data="", $
       if (!empty ($datenew)) $date = $datenew;
     }
 
-    // queue entry with additional queue data
-    if (!empty ($data) && is_array ($data) && sizeof ($data) > 0)
+    // queue entry with additional queue data in the database
+    if (!empty ($data) && is_string ($data) && trim ($data) != "" && strlen ($data) <= 21000)
+    {
+      return rdbms_createqueueentry ($action, $object, $date, $published_only, $data, $user);
+    }
+    // queue entry with additional external queue data
+    elseif (!empty ($data) && is_array ($data) && sizeof ($data) > 0)
     {
       // define php variables
       $data_str = "";
@@ -18669,14 +18719,14 @@ function createqueueentry ($action, $object, $date, $published_only, $data="", $
         $savefile = savefile ($mgmt_config['abs_path_data']."queue/", $queue_file, $data_str);
 
         // create queue entry
-        if ($savefile) return rdbms_createqueueentry ($action, $queue_id, $date, $published_only, $user);
+        if ($savefile) return rdbms_createqueueentry ($action, $queue_id, $date, $published_only, "", $user);
         else return false;
       }
     }
     // queue entry with no additional data
     else
     {
-      return rdbms_createqueueentry ($action, $object, $date, $published_only, $user);
+      return rdbms_createqueueentry ($action, $object, $date, $published_only, "", $user);
     }
   }
   else return false;
@@ -19046,9 +19096,10 @@ function HTTP_Proxy ($URL, $enable_file=false)
 
   if ($URL != "" && substr_count ($URL, "://") > 0 && !empty ($_REQUEST) && is_array ($_REQUEST))
   {
-    // define data to be posted/redirected
+    // define data to be posted/redirected (GET/POST/HEADER)
     $data = $_REQUEST;
 
+    // define file
     if (!empty ($_FILES['Filedata']['tmp_name']))
     {
       // add file and its contents to post data, prefix '@' is required (will cause additional traffic due to file upload to other server)
@@ -19093,7 +19144,7 @@ function HTTP_Proxy ($URL, $enable_file=false)
     $options = array(
         CURLOPT_POST           => true, // send a POST request 
         CURLOPT_RETURNTRANSFER => true, // to receive the response that the site gives after it receives the request
-        CURLOPT_HEADER         => false, // return HTTP headers
+        CURLOPT_HEADER         => false, // return HTTP headers in response
         CURLOPT_ENCODING       => "", // handle all encodings
         CURLOPT_AUTOREFERER    => true, // set referer on redirect
         CURLOPT_CONNECTTIMEOUT => 15, // timeout on connect
@@ -19111,8 +19162,8 @@ function HTTP_Proxy ($URL, $enable_file=false)
     // write and close session (important: curl_exec might hang otherwise)
     session_write_close();
 
-    // send the request.
-    $message = curl_exec ($ch);
+    // send the request
+    $response = curl_exec ($ch);
 
     // start session again
     session_start();
@@ -19142,13 +19193,13 @@ function HTTP_Proxy ($URL, $enable_file=false)
   else
   {
     $header = "HTTP/1.1 500 Internal Server Error";
-    $result['message'] = "Invalid input for PROXY service";
+    $response = "Invalid input for PROXY service";
   }
 
   // return result
   $result = array();
   $result['header'] = $header;
-  $result['message'] = $message;
+  $result['message'] = $response;
 
   return $result;
 }
@@ -19395,13 +19446,14 @@ function deletelog ($logname="")
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
   $result = array();
   $add_onload = "";
   $show = "";
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // file name of log
   if ($logname != "") $logfile = $logname.".log";
@@ -19478,6 +19530,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 {
   global $user, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   // set default language
@@ -19521,7 +19574,15 @@ function notifyusers ($site, $location, $object, $event, $user_from)
           // dont notify the same user multiple times and don't inform the user if he took the action
           if (!empty ($notify['user']) && !in_array ($notify['user'], $user_memory) && $notify['user'] != $user_from)
           {
-            // get user node and extract required information
+            // get user node of sender and extract required information
+            $usernode_from = selectcontent ($userdata, "<user>", "<login>", $user_from);
+
+            if (!empty ($usernode_from[0])) $temp = getcontent ($usernode_from[0], "<email>");
+
+            if (!empty ($temp[0])) $email_from = $temp[0];
+            else $email_from = "";
+            
+            // get user node of recipient and extract required information
             $usernode = selectcontent ($userdata, "<user>", "<login>", $notify['user']);
 
             // add user to memory to avoid multiple notifications for the same user
@@ -19575,8 +19636,11 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               }
 
               // mail notification
+              if (!empty ($email_from)) $sender = $user_from." (".$email_from.")";
+              else $sender = $user_from;
+
               $mail_title = $hcms_lang['hypercms-notification'][$lang_to];
-              $mail_fullbody = "<b>".str_replace ("%user%", $user_from, $text_opt)."</b>\n";
+              $mail_fullbody = "<b>".str_replace ("%user%", $sender, $text_opt)."</b>\n";
               $mail_fullbody .= $mgmt_config['today']." ";
               if ($cat == "comp") $mail_fullbody .= $hcms_lang['in-assets'][$lang_to];
               elseif ($cat == "page") $mail_fullbody .= $hcms_lang['in-pages'][$lang_to];
@@ -19641,18 +19705,18 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
 {
   global $eventsystem, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
+  $mail_sent = false;
 
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
 
   if (valid_publicationname ($site) && $cat != "" && valid_locationname ($folderpath) && valid_objectname ($text_id) && $date_begin != "" && $date_end != "" && (valid_objectname ($user) || is_array ($user)))
   {
-    $mail_sent = false;
-
     // convert path
     $folderpath = convertpath ($site, $folderpath, $cat);
 
@@ -19884,16 +19948,26 @@ function sendresetpassword ($login, $type="passwordreset", $instance="")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
+  $message = "";
 
   if (empty ($lang)) $lang = "en";
 
   // verifications
-  if (empty ($mgmt_config['resetpassword']) && empty ($mgmt_config['multifactorauth'])) return $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
+  if (empty ($mgmt_config['sso']) && empty ($mgmt_config['resetpassword']) && empty ($mgmt_config['multifactorauth'])) return $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
   if ($login == "") return $hcms_lang['a-user-name-is-required'][$lang];
 
   // create new password
-  $password = "At".createpassword (8);
+  if (strtolower ($type) == "multifactorauth")
+  {
+    // get time of last password reset
+    if (is_file ($mgmt_config['abs_path_temp'].$login.".passwordtime.dat")) $resettime = loadfile ($mgmt_config['abs_path_temp'], $login.".passwordtime.dat");
+
+    // define new password after timeout (due to WebDAV client)
+    if (empty ($resettime) || (intval ($resettime) > 0 && intval ($resettime) < (time() - 3))) $password = "At".createpassword (8);
+  }
+  elseif (strtolower ($type) == "passwordreset") $password = "At".createpassword (8);
 
   // get e-mail and first publication of user
   $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
@@ -19909,8 +19983,8 @@ function sendresetpassword ($login, $type="passwordreset", $instance="")
     $email = getcontent ($usernode[0], "<email>");
   }
 
-  // e-mail address available
-  if (!empty ($email[0]))
+  // e-mail and new password are available
+  if (!empty ($email[0]) && !empty ($password))
   {
     // do not apply strong password rules for automatically created password
     $mgmt_config['strongpassword'] = false;
@@ -19920,14 +19994,14 @@ function sendresetpassword ($login, $type="passwordreset", $instance="")
 
     if (empty ($result['result'])) return $result['message'];
 
-    // message
-    $message = "";
-
-    // 2 factor authentication logon using the provided password via e-mail (access link will not be provided since version 9.0.6 for improved security)
+    // 2-factor authentication logon using the provided password via e-mail (access link will not be provided since version 9.0.6 for improved security)
     if (strtolower ($type) == "multifactorauth")
     {
       // $message .= $hcms_lang['link'][$lang].": <a href=\"".$mgmt_config['url_path_cms']."?login=".url_encode($login)."&instance=".url_encode($instance)."\">".$hcms_lang['access-link'][$lang]."</a>\n\n";
       $message .= $hcms_lang['password'][$lang].": ".$password."\n\n";
+
+      // create temp file in order to save time stamp for user and avoid multiple resets (due to WebDAV client)
+      savefile ($mgmt_config['abs_path_temp'], $login.".passwordtime.dat", time());
     }
     // temporary password for the password reset
     else
@@ -19942,11 +20016,11 @@ function sendresetpassword ($login, $type="passwordreset", $instance="")
     $message .= $hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang];
 
     // send mail
-    $mail = sendmessage ("", $login, $hcms_lang['reset-password'][$lang], $message);
+    $mail = sendmessage ("", $login, $hcms_lang['password'][$lang], $message);
 
     // save log
     $errcode = "00750";
-    $error[] = $mgmt_config['today']."|hypercms_main.php|information|".$errcode."|user ".$login." requested a new password";
+    $error[] = $mgmt_config['today']."|hypercms_main.php|information|".$errcode."|a new password has been sent to user '".$login."'";
     savelog (@$error); 
 
     if ($mail == false) return $hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang]." ".$email[0];
@@ -20914,10 +20988,11 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
          $siteaccess, $pageaccess, $compaccess,
          $adminpermission, $hiddenfolder;
 
+  // initialize
   $error = array();
   
   // set default language
-  if ($lang == "") $lang = "en";
+  if (empty ($lang)) $lang = "en";
 
   // set content_array
   $content_array = $content;

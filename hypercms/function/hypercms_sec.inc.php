@@ -864,7 +864,11 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
 {
   global $mgmt_config, $eventsystem, $hcms_lang_codepage, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
+
+  // set default language
+  if (empty ($lang)) $lang = "en";
 
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
@@ -873,9 +877,6 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   {
     include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
   }
-
-  // set default language
-  if (empty ($lang)) $lang = "en";
 
   // result array definition
   $result = array(
@@ -1160,7 +1161,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
 
           // SSO with provided user name
           // only grant user access if it has been verified by a provided LDAP/AD admin user and the function verifyoauthclient exists (requires Connector module)
-          if ($ldap_auth == true && !empty ($mgmt_config['ldap_admin_username']) && !empty ($mgmt_config['ldap_admin_password']) && function_exists ("verifyoauthclient"))
+          if (!empty ($mgmt_config['sso']) && $ldap_auth == true && !empty ($mgmt_config['ldap_admin_username']) && !empty ($mgmt_config['ldap_admin_password']) && function_exists ("verifyoauthclient"))
           {
             // get user hash for authentication since no password has been provided
             if (!empty ($userdata))
@@ -1174,6 +1175,9 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                 if (!empty ($temp[0]))
                 {
                   $hash = $temp[0];
+
+                  // log IP of user
+                  savelog (getuserip(), $user.".ip");
                 }
                 else
                 {
@@ -2336,6 +2340,7 @@ function writesession ($user, $passwd, $checksum, $siteaccess=array())
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   if ((session_id() != "" || !isset ($_SESSION)) && valid_objectname ($user) && $passwd != "" && $checksum != "")
@@ -2520,6 +2525,7 @@ function killsession ($user="", $destroy_php=true, $remove=false)
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   // if hypercms user session file exists
@@ -2616,6 +2622,7 @@ function checkdiskkey ()
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   // version info
@@ -2754,6 +2761,7 @@ function checkpassword ($password, $user="")
 {
   global $mgmt_config, $lang;
 
+  // initialize
   $error = array();
 
   require ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
@@ -2763,8 +2771,6 @@ function checkpassword ($password, $user="")
 
   if ($password != "")
   {
-    $error = array();
-
     // must be at least X digits long
     if (strlen ($password) < intval ($mgmt_config['passwordminlength'])) $error[] = $hcms_lang['the-passwords-has-less-than-digits'][$lang];
     // must not be longer than 100 digits
@@ -2921,6 +2927,7 @@ function checkuserrequests ($user="sys")
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   // set default value
@@ -3843,6 +3850,7 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   if ($string != "")

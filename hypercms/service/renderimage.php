@@ -207,7 +207,7 @@ if (checktoken ($token, $user))
   }
 
   // render image
-  if (!empty ($media_size['width']) && !empty ($media_size['height']) && valid_publicationname ($site))
+  if (!empty ($media_size['width']) && !empty ($media_size['height']) && valid_publicationname ($site) && !empty ($mgmt_imageoptions) && !empty ($imageformat))
   { 
     // sets the maximum execution time for the script to 300 sec.
     ini_set ("max_execution_time", "300");
@@ -232,172 +232,169 @@ if (checktoken ($token, $user))
     }
 
     // get new rendering settings and set image options
-    if ($imageformat != "")
+    $formats = "";
+    $thumbformat = "";
+
+    foreach ($mgmt_imageoptions as $formatstring => $settingstring)
     {
-      $formats = "";
-      $thumbformat = "";
-
-      foreach ($mgmt_imageoptions as $formatstring => $settingstring)
+      if (substr_count ($formatstring.".", ".".$imageformat.".") > 0)
       {
-        if (substr_count ($formatstring.".", ".".$imageformat.".") > 0)
-        {
-          $formats = $formatstring;
-        }
-
-        if (substr_count ($formatstring.".", ".png.") > 0)
-        {
-          $thumbformat = $formatstring;
-        }
+        $formats = $formatstring;
       }
 
-      if ($thumbformat == "") $thumbformat = ".png";
-
-      if ($formats != "")
+      if (substr_count ($formatstring.".", ".png.") > 0)
       {
-        // convert the image file
-        // Options:
-        // -s ... size in pixels (width x height)
-        // -c ... offset in x and y (x-offset x y-offset)
-        // -f ... image output format      
-
-        $mgmt_imageoptions[$formats]['preview'] = "";
-        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] = "";
-
-        // crop image
-        if ($imageresize == "crop" && $imagecropwidth > 0 && $imagecropheight > 0 && $imagex >= 0 && $imagey >= 0)
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagecropwidth."x".$imagecropheight." -c ".$imagex."x".$imagey;
-        }
-        // resize image
-        elseif (in_array ($imageresize, array("percentage", "imagewidth", "imageheight")) && $imagewidth > 0 && $imageheight > 0)
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagewidth."x".$imageheight;
-        }
-
-        if ($thumbwidth > 0 && $thumbheight > 0)
-        {
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -s ".$thumbwidth."x".$thumbheight;
-        }
-
-        // rotate
-        if ($rotate == "rotate" && $angle !== NULL) 
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -rotate ".$angle;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -rotate ".$angle;
-        }
-        // flip
-        elseif ($rotate == "flip" && array_key_exists ($flip, $available_flip))
-        {
-          $flipflop = str_replace (array("fv", "fh"), array("-fv", "-fh"), $flip);
-
-          $mgmt_imageoptions[$formats]['preview'] .= " ".$flipflop;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " ".$flipflop;
-        }
-
-        // image density (DPI)
-        if ($imagedensity >= 72 && $imagedensity <= 1200) 
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -d ".$imagedensity;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -d ".$imagedensity;
-        }
-        
-        // image quality / compression
-        if ($imagequality >= 1 && $imagequality <= 100) 
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -q ".$imagequality;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -q ".$imagequality;
-        }
-  
-        // brightness
-        if ($use_brightness == 1 && $brightness != 0)
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -b ".$brightness;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -b ".$brightness;
-        }
-        
-        // contrast
-        if ($use_contrast == 1 && $contrast != 0)
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -k ".$contrast;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -k ".$contrast;
-        }
-        
-        // colorspace
-        if ($colorspace == 1 && array_key_exists ($imagecolorspace, $available_colorspaces)) 
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -cs ".$imagecolorspace;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -cs ".$imagecolorspace;
-        }
-        
-        // effects
-        if ($effect == "sepia" && $sepia_treshold > 0 && $sepia_treshold <= 99.9) 
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -sep ".$sepia_treshold."%";
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -sep ".$sepia_treshold."%";
-        }
-        elseif ($effect == "blur" && $blur_sigma >= 0.1 && $blur_sigma <= 3 && $blur_radius !== NULL) 
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -bl ".$blur_radius."x".$blur_sigma;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -bl ".$blur_radius."x".$blur_sigma;
-        }
-        elseif ($effect == "sharpen" && $sharpen_sigma >= 0.1 && $sharpen_sigma <= 3 && $sharpen_radius !== NULL) 
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -sh ".$sharpen_radius."x".$sharpen_sigma;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -bl ".$blur_radius."x".$blur_sigma;
-        }
-        elseif ($effect == "sketch" && $sketch_sigma !== NULL && $sketch_radius !== NULL && $sketch_angle !== NULL) 
-        {
-          if ($sketch_angle > -1) $sketch_angle = "+".$sketch_angle;
-          $mgmt_imageoptions[$formats]['preview'] .= " -sk ".$sketch_radius."x".$sketch_sigma.$sketch_angle;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -sk ".$sketch_radius."x".$sketch_sigma.$sketch_angle;
-        }
-        elseif ($effect == "paint" && $paintvalue !== NULL) 
-        {
-          $mgmt_imageoptions[$formats]['preview'] .= " -pa ".$paintvalue;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -pa ".$paintvalue;
-        }
-  
-        // add the mandatory format
-        $mgmt_imageoptions[$formats]['preview'] .= " -f ".$imageformat;
-        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -f png";
-
-        // edit and save media file
-        if ($savetype == "auto" || $savetype == "editor_so")
-        {
-          $mgmt_imageoptions[$formats]['original'] = $mgmt_imageoptions[$formats]['preview'];
-
-          $editmediaobject = editmediaobject ($site, $location, $page, $imageformat, "original", "", $user);
-
-          if (!empty ($editmediaobject['result'])) $result = $editmediaobject['mediafile'];
-        }
-        // create preview for image editing
-        else
-        {
-          // preview image in original size
-          $result = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], $imageformat, 'preview', true, false);
-
-          if ($result)
-          {
-            list ($output->imagewidth, $output->imageheight) = getimagesize ($media_root_target.$result);
-            
-            if (($imageresize == "crop" || $output->imagewidth > $thumbwidth || $output->imageheight > $thumbheight))
-            {
-              // reduced image for image editor
-              $resultthumb = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], "png", 'render.'.$thumbwidth.'x'.$thumbheight, true, false);
-            }
-            else $resultthumb = false;
-          }
-        }
+        $thumbformat = $formatstring;
       }
+    }
+
+    if ($thumbformat == "") $thumbformat = ".png";
+
+    if ($formats != "")
+    {
+      // convert the image file
+      // Options:
+      // -s ... size in pixels (width x height)
+      // -c ... offset in x and y (x-offset x y-offset)
+      // -f ... image output format      
+
+      $mgmt_imageoptions[$formats]['preview'] = "";
+      $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] = "";
+
+      // crop image
+      if ($imageresize == "crop" && $imagecropwidth > 0 && $imagecropheight > 0 && $imagex >= 0 && $imagey >= 0)
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagecropwidth."x".$imagecropheight." -c ".$imagex."x".$imagey;
+      }
+      // resize image
+      elseif (in_array ($imageresize, array("percentage", "imagewidth", "imageheight")) && $imagewidth > 0 && $imageheight > 0)
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagewidth."x".$imageheight;
+      }
+
+      if ($thumbwidth > 0 && $thumbheight > 0)
+      {
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -s ".$thumbwidth."x".$thumbheight;
+      }
+
+      // rotate
+      if ($rotate == "rotate" && $angle !== NULL) 
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -rotate ".$angle;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -rotate ".$angle;
+      }
+      // flip
+      elseif ($rotate == "flip" && array_key_exists ($flip, $available_flip))
+      {
+        $flipflop = str_replace (array("fv", "fh"), array("-fv", "-fh"), $flip);
+
+        $mgmt_imageoptions[$formats]['preview'] .= " ".$flipflop;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " ".$flipflop;
+      }
+
+      // image density (DPI)
+      if ($imagedensity >= 72 && $imagedensity <= 1200) 
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -d ".$imagedensity;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -d ".$imagedensity;
+      }
+      
+      // image quality / compression
+      if ($imagequality >= 1 && $imagequality <= 100) 
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -q ".$imagequality;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -q ".$imagequality;
+      }
+
+      // brightness
+      if ($use_brightness == 1 && $brightness != 0)
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -b ".$brightness;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -b ".$brightness;
+      }
+      
+      // contrast
+      if ($use_contrast == 1 && $contrast != 0)
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -k ".$contrast;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -k ".$contrast;
+      }
+      
+      // colorspace
+      if ($colorspace == 1 && array_key_exists ($imagecolorspace, $available_colorspaces)) 
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -cs ".$imagecolorspace;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -cs ".$imagecolorspace;
+      }
+      
+      // effects
+      if ($effect == "sepia" && $sepia_treshold > 0 && $sepia_treshold <= 99.9) 
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -sep ".$sepia_treshold."%";
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -sep ".$sepia_treshold."%";
+      }
+      elseif ($effect == "blur" && $blur_sigma >= 0.1 && $blur_sigma <= 3 && $blur_radius !== NULL) 
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -bl ".$blur_radius."x".$blur_sigma;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -bl ".$blur_radius."x".$blur_sigma;
+      }
+      elseif ($effect == "sharpen" && $sharpen_sigma >= 0.1 && $sharpen_sigma <= 3 && $sharpen_radius !== NULL) 
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -sh ".$sharpen_radius."x".$sharpen_sigma;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -bl ".$blur_radius."x".$blur_sigma;
+      }
+      elseif ($effect == "sketch" && $sketch_sigma !== NULL && $sketch_radius !== NULL && $sketch_angle !== NULL) 
+      {
+        if ($sketch_angle > -1) $sketch_angle = "+".$sketch_angle;
+        $mgmt_imageoptions[$formats]['preview'] .= " -sk ".$sketch_radius."x".$sketch_sigma.$sketch_angle;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -sk ".$sketch_radius."x".$sketch_sigma.$sketch_angle;
+      }
+      elseif ($effect == "paint" && $paintvalue !== NULL) 
+      {
+        $mgmt_imageoptions[$formats]['preview'] .= " -pa ".$paintvalue;
+        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -pa ".$paintvalue;
+      }
+
+      // add the mandatory format
+      $mgmt_imageoptions[$formats]['preview'] .= " -f ".$imageformat;
+      $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -f png";
+
+      // edit and save media file
+      if ($savetype == "auto" || $savetype == "editor_so")
+      {
+        $mgmt_imageoptions[$formats]['original'] = $mgmt_imageoptions[$formats]['preview'];
+
+        $editmediaobject = editmediaobject ($site, $location, $page, $imageformat, "original", "", $user);
+
+        if (!empty ($editmediaobject['result'])) $result = $editmediaobject['mediafile'];
+      }
+      // create preview for image editing
       else
       {
-        $show = $hcms_lang['the-file-could-not-be-processed'][$lang];
+        // preview image in original size
+        $result = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], $imageformat, 'preview', true, false);
+
+        if ($result)
+        {
+          list ($output->imagewidth, $output->imageheight) = getimagesize ($media_root_target.$result);
+          
+          if (($imageresize == "crop" || $output->imagewidth > $thumbwidth || $output->imageheight > $thumbheight))
+          {
+            // reduced image for image editor
+            $resultthumb = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], "png", 'render.'.$thumbwidth.'x'.$thumbheight, true, false);
+          }
+          else $resultthumb = false;
+        }
       }
     }
     else
     {
-      $show = $hcms_lang['required-parameters-are-missing'][$lang];
+      $show = $hcms_lang['the-file-could-not-be-processed'][$lang];
     }
+  }
+  else
+  {
+    $show = $hcms_lang['required-parameters-are-missing'][$lang];
   }
 }
 

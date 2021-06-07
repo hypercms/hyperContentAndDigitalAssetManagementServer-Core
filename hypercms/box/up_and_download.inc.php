@@ -17,7 +17,7 @@ if (isset ($siteaccess) && is_array ($siteaccess))
       
       echo "
       <div id=\"stats_".$item_site."\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
-        <div class=\"hcmsHeadline\" style=\"margin:6px;\"><img src=\"".getthemelocation("night")."img/site.png\" class=\"hcmsIconList\" /> ".$title." ".$item_site."</div>";
+        <div class=\"hcmsHeadline\" style=\"margin:6px; white-space:nowrap;\"><img src=\"".getthemelocation("night")."img/site.png\" class=\"hcmsIconList\" /> ".$title." ".$item_site."</div>";
         
       $rootlocation_esc = "%comp%/".$item_site."/.folder";
 

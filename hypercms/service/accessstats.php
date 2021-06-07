@@ -16,7 +16,9 @@ require ("../function/hypercms_tplengine.inc.php");
 
 
 // input parameters
-$rootlocation_esc = getrequest ("location", "locationname");
+$location_esc = getrequest ("location", "locationname");
+$date_from = getrequest ("date_from");
+$date_to = getrequest ("date_to");
 
 // ------------------------------ permission section --------------------------------
 
@@ -28,14 +30,35 @@ checkusersession ($user);
 // chart size in pixels
 if (!empty ($is_mobile))
 {
-  $chart_width = 480;
-  $chart_height = 220;
+  $chart_width = 560;
+  $chart_height = 190;
 }
 else
 {
   $chart_width = 600;
-  $chart_height = 260;
+  $chart_height = 230;
 }
+
+// define default date
+if ($date_from == "" || $date_to == "")
+{
+  if (!empty ($_SESSION['hcms_timezone'])) date_default_timezone_set ($_SESSION['hcms_timezone']);
+  $time = time();
+  $date_from = date ("Y-m-01", $time);
+  $date_to = date ("Y-m-t", $time);
+  $date_year = date ("Y", $time);
+  $date_month = date ("m", $time);
+}
+else
+{
+  list ($date_year, $date_month, $date_day) = explode ("-", $date_from);
+}
+
+// define previous and next dates
+$previous_date_from = date ("Y-m-01", strtotime ("-1 month", strtotime ($date_from)));
+$previous_date_to = date ("Y-m-t", strtotime ("-1 month", strtotime ($date_from)));
+$next_date_from = date ("Y-m-01", strtotime ("+1 month", strtotime ($date_from)));
+$next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 ?>
 <!DOCTYPE html>
 <html>
@@ -46,22 +69,42 @@ else
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 </head>
+
 <body>
+
+<!-- navigation forms -->
+<form name="previousform" action="" method="post">
+  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+  <input type="hidden" name="date_from" value="<?php echo $previous_date_from; ?>" />
+  <input type="hidden" name="date_to" value="<?php echo $previous_date_to; ?>" />
+</form>
+<form name="nextform" action="" method="post">
+  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+  <input type="hidden" name="date_from" value="<?php echo $next_date_from; ?>" />
+  <input type="hidden" name="date_to" value="<?php echo $next_date_to; ?>" />
+</form>
+
+<div class="hcmsHeadline" style="width:150px; margin:0px auto; text-align:center; white-space:nowrap;">
+  <img src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" class="hcmsButton hcmsIconList" onclick="document.forms['previousform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" />
+  <div style="float:left; width:100px; padding:2px; text-align:center;">&nbsp;<?php echo $date_month."/".$date_year; ?>&nbsp;</div>
+  <?php if ($date_month != date ("m", time()) || $date_year != date ("Y", time())) { ?>
+  <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButton hcmsIconList" onclick="document.forms['nextform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>"/>
+  <?php } else { ?>
+  <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButtonOff hcmsIconList" />
+  <?php } ?>
+</div>
+<div style="clear:both;"></div>
+
+<!-- chart -->
 <div class="hcmsTextWhite">
 <?php
-if (!empty ($rootlocation_esc))
+if (!empty ($location_esc))
 {
-  // filter values
-  if (!empty ($_SESSION['hcms_timezone'])) date_default_timezone_set ($_SESSION['hcms_timezone']);
-  $time = time();
-  $date_from = date ("Y-m-01", $time);
-  $date_to = date ("Y-m-t", $time);
-  $date_year = date ("Y", $time);
-  $date_month = date ("m", $time);
+  $page = getobject ($location_esc);
   
-  $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $rootlocation_esc, "", false);
-  $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $rootlocation_esc, "", true);
-  $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $rootlocation_esc, "", true);
+  $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc, "", false);
+  $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc, "", true);
+  $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc, "", true);
   
   $date_axis = array();
   $view_axis = array();
@@ -100,7 +143,13 @@ if (!empty ($rootlocation_esc))
           if (strpos (" ".$view_axis[$i]['text'].",", " ".$row['user'].",") === false) $view_axis[$i]['text'] .= $delimiter.$row['user'];
 
           // container ID for link
-          if (strpos ("|".$view_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($view_axis[$i]['onclick']) < 2000) $view_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+          if ($page == ".folder")
+          {
+            if (strpos ("|".$view_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($view_axis[$i]['onclick']) < 2000)
+            {
+              $view_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+            }
+          }
           
           // total
           $view_total_count = $view_total_count + $row['count'];
@@ -119,7 +168,7 @@ if (!empty ($rootlocation_esc))
     $download_axis[$i]['text'] = "";
     $download_axis[$i]['onclick'] = "";
 
-    if (is_array ($result_download)) 
+    if (isset ($result_download) && is_array ($result_download)) 
     {
       // collect data for same day
       foreach ($result_download as $row)
@@ -133,7 +182,13 @@ if (!empty ($rootlocation_esc))
           if (strpos (" ".$download_axis[$i]['text'].",", " ".$row['user'].",") === false) $download_axis[$i]['text'] .= $delimiter.$row['user'];
 
           // container ID for link
-          if (strpos ("|".$download_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($download_axis[$i]['onclick']) < 2000) $download_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+          if ($page == ".folder")
+          {
+            if (strpos ("|".$download_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($download_axis[$i]['onclick']) < 2000)
+            {
+              $download_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+            }
+          }
           
           // total
           $download_total_count = $download_total_count + $row['count'];
@@ -153,7 +208,7 @@ if (!empty ($rootlocation_esc))
     $upload_axis[$i]['text'] = "";
     $upload_axis[$i]['onclick'] = "";
       
-    if (is_array ($result_upload)) 
+    if (isset ($result_upload) && is_array ($result_upload)) 
     {
       // collect data for same day
       foreach ($result_upload as $row)
@@ -167,7 +222,13 @@ if (!empty ($rootlocation_esc))
           if (strpos (" ".$upload_axis[$i]['text'].",", " ".$row['user'].",") === false) $upload_axis[$i]['text'] .= $delimiter.$row['user'];
 
           // container ID for link
-          if (strpos ("|".$upload_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($upload_axis[$i]['onclick']) < 2000) $upload_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+          if ($page == ".folder")
+          {
+            if (strpos ("|".$upload_axis[$i]['onclick']."|", "|".intval ($row['container_id'])."|") === false && strlen ($upload_axis[$i]['onclick']) < 2000)
+            {
+              $upload_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
+            }
+          }
 
           // total
           $upload_total_count = $upload_total_count + $row['count'];
@@ -191,9 +252,9 @@ if (!empty ($rootlocation_esc))
 
   echo '
   <div style="margin:35px 0px 0px 40px;">
-    <div style="height:16px;"><div style="width:16px; height:16px; background:#6fae30; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['views'][$lang]).' ('.number_format ($view_total_count, 0, ".", " ").' Hits)</div>
-    <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#108ae7; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['downloads'][$lang]).' ('.number_format ($download_total_count, 0, ".", " ").' Hits / '.number_format (($download_total_filesize / 1024), 0, ".", " ").' MB)</div>
-    <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['uploads'][$lang])." (".number_format ($upload_total_count, 0, ".", " ").' Hits / '.number_format (($upload_total_filesize / 1024), 0, ".", " ").' MB)</div>
+    <div style="height:16px; white-space:nowrap;"><div style="width:16px; height:16px; background:#6fae30; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['views'][$lang]).' ('.number_format ($view_total_count, 0, ".", " ").' Hits)</div>
+    <div style="height:16px; margin-top:2px; white-space:nowrap;"><div style="width:16px; height:16px; background:#108ae7; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['downloads'][$lang]).' ('.number_format ($download_total_count, 0, ".", " ").' Hits / '.number_format (($download_total_filesize / 1024), 0, ".", " ").' MB)</div>
+    <div style="height:16px; margin-top:2px; white-space:nowrap;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['uploads'][$lang])." (".number_format ($upload_total_count, 0, ".", " ").' Hits / '.number_format (($upload_total_filesize / 1024), 0, ".", " ").' MB)</div>
   </div>';
 }
 ?>

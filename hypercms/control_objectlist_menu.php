@@ -434,11 +434,11 @@ function checkForm_delete ()
     <?php 
     if ((isset ($multiobject) && $multiobject_count > 1) || (isset ($folder) && $folder != ""))
     {
-      echo "submitToWindow('popup_status.php', 'delete', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 220);\n";
+      echo "submitToWindow('popup_status.php', 'delete', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 300);\n";
     }
     elseif (isset ($page) && $page != "" && $page != ".folder")
     {
-      echo "hcms_openWindow('popup_action.php?site=".url_encode($site)."&cat=".url_encode($cat)."&action=delete&location=".url_encode($location_esc)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&multiobject=".url_encode($multiobject)."&token=".$token_new."', '', 'location=no,scrollbars=no,resizable=no,titlebar=no', 400, 180);\n";
+      echo "hcms_openWindow('popup_action.php?site=".url_encode($site)."&cat=".url_encode($cat)."&action=delete&location=".url_encode($location_esc)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&multiobject=".url_encode($multiobject)."&token=".$token_new."', '', 'location=no,scrollbars=no,resizable=no,titlebar=no', 400, 300);\n";
     }
     ?>
   }
@@ -1143,12 +1143,12 @@ else
       <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_upload.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
 
-    // Download/Convert Button (also for folders) 
+    // Download/Convert Button (also for folders)
+    $media_info = getfileinfo ($site, $media, $cat);
+
     // get media file extension
     if (!empty ($media) && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
     {
-      $media_info = getfileinfo ($site, $media, $cat);
-
       if (!empty ($media_info['ext']))
       {
         $doc_rendering = is_supported ($mgmt_docpreview, $media_info['ext']) && is_array ($mgmt_docconvert) && array_key_exists ($media_info['ext'], $mgmt_docconvert);
@@ -1365,7 +1365,7 @@ else
     {    
       echo "
     <img class=\"hcmsButton hcmsButtonSizeSquare\" ".
-           "onClick=\"var test = confirm('".getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang])."'); if (locklayer == false && test) hcms_openWindow('popup_action.php?action=unzip&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".$token_new."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 220);\" ".
+           "onClick=\"var test = confirm('".getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang])."'); if (locklayer == false && test) hcms_openWindow('popup_action.php?action=unzip&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".$token_new."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 300);\" ".
            "name=\"pic_unzip\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_unzip.png\" alt=\"".getescapedtext ($hcms_lang['extract-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['extract-file'][$lang])."\" />";
     }
     else echo "
@@ -1425,8 +1425,8 @@ else
       {
         echo "
       <img onClick=\"if (locklayer == false) ";
-        if ($mgmt_config['db_connect_rdbms'] != "") echo "submitToWindow('popup_publish.php', 'publish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 400);";
-        else echo "submitToWindow('popup_status.php', 'publish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 400);";
+        if ($mgmt_config['db_connect_rdbms'] != "") echo "submitToWindow('popup_publish.php', 'publish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 560, 450);";
+        else echo "submitToWindow('popup_status.php', 'publish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 560, 450);";
         echo "\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_publish\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" alt=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" />\n";
       }
       else
@@ -1439,8 +1439,8 @@ else
       {
       	echo "
       <img onClick=\"if (locklayer == false) ";
-        if ($mgmt_config['db_connect_rdbms'] != "") echo "submitToWindow('popup_publish.php', 'unpublish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 400);";
-        else echo "submitToWindow('popup_status.php', 'unpublish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 400);";   		
+        if ($mgmt_config['db_connect_rdbms'] != "") echo "submitToWindow('popup_publish.php', 'unpublish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 560, 450);";
+        else echo "submitToWindow('popup_status.php', 'unpublish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 560, 450);";   		
       	echo "\" ".
       	"class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unpublish\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" alt=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" />";
       }
@@ -1457,8 +1457,8 @@ else
       {
         echo "
       <img onClick=\"if (locklayer == false) ";
-        if ($mgmt_config['db_connect_rdbms'] != "") echo "submitToWindow('popup_publish.php', 'publish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 400);";
-        else echo "submitToWindow('popup_status.php', 'publish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 400);"; 
+        if ($mgmt_config['db_connect_rdbms'] != "") echo "submitToWindow('popup_publish.php', 'publish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 560, 450);";
+        else echo "submitToWindow('popup_status.php', 'publish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 560, 450);"; 
         echo "\" ".
         "class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_publish\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" alt=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" />\n";
       }
@@ -1471,8 +1471,8 @@ else
       {
       	echo "
       <img onClick=\"if (locklayer == false) ";
-      	if ($mgmt_config['db_connect_rdbms'] != "") echo "submitToWindow('popup_publish.php', 'unpublish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 400);";
-        else echo "submitToWindow('popup_status.php', 'unpublish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 400, 400);";
+      	if ($mgmt_config['db_connect_rdbms'] != "") echo "submitToWindow('popup_publish.php', 'unpublish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 560, 450);";
+        else echo "submitToWindow('popup_status.php', 'unpublish', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=no,resizable=no', 560, 450);";
       	echo "\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unpublish\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" alt=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\">\n";
       }
       else

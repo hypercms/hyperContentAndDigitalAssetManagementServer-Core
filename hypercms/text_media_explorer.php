@@ -21,10 +21,10 @@ $dir = getrequest_esc ("dir", "locationname");
 $compcat = getrequest_esc ("compcat");
 $mediatype = getrequest_esc ("mediatype");
 $callback = getrequest_esc ("callback", false, "", true);
-if ($lang == "") $lang = getrequest_esc ("lang");
 $search_expression = getrequest ("search_expression");
 $search_format = getrequest ("search_format", "array");
 $scaling = getrequest ("scaling", "numeric", "1");
+if (empty ($lang)) $lang = getrequest_esc ("lang");
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");

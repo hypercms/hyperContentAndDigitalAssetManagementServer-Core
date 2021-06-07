@@ -182,7 +182,7 @@ function getrequest ($variable, $force_type=false, $default="")
       elseif ($force_type == "locationname" && !valid_locationname ($result)) $result = $default;
       elseif ($force_type == "objectname" && !valid_objectname ($result)) $result = $default;
       elseif ($force_type == "url" && strpos ("_".strtolower (urldecode ($result)), "<script") > 0) $result = $default;
-      elseif ($force_type == "bool") 
+      elseif ($force_type == "bool" || $force_type == "boolean") 
       {
         if ($result == 1 || $result == "yes" || $result == "true" || $result == "1") $result = true;
         elseif($result == 0 || $result == "no" || $result == "false" || $result == "0") $result = false;
@@ -4363,8 +4363,15 @@ function getimageinfo ($filepath)
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
 
-    // result
+    // initialize result
     $result = array();
+    $result['red'] = 0;
+    $result['green'] = 0;
+    $result['blue'] = 0;
+    $result['colorkey'] = "";
+    $result['width'] = 0;
+    $result['height'] = 0;
+    $result['imagetype'] = "";
 
     if (is_array ($imagecolors) && is_array ($imagesize)) $result = array_merge ($imagecolors, $imagesize);
     elseif (is_array ($imagecolors)) $result = $imagecolors;
@@ -4461,7 +4468,7 @@ function getpdfinfo ($filepath, $box="MediaBox")
     $stream = null;
 
     // use ImageMagick if MediaBox failed
-    if ((empty ($result["width"]) || empty ($result["height"])) && is_supported ($mgmt_imagepreview, $media))
+    if ((empty ($result["width"]) || empty ($result["height"])) && !empty ($mgmt_imagepreview) && is_supported ($mgmt_imagepreview, $media))
     {
       $cmdresult = exec ("identify -format \"%wx%h\" \"".shellcmd_encode ($filepath)."[0]\"");
 

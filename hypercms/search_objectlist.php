@@ -1218,15 +1218,20 @@ function confirm_delete ()
 
 function toggleview (viewoption)
 {
-  if (viewoption == "detail") hcms_showHideLayers ('objectLayer','','show','detailviewReset','','show','galleryviewLayer','','hide','galleryviewReset','','hide');
-  else if (viewoption == "small" || viewoption == "medium" || viewoption == "large") hcms_showHideLayers ('objectLayer','','hide','detailviewReset','','show','galleryviewLayer','','show','galleryviewReset','');
-  else return false;
-  
   var style = "";
   var frames;
   var icon;
   var thumbnail;
 
+  // reset explorer view
+  if (typeof viewoption !== 'undefined' && viewoption != "") explorerview = viewoption;
+  else viewoption = explorerview;
+
+  // control layers
+  if (viewoption == "detail") hcms_showHideLayers ('objectLayer','','show','detailviewReset','','show','galleryviewLayer','','hide','galleryviewReset','','hide');
+  else if (viewoption == "small" || viewoption == "medium" || viewoption == "large") hcms_showHideLayers ('objectLayer','','hide','detailviewReset','','show','galleryviewLayer','','show','galleryviewReset','');
+  else return false;
+  
   // gallery marker frame size definitions
   if (viewoption == "large") style = "max-width:<?php echo ceil ($thumbnailsize_large * 4); ?>px; height:<?php echo ($thumbnailsize_large + 56); ?>px;";
   else if (viewoption == "medium") style = "width:<?php echo ($thumbnailsize_medium + 16); ?>px; height:<?php echo ($thumbnailsize_medium + 56); ?>px;";
@@ -1467,12 +1472,12 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 <div id="tableHeadLayer" style="position:fixed; top:0; left:0; margin:0; padding:0; width:100%; z-index:2; visibility:visible;">
   <table id="objectlist_head" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;">
     <tr>
-      <td id="c0" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:280px;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
+      <td id="c0" onClick="hcms_sortTable(0); toggleview('');" class="hcmsTableHeader hcmsHead" style="width:280px;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
     <?php
     if (!$is_mobile)
     {
     ?>
-      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:250px;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
+      <td id="c1" onClick="hcms_sortTable(1); toggleview('');" class="hcmsTableHeader hcmsHead" style="width:250px;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
     <?php
       if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
       {
