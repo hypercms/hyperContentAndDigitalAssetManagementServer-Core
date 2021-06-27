@@ -10,7 +10,7 @@ require ("../config.inc.php");
 // hyperCMS API
 require ("../function/hypercms_api.inc.php");
 
-
+// initialize
 $error = array();
 $config_files = array();
 
@@ -248,6 +248,7 @@ if (sizeof ($config_files) > 0)
           }
         }
       }
+
     }
   }
 }

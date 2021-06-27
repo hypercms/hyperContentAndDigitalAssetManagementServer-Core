@@ -205,12 +205,17 @@ function submitLanguage (selectname, targetname)
   else return false;
 }
 
-function submitForm ()
+function savePublication ()
 {
   submitLanguage ('list2', 'setting[translate]');
   submitLanguage ('ocr2', 'setting[ocr]');
   hcms_showFormLayer ('savelayer', 0);
   document.forms['siteform'].submit();
+}
+
+function hcms_saveEvent ()
+{
+  savePublication();
 }
 </script>
 </head>
@@ -842,7 +847,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <?php if ($preview != "yes") { ?>         
     <tr>
       <td style="white-space:nowrap; vertical-align:middle; padding-top:10px;"><?php echo getescapedtext ($hcms_lang['save-publication-configuration'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:middle; padding-top:10px;"><img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
+      <td style="white-space:nowrap; vertical-align:middle; padding-top:10px;"><img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="savePublication();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
     </tr>
     <?php } ?>
 

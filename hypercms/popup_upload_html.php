@@ -165,6 +165,8 @@ $(document).ready(function ()
   var percent = 100;
   // shall duplicates be checked
   var checkduplicates = "";
+  // shall existing files be overwritten
+  var overwrite = "";
   // shall versioning be enabled
   var versioning = "";
   // delete objects on given date
@@ -487,6 +489,7 @@ $(document).ready(function ()
             "zipname": zipname,
             "zipcount": selectcount,
             "checkduplicates": checkduplicates,
+            "overwrite": overwrite,
             "versioning": versioning,
             "deletedate": deletedate,
             "media_update": "<?php echo $media ?>",
@@ -775,6 +778,7 @@ $(document).ready(function ()
             "zipname": zipname,
             "zipcount": selectcount,
             "checkduplicates": checkduplicates,
+            "overwrite": overwrite,
             "versioning": versioning,
             "deletedate": deletedate,
             "media_update": "<?php echo $media ?>",
@@ -1043,6 +1047,12 @@ $(document).ready(function ()
       checkduplicates = $('#checkduplicates').val();
     }
 
+    // overwrite existing files
+    if ($('#overwrite').prop('checked'))
+    {
+      overwrite = $('#overwrite').val();
+    }
+
     // submit
     $('#selectedFiles').find('.file_submit').click();
   });
@@ -1249,6 +1259,8 @@ function switchzip ()
     document.getElementById("imageresize").disabled = true;
     document.getElementById("checkduplicates").checked = false;
     document.getElementById("checkduplicates").disabled = true;
+    document.getElementById("overwrite").checked = false;
+    document.getElementById("overwrite").disabled = true;
   }
   else
   {
@@ -1259,6 +1271,8 @@ function switchzip ()
     document.getElementById("imageresize").disabled = false;
     document.getElementById("checkduplicates").checked = false;
     document.getElementById("checkduplicates").disabled = false;
+    document.getElementById("overwrite").checked = false;
+    document.getElementById("overwrite").disabled = false;
   }
 }
 
@@ -1270,11 +1284,15 @@ function switchthumbnail ()
     document.getElementById("versioning").disabled = true;
     document.getElementById("checkduplicates").checked = false;
     document.getElementById("checkduplicates").disabled = true;
+    document.getElementById("overwrite").checked = false;
+    document.getElementById("overwrite").disabled = true;
   }
   else
   {
     document.getElementById("versioning").disabled = false;
     document.getElementById("checkduplicates").disabled = false;
+    document.getElementById("overwrite").checked = false;
+    document.getElementById("overwrite").disabled = false;
   }
 }
 </script>
@@ -1327,6 +1345,12 @@ echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name
         <label><input type="checkbox" name="unzip" id="zip" onclick="switchzip();" value="zip" /> <?php echo getescapedtext ($hcms_lang['compress-files'][$lang]); ?></label> <input name="zipname" id="zipname" type="text" placeholder="<?php echo getescapedtext ($hcms_lang['file-name'][$lang]); ?>" size="20" maxlength="120" value="" disabled="disabled" />
       </div>
       <?php } ?> 
+      <?php if ($cat == "comp" && $uploadmode == "multi" && !empty ($mgmt_config['overwrite_files'])) { ?>
+      <div class="row">
+        <label><input type="checkbox" name="overwrite" id="overwrite" value="1" /> <?php echo getescapedtext ($hcms_lang['overwrite-existing-files'][$lang]." (".$hcms_lang['keep-existing-file-as-old-version'][$lang].")"); ?></label>
+        <input type="checkbox" name="versioning" id="versioning" value="1" checked="checked" style="visibility:hidden;" />
+      </div>
+      <?php } ?>
       <?php if ($cat == "comp" && $uploadmode == "single") { ?>
         <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
       <div class="row">

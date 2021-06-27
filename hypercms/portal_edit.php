@@ -227,81 +227,15 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/jscolor/jscolor.min.js"></script>
-
+<style>
 <?php
 // invert colors
 if (!empty ($hcms_themeinvertcolors))
 {
-  echo "<style>";
   echo invertcolorCSS ($hcms_themeinvertcolors);
-  echo "</style>";
 }
 ?>
 
-<script type="text/javascript">
-
-function toggleCheckboxes (name, source)
-{
-  var checkboxes = document.getElementsByName(name);
-  
-  for (var i=0; i<checkboxes.length; i++)
-  {
-    checkboxes[i].checked = source.checked;
-  }
-}
-
-function switchLayer ()
-{
-  var form = document.forms['template_edit'];
-  var layer = document.getElementById('additionalLayer');
-
-  if (form.elements['portaluser'].value != '')
-  {
-    layer.style.height = 'auto';
-    layer.style.overflow = 'auto';
-  }
-  else
-  {
-    layer.style.overflow = 'hidden';
-    layer.style.height = '0px';
-  }
-}
-
-function deleteSelected (name)
-{
- var form = document.forms['template_edit'];
-
- if (name != "" && form.elements[name])
- {
-  form.elements[name].value = "1";
-  return true;
- }
- else return false;
-}
-
-function savetemplate ()
-{
-  if (document.forms['template_edit'])
-  {
-    hcms_showFormLayer ('savelayer', 0); 
-    document.forms['template_edit'].submit();
-    return true;
-  }
-  else return false;
-}
-
-function setwallpaper ()
-{
-  // set background image
-  <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
-  document.getElementById('homeScreen').style.backgroundImage = "url('<?php echo $wallpaper; ?>?ts=<?php echo time(); ?>')";
-  return true;
-  <?php } else { ?>
-  return false;
-  <?php } ?>
-}
-</script>
-<style>
 #settings
 {
   width: 24%;
@@ -348,6 +282,74 @@ table.TableNarrow th, table.TableNarrow td
   vertical-align: top;
 }
 </style>
+<script type="text/javascript">
+
+function toggleCheckboxes (name, source)
+{
+  var checkboxes = document.getElementsByName(name);
+  
+  for (var i=0; i<checkboxes.length; i++)
+  {
+    checkboxes[i].checked = source.checked;
+  }
+}
+
+function switchLayer ()
+{
+  var form = document.forms['template_edit'];
+  var layer = document.getElementById('additionalLayer');
+
+  if (form.elements['portaluser'].value != '')
+  {
+    layer.style.height = 'auto';
+    layer.style.overflow = 'auto';
+  }
+  else
+  {
+    layer.style.overflow = 'hidden';
+    layer.style.height = '0px';
+  }
+}
+
+function deleteSelected (name)
+{
+ var form = document.forms['template_edit'];
+
+ if (name != "" && form.elements[name])
+ {
+  form.elements[name].value = "1";
+  return true;
+ }
+ else return false;
+}
+
+function setwallpaper ()
+{
+  // set background image
+  <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
+  document.getElementById('homeScreen').style.backgroundImage = "url('<?php echo $wallpaper; ?>?ts=<?php echo time(); ?>')";
+  return true;
+  <?php } else { ?>
+  return false;
+  <?php } ?>
+}
+
+function savetemplate ()
+{
+  if (document.forms['template_edit'])
+  {
+    hcms_showFormLayer ('savelayer', 0); 
+    document.forms['template_edit'].submit();
+    return true;
+  }
+  else return false;
+}
+
+function hcms_saveEvent ()
+{
+  savetemplate();
+}
+</script>
 </head>
 
 <body class="hcmsWorkplaceGeneric" onload="setwallpaper(); switchLayer();">

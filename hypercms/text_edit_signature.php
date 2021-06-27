@@ -204,6 +204,11 @@ $token = createtoken ($user);
     else return false;
   }
 
+  function hcms_saveEvent ()
+  {
+    setsavetype('editors_so');
+  }
+
   $(document).ready(function() {
     // initialize the jSignature widget
     $('#signature_<?php echo $tagname."_".$id; ?>').jSignature({ 'lineWidth': 2, 'decor-color': 'transparent' });

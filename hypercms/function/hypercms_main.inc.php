@@ -2249,7 +2249,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
   if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
 
   // check permissions (only if a publication and location has been provided)
-  if (!empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
   {
     $ownergroup = accesspermission ($site, $location, $cat);
     $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
@@ -2333,7 +2333,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
     $object_hash = false;
 
     // check permissions (only if a publication and location has been provided)
-    if (!empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
@@ -2435,7 +2435,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
   if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
   {
     // check permissions (only if a publication and location has been provided)
-    if (!empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
@@ -2549,7 +2549,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     $object_hash = false;
 
     // check permissions (only if a publication and location has been provided)
-    if (!empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
@@ -2671,7 +2671,7 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
     if (is_array ($multiobject) && sizeof ($multiobject) > 0)
     {
       // check permissions (only if a publication and location has been provided as path)
-      if (!empty ($mgmt_config['api_checkpermission']))
+      if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
       {
         foreach ($multiobject as $path)
         {
@@ -2721,7 +2721,7 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
 // output: URL for download of the requested objects / false on error
 
 // description:
-// Generates a download link of a selectio of media objects. Pages and components will be ignored.
+// Generates a download link of a selection of media objects. Pages and components will be ignored.
 // There is a difference in the file conversion functionality: 
 // Case 1: multiobject (min. 2 objects or object is a folder) without the support of file conversion
 // Case 2: multiobject with only one object (must not be a folder) with support of file conversion
@@ -2743,7 +2743,7 @@ function createmultidownloadlink ($site, $multiobject, $name="", $user="", $type
     if (!empty ($multiobject_array) && is_array ($multiobject_array) && (sizeof ($multiobject_array) > 1 || is_folder ($firstobject)))
     {
       // check permissions (only if a publication and location has been provided as path)
-      if (!empty ($mgmt_config['api_checkpermission']))
+      if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
       {
         foreach ($multiobject as $path)
         {
@@ -2778,7 +2778,7 @@ function createmultidownloadlink ($site, $multiobject, $name="", $user="", $type
       if (!is_dir ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
  
       // zip files
-      $result_zip = zipfiles ($site, $multiobject_array, $mediadir, $zip_filename, $user, "", $flatzip);
+      $result_zip = zipfiles ($site, $multiobject_array, $mediadir, $zip_filename, $user, $linktype, $flatzip);
 
       // set location (used for name)
       $location = $multiobject_array[0];
@@ -2895,7 +2895,7 @@ function createversion ($site, $file, $user="sys")
   if (valid_publicationname ($site) && valid_objectname ($file))
   {
     // create version of previous content file and media file (not for thumbnails)
-    if ((empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) && !is_thumbnail ($file, false))
+    if (!empty ($mgmt_config['contentversions']) && !is_thumbnail ($file, false))
     {
       // try to get container ID from multimedia file
       if ($container_id = getmediacontainerid ($file))
@@ -2907,7 +2907,7 @@ function createversion ($site, $file, $user="sys")
 
         $file_info = getfileinfo ($site, $file, "comp");
 
-        // create new version of file name
+        // create new version of the file name
         $file_v = fileversion ($file);
 
         // get the file extension of the version file
@@ -2923,7 +2923,7 @@ function createversion ($site, $file, $user="sys")
         // move thumbnail (important for versioning!)
         if (is_file ($thumb_root.$thumb) && filesize ($thumb_root.$thumb) > 0)
         {
-          @rename ($thumb_root.$thumb, $thumb_root.$thumb_v);
+          rename ($thumb_root.$thumb, $thumb_root.$thumb_v);
         }
 
         // rename in cloud storage
@@ -2955,7 +2955,29 @@ function createversion ($site, $file, $user="sys")
 
         if (is_file ($contentlocation.$contentfile_wrk) && filesize ($contentlocation.$contentfile_wrk) > 0)
         {
-          return @copy ($contentlocation.$contentfile_wrk, $contentlocation.$file_v);
+          // copy current working container
+          $result = @copy ($contentlocation.$contentfile_wrk, $contentlocation.$file_v);
+
+          // remove old versions
+          if (!empty ($result) && !empty ($mgmt_config['contentversions_max']) && intval ($mgmt_config['contentversions_max']) > 0)
+          {
+            // select all content version files in directory sorted by date
+            $files_v = getcontainerversions ($container_id);
+
+            if (is_array ($files_v) && sizeof ($files_v) > 0)
+            {
+              reset ($files_v);
+              $i = sizeof ($files_v);
+
+              foreach ($files_v as $date_v => $file_v)
+              {
+                if (valid_objectname ($file_v) && $i > intval ($mgmt_config['contentversions_max'])) deleteversion ($site, $file_v, $user);
+                $i--;
+              }
+            }
+          }
+
+          return $result;
         }
         else return false;
       }
@@ -2984,7 +3006,29 @@ function createversion ($site, $file, $user="sys")
 
         if (is_file ($contentlocation.$contentfile_wrk) && filesize ($contentlocation.$contentfile_wrk) > 0)
         {
-          return @copy ($contentlocation.$contentfile_wrk, $contentlocation.$file_v);
+          // copy current working container
+          $result = @copy ($contentlocation.$contentfile_wrk, $contentlocation.$file_v);
+
+          // remove old versions
+          if (!empty ($result) && !empty ($mgmt_config['contentversions_max']) && intval ($mgmt_config['contentversions_max']) > 0)
+          {
+            // select all content version files in directory sorted by date
+            $files_v = getcontainerversions ($container_id);
+
+            if (is_array ($files_v) && sizeof ($files_v) > 0)
+            {
+              reset ($files_v);
+              $i = sizeof ($files_v);
+
+              foreach ($files_v as $date_v => $file_v)
+              {
+                if (valid_objectname ($file_v) && $i > intval ($mgmt_config['contentversions_max'])) deleteversion ($site, $file_v, $user);
+                $i--;
+              }
+            }
+          }
+
+          return $result;
         }
         else return false;
       }
@@ -3291,6 +3335,9 @@ function deleteversion ($site, $container_version, $user="sys")
 {
   global $mgmt_config;
 
+  // initialize
+  $error = array();
+
   if (valid_publicationname ($site) && valid_objectname ($container_version) && strpos ($container_version, ".v_") > 0)
   {
     // get container ID
@@ -3303,6 +3350,16 @@ function deleteversion ($site, $container_version, $user="sys")
       $versiondir = getcontentlocation ($container_id, 'abs_path_content');
       $thumbdir = getmedialocation ($site, ".hcms.".$container_version, "abs_path_media").$site."/";
       $mediadir = getmedialocation ($site, $container_version, "abs_path_media").$site."/";
+      
+      // get file info
+      $fileinfo = getfileinfo ($site, $container_version, "comp");
+
+      // extract date and time from file extension
+      $file_v_ext = substr (strrchr ($container_version, "."), 3);
+      $date = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
+      $time = substr ($file_v_ext, strpos ($file_v_ext, "_") + 1);
+      $time = str_replace ("-", ":", $time);
+      $datetime = $date." ".$time;
 
       // delete media file version
       if (is_file ($mediadir.$container_version) || is_cloudobject ($container_version))
@@ -3319,7 +3376,6 @@ function deleteversion ($site, $container_version, $user="sys")
       else $media_result = true;
 
       // delete thumbnail file
-      $fileinfo = getfileinfo ($site, $container_version, "comp");
       $thumbnail = $fileinfo['filename'].".thumb.jpg".strrchr ($container_version, ".");
 
       if (is_file ($thumbdir.$thumbnail))
@@ -3334,6 +3390,11 @@ function deleteversion ($site, $container_version, $user="sys")
       // delete container version
       if ($media_result == true && $thumbnail_result == true && is_file ($versiondir.$container_version))
       {
+        // log
+        $errcode = "00786";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|version '".$datetime."' of container ".$container_id." with name '".$fileinfo['filename']."' has been deleted by user '".$user."'";
+        savelog ($error);
+
         // delete media file
         return deletefile ($versiondir, $container_version, 0);
       }
@@ -4983,7 +5044,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     if (!is_thumbnail ($location.$media) && substr ($user, 0, 4) != "sys:" && (($range && ($start == 0 || $end == ($size - 1))) || !$range))
     {
       if ($user == "sys") $user_stats = getuserip();
-      $user_stats = $user;
+      else $user_stats = $user;
 
       // get temp file for statistics of ZIP file contents
       if (is_file ($mgmt_config['abs_path_temp'].$media.".dat")) $container_id = file ($mgmt_config['abs_path_temp'].$media.".dat");
@@ -4993,6 +5054,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       // save data in database
       if (!empty ($container_id))
       {
+        // if container is a folder all included objects will receive a new download hit
         if ($force == "download") rdbms_insertdailystat ("download", $container_id, $user_stats, true);
         else rdbms_insertdailystat ("view", $container_id, $user_stats, false);
       }
@@ -5023,7 +5085,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 // output: XML content of container / false on error
 
 // description:
-// This functions loads a content container
+// This function loads a content container
 
 function loadcontainer ($container, $type="work", $user="")
 {
@@ -6496,7 +6558,7 @@ function createpublication ($site_name, $user="sys")
   $show = "";
 
   // check permissions
-  if (!empty ($mgmt_config['api_checkpermission']))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
   {
     if (!checkrootpermission ('site') || !checkrootpermission ('sitecreate'))
     {
@@ -6959,7 +7021,7 @@ function editpublication ($site_name, $setting, $user="sys")
   $exclude_folders_new = "";
 
   // check permissions
-  if (!empty ($mgmt_config['api_checkpermission']))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
   {
     if (!checkrootpermission ('site') || !checkrootpermission ('siteedit'))
     {
@@ -7762,7 +7824,7 @@ function editpublicationsetting ($site_name, $setting, $user="sys")
   $show = "";
 
   // check permissions
-  if (!empty ($mgmt_config['api_checkpermission']))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
   {
     if (!checkrootpermission ('site') || !checkrootpermission ('siteedit'))
     {
@@ -7881,7 +7943,7 @@ function deletepublication ($site_name, $user="sys")
   $show = "";
 
   // check permissions
-  if (!empty ($mgmt_config['api_checkpermission']))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
   {
     if (!checkrootpermission ('site') || !checkrootpermission ('sitedelete'))
     {
@@ -8191,7 +8253,7 @@ function createpersonalization ($site, $pers_name, $cat)
   if (valid_publicationname ($site) && valid_objectname ($pers_name) && strlen ($pers_name) <= 100 && ($cat == "tracking" || $cat == "profile"))
   {
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       if (
         ($cat == "profile" && (!checkglobalpermission ($site, 'persprof') || !checkglobalpermission ($site, 'persprofcreate'))) || 
@@ -8277,7 +8339,7 @@ function deletepersonalization ($site, $pers_name, $cat)
   if (valid_publicationname ($site) && valid_objectname ($pers_name) && ($cat == "tracking" || $cat == "profile"))
   {
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       if (
         ($cat == "profile" && (!checkglobalpermission ($site, 'persprof') || !checkglobalpermission ($site, 'persprofdelete'))) || 
@@ -8537,7 +8599,7 @@ function createtemplate ($site, $template, $cat)
     elseif (is_file ($mgmt_config['abs_path_template'].$site."/".$template))
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-tempate-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-template-name'][$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-template-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-template-name'][$lang]."\n";
     }
     else
     {
@@ -8645,7 +8707,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
     {
       // create version of previous template file
       $template_v = fileversion ($template);
-      rename ($mgmt_config['abs_path_template'].$site."/".$template, $mgmt_config['abs_path_template'].$site."/".$template_v);
+      if (!empty ($template_v)) rename ($mgmt_config['abs_path_template'].$site."/".$template, $mgmt_config['abs_path_template'].$site."/".$template_v);
 
       // save template
       $result_save = savefile ($mgmt_config['abs_path_template'].$site."/", $template, $templatedata);
@@ -8798,7 +8860,7 @@ function createportal ($site, $template)
     elseif (is_file ($mgmt_config['abs_path_template'].$site."/".$template))
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-tempate-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-template-name'][$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-template-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-template-name'][$lang]."\n";
     }
     else
     {
@@ -9132,6 +9194,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
  
   // initialize
   $error = array();
+  $success = false;
   $add_onload = "";
   $show = "";
 
@@ -9142,7 +9205,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
   if (!isset ($mgmt_config['passwordminlength'])) $mgmt_config['passwordminlength'] = 10;
 
   // check permissions
-  if (!empty ($mgmt_config['api_checkpermission']))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
   {
     if (
       (!valid_publicationname ($site) && (!checkrootpermission ('user') || !checkrootpermission ('usercreate'))) || 
@@ -9168,10 +9231,10 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-input-is-not-valid'][$lang]."</span><br/>\n(User name: 4 to 100 digits, Password: 10 to 100 digits)<br />\n".$hcms_lang['please-go-back-and-try-it-again-'][$lang]."\n";
   }
   // check if user is not admin or sys
-  elseif ($login == "admin" || $login == "sys")
+  elseif (strtolower ($login) == "admin" || strtolower ($login) == "sys")
   {
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]."!</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
   }
   // test if login name contains special characters except ".-_@"
   elseif (specialchr ($login, ".-_@") == true)
@@ -9292,7 +9355,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
             else $add_onload = "parent.openPopup('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."'); ";
 
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-user-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-user'][$lang]."<br />\n";
-            $error_switch = "no";
+            $success = true;
           }
           else
           {
@@ -9330,9 +9393,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
 
@@ -9356,9 +9417,22 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
 
   // initialize
   $error = array();
+  $success = false;
   $update = false;
   $add_onload = "";
   $show = "";
+  $password_saved = array();
+  $hashcode_saved = array();
+  $superadmin_saved = array();
+  $language_saved = array();
+  $realname_saved = array();
+  $timezone_saved = array();
+  $theme_saved = array();
+  $email_saved = array();
+  $phone_saved = array();
+  $signature_saved = array();
+  $validdatefrom_saved = array();
+  $validdateto_saved = array();
 
   // set default language
   if (empty ($lang)) $lang = "en";
@@ -9367,10 +9441,11 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
   if (!isset ($mgmt_config['passwordminlength'])) $mgmt_config['passwordminlength'] = 10;
 
   // check permissions
-  if (!empty ($mgmt_config['api_checkpermission']))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
   {
     if (
-      (!valid_publicationname ($site) && (!checkrootpermission ('user') || !checkrootpermission ('useredit'))) || 
+      ($login != $user || !checkrootpermission ('desktopsetting')) &&  
+      (!valid_publicationname ($site) && (!checkrootpermission ('user') || !checkrootpermission ('useredit'))) && 
       (valid_publicationname ($site) && (!checkglobalpermission ($site, 'user') || !checkglobalpermission ($site, 'useredit')))
     )
     {
@@ -9417,10 +9492,12 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
         $validdateto_saved = getcontent ($temp[0], "<validdateto>");
       }
 
+      // set values if missing in container
       if (empty ($password_saved[0])) $password_saved[0] = "";
       if (empty ($hashcode_saved[0])) $hashcode_saved[0] = "";
       if (empty ($superadmin_saved[0])) $superadmin_saved[0] = "";
       if (empty ($language_saved[0])) $language_saved[0] = "";
+      if (empty ($realname_saved[0])) $realname_saved[0] = "";
       if (empty ($timezone_saved[0])) $timezone_saved[0] = "";
       if (empty ($theme_saved[0])) $theme_saved[0] = "";
       if (empty ($email_saved[0])) $email_saved[0] = "";
@@ -9794,7 +9871,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
           $add_onload = "";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-information-was-saved-successfully'][$lang]."</span>";
 
-          $error_switch = "no";
+          $success = true;
         }
         else
         {
@@ -9830,6 +9907,8 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
 
         $add_onload = "";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-information-was-saved-successfully'][$lang]."</span>";
+
+        $success = true;
       }
 
       // check if lanuage was changed and register new language
@@ -9865,9 +9944,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
 
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
 
@@ -9889,12 +9966,13 @@ function deleteuser ($site, $login, $user="sys")
   // initialize
   $add_onload = "";
   $show = "";
+  $success = false;
 
   // set default language
   if (empty ($lang)) $lang = "en";
 
   // check permissions
-  if (!empty ($mgmt_config['api_checkpermission']))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
   {
     if (
       (!valid_publicationname ($site) && (!checkrootpermission ('user') || !checkrootpermission ('userdelete'))) || 
@@ -9943,6 +10021,9 @@ function deleteuser ($site, $login, $user="sys")
         // remove GUI definition file of user
         if (is_file ($mgmt_config['abs_path_data']."checkout/".$login.".gui.dat")) deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".gui.dat", 0);
 
+        // remove toolbar customization definition file of user
+        if (is_file ($mgmt_config['abs_path_data']."checkout/".$login.".toolbar.json")) deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".toolbar.json", 0);
+
         // remove saved searches of user
         deletelog ($login.".search");
 
@@ -9980,7 +10061,8 @@ function deleteuser ($site, $login, $user="sys")
 
           $add_onload = "parent.frames['mainFrame'].location.reload();";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['all-user-information-was-removed-successfully'][$lang]."</span>\n";
-          $error_switch = "no";
+          
+          $success = true;
         }
         else
         {
@@ -10022,9 +10104,7 @@ function deleteuser ($site, $login, $user="sys")
 
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
 
@@ -10047,6 +10127,7 @@ function creategroup ($site, $groupname, $user="sys")
 
   // initialize
   $error = array();
+  $success = false;
   $add_onload = "";
   $show = "";
 
@@ -10054,7 +10135,7 @@ function creategroup ($site, $groupname, $user="sys")
   if (empty ($lang)) $lang = "en";
   
   // check permissions
-  if (!empty ($mgmt_config['api_checkpermission']))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
   {
     if (!valid_publicationname ($site) || !checkglobalpermission ($site, 'group') || !checkglobalpermission ($site, 'groupcreate'))
     {
@@ -10131,7 +10212,8 @@ function creategroup ($site, $groupname, $user="sys")
 
             $add_onload = "parent.frames['mainFrame'].location='group_edit_form.php?site=".url_encode($site)."&preview=no&group_name=".url_encode($groupname)."'; ";
             $show = "<span class=hcmsHeadline>".$hcms_lang['group'][$lang]." '".$groupname."' ".$hcms_lang['was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-group'][$lang]."<br />\n";
-            $error_switch = "no";
+            
+            $success = true;
           }
           else
           {
@@ -10171,9 +10253,7 @@ function creategroup ($site, $groupname, $user="sys")
 
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
 
@@ -10265,6 +10345,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $success = false;
   $add_onload = "";
   $show = "";
 
@@ -10272,7 +10353,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
   if (empty ($lang)) $lang = "en";
 
   // check permissions
-  if (!empty ($mgmt_config['api_checkpermission']))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
   {
     if (!valid_publicationname ($site) || !checkglobalpermission ($site, 'group') || !checkglobalpermission ($site, 'groupedit'))
     {
@@ -10491,7 +10572,8 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
 
         $add_onload = "parent.location.href='group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($groupname)."&preview=no'; ";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['group-settings-were-updated'][$lang]."</span>\n";
-        $error_switch = "no";
+        
+        $success = true;
       }
       else
       {
@@ -10522,9 +10604,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $u
 
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
 
@@ -10545,6 +10625,7 @@ function deletegroup ($site, $groupname, $user)
 
   // initialize
   $error = array();
+  $success = false;
   $add_onload = "";
   $show = "";
 
@@ -10552,7 +10633,7 @@ function deletegroup ($site, $groupname, $user)
   if (empty ($lang)) $lang = "en";
 
   // check permissions
-  if (!empty ($mgmt_config['api_checkpermission']))
+  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
   {
     if (!valid_publicationname ($site) || !checkglobalpermission ($site, 'group') || !checkglobalpermission ($site, 'groupdelete'))
     {
@@ -10630,7 +10711,8 @@ function deletegroup ($site, $groupname, $user)
 
               $add_onload = "parent.frames['mainFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-group-was-removed'][$lang]."</span><br />\n".$hcms_lang['all-group-information-was-successfully-removed'][$lang]."\n";
-              $error_switch = "no";
+              
+              $success = true;
             }
             else
             {
@@ -10684,9 +10766,7 @@ function deletegroup ($site, $groupname, $user)
 
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
 
@@ -11438,6 +11518,7 @@ function createfolder ($site, $location, $folder, $user)
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
 
   // initialize
+  $success = false;
   $add_onload = "";
   $show = "";
   $folder_orig = "";
@@ -11464,7 +11545,7 @@ function createfolder ($site, $location, $folder, $user)
     $location = correctpath ($location);
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $cat = getcategory ($site, $location);
       $ownergroup = accesspermission ($site, $location, $cat);
@@ -11548,7 +11629,7 @@ function createfolder ($site, $location, $folder, $user)
           $container_id = $folderfile['container_id'];
           $page_box_xml = $folderfile['container_content'];
 
-          $error_switch = "no";
+          $success = true;
         }
       }
       // directory could not be created due to missing write permission
@@ -11572,7 +11653,7 @@ function createfolder ($site, $location, $folder, $user)
     }
 
     // eventsystem
-    if (!empty ($eventsystem['oncreatefolder_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
+    if (!empty ($eventsystem['oncreatefolder_post']) && empty ($eventsystem['hide']) && !empty ($success)) 
       oncreatefolder_post ($site, $cat, $location, $folder, $user);
   }
   else
@@ -11586,9 +11667,7 @@ function createfolder ($site, $location, $folder, $user)
 
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
   $result['folder'] = $folder;
@@ -11807,6 +11886,7 @@ function deletefolder ($site, $location, $folder, $user)
  
   // initialize
   $error = array();
+  $success = false;
   $add_onload = "";
   $show = "";
 
@@ -11842,7 +11922,7 @@ function deletefolder ($site, $location, $folder, $user)
     $folder = createfilename ($folder);
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
@@ -11889,7 +11969,7 @@ function deletefolder ($site, $location, $folder, $user)
           $add_onload = "parent.frames['mainFrame'].location.reload(); ";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-was-removed'][$lang]."</span><br />\n";
 
-          $error_switch = "no";
+          $success = true;
 
           // log delete
           $errcode = "00110";
@@ -11916,23 +11996,17 @@ function deletefolder ($site, $location, $folder, $user)
     }
 
     // eventsystem
-    if (!empty ($eventsystem['ondeletefolder_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
+    if (!empty ($eventsystem['ondeletefolder_post']) && empty ($eventsystem['hide']) && !empty ($success)) 
       ondeletefolder_post ($site, $cat, $location, $folder, $user);
   }
-  else $error_switch = "yes";
 
   // save log
   savelog (@$error); 
  
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") 
-  {
-    $folder = "";
-    $result['result'] = true;
-  }
-  else $result['result'] = false;
+  if (!empty ($success)) $folder = "";
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
   $result['folder'] = $folder;
@@ -11956,6 +12030,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 
   // initialize
   $error = array();
+  $success = false;
   $add_onload = "";
   $show = "";
   $foldernew_orig = "";
@@ -11982,7 +12057,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
     $location_esc = convertpath ($site, $location, $cat);
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
@@ -12203,7 +12278,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
           $errcode = "00103";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|the folder '".$location_esc.$folderold."' has been renamed to '".$location_esc.$foldernew."' by user '".$user."'";
 
-          $error_switch = "no";
+          $success = true;
         }
         // on error in link_db, usergroup or workflow folders
         else
@@ -12219,16 +12294,13 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
       } 
     }
   }
-  else $error_switch = "yes";
 
   // save log
   savelog (@$error);
 
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
   $result['folder'] = $folder;
@@ -12357,6 +12429,8 @@ function createobject ($site, $location, $page, $template, $user)
 
   // initialize
   $error = array();
+  $success = false;
+  $object_exists = false;
   $show = "";
   $add_onload = "";
   $cat = "";
@@ -12446,7 +12520,7 @@ function createobject ($site, $location, $page, $template, $user)
       }
 
       // check permissions
-      if (!empty ($mgmt_config['api_checkpermission']))
+      if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
       {
         $ownergroup = accesspermission ($site, $location, $cat);
         $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
@@ -12524,8 +12598,16 @@ function createobject ($site, $location, $page, $template, $user)
         }
         else
         {
+          // get media file name
+          if (is_file ($location.$pagefile)) $object_info = getobjectinfo ($site, $location, $page, $user);
+          elseif (is_file ($location.$pagename)) $object_info = getobjectinfo ($site, $location, $pagename, $user);
+
+          if (!empty ($object_info['media'])) $mediafile = $object_info['media'];
+          else $mediafile = "";
+
           $add_onload = "parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-name'][$lang]."\n";
+          $object_exists = true;
         }
 
         if ($show == "")
@@ -12764,13 +12846,13 @@ function createobject ($site, $location, $page, $template, $user)
                 remoteclient ("save", "abs_path_".$cat, $site, $location, "", $pagefile, ""); 
 
                 // eventsystem
-                if (!empty ($eventsystem['oncreateobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
+                if (!empty ($eventsystem['oncreateobject_post']) && empty ($eventsystem['hide']) && !empty ($success)) 
                   oncreateobject_post ($site, $cat, $location, $page, $template, $user);
 
                 // notification
                 notifyusers ($site, $location, $page, "oncreate", $user);
 
-                $error_switch = "no";
+                $success = true;
               }
             }
             else
@@ -12822,10 +12904,10 @@ function createobject ($site, $location, $page, $template, $user)
 
   // return results
   $result = array();
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = @$add_onload;
   $result['message'] = @$show;
+  $result['object_exists'] = $object_exists;
   $result['publication'] = @$site;
   $result['location'] = @$location;
   $result['location_esc'] = @$location_esc;
@@ -12844,8 +12926,8 @@ function createobject ($site, $location, $page, $template, $user)
 // ---------------------------------------- uploadfile --------------------------------------------
 // function: uploadfile()
 // input: publication name [string], destination location [string], category [page,comp], uploaded file (array as defined by PHP autoglobale $_FILES) [array], unzip/zip [%,unzip,zip], object name (only for media file update of existing object) [string], 
-//        create only a new thumbnail from the media file [1,0] (optional), resize image [percentage,null] (optional), image resize percentage value [integer] (optional), user name [string] (optional), check for duplicates [boolean] (optional), versioning of file [boolean] (optional), 
-//        name of zip file [string] (optional), number of files to be compressed [integer] (optional), create media files in the background [boolean] (optional)
+//        create only a new thumbnail from the media file [1,0] (optional), resize image [percentage,null] (optional), image resize percentage value [integer] (optional), user name [string] (optional), check for duplicates [boolean] (optional), 
+//        overwrite existing files [boolean] (optional), versioning of file [boolean] (optional), name of zip file [string] (optional), number of files to be compressed [integer] (optional), create media files in the background [boolean] (optional)
 // output: result array
 // requires: config.inc.php, $pageaccess, $compaccess, $hiddenfolder, $localpermission
  
@@ -12853,7 +12935,7 @@ function createobject ($site, $location, $page, $template, $user)
 // This function manages all file uploads, like unzip files, zip a collection of files, create media objects and resize images.
 // The container name will be extracted from the media file name for updating an existing multimedia file.
 
-function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="", $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false, $zipfilename="", $zipfilecount=0, $createmedia_in_background=false)
+function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="", $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $overwrite=false, $versioning=false, $zipfilename="", $zipfilecount=0, $createmedia_in_background=false)
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_compress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $eventsystem,
          $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang;
@@ -12870,6 +12952,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
   $error = array();
   $show = "";
   $show_command = "";
+  $media_update = "";
   $result = array();
   $result['result'] = false;
 
@@ -12926,9 +13009,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       $object_info = getobjectinfo ($site, $location, $page, $user);
 
       if (!empty ($object_info['media'])) $media_update = $object_info['media'];
-      else $media_update = "";
     }
-    else $media_update = "";
 
     // define variables
     $updir = $location; //absolute path to where files are uploaded, no trailing slash
@@ -13101,12 +13182,24 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     // create valid file name
     $filename_new = createfilename ($global_files['Filedata']['name']);
 
-    // error if file exists
-    if ($media_update == "" && is_file ($location.$filename_new))
+    // if file exists and is not an update
+    if (is_file ($location.$filename_new) && $media_update == "")
     {
-      $result['header'] = "HTTP/1.1 504 Internal Server Error";
-      $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang];
-      return $result;
+      // overwrite existing multimedia file
+      if ($overwrite == true)
+      {
+        // get media file name
+        $object_info = getobjectinfo ($site, $location, $filename_new, $user);
+
+        if (!empty ($object_info['media'])) $media_update = $object_info['media'];
+      }
+      // error if file exists
+      else
+      {
+        $result['header'] = "HTTP/1.1 504 Internal Server Error";
+        $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang];
+        return $result;
+      }
     }
 
     // error if file is to big
@@ -13265,16 +13358,16 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           else $cmd = "cd \"".shellcmd_encode ($temp_dir)."\" ; ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($temp_dir.$zipfilename)."\" *";
 
           // compress files to ZIP format
-          @exec ($cmd, $error_array);
+          @exec ($cmd, $output, $errorCode);
 
           // errors during compressions of files
-          if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
+          if ($errorCode && is_array ($output))
           {
-            $error_message = implode ("<br />", $error_array);
+            $error_message = implode ("<br />", $output);
             $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
 
             $errcode = "10645";
-            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|zipfiles failed for ".$filename.": ".$error_message;
+            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|zipfiles failed for '".$filename."' with error code ".$errorCode.": ".$error_message;
 
             // save log
             savelog (@$error);
@@ -13365,8 +13458,9 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $show = $result_createobject['message'];
         }
       }
+
       // -------------- update existing multimedia object -----------------
-      elseif ($media_update != "")
+      if ($media_update != "")
       {
         // get container id
         $result['container_id'] = $container_id = getmediacontainerid ($media_update);
@@ -13953,7 +14047,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 // ---------------------------------------- createmediaobjects --------------------------------------------
 // function: createmediaobjects()
 // input: publication name [string], source location [string], destination location [string], user name [string]
-// output: result array with all objects created / false
+// output: result array with all objects created / false on error
 
 // description:
 // This function creates media objects by reading all media files from a given source location (used after unzipfile). 
@@ -14042,6 +14136,25 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             // correct file namens which were decoded by unzip
             if (substr_count ($objectname, "#U") > 0) $objectname = convert_unicode2utf8 ($objectname);
 
+            // upload local file
+            $global_files = array();
+            $global_files['Filedata'] = array();
+            $global_files['Filedata']['name'] = $objectname;
+            $global_files['Filedata']['tmp_name'] = $location_source.$file;
+
+            $uploadfile = uploadfile ($site, $location_destination, "comp", $global_files, "", "", 0, "", "", $user, false, true, true);
+
+            if (!empty ($uploadfile['result']))
+            {
+              $result[] = $uploadfile['object'];
+            }
+            else
+            {
+              $errcode = "10512";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed to create '".convertpath ($site, $location_destination, "comp").$objectname;
+            }
+
+            /* deprecated since version 9.1.5
             // remove existing object
             if (object_exists ($location_destination.$objectname)) deleteobject ($site, $location_destination, $objectname, $user);
 
@@ -14055,8 +14168,9 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             else
             {
               $errcode = "10512";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject failed to create '".convertpath ($site, $location_destination, "").$objectname;
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject failed to create '".convertpath ($site, $location_destination, "comp").$objectname;
             }
+            */
           }
         }
       }
@@ -14073,7 +14187,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 // ---------------------- editmediaobject -----------------------------
 // function: editmediaobject()
 // input: publication name [string], location [string], object name [string], format (file extension w/o dot) [string] (optional), 
-//        type of image/video/audio file [thumbnail,origthumb(thumbail made from original video/audio),original,any other string present in $mgmt_imageoptions] (optional),
+//        type of image/video/audio file [thumbnail,origthumb(thumbnail made from original video/audio),original,any other string present in $mgmt_imageoptions] (optional),
 //        base64 encoded media data as alternative to server-side conversion using createmedia [string] (optional), user name [string]
 // output: result array / false on error (saves original or thumbnail media file of an object, for thumbnail only jpeg format is supported as output), user name
 
@@ -14216,7 +14330,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
           // on error
           else
           {
-            // revert changes back
+            // rollback changes
             savefile ($location, $page, $filedata_orig);
             $show = $hcms_lang['a-value-is-required'][$lang]."\n"; 
           } 
@@ -14269,7 +14383,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
  
   // default values for action = paste before loading the clipboard
   $error = array();
-  $error_switch = "";
+  $success = false;
   $method = "";
   $site_source = "";
   $cat_source = "";
@@ -15179,7 +15293,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $page = "";
           $pagename = "";
           $filetype = "";
-          $error_switch = "no";
+          $success = true;
         }
         else
         {
@@ -15245,7 +15359,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $errcode = "00106";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|the object '".$location_esc.$pageold."' has been renamed to '".$location_esc.$pagenew."' by user '".$user."'";
 
-          $error_switch = "no";
+          $success = true;
         }
         else
         {
@@ -15302,7 +15416,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $add_onload = "opener.parent.frames['controlFrame'].location.reload(); if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-unpublished'][$lang]."</span><br />\n";
 
-          $error_switch = "no";
+          $success = true;
         }
         else
         {
@@ -15376,7 +15490,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); ";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-cut-and-pasted'][$lang]."</span><br />\n";
 
-          $error_switch = "no";
+          $success = true;
         }
         else
         {
@@ -15465,7 +15579,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";
               $page = $page_sec;
 
-              $error_switch = "no";
+              $success = true;
             }
             else
             {
@@ -15492,9 +15606,10 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           // on contentcount error
           if (empty ($contentcount))
           {
-            $error_switch = "yes";
             $add_onload = "";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
+            
+            $success = false;
           }
           // on contentcount success
           else
@@ -15717,7 +15832,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $page = $page_sec;
               $pagename = $pagename_sec;
 
-              $error_switch = "no";
+              $success = true;
             }
             else
             {
@@ -15745,7 +15860,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
             $page = $page_sec;
 
-            $error_switch = "no";
+            $success = true;
           }
           else
           {
@@ -15759,7 +15874,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       }
 
       // ----------------------------------------- set relationship -------------------------------------
-      if ($error_switch == "no" && $cat == "comp" && !empty ($mediafile_self) && $contentfile_self != "" && $action == "page_paste" && $method == "copy" && (!empty ($mgmt_config['relation_source_id']) || !empty ($mgmt_config['relation_destination_id'])))
+      if (!empty ($success) && $cat == "comp" && !empty ($mediafile_self) && $contentfile_self != "" && $action == "page_paste" && $method == "copy" && (!empty ($mgmt_config['relation_source_id']) || !empty ($mgmt_config['relation_destination_id'])))
       {
         setrelation ($site, $location_source, $page_source, $mgmt_config['relation_source_id'], $location, $page_sec, $mgmt_config['relation_destination_id'], $user);
       }
@@ -15769,16 +15884,13 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     savelog (@$error);
 
     // eventsystem for paste
-    if ($action == "page_paste" && $eventsystem['onpasteobject_post'] == 1 && empty ($eventsystem['hide']) && $error_switch == "no") 
+    if ($action == "page_paste" && $eventsystem['onpasteobject_post'] == 1 && empty ($eventsystem['hide']) && !empty ($success)) 
       onpasteobject_post ($site, $cat, $location_source, $location, $page, $user);
   }
-  else $error_switch = "yes";
 
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
   $result['publication'] = $site;
@@ -15966,7 +16078,7 @@ function deleteobject ($site, $location, $page, $user)
       $location = deconvertpath ($location, "file");
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $cat = getcategory ($site, $location);
       $ownergroup = accesspermission ($site, $location, $cat);
@@ -16026,7 +16138,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
       $location = deconvertpath ($location, "file");
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $cat = getcategory ($site, $location);
       $ownergroup = accesspermission ($site, $location, $cat);
@@ -16090,7 +16202,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
       $location = deconvertpath ($location, "file");
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $cat = getcategory ($site, $location);
       $ownergroup = accesspermission ($site, $location, $cat);
@@ -16136,6 +16248,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
  
   // initialize
   $error = array();
+  $success = false;
   $add_onload = "";
   $show = "";
   $filetype = ""; 
@@ -16169,7 +16282,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
     $location_esc = convertpath ($site, $location, $cat);
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
@@ -16213,27 +16326,22 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
 
-      $error_switch = "no";
+      $success = true;
     }
     else
     {
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />";
-
-      $error_switch = "yes";
     }
 
     // eventsystem
-    if (!empty ($eventsystem['oncutobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
+    if (!empty ($eventsystem['oncutobject_post']) && empty ($eventsystem['hide']) && !empty ($success)) 
       oncutobject_post ($site, $cat, $location, $page, $user);
   }
-  else $error_switch = "yes";
  
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
   $result['object'] = $page;
@@ -16258,6 +16366,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
  
   // initialize
   $error = array();
+  $success = false;
   $add_onload = "";
   $show = "";
   $filetype = "";
@@ -16291,7 +16400,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
     $location_esc = convertpath ($site, $location, $cat);
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
@@ -16338,29 +16447,23 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
         $add_onload = "";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
 
-        $error_switch = "no"; 
+        $success = true; 
       }
       else
       {
         $add_onload = "";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />";
-
-        $error_switch = "yes";
       }
 
       // eventsystem
-      if (!empty ($eventsystem['oncopyobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
+      if (!empty ($eventsystem['oncopyobject_post']) && empty ($eventsystem['hide']) && !empty ($success)) 
         oncopyobject_post ($site, $cat, $location, $page, $user);
     }
-    else $error_switch = "yes";
   }
-  else $error_switch = "yes";
  
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
   $result['object'] = $page;
@@ -16385,6 +16488,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
 
   // initialize
   $error = array();
+  $success = false;
   $add_onload = "";
   $show = "";
   $filetype = "";
@@ -16418,7 +16522,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
     $location_esc = convertpath ($site, $location, $cat);
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $fileinfo = getfileinfo ($site, $location.$page, $cat);
       $ownergroup = accesspermission ($site, $location, $cat);
@@ -16466,29 +16570,23 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
         $add_onload = "";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
 
-        $error_switch = "no"; 
+        $success = true; 
       }
       else
       {
         $add_onload = "";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />";
-
-        $error_switch = "yes";
       }
 
       // eventsystem
-      if (!empty ($eventsystem['oncopyconnectedobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
+      if (!empty ($eventsystem['oncopyconnectedobject_post']) && empty ($eventsystem['hide']) && !empty ($success)) 
         oncopyconnectedobject_post ($site, $cat, $location, $page, $user);
     }
-    else $error_switch = "yes";
   }
-  else $error_switch = "yes";
  
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
   $result['object'] = $page;
@@ -16523,13 +16621,13 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
     if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1) $location = deconvertpath ($location, "file");
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $cat = getcategory ($site, $location);
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
       
-      if (empty ($setlocalpermission['root']) || (!is_folder ($location.$page) && empty ($setlocalpermission['rename'])) || (is_folder ($location.$page) && empty ($setlocalpermission['folderrename'])))
+      if (empty ($setlocalpermission['root']) || (empty ($setlocalpermission['rename']) && empty ($setlocalpermission['folderrename'])))
       {
         $result = array();
         $result['result'] = false;
@@ -16570,6 +16668,7 @@ function lockobject ($site, $location, $page, $user)
  
   // initialize
   $error = array();
+  $success = false;
   $add_onload = "";
   $show = "";
   $pagename = "";
@@ -16616,7 +16715,7 @@ function lockobject ($site, $location, $page, $user)
     }
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
@@ -16679,7 +16778,7 @@ function lockobject ($site, $location, $page, $user)
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-is-checked-out'][$lang]."</span><br />";
 
         $usedby = $user;
-        $error_switch = "no";
+        $success = true;
       }
       else
       { 
@@ -16688,18 +16787,14 @@ function lockobject ($site, $location, $page, $user)
       } 
 
       // eventsystem
-      if (!empty ($eventsystem['onlockobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
+      if (!empty ($eventsystem['onlockobject_post']) && empty ($eventsystem['hide']) && !empty ($success)) 
         onlockobject_post ($site, $cat, $location, $page, $user);
     }
-    else $error_switch = "yes";
   }
-  else $error_switch = "yes";
 
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
   $result['object'] = $page;
@@ -16724,6 +16819,7 @@ function unlockobject ($site, $location, $page, $user)
  
   // initialize
   $error = array();
+  $success = false;
   $add_onload = "";
   $show = "";
   $pagename = "";
@@ -16770,7 +16866,7 @@ function unlockobject ($site, $location, $page, $user)
     }
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
@@ -16827,7 +16923,7 @@ if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-is-checked-in'][$lang]."</span><br />";
 
         $usedby = "";
-        $error_switch = "no";
+        $success = true;
       }
       else
       {
@@ -16836,18 +16932,14 @@ if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
       } 
 
       // eventsystem
-      if (!empty ($eventsystem['onunlockobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
+      if (!empty ($eventsystem['onunlockobject_post']) && empty ($eventsystem['hide']) && !empty ($success)) 
         onunlockobject_post ($site, $cat, $location, $page, $user);
     }
-    else $error_switch = "yes";
   }
-  else $error_switch = "yes";
  
   // return results
   $result = array();
-
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
+  $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
   $result['object'] = $page;
@@ -16872,6 +16964,7 @@ function publishobject ($site, $location, $page, $user)
  
   // initialize
   $error = array();
+  $success = false;
   $buffer_site = "";
   $buffer_location = "";
   $buffer_page = "";
@@ -17001,7 +17094,7 @@ function publishobject ($site, $location, $page, $user)
               $page = correctfile ($location, $page, $user);
 
               // check permissions
-              if (!empty ($mgmt_config['api_checkpermission']))
+              if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
               {
                 $ownergroup = accesspermission ($site, $location, $cat);
                 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
@@ -17266,7 +17359,7 @@ function publishobject ($site, $location, $page, $user)
                   $add_onload = "opener.parent.frames['controlFrame'].location.reload(); if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();";
                   $show = "<span class=\"hcmsHeadline\">".$hcms_lang['published-item-successfully'][$lang]."</span><br />\n";
 
-                  $error_switch = "no";
+                  $success = true;
                 }
                 else
                 {
@@ -17281,11 +17374,11 @@ function publishobject ($site, $location, $page, $user)
                 $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
                 ".$hcms_lang['item-is-not-managed-by-hypercms'][$lang]."\n";
 
-                $error_switch = "no";
+                $success = true;
               }
 
               // eventsystem
-              if (!empty ($eventsystem['onpublishobject_post']) && empty ($eventsystem['hide']) && $error_switch == "no") 
+              if (!empty ($eventsystem['onpublishobject_post']) && empty ($eventsystem['hide']) && !empty ($success)) 
                 onpublishobject_post ($site, $cat, $location, $page_new, $contentfile, $contentdata, $templatefile, $templatedata, $viewstore, $user);
             }
             // if we publish a media file we dont use the link management
@@ -17294,7 +17387,7 @@ function publishobject ($site, $location, $page, $user)
               $add_onload = "";
               $show = "<span class=\"hcmsHeadline\"".$hcms_lang['published-item-successfully'][$lang]."</span><br />\n";
 
-              $error_switch = "no";
+              $success = true;
             } 
             else
             {
@@ -17336,7 +17429,7 @@ function publishobject ($site, $location, $page, $user)
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
         ".$hcms_lang['item-is-not-managed-by-hypercms'][$lang]."\n";
  
-        $error_switch = "no";
+        $success = true;
       }
 
       // ------------------------ publish VTT files of video ------------------------
@@ -17364,15 +17457,9 @@ function publishobject ($site, $location, $page, $user)
       if (!empty ($contentdata) && !empty ($container))
       {
         // create version of previous content file
-        if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true)
+        if (!empty ($mgmt_config['contentversions']))
         {
-          $contentfile_v = fileversion ($container);
-          $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
-
-          if (is_file ($contentlocation.$container))
-          {
-            @copy ($contentlocation.$container, $contentlocation.$contentfile_v);
-          }
+          createversion ($site, $container, $user);
         }
 
         // update database
@@ -17417,8 +17504,6 @@ function publishobject ($site, $location, $page, $user)
           $add_onload = "";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
           ".$hcms_lang['you-do-not-have-write-permissions-for-the-container'][$lang]."\n";
-
-          $error_switch = "yes";
         }
       }
     }
@@ -17442,7 +17527,8 @@ function publishobject ($site, $location, $page, $user)
   savelog (@$error);
 
   // return results
-  if ((isset ($error_switch) && $error_switch == "no") || $release < 3 || substr ($page, -8) == ".recycle") $result['result'] = true;
+  // result array has been defined before, do not reset here
+  if (!empty ($success) || $release < 3 || substr ($page, -8) == ".recycle") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -17578,7 +17664,7 @@ function unpublishobject ($site, $location, $page, $user)
     $page = createfilename ($page);
 
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
@@ -18778,7 +18864,7 @@ function savemessage ($data, $type="mail", $user="")
 // ---------------------- remoteclient -----------------------------
 // function: remoteclient()
 // input: action [save,copy,delete,rename,get], root [abs_path_link,abs_path_media,abs_path_comp,abs_path_page,abs_path_rep], publication name [string], location [string], new location [string], object name [string], new object name [string]
-// output: http answer [string] or false
+// output: HTTP response body [string] / false
 
 // description:
 // Sends data to remote client via http post
@@ -18860,7 +18946,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
       $data['passcode'] = hcms_crypt ($data['location'].$data['page']);
  
       // call remote client
-      $result = HTTP_Post ($mgmt_config[$site]['remoteclient'], $data, $encoding="application/x-www-form-urlencoded", $charset="UTF-8");
+      $result = HTTP_Post ($mgmt_config[$site]['remoteclient'], $data, $encoding="application/x-www-form-urlencoded", "UTF-8", "", "full");
 
       // error log
       if (substr_count ($result, "HTTP/1.1 200 OK") == 0 || substr_count ($result, "ERROR") == 1)
@@ -18879,15 +18965,67 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
   else return false;
 }
 
-// ---------------------- HTTP_Post -----------------------------
-// function: HTTP_Post()
-// input: URL [string], data (raw data) [array], content-type [application/x-www-form-urlencoded,multipart/form-data], character set [string]
-// output: http response [string] / false on error
+// ---------------------- HTTP_getheader -----------------------------
+// function: HTTP_getheader()
+// input: HTTP response [string]
+// output: HTTP header [array] / false on error
 
 // description:
-// Sends data via http post and returns response
+// Extracts the HTTP headers from the response string (header and body are seperated by an empty line)
 
-function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded", $charset="UTF-8", $referrer="") 
+function HTTP_getheader ($response)
+{
+  if (strpos ($response, "\r\n\r\n") > 0)
+  {
+    $headers = array();
+    $headertext = substr ($response, 0, strpos ($response, "\r\n\r\n"));
+
+    foreach (explode ("\r\n", $headertext) as $i => $line)
+    {
+      if ($i === 0)
+      {
+        $headers['http_code'] = $line;
+      }
+      else
+      {
+        list ($key, $value) = explode (': ', $line);
+        $headers[$key] = $value;
+      }
+    }
+
+    return $headers;
+  }
+  else return false;
+}
+
+// ---------------------- HTTP_getbody -----------------------------
+// function: HTTP_getbody()
+// input: HTTP response [string]
+// output: HTTP body [string] / false on error
+
+// description:
+// Extracts the HTTP body from the response string (header and body are seperated by an empty line)
+
+function HTTP_getbody ($response)
+{
+  if (strpos ($response, "\r\n\r\n") > 0)
+  {
+    $body = substr ($response, strpos ($response, "\r\n\r\n") + 4);
+
+    return trim ($body);
+  }
+  else return false;
+}
+
+// ---------------------- HTTP_Post -----------------------------
+// function: HTTP_Post()
+// input: URL [string], data (raw data) [array], content-type [application/x-www-form-urlencoded,multipart/form-data] (optional), character set [string] (optional), referrer [string] (optional), response type [full,header,body] (optional)
+// output: HTTP response [string], header [array], or body [string] based on the requested response type / false on error
+
+// description:
+// Sends data via HTTP post and returns the response body
+
+function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded", $charset="UTF-8", $referrer="", $response_type="body") 
 {
   global $mgmt_config;
 
@@ -18964,7 +19102,7 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
 
       $request .= "POST ".$URL_Info["path"]." HTTP/1.0\r\n";
       $request .= "Host: ".$URL_Info["host"]."\r\n";
-      $request .= "Referer: ".$referrer."\r\n";
+      if (!empty ($referrer)) $request .= "Referer: ".$referrer."\r\n";
       //$request .= "Keep-Alive: 300\n";
       //$request .= "Connection: keep-alive\n";
       $request .= "Content-type: multipart/form-data; boundary=".$boundary."\r\n";
@@ -18997,10 +19135,18 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
         $result .= @fgets ($fp, 1024);
       }
 
-      // remove header information from the xml/html-document
-      if (strpos ($result, "<") > 0) $result = substr ($result, strpos ($result, "<"), strrpos ($result, ">") - strpos ($result, "<") + 1);
-
       @fclose ($fp);
+
+      // deprecated since version 9.1.5
+      // remove HTTP header information from the xml/html-document
+      // if (strpos ($result, "<") > 0) $result = substr ($result, strpos ($result, "<"), strrpos ($result, ">") - strpos ($result, "<") + 1);
+      // remove HTTP header information from the JSON string
+      // elseif (strpos ($result, "{") > 0) $result = substr ($result, strpos ($result, "{"), strrpos ($result, "}") - strpos ($result, "{") + 1);
+
+      // remove HTTP body information from the response
+      if (strtolower ($response_type) == "header") $result = HTTP_getheader ($result);
+      // remove HTTP header information from the response
+      elseif (strtolower ($response_type) == "body") $result = HTTP_getbody ($result);
     }
     else $result = false;
  
@@ -19011,13 +19157,13 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
 
 // ---------------------- HTTP_Get -----------------------------
 // function: HTTP_Get()
-// input: URL [string],  data (raw data) [array] (optional), content-type [string excl. charset] (optional), character set [string] (optional)
-// output: http response [string] / false on error
+// input: URL [string],  data (raw data) [array] (optional), content-type [string excl. charset] (optional), character set [string] (optional), response type [full,header,body] (optional)
+// output: HTTP response [string], header [array], or body [string] based on the requested response type / false on error
 
 // description:
 // Sends data via http get and returns response
 
-function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencoded", $charset="UTF-8") 
+function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencoded", $charset="UTF-8", $response_type="body") 
 {
   global $mgmt_config;
   
@@ -19067,10 +19213,12 @@ function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencod
         $result .= @fgets ($fp, 128);
       }
 
-      // remove header information from the xml/html-document
-      if (strpos ($result, "<") > 0) $result = substr ($result, strpos ($result, "<"), strrpos ($result, ">") - strpos ($result, "<") + 1);
-
       @fclose ($fp);
+
+      // remove HTTP body information from the response
+      if (strtolower ($response_type) == "header") $result = HTTP_getheader ($result);
+      // remove HTTP header information from the response
+      elseif (strtolower ($response_type) == "body") $result = HTTP_getbody ($result);
     }
     else $result = false;
 
@@ -19545,7 +19693,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
 
-  if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($user_from))
+  if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($user_from) && (empty ($mgmt_config['notify_exclude_users']) || strpos ("_;".$mgmt_config['notify_exclude_users'].";", ";".$user_from.";") < 1))
   {
     $mail_sent = false;
 
@@ -19592,11 +19740,13 @@ function notifyusers ($site, $location, $object, $event, $user_from)
             {
               // email
               $temp = getcontent ($usernode[0], "<email>");
+              
               if (!empty ($temp[0])) $email_to = $temp[0];
               else $email_to = "";
 
               // language
               $temp = getcontent ($usernode[0], "<language>");
+
               if (!empty ($temp[0])) $lang_to = $temp[0];
               else $lang_to = "en";
             }
@@ -19604,7 +19754,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
             // load language of user if it has not been loaded
             if (!empty ($lang_to) && empty ($hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to]))
             {
-               require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang_to));
+              require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang_to));
             }
 
             if (!empty ($email_to))
@@ -19636,7 +19786,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               }
 
               // mail notification
-              if (!empty ($email_from)) $sender = $user_from." (".$email_from.")";
+              if (!empty ($email_from)) $sender = $user_from." [<a href=\"mailto:".$email_from."\">".$email_from."</a>]";
               else $sender = $user_from;
 
               $mail_title = $hcms_lang['hypercms-notification'][$lang_to];
@@ -20705,11 +20855,13 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
         {
           // email
           $temp = getcontent ($usernode[0], "<email>");
+
           if (!empty ($temp[0])) $from_email = $temp[0];
           else $from_email = "";
 
           // language
           $temp = getcontent ($usernode[0], "<language>");
+
           if (!empty ($temp[0])) $from_lang = $temp[0];
           else $from_lang = "en";
         }
@@ -20722,11 +20874,13 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
       {
         // email
         $temp = getcontent ($usernode[0], "<email>");
+
         if (!empty ($temp[0])) $to_email = $temp[0];
         else $to_email = "";
  
         // language
         $temp = getcontent ($usernode[0], "<language>");
+
         if (!empty ($temp[0])) $to_lang = $temp[0];
         else $to_lang = "en";
 
@@ -20734,6 +20888,7 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
         if ($site == "")
         {
           $temp = getcontent ($usernode[0], "<publication>");
+
           if (!empty ($temp[0])) $site = $temp[0];
         }
       }
@@ -20749,12 +20904,12 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
       }
 
       // email schema
-      if (!empty ($from_email)) $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
-      else $email_schema = "";
+      if (!empty ($from_email)) $sender = $from_user." [<a href='mailto:".$from_email."'>".$from_email."</a>]";
+      else $sender = $from_user;
 
       $body = "
   <span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">
-    <b>".$hcms_lang['message'][$to_lang]." ".$hcms_lang['from'][$to_lang]." '".$from_user."'".$email_schema."</b><br/><br/>
+    <b>".$hcms_lang['message'][$to_lang]." ".$hcms_lang['from'][$to_lang]." ".$sender."</b><br/><br/>
     ".nl2br ($message)."<br/><br/>
     ".$object_link."
   </span>";
@@ -21022,7 +21177,7 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
     }
     
     // check permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 

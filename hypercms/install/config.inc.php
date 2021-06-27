@@ -230,7 +230,7 @@ $mgmt_config['sidebar'] = true;
 // Define if chat should be enabled (true) or disabled (false)
 $mgmt_config['chat'] = true;
 
-// Define if chat should be "public" for all user of the same publication of "private" (only invited users can see the messages)
+// Define if the chat should be "public" for all users of the same publication of "private" (only invited users can see the messages)
 $mgmt_config['chat_type'] = "public";
 
 // Define support user name for chat that will always be present for chat or leave empty
@@ -280,8 +280,16 @@ $mgmt_config['homebox_welcome'] = "https://cloud.hypercms.net/home/update_info_e
 // Define a directory for your brand guidelines (components) that are based on a template and can be edited
 $mgmt_config['brandguide_directory'] = "BrandGuidelines";
 
-// Check for duplicate entries based on MD5 hash of files (true) or not (false)
+// File upload
+// Check for duplicate entries based on MD5 hash of files (true) or not (false) as default value for the checkbox
 $mgmt_config['check_duplicates'] = true;
+
+// File upload
+// Allow existing files to be overwritten (true) or not (false)
+$mgmt_config['overwrite_files'] = true;
+
+// Display owner column in content and template version history (true) or hide the owner (false)
+$mgmt_config['version_owner'] = true;
 
 // Enable AutoSave to autoamtically save the text of the edior each given value in seconds
 // Set value to 0 to disable autosave
@@ -572,6 +580,9 @@ $mgmt_config['contentversions'] = true;
 // Save versions of saved containers and media files (true) or do not create a new version (false)
 $mgmt_config['contentversions_all'] = false;
 
+// Max. number of versions to be saved (0 means no limit)
+$mgmt_config['contentversions_max'] = 0;
+
 // Public Download
 // Allow access to download and wrapper links without logon session (true) or not (false)
 // This setting must be enabled if users want to provide wrapper or download links to the public.
@@ -657,6 +668,9 @@ $mgmt_config['user_log'] = false;
 // User e-mail notification on system errors or warnings
 // Provide a list of comma separated user names for automated notification, or leave empty
 $mgmt_config['eventlog_notify'] = "";
+
+// Define users by their user name (use ; as separator) that should be excluded as senders from the automatic notifications (function notifyusers in Main API)
+$mgmt_config['notify_exclude_users'] = "sys";
 
 // Encryption
 // Encryption strength (weak, standard, strong)
@@ -989,10 +1003,13 @@ $mgmt_config['googleanalytics_key'] = "";
 
 // LDAP/AD Integration
 // If you are using LDAP, Active Directory, or any other user directory, you can specify the file name without extension to be used for the connector.
-// The standard connector file is named "ldap_connect" and located in data/connect/
-// Specify the file name "ldap_connect" located in data/connect/ in order to connect to an LDAP or AD directory and verify users.
-// Alternatively you can create your own connector file and refer to it. Make sure you use the file extension .inc.php and use the same function name and parameters.
+// The standard connector file "ldap_connect.inc.php" is located in /hypercms/connector/authconnect/.
+// Besides the standard connector, you can make a copy of the file "ldap_connect.inc.php" and paste it in /data/connect/ in order to modify the code and define your own connector.
+// The system will look in /data/connect/ for the specified connector file and will fallback to /hypercms/connector/authconnect/.
+
 // Use "ldap_connect" for LDAP/AD
+// Specify the file name "ldap_connect" located in /data/connect/ or /hypercms/connector/authconnect/ in order to connect to an LDAP or AD directory and verify users.
+// Alternatively you can create your own connector file in /data/connect/ and refer to it. Make sure you use the file extension .inc.php and use the same function name and parameters.
 $mgmt_config['authconnect'] = "";
 
 // Enable (true) or disable (false) the connectivity for all publications
@@ -1109,4 +1126,13 @@ $mgmt_config['oauth_timezone'] = "";
 // Set permissions for files that will be created by hyperCMS in the file system. Only important on UNIX systems.
 // Default value is 0757.
 $mgmt_config['fspermission'] = 0757;
+
+// ----------------------------------- Software Updates -----------------------------------------
+
+// Display update information on home screen for all users (true) or hide (false)
+// Keep in mind that only updates installed by function update_software will be tracked by the system and can be used to display and hide the information.
+$mgmt_config['update_info'] = true;
+
+// Define an alternative URL for the software update service
+$mgmt_config['update_url'] = "";
 ?>

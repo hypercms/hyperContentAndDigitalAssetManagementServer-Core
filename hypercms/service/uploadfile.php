@@ -25,6 +25,7 @@ $page = getrequest ("page", "objectname");
 $imageresize = getrequest ("imageresize");
 $imagepercentage = getrequest ("imagepercentage");
 $checkduplicates = getrequest ("checkduplicates");
+$overwrite = getrequest ("overwrite");
 $versioning = getrequest ("versioning");
 $deletedate = getrequest ("deletedate");
 $token = getrequest ("token");
@@ -75,7 +76,7 @@ if ($token != "" && checktoken ($token, $user))
     $file['Filedata']['tmp_name'] = $mgmt_config['abs_path_temp'].$proxy_file['link'];
     $file['Filedata']['name'] = $proxy_file['name'];
     
-    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning, $zipname, $zipcount);
+    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
   }
   // from Dropbox
   elseif ($dropbox_file)
@@ -83,7 +84,7 @@ if ($token != "" && checktoken ($token, $user))
     $file['Filedata']['tmp_name'] = $dropbox_file['link'];
     $file['Filedata']['name'] = $dropbox_file['name'];
     
-    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning, $zipname, $zipcount);
+    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
   }
   // from FTP server
   elseif ($ftp_file)
@@ -91,12 +92,12 @@ if ($token != "" && checktoken ($token, $user))
     $file['Filedata']['tmp_name'] = $ftp_file['link'];
     $file['Filedata']['name'] = $ftp_file['name'];
     
-    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning, $zipname, $zipcount);
+    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
   }
   // from local file system of user
   else
   {
-    $result = uploadfile ($site, $location, $cat, $_FILES, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning, $zipname, $zipcount);
+    $result = uploadfile ($site, $location, $cat, $_FILES, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
   }
 
   // additional text content

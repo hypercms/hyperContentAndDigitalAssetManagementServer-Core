@@ -430,10 +430,10 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
 // --------------------------------------- showhomeboxes -------------------------------------------
 // function: showhomeboxes ()
 // input: home box names [array:file name => readable name]
-// output: path to home boxes as array / false on error
+// output: path to home boxes [array] / false on error
 
 // description:
-// Returns the file path to the home boxes
+// Returns the file path of the home boxes as array. This function does not directly return the rendered HTML code. Therefore the home boxes need to be included in order to display them.
 
 function showhomeboxes ($homebox_array)
 {
@@ -441,6 +441,7 @@ function showhomeboxes ($homebox_array)
 
   if (!empty ($homebox_array) && is_array ($homebox_array))
   {
+    // initialize
     $result = array();
 
     // remove duplicates
@@ -472,7 +473,7 @@ function showhomeboxes ($homebox_array)
       }
     }
 
-    // return empty string
+    // return result
     if (sizeof ($result) > 0) return $result;
     else return false;
   }

@@ -1,2 +1,2 @@
-0,5,10,15,20,25,30,35,40,45,50,55 * * * * cd /var/www/html/hypercms/job; /usr/bin/php -f minutely.php 
+* * * * * cd /var/www/html/hypercms/job; /usr/bin/php -f minutely.php 
 0 4 * * * cd /var/www/html/hypercms/job; /usr/bin/php -f daily.php

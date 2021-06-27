@@ -335,17 +335,17 @@ a.hcmsNavigator
 
 .hcmsWorkplaceObjectlist
 {
-  background-color: #e0e0e0;
+  background-color: #e0e0e0 !important;
 }
 
 .hcmsWorkplaceObjectlistLinks
 {
-  background-color: #ADE6BA;
+  background-color: #ADE6BA !important;
 }
 
 .hcmsWorkplaceWorkflow
 {
-  background-color: #cecece;
+  background-color: #cecece !important;
 }
 
 .hcmsWorkplaceGeneric
@@ -397,60 +397,60 @@ a.hcmsNavigator
 
 .hcmsRowHead1
 {
-  background-color: #777777;
+  background-color: #777777 !important;
 }
 
 .hcmsRowHead2
 {
-  background-color: #909090;
+  background-color: #909090 !important;
 }
 
 .hcmsRowData1
 {
-  background-color: #a1a1a1;
+  background-color: #a1a1a1 !important;
 }
 
 .hcmsRowData2
 {
-  background-color: #c7c7c7;
+  background-color: #c7c7c7 !important;
 }
 
 .hcmsPriorityAlarm
 {
-  background-color: #FC5041;
+  background-color: #FC5041 !important;
 }
 
 .hcmsPriorityHigh
 {
-  background-color: #FC9A45;
-  color: #000000;
+  background-color: #FC9A45 !important;
+  color: #000000 !important;
 }
 
 .hcmsPriorityMedium
 {
-  background-color: #FDCE7E;
-  color: #000000;
+  background-color: #FDCE7E !important;
+  color: #000000 !important;
 }
 
 .hcmsPriorityLow
 {
-  background-color: #AECDFE;
-  color: #000000;
+  background-color: #AECDFE !important;
+  color: #000000 !important;
 }
 
 .hcmsToDo
 {
-  background-color: #FB7C0C;
+  background-color: #FB7C0C !important;
 }
 
 .hcmsInProgress
 {
-  background-color: #3094D7;
+  background-color: #3094D7 !important;
 }
 
 .hcmsFinished
 {
-  background-color: #69A738;
+  background-color: #69A738 !important;
 }
 
 .hcmsMessage
@@ -832,28 +832,28 @@ a.hcmsNavigator
 
 .hcmsTextGreen
 {
-  color: #5AAD5A; 
+  color: #5AAD5A !important; 
 }
 
 .hcmsTextOrange
 {
-  color: #F78C31; 
+  color: #F78C31 !important; 
 }
 
 .hcmsTextWhite
 {
-  color: #FFFFFF; 
+  color: #FFFFFF !important; 
 }
 
 .hcmsTextShadow
 {
-  text-shadow: 0px 0px 2px #000000;
+  text-shadow: 0px 0px 2px #000000 !important;
 }
 
 .hcmsRequiredInput
 {
-  border: 1px solid red;
-  color: red;
+  border: 1px solid red !important;
+  color: red !important;
 }
 
 .hcmsFace

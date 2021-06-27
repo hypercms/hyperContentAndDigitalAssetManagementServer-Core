@@ -5043,7 +5043,7 @@ Release 05/2021
 - Modifications in export_form in the Import/Export module in order to verify if an export directory has been defined
 - Modifications in function createmediaobject in Main API in order to support the new input parameter deletefile (keep or delete the source file)
 - Modifications in function importmediafiles and importxmlfiles in Import/Export API in order to use the new input parameter deletefile of function createmediaobject
-- Modifications in the Import/Export API in order to report import directory and start date and time
+- Modifications in the Import/Export API in order to include the import directory and start date/time
 - Modifications in the Import/Export API in order to save the report using function savefile instead of savelog
 - Modifications in the free_storage home box in order to refer to the external repository instead of the systems root path
 - Implementation of the new function convert_unicode2utf8 in Main API in order to convert unicode characters to UTF8
@@ -5190,6 +5190,8 @@ Release 06/2021
 - Implementation of page/month navigation in the service accessstats
 - Modifications in function notifyusers in Main API in order to add the e-mail address of the sender to the message
 - Minor modifications in Import/Export module
+- Modifications in Workflow API regarding the result element
+- Modifications in various function in Main API in order to implement the new success variable and return it as a result element
 - Renamed Programmers Guide to Developers Guide
 - Updates in the Connector, Installation, Developer, and Users Guide
 - Updates in the language files
@@ -5201,3 +5203,94 @@ Release 06/2021
 - Bug fix: page_multiedit used wrong div end tag for the video options
 - Bug fix: page_multiedit enabled image rendering if no image edition option has been used
 - Bug fix: Function rdbms_getmediastat in DB Connect did not group by date if the file size has been requested for a location. This caused the result to include the total amount instead of the amount per day
+- Bug fix: Function edituser in Main API did not set the success value for all successful cases
+
+Version 9.1.5
+Release 07/2021
+- Implementation of the automatic software update service
+- Implementation of the new function update_software in Update API in order to download and install the new software package
+- Implementation of the new main configuration setting $mgmt_config['update_info'] in order to display update information on the home screen
+- Implementation of the new main configuration setting $mgmt_config['update_url'] in order to support automatic software updates
+- Implementation of the new update job in order to support automatic software updates
+- Implementation of the new update information home box in the home screen
+- Modifications in various function in Get, Main, Media, Meta API in order to return error code of the unzip result and use it as error indicator instead of errors from the output
+- Modifications in various function in Main and Media API in order to include the error code in the log result for zip and unzip errors 
+- Modifications in function clonefolder in Media API in order to write download statistics for each object (required for the download of multiple multimedia objects)
+- Modifications in function createmultidownloadlink in Main API in order to provide activity to function zipfiles (required for the download of multiple multimedia objects)
+- Modifications in control_content_menu and control_objectlist_menu in order to set wrapper-links for function createmultidownloadlink for iOS devices (download is not supported by iOS)
+- Design modifications in function buildbarchart in template engine in order to define and apply a new style for the x-axis values
+- Modifications in function buildbarchart in template engine in order to define a min. y-axis value of 10 instead of 100
+- Modifications in function buildbarchart in template engine in order to support the new optional input parameter for the min. y-axis value
+- Design modifications in service accessstats and serverload
+- Modifications in chat.js and chat.min.js in order to set the time interval to 2300 ms for checkChat and 2400 ms for checkChat instead of 1500 ms
+- Modifications in chat in order to set the time interval for the check of new message to 2600 ms instead of 1000 ms
+- Minor modification in all design themes in order to set the background colors of some CSS classes to important
+- Modifications in the installation routine in order to display information regarding the automatic updates
+- Implementation of the new function HTTP_getheader and HTTP_getbody in Main API
+- Modifications in function HTTP_Post and HTTP_Get in Main API in order to support the new input parameter for the response type and use function HTTP_getheader and HTTP_getbody to extract the header and body from the response
+- Modifications in function remoteclient in Main API in order to support the new parameter of function HTTP_Post
+- Modifications in Import/Export module in order to support the new parameter of function HTTP_Post
+- Modifications in service serverload in order to implement the navigation in the server load and memory chart
+- Implementation of a loading screen in service accessstats
+- Implementation of a loading screen in service serverload
+- Implementation of the new main configuration setting $mgmt_config['notify_exclude_users'] in order to support the suppression of notifications for certain users
+- Modifications in function notifyuser in Main API in order to support the suppression of notifications for certain users defined in $mgmt_config['notify_exclude_users']
+- Modifications in function createuser in Main API in order to verify the user name regardless of upper or lower case
+- Modifications in control_user_menu in order to verify the user name regardless of upper or lower case
+- Modifications in function notifyusers and sendmessage in Main API in order to unify the sender in the message
+- Modifications in home screen in order to use night theme for the close icon of the popup layer and the move button of the home box select layer
+- Modifications in function uploadfile in Main API in order to overwrite existing multimedia files using a new input parameter
+- Modifications in service uploadfile ni order to support the new input parameter of function uploadfile
+- Modifications in function importxmlfiles in Import/Export API in order to support the new input parameter of function uploadfile
+- Modifications in function createobject in Main API in order to return a new element (object_exists) in the result array if an object exists and could therefore not be created
+- Modifications in function createobject in Main API in order to read the multimedia file name from an existing object and return it in case the object exists already
+- Modifications in popup_upload_html in order to support the overwrite existing files checkbox
+- Modifications in function createmediaobjects in Main API in order to replace function createmediafile by uploadfile and support versioning instead of deleting existing files
+- Modifications in Workplace Integration in order to support the new input parameter of function uploadfile
+- Modifications in service sendmail in order to create a new password for the automatically created users
+- Modifications in service sendmail in order to create a new user account for each provided e-mail address
+- Modification in service sendmail in order to use the provided e-mail address for the new users instead of the user name syntax User + date and time
+- Implementation of the new main configuration setting $mgmt_config['contentversions_max'] in order to define the max. number of versions to be saved
+- Implementation of the new main configuration GUI settings $mgmt_config['overwrite_files'] and $mgmt_config['version_owner']
+- Modifications in function createversion in Main API in order to support the new main configuration $mgmt_config['contentversions_max'] and remove older versions
+- Modifications in function deleteversion in Main API in order to log the deleted version
+- Modifications in version_content in order to display the owner name in a new column
+- Modifications in function getuserboxes in Get API in order to return an empty result array instead of false in case of an error
+- Modifications in version_template in order to log deletes versions of a template
+- Modifications in version_template in order to display the owner name in a new column
+- Modifications in template_source in order to verify the extracted template data
+- Implementation of Ctrl+S keys support to save data in main.js and main.min.js
+- Modifications in template_edit, pers_form, project_list, report_form, task_list, workflow_manager, workflow_script_form in order to implement the hcms_saveEvent JS function that will be trigger by Ctrl+S keys (same as save button)
+- Modifications in article_edit, component_edit_single, component_edit_multi, group_access_form, group_edit_form, image_rendering, page_multiedit, licensenotification_form, link_edit_page, media_edit_page, medie_hierarchy, media_mapping, media_taxonomy, portal_edit, site_edit_form, site_edit_inheritance, all text editors, user_edit, workflow_folder_form, instance_create, instance_edit in order to implement the hcms_saveEvent JS function that will be trigger by Ctrl+S keys (same as OK button)
+- Modifications in function buildview in the template engine in order to implement the hcms_saveEvent JS function that will be trigger by Ctrl+S keys
+- Modifications in media_rendering in order to unify Window load and DOM ready 
+- Implementation of the save layer in workflow_manager
+- Implementation of the new JS function hcms_selectAll in contextmenu.js and contextmenu.min.js in order to select all objects of a list
+- Implementation of Ctrl+A keys in order to support the select of all objects in list and gallery views in contextmenu.js and contextmenu.min.js
+- Implementation of Ctrl+X keys in order to support the cut of the selected objects in list and gallery views in contextmenu.js and contextmenu.min.js
+- Implementation of Ctrl+C keys in order to support the copy of the selected objects in list and gallery views in contextmenu.js and contextmenu.min.js
+- Implementation of Ctrl+Y keys in order to support the linked copy of the selected objects in list and gallery views in contextmenu.js and contextmenu.min.js
+- Implementation of Ctrl+V keys in order to support the paste of objects in list and gallery views in contextmenu.js and contextmenu.min.js
+- Modifications in JS function hcms_selectObject in contextmenu.js and contextmenu.min.js in order to define the multiobject for a single select (required for the support of the new key controls)
+- Modifications in JS function hcms_createContextmenuItem in contextmenu.js and contextmenu.min.js in order to verify if an object has been selected before starting the delete dialog
+- Modifications in JS function hcms_createContextmenuItem in contextmenu.js and contextmenu.min.js in order to implement permissions that can be set using JavaScript
+- Modifications in pop_action and popup_status in order to adjust the permission check
+- Modifications in pop_action and popup_status in order to process multiobjects with a single object
+- Design modifications in control_media_menu
+- Modifications in API loader in order to enable the verification of the user permissions in the API functions
+- Modifications in all API functions in order to exclude the system user from the verification of the permissions (since the system user can't login in the system)
+- Fixed possible security issue if a user manipulates the multiobject string in order to move, copy or delete objects without owning the proper permissions
+- Modifications in control_objectlist_menu in order to exclude the wrong root permissions from killsession (due to the permission check in the API functions)
+- Modifications in page_multiedit in order to verify control elements in various local JS functions
+- Modifications in all language files
+- Updates in the Installation and Users Guide
+- Bug fix: The home screen used unsupported input parameters for function showhomeboxes
+- Bug fix: image_rendering included a wrong closing bracket for a condition
+- Bug fix: Function edituser in Main API did not initialize all arrays
+- Bug fix: Function rdbms_renameobject in DB Connect did rename objects in the recycle bin
+- Bug fix: Function pasteobject in Main API did not grant access if the user did not own the rename permissions for folders and objects (verification of the paste location)
+- Bug fix: explorer_objectlist did not assign the CSS class hcmsIconList to the deactivated "notify me" icon
+- Bug fix: Function edituser verified all combinations of permissions which has resulted in a restriction when saving the user settings 
+- Bug fix: The Project Management API did invert the permission check for its functions
+- Bug fix: The Task Management API did invert the permission check for its functions
+- Bug fix: user_edit did not remove special characters from the names used in the autocomplete JQuery feature 

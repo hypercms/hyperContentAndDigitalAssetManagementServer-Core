@@ -567,7 +567,7 @@ function include (format)
   if (filename != null) insertAtCaret (code, '');
 }
 
-function savetemplate(mode)
+function savetemplate (mode)
 {
   if (document.forms['template_edit'].elements['extension'])
   {
@@ -599,6 +599,11 @@ function savetemplate(mode)
     document.forms['template_edit'].submit();
     return true;
   }
+}
+
+function hcms_saveEvent ()
+{
+  savetemplate('');
 }
 </script>
 </head>

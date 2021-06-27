@@ -188,24 +188,6 @@ function deleteSelected (select)
   }
 }
 
-function submitMultiComp(select)
-{
-  var component = "";
-
-  if (select.options.length > 0)
-  {
-    for(var i=0; i<select.options.length; i++)
-    {
-      component = component + select.options[i].value + "|";
-    }
-  }
-  
-  document.forms['component'].elements['component'].value = component;
-  correctnames ();
-  document.forms['component'].submit();
-  return true;
-}
-
 function openBrWindowComp (winName, features, type)
 {
   var url = document.forms['component'].elements['component_array'].value;
@@ -243,6 +225,30 @@ function openBrWindowComp (winName, features, type)
     if (theURL != "") hcms_openWindow (theURL, winName, features, <?php echo windowwidth ("object"); ?>, <?php echo windowheight ("object"); ?>);
   }
   else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-component-selected'][$lang]); ?>'));  
+}
+
+function submitMultiComp ()
+{
+  var select = document.forms['component'].elements['component_array'];
+  var component = "";
+
+  if (select.options.length > 0)
+  {
+    for(var i=0; i<select.options.length; i++)
+    {
+      component = component + select.options[i].value + "|";
+    }
+  }
+  
+  document.forms['component'].elements['component'].value = component;
+  correctnames ();
+  document.forms['component'].submit();
+  return true;
+}
+
+function hcms_saveEvent ()
+{
+  submitMultiComp();
 }
 </script>
 </head>
@@ -310,7 +316,7 @@ function openBrWindowComp (winName, features, type)
               <img onClick="openBrWindowComp('','location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?>" /><br />                          
               <img onClick="deleteSelected(document.forms['component'].elements['component_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
               <img onClick="moveSelected(document.forms['component'].elements['component_array'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
-              <img onclick="submitMultiComp(document.forms['component'].elements['component_array']);" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+              <img onclick="submitMultiComp();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
              </td>
           </tr>
         </table>

@@ -252,65 +252,6 @@ function checkThumb()
 }
 <?php } ?>
 
-function submitMediaConfig ()
-{
-  var errors = '';
-  
-  if (document.getElementById('cut_yes') && document.getElementById('cut_yes').checked == true)
-  {
-    if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
-    if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
-  }
-  
-  if (document.getElementById('videosize_i') && document.getElementById('videosize_i').checked == true)
-  {
-    if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
-    if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
-  }
-  
-  if (errors) 
-  { 
-    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>\n ' + errors));
-    return false;
-  }
-  else
-  {
-    var filetype = document.getElementById('filetype');
-    
-    if (filetype.options[filetype.selectedIndex].value == "original")
-    {
-      if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang]); ?>"))) return false;
-    }
-
-    // saving screen
-    if (document.getElementById('savelayer')) document.getElementById('savelayer').style.display = 'block';
-
-    document.forms['mediaconfig'].submit();
-  }
-}
-
-function submitThumbConfig ()
-{
-  var errors = '';
-
-  if (document.getElementById('thumb_yes') && document.getElementById('thumb_yes').checked == true)
-  {
-    if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
-  }
-
-  if (errors) 
-  { 
-    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>\n ' + errors));
-    return false;
-  }
-  else
-  {  
-    hcms_showHideLayers('savelayer','','show');
-    document.forms['thumbconfig'].submit();
-  }
-}
-
-
 function openerReload ()
 {
   // reload main frame
@@ -704,6 +645,64 @@ function keepsegment (id)
   else return false;
 }
 
+function submitMediaConfig ()
+{
+  var errors = '';
+  
+  if (document.getElementById('cut_yes') && document.getElementById('cut_yes').checked == true)
+  {
+    if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
+    if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
+  }
+  
+  if (document.getElementById('videosize_i') && document.getElementById('videosize_i').checked == true)
+  {
+    if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
+    if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
+  }
+  
+  if (errors) 
+  { 
+    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>\n ' + errors));
+    return false;
+  }
+  else
+  {
+    var filetype = document.getElementById('filetype');
+    
+    if (filetype.options[filetype.selectedIndex].value == "original")
+    {
+      if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang]); ?>"))) return false;
+    }
+
+    // saving screen
+    if (document.getElementById('savelayer')) document.getElementById('savelayer').style.display = 'block';
+
+    document.forms['mediaconfig'].submit();
+  }
+}
+
+function submitThumbConfig ()
+{
+  var errors = '';
+
+  if (document.getElementById('thumb_yes') && document.getElementById('thumb_yes').checked == true)
+  {
+    if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>\n';
+  }
+
+  if (errors) 
+  { 
+    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>\n ' + errors));
+    return false;
+  }
+  else
+  {  
+    hcms_showHideLayers('savelayer','','show');
+    document.forms['thumbconfig'].submit();
+  }
+}
+
 $(window).load( function()
 {
   var spinner_config = { step: 1, min: -100, max: 100, classes: {"ui-spinner": ""} }
@@ -718,9 +717,8 @@ $(window).load( function()
   $.fn.getGeneratorParameter = function() {
     return this.prop('name')+'='+this.val();
   }
-});
 
-$().ready(function() {
+  // thumbnail edit layer status
   <?php if (!$is_audio) { ?>checkThumb();<?php } ?>
   
   // hide mebed button

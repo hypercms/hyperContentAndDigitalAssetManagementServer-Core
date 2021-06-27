@@ -157,6 +157,14 @@ if ($label == "") $label = $id;
 
 // set character set in header
 if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
+
+// submit action
+if ($mediawidth != "*Null*" || $mediaheight != "*Null*")
+{
+  $onsubmit = "submitMediaAll();";
+}
+else $onsubmit = "submitMediaType();";
+?>
 ?>
 <!DOCTYPE html>
 <html>
@@ -264,36 +272,6 @@ function validateForm()
   document.returnValue = (errors == '');
 }
 
-function submitMediaAll ()
-{
-  test = validateForm('mediawidth','','NisNum','mediaheight','','NisNum');
-
-  if (test != false) 
-  {
-    test = checkType();
-    
-    if (test != false)
-    {
-      correctnames ();
-      document.forms['media'].submit();
-    }
-    else return false;
-  }
-  else return false;
-}
-
-function submitMediaType ()
-{
-  test = checkType();
-  
-  if (test != false)
-  {
-    correctnames ();
-    document.forms['media'].submit();
-  }
-  else return false;
-}
-
 function openBrWindowMedia (winName, features, type)
 {
   var url = document.forms['media'].elements['mediaobject'].value;
@@ -332,18 +310,45 @@ function openBrWindowMedia (winName, features, type)
   }
   else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-file-selected'][$lang], $charset, $lang); ?>'));  
 }
+
+function submitMediaAll ()
+{
+  test = validateForm('mediawidth','','NisNum','mediaheight','','NisNum');
+
+  if (test != false) 
+  {
+    test = checkType();
+    
+    if (test != false)
+    {
+      correctnames ();
+      document.forms['media'].submit();
+    }
+    else return false;
+  }
+  else return false;
+}
+
+function submitMediaType ()
+{
+  test = checkType();
+  
+  if (test != false)
+  {
+    correctnames ();
+    document.forms['media'].submit();
+  }
+  else return false;
+}
+
+function hcms_saveEvent ()
+{
+  <?php echo $onsubmit; ?>
+}
 </script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
-
-<?php
-if ($mediawidth != "*Null*" || $mediaheight != "*Null*")
-{
-  $onsubmit = "submitMediaAll();";
-}
-else $onsubmit = "submitMediaType();";
-?>
 
 <!-- top bar -->
 <?php

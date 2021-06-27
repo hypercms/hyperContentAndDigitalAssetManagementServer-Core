@@ -142,6 +142,11 @@ $token = createtoken ($user);
     document.forms['hcms_formview'].submit();
     return true;
   }
+
+  function hcms_saveEvent ()
+  {
+    setsavetype('editorf_so');
+  }
   </script>
   <?php echo showvideoplayer_head (false, false, false); ?>
 </head>

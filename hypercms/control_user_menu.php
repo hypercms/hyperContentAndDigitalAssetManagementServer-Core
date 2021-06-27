@@ -251,7 +251,7 @@ function checkForm()
     return false;
   }
   
-  if (userlogin.value == "admin" || userlogin.value == "sys" || userlogin.value == "hcms_download")
+  if (userlogin.value.toLowerCase() == "admin" || userlogin.value.toLowerCase() == "sys" || userlogin.value.toLowerCase() == "hcms_download")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['this-user-name-exists-already'][$lang]); ?>"));
     userlogin.focus();

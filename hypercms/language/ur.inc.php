@@ -1074,7 +1074,7 @@ $hcms_lang['hours']['ur'] = "گھنٹے";
 $hcms_lang['valid-for']['ur'] = "Stomp‬دو";
 $hcms_lang['period-of-validity-is-not-correct']['ur'] = "مدت کے واجبیت درست نہیں!";
 $hcms_lang['the-link-will-be-active-till-date']['ur'] = "لنک %date% تک فعال ہو جائے گا.";
-$hcms_lang['the-tempate-exists-already']['ur'] = "tempate شعبے کے پہلے ہی";
+$hcms_lang['the-template-exists-already']['ur'] = "tempate شعبے کے پہلے ہی";
 $hcms_lang['the-template-could-not-be-created']['ur'] = "اس template نہیں پیدا کیا جائے.";
 $hcms_lang['the-template-was-created']['ur'] = "اس template پیدا ہوا تھا";
 $hcms_lang['now-you-can-edit-the-template']['ur'] = "اب اپ template اور اس کا اڈٹ";
@@ -1429,4 +1429,5 @@ $hcms_lang['text-and-icons']['ur'] = "متن اور شبیہیں";
 $hcms_lang['logo']['ur'] = "لوگو";
 $hcms_lang['wallpaper']['ur'] = "پس منظر کی تصویر";
 $hcms_lang['youtube-sign-out']['ur'] = "نیا اکاؤنٹ شامل کرنے سے پہلے آپ کو اپنے گوگل / یوٹیوب اکاؤنٹ سے سائن آؤٹ کرنے کی ضرورت ہے";
+$hcms_lang['overwrite-existing-files']['ur'] = "موجودہ فائلوں کو اوور رائٹ کریں";
 ?>

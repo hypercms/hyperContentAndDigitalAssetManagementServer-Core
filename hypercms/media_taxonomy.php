@@ -165,29 +165,6 @@ function startpoint (row)
   form.submit();
 }
 
-function savetaxonomy ()
-{
-  var form = document.forms['taxonomyform'];
-
-  hcms_showFormLayer ('savelayer', 0);
-  form.elements['action'].value = "save";
-  form.submit();
-}
-
-function reindex ()
-{
-  var form = document.forms['taxonomyform'];
-  
-  check = confirm ("<?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?>");
-
-  if (check == true)
-  {   
-    hcms_showFormLayer ('savelayer', 0);
-    form.elements['action'].value = "reindex";
-    form.submit();
-  }
-}
-
 function createrow (position)
 {
   if (position >= 0)
@@ -265,6 +242,7 @@ function translatelanguage (sourcelang_id, targetlang_id)
   {
     var sourceLang = "";
     var targetLang = "";
+    var sourceCollection = "";
   
     if (document.getElementById(sourcelang_id)) sourceLang = document.getElementById(sourcelang_id).value;
     if (document.getElementById(targetlang_id)) targetLang = document.getElementById(targetlang_id).value;
@@ -274,25 +252,41 @@ function translatelanguage (sourcelang_id, targetlang_id)
       var sourceCols = document.getElementsByClassName(sourceLang);
       var targetCols = document.getElementsByClassName(targetLang);
       
+      // collect
       for (var i = 1; i < sourceCols.length; i++)
       {
         if (sourceCols[i].getElementsByTagName('input') && targetCols[i].getElementsByTagName('input'))
         {
           var sourceText = sourceCols[i].getElementsByTagName('input');
+
+          // merge
+          sourceCollection += sourceText[0].value + '\n';
+        }
+      }
+
+      // translate
+      var translated = hcms_translateText (sourceCollection, sourceLang, targetLang);
+
+      if (translated != "")
+      {
+        // split
+        translatedText = translated.split("\n");
+        
+        // items count is not the same
+        if ((sourceCols.length - 1) != translatedText.length) alert (hcms_entity_decode('<?php echo $hcms_lang['error-occured'][$lang]; ?> (items mismatch)'));
+      }
+      // no translation available
+      else alert (hcms_entity_decode('<?php echo $hcms_lang['error-occured'][$lang]; ?> (no translation)'));
+
+      // insert translated text
+      for (var i = 1; i < targetCols.length; i++)
+      {
+        if (sourceCols[i].getElementsByTagName('input') && targetCols[i].getElementsByTagName('input'))
+        {
           var targetText = targetCols[i].getElementsByTagName('input');
     
-          if (sourceText[0].value != "")
-          {
-            // translate
-            var translated = hcms_translateText (sourceText[0].value, sourceLang, targetLang);
-    
-            if (translated != "")
-            {
-              targetText[0].value = translated;
-              changed = true;
-            }
-            else alert (hcms_entity_decode('<?php echo $hcms_lang['error-occured'][$lang]; ?>'));
-          }
+          targetText[0].value = translatedText[i-1];
+          changed = true;
         }
       }
     }
@@ -311,6 +305,34 @@ function setlevel (e)
 function settext (e)
 {
   if (e.value) changed = true;
+}
+
+function savetaxonomy ()
+{
+  var form = document.forms['taxonomyform'];
+
+  hcms_showFormLayer ('savelayer', 0);
+  form.elements['action'].value = "save";
+  form.submit();
+}
+
+function reindex ()
+{
+  var form = document.forms['taxonomyform'];
+  
+  check = confirm ("<?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?>");
+
+  if (check == true)
+  {   
+    hcms_showFormLayer ('savelayer', 0);
+    form.elements['action'].value = "reindex";
+    form.submit();
+  }
+}
+
+function hcms_saveEvent ()
+{
+  savetaxonomy();
 }
 
 $(document).ready(function(){

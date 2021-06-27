@@ -509,24 +509,6 @@ function checkform()
   return result;
 }
 
-function submitform (check)
-{
-  if (check == true)
-  {
-    if (!confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang]); ?>"))) return false;
-  }
-  
-  var result = checkform();
-  
-  if (result == true)
-  {
-    // saving screen
-    if (document.getElementById('savelayer')) document.getElementById('savelayer').style.display = 'inline';
-    document.forms['mediaconfig'].submit();
-  }
-  else return false;
-}
-
 function openerReload ()
 {
   // reload main frame
@@ -1149,6 +1131,29 @@ function toggleOptions (caller, element)
   }
 }
 
+function saveImage (check)
+{
+  if (check == true)
+  {
+    if (!confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang]); ?>"))) return false;
+  }
+  
+  var result = checkform();
+  
+  if (result == true)
+  {
+    // saving screen
+    if (document.getElementById('savelayer')) document.getElementById('savelayer').style.display = 'inline';
+    document.forms['mediaconfig'].submit();
+  }
+  else return false;
+}
+
+function hcms_saveEvent ()
+{
+  saveImage(true);
+}
+
 $(window).load( function()
 {
   var spinner_config_bc = { step: 1, min: -100, max: 100}
@@ -1289,7 +1294,7 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
       </div>
       <?php } ?>
 
-      <?php if (getimagelib()) != "GD") { ?>
+      <?php if (getimagelib() != "GD") { ?>
       <!-- Effects -->
       <div class="row">
         <strong><?php echo getescapedtext ($hcms_lang['effects'][$lang]); ?></strong>
@@ -1373,7 +1378,7 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
 
       <!-- save -->
       <div class="row">
-        <button type="button" class="hcmsButtonGreen" name="save" onclick="submitform(true);"><img src="<?php echo getthemelocation()."img/button_save.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></button>
+        <button type="button" class="hcmsButtonGreen" name="save" onclick="saveImage(true);"><img src="<?php echo getthemelocation()."img/button_save.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></button>
         <button type="button" class="hcmsButtonGreen" name="preview" onclick="showPreview();"><img src="<?php echo getthemelocation()."img/button_file_preview.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></button>
       </div>
     </div>

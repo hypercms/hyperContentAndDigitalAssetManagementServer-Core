@@ -115,7 +115,7 @@ if (!empty ($mgmt_config['abs_path_data']))
     
     if ($savefile == false)   
     {  
-      $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
     }
     else $show = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang]);
   }
@@ -195,6 +195,26 @@ function checkForm_chars(text, exclude_chars)
   }
 }
 
+function deletehierarchy ()
+{
+  var form = document.forms['hierarchyform'];
+  
+  check = confirm ("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>");
+
+  if (check == true)
+  {
+    document.location='?site=<?php echo url_encode ($site); ?>&deletename=' + form.elements['hierarchyname'].options[form.elements['hierarchyname'].selectedIndex].value + '&token=<?php echo $token_new; ?>';
+  }
+}
+
+function setlevel (e)
+{
+ if (e)
+ {
+   e.style.marginLeft = ((e.value - 1) * 20) + "px";
+ }
+}
+
 function savehierarchy ()
 {
   var form = document.forms['hierarchyform'];
@@ -215,24 +235,9 @@ function savehierarchy ()
   form.submit();
 }
 
-function deletehierarchy ()
+function hcms_saveEvent ()
 {
-  var form = document.forms['hierarchyform'];
-  
-  check = confirm ("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>");
-
-  if (check == true)
-  {
-    document.location='?site=<?php echo url_encode ($site); ?>&deletename=' + form.elements['hierarchyname'].options[form.elements['hierarchyname'].selectedIndex].value + '&token=<?php echo $token_new; ?>';
-  }
-}
-
-function setlevel (e)
-{
- if (e)
- {
-   e.style.marginLeft = ((e.value - 1) * 20) + "px";
- }
+  savehierarchy();
 }
 </script>
 </head>

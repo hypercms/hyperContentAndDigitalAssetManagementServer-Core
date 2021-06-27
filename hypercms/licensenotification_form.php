@@ -89,6 +89,7 @@ ul.tagit
 }
 </style>
 <script type="text/javascript">
+
 function replace (string, text, by) 
 {
   // Replaces text with by in string
@@ -188,7 +189,11 @@ function selectAll (form_name, select_name, input_name)
 
   form.elements[input_name].value = folderlist;
   form.submit();
-  return true;
+}
+
+function hcms_saveEvent ()
+{
+  selectAll('notification_area', 'folder', 'result');
 }
 </script>
 </head>

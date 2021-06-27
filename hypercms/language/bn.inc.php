@@ -1074,7 +1074,7 @@ $hcms_lang['hours']['bn'] = "ঘন্টা";
 $hcms_lang['valid-for']['bn'] = "জন্য বৈধ";
 $hcms_lang['period-of-validity-is-not-correct']['bn'] = "সময়ের বৈধতা চ্যালেঞ্জ সঠিক নয়!";
 $hcms_lang['the-link-will-be-active-till-date']['bn'] = "লিংক %date% এর পর্যন্ত সক্রিয় হতে হবে";
-$hcms_lang['the-tempate-exists-already']['bn'] = "ইতিমধ্যে এই tempate আছে";
+$hcms_lang['the-template-exists-already']['bn'] = "ইতিমধ্যে এই tempate আছে";
 $hcms_lang['the-template-could-not-be-created']['bn'] = "এই টেমপ্লেট সৃষ্টি হতে পারে না";
 $hcms_lang['the-template-was-created']['bn'] = "এই টেমপ্লেট সৃষ্টি হয়";
 $hcms_lang['now-you-can-edit-the-template']['bn'] = "এখন আপনি পরিমার্জন করে টেমপ্লেট";
@@ -1429,4 +1429,5 @@ $hcms_lang['text-and-icons']['bn'] = "টেক্সট এবং আইকন"
 $hcms_lang['logo']['bn'] = "লোগো";
 $hcms_lang['wallpaper']['bn'] = "ওয়ালপেপার";
 $hcms_lang['youtube-sign-out']['bn'] = "নতুন অ্যাকাউন্ট যুক্ত করার আগে আপনাকে আপনার গুগল / ইউটিউব অ্যাকাউন্ট থেকে সাইন আউট করতে হবে";
+$hcms_lang['overwrite-existing-files']['bn'] = "বিদ্যমান ফাইলগুলি ওভাররাইট করুন";
 ?>

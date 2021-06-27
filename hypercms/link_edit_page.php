@@ -241,7 +241,19 @@ function openBrWindowLink (winName, features, type)
   else alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang], $charset, $lang); ?>'));
 }
 
-function checkForm()
+function deleteEntry(select)
+{
+  select.value = "";
+}
+
+function refreshPreview ()
+{
+  var theURL = geturl ('preview');
+
+  if (theURL != "") document.getElementById("preview").src = theURL;
+}
+
+function saveLink ()
 { 
   if (document.forms['link'] && document.forms['link'].elements['link_name'] && document.forms['link'].elements['linkhref'])
   {    
@@ -299,19 +311,11 @@ function checkForm()
   
   correctnames ();
   document.forms['link'].submit();
-  return true;
 }
 
-function deleteEntry(select)
+function hcms_saveEvent ()
 {
-  select.value = "";
-}
-
-function refreshPreview ()
-{
-  var theURL = geturl ('preview');
-
-  if (theURL != "") document.getElementById("preview").src = theURL;
+  saveLink();
 }
 </script>
 </head>
@@ -353,7 +357,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
         <img onClick="openBrWindowLink('preview','location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', 'preview')" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonView" src="<?php echo getthemelocation(); ?>img/button_file_liveview.png" alt="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" />
         <img onClick="openBrWindowLink('','location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
         <img onClick="deleteEntry(document.link.linkhref); deleteEntry(document.link.link_name);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
-        <img onClick="checkForm();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
+        <img onClick="saveLink();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
       </td>
     </tr>
   <?php

@@ -186,6 +186,16 @@ function openHelp ()
   help.moveTo(screen.width/2-640/2, screen.height/2-400/2);
   help.focus();
 }
+function savepers ()
+{
+  hcms_showFormLayer ('savelayer', 0);
+  document.forms['editor'].submit();
+}
+
+function hcms_saveEvent ()
+{
+  savepers();
+}
 </script>
 </head>
 
@@ -212,7 +222,7 @@ function openHelp ()
   <table class="hcmsTableNarrow" style="width:100%; margin:2px;">
     <tr>
       <td style="text-align:left;">
-        <?php if ($preview == "no") echo "<img onclick=\"hcms_showFormLayer ('savelayer', 0); document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>
+        <?php if ($preview == "no") echo "<img onclick=\"savepers();\" name=\"save\" src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>
       </td>
       <td style="text-align:right; width:36px;">
         <img onClick="openHelp();" name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.png" class="hcmsButton hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" />

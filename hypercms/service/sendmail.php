@@ -380,40 +380,49 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
     {
       if (!empty ($page) || is_array ($multiobject_array))
       {
-        $login = "User".date ("YmdHis", time());
+        $email_to = array_unique ($email_to);
 
-        // add new user to login array
-        $user_login_array[] = $login;
-
-        // generate password from upper case letter and session ID
-        $password = $confirm_password = "P".substr (session_id(), 0, 9);
-
-        $result = createuser ($site, $login, $password, $confirm_password, $user);
-
-        if (!empty ($result['result']))
+        foreach ($email_to as $temp)
         {
-          // create names form e-mails
-          $realnames = array();
+          // create name from e-mail
+          $realname = substr ($temp, 0, strpos ($temp, "@"));
+          $realname = str_replace (".", " ", $realname);
 
-          $email_to = array_unique ($email_to);
-
-          foreach ($email_to as $temp)
+          // user name
+          if (strlen ($temp) <= 100 && strpos ("_".$temp, " ") < 1 && strpos ("_".$temp, ",") < 1)
           {
-            $realnames[] = substr ($temp, 0, strpos ($temp, "@"));
+            // use e-mail
+            $login = $temp;
+          }
+          else
+          {
+            // use User+datetime
+            $login = "User".date ("YmdHis", time());
           }
 
-          // publication membership
-          $usersite = implode ("|", $memory_site);
-          
-          // user group membership
-          $usergroup = $user_group;
-          
-          // assign publication access and group membership
-          $result = edituser ($site, $login, "", "", "", "", implode (", ", $realnames), $language, "", "", implode (", ", $email_to), "", "", $usergroup, $usersite, "", "", $user);
-        }
-        else
-        {
-          $general_error[] = $result['message'];
+          // add new user to login array
+          $user_login_array[] = $login;
+
+          // generate password from upper case letter and session ID
+          $password = $confirm_password = "P0!".createuniquetoken (7);
+
+          $result = createuser ($site, $login, $password, $confirm_password, $user);
+
+          if (!empty ($result['result']))
+          {
+            // publication membership
+            $usersite = implode ("|", $memory_site);
+            
+            // user group membership
+            $usergroup = $user_group;
+            
+            // assign publication access and group membership
+            $result = edituser ($site, $login, "", "", "", "", $realname, $language, "", "", $temp, "", "", $usergroup, $usersite, "", "", $user);
+          }
+          else
+          {
+            $general_error[] = $result['message'];
+          }
         }
       }
     }
@@ -503,12 +512,9 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
           if ($mail_receiver_array != false)
           {
             // real name
-            $buffer_array = getcontent ($mail_receiver_array[0], "<realname>");
-
-            if (!empty ($buffer_array[0]))
-            {
-              $temp_realname_to = $buffer_array[0];
-            }
+            $temp_realname_to = "";
+            $temp_array = getcontent ($mail_receiver_array[0], "<realname>");
+            if (!empty ($temp_array[0])) $temp_realname_to = $temp_array[0];
 
             // email
             $temp_array = getcontent ($mail_receiver_array[0], "<email>");
@@ -523,11 +529,11 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
             }
 
             // language
-            $buffer_array = getcontent ($mail_receiver_array[0], "<language>");
+            $temp_array = getcontent ($mail_receiver_array[0], "<language>");
 
-            if (!empty ($buffer_array[0]))
+            if (!empty ($temp_array[0]))
             {
-              $temp_user_lang = $buffer_array[0];
+              $temp_user_lang = $temp_array[0];
 
               if ($temp_user_lang != $lang) require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($temp_user_lang));
             }

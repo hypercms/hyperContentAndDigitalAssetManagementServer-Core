@@ -143,11 +143,16 @@ function deleteEntry(select)
   select.elements['comp_name'].value = "";
 }
 
-function submitSingleComp(select)
+function submitSingleComp ()
 {
   correctnames ();
   document.forms['component'].submit();
   return true;
+}
+
+function hcms_saveEvent ()
+{
+  submitSingleComp();
 }
 </script>
 </head>
@@ -183,7 +188,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
         <input type="text" name="comp_name" style="width:220px;" value="<?php echo $component_name_short; ?>" title="<?php echo $component_name; ?>" readonly="readonly" />
         <img onClick="openBrWindowComp('','location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" alt="<?php echo getescapedtext ($hcms_lang['select'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select'][$lang]); ?>" />                          
         <img onClick="deleteEntry(document.forms['component']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
-        <img onclick="submitSingleComp(document.forms['component']);" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1);" alt="OK" title="OK" />    
+        <img onclick="submitSingleComp();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1);" alt="OK" title="OK" />    
       </td>
     </tr>
     <?php if (!$mgmt_config[$site]['dam']) { ?>

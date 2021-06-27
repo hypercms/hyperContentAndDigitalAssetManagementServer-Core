@@ -204,6 +204,11 @@ $token = createtoken ($user);
     }  
     else return false;
   }
+
+  function hcms_saveEvent ()
+  {
+    setsavetype('editoru_so');
+  }
   </script>
 </head>
 

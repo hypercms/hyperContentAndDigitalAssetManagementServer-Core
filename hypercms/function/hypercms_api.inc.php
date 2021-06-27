@@ -198,4 +198,7 @@ if (!empty ($is_mobile))
   $mgmt_config['object_newwindow'] = true;
   $mgmt_config['facerecognition'] = false;
 }
+
+// verify the permissions of the user in the API functions
+$mgmt_config['api_checkpermission'] = true;
 ?>

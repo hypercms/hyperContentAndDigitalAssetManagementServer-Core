@@ -8805,6 +8805,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
     else return false;
   }
+
+  function hcms_saveEvent ()
+  {
+    setSaveType('form_so', '', 'ajax');
+  }
   ";
 
   // autosave code
@@ -10851,7 +10856,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 // --------------------------------- buildbarchart -------------------------------------------
 // function: buildbarchart()
 // input: name/id of paper [string], width of paper in pixel [integer], height of paper in pixel [integer], top space in pixel [integer], left space in pixel [integer], x-axis values with index as 1st key and 'value','text','onclick' as 2nd key [array], y1-axis values [array], y2-axis values [array] (optional), y3-axis values [array] (optional),
-//        paper CSS style [string], 1st bar chart CSS style [string], 2nd bar chart CSS style [string], 3rd bar chart CSS style [string], show y-value in bar [boolean]
+//        paper CSS style [string] (optional), 1st bar chart CSS style [string] (optional), 2nd bar chart CSS style [string] (optional), 3rd bar chart CSS style [string] (optional), show y-value in chart bar [boolean] (optional), mininmum y-axis value [integer] (optional)
 // output: bar chart view / false on error
 
 // help function to find max value of 2-dimensional array
@@ -10872,7 +10877,7 @@ function getmaxvalue ($array)
   else return false;
 }
 
-function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper_top=10, $paper_left=40, $x_axis, $y1_axis, $y2_axis="", $y3_axis="", $paper_style="", $bar1_style="", $bar2_style="", $bar3_style="", $show_value=false)
+function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper_top=10, $paper_left=40, $x_axis, $y1_axis, $y2_axis="", $y3_axis="", $paper_style="", $bar1_style="", $bar2_style="", $bar3_style="", $show_value=false, $y_min_value=10)
 {
   global $lang,
          $mgmt_config;
@@ -10890,7 +10895,7 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
     else $bar_maxheight = 0;
 
     // set default max value for y-axis
-    if ($bar_maxheight < 100) $bar_maxheight = 100;
+    if ($bar_maxheight < intval ($y_min_value)) $bar_maxheight = intval ($y_min_value);
 
     // count bars
     $bar_count = sizeof ($x_axis);
@@ -10906,7 +10911,28 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
     $bar_width = floor ($bar_width);
 
     // paper div-layer
-    $result = "<div id=\"".$paper_name."\" style=\"position:relative; width:".$paper_width."px; height:".$paper_height."px; top:".$paper_top."px; left:".$paper_left."px; margin:0; padding:0; z-index:100; ".$paper_style."\">\n";
+    $result = "<style>
+.hcmsChartXAxis
+{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  text-align: right;
+  vertical-align: top;
+  z-index: 100;
+  transform-origin: right bottom 0; 
+  transform: rotate(-45deg);
+  /* Safari */
+  -webkit-transform: rotate(-45deg);
+  /* Firefox */
+  -moz-transform: rotate(-45deg);
+  /* IE */
+  -ms-transform: rotate(-45deg);
+  /* Opera */
+  -o-transform: rotate(-45deg);
+}
+</style>
+<div id=\"".$paper_name."\" style=\"position:relative; width:".$paper_width."px; height:".$paper_height."px; top:".$paper_top."px; left:".$paper_left."px; margin:0; padding:0; z-index:100; ".$paper_style."\">\n";
 
     // y-axis values/rulers
     $result .= "  <div id=\"yval4\" style=\"position:absolute; width:40px; top:-8px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:1;\">".$bar_maxheight."</div>\n";
@@ -10940,7 +10966,7 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
       if ($bar_height > 0) $result .= "  <div id=\"bar1_".$i."\" ".$link." title=\"".addslashes($y1_axis[$key]['text'])."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center;  vertical-align:top; z-index:200; ".$bar1_style."\">".$bar_value."</div>\n";
       
       // x-axis values
-      $result .= "  <div id=\"xval".$i."\" style=\"position:absolute; width:".$x_width."px; top:".$paper_height."px; left:".$x_left."px; margin:0; padding:0; border:0; text-align:center; vertical-align:top; z-index:100;\">".$x_axis[$key]."</div>\n";
+      $result .= "  <div id=\"xval".$i."\" class=\"hcmsChartXAxis\" style=\"position:absolute; top:".($paper_height + 4)."px; left:".$x_left."px;\">".$x_axis[$key]."</div>\n";
       $i++;
     }
 

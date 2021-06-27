@@ -120,8 +120,8 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
       $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
     }
     
-    // change theme in session if user changed it and mobile edition is not used
-    if (!empty ($theme) && $hcms_themename != $theme && !$is_mobile)
+    // change theme in session if user changed it
+    if (!empty ($theme) && $hcms_themename != $theme)
     {
       $themeinvertcolors = false;
 
@@ -306,7 +306,30 @@ function checkForm_chars (text, exclude_chars)
   else return true;
 }
 
-function checkForm ()
+function setHomeBoxes ()
+{
+  var form = document.forms['userform'];
+
+  if (form.elements['list4'])
+  {
+    var select = form.elements['list4'];
+    var homeboxes = "|";
+
+    if (select.options.length > 0)
+    {
+      for (var i=0; i<select.options.length; i++)
+      {
+        homeboxes = homeboxes + select.options[i].value + "|";
+      }
+    }
+
+    form.elements['homeboxes'].value = homeboxes;
+    return true;
+  }
+  else return false;
+}
+
+function saveUser ()
 {
   var userform = document.forms['userform'];
   var selectall = true;
@@ -358,27 +381,9 @@ function checkForm ()
   }
 }
 
-function setHomeBoxes ()
+function hcms_saveEvent ()
 {
-  var form = document.forms['userform'];
-
-  if (form.elements['list4'])
-  {
-    var select = form.elements['list4'];
-    var homeboxes = "|";
-
-    if (select.options.length > 0)
-    {
-      for (var i=0; i<select.options.length; i++)
-      {
-        homeboxes = homeboxes + select.options[i].value + "|";
-      }
-    }
-
-    form.elements['homeboxes'].value = homeboxes;
-    return true;
-  }
-  else return false;
+  saveUser();
 }
 </script>
 </head>
@@ -860,7 +865,7 @@ if ($login != "" && $login != false)
     <!-- Save -->
     <div class="hcmsFormRowContent" style="white-space:nowrap; padding-top:10px;">
       <?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> 
-      <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="checkForm();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
+      <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="saveUser();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" />
     </div>
     
   </form>

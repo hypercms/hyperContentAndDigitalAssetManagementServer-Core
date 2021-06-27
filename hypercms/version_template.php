@@ -36,6 +36,7 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $error = array();
 
 // template directory
@@ -94,12 +95,19 @@ if (checkglobalpermission ($site, 'tpldelete') == 1 && is_array ($delete) && siz
   {
     if (valid_objectname ($file_v_del))
     {
-      $test = deletefile ($versiondir, $file_v_del, 0);
+      $deletefile = deletefile ($versiondir, $file_v_del, 0);
     
-      if ($test == false)
+      if ($deletefile == true)
       {
-        $errcode = "10200";
-        $error[] = $mgmt_config['today']."|version_template.php|error|".$errcode."|deletefile failed for ".$versiondir.$file_v_del;           
+        // extract date and time from file extension
+        $file_v_ext = substr (strrchr ($file_v_del, "."), 3);
+        $date = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
+        $time = substr ($file_v_ext, strpos ($file_v_ext, "_") + 1);
+        $time = str_replace ("-", ":", $time);
+        $datetime = $date." ".$time;
+        
+        $errcode = "00200";
+        $error[] = $mgmt_config['today']."|version_template.php|information|".$errcode."|version '".$datetime."' of template '".$site."/".str_replace (".v_".$file_v_ext, "", $file_v_del)."' has been deleted by user '".$user."'";           
       }
     }
   }     
@@ -207,6 +215,7 @@ function toggledelete (source)
     <tr>
       <td style="white-space:nowrap; width:160px;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['version-date'][$lang]); ?></td>
       <td style="white-space:nowrap;" class="hcmsHeadline"><?php echo $pagecomp; ?></td>
+      <td style="white-space:nowrap; width:120px;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['owner'][$lang]); ?></td>
       <td style="white-space:nowrap; width:60px; text-align:center;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['compare'][$lang]); ?></td>
       <td style="white-space:nowrap; width:60px; text-align:center;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['current'][$lang]); ?></td>
       <td style="white-space:nowrap; width:60px; text-align:center;" class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggledelete(this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></label></td>
@@ -223,6 +232,21 @@ function toggledelete (source)
 
       foreach ($files_v as $date_v => $file_v)
       {
+        // get owner
+        if (!empty ($mgmt_config['version_owner']))
+        {
+          $owner = "";
+
+          // load template version
+          $templatedata = loadtemplate ($site, $file_v);
+
+          if (!empty ($templatedata['content']))
+          {
+            $temp = getcontent ($templatedata['content'], "<user>");
+            if (!empty ($temp[0])) $owner = $temp[0];
+          }
+        }
+
         // define row color
         if ($rowcolor == "hcmsRowData1") $rowcolor = "hcmsRowData2";
         else $rowcolor = "hcmsRowData1";
@@ -230,7 +254,10 @@ function toggledelete (source)
         echo "
         <tr class=\"".$rowcolor."\">
           <td style=\"white-space:nowrap;\">".showdate ($date_v, "Y-m-d H:i:s", $hcms_lang_date[$lang])."</td>
-          <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($file_v)."', 'preview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$tpl_name."</a> <a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_source.php?site=".url_encode($site)."&template=".url_encode($file_v)."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><span class=\"hcmsTextSmall\">(Source Code)</span</a></td>
+          <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($file_v)."', 'preview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$tpl_name."</a> <a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_source.php?site=".url_encode($site)."&template=".url_encode($file_v)."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><span class=\"hcmsTextSmall\">(Source Code)</span</a></td>";
+          if (!empty ($mgmt_config['version_owner'])) echo "
+          <td style=\"white-space:nowrap;\">".$owner."</td>";
+        echo "
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"dummy\" value=\"".$file_v."\" onclick=\"if (compare_select('".$file_v."')) this.checked=true; else this.checked=false;\" /></td>
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"radio\" name=\"actual\" value=\"".$file_v."\" /></td>
           <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" class=\"delete\" ".(checkglobalpermission ($site, 'tpldelete') != 1 ? "disabled=\"disabled\"" : "")."/></td>
@@ -238,10 +265,28 @@ function toggledelete (source)
       }
     }
 
+    // get owner
+    if (!empty ($mgmt_config['version_owner']))
+    {
+      $owner = "";
+
+      // load template
+      $contentdata = loadtemplate ($site, $template); 
+
+      if (!empty ($templatedata['content']))
+      {
+        $temp = getcontent ($templatedata['content'], "<user>");
+        if (!empty ($temp[0])) $owner = $temp[0];
+      }
+    }
+
     echo "
     <tr class=\"hcmsRowHead2\">
       <td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['current-version'][$lang])."</td>
-      <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($template)."', 'preview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$tpl_name."</a> <a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_source.php?site=".url_encode($site)."&template=".url_encode($template)."', 'sourceview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><span class=\"hcmsTextSmall\">(Source Code)</span></a></td>
+      <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($template)."', 'preview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$tpl_name."</a> <a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('template_source.php?site=".url_encode($site)."&template=".url_encode($template)."', 'sourceview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><span class=\"hcmsTextSmall\">(Source Code)</span></a></td>";
+      if (!empty ($mgmt_config['version_owner'])) echo "
+      <td style=\"white-space:nowrap;\">".$owner."</td>";
+    echo "
       <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"dummy\" value=\"\" onclick=\"if (compare_select('".$template."')) this.checked=true; else this.checked=false;\" /></td>
       <td style=\"text-align:center; vertical-align:middle;\"><input type=\"radio\" name=\"actual\" value=\"\" checked=\"checked\" /></td>
       <td style=\"text-align:center; vertical-align:middle;\"><input type=\"checkbox\" name=\"dummy\" value=\"\" disabled=\"disabled\" /></td>

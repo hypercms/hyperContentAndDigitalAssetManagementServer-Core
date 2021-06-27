@@ -227,6 +227,12 @@ else $objects_counted = 0;
 // define global variable for popup window name used in contextmenu.js
 var session_id = '<?php echo session_id(); ?>';
 
+// overwrite permissions from contextmenu.js
+permission['rename'] = false;
+permission['paste'] = false;
+permission['delete'] = false;
+permission['publish'] = false;
+
 function confirm_delete ()
 {
   return confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-entry'][$lang]); ?>"));

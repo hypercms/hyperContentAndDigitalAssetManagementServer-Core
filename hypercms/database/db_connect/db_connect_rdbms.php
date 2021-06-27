@@ -1386,7 +1386,7 @@ function rdbms_renameobject ($object_old, $object_new)
 
     // query
     $sql = 'SELECT object_id, id, objectpath FROM object '; 
-    $sql .= 'WHERE objectpath LIKE _utf8"'.$object_old.'%" COLLATE utf8_bin';
+    $sql .= 'WHERE objectpath LIKE _utf8"'.$object_old.'%" COLLATE utf8_bin AND objectpath NOT LIKE _utf8"'.$object_old.'.recycle%"';
 
     $errcode = "50010";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');

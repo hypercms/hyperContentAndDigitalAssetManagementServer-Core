@@ -83,7 +83,7 @@ function hcms_getBrowserName()
   return name;
 }
 
-// ------------------------ get URL paramater ----------------------------
+// ------------------------ get URL parameter ----------------------------
 
 function hcms_getURLparameter (name)
 {
@@ -1575,7 +1575,7 @@ function hcms_elementbyIdStyle (id, ElementClass)
 
 // decodes the html entities in the str (e.x.: &auml; =>   but for the corresponding charset
 // uses an html element to decode
-function hcms_entity_decode(str)
+function hcms_entity_decode (str)
 {
   var ta = document.createElement("textarea");
   // html element to convert special characters
@@ -1585,7 +1585,7 @@ function hcms_entity_decode(str)
 
 // encodes the html entities in the str (e.x.:   => &auml; but for the corresponding charset
 // uses an html element to encode
-function hcms_entity_encode(str)
+function hcms_entity_encode (str)
 {
   var ta = document.createElement("textarea");
   // html element to convert special characters
@@ -2094,6 +2094,8 @@ function hcms_stringifyVTTrecords ()
   else return false;
 }
 
+// ------------------------ iframe fix ----------------------------
+
 // for alert, confirm, and prompt in iframe
 if (hcms_service == false)
 {
@@ -2101,3 +2103,17 @@ if (hcms_service == false)
   window.confirm = top.confirm;
   window.prompt = top.prompt;
 }
+
+// ------------------------ key events ----------------------------
+
+document.addEventListener('keydown', e => {
+  // save if Ctrl+S key is pressed
+  if (e.ctrlKey && (e.key === 's' || e.key === 'S'))
+  {
+    // prevent the save dialog to open
+    e.preventDefault();
+    
+    // call function
+    if (typeof hcms_saveEvent === 'function') hcms_saveEvent();
+  }
+});

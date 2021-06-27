@@ -146,33 +146,6 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
 
-function selectAll ()
-{
-  var assigned = "";
-  var form = document.forms['siteform'];
-  var select = form.elements['list2'];
-
-  if (select.options.length > 0)
-  {
-    for (var i=0; i<select.options.length; i++)
-    {
-      assigned = assigned + select.options[i].value + "|" ;
-    }
-  }
-  else
-  {
-    assigned = "*Null*";
-  }
-
-  if (form.elements['site_name'].value == "*Null*")  
-  {
-    form.elements['site_parents'].value = assigned;  
-  }
-
-  form.submit();
-  return true;
-}
-
 function move (fbox, tbox)
 {
   var arrFbox = new Array();
@@ -225,6 +198,37 @@ function move (fbox, tbox)
     no.text = arrTbox[c];
     tbox[c] = no;
   }
+}
+
+function selectAll ()
+{
+  var assigned = "";
+  var form = document.forms['siteform'];
+  var select = form.elements['list2'];
+
+  if (select.options.length > 0)
+  {
+    for (var i=0; i<select.options.length; i++)
+    {
+      assigned = assigned + select.options[i].value + "|" ;
+    }
+  }
+  else
+  {
+    assigned = "*Null*";
+  }
+
+  if (form.elements['site_name'].value == "*Null*")  
+  {
+    form.elements['site_parents'].value = assigned;  
+  }
+
+  form.submit();
+}
+
+function hcms_saveEvent ()
+{
+  selectAll();
 }
 </script>
 </head>

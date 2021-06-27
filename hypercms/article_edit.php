@@ -146,7 +146,7 @@ function cal_on_autoclose(cal)
 	cal_obj = null;
 }
 
-function submitform ()
+function saveArticle ()
 {
   var artdatefromcheck = document.getElementById("artdatefrom").value;
   artdatefromcheck = artdatefromcheck.replace (/-/g, "");
@@ -170,6 +170,11 @@ function submitform ()
     document.forms['article'].submit();
     return true;
   }
+}
+
+function hcms_saveEvent ()
+{
+  saveArticle();
 }
 </script>
 </head>
@@ -237,7 +242,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       <tr>
         <td><?php echo getescapedtext ($hcms_lang['save-release-settings'][$lang], $charset, $lang); ?>&nbsp;</td>
         <td>
-          <img name="Button" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" onClick="submitform();" />        
+          <img name="Button" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" onClick="saveArticle();" />        
         </td>
       </tr>
     </table>

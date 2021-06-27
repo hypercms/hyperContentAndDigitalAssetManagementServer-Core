@@ -335,7 +335,7 @@ function insertmediacat ()
       <td style="overflow:auto;">
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-media-category'][$lang]); ?></span><br />
         <span style="white-space:nowrap;">
-          <input type="text" name="mediacat_name" maxlength="100" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" placeholder="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>" />
+          <input type="text" name="mediacat_name" maxlength="100" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>" />
           <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" value="Submit" onclick="checkForm_mediacat_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
@@ -358,7 +358,7 @@ function insertmediacat ()
       <td style="overflow:auto;">
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['rename-media-category'][$lang]); ?></span><br />
         <span style="white-space:nowrap;">
-          <select name="mediacat_name_curr" onChange="insertmediacat()" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>">
+          <select name="mediacat_name_curr" onChange="insertmediacat()" style="width:<?php if ($is_mobile) echo "120px"; else echo "180px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>">
             <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
             <?php
             if (!empty ($mediacat_array) && is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
@@ -375,7 +375,7 @@ function insertmediacat ()
             }
             ?>
           </select>
-          <input type="text" name="mediacat_name" maxlength="100" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" placeholder="<?php echo getescapedtext ($hcms_lang['rename-selected-category'][$lang]); ?> " />
+          <input type="text" name="mediacat_name" maxlength="100" style="width:<?php if ($is_mobile) echo "120px"; else echo "280px"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['rename-selected-category'][$lang]); ?> " />
           <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_mediacat_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>
@@ -438,7 +438,7 @@ function insertmediacat ()
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['upload-media-file'][$lang]); ?></span><br />
         <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>
         <span style="white-space:nowrap;">
-          <select name="mediacat_name" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>">
+          <select name="mediacat_name" style="width:<?php if ($is_mobile) echo "120px"; else echo "180px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>">
             <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
             <?php
             if (!empty ($mediacat_array) && is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
@@ -455,7 +455,7 @@ function insertmediacat ()
             }
             ?>
           </select>
-          <input type="file" name="file" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>" />
+          <input type="file" name="file" style="width:<?php if ($is_mobile) echo "120px"; else echo "280px"; ?>;" />
           <img name="Button4" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_mediafile_upload();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button4','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </span>
       </td>

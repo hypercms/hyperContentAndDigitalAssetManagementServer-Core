@@ -957,7 +957,7 @@ if ($page != "")
             // iOS (iPhone, iPad) download
             if ($action == "download" && $is_iphone)
             { 
-              $downloadlink = createmultidownloadlink ($site, $multiobject, $pagename, $user, $convert_type, $convert_cfg);
+              $downloadlink = createmultidownloadlink ($site, $multiobject, $pagename, $user, $convert_type, $convert_cfg, "wrapper");
               
               echo "<a href=\"".$downloadlink."\" class=\"button hcmsButtonGreen\" target=\"_blank\">".getescapedtext ($hcms_lang['downloadview-file'][$lang])."</a>";
             }
@@ -980,7 +980,7 @@ if ($page != "")
 // download for non iOS devices
 if ($action == "download" && !$is_iphone)
 {
-  $downloadlink = createmultidownloadlink ($site, $multiobject, $pagename, $user, $convert_type, $convert_cfg);
+  $downloadlink = createmultidownloadlink ($site, $multiobject, $pagename, $user, $convert_type, $convert_cfg, "download");
 
   if ($downloadlink != "")
   {

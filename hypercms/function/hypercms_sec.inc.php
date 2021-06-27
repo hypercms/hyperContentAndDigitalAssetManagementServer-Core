@@ -2708,7 +2708,7 @@ function checkdiskkey ()
 
     if ($mgmt_config['url_protocol'] != "https://" || $mgmt_config['url_protocol'] != "http://") $mgmt_config['url_protocol'] = "https://";
 
-    $result_post = HTTP_Post ($mgmt_config['url_protocol']."cloud.hypercms.net/keyserver/", $data);
+    $result_post = HTTP_Post ($mgmt_config['url_protocol']."cloud.hypercms.net/keyserver/", $data, "application/x-www-form-urlencoded", "UTF-8", "", "body");
 
     if (!empty ($result_post) && strpos ("_".$result_post, "<result>") > 0)
     {

@@ -455,10 +455,12 @@ $token_new = createtoken ($user);
           }
           else
           {
-            var mainname = 'main_'+ui.item.loginname;
-            var delname = 'delete_'+ui.item.loginname;
-            var inputid = 'user_login_'+ui.item.loginname;
-            var divtextid = 'divtext_'+ui.item.loginname;
+            var fieldname = ui.item.loginname.replace(/([\.\-\@])/g, "_");
+
+            var mainname = 'main_'+fieldname;
+            var delname = 'delete_'+fieldname;
+            var inputid = 'user_login_'+fieldname;
+            var divtextid = 'divtext_'+fieldname;
             
             // only add persons who aren't on the list already
             if (!$('#'+mainname).length)
@@ -473,6 +475,7 @@ $token_new = createtoken ($user);
             {
               alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['recipient-already-added'][$lang]); ?>"));
             }
+
             $(this).val("");
           }
           // Returning false suppresses that the inputfield is updated with the selected value

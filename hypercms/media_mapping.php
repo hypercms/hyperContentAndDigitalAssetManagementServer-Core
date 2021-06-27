@@ -58,6 +58,16 @@ function checkReindex ()
     document.forms['reindex'].submit();
   }
 }
+
+function saveMapping ()
+{
+  document.forms['editor'].submit();
+}
+
+function hcms_saveEvent ()
+{
+  saveMapping();
+}
 </script>
 </head>
 
@@ -144,7 +154,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:50px;")
   <table class="hcmsTableStandard" style="margin-top:10px;">
     <tr>
       <td style="width:240px;"><?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?> </td>
-      <td><img name="Button1" onClick="document.forms['editor'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td> 
+      <td><img name="Button1" onClick="saveMapping();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td> 
     </tr>
   </table>
 </form>

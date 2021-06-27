@@ -58,8 +58,9 @@ if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['
 // check access permissions
 $ownergroup = accesspermission ($site, $location_ACCESS, $cat);
 $setlocalpermission_ACCESS = setlocalpermission ($site, $ownergroup, $cat);
-// we check for general root element access since localpermissions are checked later
-if ($virtual != 1 && ($ownergroup == false || $setlocalpermission_ACCESS['root'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location))) killsession ($user);
+
+// check for general root element access since localpermissions are checked later
+if ($virtual != 1 && (!valid_publicationname ($site) || !valid_locationname ($location))) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -1355,7 +1356,7 @@ else
 
     // UNZIP Button
     if ( 
-         $mgmt_uncompress['.zip'] != "" && $from_page == "" && 
+         !empty ($mgmt_uncompress['.zip']) && $from_page == "" && 
          $multiobject_count <= 1 &&
          $filetype == "compressed" &&
          ($usedby == "" || $usedby == $user) && 

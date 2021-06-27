@@ -1585,4 +1585,119 @@ function updates_all ()
   update_plugin_v911 ();;
   update_database_v914 ();
 }
+
+// ------------------------------------------ update_software ----------------------------------------------
+// function: update_software()
+// input: check for update only or update software [check,update] (optional)
+// output: true / false
+
+// description: 
+// Downloads the software package and installes the update.
+// Requires the OS user to overwrite the existing system files.
+
+function update_software ($type="update")
+{
+  global $mgmt_config, $mgmt_uncompress;
+
+  // initialize
+  $error = array();
+
+  // default update service
+  if (empty ($mgmt_config['update_url'])) $mgmt_config['update_url'] = "https://cloud.hypercms.net/keyserver/update.php";
+
+  if (!empty ($mgmt_config['update_url']) && !empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_temp']) && !empty ($mgmt_uncompress['.zip']))
+  {
+    // version info
+    require ($mgmt_config['abs_path_cms']."version.inc.php");
+
+    // disk key
+    require ($mgmt_config['abs_path_cms']."include/diskkey.inc.php");
+
+    // load log
+    $logdata = loadlog ("update", "string");
+
+    // source file
+    $source = $mgmt_config['abs_path_temp']."update.zip";
+
+    // destination path
+    $destination = $mgmt_config['abs_path_cms'];
+
+    // get download link JSON string via GET methode (not recommended since the key will be saved in log files)
+    // download URL to acquire download link
+    // $download = $mgmt_config['update_url']."?key=".$mgmt_config['diskkey']."&version=".url_encode ($mgmt_config['version']);
+    // $download_json = file_get_contents ($download);
+
+    // get download link JSON string via POST methode
+    $data = array();
+    $data['key'] = $mgmt_config['diskkey'];
+    $data['version'] = $mgmt_config['version'];
+
+    $download_json = HTTP_Post ($mgmt_config['update_url'], $data, "application/x-www-form-urlencoded", "UTF-8", "", "body");
+
+    // verify download link
+    if (empty ($download_json)) return false;
+
+    // decode JSON to array
+    $download_json = json_decode ($download_json, true);
+    $download_md5 = $download_json['md5'];
+    $download_link = $download_json['link'];
+
+    // verify JSON data
+    if (empty ($download_json['md5']) || substr ($download_json['link'], 0, 8) != "https://") return false;
+
+    // verify that the same package has not been downloaded and installed already (MD5 hash identifies the package file)
+    if (empty ($logdata) || strpos ($logdata, $download_json['md5']) < 1)
+    {
+      // return result for update check
+      if (strtolower ($type) == "check") return true;
+
+      // download package
+      file_put_contents ($source, fopen ($download_link, 'r'));
+
+      // verify software package
+      if (is_file ($source) && filesize ($source) > 100)
+      {
+        // md5 hash of file
+        $md5_hash = md5_file ($source);
+
+        // update the software if the MD5 hash of the package matches the provided MD5 hash of the update service
+        if ($md5_hash == trim ($download_json['md5']))
+        {
+          // unpack
+          $cmd = $mgmt_uncompress['.zip']." -o \"".shellcmd_encode ($source)."\" -d \"".shellcmd_encode ($destination)."\"";
+          @exec ($cmd, $output, $errorCode);
+
+          // on error
+          if ($errorCode && is_array ($output))
+          {
+            $errcode = "20133";
+            $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|unzip of software update failed for '".$source."' with error code ".$errorCode.": ".implode (", ", $output);
+
+            // save event log
+            savelog (@$error);
+          }
+          // on success
+          else
+          {
+            updates_all ();
+            unlink ($source);
+
+            $errcode = "00133";
+            $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|".$errcode."|installed new software update";
+
+            // save event log
+            savelog (@$error);
+
+            // save update log
+            savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|md5|installed software update with MD5 hash: ".$md5_hash), "update");
+
+            return true;
+          }
+        }
+      }
+    }
+  }
+  
+  return false;
+}
 ?>

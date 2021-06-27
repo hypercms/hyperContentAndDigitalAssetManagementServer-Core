@@ -65,12 +65,17 @@ if ($template != "")
   $templatedata = loadtemplate ($site, $template);
   
   // extract information
-  $bufferarray = getcontent ($templatedata['content'], "<extension>"); 
-  $extension = $bufferarray[0];
-  $bufferarray = getcontent ($templatedata['content'], "<application>"); 
-  $application = $bufferarray[0];  
-  $bufferarray = getcontent ($templatedata['content'], "<content>"); 
-  $contentfield = $bufferarray[0];
+  $temp_array = getcontent ($templatedata['content'], "<extension>"); 
+  if (!empty ($temp_array[0])) $extension = $temp_array[0];
+  else $extension = "";
+
+  $temp_array = getcontent ($templatedata['content'], "<application>"); 
+  if (!empty ($temp_array[0])) $application = $temp_array[0];
+  else $application = "";
+
+  $temp_array = getcontent ($templatedata['content'], "<content>"); 
+  if (!empty ($temp_array[0])) $contentfield = $temp_array[0];
+  else $contentfield = "";
   
   // escape special characters (transform all special chararcters into their html/xml equivalents)
   $contentfield = str_replace ("&", "&amp;", $contentfield);

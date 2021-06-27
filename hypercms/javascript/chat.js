@@ -125,7 +125,7 @@ function updateChat ()
       },
     });
   }
-  else setTimeout (updateChat, 1500);
+  else setTimeout (updateChat, 2300);
 }
 
 // send the message
@@ -225,5 +225,5 @@ function checkChat ()
       },
     });
   }
-  else setTimeout (checkChat, 1500);
+  else setTimeout (checkChat, 2400);
 }

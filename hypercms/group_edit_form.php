@@ -79,8 +79,17 @@ function goToAccess (target)
 {
   document.forms['groupform'].elements['cat'].value = target;
   document.forms['groupform'].submit();
+}
 
-  return true;
+function saveGroup ()
+{
+  hcms_showFormLayer ('savelayer', 0);
+  document.forms['groupform'].submit();
+}
+
+function hcms_saveEvent ()
+{
+  saveGroup();
 }
 </script>
 </head>
@@ -644,7 +653,7 @@ else
     {
       echo "<tr>
         <td colspan=\"2\"><strong>".getescapedtext ($hcms_lang['save-group-settings'][$lang])."</strong>
-          <img name=\"Button\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"hcms_showFormLayer ('savelayer', 0); document.forms['groupform'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" />
+          <img name=\"Button\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"saveGroup();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" />
         </td>
       </tr>";
     }

@@ -198,6 +198,11 @@ function selectAll ()
   form.submit();
   return true;
 }
+
+function hcms_saveEvent ()
+{
+  selectAll();
+}
 </script>
 </head>
 

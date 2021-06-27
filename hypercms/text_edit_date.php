@@ -130,6 +130,11 @@ function setsavetype(type)
   document.forms['editor'].elements['savetype'].value = type;
   document.forms['editor'].submit();
 }
+
+function hcms_saveEvent ()
+{
+  setsavetype('editord_so');
+}
 </script>
 </head>
 

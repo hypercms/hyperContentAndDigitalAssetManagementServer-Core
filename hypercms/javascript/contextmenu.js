@@ -41,6 +41,13 @@ var y4 = 0;
 // drag and drop
 var dragndrop = false;
 
+// enable/disable specific functions
+var permission = new Array();
+permission['rename'] = true;
+permission['paste'] = true;
+permission['delete'] = true;
+permission['publish'] = true;
+
 // design theme
 var themelocation = '';
 
@@ -93,6 +100,7 @@ function hcms_loadSidebar ()
 // reset context menu  
 function hcms_resetContext ()
 {
+  // Object
   if (document.forms['contextmenu_object'] && document.forms['contextmenu_object'].elements['contextmenustatus'].value == "hidden")
   {
     var contextmenu_form = document.forms['contextmenu_object'];
@@ -104,16 +112,15 @@ function hcms_resetContext ()
     contextmenu_form.elements['media'].value = "";
     contextmenu_form.elements['folder'].value = "";   
     if (contextmenu_form.elements['folder_id']) contextmenu_form.elements['folder_id'].value = "";
-    if (contextmenu_form.elements['memory']) contextmenu_form.elements['token'].value = contextmenu_form.elements['memory'].value;
-    else contextmenu_form.elements['token'].value = "";
-  } 
+  }
+  // User
   else if (document.forms['contextmenu_user'] && document.forms['contextmenu_user'].elements['contextmenustatus'].value == "hidden")
   {
     var contextmenu_form = document.forms['contextmenu_user'];
     
     contextmenu_form .elements['login'].value = "";
-    contextmenu_form .elements['token'].value = "";
   }
+  // Queue
   else if (document.forms['contextmenu_queue'] && document.forms['contextmenu_queue'].elements['contextmenustatus'].value == "hidden")
   {
     var contextmenu_form = document.forms['contextmenu_queue'];
@@ -126,7 +133,6 @@ function hcms_resetContext ()
     contextmenu_form.elements['filetype'].value = "";
     contextmenu_form.elements['queueuser'].value = "";
     contextmenu_form.elements['queue_id'].value = ""; 
-    contextmenu_form.elements['token'].value = "";
   }  
   
   return true;
@@ -510,8 +516,10 @@ function hcms_createContextmenuItem (action)
   if (localStorage.getItem('user_newwindow') !== null && localStorage.getItem('user_newwindow') == "true") var user_newwindow = true;
   else var user_newwindow = false;
 
+  // Objects (folders, pages, assets)
   if (document.forms['contextmenu_object'])
   {
+    var check = false;
     var contexttype = document.forms['contextmenu_object'].elements['contexttype'].value;
     var site = document.forms['contextmenu_object'].elements['site'].value;
     var cat = document.forms['contextmenu_object'].elements['cat'].value;
@@ -538,21 +546,29 @@ function hcms_createContextmenuItem (action)
         }
       }
       
+      // preview
       if (action == "preview")
       {
         if (folder != "") location = location + folder + '/';
         openObjectView(location, page, 'preview');
       }
-      else if (action == "cmsview" && multiobject.split("|").length > 2 && parent && parent.frames && parent.frames['controlFrame'] && parent.frames['controlFrame'].submitToWindow)
-      {
-        if (object_newwindow == true) parent.frames['controlFrame'].submitToWindow('page_multiedit.php', '', 'multiedit', 'status=yes,scrollbars=yes,resizable=yes', windowwidth, windowheight);
-        else parent.frames['controlFrame'].submitToMainFrame('page_multiedit.php', '');
-      }
+      // edit view
       else if (action == "cmsview")
       {
-        if (object_newwindow == true) hcms_openWindow('frameset_content.php?ctrlreload=yes&' + URLparaView, '', 'status=yes,scrollbars=no,resizable=yes', windowwidth, windowheight);
-        else top.openMainView('frameset_content.php?ctrlreload=yes&' + URLparaView);
+        // multiedit for multiple selected objects
+        if (multiobject.split("|").length > 2 && parent && parent.frames && parent.frames['controlFrame'] && parent.frames['controlFrame'].submitToWindow)
+        {
+          if (object_newwindow == true) parent.frames['controlFrame'].submitToWindow('page_multiedit.php', '', 'multiedit', 'status=yes,scrollbars=yes,resizable=yes', windowwidth, windowheight);
+          else parent.frames['controlFrame'].submitToMainFrame('page_multiedit.php', '');
+        }
+        // single object
+        else
+        {
+          if (object_newwindow == true) hcms_openWindow('frameset_content.php?ctrlreload=yes&' + URLparaView, '', 'status=yes,scrollbars=no,resizable=yes', windowwidth, windowheight);
+          else top.openMainView('frameset_content.php?ctrlreload=yes&' + URLparaView);
+        }
       }
+      // notify me
       else if (action == "notify")
       {
         URLfile = "popup_notify.php";
@@ -560,12 +576,14 @@ function hcms_createContextmenuItem (action)
         document.forms['contextmenu_object'].attributes['action'].value = URLfile;
         hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no', 620, 520);
       }
+      // chat
       else if (action == "chat")
       {
         var chatcontent = "hcms_openWindow('frameset_content.php?ctrlreload=yes&" + URLparaView + "', '', 'status=yes,scrollbars=no,resizable=yes', 800, 1000);";
         
         sendtochat (chatcontent);
       }
+      // restore from recycle bin
       else if (action == "restore")
       {
         if (multiobject == "" && (contexttype == "object" || contexttype == "media")) URLfile = "popup_action.php";
@@ -576,10 +594,11 @@ function hcms_createContextmenuItem (action)
         document.forms['contextmenu_object'].elements['force'].value = 'start';
         hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no', 400, 300);
       }
+      // delete
       else if (action == "delete")
       {
-        check = confirm_delete ();
-      
+        if ((multiobject != "" || page != "" || folder != "") && permission['delete'] == true) check = confirm_delete();
+
         if (check == true)
         {
           if (multiobject == "" && (contexttype == "object" || contexttype == "media")) URLfile = "popup_action.php";
@@ -591,25 +610,38 @@ function hcms_createContextmenuItem (action)
           hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,status=no,scrollbars=no,resizable=no', 400, 300);
         }
       }
+      // cut, copy, linked copy
       else if (action == "cut" || action == "copy" || action == "linkcopy")
       {
-        document.forms['contextmenu_object'].attributes['action'].value = 'popup_action.php';
-        document.forms['contextmenu_object'].elements['action'].value = action;
-        hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no', 400, 300);
+        if (permission['rename'] == true)
+        {
+          document.forms['contextmenu_object'].attributes['action'].value = 'popup_action.php';
+          document.forms['contextmenu_object'].elements['action'].value = action;
+          hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no', 400, 300);
+        } 
       }
+      // paste
       else if (action == "paste")
       {
-        if (site != "" && location != "") hcms_openWindow('popup_status.php?force=start&action=' + encodeURIComponent(action) + '&site=' + encodeURIComponent(site) + '&cat=' + encodeURIComponent(cat) + '&location=' + encodeURIComponent(location) + '&token=' + token, '', 'status=no,scrollbars=no,resizable=no', 400, 300);    
+        if (site != "" && location != "" && permission['paste'] == true)
+        {
+          hcms_openWindow('popup_status.php?force=start&action=' + encodeURIComponent(action) + '&site=' + encodeURIComponent(site) + '&cat=' + encodeURIComponent(cat) + '&location=' + encodeURIComponent(location) + '&token=' + token, '', 'status=no,scrollbars=no,resizable=no', 400, 300);    
+        }
       }
+      // publish, unpublish
       else if (action == "publish" || action == "unpublish")
       {
-        URLfile = "popup_publish.php";
-          
-        document.forms['contextmenu_object'].attributes['action'].value = URLfile;
-        document.forms['contextmenu_object'].elements['action'].value = action;
-        document.forms['contextmenu_object'].elements['force'].value = 'start';
-        hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no', 400, 300);
+        if (permission['publish'] == true)
+        {
+          URLfile = "popup_publish.php";
+            
+          document.forms['contextmenu_object'].attributes['action'].value = URLfile;
+          document.forms['contextmenu_object'].elements['action'].value = action;
+          document.forms['contextmenu_object'].elements['force'].value = 'start';
+          hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no', 400, 300);
+        }
       }
+      // create favorite
       else if (action == "favorites_create")
       {
         document.forms['contextmenu_object'].attributes['action'].value = "popup_action.php";
@@ -617,6 +649,7 @@ function hcms_createContextmenuItem (action)
         hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no' ,400, 300);
         allow_tr_submit = false;
       }
+      // delete favorite
       else if (action == "favorites_delete")
       {
         document.forms['contextmenu_object'].attributes['action'].value = "popup_action.php";
@@ -624,6 +657,7 @@ function hcms_createContextmenuItem (action)
         hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no' ,400, 300);
         allow_tr_submit = false;
       }
+      // check-in
       else if (action == "checkin")
       {
         document.forms['contextmenu_object'].attributes['action'].value = "popup_action.php";
@@ -631,6 +665,7 @@ function hcms_createContextmenuItem (action)
         hcms_submitWindow('contextmenu_object', 'location=no,menubar=no,toolbar=no,titlebar=no,status=no,scrollbars=no,resizable=no', 400, 300);
         allow_tr_submit = false;
       }
+      // other actions
       else if (action != "")
       {
         document.forms['contextmenu_object'].attributes['action'].value = action;
@@ -641,8 +676,10 @@ function hcms_createContextmenuItem (action)
       }
     }
   }
+  // Users
   else if (document.forms['contextmenu_user'])
   {
+    var check = false;
     var site = document.forms['contextmenu_user'].elements['site'].value;
     var group = document.forms['contextmenu_user'].elements['group'].value;
     var login = document.forms['contextmenu_user'].elements['login'].value;
@@ -656,7 +693,7 @@ function hcms_createContextmenuItem (action)
     }
     else if (action == "delete")
     {
-      check = confirm_delete ();
+      if (multiobject != "" || login != "") check = confirm_delete();
     
       if (check == true)
       {
@@ -668,8 +705,10 @@ function hcms_createContextmenuItem (action)
       }
     }
   }
+  // Queue
   else if (document.forms['contextmenu_queue'])
   {
+    var check = false;
     var site = document.forms['contextmenu_queue'].elements['site'].value;
     var cat = document.forms['contextmenu_queue'].elements['cat'].value;
     var location = document.forms['contextmenu_queue'].elements['location'].value;
@@ -698,7 +737,7 @@ function hcms_createContextmenuItem (action)
     }
     else if (action == "delete")
     {
-      check = confirm_delete ();
+      if (multiobject != "" || page != "") check = confirm_delete();
     
       if (check == true)
       {
@@ -710,8 +749,10 @@ function hcms_createContextmenuItem (action)
       }
     }
   }
+  // Messages
   else if (document.forms['contextmenu_message'])
   {
+    var check = false;
     var messageuser = document.forms['contextmenu_message'].elements['messageuser'].value;
     var message_id = document.forms['contextmenu_message'].elements['message_id'].value;
     var multiobject = document.forms['contextmenu_message'].elements['multiobject'].value;
@@ -724,7 +765,7 @@ function hcms_createContextmenuItem (action)
     }
     else if (action == "delete")
     {
-      check = confirm_delete ();
+      if ((multiobject != "" || message_id != "")) check = confirm_delete();
     
       if (check == true)
       {
@@ -960,7 +1001,11 @@ function hcms_selectObject (row_id, event)
       }
       else if (multiobject_str != '')
       {
-        if (hcms_endsWith(multiobject_str, '|'+object))
+        if (multiobject_str == object)
+        {
+          contextmenu_form.elements['multiobject'].value = hcms_replace (multiobject_str, object, '');
+        }
+        else if (hcms_endsWith(multiobject_str, '|'+object))
         {
           contextmenu_form.elements['multiobject'].value = hcms_replace (multiobject_str, '|'+object, '');
         }
@@ -1012,7 +1057,9 @@ function hcms_selectObject (row_id, event)
         for (i = 0; i < rows.length; i++)
         {
           var links = rows[i].getElementsByTagName('A');  
-          object = links[0].getAttribute('data-objectpath');  
+
+          if (links) object = links[0].getAttribute('data-objectpath');
+          else object = '';
           
           if (topdown == '1' && startselect == true && stopselect == false && multiobject_str2.indexOf ('|'+object+'|') == -1)
           { 
@@ -1056,18 +1103,16 @@ function hcms_selectObject (row_id, event)
   else
   {
     hcms_unselectAll();
-    
-    var multiobject_str = contextmenu_form.elements['multiobject'].value;
-  
+
     var td = document.getElementById('h' + row_id + '_0');
     var links = td.getElementsByTagName('A');
 
     if (links[0]) var object = links[0].getAttribute('data-objectpath');
-    else var object = false;
+    else var object = '';
 
-    if (multiobject_str == '' && object != '')
+    if (object != '')
     {
-      contextmenu_form.elements['multiobject'].value = multiobject_str + '|' + object;
+      contextmenu_form.elements['multiobject'].value = '|' + object;
       document.getElementById('g' + row_id).className = 'hcmsObjectSelected';
       if (document.getElementById('objectgallery')) document.getElementById('t' + row_id).className = 'hcmsObjectSelected';
       return true;
@@ -1171,6 +1216,75 @@ function hcms_updateControlMessageMenu ()
   else return false;
 }
 
+// select all objects
+function hcms_selectAll (e)
+{
+  if (!e) var e = window.event;
+
+  // if Ctrl+A key is pressed
+  if (hcms_keyPressed('ctrl', e) && e.key === 'a')
+  {
+    // prevent the default select
+    e.preventDefault();
+    
+    // select all
+    if (document.getElementById('objectlist'))
+    {
+      var links = '';
+      var multiobject = '';
+      var table = document.getElementById('objectlist');
+      var tablerows = table.getElementsByTagName("TR");
+
+      for (i = 0; i < tablerows.length; i++)
+      {
+        links = tablerows[i].getElementsByTagName('A');  
+
+        if (links)
+        {
+          object = links[0].getAttribute('data-objectpath');
+          if (object != '') multiobject = multiobject + '|' + object;
+        }
+
+        tablerows[i].className = "hcmsObjectSelected";
+      }
+    }
+    
+    if (document.getElementById('objectgallery'))
+    {
+      var table = document.getElementById('objectgallery');   
+      var tabledata = table.children;
+
+      for (i = 0; i < tabledata.length; i++)
+      {           
+        tabledata[i].className = "hcmsObjectSelected";     
+      }  
+    } 
+
+    if (document.forms['contextmenu_object'] && document.forms['contextmenu_object'].elements['multiobject'])
+    {
+      document.forms['contextmenu_object'].elements['multiobject'].value = multiobject;
+      hcms_updateControlObjectListMenu();
+    }
+    else if (document.forms['contextmenu_user'] && document.forms['contextmenu_user'].elements['multiobject'])
+    {
+      document.forms['contextmenu_user'].elements['multiobject'].value = multiobject;
+      hcms_updateControlUserMenu();
+    }
+    else if (document.forms['contextmenu_queue'] && document.forms['contextmenu_queue'].elements['multiobject'])
+    {
+      document.forms['contextmenu_queue'].elements['multiobject'].value = multiobject;
+      hcms_updateControlQueueMenu();
+    }
+    else if (document.forms['contextmenu_message'] && document.forms['contextmenu_message'].elements['multiobject'])
+    {
+      document.forms['contextmenu_message'].elements['multiobject'].value = multiobject;
+      hcms_updateControlMessageMenu();
+    }
+
+    return true;
+  }
+}
+
 // unselect all objects
 function hcms_unselectAll ()
 {
@@ -1178,24 +1292,24 @@ function hcms_unselectAll ()
   {
     var table = document.getElementById('objectlist');   
     var tablerows = table.getElementsByTagName("TR");
-    
+
     for (i = 0; i < tablerows.length; i++)
     {           
       tablerows[i].className = "hcmsObjectUnselected";
     }
   }
-  
+
   if (document.getElementById('objectgallery'))
   {
     var table = document.getElementById('objectgallery');   
     var tabledata = table.children;
-    
+
     for (i = 0; i < tabledata.length; i++)
     {           
       tabledata[i].className = "hcmsObjectUnselected";     
     }  
   } 
-  
+
   if (document.forms['contextmenu_object'] && document.forms['contextmenu_object'].elements['multiobject'].value)
   {
     document.forms['contextmenu_object'].elements['multiobject'].value = '';
@@ -1216,9 +1330,9 @@ function hcms_unselectAll ()
     document.forms['contextmenu_message'].elements['multiobject'].value = '';
     hcms_updateControlMessageMenu();
   }
-  
+
   return true; 
-} 
+}
 
 // contextmenu
 function hcms_Contextmenu (e) 
@@ -1247,10 +1361,10 @@ function hcms_rightClick (e)
     {
       hcms_showContextmenu();
     }
-    
+
     hcms_startSelectArea(e);
   }
-  
+
   return true;
 }
 
@@ -1258,11 +1372,11 @@ function hcms_rightClick (e)
 function hcms_leftClick (e) 
 {
   if (!e) var e = window.event;
-  
+
   var object;
   var multiobject;
   var objectcount = 0;
-  
+
   // remove selection marks of browser
   hcms_clearSelection();
 
@@ -1286,7 +1400,7 @@ function hcms_leftClick (e)
     object = document.forms['contextmenu_message'].elements['message_id'].value;
     multiobject = document.forms['contextmenu_message'].elements['multiobject'].value;
   }
-  
+
   // count objects stored in multiobject
   if (multiobject != "") objectcount = multiobject.split("|").length - 1;
 
@@ -1294,7 +1408,7 @@ function hcms_leftClick (e)
   if (e.which == 0 || e.which == 1 || e.button == 0 || e.button == 1) 
   {
     hcms_hideContextmenu();
-   
+
     // if no key is pressed and multiobject stores more than 1 object
     if (hcms_keyPressed('', e) == false && object == "" && objectcount <= 1)
     {
@@ -1332,14 +1446,14 @@ function hcms_keyPressed (key, e)
       altPressed = evt.altKey;
       ctrlPressed = evt.ctrlKey;
     }
-    
+
     if (key == 'ctrl' && ctrlPressed) return true;
     else if (key == 'shift' && shiftPressed) return true;
     else if (key == 'alt' && altPressed) return true;
     else if (key == '' && (altPressed || shiftPressed || ctrlPressed)) return true;
     else return false;
   }
- 
+
   return false;
 }
 
@@ -1351,7 +1465,7 @@ function hcms_getlink (location, type)
     var object_id;
     var downloadlink = '';
     var wrapperlink = '';
-  
+
   	$.ajax({
   		async: false,
   		type: 'POST',
@@ -1360,7 +1474,7 @@ function hcms_getlink (location, type)
   		dataType: 'json',
   		success: function(data){ if(data.success) {downloadlink = data.downloadlink; wrapperlink = data.downloadlink;} }
   	});
-    
+
     if (type == 'download' && downloadlink != '') return downloadlink;
     else if (type == 'wrapper' && wrapperlink != '') return wrapperlink;
     else return false;
@@ -1373,6 +1487,7 @@ function hcms_activateLinks (e)
 {
   if (!e) var e = window.event;
 
+  // if Alt keyx is pressed
   // activate or deactivate links for all objects (only supports contextmenu_object)
   if (dragndrop == false && hcms_keyPressed('alt', e) && document.forms['contextmenu_object'])
   {
@@ -1426,7 +1541,7 @@ function hcms_activateLinks (e)
           var hrefnode = thisLink.getAttributeNode('href');
           thisLink.removeAttributeNode(hrefnode);
         }
-        
+
         // are download links present
         hashlink = true;
       }
@@ -1478,10 +1593,10 @@ function hcms_drawSelectArea ()
     x4 = Math.max(x1,x2);
     y3 = Math.min(y1,y2);
     y4 = Math.max(y1,y2);
-    
+
     // remove selection marks of browser
     hcms_clearSelection();
-  
+
     // enable select area if width and height are larger than 5 pixels
     if (selectarea.style.display == 'none' && (x4 - x3) > 5 && (y4 - y3) > 5)
     {
@@ -1498,7 +1613,7 @@ function hcms_drawSelectArea ()
       return true;
     }
   }
-  
+
   return false;
 }
 
@@ -1512,7 +1627,7 @@ function hcms_endSelectArea ()
   {    
     // unselect all
     hcms_unselectAll ();
-    
+
     // select objects in the given area
     if (document.getElementById('objectLayer') && document.getElementById('objectLayer').style.visibility == "visible")
     {
@@ -1532,7 +1647,7 @@ function hcms_endSelectArea ()
     if (objects && objects.length > 0)
     {
       var div_id, row_id, pos, x, y;
-        
+
       for (var i = 0; i < objects.length; i++)
       {
         pos = objects[i].getBoundingClientRect();
@@ -1546,7 +1661,7 @@ function hcms_endSelectArea ()
           selected = true;
         }
       }
-    
+
       // update control
       if (selected)
       {
@@ -1557,7 +1672,7 @@ function hcms_endSelectArea ()
       }
     }
   }
-    
+
   // reset select area
   x1 = 0;
   y1 = 0;
@@ -1567,7 +1682,7 @@ function hcms_endSelectArea ()
   y3 = 0;
   x4 = 0;
   y4 = 0;
-  
+
   // hide select area
   if (selectarea) selectarea.style.display = 'none';
 
@@ -1712,8 +1827,51 @@ function hcms_allowDrop (e)
   if (!is_mobile) e.preventDefault();
 }
 
-// events
-document.onkeydown = hcms_activateLinks;
+// key events
+document.addEventListener('keydown', e => {
+  // activate download links on Alt key
+  hcms_activateLinks(e);
+
+  // select all objects on Ctrl+A key
+  hcms_selectAll(e);
+
+  // cut objects if Ctrl+X key is pressed
+  if (hcms_keyPressed('ctrl', e) && (e.key == 'x' || e.key == 'X'))
+  {
+    // prevent the default
+    e.preventDefault();
+    hcms_createContextmenuItem('cut');
+  }
+
+  // copy objects if Ctrl+C key is pressed
+  if (hcms_keyPressed('ctrl', e) && (e.key == 'c' || e.key == 'C'))
+  {
+    // prevent the default
+    e.preventDefault();
+    hcms_createContextmenuItem('copy');
+  }
+
+  // linked copy objects if Ctrl+Y key is pressed
+  if (hcms_keyPressed('ctrl', e) && (e.key == 'y' || e.key == 'Y'))
+  {
+    // prevent the default
+    e.preventDefault();
+    hcms_createContextmenuItem('linkcopy');
+  }
+
+  // paste objects if Ctrl+V key is pressed
+  if (hcms_keyPressed('ctrl', e) && (e.key == 'v' || e.key == 'V'))
+  {
+    // prevent the default
+    e.preventDefault();
+    hcms_createContextmenuItem('paste');
+  }
+
+  // delete objects if Ctrl+V key is pressed
+  if (e.key == "Delete") hcms_createContextmenuItem('delete');
+});
+
+// other events
 document.onmousemove = hcms_getMouseXY;
 document.oncontextmenu = hcms_Contextmenu;
 document.onmousedown = hcms_rightClick;

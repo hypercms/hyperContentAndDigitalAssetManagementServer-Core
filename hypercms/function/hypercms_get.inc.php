@@ -1901,7 +1901,7 @@ function getmetadata_container ($container_id, $text_id_array=array())
 
 function getobjectlist ($site="", $location="", $folderhash="", $objectlistcols=array())
 {
-  global $mgmt_config;
+  global $mgmt_config, $user;
 
   // get location from hash code
   if ($folderhash != "")
@@ -1917,7 +1917,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $objectlistcols=
     $cat = getcategory ($site, $location);
 
     // check access permissions
-    if (!empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
@@ -4228,7 +4228,7 @@ function getmediasize ($filepath)
       // use ImageMagick
       if (!empty ($mgmt_imagepreview) && is_supported ($mgmt_imagepreview, $filepath))
       {
-        // get size of first page if document with more than oen page
+        // get size of first page if document with more than one page
         $cmdresult = exec ("identify -format \"%wx%h\" \"".shellcmd_encode ($filepath)."[0]\"");
 
         if (strpos ($cmdresult, "x") > 0) list ($result["width"], $result["height"]) = explode ("x", $cmdresult);
@@ -4595,11 +4595,11 @@ function getvideoinfo ($filepath)
         if (is_array ($metadata) && sizeof ($metadata) > 0)
         {
           // video dimension in pixels
-    	  $matches = array();
+    	    $matches = array();
 
-    	  if (preg_match ($dimensionRegExp, implode ("\n", $metadata), $matches))
+          if (preg_match ($dimensionRegExp, implode ("\n", $metadata), $matches))
           {
-    	    $dimension = $matches[1];
+            $dimension = $matches[1];
 
             if ($dimension != "")
             {
@@ -5407,13 +5407,14 @@ function gethomeboxes ($site_array=array())
 // --------------------------------------- getuserboxes -------------------------------------------
 // function: getuserboxes ()
 // input: user name [string]
-// output: selected home box of a user as array with technical name as key and readable name as value / false
+// output: selected home box of a user with technical name as key and readable name as value [array]
 // requires: config.inc.php
 
 function getuserboxes ($user)
 {
   global $mgmt_config;
 
+  // initialize
   $result = array();
 
   if (valid_objectname ($user))
@@ -5443,9 +5444,7 @@ function getuserboxes ($user)
 
           return $result;
         }
-        else return false;
       }
-      else return false;
     }
     // default home boxes defined in main config
     elseif (!empty ($mgmt_config['homeboxes']))
@@ -5461,13 +5460,11 @@ function getuserboxes ($user)
           // system home boxes (name)
           else $result[$name] = ucfirst (str_replace ("_", " ", $name));
         }
-
-        return $result;
       }
-      else return false;
     }
   }
-  else return false;
+
+  return $result;
 }
 
 // =========================== CHAT ==================================

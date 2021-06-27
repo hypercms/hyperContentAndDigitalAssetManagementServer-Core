@@ -1193,6 +1193,12 @@ else hcms_transitioneffect = true;
 contextxmove = true;
 contextymove = true;
 
+// overwrite permissions from contextmenu.js
+<?php if ($action == "recyclebin") { ?>
+permission['rename'] = false;
+<?php } ?>
+permission['paste'] = false;
+
 // explorer view option
 var explorerview = "<?php echo getescapedtext ($temp_explorerview); ?>";
 
@@ -1394,7 +1400,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
     <input type="hidden" name="folder" value="" />
     <input type="hidden" name="multiobject" value="" />
     <input type="hidden" name="from_page" value="<?php echo $action; ?>" />
-    <input type="hidden" name="token" value="" />
+    <input type="hidden" name="token" value="<?php echo $token; ?>" />
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
     

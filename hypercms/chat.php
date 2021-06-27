@@ -44,6 +44,7 @@ checkusersession ($user, false);
   border-radius: 3px;
   margin: 0px 5px 0px 0px;
 }
+
 #chat-area p
 {
   padding: 4px 0px;
@@ -166,7 +167,7 @@ function getusersonline ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onload="setInterval('chat.update()', 1000); setInterval('getusersonline()', 10000); adjust_height();" onresize="adjust_height();">
+<body class="hcmsWorkplaceGeneric" onload="setInterval('chat.update()', 2600); setInterval('getusersonline()', 12300); adjust_height();" onresize="adjust_height();">
 
 <!-- top bar -->
 <div class="hcmsWorkplaceBar" style="width:100%;">

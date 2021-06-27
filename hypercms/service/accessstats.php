@@ -30,7 +30,7 @@ checkusersession ($user);
 // chart size in pixels
 if (!empty ($is_mobile))
 {
-  $chart_width = 560;
+  $chart_width = 300;
   $chart_height = 190;
 }
 else
@@ -68,9 +68,27 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<script>
+function previous ()
+{
+  document.getElementById('hcmsLoadScreen').style.display='inline';
+  document.forms['previousform'].submit();
+}
+
+function next ()
+{
+  document.getElementById('hcmsLoadScreen').style.display='inline';
+  document.forms['nextform'].submit();
+}
+</script>
 </head>
 
 <body>
+
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="background-color:transparent;"></div>
+
+<div class="hcmsTextWhite">
 
 <!-- navigation forms -->
 <form name="previousform" action="" method="post">
@@ -85,18 +103,17 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 </form>
 
 <div class="hcmsHeadline" style="width:150px; margin:0px auto; text-align:center; white-space:nowrap;">
-  <img src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" class="hcmsButton hcmsIconList" onclick="document.forms['previousform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" />
+  <img src="<?php echo getthemelocation("night"); ?>img/button_arrow_left.png" class="hcmsButton hcmsIconList" onclick="previous();" alt="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" />
   <div style="float:left; width:100px; padding:2px; text-align:center;">&nbsp;<?php echo $date_month."/".$date_year; ?>&nbsp;</div>
   <?php if ($date_month != date ("m", time()) || $date_year != date ("Y", time())) { ?>
-  <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButton hcmsIconList" onclick="document.forms['nextform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>"/>
+  <img src="<?php echo getthemelocation("night"); ?>img/button_arrow_right.png" class="hcmsButton hcmsIconList" onclick="next();" alt="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>"/>
   <?php } else { ?>
-  <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButtonOff hcmsIconList" />
+  <img src="<?php echo getthemelocation("night"); ?>img/button_arrow_right.png" class="hcmsButtonOff hcmsIconList" />
   <?php } ?>
 </div>
 <div style="clear:both;"></div>
 
 <!-- chart -->
-<div class="hcmsTextWhite">
 <?php
 if (!empty ($location_esc))
 {
@@ -246,7 +263,7 @@ if (!empty ($location_esc))
     
   if (is_array ($view_axis) || is_array ($download_axis) || is_array ($upload_axis))
   {
-    $chart = buildbarchart ("chart", $chart_width, $chart_height, 8, 40, $date_axis, $view_axis, $download_axis, $upload_axis, "border:1px solid #666666; background:white;", "background:#6fae30; font-size:10px; cursor:pointer;", "background:#108ae7; font-size:10px; cursor:pointer;", "background:#ff8219; font-size:10px; cursor:pointer;");
+    $chart = buildbarchart ("chart", $chart_width, $chart_height, 8, 40, $date_axis, $view_axis, $download_axis, $upload_axis, "border:1px solid #666666; background:white; font-size:10px;", "background:#6fae30; font-size:10px; cursor:pointer;", "background:#108ae7; font-size:10px; cursor:pointer;", "background:#ff8219; font-size:10px; cursor:pointer;");
     echo $chart;
   }
 

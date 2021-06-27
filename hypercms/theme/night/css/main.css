@@ -324,17 +324,17 @@ a.hcmsNavigator
 
 .hcmsWorkplaceObjectlist
 {
-  background-color: #313131;
+  background-color: #313131 !important;
 }
 
 .hcmsWorkplaceObjectlistLinks
 {
-  background-color: #3E6517
+  background-color: #3E6517 !important;
 }
 
 .hcmsWorkplaceWorkflow
 {
-  background-color: #505050;
+  background-color: #505050 !important;
 }
 
 .hcmsWorkplaceGeneric
@@ -386,57 +386,57 @@ a.hcmsNavigator
 
 .hcmsRowHead1
 {
-  background-color: #E36804;
+  background-color: #E36804 !important;
 }
 
 .hcmsRowHead2
 {
-  background-color: #1D1D1D;
+  background-color: #1D1D1D !important;
 }
 
 .hcmsRowData1
 {
-  background-color: #777777;
+  background-color: #777777 !important;
 }
 
 .hcmsRowData2
 {
-  background-color: #909090;
+  background-color: #909090 !important;
 }
 
 .hcmsPriorityAlarm
 {
-  background-color: #DE3E04;
+  background-color: #DE3E04 !important;
 }
 
 .hcmsPriorityHigh
 {
-  background-color: #FB7C0C;
+  background-color: #FB7C0C !important;
 }
 
 .hcmsPriorityMedium
 {
-  background-color: #FCB335;
+  background-color: #FCB335 !important;
 }
 
 .hcmsPriorityLow
 {
-  background-color: #83B2C6;
+  background-color: #83B2C6 !important;
 }
 
 .hcmsToDo
 {
-  background-color: #FB7C0C;
+  background-color: #FB7C0C !important;
 }
 
 .hcmsInProgress
 {
-  background-color: #3094D7;
+  background-color: #3094D7 !important;
 }
 
 .hcmsFinished
 {
-  background-color: #69A738;
+  background-color: #69A738 !important;
 }
 
 .hcmsMessage
@@ -816,28 +816,28 @@ a.hcmsNavigator
 
 .hcmsTextGreen
 {
-  color: #5AAD5A; 
+  color: #5AAD5A !important; 
 }
 
 .hcmsTextOrange
 {
-  color: #F78C31; 
+  color: #F78C31 !important; 
 }
 
 .hcmsTextWhite
 {
-  color: #FFFFFF; 
+  color: #FFFFFF !important; 
 }
 
 .hcmsTextShadow
 {
-  text-shadow: 0px 0px 2px #000000;
+  text-shadow: 0px 0px 2px #000000 !important;
 }
 
 .hcmsRequiredInput
 {
-  border: 1px solid red;
-  color: red;
+  border: 1px solid red !important;
+  color: red !important;
 }
 
 .hcmsFace

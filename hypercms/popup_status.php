@@ -14,6 +14,9 @@ require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
 
+// verify the permissions of the user in the API functions
+$mgmt_config['api_checkpermission'] = true;
+
 
 // input parameters
 $action = getrequest ("action");
@@ -30,6 +33,13 @@ $published_only = getrequest_esc ("published_only");
 $tempfile = getrequest_esc ("tempfile", "locationname");
 $from_page = getrequest_esc ("from_page");
 $token= getrequest_esc ("token");
+
+// no location provided
+if ($location_orig == "" && is_string ($multiobject) && strlen ($multiobject) > 6)
+{
+  $multiobject_array = link_db_getobject ($multiobject);
+  $location = $multiobject_array[0];
+}
 
 // flush in order to display load screen
 // do not use it for action "publish" since the output will interfere with the session_start used in the template engine
@@ -71,7 +81,7 @@ if ($force == "start" && substr_count ($action, "->") == 1)
 
   if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
   {
-    if (($method == "cut" || $method == "copy" || $method == "linkcopy") && ($setlocalpermission['rename'] == 1 && $setlocalpermission['folderrename'] == 1)) $authorized = true;
+    if (($method == "cut" || $method == "copy" || $method == "linkcopy") && ($setlocalpermission['rename'] == 1 || $setlocalpermission['folderrename'] == 1)) $authorized = true;
   }
 
   // --------------------------------- logic section ----------------------------------
@@ -155,7 +165,7 @@ $location_esc = convertpath ($site, $location, $cat);
 $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
-if ($action != "emptybin" && ($ownergroup == false || $setlocalpermission['root'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location))) killsession ($user);
+if ($action != "emptybin" && (!valid_publicationname ($site) || !valid_locationname ($location))) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);
@@ -179,8 +189,8 @@ if (($setlocalpermission['root'] == 1 || $action == "emptybin") && checktoken ($
   // other actions
   else
   {
-    if (($action == "delete" || $action == "deletemark" || $action == "restore") && $setlocalpermission['folderdelete'] == 1 && $setlocalpermission['delete'] == 1) $authorized = true;
-    elseif ($action == "paste" && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['rename'] == 1) $authorized = true;
+    if (($action == "delete" || $action == "deletemark" || $action == "restore") && ($setlocalpermission['folderdelete'] == 1 || $setlocalpermission['delete'] == 1)) $authorized = true;
+    elseif ($action == "paste" && ($setlocalpermission['folderrename'] == 1 || $setlocalpermission['rename'] == 1)) $authorized = true;
     elseif (($action == "publish" || $action == "unpublish") && $setlocalpermission['publish'] == 1) $authorized = true;
     
     // check if folder or object exists
@@ -207,7 +217,7 @@ if ($authorized == true || $force == "stop")
       // multiobjects are not possible if action = paste
       if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_temp = link_db_getobject ($multiobject);
 
-      if (is_array ($multiobject_temp) && sizeof ($multiobject_temp) > 1 && $action != "paste")
+      if (is_array ($multiobject_temp) && sizeof ($multiobject_temp) > 0 && $action != "paste")
       {
         $multiobject_array = $multiobject_temp;
       }
@@ -225,7 +235,7 @@ if ($authorized == true || $force == "stop")
     // process objects:
     // method is used for action = paste -> methods: cut, copy, linkcopy
     // $source_root and $source_folder are passed as global variables to the functions and are needed if action = paste.
-    if ($from_page != "recyclebin" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark"; 
+    if ($from_page != "recyclebin" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark";
 
     $result = manipulateallobjects ($action, $multiobject_array, "$method", $force, $published_only, $user, $tempfile);
     
@@ -371,8 +381,13 @@ if ($authorized == true || $force == "stop")
     $status = ($maxcount - $count)." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
   }
 }
+// permission not granted
 else
 {
+  $add_javascript = "
+  self.close();
+  ";
+
   $status = getescapedtext ($hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang]);
 }
 

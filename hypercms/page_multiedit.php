@@ -944,6 +944,8 @@ function cal_on_autoclose (cal)
   cal_obj = null;
 }
 
+// ----- Save -----
+
 // save content
 function savecontent (reload)
 {
@@ -1234,8 +1236,15 @@ function savecontent (reload)
   }
   else return false;
 }
-  
-function validateForm() 
+
+function hcms_saveEvent ()
+{
+  savecontent(true);
+}
+
+// ---- validation ---
+
+function validateForm () 
 {
   var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
   
@@ -1330,9 +1339,8 @@ function openerReload ()
 } 
 
 <?php if (!$mixedmedia && $is_image) { ?>
-// image
-
-function validateImageForm() 
+// image validation
+function validateImageForm () 
 {
   var i,p,q,nm,test,num,min,max,errors='',args=validateImageForm.arguments;
   
@@ -1377,7 +1385,7 @@ function validateImageForm()
   else return true;
 }
 
-function checkImageForm()
+function checkImageForm ()
 {
   var result = true;
 
@@ -1853,13 +1861,13 @@ function checkVideoForm()
   {
     var errors = '';
           
-    if (document.getElementById('cut_yes').checked == true)
+    if (document.getElementById('cut_yes') && document.getElementById('cut_yes').checked == true)
     {
       if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
       if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
     }
     
-    if (document.getElementById('videosize_i').checked == true)
+    if (document.getElementById('videosize_i') && document.getElementById('videosize_i').checked == true)
     {
       if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
       if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
@@ -1877,7 +1885,7 @@ function checkVideoForm()
   }
 
   // video thumbnail image
-  if (document.getElementById('thumb_yes').checked == true)
+  if (document.getElementById('thumb_yes') && document.getElementById('thumb_yes').checked == true)
   {
     if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
 
@@ -1892,7 +1900,7 @@ function checkCut()
 {
   var area1 = $('#cut_area');
   
-  if (document.getElementById('cut_yes').checked == true)
+  if (document.getElementById('cut_yes') && document.getElementById('cut_yes').checked == true)
   {
     area1.show();
   }
@@ -1907,7 +1915,7 @@ function checkThumb()
 {
   var area1 = $('#thumb_area');
   
-  if (document.getElementById('thumb_yes').checked == true)
+  if (document.getElementById('thumb_yes') && document.getElementById('thumb_yes').checked == true)
   {
     area1.show();
   }

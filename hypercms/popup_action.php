@@ -14,6 +14,9 @@ require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
 
+// verify the permissions of the user in the API functions
+$mgmt_config['api_checkpermission'] = true;
+
 
 // input parameters
 $action = getrequest ("action");
@@ -24,6 +27,13 @@ $page = getrequest ("page", "objectname");
 $wf_token = getrequest ("wf_token");
 $from_page = getrequest ("from_page");
 $token = getrequest ("token");
+
+// no location provided
+if ($location == "" && is_string ($multiobject) && strlen ($multiobject) > 6)
+{
+  $multiobject_array = link_db_getobject ($multiobject);
+  $location = $multiobject_array[0];
+}
 
 // get publication and category
 $site = getpublication ($location);
@@ -39,8 +49,9 @@ $location = deconvertpath ($location, "file");
 
 // check access permissions
 $ownergroup = accesspermission ($site, $location, $cat);
-$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
-if ($ownergroup == false || $setlocalpermission['root'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location)) killsession ($user);
+$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
+if (!valid_publicationname ($site) || !valid_locationname ($location)) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);
@@ -79,23 +90,13 @@ $add_onload = "";
 $multiobject_array = array();
 $result = array();
 
-// correct location for access permission
-if ($folder != "")
-{
-  $location_ACCESS = $location.$folder."/";
-}
-else
-{
-  $location_ACCESS = $location;
-}
-
 // check authorization
 $authorized = false;
 
 if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
 {
-  if (($action == "delete" || $action == "deletemark" || $action == "restore") && (($page != "" && $setlocalpermission['delete'] == 1) || ($folder != "" && $setlocalpermission['folderdelete'] == 1))) $authorized = true;
-  elseif (($action == "cut" || $action == "copy" || $action == "linkcopy") && (($page != "" && $setlocalpermission['rename'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1))) $authorized = true;
+  if (($action == "delete" || $action == "deletemark" || $action == "restore") && ($setlocalpermission['delete'] == 1 || $setlocalpermission['folderdelete'] == 1)) $authorized = true;
+  elseif (($action == "cut" || $action == "copy" || $action == "linkcopy") && ($setlocalpermission['rename'] == 1 || $setlocalpermission['folderrename'] == 1)) $authorized = true;
   elseif (($action == "page_favorites_create" || $action == "page_favorites_delete") && $setlocalpermission['create'] == 1) $authorized = true;
   elseif ($action == "page_unlock" && ($page != "" && $setlocalpermission['create'] == 1) || ($folder != "" && $setlocalpermission['foldercreate'] == 1)) $authorized = true;
   elseif ($action == "paste" && ($setlocalpermission['rename'] == 1 || $setlocalpermission['folderrename'] == 1)) $authorized = true;
@@ -128,7 +129,7 @@ if ($authorized == true)
 
     if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_array = link_db_getobject ($multiobject);
 
-    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 1)
+    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 0)
     {
       $result['result'] = true;
 
@@ -174,7 +175,7 @@ if ($authorized == true)
   {
     if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_array = link_db_getobject ($multiobject);
 
-    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 1)
+    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 0)
     {
       $result['result'] = true;
 
@@ -222,7 +223,7 @@ if ($authorized == true)
   {
     if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_array = link_db_getobject ($multiobject);
 
-    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 1)
+    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 0)
     {
       $result['result'] = true;
 
@@ -274,7 +275,7 @@ if (opener && parent.frames['mainFrame']) parent.frames['mainFrame'].location.re
   {
     if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_array = link_db_getobject ($multiobject);
 
-    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 1)
+    if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 0)
     {
       $result['result'] = true;
 
@@ -340,8 +341,11 @@ if (opener && parent.frames['mainFrame']) parent.frames['mainFrame'].location.re
     $show = $result['message'];  
   }
 }
+// permission not granted
 else
 {
+  $result['result'] = true;
+  $add_onload = "";
   $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang])."</span>";
 }
 
@@ -383,6 +387,14 @@ if ($action == "unzip" && $authorized == true)
     $add_onload = "document.getElementById('hcmsLoadScreen').style.display='none';\n";
     $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['file-could-not-be-extracted'][$lang])."</span><br />\n";
   }
+}
+
+// no objects provided
+if ($show == "")
+{
+  $result['result'] = true;
+  $add_onload = "";
+  $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['no-file-selected'][$lang])."</span><br />\n";
 }
 ?>
 
