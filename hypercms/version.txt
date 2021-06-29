@@ -5276,6 +5276,7 @@ Release 07/2021
 - Modifications in JS function hcms_createContextmenuItem in contextmenu.js and contextmenu.min.js in order to implement permissions that can be set using JavaScript
 - Modifications in pop_action and popup_status in order to adjust the permission check
 - Modifications in pop_action and popup_status in order to process multiobjects with a single object
+- Modifications in explorer in order to deactivate keyboard shortcuts
 - Design modifications in control_media_menu
 - Modifications in API loader in order to enable the verification of the user permissions in the API functions
 - Modifications in all API functions in order to exclude the system user from the verification of the permissions (since the system user can't login in the system)
@@ -5293,4 +5294,5 @@ Release 07/2021
 - Bug fix: Function edituser verified all combinations of permissions which has resulted in a restriction when saving the user settings 
 - Bug fix: The Project Management API did invert the permission check for its functions
 - Bug fix: The Task Management API did invert the permission check for its functions
-- Bug fix: user_edit did not remove special characters from the names used in the autocomplete JQuery feature 
+- Bug fix: user_edit did not remove special characters from the names used in the autocomplete JQuery feature
+- Bug fix: JS function hcms_leftClick in contextmenu.js and contextmenu.min.js did not unselect all objects if there was more than 1 object selected (multiobject)

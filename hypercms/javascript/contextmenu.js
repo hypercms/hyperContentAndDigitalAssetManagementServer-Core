@@ -47,6 +47,7 @@ permission['rename'] = true;
 permission['paste'] = true;
 permission['delete'] = true;
 permission['publish'] = true;
+permission['shortcuts'] = true;
 
 // design theme
 var themelocation = '';
@@ -1217,72 +1218,63 @@ function hcms_updateControlMessageMenu ()
 }
 
 // select all objects
-function hcms_selectAll (e)
+function hcms_selectAll ()
 {
-  if (!e) var e = window.event;
-
-  // if Ctrl+A key is pressed
-  if (hcms_keyPressed('ctrl', e) && e.key === 'a')
+  // select all
+  if (document.getElementById('objectlist'))
   {
-    // prevent the default select
-    e.preventDefault();
-    
-    // select all
-    if (document.getElementById('objectlist'))
-    {
-      var links = '';
-      var multiobject = '';
-      var table = document.getElementById('objectlist');
-      var tablerows = table.getElementsByTagName("TR");
+    var links = '';
+    var multiobject = '';
+    var table = document.getElementById('objectlist');
+    var tablerows = table.getElementsByTagName("TR");
 
-      for (i = 0; i < tablerows.length; i++)
+    for (i = 0; i < tablerows.length; i++)
+    {
+      links = tablerows[i].getElementsByTagName('A');  
+
+      if (links)
       {
-        links = tablerows[i].getElementsByTagName('A');  
-
-        if (links)
-        {
-          object = links[0].getAttribute('data-objectpath');
-          if (object != '') multiobject = multiobject + '|' + object;
-        }
-
-        tablerows[i].className = "hcmsObjectSelected";
+        object = links[0].getAttribute('data-objectpath');
+        if (object != '') multiobject = multiobject + '|' + object;
       }
-    }
-    
-    if (document.getElementById('objectgallery'))
-    {
-      var table = document.getElementById('objectgallery');   
-      var tabledata = table.children;
 
-      for (i = 0; i < tabledata.length; i++)
-      {           
-        tabledata[i].className = "hcmsObjectSelected";     
-      }  
-    } 
-
-    if (document.forms['contextmenu_object'] && document.forms['contextmenu_object'].elements['multiobject'])
-    {
-      document.forms['contextmenu_object'].elements['multiobject'].value = multiobject;
-      hcms_updateControlObjectListMenu();
+      tablerows[i].className = "hcmsObjectSelected";
     }
-    else if (document.forms['contextmenu_user'] && document.forms['contextmenu_user'].elements['multiobject'])
-    {
-      document.forms['contextmenu_user'].elements['multiobject'].value = multiobject;
-      hcms_updateControlUserMenu();
-    }
-    else if (document.forms['contextmenu_queue'] && document.forms['contextmenu_queue'].elements['multiobject'])
-    {
-      document.forms['contextmenu_queue'].elements['multiobject'].value = multiobject;
-      hcms_updateControlQueueMenu();
-    }
-    else if (document.forms['contextmenu_message'] && document.forms['contextmenu_message'].elements['multiobject'])
-    {
-      document.forms['contextmenu_message'].elements['multiobject'].value = multiobject;
-      hcms_updateControlMessageMenu();
-    }
-
-    return true;
   }
+  
+  if (document.getElementById('objectgallery'))
+  {
+    var table = document.getElementById('objectgallery');   
+    var tabledata = table.children;
+
+    for (i = 0; i < tabledata.length; i++)
+    {           
+      tabledata[i].className = "hcmsObjectSelected";     
+    }  
+  } 
+
+  if (document.forms['contextmenu_object'] && document.forms['contextmenu_object'].elements['multiobject'])
+  {
+    document.forms['contextmenu_object'].elements['multiobject'].value = multiobject;
+    hcms_updateControlObjectListMenu();
+  }
+  else if (document.forms['contextmenu_user'] && document.forms['contextmenu_user'].elements['multiobject'])
+  {
+    document.forms['contextmenu_user'].elements['multiobject'].value = multiobject;
+    hcms_updateControlUserMenu();
+  }
+  else if (document.forms['contextmenu_queue'] && document.forms['contextmenu_queue'].elements['multiobject'])
+  {
+    document.forms['contextmenu_queue'].elements['multiobject'].value = multiobject;
+    hcms_updateControlQueueMenu();
+  }
+  else if (document.forms['contextmenu_message'] && document.forms['contextmenu_message'].elements['multiobject'])
+  {
+    document.forms['contextmenu_message'].elements['multiobject'].value = multiobject;
+    hcms_updateControlMessageMenu();
+  }
+
+  return true;
 }
 
 // unselect all objects
@@ -1409,8 +1401,8 @@ function hcms_leftClick (e)
   {
     hcms_hideContextmenu();
 
-    // if no key is pressed and multiobject stores more than 1 object
-    if (hcms_keyPressed('', e) == false && object == "" && objectcount <= 1)
+    // if no key is pressed and multiobject stores at least 1 object
+    if (hcms_keyPressed('', e) == false && object == "" && objectcount >= 1)
     {
       hcms_unselectAll();
       hcms_resetContext();
@@ -1829,46 +1821,54 @@ function hcms_allowDrop (e)
 
 // key events
 document.addEventListener('keydown', e => {
-  // activate download links on Alt key
-  hcms_activateLinks(e);
-
-  // select all objects on Ctrl+A key
-  hcms_selectAll(e);
-
-  // cut objects if Ctrl+X key is pressed
-  if (hcms_keyPressed('ctrl', e) && (e.key == 'x' || e.key == 'X'))
+  if (permission['shortcuts'] == true)
   {
-    // prevent the default
-    e.preventDefault();
-    hcms_createContextmenuItem('cut');
-  }
+    // activate download links on Alt key
+    hcms_activateLinks(e);
 
-  // copy objects if Ctrl+C key is pressed
-  if (hcms_keyPressed('ctrl', e) && (e.key == 'c' || e.key == 'C'))
-  {
-    // prevent the default
-    e.preventDefault();
-    hcms_createContextmenuItem('copy');
-  }
+    // select all objects on Ctrl+A key
+    if (hcms_keyPressed('ctrl', e) && (e.key === 'a' || e.key == 'A'))
+    {
+      // prevent the default
+      e.preventDefault();
+      hcms_selectAll();
+    }
 
-  // linked copy objects if Ctrl+Y key is pressed
-  if (hcms_keyPressed('ctrl', e) && (e.key == 'y' || e.key == 'Y'))
-  {
-    // prevent the default
-    e.preventDefault();
-    hcms_createContextmenuItem('linkcopy');
-  }
+    // cut objects if Ctrl+X key is pressed
+    if (hcms_keyPressed('ctrl', e) && (e.key == 'x' || e.key == 'X'))
+    {
+      // prevent the default
+      e.preventDefault();
+      hcms_createContextmenuItem('cut');
+    }
 
-  // paste objects if Ctrl+V key is pressed
-  if (hcms_keyPressed('ctrl', e) && (e.key == 'v' || e.key == 'V'))
-  {
-    // prevent the default
-    e.preventDefault();
-    hcms_createContextmenuItem('paste');
-  }
+    // copy objects if Ctrl+C key is pressed
+    if (hcms_keyPressed('ctrl', e) && (e.key == 'c' || e.key == 'C'))
+    {
+      // prevent the default
+      e.preventDefault();
+      hcms_createContextmenuItem('copy');
+    }
 
-  // delete objects if Ctrl+V key is pressed
-  if (e.key == "Delete") hcms_createContextmenuItem('delete');
+    // linked copy objects if Ctrl+Y key is pressed
+    if (hcms_keyPressed('ctrl', e) && (e.key == 'y' || e.key == 'Y'))
+    {
+      // prevent the default
+      e.preventDefault();
+      hcms_createContextmenuItem('linkcopy');
+    }
+
+    // paste objects if Ctrl+V key is pressed
+    if (hcms_keyPressed('ctrl', e) && (e.key == 'v' || e.key == 'V'))
+    {
+      // prevent the default
+      e.preventDefault();
+      hcms_createContextmenuItem('paste');
+    }
+
+    // delete objects if Ctrl+V key is pressed
+    if (e.key == "Delete") hcms_createContextmenuItem('delete');
+  }
 });
 
 // other events

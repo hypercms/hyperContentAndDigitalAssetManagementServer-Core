@@ -1365,6 +1365,9 @@ else
 
     <script type="text/javascript">
 
+    // reassign permissions for contextmenu.js
+    permission['shortcuts'] = false;
+
     // variable where lastSelected element is stored
     var lastSelected = "";
 
