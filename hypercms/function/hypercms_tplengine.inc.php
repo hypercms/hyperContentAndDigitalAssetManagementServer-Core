@@ -969,7 +969,7 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
           }
           elseif (!empty ($result['content']))
           {
-            $temp = getcontent ($result['content'], "<content>");
+            $temp = getcontent ($result['content'], "<content>", true);
             $includedata = $temp[0];
           }
         }
@@ -1006,7 +1006,7 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
 
           if (!empty ($result['content']))
           {
-            $temp = getcontent ($result['content'], "<content>");
+            $temp = getcontent ($result['content'], "<content>", true);
             if (!empty ($temp[0])) $includedata = $temp[0];
           }
         }
@@ -1483,7 +1483,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $bufferdata = getcontent ($templatedata, "<application>");
       $application = $bufferdata[0];
 
-      $bufferdata = getcontent ($templatedata, "<content>");
+      $bufferdata = getcontent ($templatedata, "<content>", true);
       $templatedata = $bufferdata[0];
     }
     else
@@ -2298,6 +2298,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // set default value given eventually by tag
           if (empty ($contentbot) && $defaultvalue != "") $contentbot = $defaultvalue;
 
+          // encode scripts in content
+          $contentbot = scriptcode_encode ($contentbot);
+
           // in order to access the content via JS
           if ($groupaccess != true && ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock"))
           {
@@ -3110,7 +3113,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {
                         $tmpid = getcontent ($data, "<text_id>");
                         $tmpuser = getcontent ($data, "<textuser>");
-                        $tmpcontent = getcontent ($data, "<textcontent>");
+                        $tmpcontent = getcontent ($data, "<textcontent>", true);
 
                         if (!empty ($tmpid[0]) && !empty ($tmpcontent[0]))
                         {
@@ -3165,13 +3168,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   {
                     // get content
                     $bufferarray = selectcontent ($contentdata, "<text>", "<text_id>", $id);
-                    if (!empty ($bufferarray[0])) $bufferarray = getcontent ($bufferarray[0], "<textcontent>");
+                    if (!empty ($bufferarray[0])) $bufferarray = getcontent ($bufferarray[0], "<textcontent>", true);
                     if (!empty ($bufferarray[0])) $contentbot = $bufferarray[0];
                   }
                 }
 
                 // set default value defined by tag
                 if (empty ($contentbot) && $defaultvalue != "") $contentbot = $defaultvalue;
+
+                // encode scripts in content
+                $contentbot = scriptcode_encode ($contentbot);
 
                 // un-comment html tags (important for formatted texts)
                 if (!empty ($contentbot))
@@ -4540,33 +4546,49 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   if ($hypertagname == $searchtag."alttext" && !isset ($mediaalttextbot[$id]))
                   {
                     $bufferarray = getcontent ($mediabot[$id], "<mediaalttext>");
-                    $mediaalttextbot[$id] = $bufferarray[0];
-                    // escape special characters
-                    $mediaalttextbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalttextbot[$id]);
+
+                    if (!empty ($bufferarray[0]))
+                    {
+                      $mediaalttextbot[$id] = $bufferarray[0];
+                      // escape special characters
+                      $mediaalttextbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalttextbot[$id]);
+                    }
                   }
                   // get the media alignment name from mediabot
                   elseif (($hypertagname == $searchtag."align" || $is_watermark) && !isset ($mediaalignbot[$id]))
                   {
                     $bufferarray = getcontent ($mediabot[$id], "<mediaalign>");
-                    $mediaalignbot[$id] = $bufferarray[0];
-                    // escape special characters
-                    $mediaalignbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalignbot[$id]);
+
+                    if (!empty ($bufferarray[0]))
+                    {
+                      $mediaalignbot[$id] = $bufferarray[0];
+                      // escape special characters
+                      $mediaalignbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalignbot[$id]);
+                    }
                   }
                   // get the media width name from mediabot
                   elseif ($hypertagname == $searchtag."width" && !isset ($mediawidthbot[$id]))
                   {
                     $bufferarray = getcontent ($mediabot[$id], "<mediawidth>");
-                    $mediawidthbot[$id] = $bufferarray[0];
-                    // escape special characters
-                    $mediawidthbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediawidthbot[$id]);
+
+                    if (!empty ($bufferarray[0]))
+                    {
+                      $mediawidthbot[$id] = $bufferarray[0];
+                      // escape special characters
+                      $mediawidthbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediawidthbot[$id]);
+                    }
                   }
                   // get the media height name from mediabot
                   elseif ($hypertagname == $searchtag."height" && !isset ($mediaheightbot[$id]))
                   {
                     $bufferarray = getcontent ($mediabot[$id], "<mediaheight>");
-                    $mediaheightbot[$id] = $bufferarray[0];
-                    // escape special characters
-                    $mediaheightbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaheightbot[$id]);
+
+                    if (!empty ($bufferarray[0]))
+                    {
+                      $mediaheightbot[$id] = $bufferarray[0];
+                      // escape special characters
+                      $mediaheightbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaheightbot[$id]);
+                    }
                   }
                 }
               }
@@ -5417,6 +5439,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   {
                     $bufferarray = getcontent ($linkbot[$id], "<linkhref>");
                     if (!empty ($bufferarray[0])) $linkhrefbot[$id] = $bufferarray[0];
+                    // escape special characters
+                    if (!empty ($linkhrefbot[0])) $linkhrefbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linkhrefbot[$id]); 
                   }
                   // get the link alttext name from linkbot
                   elseif ($hypertagname == $searchtag."target" && !isset ($linktargetbot[$id]))
@@ -7045,7 +7069,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // get content
           if ($buildview != "template" && $groupaccess == true && $onpublish != "hidden")
           {
-            $temp = rdbms_getmedia ($container_id, true);
+            $temp = rdbms_getmedia ($container_id);
 
             if (!empty ($temp['latitude']) && !empty ($temp['longitude'])) $contentbot = $temp['latitude'].", ".$temp['longitude'];
             else $contentbot = "";
@@ -7123,8 +7147,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
         if (!empty ($bufferarray[0]))
         {
-          $bufferarray = getcontent ($bufferarray[0], "<textcontent>");
+          $bufferarray = getcontent ($bufferarray[0], "<textcontent>", true);
           if (!empty ($bufferarray[0])) $faces_json = $bufferarray[0];
+
+          // encode script code
+          $faces_json = scriptcode_encode ($faces_json);
 
           // set empty string instead of JSON string
           if (trim ($faces_json) == "") $faces_json = "''";
@@ -7406,7 +7433,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $errview = substr ($errview, 0, strpos (trim ($errview, "\n"), "\n"));
 
                   $errcode = "10201";
-                  $error[] = $mgmt_config['today']."|hypercms_tplengine.inc.php|error|".$errcode."|generator failed to render file ".$mediafile." with error: ".$errview;
+                  $error[] = $mgmt_config['today']."|hypercms_tplengine.inc.php|error|".$errcode."|Generator failed to render file ".$mediafile." with error: ".$errview;
                 }
               }
 
@@ -8783,8 +8810,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       ".$add_submitlink."
       ".$add_submitcomp."
       hcms_stringifyVTTrecords();
-      collectFaces();
-      initFaceOnVideo();
+      if (typeof collectFaces === 'function') collectFaces();
+      if (typeof initFaceOnVideo === 'function') initFaceOnVideo();
 
       // save content using form POST method
       if (method == 'post' || isNewComment()) saveContent();
@@ -8792,7 +8819,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       else save = autoSave(true);
 
       // for file upload and meta data editing
-      if (save == true && typeof parent.nextEditWindow == 'function')
+      if (save == true && typeof parent.nextEditWindow === 'function')
       {
         parent.nextEditWindow();
       }
@@ -8844,7 +8871,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         ".$add_submitlink."
         ".$add_submitcomp."
         hcms_stringifyVTTrecords();
-        collectFaces();
+        if (typeof collectFaces === 'function') collectFaces();
 
         // write content to textareas
         if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances)
@@ -10183,7 +10210,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           $vtt_id = getcontent ($vtt_textnode, "<text_id>");
           if (!empty ($vtt_id[0])) list ($vtt, $vtt_langcode) = explode ("-", $vtt_id[0]);
 
-          $vtt_string = getcontent ($vtt_textnode, "<textcontent>");
+          $vtt_string = getcontent ($vtt_textnode, "<textcontent>", true);
         }
 
         if (!empty ($vtt_string[0]) && !empty ($vtt_langcode))
@@ -10204,9 +10231,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   {
     // delay for image to load and be displayed
     if (is_image ($mediafile)) $add_facedetection .= "
-    setTimeout (detectFaceOnImage, 800);";
+    if (typeof detectFaceOnImage === 'function') setTimeout (detectFaceOnImage, 800);";
     elseif (is_video ($mediafile)) $add_facedetection .= "
-    setTimeout (\"initFaceOnVideo('all')\", 500);";
+    if (typeof initFaceOnVideo === 'function') setTimeout (\"initFaceOnVideo('all')\", 500);";
   }
 
   // onload event / document ready
@@ -10547,7 +10574,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
     $templatedata = $result['content'];
     $templatesite = $result['publication'];
 
-    $bufferdata = getcontent ($templatedata, "<content>");
+    $bufferdata = getcontent ($templatedata, "<content>", true);
 
     // add newline at the begin to correct errors in tag-search
     if (!empty ($bufferdata[0])) $viewstore = "\n".$bufferdata[0];

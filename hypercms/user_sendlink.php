@@ -626,7 +626,7 @@ $token_new = createtoken ($user);
             </tr>
             <tr>
               <td id="selectbox">
-                <input type="text" value="" style="width:<?php echo $css_width_field; ?>;" name="selector" id="selector" />
+                <input id="selector" name="selector" type="text" value="" maxlength="500" style="width:<?php echo $css_width_field; ?>;" />
               </td>
             <tr>
               <td class="hcmsHeadline">
@@ -1059,11 +1059,13 @@ $token_new = createtoken ($user);
 
         <table class="hcmsTableNarrow">
           <tr>
-            <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </td>
-          </tr>
-          <tr>
             <td>
-              <?php if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?><label><input type="checkbox" name="email_ondate" id="email_ondate" value="yes" onclick="enablefield('email_date', this.checked);" <?php if ($email_ondate == "yes") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?></label> <input type="text" name="email_date" id="email_date" readonly="readonly" style="width:140px;" value="<?php echo showdate ($email_date, "Y-m-d H:i", "Y-m-d H:i"); ?>" /><img name="datepicker3" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'email_date', '%Y-%m-%d %H:%i', true);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" /><?php } ?>
+              <?php if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?>
+              <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </span><br/>
+              <label><input type="checkbox" name="email_ondate" id="email_ondate" value="yes" onclick="enablefield('email_date', this.checked);" <?php if ($email_ondate == "yes") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?></label> <input type="text" name="email_date" id="email_date" readonly="readonly" style="width:140px;" value="<?php echo showdate ($email_date, "Y-m-d H:i", "Y-m-d H:i"); ?>" /><img name="datepicker3" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'email_date', '%Y-%m-%d %H:%i', true);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" />
+              <?php } else { ?>
+              <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </span>
+              <?php } ?>
               <img name="ButtonSubmit" src="<?php echo getthemelocation(); ?>img/button_ok.png" onClick="if (checkForm()) document.forms['mailForm'].submit();" onMouseOver="hcms_swapImage('ButtonSubmit','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" onMouseOut="hcms_swapImgRestore()"  class="hcmsButtonTinyBlank hcmsButtonSizeSquare" title="OK" alt="OK" />
             </td>
           </tr>

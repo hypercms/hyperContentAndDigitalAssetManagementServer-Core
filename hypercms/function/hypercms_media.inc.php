@@ -95,7 +95,7 @@ function ocr_extractcontent ($site, $location, $file)
         if ($errorCode || !is_file ($temp_dir.$temp_name.".temp-0.tiff"))
         {
           $errcode = "20531";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:".$errorCode.", command:".$cmd.") failed in indexcontent for file: ".$file;
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed in indexcontent for file: ".$file;
         }
         // on success
         else
@@ -203,7 +203,7 @@ function ocr_extractcontent ($site, $location, $file)
                 if (!is_file ($temp_dir.$temp_name.".txt"))
                 {
                   $errcode = "20532";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of tesseract (command:".$cmd.") failed in indexcontent for file: ".$file;
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of tesseract (command:".$cmd.") failed in indexcontent for file: ".$file;
                 }
                 // on success
                 else
@@ -232,7 +232,7 @@ function ocr_extractcontent ($site, $location, $file)
             if (!is_file ($temp_dir.$temp_name.".txt"))
             {
               $errcode = "20532";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of tesseract (command:".$cmd.") failed in indexcontent for file: ".$file;
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of tesseract (command:".$cmd.") failed in indexcontent for file: ".$file;
             }
             // on success
             else
@@ -355,7 +355,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           $file_content = "";
 
           $errcode = "20132";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of pdftotext (code:".$errorCode.") failed in indexcontent for file '".$location.$file."'"; 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of pdftotext (code:".$errorCode.") failed in indexcontent for file '".$location.$file."'"; 
         }
         elseif (is_array ($file_content))
         {
@@ -389,7 +389,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if ($errorCode && is_array ($output))
         {
           $errcode = "20133";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
         } 
         else
         {
@@ -422,7 +422,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           $file_content = ""; 
 
           $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of antiword (code:$errorCode) failed in indexcontent for file: ".$location.$file; 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of antiword (code:$errorCode) failed in indexcontent for file: ".$location.$file; 
         }
         elseif (is_array ($file_content))
         {
@@ -448,7 +448,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if ($errorCode && is_array ($output))
         {
           $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
         } 
         else
         {
@@ -456,6 +456,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
           if ($file_content != false)
           {
+            // get encoding/charset
+            $xml_encoding = gethtmltag ($file_content, "?xml");
+            if ($xml_encoding != false) $charset_temp = getattribute ($xml_encoding, "encoding");
+            
             // add whitespaces before newline
             $file_content = str_replace ("</", " </", $file_content);
 
@@ -464,8 +468,14 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
             // remove multiple white spaces
             $file_content = preg_replace ('/\s+/', ' ', $file_content);
+
+            // convert content if source charset is not UTF-8 (XML-Containers of multimedia files must use UTF-8 encoding)
+            if (!empty ($charset_temp) && strtolower ($charset_temp) != "utf-8")
+            {
+              $file_content = convertchars ($file_content, $charset_temp, "UTF-8");
+            }
           }
- 
+
           // remove temp directory
           deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
         } 
@@ -489,7 +499,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if ($errorCode && is_array ($output))
         {
           $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
         } 
         else
         {
@@ -497,8 +507,21 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
           if ($file_content != false)
           {
+            // get encoding/charset
+            $xml_encoding = gethtmltag ($file_content, "?xml");
+            if ($xml_encoding != false) $charset_temp = getattribute ($xml_encoding, "encoding");
+
             // add whitespaces
             $file_content = str_replace ("</", " </", $file_content);
+
+            // strip tags
+            $file_content = strip_tags ($file_content);
+
+            // convert content if source charset is not UTF-8 (XML-Containers of multimedia files must use UTF-8 encoding)
+            if (!empty ($charset_temp) && strtolower ($charset_temp) != "utf-8")
+            {
+              $file_content = convertchars ($file_content, $charset_temp, "UTF-8");
+            }
           }
  
           // remove temp directory
@@ -555,7 +578,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         else
         {
           $errcode = "20135";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|extraction of content from powerpoint failed in indexcontent for file: ".$location.$file; 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Extraction of content from powerpoint failed in indexcontent for file: ".$location.$file; 
         } 
       }
       // get file content from MS Powerpoint 2007 (pptx) in UTF-8
@@ -578,7 +601,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if ($errorCode && is_array ($output))
         {
           $errcode = "20136";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
         } 
         else
         {
@@ -595,9 +618,24 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
                 if ($file_temp != false)
                 {
+                  // get encoding/charset
+                  $xml_encoding = gethtmltag ($file_temp, "?xml");
+                  if ($xml_encoding != false) $charset_temp = getattribute ($xml_encoding, "encoding");
+
                   // add whitespaces
                   $file_temp = str_replace ("</", " </", $file_temp);
-                  $file_content = $file_content." ".strip_tags ($file_temp);
+
+                  // strip tags
+                  $file_temp = strip_tags ($file_temp);
+
+                  // convert content if source charset is not UTF-8 (XML-Containers of multimedia files must use UTF-8 encoding)
+                  if (!empty ($charset_temp) && strtolower ($charset_temp) != "utf-8")
+                  {
+                    $file_temp = convertchars ($file_temp, $charset_temp, "UTF-8");
+                  }
+
+                  // merge
+                  $file_content = $file_content." ".$file_temp;
                 }
               }
             }
@@ -687,8 +725,8 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           // set character set / encoding of content container of not set already
           if ($charset_container == "" || $charset_container != $charset_dest)
           {
-            $container_content_temp = setxmlparameter ($container_content, "encoding", $charset_dest);
-            if (!empty ($container_content_temp)) $container_content = $container_content_temp;
+            $container_contentnew = setxmlparameter ($container_content, "encoding", $charset_dest);
+            if (!empty ($container_contentnew)) $container_content = $container_contentnew;
           }
 
           // set array to save content as UTF-8 in database before converting it
@@ -702,20 +740,19 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           }
 
           // update existing content
-          $container_contentnew = setcontent ($container_content, "<multimedia>", "<file>", $file, "", "");
+          $container_contentnew = setcontent ($container_content, "<multimedia>", "<file>", $file, "", "", true);
 
           if ($container_contentnew != false)
           {
-            $container_contentnew = setcontent ($container_contentnew, "<multimedia>", "<content>", "<![CDATA[".$file_content."]]>", "", "");
+            $container_contentnew = setcontent ($container_contentnew, "<multimedia>", "<content>", "<![CDATA[".cleancontent ($file_content, $charset_dest)."]]>", "", "", true);
           }
           // insert new multimedia xml-node
           else
           {
             $multimedia_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "multimedia.schema.xml.php"));
 
-            $multimedia_node = setcontent ($multimedia_schema_xml, "<multimedia>", "<file>", $file, "", "");
-            $multimedia_node = setcontent ($multimedia_node, "<multimedia>", "<content>", "<![CDATA[".$file_content."]]>", "", "");
-
+            $multimedia_node = setcontent ($multimedia_schema_xml, "<multimedia>", "<file>", $file, "", "", true);
+            $multimedia_node = setcontent ($multimedia_node, "<multimedia>", "<content>", "<![CDATA[".cleancontent ($file_content, $charset_dest)."]]>", "", "", true);
             if ($multimedia_node != false) $container_contentnew = insertcontent ($container_content, $multimedia_node, "<container>");
           }
 
@@ -732,10 +769,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
             $date = date ("Y-m-d H:i:s", time());
 
             // set modified date in container
-            $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $date, "", "");
+            $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $date, "", "", true);
 
             // set owner (if not a system user)
-            if ($container_content != false && $user != "sys" && substr ($user, 0, 4) != "sys:") $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
+            if ($container_contentnew != false && $user != "sys" && substr ($user, 0, 4) != "sys:") $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentuser>", $user, "", "", true);
 
             // save container
             if ($container_contentnew != false)
@@ -755,10 +792,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           $date = date ("Y-m-d H:i:s", time());
 
           // set modified date in container
-          $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $date, "", "");
+          $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $date, "", "", true);
 
           // set owner (if not a system user)
-          if ($container_content != false && $user != "sys" && substr ($user, 0, 4) != "sys:") $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
+          if ($container_content != false && $user != "sys" && substr ($user, 0, 4) != "sys:") $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "", true);
 
           // save container
           if ($container_content != false)
@@ -921,12 +958,12 @@ function reindexcontent ($site, $container_id_array="")
             if ($result)
             {
               $errcode = "00501";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|".$errcode."|reindex of content was successful for: ".$site."/".$file; 
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|".$errcode."|Reindex of content was successful for: ".$site."/".$file; 
             }
             else
             {
               $errcode = "20501";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|reindex of content failed for: ".$site."/".$file; 
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Reindex of content failed for: ".$site."/".$file; 
             }
 
             // save log
@@ -1063,7 +1100,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
           if ($errorCode)
           {
             $errcode = "20141";
-            $error[] = $mgmt_config['today']."|hypercms_media.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) failed to extract thumbnail from INDD file '".$file."'";
+            $error[] = $mgmt_config['today']."|hypercms_media.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) failed to extract thumbnail from INDD file '".$file."'";
   
             // save log
             savelog (@$error);
@@ -1512,6 +1549,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
   // initialize
   $error = array();
+  $converted = false;
+  $skip = false;
+  $temp_file_delete = array();
+  $session_id = "";
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
@@ -1534,11 +1575,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-    } 
-
-    $converted = false;
-    $skip = false;
-    $temp_file_delete = array();
+    }
 
     // save input type in new variable
     $type_memory = $type;
@@ -1582,9 +1619,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $file = $temp_source['file'];
     }
 
-    // check if source file exists and has a size of min. 100 bytes
-    if (!is_file ($location_source.$file) || filesize ($location_source.$file) < 100) return false;
-
     // check if symbolic link
     if (is_link ($location_source.$file)) 
     {
@@ -1601,6 +1635,16 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     else
     {
       $path_source = $location_source.$file;
+    }
+
+    // check if source file exists and has a size of min. 100 bytes
+    if (!is_file ($location_source.$file) || filesize ($location_source.$file) < 100) return false;
+
+    // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
+    if (session_id() != "")
+    {
+      $session_id = session_id();
+      session_write_close();
     }
 
     // get file size of media file in kB
@@ -1679,7 +1723,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               if ($errorCode)
               {
                 $errcode = "20259";
-                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file."<br />".implode ("<br />", $output); 
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file."<br />".implode ("<br />", $output); 
               }
               else
               {
@@ -1716,7 +1760,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         }
 
         // verify local media file
-        if (!is_file ($location_source.$file)) return false;
+        if (!is_file ($location_source.$file)) 
+        {
+          // restart session (that has been previously closed for non-blocking procedure)
+          if (empty (session_id()) && $session_id != "") createsession();
+
+          return false;
+        }
       }
 
       // reset source path to JPG file of RAW image
@@ -2362,7 +2412,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode)
                     {
                       $errcode = "20231";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;
                     }
                     // on success
                     else $converted = true;
@@ -2417,7 +2467,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode || !is_file ($location_dest.$newfile))
                     {
                       $errcode = "20232";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file; 
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file; 
                     }
                     // on success
                     else $converted = true;
@@ -2468,7 +2518,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode || !is_file ($location_dest.$newfile))
                     {
                       $errcode = "20234";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file." (".implode (", ", $output).")"; 
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file." (".implode (", ", $output).")"; 
                     }
                     // on success
                     else $converted = true;
@@ -2494,7 +2544,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         if (is_file ($location_temp."watermark.".$newfile)) unlink ($location_temp."watermark.".$newfile);
 
                         $errcode = "20262";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile." (".implode (", ", $output).")";
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile." (".implode (", ", $output).")";
                       }
                       // on success
                       elseif (is_file ($location_temp."watermark.".$newfile))
@@ -2641,10 +2691,17 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
                   }
 
+                  // create new image from source file
                   if ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @imagecreatefromjpeg ($temp_file);
                   elseif ($file_ext == ".png") $imgsource = @imagecreatefrompng ($temp_file);
                   elseif ($file_ext == ".gif") $imgsource = @imagecreatefromgif ($temp_file);
-                  else return false;
+                  else
+                  {
+                    // restart session (that has been previously closed for non-blocking procedure)
+                    if (empty (session_id()) && $session_id != "") createsession();
+
+                    return false;
+                  }
 
                   // crop image
                   if ($crop_mode)
@@ -3175,7 +3232,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           if ($errorCode || !is_file ($location_temp.shellcmd_encode ($file_name)."-1.ts"))
                           {
                             $errcode = "20239";
-                            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file; 
+                            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file; 
                           }
                           //
                           else
@@ -3207,7 +3264,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       if ($errorCode || !is_file ($location_temp.shellcmd_encode ($file_orig)))
                       {
                         $errcode = "20240";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file_orig; 
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file_orig; 
                       }
                       // reset media file source
                       else
@@ -3301,7 +3358,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode)
                     {
                       $errcode = "10338";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|metadata update (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Metadata update (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
                     }
                     // replace video file
                     else
@@ -3368,7 +3425,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   @unlink ($location_temp.$tmpfile);
 
                   $errcode = "20236";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
                 } 
                 elseif (is_file ($location_temp.$tmpfile))
                 {
@@ -3390,7 +3447,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode)
                     {
                       $errcode = "20237";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of yamdi (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$newfile;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of yamdi (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$newfile;
                     }
                     // on success
                     else
@@ -3606,7 +3663,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     }
 
     // save log
-    savelog (@$error); 
+    savelog (@$error);
+
+    // restart session (that has been previously closed for non-blocking procedure)
+    if (empty (session_id()) && $session_id != "") createsession();
 
     // return result
     if ($converted == true && !empty ($newfile)) return $newfile;
@@ -4939,7 +4999,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                   if (!empty ($errorCode) || !is_file ($location_source.$file_name.".".$docformat))
                   {
                     $errcode = "20276";
-                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of libreoffice/unoconv (".$cmd.") to '".$format."' failed in createdocument for file '".$location_source.$file."' with message (Error code:".$errorCode."): ".implode(", ", $output);
+                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of libreoffice/unoconv (".$cmd.") to '".$format."' failed in createdocument for file '".$location_source.$file."' with message (Error code:".$errorCode."): ".implode(", ", $output);
 
                     // save log
                     savelog (@$error);
@@ -4952,7 +5012,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                     if ($result_rename == false)
                     {
                       $errcode = "20377";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
 
                       // save log
                       savelog (@$error);
@@ -5212,8 +5272,8 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
               $result[] = $container_id = $folderinfo['container_id'];
             }
           }
-          // exclude files matching the temp file pattern and in recycle bin  (double check of recycle bin object and location, since a folder is maybe in the recycle bin)
-          elseif (!is_tempfile ($file) && strpos ($source.$file, ".recycle") === false)
+          // exclude files matching the temp file pattern and in recycle bin (check for recycle bin object and location, since a folder can be in the recycle bin)
+          elseif (!is_tempfile ($file) && strpos ($source.$file."/", ".recycle/") === false)
           {
             $objectdata = loadfile ($source."/", $file);
 
@@ -5395,12 +5455,12 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
             // if location path
             if (substr ($multiobject, -1) == "/")
             {
-              $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath LIKE \"".$multiobject."%\" AND object.objectpath NOT LIKE \"%.recycle%\" AND container.date>=\"".$zipfiledate."\"");
+              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE objectpath LIKE BINARY \"".$multiobject."%\" AND objectpath NOT LIKE BINARY \"%.recycle%\" AND date>=\"".$zipfiledate."\"");
             }
             // if object path
             else
             {
-              $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath=\"".$multiobject."\" AND object.objectpath NOT LIKE \"%.recycle\" AND object.objectpath NOT LIKE \"%.recycle/%\" AND container.date>=\"".$zipfiledate."\"");
+              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE BINARY objectpath=\"".$multiobject."\" AND objectpath NOT LIKE BINARY \"%.recycle\" AND objectpath NOT LIKE BINARY \"%.recycle/%\" AND date>=\"".$zipfiledate."\"");
             }
           }
         }
@@ -5470,8 +5530,8 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
           }
           else $destinationFolder = "";
 
-          // exclude files matching the temp file pattern and in recycle bin (double check of recycle bin object and location, since a folder is maybe in the recycle bin)
-          if (!is_tempfile ($filename) && strpos ($location.$filename, ".recycle") === false)
+          // exclude files matching the temp file pattern and in recycle bin (check for recycle bin object and location, since a folder can be in the recycle bin)
+          if (!is_tempfile ($filename) && strpos ($location.$filename."/", ".recycle/") === false)
           {
             if ($filename != ".folder" && is_file ($location.$filename))
             {

@@ -1056,7 +1056,7 @@ div.hcmsObjectUnselected
 ::-webkit-scrollbar-thumb
 {
   background: #7ba9ff; 
-  border-radius: 8px;
+  border-radius: 0px;
 }
 
 ::-webkit-scrollbar-thumb:hover

@@ -38,3 +38,9 @@ input, select, textarea, button, .hcmsTextArea
   padding-right: 1px;
   margin-right: 1px;
 }
+
+.hcmsIconList
+{
+  width: 18px;
+  height: 18px;
+}

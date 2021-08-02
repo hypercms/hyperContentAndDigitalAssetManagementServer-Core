@@ -99,7 +99,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
       
       if (is_array ($multimedianodes) && $multimedianodes[0] != "")
       {
-        $buffer = getcontent ($multimedianodes[0], "<content>");
+        $buffer = getcontent ($multimedianodes[0], "<content>", true);
         
         if (is_array ($buffer) && $buffer[0] != "")
         {
@@ -126,7 +126,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
           if (is_array ($buffer) && $buffer[0] != "") $textuser[$id][$i] = $buffer[0];
           else $textuser[$id][$i] = "";
           
-          $buffer = getcontent ($text, "<textcontent>");
+          $buffer = getcontent ($text, "<textcontent>", true);
           
           if ($id != "" && is_array ($buffer))
           {

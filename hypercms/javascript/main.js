@@ -1,5 +1,14 @@
 // ------------------------ default values ----------------------------
 
+// enable/disable specific functions for main and contextmenu library
+var hcms_permission = new Array();
+hcms_permission['rename'] = true;
+hcms_permission['paste'] = true;
+hcms_permission['delete'] = true;
+hcms_permission['publish'] = true;
+hcms_permission['shortcuts'] = true;
+hcms_permission['minnavframe'] = true;
+
 // client service
 if (typeof hcms_service === 'undefined')
 {
@@ -1706,8 +1715,8 @@ function hcms_bubbleSort (c, _ud, _isNumber)
 
 function hcms_sortTable (_c, _isNumber)
 {
-  if (typeof hcms_unselectAll == 'function') hcms_unselectAll();
-  if (typeof hcms_resetContext == 'function') hcms_resetContext();
+  if (typeof hcms_unselectAll === 'function') hcms_unselectAll();
+  if (typeof hcms_resetContext === 'function') hcms_resetContext();
 
   hcms_is_gallery = eval (document.getElementById("t0"));  
 
@@ -2104,16 +2113,115 @@ if (hcms_service == false)
   window.prompt = top.prompt;
 }
 
+// ----------- event listener (cross-browser-support) -------------
+
+function hcms_addEvent (event, elem, func)
+{
+  // W3C DOM
+  if (elem.addEventListener)
+  {
+    elem.addEventListener(event, func, false);
+  }
+  // IE DOM
+  else if (elem.attachEvent)
+  {
+    elem.attachEvent("on"+event, func);
+  }
+  else
+  {
+    elem["on"+event] = func;
+  }
+}
+
+// ------------------------ mouse events ----------------------------
+
+// left mouse click
+function hcms_leftClickMain (e) 
+{
+  if (!e) var e = window.event;
+
+  // left mouse click
+  if (e.which == 0 || e.which == 1 || e.button == 0 || e.button == 1) 
+  {
+    // minimize navigation for Mobile Edition
+    if (is_mobile && hcms_permission['minnavframe'] == true && typeof top.minNavFrame === 'function') top.minNavFrame();
+  }
+
+  return true;
+}
+
 // ------------------------ key events ----------------------------
 
-document.addEventListener('keydown', e => {
-  // save if Ctrl+S key is pressed
-  if (e.ctrlKey && (e.key === 's' || e.key === 'S'))
+// verify if key is pressed
+function hcms_keyPressed (key, e)
+{
+  var ctrlPressed = 0;
+  var altPressed = 0;
+  var shiftPressed = 0;
+
+  if (e != null && e != 'selectarea')
+  {
+    // newer browsers (cross-platform)
+    shiftPressed = e.shiftKey;
+    altPressed = e.altKey;
+    ctrlPressed = e.ctrlKey;
+    // MacOS command key
+    if (!ctrlPressed) ctrlPressed = e.metaKey;
+
+    if (key == 'ctrl' && ctrlPressed) return true;
+    else if (key == 'shift' && shiftPressed) return true;
+    else if (key == 'alt' && altPressed) return true;
+    else if (key == '' && (altPressed || shiftPressed || ctrlPressed)) return true;
+    else return false;
+  }
+
+  return false;
+}
+
+hcms_addEvent ('keydown', document, function(e) {
+  // save if Ctrl/Cmd+S key is pressed
+  if (hcms_keyPressed('ctrl', e) && (e.key === 's' || e.key === 'S'))
   {
     // prevent the save dialog to open
     e.preventDefault();
     
     // call function
     if (typeof hcms_saveEvent === 'function') hcms_saveEvent();
+  }
+
+  // left arrow key
+  if (e.keyCode == 37)
+  {
+    // call function
+    if (typeof hcms_leftArrowEvent === 'function') hcms_leftArrowEvent();
+  }
+
+  // right arrow key
+  if (e.keyCode == 39)
+  {
+    // call function
+    if (typeof hcms_rightArrowEvent === 'function') hcms_rightArrowEvent();
+  }
+
+  // up arrow key
+  if (e.keyCode == 38)
+  {
+    // call function
+    if (typeof hcms_upArrowEvent === 'function') hcms_upArrowEvent();
+  }
+
+  // down arrow key
+  if (e.keyCode == 40)
+  {
+    // call function
+    if (typeof hcms_downArrowEvent === 'function') hcms_downArrowEvent();
+  }
+});
+
+hcms_addEvent ('click', document, function(e) {
+  // verify that the function hcms_leftClick of contextmenu.js is not included
+  if (typeof hcms_leftClick != 'function') 
+  {
+    hcms_leftClickMain(e);
   }
 });

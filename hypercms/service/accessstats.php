@@ -27,6 +27,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
+
 // chart size in pixels
 if (!empty ($is_mobile))
 {

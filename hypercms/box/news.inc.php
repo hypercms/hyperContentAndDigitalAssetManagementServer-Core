@@ -1,6 +1,8 @@
 <?php
 // ---------------------- NEWS / WELCOME BOX ---------------------
-if (empty ($mgmt_config['homebox_welcome'])) $mgmt_config['homebox_welcome'] = $mgmt_config['welcome'];
+
+// migration to version 8.0.4
+if (empty ($mgmt_config['homebox_welcome']) && !empty ($mgmt_config['welcome'])) $mgmt_config['homebox_welcome'] = $mgmt_config['welcome'];
 
 if (!empty ($mgmt_config['homebox_welcome']))
 {

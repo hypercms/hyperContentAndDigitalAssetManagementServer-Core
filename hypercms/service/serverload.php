@@ -39,6 +39,9 @@ else
   $chart_height = 230;
 }
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
+
 if (isset ($siteaccess) && is_array ($siteaccess))
 { 
   // load log file

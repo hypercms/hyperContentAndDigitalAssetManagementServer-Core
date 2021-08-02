@@ -107,7 +107,7 @@ if (checkglobalpermission ($site, 'tpldelete') == 1 && is_array ($delete) && siz
         $datetime = $date." ".$time;
         
         $errcode = "00200";
-        $error[] = $mgmt_config['today']."|version_template.php|information|".$errcode."|version '".$datetime."' of template '".$site."/".str_replace (".v_".$file_v_ext, "", $file_v_del)."' has been deleted by user '".$user."'";           
+        $error[] = $mgmt_config['today']."|version_template.php|information|".$errcode."|Version '".$datetime."' of template '".$site."/".str_replace (".v_".$file_v_ext, "", $file_v_del)."' has been deleted by user '".$user."'";           
       }
     }
   }     

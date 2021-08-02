@@ -25,6 +25,8 @@ $perpage = getrequest ("perpage", "numeric", 20);
 $saveindex_start = getrequest ("saveindex_start", "numeric");
 $saveindex_stop = getrequest ("saveindex_stop", "numeric");
 $taxonomy = getrequest ("taxonomy", "array");
+$temp_sourcelang = getrequest ("temp_sourcelang");
+$temp_targetlang = getrequest ("temp_targetlang");
 $token = getrequest ("token");
 
 // publication management config
@@ -42,6 +44,10 @@ checkusersession ($user);
 
 // initialize
 $show = "";
+$show_taxonomy = "";
+$id = $start;
+$loadtaxonomy = true;
+$restoretaxonomy = false;
 if (empty ($selectedlang)) $selectedlang = array();
 $selectedlang_temp = $selectedlang;
 
@@ -93,19 +99,27 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && !
     
     if ($savefile == false)   
     {  
-      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>";
     }
   }
   // delete row and save as CSV
   elseif ($action == "deleterow")
   {
+    // remove row
     unset ($taxonomy[$position]);
 
-    $savefile = savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop);
+    if (sizeof ($taxonomy) > 0)
+    {
+      $savefile = savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop);
     
-    if ($savefile == false)   
-    {  
-      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
+      if ($savefile == false)   
+      {  
+        $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>";
+      }
+    }
+    else
+    {
+      $loadtaxonomy = false;
     }
   }
   // save as CSV
@@ -115,7 +129,7 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && !
     
     if ($savefile == false)   
     {  
-      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>";
     }
   }
   // reindex content based on taxonomy
@@ -124,6 +138,38 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && !
     $create = createtaxonomy ($site, false);
    
     if ($create == false)   
+    {  
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>";
+    }
+    else $show = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang]);
+  }
+  // delete taxonomy
+  elseif ($action == "deletetaxonomy")
+  {
+    $delete = deletetaxonomy ($site, true);
+   
+    if ($delete == false)   
+    {  
+      $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-object-could-not-be-removed'][$lang])."</p>";
+    }
+    else $show = getescapedtext ($hcms_lang['the-object-was-deleted'][$lang]);
+  }
+  // restore taxonomy
+  elseif ($action == "restoretaxonomy")
+  {
+    // copy default CSV taxonomy 
+    if (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.csv"))
+    {
+      $restored = copy ($mgmt_config['abs_path_data']."include/default.taxonomy.csv", $mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv");
+    }
+
+    // copy default PHP taxonomy 
+    if (!empty ($restored) && is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+    {
+      $restored = copy ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php", $mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+    }
+
+    if (empty ($restored))   
     {  
       $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</p>";
     }
@@ -260,7 +306,7 @@ function translatelanguage (sourcelang_id, targetlang_id)
           var sourceText = sourceCols[i].getElementsByTagName('input');
 
           // merge
-          sourceCollection += sourceText[0].value + '\n';
+          sourceCollection += sourceText[0].value.trim() + '\n';
         }
       }
 
@@ -285,7 +331,7 @@ function translatelanguage (sourcelang_id, targetlang_id)
         {
           var targetText = targetCols[i].getElementsByTagName('input');
     
-          targetText[0].value = translatedText[i-1];
+          targetText[0].value = translatedText[i-1].trim();
           changed = true;
         }
       }
@@ -330,6 +376,34 @@ function reindex ()
   }
 }
 
+function deletetaxonomy ()
+{
+  var form = document.forms['taxonomyform'];
+
+  check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>\n<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-item'][$lang]); ?>"));
+
+  if (check == true)
+  {
+    hcms_showFormLayer ('savelayer', 0);
+    form.elements['action'].value = "deletetaxonomy";
+    form.submit();
+  }
+}
+
+function restoretaxonomy ()
+{
+  var form = document.forms['taxonomyform'];
+
+  check = confirm ("<?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?>");
+
+  if (check == true)
+  {
+    hcms_showFormLayer ('savelayer', 0);
+    form.elements['action'].value = "restoretaxonomy";
+    form.submit();
+  }
+}
+
 function hcms_saveEvent ()
 {
   savetaxonomy();
@@ -367,10 +441,6 @@ $(document).ready(function(){
 <?php
 echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:50px;");
 
-// initialize
-$show_taxonomy = "";
-$id = $start;
-
 // load languages
 $languages = getlanguageoptions ();
 
@@ -390,8 +460,8 @@ if (is_array ($languages))
 
 if (sizeof ($activelanguage) < 1) $activelanguage['en'] = "English";
 
-// prepare taxonomy for table 
-$result = loadtaxonomy ($site, $start, $perpage);
+// load taxonomy
+if (!empty ($loadtaxonomy)) $result = loadtaxonomy ($site, $start, $perpage, true, $restoretaxonomy);
 
 // no taxonomy available, set first taxonomy element
 if (empty ($result))
@@ -409,69 +479,72 @@ if (is_array ($result))
 {
   foreach ($result as $row => $temp_array)
   {
-    $show_taxonomy .= "
-            <tr style=\"height:32px;\">";
-    
-    // create table cells for each row  
-    // first column
-    if (!empty ($temp_array['level']))
+    if ($row != "count")
     {
-      $level = $temp_array['level'];
-      
       $show_taxonomy .= "
-            <td class=\"hcmsRowHead2\" style=\"text-align:left; white-space:nowrap; width:160px; box-sizing:border-box;\">
-              <select name=\"taxonomy[".$row."][level]\" class=\"hcmsRowHead1\" onchange=\"setlevel(this)\" style=\"margin-left:".(($level - 1) * 20)."px\">";
-
-      for ($l=1; $l<=5; $l++)
-      {
-        $show_taxonomy .= "
-                <option ".($level == $l ? "selected=\"selected\"" : "").">".$l."</option>";
-      }
+              <tr style=\"height:32px;\">";
       
-      $show_taxonomy .= "
-              </select><img src=\"".getthemelocation()."img/button_arrow_right.png\" align=\"absmiddle\" class=\"hcmsButtonSizeSquare\" />
-            </td>
-            <td class=\"hcmsRowHead2\" style=\"text-align:right; width:32px; box-sizing:border-box;\"><b>".$id."</b>&nbsp;</td>
-            <td class=\"hcmsRowHead2\" style=\"text-align:right; width:92px !important; min-width:92px; box-sizing:border-box; white-space:nowrap;\">
-              <img src=\"".getthemelocation()."img/button_moveup.png\" class=\"hcmsButton hcmsIconList up\" alt=\"".getescapedtext ($hcms_lang['move-up'][$lang])."\" title=\"".getescapedtext ($hcms_lang['move-up'][$lang])."\" />
-              <img src=\"".getthemelocation()."img/button_movedown.png\" class=\"hcmsButton hcmsIconList down\" alt=\"".getescapedtext ($hcms_lang['move-down'][$lang])."\" title=\"".getescapedtext ($hcms_lang['move-down'][$lang])."\" />
-              <img src=\"".getthemelocation()."img/button_file_new.png\" class=\"hcmsButton hcmsIconList\" onclick=\"createrow(".$row.");\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
-              <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButton hcmsIconList\" onclick=\"deleterow(".$row.");\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
-            </td>";
-    }
-    
-    // language columns / input fields
-    if (!empty ($activelanguage) && is_array ($activelanguage))
-    {
-      reset ($activelanguage);
-      
-      foreach ($activelanguage as $langcode => $langname)
+      // create table cells for each row  
+      // first column
+      if (!empty ($temp_array['level']))
       {
-        // memorize selected languages initially
-        if (!empty ($langcode) && empty ($selectedlang_temp) || (is_array ($selectedlang_temp) && sizeof ($selectedlang_temp) < 1))
-        {
-          $selectedlang[$langcode] = $langcode;
-        }
-
-        // text
-        if (!empty ($result[$row][$langcode])) $text = $result[$row][$langcode];
-        else $text = "";
+        $level = $temp_array['level'];
         
-        // display or hide based on selected languages
-        if (empty ($selectedlang[$langcode])) $style = "display:none;";
-        else $style = "";
-
         $show_taxonomy .= "
-            <td class=\"".$langcode."\" style=\"".$style." box-sizing:border-box;\">
-              <input type=\"text\" name=\"taxonomy[".$row."][".$langcode."]\" value=\"".$text."\" onkeyup=\"settext(this);\" class=\"hcmsRowData1\" style=\"\" />
-            </td>";
+              <td class=\"hcmsRowHead2\" style=\"text-align:left; white-space:nowrap; width:160px; box-sizing:border-box;\">
+                <select name=\"taxonomy[".$row."][level]\" class=\"hcmsRowHead1\" onchange=\"setlevel(this)\" style=\"margin-left:".(($level - 1) * 20)."px\">";
+
+        for ($l=1; $l<=5; $l++)
+        {
+          $show_taxonomy .= "
+                  <option ".($level == $l ? "selected=\"selected\"" : "").">".$l."</option>";
+        }
+        
+        $show_taxonomy .= "
+                </select><img src=\"".getthemelocation()."img/button_arrow_right.png\" align=\"absmiddle\" class=\"hcmsButtonSizeSquare\" />
+              </td>
+              <td class=\"hcmsRowHead2\" style=\"text-align:right; width:32px; box-sizing:border-box;\"><b>".$id."</b>&nbsp;</td>
+              <td class=\"hcmsRowHead2\" style=\"text-align:right; width:92px !important; min-width:92px; box-sizing:border-box; white-space:nowrap;\">
+                <img src=\"".getthemelocation()."img/button_moveup.png\" class=\"hcmsButton hcmsIconList up\" alt=\"".getescapedtext ($hcms_lang['move-up'][$lang])."\" title=\"".getescapedtext ($hcms_lang['move-up'][$lang])."\" />
+                <img src=\"".getthemelocation()."img/button_movedown.png\" class=\"hcmsButton hcmsIconList down\" alt=\"".getescapedtext ($hcms_lang['move-down'][$lang])."\" title=\"".getescapedtext ($hcms_lang['move-down'][$lang])."\" />
+                <img src=\"".getthemelocation()."img/button_file_new.png\" class=\"hcmsButton hcmsIconList\" onclick=\"createrow(".$row.");\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
+                <img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButton hcmsIconList\" onclick=\"deleterow(".$row.");\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
+              </td>";
       }
-    }
     
-    $show_taxonomy .= "
-            </tr>";
-            
-    $id++;
+      // language columns / input fields
+      if (!empty ($activelanguage) && is_array ($activelanguage))
+      {
+        reset ($activelanguage);
+        
+        foreach ($activelanguage as $langcode => $langname)
+        {
+          // memorize selected languages initially
+          if (!empty ($langcode) && empty ($selectedlang_temp) || (is_array ($selectedlang_temp) && sizeof ($selectedlang_temp) < 1))
+          {
+            $selectedlang[$langcode] = $langcode;
+          }
+
+          // text
+          if (!empty ($result[$row][$langcode])) $text = $result[$row][$langcode];
+          else $text = "";
+          
+          // display or hide based on selected languages
+          if (empty ($selectedlang[$langcode])) $style = "display:none;";
+          else $style = "";
+
+          $show_taxonomy .= "
+              <td class=\"".$langcode."\" style=\"".$style." box-sizing:border-box;\">
+                <input type=\"text\" name=\"taxonomy[".$row."][".$langcode."]\" value=\"".trim ($text)."\" onkeyup=\"settext(this);\" class=\"hcmsRowData1\" style=\"\" />
+              </td>";
+        }
+      }
+
+      $show_taxonomy .= "
+      </tr>";
+
+      $id++;
+    }        
   }
 }
 ?>
@@ -487,7 +560,7 @@ if (is_array ($result))
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
 
   <?php
-  // language options / checkpose only if more than 1 language option is active
+  // language options / display checkboxes only if more than 1 language option is active
   if (sizeof ($activelanguage) > 1)
   {
     echo "
@@ -509,28 +582,28 @@ if (is_array ($result))
   <!-- translation -->
   <div style=\"width:94%;\">
     <span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['translate'][$lang])."</span>&nbsp;
-    <select id=\"sourceLang\" style=\"width:165px;\">";
+    <select id=\"sourceLang\" name=\"temp_sourcelang\" style=\"width:165px;\">";
 
     if (!empty ($activelanguage) && is_array ($activelanguage))
     {
       foreach ($activelanguage as $langcode => $langname)
       {
         echo "
-      <option value=\"".$langcode."\">".$langname."</option>";
+      <option value=\"".$langcode."\"".($temp_sourcelang == $langcode ? "selected=\"selected\"" : "").">".$langname."</option>";
       }
     }
 
     echo "
     </select>
     &#10095;
-    <select id=\"targetLang\" style=\"width:165px;\">";
+    <select id=\"targetLang\" name=\"temp_targetlang\" style=\"width:165px;\">";
 
     if (!empty ($activelanguage) && is_array ($activelanguage))
     {
       foreach ($activelanguage as $langcode => $langname)
       {
         echo "
-      <option value=\"".$langcode."\">".$langname."</option>";
+      <option value=\"".$langcode."\"".($temp_targetlang == $langcode ? "selected=\"selected\"" : "").">".$langname."</option>";
       }
     }
 
@@ -541,7 +614,6 @@ if (is_array ($result))
   <hr />";
   }
   ?>
-
 
   <!-- taxonomy -->
   <div style="width:94%; overflow:auto; padding-bottom:6px;">
@@ -577,18 +649,39 @@ if (is_array ($result))
   </div>
   
   <!-- paging -->
-  <div class="hcmsHeadline" style="display:block; width:220px; margin:10px auto; text-align:center;">
+  <div class="hcmsHeadline" style="display:block; width:280px; margin:10px auto; text-align:center;">
+
     <?php if (($start - $perpage) >= 0) { ?>
     <img src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" class="hcmsButton hcmsButtonSizeSquare" onclick="startpoint(<?php echo ($start - $perpage); ?>);" alt="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>" />
     <?php } else { ?>
     <img src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
     <?php } ?>
-    <div style="float:left; width:120px; padding:10px;">&nbsp;<?php echo $start." - ".($start +  sizeof ($result) - 1); ?>&nbsp;</div>
+
+    <?php
+    if (!empty ($result['count']))
+    {
+      $pageselect = "<select onchange=\"startpoint(this.value);\">\n";
+
+      $i = 1;
+
+      while ($i <= $result['count'])
+      {
+        $pageselect .= "  <option value=\"".$i."\"".($i == $start ? " selected=\"selected\"" : "").">&nbsp;".$i." - ".($i + $perpage - 1)."&nbsp;</option>\n";
+        $i = $i + $perpage;
+      }
+
+      $pageselect .= "</select>";
+    }
+    else $pageselect = $start." - ".($start +  sizeof ($result) - 1);
+    ?>
+    <div style="float:left; width:160px; padding:2px 10px;"><?php echo $pageselect; ?></div>
+
     <?php if (sizeof ($result) >= $perpage) { ?>
     <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButton hcmsButtonSizeSquare" onclick="startpoint(<?php echo ($start + $perpage); ?>);" alt="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['forward'][$lang]); ?>"/>
     <?php } else { ?>
     <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
     <?php } ?>
+
   </div>
   <br/>
 
@@ -601,6 +694,14 @@ if (is_array ($result))
     <tr>
       <td><?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?> </div>
       <td><img name="Button2" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="reindex()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
+    </tr>
+    <tr>
+      <td><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?> </div>
+      <td><img name="Button3" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="deletetaxonomy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
+    </tr>
+    <tr>
+      <td><?php echo getescapedtext ($hcms_lang['restore'][$lang]." (".$hcms_lang['standard'][$lang].")"); ?> </div>
+      <td><img name="Button4" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="restoretaxonomy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button4','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
     </tr>
   </table>
   

@@ -41,6 +41,7 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $data = array('success' => false);
 
 // collect keywords of a taxonomy and return as comma seperated list

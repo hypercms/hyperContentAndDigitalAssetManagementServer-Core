@@ -32,6 +32,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 $add_onload = "";
 
@@ -50,6 +51,7 @@ elseif ($action == "site_delete" && checkrootpermission ('site') && checkrootper
   $add_onload =  $result['add_onload'];
   $show = $result['message'];  
 }
+
 // security token
 $token_new = createtoken ($user);
 ?>
@@ -173,7 +175,7 @@ function checkForm ()
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['publication-management'][$lang]); ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['publication-management'][$lang]); ?></span>
   <?php } ?>
 </div>
 
@@ -237,8 +239,9 @@ function checkForm ()
   </div>
 </div>
 
+<!-- create publication -->
 <div id="createsiteLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden;">
-  <form name="site_create" action="" method="post">
+  <form name="site_create" action="" method="post" onsubmit="return checkForm();">
     <input type="hidden" name="action" value="site_create" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     

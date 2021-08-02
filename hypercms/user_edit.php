@@ -59,6 +59,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 $add_onload = "";
 
@@ -117,11 +118,11 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
       
       // language file
       require_once ("language/".getlanguagefile ($lang));
-      $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+      $add_onload = "setTimeout (function(){ top.location.reload(true); }, 1000);";
     }
     
     // change theme in session if user changed it
-    if (!empty ($theme) && $hcms_themename != $theme)
+    if (!empty ($theme) && $theme != $hcms_themename)
     {
       $themeinvertcolors = false;
 
@@ -156,7 +157,7 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
 
       setsession ('hcms_themename', $theme, true);
       setsession ('hcms_themeinvertcolors', $themeinvertcolors, true);
-      $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+      $add_onload = "setTimeout (function(){ top.location.reload(true); }, 1000);";
     }
   }
 
@@ -164,7 +165,7 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
   if (!empty ($timezone) && $timezone != getsession ("hcms_timezone"))
   {
     setsession ('hcms_timezone', $timezone);
-    $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+    $add_onload = "setTimeout (function(){ top.location.reload(true); }, 1000);";
   }
 
   // edit user settings
@@ -405,11 +406,11 @@ if (strpos ($login, ".php") > 0)
   $login = getattribute ($login, "login");
 }
 
-if ($login != "" && $login != false)
+if (!empty ($login))
 {
   $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
 
-  $userrecord = selectcontent ($userdata, "<user>", "<login>", "$login");
+  $userrecord = selectcontent ($userdata, "<user>", "<login>", $login);
 
   if (!empty ($userrecord[0]))
   {
@@ -459,7 +460,7 @@ if ($login != "" && $login != false)
     
     if (valid_publicationname ($site)) 
     {
-      $memberofarray = selectcontent ($userrecord[0], "<memberof>", "<publication>", "$site");
+      $memberofarray = selectcontent ($userrecord[0], "<memberof>", "<publication>", $site);
       
       $usergrouparray = getcontent ($memberofarray[0], "<usergroup>");
       

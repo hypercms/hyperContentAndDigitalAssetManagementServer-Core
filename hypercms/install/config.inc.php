@@ -1,6 +1,6 @@
 <?php
 // hyperCMS Main Configuration File
-// Please add a slash at the end of each path entries, see examples.
+// Please add a slash at the end of each path entries, see examples
 
 // Attention: All variable values must not include "#"!
 
@@ -161,7 +161,7 @@ $mgmt_config['storage_dailycloudsnyc'] = false;
 $mgmt_config['storage_synctime']  = 24;
 
 // Keep the temporary preview images (true) or delete the images after 24 hours of age (false)
-// In order to reduce read and transfer activities with the Cloud Storage it might be useful to keep the preview miages locally,
+// In order to reduce read and transfer activities with the Cloud Storage it might be useful to keep the preview images locally,
 // especially if you use the face recognition service.
 $mgmt_config['keep_previews'] = false;
 
@@ -276,6 +276,12 @@ $mgmt_config['homeboxes'] = "search;news;tasks;recent_objects;up_and_downloads;r
 // Define URL to show in welcome/news home box
 $mgmt_config['homebox_welcome'] = "https://cloud.hypercms.net/home/update_info_en.xhtml";
 
+// Define a directory for individual home boxes (components) that are based on a template and can be edited
+$mgmt_config['homeboxes_directory'] = "HomeBoxes";
+
+// Enable (true) or disable (false) the toolbar personalization for all users
+$mgmt_config['toolbar_functions'] = true;
+
 // Brand Guidelines
 // Define a directory for your brand guidelines (components) that are based on a template and can be edited
 $mgmt_config['brandguide_directory'] = "BrandGuidelines";
@@ -289,7 +295,8 @@ $mgmt_config['check_duplicates'] = true;
 $mgmt_config['overwrite_files'] = true;
 
 // Display owner column in content and template version history (true) or hide the owner (false)
-$mgmt_config['version_owner'] = true;
+// Requires to read the owner from the XML content for each version and requires some time for longer version histories.
+$mgmt_config['version_owner'] = false;
 
 // Enable AutoSave to autoamtically save the text of the edior each given value in seconds
 // Set value to 0 to disable autosave
@@ -301,7 +308,7 @@ $mgmt_config['recyclebin'] = false;
 // Delete objects from recycle bin permanently after certain amount of days or 0 for never
 $mgmt_config['recycledays'] = 5;
 
-// Define screen sizes for mobile browser emulation
+// Define screen/viewport sizes for screen and mobile browser emulation
 $mgmt_config['screensize'] = array();
 // Notebook/desktop screen sizes
 $mgmt_config['screensize']['desktop']['10&quot; Netbook'] = "1024 x 600";
@@ -331,6 +338,10 @@ $mgmt_config['screensize']['phone']['Apple iPhone 7'] = "375 x 667";
 $mgmt_config['screensize']['phone']['Apple iPhone 7 Plus'] = "414 x 736";
 $mgmt_config['screensize']['phone']['Apple iPhone 8'] = "375 x 667";
 $mgmt_config['screensize']['phone']['Apple iPhone 8 Plus'] = "414 x 736";
+$mgmt_config['screensize']['phone']['Apple iPhone 11'] = "390 x 844";
+$mgmt_config['screensize']['phone']['Apple iPhone 12'] = "414 x 895";
+$mgmt_config['screensize']['phone']['Apple iPhone 12 Pro'] = "390 x 844";
+$mgmt_config['screensize']['phone']['Apple iPhone 12 Pro Max'] = "428 x 926";
 $mgmt_config['screensize']['phone']['Apple iPhone X'] = "375 x 812";
 $mgmt_config['screensize']['phone']['Apple iPhone XR'] = "	414 x 896";
 $mgmt_config['screensize']['phone']['Apple iPhone XS'] = "375 x 812";
@@ -344,21 +355,23 @@ $mgmt_config['screensize']['phone']['Google Pixel XL'] = "412 x 732";
 $mgmt_config['screensize']['phone']['Google Pixel 2 XL'] = "412 x 732";
 $mgmt_config['screensize']['phone']['Google Pixel 3'] = "412 x 824";
 $mgmt_config['screensize']['phone']['Google Pixel 3 XL'] = "412 x 847";
+$mgmt_config['screensize']['phone']['Google Pixel 4'] = "412 x 869";
+$mgmt_config['screensize']['phone']['Google Pixel 4 XL'] = "412 x 869";
+$mgmt_config['screensize']['phone']['Google Pixel 5'] = "393 x 851";
 $mgmt_config['screensize']['phone']['LG Optimus S'] = "320 x 480";
 $mgmt_config['screensize']['phone']['LG G5'] = "480 x 853";
 $mgmt_config['screensize']['phone']['One Plus 3'] = "480 x 853";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S2'] = "320 x 533";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S3/4'] = "320 x 640";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S5'] = "360 x 640";
-$mgmt_config['screensize']['phone']['Samsung Galaxy S5'] = "360 x 640";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S7'] = "360 x 640";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S7 Edge'] = "360 x 640";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S8'] = "360 x 740";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S8+'] = "360 x 740";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S9'] = "360 x 740";
-$mgmt_config['screensize']['phone']['Samsung Galaxy S9+'] = "360 x 740";
 $mgmt_config['screensize']['phone']['Samsung Galaxy Note 5'] = "480 x 853";
 $mgmt_config['screensize']['phone']['Samsung Galaxy Note 9'] = "360 x 740";
+$mgmt_config['screensize']['phone']['Samsung Galaxy Note 10'] = "412 x 869";
 
 // Define the tag/content IDs for the source and destination container for the relationsship (source -> destination multimedia object) when using copy and paste
 // Leave empty if you do not want to save the relationship
@@ -534,7 +547,7 @@ $mgmt_config['today'] = date ("Y-m-d H:i:s", time());
 $mgmt_config['taskunit'] = "h";
 
 // Define the database tables to be used in reports, use ; as delimiter
-$mgmt_config['report_tables'] = "object;container;textnodes;dailystat;media;project;task;recipient;accesslink";
+$mgmt_config['report_tables'] = "object;textnodes;dailystat;project;task;recipient;accesslink";
 
 // Supported Applications
 // Set value to true if your content management server supports rendering of objects
@@ -703,6 +716,11 @@ $mgmt_config['requests_per_minute'] = 500;
 // Security Token
 // Define lifetime of security token in seconds (min. 60 sec.)
 $mgmt_config['token_lifetime'] = 86400;
+
+// Workplace Integration (WebDAV)
+// Define the time in seconds for the users session cache in seconds (a password change will take effect after the session lifetime)
+// The min. supported value is 10 seconds and the default/fallback value is 3600 seconds
+$mgmt_config['webdav_lifetime'] = 3600;
 
 // Support password
 // Set a support password for the support log file access
@@ -975,7 +993,7 @@ $mgmt_config['smtp_sender']   = "%smtp_sender%";
 $mgmt_config['passcode'] = "";
 
 // Restore exported media files to the media repository if requested (true) or leave the media files at their current export location (false)
-// The media file will always be restored if any modifications will be applied
+// Note: The media file will always be restored if any modifications will be applied
 $mgmt_config['restore_exported_media'] = true;
 
 // --------------------------------------- App Keys --------------------------------------------

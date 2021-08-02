@@ -89,6 +89,9 @@ if ((is_array ($column) || empty ($column)) && checktoken ($token, $user))
   $resetcols = true;
 }
 
+// write and close session (important for non-blocking of other frames)
+if (session_id() != "") session_write_close();
+
 // convert location
 $location = deconvertpath ($location, "file");
 $location_esc = convertpath ($site, $location, $cat);
@@ -271,9 +274,9 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
             
             if (!empty ($container_info) && is_array ($container_info))
             {  
-              if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
-              if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
-              if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
+              if (!empty ($container_info['createdate']) && is_date ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+              if (!empty ($container_info['date']) && is_date ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+              if (!empty ($container_info['publishdate']) && is_date ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
               if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
             }
           }
@@ -315,7 +318,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         // if linking is used display download buttons
         $linking_buttons = "";
 
-        // if mobile edition is used display edit button
+        // if mobile edition is used display navigate button
         if ($is_mobile && $setlocalpermission['root'] == 1)
         {   
           $linking_buttons .= "
@@ -508,11 +511,11 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols[$site][$cat]));
   
             if (!empty ($container_info) && is_array ($container_info))
-            { 
+            {
               if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, ".", " ");
-              if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
-              if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
-              if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+              if (!empty ($container_info['createdate']) && is_date ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+              if (!empty ($container_info['publishdate']) && is_date ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
+              if (!empty ($container_info['date']) && is_date ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
               if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
             }
           }
@@ -722,6 +725,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         // if linking is used display download buttons, display edit button for mobile edition
         $linking_buttons = "";
 
+        // if mobile edition is used display download button
         if ($mediafile != false && linking_valid() == true && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
         {
           // check download of original file
@@ -733,8 +737,8 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           }
         }
 
-        // if mobile edition is used display edit button
-        if ($is_mobile && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
+        // if mobile edition is used display edit button if the download button is not used (only one button must be displayed in order to keep the div height for all folders and objects)
+        if ($is_mobile && $linking_buttons == "" && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
         {   
           $linking_buttons .= "
           <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
@@ -1123,7 +1127,6 @@ function initialize ()
 
 <!-- context menu --> 
 <div id="contextLayer" style="position:absolute; min-width:180px; max-width:280px; height:320px; z-index:10; left:20px; top:20px; visibility:hidden;">
-   <!-- context menu for objects -->
   <form name="contextmenu_object" action="" method="post" target="_blank" style="display:block;">
     <input type="hidden" name="contextmenustatus" value="" />
     <input type="hidden" name="contextmenulocked" value="false" />
@@ -1280,7 +1283,7 @@ function initialize ()
 <!-- Table Header -->
 <div id="tableHeadLayer" style="position:fixed; top:0; left:0; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:hidden;">
   <table id="objectlist_head" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
-    <tr onmouseover="hcms_setColumncontext()">
+    <tr onmouseover="hcms_setColumncontext();">
       <td id="c0" onClick="hcms_sortTable(0); toggleview('');" class="hcmsTableHeader hcmsHead" style="width:280px;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
     <?php
     if (!$is_mobile)
@@ -1347,7 +1350,7 @@ function initialize ()
 </div>
 
 <!-- Detail View -->
-<div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:1; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
+<div id="objectLayer" onmouseover="hcms_setObjectcontext('<?php echo $site; ?>', '<?php echo $cat; ?>', '<?php echo $location_esc; ?>', '', '', '', '', '', '', '<?php echo $token; ?>');" style="position:fixed; top:20px; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:1; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
   <table id="objectlist" name="objectlist" style="table-layout:fixed; border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%;">
   <?php 
   echo $listview;
@@ -1357,7 +1360,7 @@ function initialize ()
 </div>
 
 <!-- Gallery View -->
-<div id="galleryviewLayer" style="position:fixed; top:20px; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:1; visibility:hidden; overflow-y:scroll;">
+<div id="galleryviewLayer" onmouseover="hcms_setObjectcontext('<?php echo $site; ?>', '<?php echo $cat; ?>', '<?php echo $location_esc; ?>', '', '', '', '', '', '', '<?php echo $token; ?>');" style="position:fixed; top:20px; left:0; bottom:32px; margin:0; padding:0; width:100%; z-index:1; visibility:hidden; overflow-y:scroll;">
 <?php
 if ($galleryview != "")
 {

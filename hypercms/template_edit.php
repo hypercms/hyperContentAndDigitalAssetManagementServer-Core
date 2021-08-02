@@ -131,12 +131,12 @@ else
   else $charset = $mgmt_config[$site]['default_codepage'];
 }
 
-// escape special characters (transform all special chararcters into their html/xml equivalents)
+// escape special characters
 if ($contentfield != "")
 {
-  $contentfield = str_replace ("&", "&amp;", $contentfield);
-  $contentfield = str_replace ("<", "&lt;", $contentfield);
-  $contentfield = str_replace (">", "&gt;", $contentfield);
+  if (strpos ("_".$contentfield, "&amp;") < 1) $contentfield = str_replace ("&", "&amp;", $contentfield);
+  if (strpos ("_".$contentfield, "<") > 0) $contentfield = str_replace ("<", "&lt;", $contentfield);
+  if (strpos ("_".$contentfield, ">") > 0) $contentfield = str_replace (">", "&gt;", $contentfield);
 }
 
 // create secure token

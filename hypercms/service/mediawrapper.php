@@ -49,6 +49,7 @@ if ($user != "") checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $media_approved = false;
 
 // new media configuration parameter since version 8.0.5

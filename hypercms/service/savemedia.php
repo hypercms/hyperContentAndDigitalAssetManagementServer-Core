@@ -72,6 +72,7 @@ if (checktoken ($token, $user)) loadbalancer ("renderimage");
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 $add_onload = "";
 

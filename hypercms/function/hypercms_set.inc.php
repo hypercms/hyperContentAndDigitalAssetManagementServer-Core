@@ -335,18 +335,18 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle=array(), $arts
         $arttitle[$artid] = str_replace (">", "&gt;", $arttitle[$artid]);
 
         // set the new content
-        $contentdatanew = setcontent ($contentdata, "<article>", "<articletitle>", trim ($arttitle[$artid]), "<article_id>", $artid);
+        $contentdatanew = setcontent ($contentdata, "<article>", "<articletitle>", trim ($arttitle[$artid]), "<article_id>", $artid, true);
 
         if ($contentdatanew == false)
         {
           $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
-          $contentdatanew = setcontent ($contentdatanew, "<article>", "<articletitle>", trim ($arttitle[$artid]), "<article_id>", $artid);
+          $contentdatanew = setcontent ($contentdatanew, "<article>", "<articletitle>", trim ($arttitle[$artid]), "<article_id>", $artid, true);
         }
 
-        $contentdatanew = setcontent ($contentdatanew, "<article>", "<articledatefrom>", $artdatefrom[$artid], "<article_id>", $artid);
-        $contentdatanew = setcontent ($contentdatanew, "<article>", "<articledateto>", $artdateto[$artid], "<article_id>", $artid);
-        $contentdatanew = setcontent ($contentdatanew, "<article>", "<articlestatus>", $artstatus[$artid], "<article_id>", $artid);
-        if (!empty ($artuser[$artid])) $contentdatanew = setcontent ($contentdatanew, "<article>", "<articleuser>", $artuser[$artid], "<article_id>", $artid);
+        $contentdatanew = setcontent ($contentdatanew, "<article>", "<articledatefrom>", $artdatefrom[$artid], "<article_id>", $artid, true);
+        $contentdatanew = setcontent ($contentdatanew, "<article>", "<articledateto>", $artdateto[$artid], "<article_id>", $artid, true);
+        $contentdatanew = setcontent ($contentdatanew, "<article>", "<articlestatus>", $artstatus[$artid], "<article_id>", $artid, true);
+        if (!empty ($artuser[$artid])) $contentdatanew = setcontent ($contentdatanew, "<article>", "<articleuser>", $artuser[$artid], "<article_id>", $artid, true);
 
         $contentdata = $contentdatanew;
       }
@@ -566,7 +566,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
           // exctract previous (old) links
           $temp_array = selectcontent ($contentdata, "<text>", "<text_id>", $id);
 
-          if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>");
+          if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>", true);
 
           if (!empty ($temp_array[0])) $textcontent_old = $temp_array[0];
           else $textcontent_old = "";
@@ -657,15 +657,15 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
         if ($art[$id] == "no")
         {
           // set the new content
-          $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid);
+          $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, true);
 
           if ($contentdatanew == false)
           {
             $contentdatanew = addcontent ($contentdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $elemid);
-            $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid);
+            $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, true);
           }
 
-          if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid);
+          if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid, true);
         }
         // check if article
         elseif ($art[$id] == "yes")
@@ -674,7 +674,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
           $artid = getartid ($id);
 
           // set the new content
-          $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid);
+          $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, true);
  
           if ($contentdatanew == false)
           {
@@ -686,8 +686,8 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
               $contentdatanew = addcontent ($contentdatanew, $text_schema_xml, "<article>", "<article_id>", $artid, "<articletextcollection>", "<text_id>", $elemid);
             }
 
-            $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid);
-            if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid);
+            $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, true);
+            if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid, true);
           }
         } 
 
@@ -713,7 +713,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
         link_db_close ($site, $user);
  
         $errcode = "20522";
-        $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|link management file is missing or you do not have write permissions for '".$site.".link.dat'";
+        $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|Link management file is missing or you do not have write permissions for '".$site.".link.dat'";
       }
     }
 
@@ -805,14 +805,17 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
         if (!empty ($userbuffer)) $mediauser[$id] = $userbuffer; 
 
         $mediafile[$id] = urldecode ($mediafile[$id]);
-        // remove dangerous script code
-        $mediafile[$id] = scriptcode_encode ($mediafile[$id]);
-        // escape special characters (transform all special chararcters into their html/xml equivalents)
-        $mediafile[$id] = str_replace ("&", "&amp;", $mediafile[$id]);
-        $mediafile[$id] = str_replace ("<", "&lt;", $mediafile[$id]);
-        $mediafile[$id] = str_replace (">", "&gt;", $mediafile[$id]);
 
-        // remove dangerous script code
+        // encode script code
+        $mediafile[$id] = scriptcode_encode ($mediafile[$id]);
+        
+        // escape special characters (transform all special chararcters into their html/xml equivalents)
+        $mediafile[$id] = str_replace (array("&", "<", ">"), array("&amp;", "&lt;", "&gt;"), $mediafile[$id]);
+        $mediaalign[$id] = str_replace (array("&", "<", ">"), array("&amp;", "&lt;", "&gt;"), $mediaalign[$id]);
+        $mediawidth[$id] = str_replace (array("&", "<", ">"), array("&amp;", "&lt;", "&gt;"), $mediawidth[$id]);
+        $mediaheight[$id] = str_replace (array("&", "<", ">"), array("&amp;", "&lt;", "&gt;"), $mediaheight[$id]);
+
+        // encode script code
         $mediaalttext[$id] = scriptcode_encode ($mediaalttext[$id]);
 
         // encode special characters in alternative text
@@ -897,7 +900,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
           $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalign>", trim ($mediaalign[$id]), "<media_id>", $id);
           $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediawidth>", trim ($mediawidth[$id]), "<media_id>", $id);
           $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaheight>", trim ($mediaheight[$id]), "<media_id>", $id);
-          if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id);
+          if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id, true);
         }
 
         // ------------------------- add link to link management file ---------------------------
@@ -919,7 +922,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
       link_db_close ($site, $user);
 
       $errcode = "20510";
-      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|link management file is missing or you do not have write permissions for ".$site.".link.dat";
+      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|Link management file is missing or you do not have write permissions for ".$site.".link.dat";
     }
 
     // return container
@@ -1012,17 +1015,19 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
         // convert path
         $linkhref[$id] = convertpath ($site, $linkhref[$id], "page");
 
-        // remove dangerous scipt code
+        // encode script code
         $linkhref[$id] = scriptcode_encode ($linkhref[$id]);
-        // escape special characters (transform all special chararcters into their html/xml equivalents) 
+
+        // escape special characters
         $linkhref[$id] = str_replace ("&", "&amp;", $linkhref[$id]);
         $linkhref[$id] = str_replace ("<", "&lt;", $linkhref[$id]);
-        $linkhref[$id] = str_replace (">", "&gt;", $linkhref[$id]); 
- 
+        $linkhref[$id] = str_replace (">", "&gt;", $linkhref[$id]);
+
+        // encode script code
         $linktext[$id] = urldecode ($linktext[$id]);
-        // remove dangerous scipt code
         $linktext[$id] = scriptcode_encode ($linktext[$id]);
-        // escape special characters (transform all special chararcters into their html/xml equivalents)
+
+        // escape special characters
         if (!empty ($charset))
         {
           $linktext[$id] = html_encode ($linktext[$id], $charset);
@@ -1056,9 +1061,9 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
             $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
           }
 
-          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id);
-          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id);
-          if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id);
+          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id, true);
+          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id, true);
+          if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id, true);
         }
         // check if article link
         elseif ($art[$id] == "yes")
@@ -1078,12 +1083,13 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
               $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
               $contentdatanew = addcontent ($contentdatanew, $link_schema_xml, "<article>", "<article_id>", $artid, "<articlelinkcollection>", "<link_id>", $id);
             }
+
             $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
           }
 
-          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id);
-          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id);
-          if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id);
+          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id, true);
+          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id, true);
+          if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id, true);
         }
 
         // ------------------------- add link to link management file ---------------------------
@@ -1105,7 +1111,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
       link_db_close ($site, $user);
  
       $errcode = "20511";
-      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|link management file is missing or you do not have write permissions for ".$site.".link.dat";
+      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|Link management file is missing or you do not have write permissions for ".$site.".link.dat";
     }
 
     // save log
@@ -1282,7 +1288,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
       link_db_close ($site, $user);
  
       $errcode = "20512";
-      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|link management file is missing or you do not have write permissions for ".$site.".link.dat";
+      $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|Link management file is missing or you do not have write permissions for ".$site.".link.dat";
     }
 
     // save log
@@ -1365,14 +1371,14 @@ function sethead ($site, $contentdata, $contentfile, $headcontent=array(), $user
         // except the code of page customer tracking
         if ($tagname != "pagetracking" && $content != "")
         {
-          // remove dangerous script code
+          // encode script code
           $content = scriptcode_encode ($content);
 
           // encode special characters
           $content = html_encode ($content);
         }
 
-        $contentdata = setcontent ($contentdata, "<head>", "<".$tagname.">", "<![CDATA[".trim ($content)."]]>", "", "");
+        $contentdata = setcontent ($contentdata, "<head>", "<".$tagname.">", "<![CDATA[".trim ($content)."]]>", "", "", true);
 
         // set xml encoding if content-type has changed and is not empty
         if ($tagname == "pagecontenttype" && $contentdata != false)
@@ -1490,7 +1496,7 @@ function setrelation ($site, $location_1="", $object_1="", $id_1="Related", $loc
         if (empty ($save_1))
         {
           $errcode = "20601";
-          $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|relation to ".$location_esc_2.$object_2." could not be saved for ".$location_esc_1.$object_1; 
+          $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|Relation to ".$location_esc_2.$object_2." could not be saved for ".$location_esc_1.$object_1; 
         }
       }
     }
@@ -1527,7 +1533,7 @@ function setrelation ($site, $location_1="", $object_1="", $id_1="Related", $loc
         if (empty ($save_2))
         {
           $errcode = "20602";
-          $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|relation to ".$location_esc_1.$object_1." could not be saved for ".$location_esc_2.$object_2; 
+          $error[] = $mgmt_config['today']."|hypercms_set.inc.php|error|".$errcode."|Relation to ".$location_esc_1.$object_1." could not be saved for ".$location_esc_2.$object_2; 
         }
       }
     }
@@ -1694,6 +1700,45 @@ function setguiview ($objectview, $explorerview, $sidebar, $user)
 
     // save file
     return savefile ($dir, $file, $view);
+  }
+  else return false;
+}
+
+// --------------------------------------- settoolbarfunctions -------------------------------------------
+// function: settoolbarfunctions ()
+// input: toolbar functions [array], user name [string]
+// output: true / false
+
+function settoolbarfunctions ($toolbar, $user)
+{
+  global $mgmt_config;
+
+  if (is_array ($toolbar) && valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".toolbar.json";
+
+    // if toolbar personalization is enabled
+    if (!empty ($mgmt_config['toolbar_functions']))
+    {
+      // JSON encode array
+      $settings = json_encode ($toolbar);
+    }
+    // remove settings
+    else
+    {
+      $toolbar = NULL;
+      $settings = "";
+    }
+
+    // set in session
+    if ($user == getsession ("hcms_user"))
+    {
+      setsession ("hcms_toolbarfunctions", $toolbar, true);
+    }
+
+    // save file
+    return savefile ($dir, $file, $settings);
   }
   else return false;
 }

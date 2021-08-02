@@ -21,9 +21,7 @@ function update_users_546 ()
 {
   global $mgmt_config;
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|5.4.6|") < 1)
+  if (!checksoftwareversion ("5.4.6"))
   {
     // update users
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
@@ -209,12 +207,12 @@ function update_tasks_v584 ()
                 if ($result)
                 {
                   $errcode = "00101";
-                  $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|".$errcode."|task '".$task_id[0]."' of user '".$to_user."' has been updated";
+                  $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|".$errcode."|Task '".$task_id[0]."' of user '".$to_user."' has been updated";
                 }
                 else
                 {
                   $errcode = "50101";
-                  $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|".$errcode."|task '".$task_id[0]."' of user '".$to_user."' has not been updated";
+                  $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|".$errcode."|Task '".$task_id[0]."' of user '".$to_user."' has not been updated";
                 }
               }
             }
@@ -286,7 +284,7 @@ function update_database_v586 ()
       $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table recipient
-      $sql = "ALTER TABLE recipient CHANGE sender from_user CHAR(60);";
+      $sql = "ALTER TABLE recipient CHANGE sender from_user CHAR(100);";
 
       $errcode = "50007";
       $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
@@ -297,25 +295,25 @@ function update_database_v586 ()
       $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table container
-      $sql = "ALTER TABLE container MODIFY user CHAR(60);";
+      $sql = "ALTER TABLE container MODIFY user CHAR(100);";
 
       $errcode = "50009";
       $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table queue
-      $sql = "ALTER TABLE queue MODIFY user CHAR(60);";
+      $sql = "ALTER TABLE queue MODIFY user CHAR(100);";
 
       $errcode = "50010";
       $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table dailystat
-      $sql = "ALTER TABLE dailystat MODIFY user CHAR(60);";
+      $sql = "ALTER TABLE dailystat MODIFY user CHAR(100);";
 
       $errcode = "50011";
       $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
 
       // alter table notify
-      $sql = "ALTER TABLE notify MODIFY user CHAR(60);";
+      $sql = "ALTER TABLE notify MODIFY user CHAR(100);";
 
       $errcode = "50012";
       $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
@@ -340,7 +338,7 @@ function update_database_v586 ()
         if (!$mkdir)
         {
           $errcode = "10201";
-          $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|report directory could not be created";
+          $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|Report directory could not be created";
         }
       }
     }
@@ -449,7 +447,7 @@ function update_database_v614 ()
     // create new table
     $sql = "CREATE TABLE `taxonomy` (
   `id` int(11) NOT NULL,
-  `text_id` char(120) NOT NULL default '',
+  `text_id` char(255) NOT NULL default '',
   `taxonomy_id` int(11) NOT NULL default '0',
   `lang` char(6) NOT NULL default '',
   KEY `taxonomy` (`id`,`taxonomy_id`)
@@ -506,9 +504,9 @@ function update_database_v6113 ()
     // create new table
     $sql = "CREATE TABLE `keywords` (
   `keyword_id` int(11) NOT NULL auto_increment,
-  `keyword` char (100) NOT NULL default '',
+  `keyword` char(100) NOT NULL default '',
   PRIMARY KEY (`keyword_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
     $errcode = "50069";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -518,7 +516,7 @@ function update_database_v6113 ()
   `id` int(11) NOT NULL default '0',
   `keyword_id` int(11) NOT NULL default '0',
   PRIMARY KEY (`id`,`keyword_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin";
 
     $errcode = "50070";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -667,7 +665,7 @@ function update_database_v6115 ()
 
         // information
         $errcode = "00101";
-        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|".$errcode."|cleaned content of container '".$row['id']."' with text ID '".$row['text_id']."': ".$cleaned; 
+        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|".$errcode."|Cleaned content of container '".$row['id']."' with text ID '".$row['text_id']."': ".$cleaned; 
       }
     }
   }
@@ -694,9 +692,7 @@ function update_container_v6118 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (!empty ($mgmt_config['abs_path_data']) && (empty ($logdata) || strpos ($logdata, "|6.1.18|") < 1))
+  if (!empty ($mgmt_config['abs_path_data']) && !checksoftwareversion ("6.1.18"))
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -766,7 +762,7 @@ function update_container_v6118 ()
                       {
                         // error
                         $errcode = "10105";
-                        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|container '".$file."' could not be updated";
+                        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|Container '".$file."' could not be updated";
                       }
 
                       $i++;
@@ -811,9 +807,7 @@ function update_database_v6139 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|6.1.39|") < 1)
+  if (!checksoftwareversion ("6.1.39"))
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -858,9 +852,7 @@ function update_database_v625 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|6.2.5|") < 1)
+  if (!checksoftwareversion ("6.2.5"))
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -899,9 +891,7 @@ function update_database_v705 ($dir, $db_alter)
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|7.0.5|") < 1)
+  if (!checksoftwareversion ("7.0.5"))
   { 
     if (!empty ($db_alter))
     {
@@ -971,9 +961,7 @@ function update_users_706 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|7.0.6|") < 1)
+  if (!checksoftwareversion ("7.0.6"))
   {
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
 
@@ -1013,9 +1001,7 @@ function update_database_v708 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|7.0.8|") < 1)
+  if (!checksoftwareversion ("7.0.8"))
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -1057,9 +1043,7 @@ function update_users_709 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|7.0.9|") < 1)
+  if (!checksoftwareversion ("7.0.9"))
   {
     // update management config
     $dir = $mgmt_config['abs_path_data']."config/";
@@ -1147,9 +1131,7 @@ function update_config_7010 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|7.0.10|") < 1)
+  if (!checksoftwareversion ("7.0.10"))
   {
     // update management config
     $dir = $mgmt_config['abs_path_data']."config/";
@@ -1212,15 +1194,13 @@ function update_database_v800 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|8.0.0|") < 1)
+  if (!checksoftwareversion ("8.0.0"))
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // alter table
-    $sql = "ALTER TABLE accesslink MODIFY object_id varchar(4000);";
+    $sql = "ALTER TABLE accesslink MODIFY object_id int(11);";
     $errcode = "50800";
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
@@ -1251,9 +1231,7 @@ function update_users_804 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|8.0.4|") < 1)
+  if (!checksoftwareversion ("8.0.4"))
   {
     // rename custom.log to publication.log (since version 8.0.4)
     $dir = $mgmt_config['abs_path_data']."log/";
@@ -1275,7 +1253,7 @@ function update_users_804 ()
             if (!$rename)
             {
               $errcode = "10801";
-              $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|publication log '".$site.".custom.log' could not be renamed to '".$site.".publication.log";
+              $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|Publication log '".$site.".custom.log' could not be renamed to '".$site.".publication.log";
             }
           }
         }
@@ -1290,7 +1268,7 @@ function update_users_804 ()
       if (!$mkdir)
       {
         $errcode = "10802";
-        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|portal directory could not be created";
+        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|Portal directory could not be created";
       }
     }
 
@@ -1306,9 +1284,9 @@ function update_users_804 ()
         $savefile = savefile ($mgmt_config['abs_path_data']."user/", "user.xml.php", $datanew);
 
         // update log
-        if ($savefile == true) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|8.0.4|updated to version 8.0.4"), "update");
+        if ($savefile == true) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|8.0.4|Updated to version 8.0.4"), "update");
         // sys log
-        else savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10108|update to version 8.0.4 failed for 'user.xml.php'"));
+        else savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10108|Update to version 8.0.4 failed for 'user.xml.php'"));
 
         return $savefile;
       }
@@ -1333,9 +1311,7 @@ function update_database_v805 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|8.0.5|") < 1)
+  if (!checksoftwareversion ("8.0.5"))
   {
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -1415,9 +1391,7 @@ function update_database_v903 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|9.0.3|") < 1)
+  if (!checksoftwareversion ("9.0.3"))
   {
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -1454,9 +1428,7 @@ function update_database_v910 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|9.1.0|") < 1)
+  if (!checksoftwareversion ("9.1.0"))
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -1493,9 +1465,7 @@ function update_plugin_v911 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|9.1.1|") < 1)
+  if (!checksoftwareversion ("9.1.1"))
   { 
     // update plugin management file name for version 9.1.1 
     if (is_file ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
@@ -1525,9 +1495,7 @@ function update_database_v914 ()
 
   $error = array();
 
-  $logdata = loadlog ("update", "string");
-
-  if (empty ($logdata) || strpos ($logdata, "|9.1.4|") < 1)
+  if (!checksoftwareversion ("9.1.4"))
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -1550,6 +1518,151 @@ function update_database_v914 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v1000 ----------------------------------------------
+// function: update_database_v1000()
+// input: %
+// output: true / false
+
+// description: 
+// Merge table contaainer and media with table object for support of version 10.0.0
+
+function update_database_v1000 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.0"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table taxonomy (text_id)
+    $sql = "ALTER TABLE taxonomy MODIFY COLUMN text_id char(255);";
+    $errcode = "50598";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    
+    // alter table accesslink (object_id)
+    $sql = "ALTER TABLE accesslink MODIFY COLUMN object_id int(11);";
+    $errcode = "50599";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    
+    // alter table object (objectpath)
+    $sql = "ALTER TABLE object MODIFY COLUMN objectpath varchar(16000);";
+    $errcode = "50600";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table object (merge with table container)
+    $sql = "ALTER TABLE object ADD COLUMN createdate datetime NOT NULL AFTER id;";
+    $errcode = "50601";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN date datetime NOT NULL AFTER createdate;";
+    $errcode = "50602";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN publishdate datetime DEFAULT NULL AFTER date;";
+    $errcode = "50603";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN user char(100) NOT NULL default '' AFTER publishdate;";
+    $errcode = "50604";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN container char(16) NOT NULL default '' AFTER objectpath;";
+    $errcode = "50605";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN latitude float(10,6) DEFAULT NULL AFTER media;";
+    $errcode = "50606";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN longitude float(10,6) DEFAULT NULL AFTER latitude;";
+    $errcode = "50607";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table object (merge with table media)
+    $sql = "ALTER TABLE object ADD COLUMN filesize int(11) DEFAULT NULL AFTER longitude;";
+    $errcode = "50608";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN filetype char(16) DEFAULT NULL AFTER filesize;";
+    $errcode = "50609";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN width smallint(6) DEFAULT NULL AFTER filetype;";
+    $errcode = "50610";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN height smallint(6) DEFAULT NULL AFTER width;";
+    $errcode = "50611";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN red smallint(3) DEFAULT NULL AFTER height;";
+    $errcode = "50612";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN green smallint(3) DEFAULT NULL AFTER red;";
+    $errcode = "50613";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN blue smallint(3) DEFAULT NULL AFTER green;";
+    $errcode = "50614";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN colorkey char(8) DEFAULT NULL AFTER blue;";
+    $errcode = "50615";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN imagetype char(16) DEFAULT NULL AFTER colorkey;";
+    $errcode = "50616";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN md5_hash char(32) DEFAULT NULL AFTER imagetype;";
+    $errcode = "50617";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE object ADD COLUMN analyzed tinyint(1) NOT NULL default '0' AFTER md5_hash;";
+    $errcode = "50618";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // migrate/merge data from table container with table object
+    $sql = 'UPDATE object INNER JOIN container ON container.id=object.id ';
+    $sql .= 'SET object.createdate=container.createdate, object.date=container.date, object.publishdate=container.publishdate, object.user=container.user, object.container=container.container, ';
+    $sql .= 'object.latitude=container.latitude, object.longitude=container.longitude';
+    $errcode = "50620";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // migrate/merge data from table media with table object
+    $sql = 'UPDATE object INNER JOIN media ON media.id=object.id ';
+    $sql .= 'SET object.filesize=media.filesize, object.filetype=media.filetype, object.width=media.width, object.height=media.height, object.red=media.red, object.green=media.green, object.blue=media.blue, ';
+    $sql .= 'object.colorkey=media.colorkey, object.imagetype=media.imagetype, object.md5_hash=media.md5_hash, object.analyzed=media.analyzed';
+    $errcode = "50621";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // remove old index
+    $sql = 'DROP INDEX object ON object';
+    $errcode = "50622";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // create new index
+    $sql = 'CREATE INDEX object ON object (id, date, template, latitude, longitude, filesize, filetype, width, height, colorkey, imagetype, deleteuser)';
+    $errcode = "50623";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.0|updated to version 10.0.0"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -1562,28 +1675,33 @@ function updates_all ()
 {
   global $mgmt_config;
 
-  update_users_546 ();
-  update_tasks_v584 ();
-  update_database_v586 ();
-  update_database_v601 ();
-  update_database_v614 ();
-  update_database_v6113 ();
-  update_container_v6118 ();
-  update_database_v6139 ();
-  update_database_v625 ();
-  $update = update_database_v705 ($mgmt_config['abs_path_comp'], true);
-  if ($update) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.5|updated to version 7.0.5"), "update");
-  update_users_706 ();
-  update_database_v708();
-  update_users_709();
-  update_config_7010();
-  update_database_v800 ();
-  update_users_804 ();
-  update_database_v805 ();
-  update_database_v903 ();
-  update_database_v910 ();
-  update_plugin_v911 ();;
-  update_database_v914 ();
+  // check for existing installation (using check.dat)
+  if (is_file ($mgmt_config['abs_path_data']."check.dat"))
+  {
+    update_users_546 ();
+    update_tasks_v584 ();
+    update_database_v586 ();
+    update_database_v601 ();
+    update_database_v614 ();
+    update_database_v6113 ();
+    update_container_v6118 ();
+    update_database_v6139 ();
+    update_database_v625 ();
+    $update = update_database_v705 ($mgmt_config['abs_path_comp'], true);
+    if ($update) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.5|updated to version 7.0.5"), "update");
+    update_users_706 ();
+    update_database_v708();
+    update_users_709();
+    update_config_7010();
+    update_database_v800 ();
+    update_users_804 ();
+    update_database_v805 ();
+    update_database_v903 ();
+    update_database_v910 ();
+    update_plugin_v911 ();;
+    update_database_v914 ();
+    update_database_v1000 ();
+  }
 }
 
 // ------------------------------------------ update_software ----------------------------------------------
@@ -1643,7 +1761,16 @@ function update_software ($type="update")
     $download_link = $download_json['link'];
 
     // verify JSON data
-    if (empty ($download_json['md5']) || substr ($download_json['link'], 0, 8) != "https://") return false;
+    if (empty ($download_json['md5']) || substr ($download_json['link'], 0, 8) != "https://")
+    {
+      $errcode = "20132";
+      $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|Invalid JSON data provided by update service '".$mgmt_config['update_url']."'";
+
+      // save event log
+      savelog (@$error);
+
+      return false;
+    }
 
     // verify that the same package has not been downloaded and installed already (MD5 hash identifies the package file)
     if (empty ($logdata) || strpos ($logdata, $download_json['md5']) < 1)
@@ -1671,7 +1798,7 @@ function update_software ($type="update")
           if ($errorCode && is_array ($output))
           {
             $errcode = "20133";
-            $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|unzip of software update failed for '".$source."' with error code ".$errorCode.": ".implode (", ", $output);
+            $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|Execution of unzip of software update failed for '".$source."' with error code ".$errorCode.": ".implode (", ", $output);
 
             // save event log
             savelog (@$error);
@@ -1683,18 +1810,27 @@ function update_software ($type="update")
             unlink ($source);
 
             $errcode = "00133";
-            $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|".$errcode."|installed new software update";
+            $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|".$errcode."|Installed new software update";
 
             // save event log
             savelog (@$error);
 
             // save update log
-            savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|md5|installed software update with MD5 hash: ".$md5_hash), "update");
+            savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|md5|Installed software update with MD5 hash: ".$md5_hash), "update");
 
             return true;
           }
         }
       }
+    }
+    // update has been installed already
+    else
+    {
+      $errcode = "00134";
+      $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|".$errcode."|The update with MD5 hash '".$download_json['md5']."' is already installed";
+
+      // save event log
+      savelog (@$error);
     }
   }
   

@@ -340,7 +340,7 @@ function onfileupload_post ($site, $cat, $location, $object, $mediafile, $contai
     $description = "";
     
     $container_content = loadcontainer ($container, "work", $user);
-    if (!empty ($container_content)) $content_array = getcontent ($container_content, "<content>");
+    if (!empty ($container_content)) $content_array = getcontent ($container_content, "<content>", true);
 
     if (!empty ($content_array[0])) $content = $content_array[0];
     else $content = "";
@@ -770,7 +770,7 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
         $description = "";
         
         if (empty ($container_content)) $container_content = loadcontainer ($container_name, "work", $user);
-        if (!empty ($container_content)) $content_array = getcontent ($container_content, "<content>");
+        if (!empty ($container_content)) $content_array = getcontent ($container_content, "<content>", true);
         
         if (!empty ($content_array[0])) $content = $content_array[0];
         else $content = "";
@@ -812,19 +812,19 @@ function onpublishobject_post ($site, $cat, $location, $object, $container_name,
       $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");  
 
       $url = str_replace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$object;
-      $title_array = getcontent ($container_content, "<pagetitle>");
+      $title_array = getcontent ($container_content, "<pagetitle>", true);
 
       if (empty ($title_array[0]))
       {
         $textnode = selectcontent ($container_content, "<text>", "<text_id>", "Title".$language_suffix);
         
-        if (!empty ($textnode[0])) $title_array = getcontent ($textnode[0], "<textcontent>");
+        if (!empty ($textnode[0])) $title_array = getcontent ($textnode[0], "<textcontent>", true);
       }
       
       if (!empty ($title_array[0])) $title = $title_array[0];
       else $title = "";
         
-      $description_array = getcontent ($container_content, "<pagedescription>");
+      $description_array = getcontent ($container_content, "<pagedescription>", true);
       
       if (!empty ($description_array[0])) $description = $description_array[0];
       else $description = "";

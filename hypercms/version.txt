@@ -5222,7 +5222,7 @@ Release 07/2021
 - Modifications in function buildbarchart in template engine in order to define a min. y-axis value of 10 instead of 100
 - Modifications in function buildbarchart in template engine in order to support the new optional input parameter for the min. y-axis value
 - Design modifications in service accessstats and serverload
-- Modifications in chat.js and chat.min.js in order to set the time interval to 2300 ms for checkChat and 2400 ms for checkChat instead of 1500 ms
+- Modifications in chat.js in order to set the time interval to 2300 ms for checkChat and 2400 ms for checkChat instead of 1500 ms
 - Modifications in chat in order to set the time interval for the check of new message to 2600 ms instead of 1000 ms
 - Minor modification in all design themes in order to set the background colors of some CSS classes to important
 - Modifications in the installation routine in order to display information regarding the automatic updates
@@ -5240,7 +5240,7 @@ Release 07/2021
 - Modifications in function notifyusers and sendmessage in Main API in order to unify the sender in the message
 - Modifications in home screen in order to use night theme for the close icon of the popup layer and the move button of the home box select layer
 - Modifications in function uploadfile in Main API in order to overwrite existing multimedia files using a new input parameter
-- Modifications in service uploadfile ni order to support the new input parameter of function uploadfile
+- Modifications in service uploadfile in order to support the new input parameter of function uploadfile
 - Modifications in function importxmlfiles in Import/Export API in order to support the new input parameter of function uploadfile
 - Modifications in function createobject in Main API in order to return a new element (object_exists) in the result array if an object exists and could therefore not be created
 - Modifications in function createobject in Main API in order to read the multimedia file name from an existing object and return it in case the object exists already
@@ -5259,21 +5259,21 @@ Release 07/2021
 - Modifications in version_template in order to log deletes versions of a template
 - Modifications in version_template in order to display the owner name in a new column
 - Modifications in template_source in order to verify the extracted template data
-- Implementation of Ctrl+S keys support to save data in main.js and main.min.js
+- Implementation of Ctrl+S keys support to save data in main.js
 - Modifications in template_edit, pers_form, project_list, report_form, task_list, workflow_manager, workflow_script_form in order to implement the hcms_saveEvent JS function that will be trigger by Ctrl+S keys (same as save button)
 - Modifications in article_edit, component_edit_single, component_edit_multi, group_access_form, group_edit_form, image_rendering, page_multiedit, licensenotification_form, link_edit_page, media_edit_page, medie_hierarchy, media_mapping, media_taxonomy, portal_edit, site_edit_form, site_edit_inheritance, all text editors, user_edit, workflow_folder_form, instance_create, instance_edit in order to implement the hcms_saveEvent JS function that will be trigger by Ctrl+S keys (same as OK button)
 - Modifications in function buildview in the template engine in order to implement the hcms_saveEvent JS function that will be trigger by Ctrl+S keys
 - Modifications in media_rendering in order to unify Window load and DOM ready 
 - Implementation of the save layer in workflow_manager
-- Implementation of the new JS function hcms_selectAll in contextmenu.js and contextmenu.min.js in order to select all objects of a list
-- Implementation of Ctrl+A keys in order to support the select of all objects in list and gallery views in contextmenu.js and contextmenu.min.js
-- Implementation of Ctrl+X keys in order to support the cut of the selected objects in list and gallery views in contextmenu.js and contextmenu.min.js
-- Implementation of Ctrl+C keys in order to support the copy of the selected objects in list and gallery views in contextmenu.js and contextmenu.min.js
-- Implementation of Ctrl+Y keys in order to support the linked copy of the selected objects in list and gallery views in contextmenu.js and contextmenu.min.js
-- Implementation of Ctrl+V keys in order to support the paste of objects in list and gallery views in contextmenu.js and contextmenu.min.js
-- Modifications in JS function hcms_selectObject in contextmenu.js and contextmenu.min.js in order to define the multiobject for a single select (required for the support of the new key controls)
-- Modifications in JS function hcms_createContextmenuItem in contextmenu.js and contextmenu.min.js in order to verify if an object has been selected before starting the delete dialog
-- Modifications in JS function hcms_createContextmenuItem in contextmenu.js and contextmenu.min.js in order to implement permissions that can be set using JavaScript
+- Implementation of the new JS function hcms_selectAll in contextmenu.js in order to select all objects of a list
+- Implementation of Ctrl+A keys in order to support the select of all objects in list and gallery views in contextmenu.js
+- Implementation of Ctrl+X keys in order to support the cut of the selected objects in list and gallery views in contextmenu.js
+- Implementation of Ctrl+C keys in order to support the copy of the selected objects in list and gallery views in contextmenu.js
+- Implementation of Ctrl+Y keys in order to support the linked copy of the selected objects in list and gallery views in contextmenu.js
+- Implementation of Ctrl+V keys in order to support the paste of objects in list and gallery views in contextmenu.js
+- Modifications in JS function hcms_selectObject in contextmenu.js in order to define the multiobject for a single select (required for the support of the new key controls)
+- Modifications in JS function hcms_createContextmenuItem in contextmenu.js in order to verify if an object has been selected before starting the delete dialog
+- Modifications in JS function hcms_createContextmenuItem in contextmenu.js in order to implement permissions that can be set using JavaScript
 - Modifications in pop_action and popup_status in order to adjust the permission check
 - Modifications in pop_action and popup_status in order to process multiobjects with a single object
 - Modifications in explorer in order to deactivate keyboard shortcuts
@@ -5295,4 +5295,137 @@ Release 07/2021
 - Bug fix: The Project Management API did invert the permission check for its functions
 - Bug fix: The Task Management API did invert the permission check for its functions
 - Bug fix: user_edit did not remove special characters from the names used in the autocomplete JQuery feature
-- Bug fix: JS function hcms_leftClick in contextmenu.js and contextmenu.min.js did not unselect all objects if there was more than 1 object selected (multiobject)
+- Bug fix: JS function hcms_leftClick in contextmenu.js did not unselect all objects if there was more than 1 object selected (multiobject)
+
+Version 10.0.0
+Release 08/2021
+- Major release with a new database design (table container and media has been merged with table object for performance improvements) and new group permissions for plugins
+- Reports using attributes of table container or media need to be changed (table object includes all attributes of former table container and media)
+- Modifications in function hcms_loadSidebar in contextmenu.js in set change the delay from 400ms to 200ms
+- Modifications in createtables.sql in order to merge the attributes of table container and media with table object
+- Modifications in createtables.sql in order to set the character set of table keywords, project, task, and textnodes to utf8mb4 (4 bytes) instead of utf8 (3 bytes)
+- Modifications in createtables.sql in order to set the max. characters of attribute objectpath to 16,000 of table object
+- Modifications in createtables.sql in order to set the max. characters of attribute to_user to 500 of table recipient
+- Modification in user_sendlink in order to restricte the max. length of the input field for recipients to 500 digits
+- Modification in function createfolder and createobject in Main API in order to verify an restrict the max. characters for the location path (due to the database attribute objectpath)
+- Changed all case-sensitive SQL queries from utf8_bin collation to binary comparison
+- Implementation of the new function update_database_v1000 in the Update API in order to merge the attributes and contents of table container and media with table object
+- Modifications in function rdbms_getmedia in DB Connect in order to remove the extended input parameter
+- Modifications in various functions in DB Connect in order to remove table container and media from all queries
+- Modifications in all system components that use function rdbms_getmedia
+- Modifications in function exportxmlfiles in Import/Export API in order to remove table container and media from all queries
+- Modifications in function getmetadata_multiobjects, getmetadata_container in Get API in order to remove table container and media from all queries
+- Modifications in function contentcount in Main API in order to remove table container and media from all queries
+- Modifications in function zipfiles in Media API in order to remove table container and media from all queries
+- Modifications in function setmetadata in Meta API in order to remove table container and media from all queries
+- Modifications in the savecontent service in order to remove table container and media from all queries
+- Modifications in function rdbms_createobject in DB Connect in order to support the copy of media data for connected copies and the new input parameter for the copy of the media data
+- Modifications in function manipulateobject in Main API in order to support the new input parameter of function rdbms_createobject for the connected copy
+- Modifications in function rdbms_getobject_id in DB Connect in order to accept the *page* and *comp* path variables besides %page% and %comp%
+- Modifications in setting $mgmt_config['report_tables'] in the main configuration in order to exclude table container and media from the Report Management module
+- Modifications in the simplestats plugin in order to remove table container and media from all queries
+- Design modification in user_sendlink
+- Implementation of the toolbar customization in control_objectlist_menu
+- Implementation of the new main configuration GUI settings $mgmt_config['toolbar_functions']
+- Implementation of the new session variable hcms_toolbarfunctions in include/session in order to support the toolbar customization
+- Modifications in function deleteuser in Main API in order to remove the toolbar customization file of the user
+- Implementation of the new function settoolbarfunctions in Get API in order to save the toolbar customization file
+- Modifications in function userlogin in Security API in order to load and return the toolbar settings of the user
+- Modifications in function registeruser in Security API in order to register the toolbar settings of the user
+- Modifications in user_edit in order to also change the design theme for Mobile Edition
+- Removed the activation of the permission verification in the API loader in order to avoid double check by the GUI and the API
+- Modifications in popup_action adn popup_status in order to activate the permission verification for all API functions (whenever multiobject is used)
+- Modifications in the local JS function translatelanguage in media_taxonomy in order to collect all expressions of a page and send it to the translation engine (reduces process time significantly)
+- Implementation of the new exe file icon in all design themes
+- Modifications in function getfileinfo in Get API in order to support exe files
+- Modifications in function getserverload in Main API in order to verify the interval input parameter
+- Modifications in news home box in order to verify the old main configuration setting for the welcome screen
+- Design modifications in the search home box
+- Implementation of the new XML node plugins in user groups (xmlschema/usergroup.scheam.xml.php and xmlsubschema/usergroup.scheam.xml.php)
+- Modifications in group_edit_form and group_edit_script in order to support access permissions for plugins
+- Modifications in function editgroup in Main API in order to support plugins and the new input parameter for plugins
+- Design modifications in group_edit_form and implementation of labels for the checkboxes
+- Modifications in function userlogin in Security API in order to support the new plugin access permissions
+- Modifications in function registeruser in Security API in order to support the new plugin access permissions
+- Implementation of the new session variable hcms_pluginaccess in include/session in order to support the new plugin access permissions
+- Implementation of the new function checkpluginpermission in Security API
+- Modifications in explorer in order to support the new plugin access permissions
+- Modifications in all plugins in order to support the new plugin access permissions
+- Modifications in various function of the Security API regarding the return of the false result
+- Modifications in plugin_management
+- Modifications in all language files
+- Updates in the main configuration file regarding the viewport sizes of smartphones
+- Design modifications in the Mobile Edition (mobile.css)
+- Modifications in group_access_explorer in order to remove the publication name from the object path
+- Modifications in function create_csv in Main API in order to suppress messages caused by ob_clean and ob_flush
+- Modifications in function importmediafiles, importxmlfiles, and exportxmlfiles in Import/Export API in order to use new output buffering logic
+- Modifications in function showdate in UI API and is_date in Main API in order to exclude zero date provided by the database
+- Modifications in all object lists in order to verify dates with function is_date
+- Design modifications in function showmedia in UI API
+- Design modifications in page_info
+- Modifications in JS function hcms_leftClick in contextmenu.js in order to minimize the navigation on touch of the objectlist
+- Implementation of the new JS function hcms_addEvent in main.js for cross-browser-support for event listeners (in order support keyboard shortcuts for MS IE)
+- Modifications of various functions in contextmenu.js in order to implement the global is_selectarea variable and check for the display style of the selectarea to be empty or 'none' in order to trigger the display of the selectarea
+- Modifications in function loadtaxonomy and savetaxonomy in Meta API in order to trim the taxonomy expressions
+- Modifications in function loadtaxonomy in Meta API in order to support a new input parameter and result item for the total number of rows of the taxonomy
+- Modifications in function loadtaxonomy in Meta API in order to support the new input parameter for loading the default taxonomy
+- Implementation of a page selector in the taxonomy editor (media_taxonomy)
+- Implementation of a memory for the selected languages for the automatic translation in the taxonomy editor (media_taxonomy)
+- Implementation of the new function deletetaxonomy in Meta API
+- Implementation of the delete function in the taxonomy editor (media_taxonomy)
+- Implementation of the restore default taxonomy function in the taxonomy editor (media_taxonomy)
+- Implementation of the new function checksoftwareversion in Main API
+- Modifications in various functions in the Update API in order to use to new function checksoftwareversion
+- Modifications in the standard taxonomy
+- Added Chinese traditional language to the standard taxonomy
+- Modifications in function updates_all in Update API in order to suppress all updates if it is a new/clean installation
+- Modifications in function cleancontent in Main API in order to convert special characters of no character set has been provided as input
+- Modifications in function indexcontent in Media API in order to save cleaned text in the XML Container
+- Modifications in function indexcontent in Media API in order to compare encoding for MS Office files and convert the content to UTF-8 if required
+- Implementation of the new main configuration setting $mgmt_config['webdav_lifetime'] in order to define the WebDAV session lifetime
+- Modifications in function rdbms_searchcontent in DB Connect in order to exclude search expressions that are longer than 800 digits and numbers and to replace | with space
+- Modifications in function getsearchhistory in Get API in order to support the new clean input parameter for cleaning the search log
+- Modifications in explorer in order to support the new input parameter of function getsearchhistory
+- Modifications in function rdbms_getduplicate_file in DB Connect in order to query only the objectpath attribute
+- Template code saved in the content node of a XML template and rich content saved in the textnode of a XML container will be always escaped
+- Modifications in function setcontent, seticontent, and setcontent_fast in XML API in order to support the new input parameter to escape the content
+- Modifications in function getcontent and geticontent in XML API in order to support the new input parameter to unescape the content
+- Modifications in function indexcontent in Media API, importmetadata and setmetadata in Meta API in order to apply the new input parameter of function getcontent and setcontent
+- Modifications in various functions in Main API in order to apply the new input parameter of function getcontent and setcontent
+- Modifications in various functions in Set API in order to apply the new input parameter of function getcontent and setcontent
+- Modifications in various functions in UI API in order to apply the new input parameter of function getcontent and setcontent
+- Modifications in various functions in template engine in order to apply the new input parameter of function getcontent and setcontent
+- Modifications in various functions in event system in order to apply the new input parameter of function getcontent and setcontent
+- Modifications in page_multiedit, text_edit_format, and text_edit_signature in order to apply the new input parameter of function getcontent and setcontent
+- Modifications in search API and service savecontent in order to apply the new input parameter of function getcontent and setcontent
+- Modifications in template_edit and template_source in order to apply the new input parameter of function getcontent and setcontent
+- Implementation of the new function escape_xmltags in XML API in order to replace XML tag names used in the XML schema of containers and templates (this function is however not used since the contents are escaped)
+- Implementation of the new local JS function initializeSearch in explorer in order to initialize the search form and the search parameters
+- Modifications in explorer in order to uncheck all file types in the search form by default
+- Modifications in local JS function startSearch in explorer in order to verify if at least one file-type is checked and to display a message if no file-type hs been selected
+- Modifications in explorer in order to implement labels for the color checkboxes
+- Design modifications in the search field of the Mobile Edition (frameset_mobile)
+- Modifications in template engine in order to apply function scriptcode_encode on text content
+- Modifications in explorer_objectview in order to implement the arrow key events for the preview navigation
+- Modifications in frameset_main and frameset_mobile in order to disable keyboard shortcuts and the control of the navigation frame on touch (only for the Mobile Edition) 
+- Modifications in contextmenu.js in order to replace the standard JS events by the new function hcms_addEvent
+- Modifications in local JS function generatePluginTree in explorer in order to hide navigation frame on click or touch
+- Modifications in text_edit_format, text_editunformat, text_edit_list, and text_edit_signature in order to apply function scriptcode_clean on the content
+- Modifications in JS function hcms_setObjectcontext, hcms_setColumncontext, hcms_setUsercontext, hcms_setQueuecontext, and hcms_setMessagecontext in contextmenu.js in order to stop the propagation of the event
+- Modifications in explorer_objectlist in order to call JS function hcms_setObjectcontext on mouseover event of the list or gallery view layer
+- Implementation of the support of the command key in main.js and contextmenu.js in order to support keyboard shortcuts for MacOS
+- Implementation of the support of the MacOS Delete and Backspace key in contextmenu.js in order to support keyboard shortcuts for MacOS
+- Moved JS function hcms_keyPressed from contextmenu.js to main.js
+- Changes in the text of most event log entries
+- Design modifications in all control menus
+- Redesign of the colorful design theme
+- Minor design modifications in day design theme
+- Redesign of the standard design theme
+- Updates in all user manuals
+- Bug fix: Implementation of the missing support of uppercase key for the save event Ctrl+S
+- Bug fix: The plugin_management did not display the active state correctly after saving the data (the reload of the configuration file provided the old data)
+- Bug fix: The local JS function setSaveType of the template engine did not verify if the local JS function collectFaces and initFaceOnVideo is available (MS IE does not support the face recognition service and still called function collectFaces)
+- Bug fix: JS function createFaceOnImage in function showmedia in UI API has not been verified (MS IE does not support the face recognition service and still called function collectFaces)
+- Bug fix: The implementation of the folder button in the Mobile Edition was in the list view instead of the gallery view of folders in search_objectlist
+- Bug fix: The task management view selector of the toolbar did not use the proper inverse colors of the design theme 
+

@@ -267,6 +267,9 @@ checkusersession ($user);
 // create secure token
 $token = createtoken ($user);
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
+
 // search operator for multiple fields in advanced search
 if ($search_operator == "AND" || $search_operator == "OR")
 {
@@ -466,9 +469,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
       {
         if (!empty ($object_item['container_id'])) $container_id = $object_item['container_id'];
         if (!empty ($object_item['media'])) $mediafile = $object_item['media'];
-        if (!empty ($object_item['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($object_item['createdate']));
-        if (!empty ($object_item['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($object_item['date']));
-        if (!empty ($object_item['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($object_item['publishdate']));
+        if (!empty ($object_item['createdate']) && is_date ($object_item['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($object_item['createdate']));
+        if (!empty ($object_item['date']) && is_date ($object_item['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($object_item['date']));
+        if (!empty ($object_item['publishdate']) && is_date ($object_item['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($object_item['publishdate']));
         if (!empty ($object_item['user'])) $file_owner = $object_item['user'];
         if (!empty ($object_item['filesize'])) $file_size = number_format ($object_item['filesize'], 0, ".", " ");
         if (!empty ($object_item['width'])) $file_width = $object_item['width'];
@@ -527,7 +530,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if (empty ($container_id))
               {
                 $objectdata = loadfile ($location.$folder."/", ".folder");
-                
+
                 if (!empty ($objectdata))
                 {
                   // get name of content file and load content container
@@ -541,7 +544,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               {
                 createobject ($site, $location.$folder."/", ".folder", "default.meta.tpl", "sys");
               }
-              
+
               if (!empty ($container_id))
               {
                 // read meta data of media file
@@ -555,9 +558,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   
                   if (!empty ($container_info) && is_array ($container_info))
                   {  
-                    if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
-                    if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
-                    if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
+                    if (!empty ($container_info['createdate']) && is_date ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+                    if (!empty ($container_info['date']) && is_date ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+                    if (!empty ($container_info['publishdate']) && is_date ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
                     if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
                   }
                 }
@@ -574,32 +577,32 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"javascript:void(0);\">";
                 $dlink_end = "</a>";
               }
-              
+
               // fallback for modified date
               if (empty ($file_modified))
               {
                 // get file time
                 $file_modified = date ("Y-m-d H:i", @filemtime ($location.$folder));
               }
-              
+
               // listview - view option for locked multimedia objects
               if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
               else $class_image = "class=\"hcmsIconList\"";            
-              
+
               // onclick for marking objects
               $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
-              
+
               // open folder
               if ($action != "recyclebin") $openFolder = "onDblClick=\"parent.location='frameset_objectlist.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc.$folder)."/&token=".$token."';\" ";
               else $openFolder = "";
-              
+
               // set context
               $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
-    
+
               // if linking is used display download buttons
               $linking_buttons = "";
 
-              // if mobile edition is used display edit button
+              // if mobile edition is used display navigate button
               if ($is_mobile && $setlocalpermission['root'] == 1)
               {   
                 $linking_buttons .= "
@@ -627,15 +630,14 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
               // metadata
               $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
-    
+
               $listview .= "
                           <tr id=\"g".$items_row."\" style=\"cursor:pointer\" ".$selectclick.">
                             <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                               <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">
                                 ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end."
                               </div>
-                              ".$linking_buttons."
-                              </td>";
+                            </td>";
     
               if (!$is_mobile)
               {
@@ -706,6 +708,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                                     <div class=\"hcmsItemName\">".showshorttext($folder_name, 18, true)."</div>
                                   ".$dlink_end."
                                 </div>
+                                ".$linking_buttons."
                               </div>";
             }
           }
@@ -784,9 +787,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 if (!empty ($container_info) && is_array ($container_info))
                 { 
                   if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, ".", " ");
-                  if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
-                  if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
-                  if (!empty ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
+                  if (is_date ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+                  if (is_date ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+                  if (is_date ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
                   if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
                   if (!empty ($container_info['width'])) $file_width = $container_info['width'];
                   if (!empty ($container_info['height'])) $file_height = $container_info['height'];
@@ -1195,9 +1198,9 @@ contextymove = true;
 
 // overwrite permissions from contextmenu.js
 <?php if ($action == "recyclebin") { ?>
-permission['rename'] = false;
+hcms_permission['rename'] = false;
 <?php } ?>
-permission['paste'] = false;
+hcms_permission['paste'] = false;
 
 // explorer view option
 var explorerview = "<?php echo getescapedtext ($temp_explorerview); ?>";
@@ -1346,16 +1349,6 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 <!-- select area --> 
 <div id="selectarea" class="hcmsSelectArea"></div>
 
-<!-- popup for preview/live-view and forms (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
-<div id="objectviewLayer" style="display:none;">
-  <div style="position:fixed; right:4px; top:4px; z-index:8001;">
-    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
-  </div>
-  <div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:8000;">
-   <iframe id="objectview" name="objectview" src="" frameborder="0" style="width:100%; height:100%; margin:0; padding:0; border:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>" sandbox="allow-same-origin allow-scripts allow-forms" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
-  </div>
-</div>
-
 <!-- contextual help --> 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang]."<br/>".$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy'][$lang], $lang, "position:fixed; top:30px; right:30px;", "hcms_infoboxKeys"); ?>
 
@@ -1381,7 +1374,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 
 <!-- context menu --> 
 <div id="contextLayer" style="position:absolute; min-width:160px; max-width:280px; height:320px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
-  <form name="contextmenu_object" action="" method="post" target="_blank">
+  <form name="contextmenu_object" action="" method="post" target="_blank" style="display:block;">
     <input type="hidden" name="contextmenustatus" value="" />
     <input type="hidden" name="contextmenulocked" value="false" />
     <input type="hidden" name="action" value="" />
@@ -1403,7 +1396,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
-    
+
     <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
       <tr>
         <td style="white-space:nowrap;">

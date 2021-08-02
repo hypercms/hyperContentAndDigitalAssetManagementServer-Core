@@ -183,7 +183,7 @@ function checkForm_tpl_create()
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$hcms_lang['portal-templates'][$lang]); ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$hcms_lang['portal-templates'][$lang]); ?></span>
   <?php } ?>
 </div>
 
@@ -235,8 +235,9 @@ function checkForm_tpl_create()
   </div>
 </div>
 
+<!-- create portal -->
 <div id="createtplLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden;">
-  <form name="tpl_create" action="" method="post">
+  <form name="tpl_create" action="" method="post" onsubmit="return checkForm_tpl_create();">
     <input type="hidden" name="action" value="tpl_create" />
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />

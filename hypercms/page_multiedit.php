@@ -409,7 +409,7 @@ foreach ($multiobject_array as $object)
     }
     
     // read content from content container         
-    if ($db_connect_data == false) $textcontent = getcontent ($text, "<textcontent>");
+    if ($db_connect_data == false) $textcontent = getcontent ($text, "<textcontent>", true);
     
     // stop here and continue if we didn't find anything
     if (!is_array ($id) || !is_array ($textcontent)) continue;

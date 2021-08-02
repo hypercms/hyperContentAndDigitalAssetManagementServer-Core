@@ -41,6 +41,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 $add_onload = "";
 
@@ -377,7 +378,7 @@ function goToURL()
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php if (valid_publicationname ($site)) echo getescapedtext ($site." &gt; "); echo getescapedtext ($hcms_lang['user-management'][$lang])." &gt; ".(!empty ($login) ? $login : ""); ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php if (valid_publicationname ($site)) echo getescapedtext ($site." &gt; "); echo getescapedtext ($hcms_lang['user-management'][$lang])." &gt; ".(!empty ($login) ? $login : ""); ?></span>
   <?php } ?>
 </div>
 
@@ -596,8 +597,9 @@ function goToURL()
 echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;");
 ?>
 
+<!-- create user -->
 <div id="createuserLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:92px; left:10px; top:4px; visibility:hidden;">
-  <form name="userform" action="" method="post">
+  <form name="userform" action="" method="post" onsubmit="return checkForm();">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="group" value="<?php echo $group; ?>" />
     <input type="hidden" name="action" value="create" />
@@ -626,6 +628,7 @@ echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;")
   </form>
 </div>
 
+<!-- registration -->
 <div id="registrationLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:92px; left:10px; top:4px; visibility:hidden;">
   <form name="registrationform" action="" method="post">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />

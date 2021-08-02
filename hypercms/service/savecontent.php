@@ -89,7 +89,7 @@ function appendcontent_helper ($xmlcontent, $text, $delimiter=" ")
     {
       // get content
       $temp = selectcontent ($xmlcontent, "<text>", "<text_id>", $key);
-      if (!empty ($temp[0])) $temp_content = getcontent ($temp[0], "<textcontent>");
+      if (!empty ($temp[0])) $temp_content = getcontent ($temp[0], "<textcontent>", true);
       
       // append content
       if (!empty ($temp_content[0])) $text[$key] = $temp_content[0].$delimiter.$value;
@@ -734,7 +734,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
     {
       list ($latitude, $longitude) = explode (",", $geolocation);
 
-      $sql = "UPDATE container SET latitude=".floatval($latitude).", longitude=".floatval($longitude)." WHERE id=".intval($container_id);                
+      $sql = "UPDATE object SET latitude=".floatval($latitude).", longitude=".floatval($longitude)." WHERE id=".intval($container_id);                
       $result = rdbms_externalquery ($sql);
     }
 
@@ -757,7 +757,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
       }
 
       // insert new date into content file
-      $contentdatanew = setcontent ($contentdatanew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+      $contentdatanew = setcontent ($contentdatanew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "", true);
 
       // set/change encoding (not for assets)
       $charset_old = getcharset ("", $contentdatanew);
@@ -807,7 +807,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
 
         // information log
         $errcode = "00101";
-        $error[] = date('Y-m-d H:i')."|savecontent.php|information|".$errcode."|object '".$location_esc.$page."' has been edited and saved by user '".$user."'";
+        $error[] = date('Y-m-d H:i')."|savecontent.php|information|".$errcode."|Object '".$location_esc.$page."' has been edited and saved by user '".$user."'";
 
         // notification
         notifyusers ($site, $location, $page, "onedit", $user);
@@ -893,7 +893,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
         if ($test == false)
         {
           $errcode = "20101";
-          $error[] = $mgmt_config['today']."|page_save.inc.php|error|".$errcode."|unable to save data of container '".$object_contentfile."' using db_connect '".$db_connect."'";          
+          $error[] = $mgmt_config['today']."|page_save.inc.php|error|".$errcode."|Unable to save data of container '".$object_contentfile."' using db_connect '".$db_connect."'";          
         }
       }
     }

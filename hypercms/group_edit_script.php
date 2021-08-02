@@ -19,7 +19,8 @@ require ("function/hypercms_api.inc.php");
 $site = getrequest_esc ("site", "publicationname");
 $cat = getrequest_esc ("cat", "objectname");
 $group_name = getrequest_esc ("group_name", "objectname");
-$permission = getrequest ("permission");
+$permission = getrequest ("permission", "array");
+$plugin = getrequest ("plugin", "array");
 $access_new = getrequest ("access_new");
 $sender = getrequest ("sender");
 $token = getrequest ("token");
@@ -40,7 +41,7 @@ checkusersession ($user);
 // ------------------------------ permission settings -------------------------------
 if ($sender == "settings" && checktoken ($token, $user))
 {
-  $result = editgroup ($site, $group_name, "", "", $permission, $user);
+  $result = editgroup ($site, $group_name, "", "", $permission, $plugin, $user);
 
   if (!empty ($result['result']))
   {
@@ -84,11 +85,11 @@ elseif ($sender == "access" && checktoken ($token, $user))
   // define variables depending on content category
   if ($cat == "page")
   {
-    $result = editgroup ($site, $group_name, $access_array, "", "", $user);
+    $result = editgroup ($site, $group_name, $access_array, "", "", "", $user);
   }
   elseif ($cat == "comp")
   {
-    $result = editgroup ($site, $group_name, "", $access_array, "", $user);
+    $result = editgroup ($site, $group_name, "", $access_array, "", "", $user);
   }
 
   if (is_array ($result))

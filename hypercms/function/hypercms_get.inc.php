@@ -11,14 +11,16 @@
 
 // ---------------------- getserverload -----------------------------
 // function: getserverload()
-// input: intervall for average system load can be 1, 5 or 15 minutes [0,1,2] (optional)
+// input: intervall for the average system load can be 1, 5 or 15 minutes [0,1,2] (optional)
 // output: Returns the average system load (the number of processes in the system run queue) over the last minute, the number of CPU cores, and the memory usage as array
 
 function getserverload ($interval=0)
 {
+  // initialize
   $cpu_num = 2;
   $load = 0;
   $memory_usage = 0;
+  if ($interval != 0 || $interval != 1 || $interval != 2) $interval = 0;
 
   // for Windows
   if (stristr (PHP_OS, 'win'))
@@ -415,40 +417,57 @@ function getescapedtext ($text, $charset="", $lang="")
 
 // ----------------------------------------- getsearchhistory ------------------------------------------
 // function: getsearchhistory()
-// input: user name [string] (optional)
+// input: user name [string] (optional), clean history [boolean] (optional)
 // output: array holding all expressions (in single quotes) of the search history of a user / false on error
 
-function getsearchhistory ($user="")
+function getsearchhistory ($user="", $clean=false)
 {
   global $mgmt_config;
 
   if (is_file ($mgmt_config['abs_path_data']."log/search.log"))
   {
+    // initialize
+    $searchlog = "";
+    $keywords = array();
+
     // load search log
     $data = file ($mgmt_config['abs_path_data']."log/search.log");
 
     if (is_array ($data) && sizeof ($data) > 0)
     {
-      $keywords = array();
-
       foreach ($data as $record)
       {
         if (substr_count ($record, "|") > 0)
         {
+          $record = trim ($record);
+
           list ($date, $searchuser, $keyword_add) = explode ("|", $record);
 
-          if ($searchuser == $user || $user == "") $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
+          // clean entries
+          if (!empty ($clean) && !empty ($date) && !empty ($searchuser) && trim ($keyword_add) != "" && !is_numeric ($keyword_add) && strlen ($keyword_add) < 800)
+          {
+            $searchlog .= $record."\n";
+          }
+
+          // collect entries
+          if (($searchuser == $user || $user == "") && !is_numeric (trim ($keyword_add)) && strlen ($keyword_add) < 800 && strpos ("_".$keyword_add, "<") < 1 && strpos ("_".$keyword_add, ">") < 1)
+          {
+            $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
+          }
         }
       }
+
+      // save cleaned search log
+      if (!empty ($clean) && !empty ($searchlog)) savefile ($mgmt_config['abs_path_data']."log/", "search.log", $searchlog);
 
       // only unique expressions
       if (sizeof ($keywords) > 0) $keywords = array_unique ($keywords);
 
       return $keywords;
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ----------------------------------------- getsynonym ------------------------------------------
@@ -1130,7 +1149,7 @@ function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $pri
 
                 if ($textnode != false)
                 {
-                  $textcontent = getcontent ($textnode[0], "<textcontent>");
+                  $textcontent = getcontent ($textnode[0], "<textcontent>", true);
 
                   if (!empty ($textcontent[0]))
                   {
@@ -1488,7 +1507,7 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
               {
                 $label = str_replace ("_", " ", $text_id[0]);
 
-                $text_content = getcontent ($buffer, "<textcontent>");
+                $text_content = getcontent ($buffer, "<textcontent>", true);
                 
                 // strip tags and replace double by single quotes
                 if (!empty ($text_content[0]) && strpos ("_".$text_content[0], "\"") > 0)
@@ -1522,7 +1541,7 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
 
               if ($textnode != false)
               {
-                $text_content = getcontent ($textnode[0], "<textcontent>");
+                $text_content = getcontent ($textnode[0], "<textcontent>", true);
 
                 // strip tags and replace double by single quotes
                 if (!empty ($text_content[0]) && strpos ("_".$text_content[0], "\"") > 0)
@@ -1592,7 +1611,7 @@ function getmetadata_multiobjects ($multiobject_array, $user, $include_subfolder
           if (getobject ($multiobject) == ".folder") $folderpath = getlocation ($multiobject);
           else $folderpath = $multiobject; 
 
-          $temp_array = rdbms_externalquery ('SELECT objectpath FROM object WHERE objectpath LIKE "'.$folderpath.'%" AND objectpath!="'.$folderpath.'.folder"');
+          $temp_array = rdbms_externalquery ('SELECT objectpath FROM object WHERE objectpath LIKE BINARY "'.$folderpath.'%" AND BINARY objectpath!="'.$folderpath.'.folder"');
 
           if (is_array ($temp_array) && sizeof ($temp_array) > 0)
           {
@@ -1639,9 +1658,9 @@ function getmetadata_multiobjects ($multiobject_array, $user, $include_subfolder
             $container_id = intval ($objectinfo['container_id']);
 
             // query
-            $query_attritbutes = 'container.id AS "Container-ID", object.objectpath AS "Objectpath", object.template AS "Template", container.createdate AS "Date created", container.date AS "Date modified", container.publishdate AS "Date published", container.user AS "Owner", container.latitude AS "Latitude", container.longitude AS "Longitude", media.filesize AS "Size in KB", media.filetype AS "File type", media.width AS "Width in PX", media.height AS "Height in PX", media.red AS "Red", media.green AS "Green", media.blue AS "Blue", media.colorkey AS "Colorkey", media.imagetype AS "Image type", media.md5_hash AS "MD5 hash", media.analyzed AS "Analyzed"';
+            $query_attritbutes = 'id AS "Container-ID", objectpath AS "Objectpath", template AS "Template", createdate AS "Date created", date AS "Date modified", publishdate AS "Date published", user AS "Owner", latitude AS "Latitude", longitude AS "Longitude", filesize AS "Size in KB", filetype AS "File type", width AS "Width in PX", height AS "Height in PX", red AS "Red", green AS "Green", blue AS "Blue", colorkey AS "Colorkey", imagetype AS "Image type", md5_hash AS "MD5 hash", analyzed AS "Analyzed"';
 
-            $objectdata = rdbms_externalquery ('SELECT '.$query_attritbutes.' FROM object INNER JOIN container ON object.id=container.id LEFT JOIN media ON object.id=media.id WHERE object.id='.$container_id);
+            $objectdata = rdbms_externalquery ('SELECT '.$query_attritbutes.' FROM object WHERE object.id='.$container_id);
 
             if (is_array ($objectdata) && sizeof ($objectdata) > 0)
             {
@@ -1742,41 +1761,41 @@ function getmetadata_container ($container_id, $text_id_array=array())
       if (in_array ("createdate", $text_id_array))
       {
         if ($select != "") $select .= ', ';
-        $select .= 'container.createdate';
+        $select .= 'createdate';
       }
 
       // date modified
       if (in_array ("modifieddate", $text_id_array) || in_array ("date", $text_id_array))
       {
         if ($select != "") $select .= ', ';
-        $select .= 'container.date';
+        $select .= 'date';
       }
 
       // date modified
       if (in_array ("publishdate", $text_id_array))
       {
         if ($select != "") $select .= ', ';
-        $select .= 'container.publishdate';
+        $select .= 'publishdate';
       }
 
       // user/owner
       if (in_array ("owner", $text_id_array) || in_array ("user", $text_id_array))
       {
         if ($select != "") $select .= ', ';
-        $select .= 'container.user';
+        $select .= 'user';
       }
 
       // file size
       if (in_array ("filesize", $text_id_array))
       {
         if ($select != "") $select .= ', ';
-        $select .= 'media.filesize';
+        $select .= 'filesize';
       }
 
       // media dimensions
       if ($select != "") $select = ', '.$select;
 
-      $sql = 'SELECT media.width, media.height '.$select.' FROM container LEFT JOIN media ON media.id=container.id WHERE container.id='.intval($container_id);
+      $sql = 'SELECT width, height'.$select.' FROM object WHERE id='.intval($container_id);
       $objectdata = rdbms_externalquery ($sql);
 
       // reduce array
@@ -1871,7 +1890,7 @@ function getmetadata_container ($container_id, $text_id_array=array())
             // only include requested text IDs
             if (!empty ($text_id[0]) && in_array ("text:".$text_id[0], $text_id_array))
             {
-              $text_content = getcontent ($buffer, "<textcontent>");
+              $text_content = getcontent ($buffer, "<textcontent>", true);
 
               if (!empty ($text_content[0]))
               {
@@ -3358,6 +3377,12 @@ function getfileinfo ($site, $file, $cat="comp")
         {
           $file_icon = "file_js.png";
           $file_type = "JavaScript";
+        }
+        // JavaScript
+        elseif ($file_ext == ".exe")
+        {
+          $file_icon = "file_exe.png";
+          $file_type = "EXE";
         }
         // text based documents in proprietary format or clear text 
         elseif (@substr_count (strtolower ($hcms_ext['bintxt']).".", $file_ext.".") > 0 || @substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
@@ -6615,8 +6640,8 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
   {
     // get usergroup users
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-    $buffer_array = selectcontent ($userdata, "<user>", "<login>", "$user");
-    $buffer_array = selectcontent ($buffer_array[0], "<memberof>", "<publication>", "$site");
+    $buffer_array = selectcontent ($userdata, "<user>", "<login>", $user);
+    $buffer_array = selectcontent ($buffer_array[0], "<memberof>", "<publication>", $site);
     $buffer_array = getcontent ($buffer_array[0], "<usergroup>");
     $group_str = substr ($buffer_array[0], 1, strlen ($buffer_array[0])-2);
     $group_array = explode ("|", $group_str);

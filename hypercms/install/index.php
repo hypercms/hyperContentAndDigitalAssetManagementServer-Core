@@ -76,8 +76,12 @@ $lang = "en";
 
 // hyperCMS API
 require ($mgmt_config['abs_path_cms']."function/hypercms_api.inc.php");
+
 // version info
 require ($mgmt_config['abs_path_cms']."version.inc.php");
+
+// extract version number (important since $mgmt_config array will be reset during the installation process)
+if (!empty ($mgmt_config['version'])) $version_number = substr ($mgmt_config['version'], (strpos ($mgmt_config['version'], " ") + 1));
 
 // detect browser
 if (is_mobilebrowser ()) $is_mobile = 1;
@@ -157,6 +161,7 @@ $token = getrequest ("token");
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 
 // ------------------- basic checks -------------------
@@ -183,6 +188,12 @@ if (!function_exists ("bcadd")) $show .= "<li>The PHP bcmath extension is disabl
 
 if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken ($token, $user))
 {
+  // check version
+  if (empty ($version_number))
+  {
+    $show .= "<li>The version information is missing!</li>\n";
+  }
+
   // create data and repository file structure
   if (!empty ($mgmt_config['abs_path_data']) && !empty ($mgmt_config['abs_path_rep']) && !empty ($publ_config['abs_path_mypublication']))
   {   
@@ -243,7 +254,7 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
           if ($show == "")
           {
             // check if objects exist already
-            if ($result = $mysqli->query ('SELECT count(*) AS count FROM `object`'))
+            if ($result = $mysqli->query ('SELECT count(*) AS count FROM object'))
             {
               if ($row = $result->fetch_assoc()) $count = $row['count'];
               $result->free();
@@ -263,6 +274,7 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
               
               $mysqli->close();
             }
+            else $show .= "<li>Error creating tables: the database is not empty</li>\n";
           }
         }
       }
@@ -670,10 +682,22 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
   }
   
   // show errors
-  if ($show != "") $show = "<strong>The following errors occured:</strong><br/>\n<ul>".$show."</ul>";
-  
-  // forward on success
-  else header ("Location: ".cleandomain ($mgmt_config['url_path_cms']));
+  if ($show != "")
+  {
+    $show = "<strong>The following errors occured:</strong><br/>\n<ul>".$show."</ul>";  
+  }
+  // on success
+  else
+  {
+    // update log
+    if (!empty ($version_number))
+    {
+      savelog (array($mgmt_config['today']."|hypercms_update.inc.php|installation|".trim($version_number)."|installed version ".trim($version_number)), "update");
+    }
+
+    // forward on success
+    header ("Location: ".cleandomain ($mgmt_config['url_path_cms']));
+  }
 }
 
 // create secure token

@@ -18,7 +18,7 @@ require ("version.inc.php");
 
 
 // plugin config
-if (file_exists ($mgmt_config['abs_path_data']."config/plugin.global.php"))
+if (is_file ($mgmt_config['abs_path_data']."config/plugin.global.php"))
 {
   require ($mgmt_config['abs_path_data']."config/plugin.global.php");
 }
@@ -421,7 +421,7 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
       else 
       {
         $errcode = "00178";
-        $error[] = $mgmt_config['today']."|explorer.php|warning|".$errcode."|directory ".$location_esc." is missing";         
+        $error[] = $mgmt_config['today']."|explorer.php|warning|".$errcode."|Directory ".$location_esc." is missing";         
 
         // save log
         savelog (@$error);   
@@ -700,7 +700,7 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false, $site
           }
 
           $curr = new hcms_menupoint($point['name'], $link, $icon);
-          $curr->setOnClick('changeSelection(this)');
+          $curr->setOnClick('changeSelection(this); minNavFrame();');
           $curr->setTarget('workplFrame');
           $curr->setOnMouseOver('hcms_resetContext();');
           $return[] = $curr;
@@ -726,7 +726,7 @@ if ($location != "")
     list ($domain, $site, $lang, $tax_id, $levels) = explode ("/", $location);
     $tree = generateTaxonomyTree ($site, $tax_id, $rnr);
   }
-  // taxonomy location
+  // metadata hierarchy location
   elseif (substr_count ($location, "%hierarchy%/") > 0)
   {
     $tree = generateHierarchyTree ($location, $rnr);
@@ -897,16 +897,20 @@ else
   }
 
   // ----------------------------------------- plugins ----------------------------------------------
-  // Plugins require Desktop permission since version 9.1.1
-  if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin) && checkrootpermission ('desktop'))
+  // Plugins require plugin access permission since version 9.1.6
+  if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin) && is_array ($mgmt_plugin))
   { 
     foreach ($mgmt_plugin as $key => $data)
     {
-      // Only active plugins which have the correct keys are used
-      if (is_array ($data) && !empty ($data['active']) && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('main', $data['menu']) && is_array ($data['menu']['main']))
+      // check permission and plugin menu keys
+      if (checkpluginpermission ("", $key) && !empty ($data['menu']['main']))
       {
         $pluginmenu = generatePluginTree ($data['menu']['main'], $key, $data['folder']);
-        foreach ($pluginmenu as $point) $maintree .= $point->generateHTML();
+
+        foreach ($pluginmenu as $point)
+        {
+          $maintree .= $point->generateHTML();
+        }
       }
     }
   }
@@ -1208,13 +1212,13 @@ else
           }
 
           // ----------------------------------------- plugins ----------------------------------------------
-          // Plugins require Desktop permission since version 9.1.1
-          if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin) && checkrootpermission ('desktop'))
+          // Plugins require plugin access permission since version 9.1.6
+          if (empty ($hcms_assetbrowser) && !empty ($mgmt_plugin) && is_array ($mgmt_plugin))
           { 
             foreach ($mgmt_plugin as $key => $data)
             {
-              // Only active plugins which have the correct keys are used
-              if (is_array ($data) && array_key_exists ('active', $data) && $data['active'] == true && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('publication', $data['menu']) && is_array ($data['menu']['publication']))
+              // check permission and plugin menu keys
+              if (checkpluginpermission ($site, $key) && !empty ($data['menu']['publication']))
               {
                 $pluginmenu = generatePluginTree ($data['menu']['publication'], $key, $data['folder'], false, $site);
 
@@ -1267,7 +1271,7 @@ else
             }
           }
 
-          // ----------------------------------------- component ---------------------------------------------
+          // ----------------------------------------- assets/components ---------------------------------------------
           // category of content: cat=comp
           if ((empty ($hcms_portal) || in_array ("assets", $portalnavigation)) && is_dir ($mgmt_config['abs_path_comp'].$site."/") && checkglobalpermission ($site, 'component'))
           {
@@ -1365,8 +1369,9 @@ else
 
     <script type="text/javascript">
 
-    // reassign permissions for contextmenu.js
-    permission['shortcuts'] = false;
+    // reassign permissions for main.js and contextmenu.js
+    hcms_permission['shortcuts'] = false;
+    hcms_permission['minnavframe'] = false;
 
     // variable where lastSelected element is stored
     var lastSelected = "";
@@ -1937,6 +1942,20 @@ else
       }
     }
 
+    function initializeSearch ()
+    {
+      hcms_hideFormLayer('advancedLayer');
+      hcms_hideFormLayer('searchreplaceLayer');
+      hcms_hideFormLayer('keywordsLayer');
+      hcms_hideFormLayer('filetypeLayer');
+      hcms_hideFormLayer('imageLayer');
+      hcms_hideFormLayer('mapLayer');
+      hcms_hideFormLayer('dateLayer');
+      hcms_hideFormLayer('idLayer');
+      hcms_hideFormLayer('recipientLayer');
+      activateFulltextSearch();
+    }
+
     function startSearch (type)
     {
       // iframe for search result
@@ -2028,7 +2047,7 @@ else
 
             for (var i=0; i<childs.length; i++)
             {
-              // found unchecked element
+              // found checked element
               if (childs[i].checked == true)
               {
                 keywordChecked = true;
@@ -2036,36 +2055,34 @@ else
               }
             }
 
-            if (!keywordChecked)
+            if (keywordChecked == false)
             {
               return false;
             }
           }
 
-          // check if all file-types have been checked
+          // check if file-types have been checked
           var filetypeLayer = document.getElementById('filetypeLayer');
 
           if (filetypeLayer && filetypeLayer.style.display != "none")
           {
-            var unchecked = false;
+            var filetypechecked = false;
             var childs = filetypeLayer.getElementsByTagName('INPUT');
 
             for (var i=0; i<childs.length; i++)
             {
-              // found unchecked element
-              if (childs[i].checked == false)
+              // found checked element
+              if (childs[i].checked == true)
               {
-                unchecked = true;
+                filetypechecked = true;
+                break;
               }
             }
 
-            // disable checkboxes for file-type
-            if (unchecked == false)
+            if (filetypechecked == false)
             {
-              for (var i=0; i<childs.length; i++)
-              {
-                childs[i].disabled = true;
-              }
+              alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['file-type'][$lang].": ".$hcms_lang['please-select-an-option'][$lang]); ?>"));
+              return false;
             }
           }
         }
@@ -2092,15 +2109,6 @@ else
           // submit form (use delay due to issues with frames)
           window.setTimeout(function(){form.submit();}, 100);
 
-          // enable checkboxes for file-type
-          if (filetypeLayer && filetypeLayer.style.display != 'none')
-          {
-            for (var i=0; i<childs.length; i++)
-            {
-              childs[i].disabled = false;
-            }
-          }
-
           // reload page for a new saved search
           if (document.forms['searchform_advanced'].elements['search_save'].checked == true)
           {
@@ -2123,21 +2131,14 @@ else
     $(document).ready(function ()
     {
       // initialize search form
-      hcms_hideFormLayer('advancedLayer');
-      hcms_hideFormLayer('searchreplaceLayer');
-      hcms_hideFormLayer('keywordsLayer');
-      hcms_hideFormLayer('filetypeLayer');
-      hcms_hideFormLayer('imageLayer');
-      hcms_hideFormLayer('mapLayer');
-      hcms_hideFormLayer('dateLayer');
-      hcms_hideFormLayer('idLayer');
-      hcms_hideFormLayer('recipientLayer');
-      activateFulltextSearch();
+      initializeSearch();
+
+      // maximize navigation frame
       parent.maxNavFrame();
 
       // search history
       <?php
-      $keywords = getsearchhistory ($user);
+      $keywords = getsearchhistory ($user, true);
       ?>
       var available_expressions = [<?php if (is_array ($keywords)) echo implode (",\n", $keywords); ?>];
 
@@ -2454,12 +2455,12 @@ else
         <!-- filetype search -->
         <div id="filetypeLayer" style="display:none; clear:right;">
           <div style="padding-bottom:3px;">
-            <input type="checkbox" id="search_format_page" name="search_format[]" value="page" checked="checked" />&nbsp;<label for="search_format_page"><?php echo getescapedtext ($hcms_lang['page'][$lang]); ?></label><br />
-            <input type="checkbox" id="search_format_comp" name="search_format[]" value="comp" checked="checked" />&nbsp;<label for="search_format_comp"><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
-            <input type="checkbox" id="search_format_image" name="search_format[]" value="image" checked="checked" />&nbsp;<label for="search_format_image"><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
-            <input type="checkbox" id="search_format_document" name="search_format[]" value="document" checked="checked" />&nbsp;<label for="search_format_document"><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label><br />
-            <input type="checkbox" id="search_format_video" name="search_format[]" value="video" checked="checked" />&nbsp;<label for="search_format_video"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label><br />
-            <input type="checkbox" id="search_format_audio" name="search_format[]" value="audio" checked="checked" />&nbsp;<label for="search_format_audio"><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label><br />
+            <label><input type="checkbox" name="search_format[]" value="page" />&nbsp;<?php echo getescapedtext ($hcms_lang['page'][$lang]); ?></label><br />
+            <label><input type="checkbox" name="search_format[]" value="comp" />&nbsp;<?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
+            <label><input type="checkbox" name="search_format[]" value="image" />&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
+            <label><input type="checkbox" name="search_format[]" value="document" />&nbsp;<?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label><br />
+            <label><input type="checkbox" name="search_format[]" value="video" />&nbsp;<?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label><br />
+            <label><input type="checkbox" name="search_format[]" value="audio" />&nbsp;<?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label><br />
           </div>
         </div>
         <hr />
@@ -2507,19 +2508,19 @@ else
           <div style="padding-bottom:3px;">
             <label><?php echo getescapedtext ($hcms_lang['image-color'][$lang]); ?></label><br />
             <div style="display:block;">
-              <div style="width:<?php echo $width_searchfield; ?>px; margin:1px; padding:0; float:left;"><div style="float:left;"><input id="unsetcolors" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="" checked="checked" onclick="unsetColors()"  /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#000000; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="K" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['black'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FFFFFF; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="W" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['white'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#808080; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="E" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['grey'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FF0000; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="R" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['red'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#00C000; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="G" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['green'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#0000FF; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="B" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['blue'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#00FFFF; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="C" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['cyan'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FF0090; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="M" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['magenta'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FFFF00; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="Y" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['yellow'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FF8A00; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="O" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['orange'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FFCCDD; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="P" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['pink'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#A66500; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="N" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['brown'][$lang]); ?></div>
+              <div style="width:<?php echo $width_searchfield; ?>px; margin:1px; padding:0; float:left;"><label><div style="float:left;"><input id="unsetcolors" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="" checked="checked" onclick="unsetColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#000000; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="K" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['black'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#FFFFFF; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="W" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['white'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#808080; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="E" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['grey'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#FF0000; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="R" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['red'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#00C000; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="G" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['green'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#0000FF; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="B" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['blue'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#00FFFF; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="C" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['cyan'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#FF0090; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="M" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['magenta'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#FFFF00; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="Y" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['yellow'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#FF8A00; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="O" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['orange'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#FFCCDD; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="P" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['pink'][$lang]); ?></label></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><label><div style="border:1px solid #666666; background-color:#A66500; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="N" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['brown'][$lang]); ?></label></div>
               <div style="clear:both;"></div>
             </div>
           </div>

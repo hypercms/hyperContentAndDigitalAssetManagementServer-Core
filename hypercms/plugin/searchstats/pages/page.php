@@ -32,6 +32,13 @@ $keywordfile = $mgmt_config['abs_path_data']."config/searchexpressions.php";
 
 // ------------------------------ permission section --------------------------------
 
+// check plugin permissions
+if (!checkpluginpermission ('', 'searchstats'))
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang], $lang);
+  exit;
+}
+
 // check session of user
 checkusersession ($user, false);
 
@@ -89,6 +96,9 @@ $show = "";
 $show_rank = "";
 $show_sort = "";
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
+
 // collect search expressions from log
 if ($action == "regenerate" && checktoken ($token, $user) && is_file ($mgmt_config['abs_path_data']."log/search.log"))
 {
@@ -140,7 +150,7 @@ if (is_file ($keywordfile) && filemtime ($keywordfile) > $limit) $regenerate = f
 else $regenerate = true;
 
 // load keywords
-if (is_file ($keywordfile) && checkrootpermission ('desktop'))
+if (is_file ($keywordfile))
 {
   $expressions = array();
   

@@ -74,7 +74,7 @@ if ($action == "user_save" && checktoken ($token, $user))
   else
   {
     $errcode = "30010";
-    $error[] = $mgmt_config['today']."|user_edit.inc.php|error|".$errcode."|unauthorized access of user '".$user."'";
+    $error[] = $mgmt_config['today']."|user_edit.inc.php|error|".$errcode."|Unauthorized access of user '".$user."'";
 
     savelog ($error);
     

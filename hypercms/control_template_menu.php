@@ -34,6 +34,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 $add_onload = "";
 
@@ -238,7 +239,7 @@ function checkForm_import ()
   if (filename.trim() == "" || filename.substr((filename.lastIndexOf('.') + 1)).toLowerCase() != "csv")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-select-a-file-to-upload'][$lang]); ?>"));
-    form.elements['foldernew'].focus();
+    form.elements['importfile'].focus();
     return false;
   }
 
@@ -265,7 +266,7 @@ function checkForm_import ()
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$pagecomp); ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$pagecomp); ?></span>
   <?php } ?>
 </div>
 
@@ -362,8 +363,9 @@ function checkForm_import ()
   </div>
 </div>
 
+<!-- create template -->
 <div id="createtplLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden;">
-  <form name="tpl_create" action="" method="post">
+  <form name="tpl_create" action="" method="post" onsubmit="return checkForm_tpl_create();">
     <input type="hidden" name="action" value="tpl_create" />
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
@@ -386,6 +388,7 @@ function checkForm_import ()
   </form>
 </div>
 
+<!-- import CSV data -->
 <div id="importLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden">
   <form name="import" action="" method="post" enctype="multipart/form-data" onsubmit="return checkForm_import();">
     <input type="hidden" name="action" value="import" />

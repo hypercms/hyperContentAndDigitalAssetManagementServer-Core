@@ -33,8 +33,20 @@ if (empty ($mgmt_config['additional_storage'])) $mgmt_config['additional_storage
 
 // ------------------------------ permission section --------------------------------
 
+// check plugin permissions
+if (!checkpluginpermission ($site, 'simplestats'))
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang], $lang);
+  exit;
+}
+
 // check session of user
 checkusersession ($user, false);
+
+// --------------------------------- logic section ----------------------------------
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -128,7 +140,7 @@ while (@ob_end_flush());
       
       if ($show == "")
       {
-        $sql = "SELECT dailystat.id, object.objectpath, SUM(dailystat.count) count, SUM(media.filesize) filesize FROM dailystat, object, media WHERE dailystat.activity='download' AND dailystat.id=object.id AND dailystat.id=media.id GROUP BY dailystat.id ORDER BY count DESC LIMIT 0,10";
+        $sql = "SELECT dailystat.id, object.objectpath, SUM(dailystat.count) count, SUM(object.filesize) filesize FROM dailystat, object WHERE dailystat.activity='download' AND dailystat.id=object.id GROUP BY dailystat.id ORDER BY count DESC LIMIT 0,10";
       
         if ($result = $mysqli->query ($sql))
         {
@@ -197,7 +209,7 @@ while (@ob_end_flush());
       
       if ($show == "")
       {
-        $sql = "SELECT dailystat.id, object.objectpath, SUM(dailystat.count) count, SUM(media.filesize) filesize FROM dailystat, object, media WHERE dailystat.activity='upload' AND dailystat.id=object.id AND dailystat.id=media.id GROUP BY dailystat.id ORDER BY count DESC LIMIT 0,10";
+        $sql = "SELECT dailystat.id, object.objectpath, SUM(dailystat.count) count, SUM(object.filesize) filesize FROM dailystat, object WHERE dailystat.activity='upload' AND dailystat.id=object.id GROUP BY dailystat.id ORDER BY count DESC LIMIT 0,10";
       
         if ($result = $mysqli->query ($sql))
         {

@@ -201,7 +201,7 @@ if (sizeof ($config_files) > 0)
               if ($duration > 3600)
               {
                 $errcode = "00911";
-                $error[] = $mgmt_config['today']."|daily.php|warning|".$errcode."|used space calculation took ".round(($duration / 3600), 2)." hours for publication ".$site;
+                $error[] = $mgmt_config['today']."|daily.php|warning|".$errcode."|Used space calculation took ".round(($duration / 3600), 2)." hours for publication ".$site;
       
                 savelog (@$error);
               }

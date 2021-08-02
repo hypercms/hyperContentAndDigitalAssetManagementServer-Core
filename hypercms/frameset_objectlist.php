@@ -29,6 +29,9 @@ $search_expression = url_encode (getrequest ("search_expression", "url"));
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE html>
 <html>

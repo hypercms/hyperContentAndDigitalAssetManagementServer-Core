@@ -26,9 +26,10 @@ $pagenew = getrequest_esc ("pagenew", "objectname");
 $contexttype = getrequest_esc ("contexttype"); // contextmenu context-types (folder, object, media)
 $from_page = getrequest ("from_page");
 $virtual = getrequest ("virtual", "numeric");
-$token = getrequest ("token");
 $convert_type = getrequest ("convert_type");
 $convert_cfg = getrequest ("convert_cfg");
+$toolbar = getrequest ("toolbar", "array");
+$token = getrequest ("token");
 
 // location has been provided
 if ($location != "")
@@ -256,6 +257,17 @@ if (checktoken ($token, $user))
     // CSV export
     create_csv ($assoc_array, "export.csv", "php://output", ";", '"', "utf-8", "utf-8", true);
   }
+  // save toolbar settings
+  elseif ($action == "toolbar" && $setlocalpermission['root'] == 1)
+  {
+    $settoolbar = settoolbarfunctions ($toolbar, $user);
+
+    // reset toolbar functions in session
+    if (!empty ($settoolbar)) $toolbarfunctions = getsession ("hcms_toolbarfunctions");
+
+    if (!empty ($settoolbar)) $show = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang]);
+    else $show = getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang]);
+  }
 }
 
 // define message if object is checked out by another user
@@ -349,7 +361,7 @@ function submitToWindow (url, action, windowname, features, width, height)
     form.target = windowname;
     form.submit();
   }
-  else alert ('<?php echo getescapedtext ($hcms_lang['please-close-the-search-window'][$lang]); ?>');
+  else alert ('<?php echo getescapedtext ($hcms_lang['error-occured'][$lang]); ?>');
 }
 
 function submitToMainFrame (url, action)
@@ -373,7 +385,7 @@ function submitToMainFrame (url, action)
     parent.openMainView('empty.php');
     form.submit();
   }
-  else alert ('<?php echo getescapedtext ($hcms_lang['please-close-the-search-window'][$lang]); ?>');
+  else alert ('<?php echo getescapedtext ($hcms_lang['error-occured'][$lang]); ?>');
 }
 
 function submitToFrame (url, action)
@@ -397,7 +409,7 @@ function submitToFrame (url, action)
     parent.openPopup('empty.php');
     form.submit();
   }
-  else alert ('<?php echo getescapedtext ($hcms_lang['please-close-the-search-window'][$lang]); ?>');
+  else alert ('<?php echo getescapedtext ($hcms_lang['error-occured'][$lang]); ?>');
 }
 
 function submitToSelf (action)
@@ -423,7 +435,7 @@ function submitToSelf (action)
     form.target = 'controlFrame';
     form.submit();
   }
-  else alert ('<?php echo getescapedtext ($hcms_lang['please-close-the-search-window'][$lang]); ?>');
+  else alert ('<?php echo getescapedtext ($hcms_lang['error-occured'][$lang]); ?>');
 }
 
 function checkForm_delete ()
@@ -633,7 +645,7 @@ function checkForm_import()
   return true;
 }
 
-function switchview (view)
+function switchView (view)
 {
   if (view == "large" || view == "medium" || view == "small" || view == "detail")
   {
@@ -654,7 +666,7 @@ function switchview (view)
   else return false;
 }
 
-function switchsidebar ()
+function switchSidebar ()
 {  
   if (!sidebar) view = true;
   else view = false;
@@ -695,7 +707,7 @@ function switchsidebar ()
   else return false;
 }
 
-function switchfilter ()
+function switchFilter ()
 {
   if (document.getElementById('filterLayer'))
   {
@@ -717,11 +729,28 @@ function switchfilter ()
   else return false;
 }
 
-function setfilter (filter)
+function setFilter (filter)
 {
   if (document.forms['filter_set'])
   {
     var form = document.forms['filter_set'];
+
+    form.submit();
+    return true;
+  }
+  else return false;
+}
+
+function switchToolbar ()
+{
+  return hcms_switchSelector('toolbarSettingsLayer');
+}
+
+function setToolbar ()
+{
+  if (document.forms['toolbar_set'])
+  {
+    var form = document.forms['toolbar_set'];
 
     form.submit();
     return true;
@@ -766,9 +795,45 @@ function sendtochat (text)
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:none;"></div>
 
+<!-- help infobox -->
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:10px;"); ?>
 
+<!-- message -->
 <?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
+
+<!-- toolbar settings -->
+<?php if ($from_page == "" && !empty ($mgmt_config['toolbar_functions'])) { ?>
+<div style="position:fixed; <?php if ($is_mobile) echo "top:-1px; right:2px;"; else echo "top:4px; right:6px;"; ?>">
+  <?php echo "<img src=\"".getthemelocation()."img/admin.png\" class=\"hcmsButtonTiny hcmsIconList\" onclick=\"switchToolbar();\" title=\"".getescapedtext ($hcms_lang['customize-toolbar'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['customize-toolbar'][$lang])."\" />"; ?>
+</div>
+<div id="toolbarSettingsLayer" class="hcmsMessage" style="position:fixed; top:6px; right:20px; min-width:<?php if ($is_mobile) echo "80%"; else echo "560px"; ?>; max-height:80px; margin:0; padding:0px 4px; overflow:auto; visibility:hidden;">
+  <form name="toolbar_set" action="" method="post">
+    <input type="hidden" name="action" value="toolbar" />
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="virtual" value="<?php echo $virtual; ?>" />
+    <input type="hidden" name="page" value="<?php echo $page; ?>" />
+    <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
+    <input type="hidden" name="multiobject" value="<?php echo $multiobject ?>" />
+    <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+    <!-- required for function settoolbarfunctions -->
+    <input type="hidden" name="toolbar[toolbar]" value="1" />
+
+    <div class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['customize-toolbar'][$lang]); ?> <img name="ButtonToolbarSettings" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="setToolbar();" class="hcmsButtonTinyBlank hcmsIconList" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonToolbarSettings','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" /></div>
+    <div style="display:inline-block; width:45%; min-width:220px; white-space:nowrap;">
+      <label><input type="checkbox" name="toolbar[preview]" value="1" <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['preview'])) echo "checked=\"checked\""; ?>/>&nbsp;<img src="<?php echo getthemelocation(); ?>img/button_file_preview.png" class="hcmsIconList" style="vertical-align:middle;" /> <?php echo getescapedtext ($hcms_lang['preview'][$lang]."/".$hcms_lang['view-live'][$lang]); ?></label>&nbsp;&nbsp;<br/>
+      <label><input type="checkbox" name="toolbar[edit]" value="1" <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['edit'])) echo "checked=\"checked\""; ?>/>&nbsp;<img src="<?php echo getthemelocation(); ?>img/button_edit.png" class="hcmsIconList" style="vertical-align:middle;" /> <?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></label>&nbsp;&nbsp;<br/>
+      <label><input type="checkbox" name="toolbar[updownload]" value="1" <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['updownload'])) echo "checked=\"checked\""; ?>/>&nbsp;<img src="<?php echo getthemelocation(); ?>img/button_file_upload.png" class="hcmsIconList" style="vertical-align:middle;" /> <?php echo getescapedtext ($hcms_lang['upload'][$lang]."/".$hcms_lang['download'][$lang]); ?></label>&nbsp;&nbsp;<br/>
+      <label><input type="checkbox" name="toolbar[create]" value="1" <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['create'])) echo "checked=\"checked\""; ?>/>&nbsp;<img src="<?php echo getthemelocation(); ?>img/button_file_new.png" class="hcmsIconList" style="vertical-align:middle;" /> <?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></label>&nbsp;&nbsp;
+    </div>
+    <div style="display:inline-block; width:45%; min-width:220px; white-space:nowrap;">
+      <label><input type="checkbox" name="toolbar[unzip]" value="1" <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['unzip'])) echo "checked=\"checked\""; ?>/>&nbsp;<img src="<?php echo getthemelocation(); ?>img/button_zip.png" class="hcmsIconList" style="vertical-align:middle;" /> <?php echo getescapedtext ($hcms_lang['compress-files'][$lang]."/".$hcms_lang['extract-file'][$lang]); ?></label>&nbsp;&nbsp;<br/>
+      <label><input type="checkbox" name="toolbar[share]" value="1" <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['share'])) echo "checked=\"checked\""; ?>/>&nbsp;<img src="<?php echo getthemelocation(); ?>img/button_user_sendlink.png" class="hcmsIconList" style="vertical-align:middle;" /> <?php echo getescapedtext ($hcms_lang['share'][$lang]."/".$hcms_lang['send-mail-link'][$lang]); ?></label>&nbsp;&nbsp;<br/>
+      <label><input type="checkbox" name="toolbar[unpublish]" value="1" <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['unpublish'])) echo "checked=\"checked\""; ?>/>&nbsp;<img src="<?php echo getthemelocation(); ?>img/button_file_publish.png" class="hcmsIconList" style="vertical-align:middle;" /> <?php echo getescapedtext ($hcms_lang['publish'][$lang]."/".$hcms_lang['unpublish'][$lang]); ?></label>&nbsp;&nbsp;<br/>
+      <label><input type="checkbox" name="toolbar[imexport]" value="1" <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['imexport'])) echo "checked=\"checked\""; ?>/>&nbsp;<img src="<?php echo getthemelocation(); ?>img/button_import.png" class="hcmsIconList" style="vertical-align:middle;" /> <?php echo getescapedtext ($hcms_lang['import'][$lang]."/".$hcms_lang['export'][$lang]); ?></label>&nbsp;&nbsp;
+    </div>
+  </form>
+</div>
+<?php } ?>
 
 <?php
 // define location name
@@ -806,6 +871,7 @@ else
 }
 ?>
 
+<!-- location bar -->
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
@@ -816,13 +882,13 @@ else
       {
         echo "
       <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" />&nbsp;</td>
-      <td class=\"hcmsHeadlineTiny\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".str_replace ("/", " &gt; ", trim ($location_name, "/"))."</td>";
+      <td style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".str_replace ("/", " &gt; ", trim ($location_name, "/"))."</td>";
       }
       else 
       {
         echo "
       <td style=\"white-space:nowrap; width:20px;\">&nbsp;</td>
-      <td class=\"hcmsHeadlineTiny\">&nbsp;</td>";    
+      <td>&nbsp;</td>";    
       }
       ?>
     </tr>
@@ -833,12 +899,12 @@ else
 
       echo "
       <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" title=\"".$item."\" class=\"hcmsIconList\" />&nbsp;</td>
-      <td class=\"hcmsHeadlineTiny\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".$object_name."</td>";
+      <td style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".$object_name."</td>";
       ?>
     </tr>
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo str_replace ("/", " &gt; ", trim ($location_name, "/"))." &gt; ".$object_name; ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo str_replace ("/", " &gt; ", trim ($location_name, "/"))." &gt; ".$object_name; ?></span>
   <?php } ?>
 </div>
 
@@ -880,7 +946,7 @@ else
       if ($from_page == "" && $cat != "page")
       {
         echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"switchfilter();\" title=\"".getescapedtext ($hcms_lang['filter-by-file-type'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['filter-by-file-type'][$lang])."\" />";
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"switchFilter();\" title=\"".getescapedtext ($hcms_lang['filter-by-file-type'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['filter-by-file-type'][$lang])."\" />";
       }
       else
       {
@@ -891,6 +957,7 @@ else
     ?>    
   </div>
 
+  <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['preview'])) { ?>
   <div class="hcmsToolbarBlock">
     <?php
     // Preview Button
@@ -918,7 +985,9 @@ else
     <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_liveview.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     ?>
   </div>
+  <?php } ?>
   
+  <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['edit'])) { ?>
   <div class="hcmsToolbarBlock">
     <?php
     // object edit buttons
@@ -1124,7 +1193,9 @@ else
     </div>";
     ?>    
   </div>
+  <?php } ?>
   
+  <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['updownload'])) { ?>
   <div class="hcmsToolbarBlock">
     <?php
     // Upload Button (HTML5 file upload)
@@ -1287,7 +1358,9 @@ else
     }
     ?>    
   </div>
+  <?php } ?>
   
+  <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['create'])) { ?>
   <div class="hcmsToolbarBlock">
     <?php
     // New Folder Button
@@ -1326,7 +1399,9 @@ else
     }
     ?>    
   </div>
+  <?php } ?>
   
+  <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['unzip'])) { ?>
   <div class="hcmsToolbarBlock">
     <?php
     // ZIP Button
@@ -1373,7 +1448,9 @@ else
     <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_unzip.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     ?>    
   </div>
-  
+  <?php } ?>
+
+  <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['share'])) { ?>
   <div class="hcmsToolbarBlock">       
     <?php    
     // Send Mail Button
@@ -1416,7 +1493,9 @@ else
     }
     ?>
   </div>
+  <?php } ?>
   
+  <?php if (empty ($toolbarfunctions) || !empty ($toolbarfunctions['unpublish'])) { ?>
   <div class="hcmsToolbarBlock">
     <?php
     // un/publish object
@@ -1491,8 +1570,9 @@ else
     }
     ?>    
   </div>
+  <?php } ?>
   
-  <?php if (!$is_mobile) { ?>
+  <?php if (!$is_mobile && (empty ($toolbarfunctions) || !empty ($toolbarfunctions['imexport']))) { ?>
   <div class="hcmsToolbarBlock">
     <?php
     // CSV import
@@ -1558,10 +1638,10 @@ else
       <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_gallery_".$temp_explorerview.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" /><img src=\"".getthemelocation($hcms_themeinvertcolors)."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" />
 
       <div id=\"select_obj_view\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:-180px; visibility:hidden; z-index:999; width:180px; max-height:".($is_mobile ? "50" : "72")."px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">
-        <div class=\"hcmsSelectorItem\" onclick=\"switchview ('large'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_large.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['large-thumbnails'][$lang])."</div>
-        <div class=\"hcmsSelectorItem\" onclick=\"switchview ('medium'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_medium.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['medium-thumbnails'][$lang])."</div>
-        <div class=\"hcmsSelectorItem\" onclick=\"switchview ('small'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_small.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['small-thumbnails'][$lang])."</div>
-        <div class=\"hcmsSelectorItem\" onclick=\"switchview ('detail'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_detail.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['details'][$lang])."</div>
+        <div class=\"hcmsSelectorItem\" onclick=\"switchView ('large'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_large.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['large-thumbnails'][$lang])."</div>
+        <div class=\"hcmsSelectorItem\" onclick=\"switchView ('medium'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_medium.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['medium-thumbnails'][$lang])."</div>
+        <div class=\"hcmsSelectorItem\" onclick=\"switchView ('small'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_small.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['small-thumbnails'][$lang])."</div>
+        <div class=\"hcmsSelectorItem\" onclick=\"switchView ('detail'); document.getElementById('button_obj_view').click();\"><img src=\"".getthemelocation()."img/button_view_gallery_detail.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['details'][$lang])."</div>
       </div>
     </div>";
     ?>
@@ -1571,7 +1651,7 @@ else
     {
       // sidebar
       echo "
-    <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_sidebar.png\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"switchsidebar();\" title=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" />";
+    <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_sidebar.png\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"switchSidebar();\" title=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" />";
 
       // search
       if ($location != "" && !empty ($mgmt_config['db_connect_rdbms']) && $from_page != "recyclebin")
@@ -1599,15 +1679,16 @@ else
     <input type="hidden" name="virtual" value="<?php echo $virtual; ?>" />
     <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
     <input type="hidden" name="filter[dummy]" value="1" />
-    <input type="checkbox" id="filter1" onclick="setfilter();" name="filter[comp]" value="1" <?php if (!empty ($objectfilter['comp'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter1" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter2" onclick="setfilter();" name="filter[image]" value="1" <?php if (!empty ($objectfilter['image'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter2" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter3" onclick="setfilter();" name="filter[document]" value="1" <?php if (!empty ($objectfilter['document'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter3" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter4" onclick="setfilter();" name="filter[video]" value="1" <?php if (!empty ($objectfilter['video'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter4" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter5" onclick="setfilter();" name="filter[audio]" value="1" <?php if (!empty ($objectfilter['audio'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter5" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter1" onclick="setFilter();" name="filter[comp]" value="1" <?php if (!empty ($objectfilter['comp'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter1" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter2" onclick="setFilter();" name="filter[image]" value="1" <?php if (!empty ($objectfilter['image'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter2" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter3" onclick="setFilter();" name="filter[document]" value="1" <?php if (!empty ($objectfilter['document'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter3" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter4" onclick="setFilter();" name="filter[video]" value="1" <?php if (!empty ($objectfilter['video'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter4" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter5" onclick="setFilter();" name="filter[audio]" value="1" <?php if (!empty ($objectfilter['audio'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter5" class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label>&nbsp;&nbsp;
   </form>
 </div>
 <?php } ?>
 
+<!-- create folder -->
 <div id="foldercreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; z-index:1; left:10px; top:10px; visibility:hidden">
   <form name="folder_create" action="" method="post" onsubmit="return checkForm_folder_create();">
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -1631,6 +1712,7 @@ else
   </form>
 </div>
 
+<!-- rename folder -->
 <div id="folderrenameLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; z-index:2; left:10px; top:10px; visibility:hidden;">
   <form name="folder_rename" action="" method="post" onsubmit="return checkForm_folder_rename();">
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -1655,8 +1737,9 @@ else
   </form>
 </div>
 
+<!-- rename object -->
 <div id="objrenameLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; z-index:3; left:10px; top:10px; visibility:hidden">
-  <form name="page_rename" action="" onsubmit="return checkForm_folder_rename();">
+  <form name="page_rename" action="" onsubmit="return checkForm_page_rename();">
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
     <input type="hidden" name="page" value="<?php echo $page; ?>" />
     <input type="hidden" name="action" value="page_rename" />
@@ -1679,8 +1762,9 @@ else
   </form>
 </div>
 
+<!-- create ZIP file -->
 <div id="zipLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden">
-  <form name="page_zip" action="">
+  <form name="page_zip" action="" onsubmit="return checkForm_zip();">
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
     <input type="hidden" name="page" value="<?php echo $page; ?>" />
     <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
@@ -1705,6 +1789,7 @@ else
   </form>
 </div>
 
+<!-- import CSV data -->
 <div id="importLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "850px"; ?>; height:85px; z-index:1; left:10px; top:10px; visibility:hidden">
   <form name="import" action="" method="post" enctype="multipart/form-data" onsubmit="return checkForm_import();">
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -1728,6 +1813,7 @@ else
   </form>
 </div>
 
+<!-- download -->
 <div id="downloadLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; height:70px; z-index:15; left:10px; top:10px; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
   <table class="hcmsTableNarrow" style="width:100%; height:60px;">
     <tr>

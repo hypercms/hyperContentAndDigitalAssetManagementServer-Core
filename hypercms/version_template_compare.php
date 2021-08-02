@@ -105,7 +105,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
     $extension_array[$i] = $bufferarray[0];
     $bufferarray = getcontent ($templatedata['content'], "<application>"); 
     $application_array[$i] = $bufferarray[0];  
-    $bufferarray = getcontent ($templatedata['content'], "<content>"); 
+    $bufferarray = getcontent ($templatedata['content'], "<content>", true); 
     $content_array[$i] = $bufferarray[0];
 
     // extract text id and content

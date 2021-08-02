@@ -143,7 +143,7 @@ function warning_delete()
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php if (valid_publicationname ($site)) echo getescapedtext ($site." &gt; "); echo getescapedtext ($hcms_lang['system-events'][$lang]); ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php if (valid_publicationname ($site)) echo getescapedtext ($site." &gt; "); echo getescapedtext ($hcms_lang['system-events'][$lang]); ?></span>
   <?php } ?>
 </div>
 
@@ -175,6 +175,7 @@ function warning_delete()
   </div>
 </div>
 
+<!-- notify users -->
 <div id="notificationLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; left:15px; top:4px; visibility:hidden;">
 <form name="registrationform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />

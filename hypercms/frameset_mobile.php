@@ -56,6 +56,9 @@ if (!empty ($hcms_themeinvertcolors))
 ?>
 </style>
 <script type="text/javascript">
+// reassign permissions for main.js and contextmenu.js
+hcms_permission['shortcuts'] = false;
+hcms_permission['minnavframe'] = false;
 
 // callback for hcms_geolocation
 function hcms_geoposition (position)
@@ -234,12 +237,12 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <?php if (linking_valid() == false) { ?>
   <!-- navigator panel -->
   <div id="navLayer" class="hcmsWorkplaceExplorer hcmsBoxShadow" style="position:fixed; top:36px; bottom:0; left:-280px; width:260px; margin:0; padding:0; z-index:50;">
-    <div style="width:100%; height:36px;">
+    <div style="width:100%; height:50px;">
       <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
         <input type="hidden" name="action" value="base_search" />
         <input type="hidden" name="search_dir" value="" />
-        <input type="text" name="search_expression" <?php if (empty ($mgmt_config['db_connect_rdbms'])) echo "readonly=\"readonly\""; ?> style="margin:3px 0px 3px 3px; padding:3px; width:215px;" maxlength="200" value="" placeholder="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
-        <img src="<?php echo getthemelocation(); ?>img/button_search.png" <?php if (!empty ($mgmt_config['db_connect_rdbms']) && linking_valid() == false) echo "onclick=\"if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();\""; ?> class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+        <input type="text" name="search_expression" <?php if (empty ($mgmt_config['db_connect_rdbms'])) echo "readonly=\"readonly\""; ?> style="margin:6px 0px 3px 3px; padding:7px; width:252px;" maxlength="2000" value="" placeholder="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+        <img src="<?php echo getthemelocation("day"); ?>img/button_search.png" <?php if (!empty ($mgmt_config['db_connect_rdbms']) && linking_valid() == false) echo "onclick=\"if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();\""; ?> class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px; margin-left:-40px;" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
       </form>
     </div>
     <div id="navContainer" style="width:100%; height:calc(100% - 76px); margin:0; padding:0; overflow:visible; -webkit-overflow-scrolling:touch;">

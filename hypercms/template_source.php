@@ -73,14 +73,18 @@ if ($template != "")
   if (!empty ($temp_array[0])) $application = $temp_array[0];
   else $application = "";
 
-  $temp_array = getcontent ($templatedata['content'], "<content>"); 
+  $temp_array = getcontent ($templatedata['content'], "<content>", true);
+  
   if (!empty ($temp_array[0])) $contentfield = $temp_array[0];
   else $contentfield = "";
   
-  // escape special characters (transform all special chararcters into their html/xml equivalents)
-  $contentfield = str_replace ("&", "&amp;", $contentfield);
-  $contentfield = str_replace ("<", "&lt;", $contentfield);
-  $contentfield = str_replace (">", "&gt;", $contentfield);
+  // escape special characters
+  if ($contentfield != "")
+  {
+    if (strpos ("_".$contentfield, "&amp;") < 1) $contentfield = str_replace ("&", "&amp;", $contentfield);
+    if (strpos ("_".$contentfield, "<") > 0) $contentfield = str_replace ("<", "&lt;", $contentfield);
+    if (strpos ("_".$contentfield, ">") > 0) $contentfield = str_replace (">", "&gt;", $contentfield);
+  }
 }
 
 // get charset

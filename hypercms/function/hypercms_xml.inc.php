@@ -13,7 +13,6 @@
 // function getcontent, selectcontent, getxmlcontent, selectxmlcontent will return an array
 // function setcontent, addcontent, updatecontent, deletecontent will return a XML-string in a single variable
 
-
 // ------------------------------------ valid_tagname ----------------------------------------------
 
 // function: valid_tagname()
@@ -35,6 +34,36 @@ function valid_tagname ($tagname)
     else return false;
   }
   else return true;
+}
+
+// ------------------------------------ escape_xmltags ----------------------------------------------
+
+// function: escape_xmltags()
+// input: XML content [string], XML schema [container,template] (optional)
+// output: escaped hyperCMS tags in XML content [string] / false on error
+
+// description:
+// Escapes all XML tags used in containers since they could be used in the unescaped CDATA sections of a textcontent node.
+
+function escape_xmltags ($xmldata, $schema="container")
+{
+  if ($xmldata != "")
+  {
+    if ($schema == "container")
+    {
+      $search = array("<container>", "<hyperCMS>", "<contentcontainer>", "</contentcontainer>", "<contentxmlschema>", "</contentxmlschema>", "<contentorigin>", "</contentorigin>", "<contentobjects>", "</contentobjects>", "<contentuser>", "</contentuser>", "<contentcreated>", "</contentcreated>", "<contentdate>", "</contentdate>", "<contentpublished>", "</contentpublished>", "<contentstatus>", "</contentstatus>", "<contentworkflow>", "</contentworkflow>", "</hyperCMS>", "<head>", "<pagetitle>", "</pagetitle>", "<pageauthor>", "</pageauthor>", "<pagedescription>", "</pagedescription>", "<pagekeywords>", "</pagekeywords>", "<pagecontenttype>", "</pagecontenttype>", "<pagelanguage>", "</pagelanguage>", "<pagerevisit>", "</pagerevisit>", "<pagetracking>", "</pagetracking>", "</head>", "<textcollection>", "</textcollection>", "<mediacollection>", "</mediacollection>", "<linkcollection>", "</linkcollection>", "<componentcollection>", "</componentcollection>", "<articlecollection>", "</articlecollection>", "</container>", "<text>", "<text_id>", "</text_id>", "<textuser>", "</textuser>", "<textcontent>", "</textcontent>", "</text>", "<article>", "<article_id>", "</article_id>", "<articletitle>", "</articletitle>", "<articledatefrom>", "</articledatefrom>", "<articledateto>", "</articledateto>", "<articlestatus>", "</articlestatus>", "<articleuser>", "</articleuser>", "<articletextcollection>", "</articletextcollection>", "<articlemediacollection>", "</articlemediacollection>", "<articlelinkcollection>", "</articlelinkcollection>", "<articlecomponentcollection>", "</articlecomponentcollection>", "</article>", "<component>", "<component_id>", "</component_id>", "<componentuser>", "</componentuser>", "<componentcond>", "</componentcond>", "<componentfiles>", "</componentfiles>", "</component>", "<link>", "<link_id>", "</link_id>", "<linkuser>", "</linkuser>", "<linkhref>", "</linkhref>", "<linktarget>", "</linktarget>", "<linktext>", "</linktext>", "</link>", "<media>", "<media_id>", "</media_id>", "<mediauser>", "</mediauser>", "<mediafile>", "</mediafile>", "<mediaobject>", "</mediaobject>", "<mediaalttext>", "</mediaalttext>", "<mediaalign>", "</mediaalign>", "<mediawidth>", "</mediawidth>", "<mediaheight>", "</mediaheight>", "</media>");
+      $replace = array("&lt;container&gt;", "&lt;hyperCMS&gt;", "&lt;contentcontainer&gt;", "&lt;/contentcontainer&gt;", "&lt;contentxmlschema&gt;", "&lt;/contentxmlschema&gt;", "&lt;contentorigin&gt;", "&lt;/contentorigin&gt;", "&lt;contentobjects&gt;", "&lt;/contentobjects&gt;", "&lt;contentuser&gt;", "&lt;/contentuser&gt;", "&lt;contentcreated&gt;", "&lt;/contentcreated&gt;", "&lt;contentdate&gt;", "&lt;/contentdate&gt;", "&lt;contentpublished&gt;", "&lt;/contentpublished&gt;", "&lt;contentstatus&gt;", "&lt;/contentstatus&gt;", "&lt;contentworkflow&gt;", "&lt;/contentworkflow&gt;", "&lt;/hyperCMS&gt;", "&lt;head&gt;", "&lt;pagetitle&gt;", "&lt;/pagetitle&gt;", "&lt;pageauthor&gt;", "&lt;/pageauthor&gt;", "&lt;pagedescription&gt;", "&lt;/pagedescription&gt;", "&lt;pagekeywords&gt;", "&lt;/pagekeywords&gt;", "&lt;pagecontenttype&gt;", "&lt;/pagecontenttype&gt;", "&lt;pagelanguage&gt;", "&lt;/pagelanguage&gt;", "&lt;pagerevisit&gt;", "&lt;/pagerevisit&gt;", "&lt;pagetracking&gt;", "&lt;/pagetracking&gt;", "&lt;/head&gt;", "&lt;textcollection&gt;", "&lt;/textcollection&gt;", "&lt;mediacollection&gt;", "&lt;/mediacollection&gt;", "&lt;linkcollection&gt;", "&lt;/linkcollection&gt;", "&lt;componentcollection&gt;", "&lt;/componentcollection&gt;", "&lt;articlecollection&gt;", "&lt;/articlecollection&gt;", "&lt;/container&gt;", "&lt;text&gt;", "&lt;text_id&gt;", "&lt;/text_id&gt;", "&lt;textuser&gt;", "&lt;/textuser&gt;", "&lt;textcontent&gt;", "&lt;/textcontent&gt;", "&lt;/text&gt;", "&lt;article&gt;", "&lt;article_id&gt;", "&lt;/article_id&gt;", "&lt;articletitle&gt;", "&lt;/articletitle&gt;", "&lt;articledatefrom&gt;", "&lt;/articledatefrom&gt;", "&lt;articledateto&gt;", "&lt;/articledateto&gt;", "&lt;articlestatus&gt;", "&lt;/articlestatus&gt;", "&lt;articleuser&gt;", "&lt;/articleuser&gt;", "&lt;articletextcollection&gt;", "&lt;/articletextcollection&gt;", "&lt;articlemediacollection&gt;", "&lt;/articlemediacollection&gt;", "&lt;articlelinkcollection&gt;", "&lt;/articlelinkcollection&gt;", "&lt;articlecomponentcollection&gt;", "&lt;/articlecomponentcollection&gt;", "&lt;/article&gt;", "&lt;component&gt;", "&lt;component_id&gt;", "&lt;/component_id&gt;", "&lt;componentuser&gt;", "&lt;/componentuser&gt;", "&lt;componentcond&gt;", "&lt;/componentcond&gt;", "&lt;componentfiles&gt;", "&lt;/componentfiles&gt;", "&lt;/component&gt;", "&lt;link&gt;", "&lt;link_id&gt;", "&lt;/link_id&gt;", "&lt;linkuser&gt;", "&lt;/linkuser&gt;", "&lt;linkhref&gt;", "&lt;/linkhref&gt;", "&lt;linktarget&gt;", "&lt;/linktarget&gt;", "&lt;linktext&gt;", "&lt;/linktext&gt;", "&lt;/link&gt;", "&lt;media&gt;", "&lt;media_id&gt;", "&lt;/media_id&gt;", "&lt;mediauser&gt;", "&lt;/mediauser&gt;", "&lt;mediafile&gt;", "&lt;/mediafile&gt;", "&lt;mediaobject&gt;", "&lt;/mediaobject&gt;", "&lt;mediaalttext&gt;", "&lt;/mediaalttext&gt;", "&lt;mediaalign&gt;", "&lt;/mediaalign&gt;", "&lt;mediawidth&gt;", "&lt;/mediawidth&gt;", "&lt;mediaheight&gt;", "&lt;/mediaheight&gt;", "&lt;/media&gt;");
+    }
+    elseif ($schema == "template")
+    {
+      $search = array("<template>", "<name>", "</name>", "<user>", "</user>", "<category>", "</category>", "<extension>", "</extension>", "<application>", "</application>", "<content>", "</content>", "</template>");
+      $replace = array("&lt;template&gt;", "&lt;name&gt;", "&lt;/name&gt;", "&lt;user&gt;", "&lt;/user&gt;", "&lt;category&gt;", "&lt;/category&gt;", "&lt;extension&gt;", "&lt;/extension&gt;", "&lt;application&gt;", "&lt;/application&gt;", "&lt;content&gt;", "&lt;/content&gt;", "&lt;/template&gt;");
+    }
+
+    $xmldata = str_replace ($search, $replace, $xmldata);
+  }
+
+  return $xmldata;
 }
 
 // ------------------------------------ setxmlparameter ----------------------------------------------
@@ -105,7 +134,7 @@ function setxmlparameter ($xmldata, $parameter, $value)
 // ------------------------------------ getcontent ----------------------------------------------
 
 // function: getcontent()
-// input: XML content container [string], tag name [string]
+// input: XML content container [string], tag name [string], unescape content [boolean] (optional) 
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -115,9 +144,9 @@ function setxmlparameter ($xmldata, $parameter, $value)
 // Function getcontent will only decode values if they are non-xml and non_html. so content inside child nodes including tags won't be decoded.
 // Wild card character "*" can be used at the end of $starttagname.
 
-function getcontent ($xmldata, $starttagname)
+function getcontent ($xmldata, $starttagname, $unescape_content=false)
 {
-  // if filedata contains no content
+  // missing input
   if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
@@ -170,8 +199,9 @@ function getcontent ($xmldata, $starttagname)
           $content_record = str_replace ("&lt;![CDATA[", "<![CDATA[", $content_record); 
           $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
         }
+
         // unescape characters & < > if no CDATA section embraces the code
-        elseif (@substr_count ($content_record, "<") == 0)
+        if (!empty ($unescape_content))
         {
           $content_record = str_replace ("&amp;", "&", $content_record);
           $content_record = str_replace ("&lt;", "<", $content_record);
@@ -184,10 +214,6 @@ function getcontent ($xmldata, $starttagname)
       $i++;
     }
   }
-  else
-  {
-    return false;
-  }
 
   if (isset ($result_set)) return $result_set;
   else return false;
@@ -196,7 +222,7 @@ function getcontent ($xmldata, $starttagname)
 // ------------------------------------ geticontent ----------------------------------------------
 
 // function: geticontent()
-// input: XML content container [string], tag name [string]
+// input: XML content container [string], tag name [string], unescape content [boolean] (optional) 
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -208,9 +234,9 @@ function getcontent ($xmldata, $starttagname)
 // getcontent will only decode values if they are non-xml and non_html. so content inside child nodes including tags won't be decoded.
 // Wild card character "*" can be used at the end of $starttagname
 
-function geticontent ($xmldata, $starttagname)
+function geticontent ($xmldata, $starttagname, $unescape_content=false)
 {
-  // if filedata contains no content
+  // missing input
   if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
@@ -267,8 +293,9 @@ function geticontent ($xmldata, $starttagname)
           $content_record = str_replace ("&lt;![CDATA[", "<![CDATA[", $content_record); 
           $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
         }
+
         // unescape characters & < > if no CDATA section embraces the code
-        elseif (@substr_count ($content_record, "<") == 0)
+        if (!empty ($unescape_content))
         {
           $content_record = str_replace ("&amp;", "&", $content_record);
           $content_record = str_replace ("&lt;", "<", $content_record);
@@ -280,10 +307,6 @@ function geticontent ($xmldata, $starttagname)
 
       $i++;
     }
-  }
-  else
-  {
-    return false;
   }
 
   if (isset ($result_set)) return $result_set;
@@ -305,7 +328,7 @@ function geticontent ($xmldata, $starttagname)
 
 function getxmlcontent ($xmldata, $starttagname)
 {
-  // if filedata contains no content
+  // missing input
   if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
@@ -349,10 +372,6 @@ function getxmlcontent ($xmldata, $starttagname)
       $i++;
     }
   }
-  else
-  {
-    return false;
-  }
 
   if (isset ($result_set)) return $result_set;
   else return false;
@@ -374,7 +393,7 @@ function getxmlcontent ($xmldata, $starttagname)
 
 function getxmlicontent ($xmldata, $starttagname)
 {
-  // if filedata contains no content
+  // missing input
   if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
@@ -422,10 +441,6 @@ function getxmlicontent ($xmldata, $starttagname)
       $i++;
     }
   }
-  else
-  {
-    return false;
-  }
 
   if (isset ($result_set)) return $result_set;
   else return false;
@@ -452,7 +467,7 @@ function getxmlicontent ($xmldata, $starttagname)
 
 function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
-  // if filedata contains no content
+  // missing input
   if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
@@ -526,10 +541,11 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-
+                }
+  
                 $result_set[$j] = $content_record;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == true && $wc_end == true && @substr_count ($currentvalue, $condvalue) >= 1)
@@ -538,10 +554,11 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $content_record;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == true && $wc_end == false && substr ($currentvalue, strlen ($currentvalue) - strlen ($condvalue)) == $condvalue)
@@ -550,10 +567,11 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $content_record;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == false && $wc_end == true && substr ($currentvalue, 0, strlen ($condvalue)) == $condvalue)
@@ -562,27 +580,25 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $content_record;
                 $j++;
+
                 break;
               }
             }
           }
         }
+
         $i++;
       }
-    }
-    else
-    {
-      return false;
     }
   }
   // if there is no condition set
   else
   {
-    $result_set = getcontent ($xmldata, $starttagname);
+    $result_set = getcontent ($xmldata, $starttagname, false);
   }
 
   if (isset ($result_set)) return $result_set;
@@ -592,7 +608,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // ------------------------------------ selecticontent -------------------------------------
 
 // function: selecticontent()
-// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string], conditional value [string]
+// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string]
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -611,7 +627,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 
 function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
-  // if filedata contains no content
+  // missing input
   if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
@@ -689,10 +705,11 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
+                }
 
                 $result_set[$j] = $content_record;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == true && $wc_end == true && @substr_count ($currentvalue, $condvalue) >= 1)
@@ -701,10 +718,11 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $content_record;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == true && $wc_end == false && substr ($currentvalue, strlen ($currentvalue) - strlen ($condvalue)) == $condvalue)
@@ -714,9 +732,10 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
                 } 
-        
+
                 $result_set[$j] = $content_record;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == false && $wc_end == true && substr ($currentvalue, 0, strlen ($condvalue)) == $condvalue)
@@ -725,27 +744,25 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $content_record;
                 $j++;
+
                 break;
               }
             }
           }
         }
+
         $i++;
       }
-    }
-    else
-    {
-      return false;
     }
   }
   // if there is no condition set
   else
   {
-    $result_set = geticontent ($xmldata, $starttagname);
+    $result_set = geticontent ($xmldata, $starttagname, false);
   }
 
   if (isset ($result_set)) return $result_set;
@@ -756,7 +773,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // ------------------------------------ selectxmlcontent -------------------------------------
 
 // function: selectxmlcontent()
-// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagnamev, conditional value [string]
+// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -772,7 +789,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 
 function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
-  // if filedata contains no content
+  // missing input
   if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
@@ -803,7 +820,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     $condvalue = trim ($condvalue);
 
     // check if wild card characters are used in condvalue
-    if ($condvalue != "" && $condvalue[0] == "*") 
+    if ($condvalue != "" && $condvalue[0] == "*")
     {
       $wc_begin = true;
       $condvalue = substr ($condvalue, 1);
@@ -849,10 +866,11 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == true && $wc_end == true && @substr_count ($currentvalue, $condvalue) >= 1)
@@ -861,10 +879,11 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == true && $wc_end == false && substr ($currentvalue, strlen ($currentvalue) - strlen ($condvalue)) == $condvalue)
@@ -873,10 +892,11 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == false && $wc_end == true && substr ($currentvalue, 0, strlen ($condvalue)) == $condvalue)
@@ -885,21 +905,19 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
+                }
 
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
+
                 break;
               }
             }
           }
         }
+
         $i++;
       }
-    }
-    else
-    {
-      return false;
     }
   }
   // if there is no condition set
@@ -933,7 +951,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 
 function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
-  // if filedata contains no content
+  // missing input
   if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
@@ -1014,10 +1032,11 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == true && $wc_end == true && @substr_count ($currentvalue, $condvalue) >= 1)
@@ -1026,10 +1045,11 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == true && $wc_end == false && substr ($currentvalue, strlen ($currentvalue) - strlen ($condvalue)) == $condvalue)
@@ -1038,10 +1058,11 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
-        
+                }
+
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
+
                 break;
               }
               elseif ($wc_begin == false && $wc_end == true && substr ($currentvalue, 0, strlen ($condvalue)) == $condvalue)
@@ -1050,21 +1071,19 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
                 if ($wildcard == true) 
                 {
                   $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-                } 
+                }
 
                 $result_set[$j] = $buffer.$content_record.$endtagname;
                 $j++;
+
                 break;
               }
             }
           }
         }
+
         $i++;
       }
-    }
-    else
-    {
-      return false;
     }
   }
   // if there is no condition set
@@ -1187,7 +1206,8 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag="", $condvalue="
 // --------------------------------- setcontent --------------------------------------------
 
 // function: setcontent()
-// input: XML content container [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted, tag holding the conditional value inside the given starttagname [string], conditional value [string]
+// input: XML content container [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted, 
+//        tag holding the conditional value inside the given starttagname [string], conditional value [string], escape content [boolean] (optional) 
 // output: XML content container / false on error
 
 // description:
@@ -1205,7 +1225,7 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag="", $condvalue="
 //
 // Wild card character "*" can be used at begin and end of $condvalue.
 
-function setcontent ($xmldata, $startparenttagname="", $starttagname="", $contentnew="", $startcondtag="", $condvalue="")
+function setcontent ($xmldata, $startparenttagname="", $starttagname="", $contentnew="", $startcondtag="", $condvalue="", $escape_content=false)
 {
   // if filedata contains no content
   if (!valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
@@ -1243,11 +1263,38 @@ function setcontent ($xmldata, $startparenttagname="", $starttagname="", $conten
     {
       // exclude the old content
       list ($xmlstringstart, $xmlstringrest) = explode ($starttagname, $record);
-      list ($contentold, $xmlstringend) = explode ($endtagname, $xmlstringrest);
+      if (!empty ($xmlstringrest)) list ($contentold, $xmlstringend) = explode ($endtagname, $xmlstringrest);
 
-      // check if $starttagname was found
-      if ($xmlstringrest != "")
+      // check if starttagname was found
+      if (!empty ($xmlstringrest))
       {
+        // escape content
+        if (!empty ($escape_content))
+        {
+          if (substr (trim ($contentnew), 0, 9) == "<![CDATA[" && substr (trim ($contentnew), -3) == "]]>")
+          {
+            $contentnew = trim ($contentnew);
+
+            // remove CDATA
+            $contentnew = substr ($contentnew, 9, (strlen($contentnew) - 12));
+
+            // escape &, < and >
+            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            $contentnew = str_replace ("<", "&lt;", $contentnew);
+            $contentnew = str_replace (">", "&gt;", $contentnew);
+
+            // add CDATA
+            $contentnew = "<![CDATA[".$contentnew."]]>";
+          }
+          else
+          {
+            // escape &, < and >
+            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            $contentnew = str_replace ("<", "&lt;", $contentnew);
+            $contentnew = str_replace (">", "&gt;", $contentnew);
+          }
+        }
+
         // build xml data including the new content $contentnew
         $record_new = $xmlstringstart.$starttagname.$contentnew.$endtagname.$xmlstringend;
 
@@ -1271,7 +1318,8 @@ function setcontent ($xmldata, $startparenttagname="", $starttagname="", $conten
 // --------------------------------- seticontent --------------------------------------------
 
 // function: seticontent()
-// input: XML content container [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted [string], tag holding the conditional value inside the given starttagname [string], conditional value [string]
+// input: XML content container [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted [string], 
+//        tag holding the conditional value inside the given starttagname [string], conditional value [string], escape content [boolean] (optional) 
 // output: XML content container / false on error
 
 // description:
@@ -1290,7 +1338,7 @@ function setcontent ($xmldata, $startparenttagname="", $starttagname="", $conten
 // $condvalue = value of the condition
 //
 // Wild card character "*" can be used at begin and end of $condvalue. 
-function seticontent ($xmldata, $startparenttagname="", $starttagname="", $contentnew="", $startcondtag="", $condvalue="")
+function seticontent ($xmldata, $startparenttagname="", $starttagname="", $contentnew="", $startcondtag="", $condvalue="", $escape_content=false)
 {
   // if filedata contains no content
   if (!valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
@@ -1332,11 +1380,38 @@ function seticontent ($xmldata, $startparenttagname="", $starttagname="", $conte
 
       // exclude the old content
       list ($xmlstringstart, $xmlstringrest) = explode (strtolower ($starttagname), $record);
-      list ($contentold, $xmlstringend) = explode (strtolower ($endtagname), $xmlstringrest);
+      if (!empty ($xmlstringrest)) list ($contentold, $xmlstringend) = explode (strtolower ($endtagname), $xmlstringrest);
 
       // check if $starttagname was found
-      if ($xmlstringrest != "")
+      if (!empty ($xmlstringrest))
       {
+        // escape content
+        if (!empty ($escape_content))
+        {
+          if (substr (trim ($contentnew), 0, 9) == "<![CDATA[" && substr (trim ($contentnew), -3) == "]]>")
+          {
+            $contentnew = trim ($contentnew);
+
+            // remove CDATA
+            $contentnew = substr ($contentnew, 9, (strlen($contentnew) - 12));
+
+            // escape &, < and >
+            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            $contentnew = str_replace ("<", "&lt;", $contentnew);
+            $contentnew = str_replace (">", "&gt;", $contentnew);
+
+            // add CDATA
+            $contentnew = "<![CDATA[".$contentnew."]]>";
+          }
+          else
+          {
+            // escape &, < and >
+            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            $contentnew = str_replace ("<", "&lt;", $contentnew);
+            $contentnew = str_replace (">", "&gt;", $contentnew);
+          }
+        }
+        
         // build xml data including the new content $contentnew
         $record_new = $xmlstringstart.$starttagname.$contentnew.$endtagname.$xmlstringend;
 
@@ -1360,7 +1435,8 @@ function seticontent ($xmldata, $startparenttagname="", $starttagname="", $conte
 // --------------------------------- setcontent_fast --------------------------------------------
 
 // function: setcontent_fast()
-// input: XML content container [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted, tag holding the conditional value inside the given starttagname [string], conditional value [string]
+// input: XML content container [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted, 
+//        tag holding the conditional value inside the given starttagname [string], conditional value [string], escape content [boolean] (optional) 
 // output: XML content container / false on error
 
 // description:
@@ -1380,7 +1456,7 @@ function seticontent ($xmldata, $startparenttagname="", $starttagname="", $conte
 //
 // Wild card character "*" can be used at begin and end of $condvalue.
 
-function setcontent_fast ($xmldata, $startparenttagname="", $starttagname="", $contentnew="", $startcondtag="", $condvalue="")
+function setcontent_fast ($xmldata, $startparenttagname="", $starttagname="", $contentnew="", $startcondtag="", $condvalue="", $escape_content=false)
 {
   // if filedata contains no content
   if (!valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
@@ -1418,6 +1494,34 @@ function setcontent_fast ($xmldata, $startparenttagname="", $starttagname="", $c
       if (@substr_count ($record, $condvalue) == 1)
       {
         $contentold = getxmlcontent ($record, $starttagname);
+
+        // escape content
+        if (!empty ($escape_content))
+        {
+          if (substr (trim ($contentnew), 0, 9) == "<![CDATA[" && substr (trim ($contentnew), -3) == "]]>")
+          {
+            $contentnew = trim ($contentnew);
+
+            // remove CDATA
+            $contentnew = substr ($contentnew, 9, (strlen($contentnew) - 12));
+
+            // escape &, < and >
+            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            $contentnew = str_replace ("<", "&lt;", $contentnew);
+            $contentnew = str_replace (">", "&gt;", $contentnew);
+
+            // add CDATA
+            $contentnew = "<![CDATA[".$contentnew."]]>";
+          }
+          else
+          {
+            // escape &, < and >
+            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            $contentnew = str_replace ("<", "&lt;", $contentnew);
+            $contentnew = str_replace (">", "&gt;", $contentnew);
+          }
+        }
+
         // replace/update the old xml content with the new xml content in $xmldata
         $record_array[$i] = str_replace ($contentold, $starttagname.$contentnew.$endtagname, $record);
       }
@@ -1500,14 +1604,17 @@ function insertcontent ($xmldata, $insertxmldata, $starttagname)
   {
     // split xmldata
     $block_array = explode ($endtagname, $xmldata);
-    // build xml data including the new xml sub data
+
+    // build xml data including the new xml node
     $xmldata_new = implode (chop ($insertxmldata)."\n".$endtagname, $block_array);
+
     return $xmldata_new;
   }
   else
   {
     // build xml data including the new content $contentnew at the end of xmldata
     $xmldata_new = chop ($xmldata)."\n".chop ($insertxmldata)."\n";
+
     return $xmldata_new;
   }
 }
@@ -1555,14 +1662,17 @@ function inserticontent ($xmldata, $insertxmldata, $starttagname)
   {
     // split xmldata
     $block_array = explode (strtolower ($endtagname), $xmldata);
-    // build xml data including the new xml sub data
+
+    // build xml data including the new xml node
     $xmldata_new = implode (chop ($insertxmldata)."\n".$endtagname, $block_array);
+
     return $xmldata_new;
   }
   else
   {
     // build xml data including the new content $contentnew at the end of xmldata
     $xmldata_new = chop ($xmldata)."\n".chop ($insertxmldata)."\n";
+
     return $xmldata_new;
   }
 }
@@ -1651,6 +1761,7 @@ function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, 
         // update into content
         $xmldata = str_replace ($grand_record, $grand_record_new, $xmldata);
       }
+
       return $xmldata;
     }
     else
@@ -1746,6 +1857,7 @@ function addicontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag,
         // update into content
         $xmldata = str_replace ($grand_record, $grand_record_new, $xmldata);
       }
+
       return $xmldata;
     }
     else

@@ -14,9 +14,15 @@ require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
 
+// ------------------------------ permission section --------------------------------
 
 // check session of user
 checkusersession ($user, false);
+
+// --------------------------------- logic section ----------------------------------
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE html>
 <html>

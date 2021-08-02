@@ -169,12 +169,12 @@ function link_db_restore ($site="")
         if ($test == true)
         {
           $errcode = "00810";
-          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|information|".$errcode."|regernated and saved link index for publication '".$publication."' successfully (execution time: ".$duration." sec)";
+          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|information|".$errcode."|Regernated and saved link index for publication '".$publication."' successfully (execution time: ".$duration." sec)";
         }
         else
         {
           $errcode = "10810";
-          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|could not regenerate and save link index for publication '".$publication."' (execution time: ".$duration." sec)";
+          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|Could not regenerate and save link index for publication '".$publication."' (execution time: ".$duration." sec)";
         }
       }
 
@@ -924,7 +924,7 @@ function getlinkedobject ($site, $location, $page, $cat)
       {
         $result = false;
         $errcode = "10189";
-        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|could not read link management database for publication '".$site."'";
+        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|Could not read link management database for publication '".$site."'";
       }
       // link management is disabled
       elseif ($link_db == true)
@@ -946,7 +946,7 @@ function getlinkedobject ($site, $location, $page, $cat)
 
 // ---------------------------------------- getconnectedobject --------------------------------------------
 // function: getconnectedobject()
-// input: container name [string], container type [work,published,version] (optional)
+// input: container name or ID [string], container type [work,published,version] (optional)
 // output: connected objects[array] 
 
 // description:
@@ -956,29 +956,55 @@ function getconnectedobject ($container, $type="work")
 {
   global $mgmt_config, $user;
 
+  // initialize
   $error = array();
+  $object_array = false;
+  $result = array();
 
   if (valid_objectname ($container))
   {
-    // load container
-    $container_data = loadcontainer ($container, $type, $user);
-
-    // extract object references
-    if ($container_data != "")
+    // use database
+    if (!empty ($mgmt_config['db_connect_rdbms']))
     {
-      $object_array = getcontent ($container_data, "<contentobjects>");
- 
-      if (!empty ($object_array[0])) $object_array = link_db_getobject ($object_array[0]);
-      else $object_array = false;
+      // get container id
+      if (strpos ($container, ".xml") > 0) $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      else $container_id = $container;
+
+      $temp_array = rdbms_getobjects ($container_id);
+
+      if (is_array ($temp_array) && sizeof ($temp_array) > 0) 
+      {
+        foreach ($temp_array as $temp)
+        {
+          if (!empty ($temp['objectpath'])) $object_array[] = $temp['objectpath'];
+        }
+      }
     }
-    else $object_array = false;
+    // use XML container
+    else
+    {
+      // load container
+      $container_data = loadcontainer ($container, $type, $user);
+
+      // extract object references
+      if ($container_data != "")
+      {
+        $object_array = getcontent ($container_data, "<contentobjects>");
+  
+        if (!empty ($object_array[0])) $object_array = link_db_getobject ($object_array[0]);
+      }
+      else
+      {
+        $errcode = "10188";
+        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|Could not extract objects from container '".$container."'";
+      }
+    }
 
     // collect object information
-    if (is_array ($object_array)) 
+    if (is_array ($object_array) && sizeof ($object_array) > 0) 
     {
       // set result array counter
       $counter = 0;
-      $result = array();
 
       // collect objects and form result
       foreach ($object_array as $object_path)
@@ -988,7 +1014,7 @@ function getconnectedobject ($container, $type="work")
           // get category of object
           $site = getpublication ($object_path);
           $location_converted = getlocation ($object_path);
-          $cat = getcategory ($site, $location_converted);   
+          $cat = getcategory ($site, $location_converted);
           $location = deconvertpath ($location_converted, "file");
           $page = getobject ($object_path);
 
@@ -1003,18 +1029,13 @@ function getconnectedobject ($container, $type="work")
         }
       }
     }
-    else
-    {
-      $errcode = "10188";
-      $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|could not extract objects from container '".$container."'";
-    }
 
     // save log
     savelog (@$error);
   }
 
   // return result
-  if (isset ($result) && is_array ($result) && sizeof ($result) > 0) return $result;
+  if (is_array ($result) && sizeof ($result) > 0) return $result;
   else return false;
 }
 

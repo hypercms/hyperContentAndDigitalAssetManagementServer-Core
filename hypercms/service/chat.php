@@ -28,6 +28,9 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
+
 // chat log file
 $chat_log = $mgmt_config['abs_path_data']."log/chat.log";
 

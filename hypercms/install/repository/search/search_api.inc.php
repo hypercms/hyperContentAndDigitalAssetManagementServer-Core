@@ -646,7 +646,7 @@ function collectcontent ($container_content, $text_id="", $component_id="")
           {
             if ($temp != "")
             {
-              $textcontent = getcontent ($temp, "<textcontent>");
+              $textcontent = getcontent ($temp, "<textcontent>", true);
 
               if (!empty ($textcontent[0]))
               {
@@ -658,7 +658,7 @@ function collectcontent ($container_content, $text_id="", $component_id="")
         }
       } 
     }
-    else $contentslices = getcontent ($container_content, "<textcontent>");  
+    else $contentslices = getcontent ($container_content, "<textcontent>", true);  
       
     if (isset ($contentslices) && is_array ($contentslices) && sizeof ($contentslices) > 0)
     {

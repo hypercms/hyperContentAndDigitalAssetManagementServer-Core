@@ -29,6 +29,7 @@ var activatelinks = false;
 
 // select area
 var selectarea = null;
+var is_selectarea = false;
 var x1 = 0;
 var y1 = 0;
 var x2 = 0;
@@ -39,15 +40,7 @@ var x4 = 0;
 var y4 = 0;
 
 // drag and drop
-var dragndrop = false;
-
-// enable/disable specific functions
-var permission = new Array();
-permission['rename'] = true;
-permission['paste'] = true;
-permission['delete'] = true;
-permission['publish'] = true;
-permission['shortcuts'] = true;
+var is_dragndrop = false;
 
 // design theme
 var themelocation = '';
@@ -78,7 +71,7 @@ function hcms_loadSidebar ()
   if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.width != "0px" && document.forms['contextmenu_object'])
   {
     // wait (due to issues with browsers like MS Edge, Chrome)
-    hcms_sleep (400);
+    hcms_sleep (200);
 
     var location = document.forms['contextmenu_object'].elements['location'].value;
     var folder = document.forms['contextmenu_object'].elements['folder'].value;
@@ -598,7 +591,7 @@ function hcms_createContextmenuItem (action)
       // delete
       else if (action == "delete")
       {
-        if ((multiobject != "" || page != "" || folder != "") && permission['delete'] == true) check = confirm_delete();
+        if ((multiobject != "" || page != "" || folder != "") && hcms_permission['delete'] == true) check = confirm_delete();
 
         if (check == true)
         {
@@ -614,7 +607,7 @@ function hcms_createContextmenuItem (action)
       // cut, copy, linked copy
       else if (action == "cut" || action == "copy" || action == "linkcopy")
       {
-        if (permission['rename'] == true)
+        if (hcms_permission['rename'] == true)
         {
           document.forms['contextmenu_object'].attributes['action'].value = 'popup_action.php';
           document.forms['contextmenu_object'].elements['action'].value = action;
@@ -624,7 +617,7 @@ function hcms_createContextmenuItem (action)
       // paste
       else if (action == "paste")
       {
-        if (site != "" && location != "" && permission['paste'] == true)
+        if (site != "" && location != "" && hcms_permission['paste'] == true)
         {
           hcms_openWindow('popup_status.php?force=start&action=' + encodeURIComponent(action) + '&site=' + encodeURIComponent(site) + '&cat=' + encodeURIComponent(cat) + '&location=' + encodeURIComponent(location) + '&token=' + token, '', 'status=no,scrollbars=no,resizable=no', 400, 300);    
         }
@@ -632,7 +625,7 @@ function hcms_createContextmenuItem (action)
       // publish, unpublish
       else if (action == "publish" || action == "unpublish")
       {
-        if (permission['publish'] == true)
+        if (hcms_permission['publish'] == true)
         {
           URLfile = "popup_publish.php";
             
@@ -792,6 +785,10 @@ function hcms_setObjectcontext (site, cat, location, page, pagename, filetype, m
     // hide and reset context menu
     hcms_hideContextmenu();
 
+    // stop propagation
+    if (!e) var e = window.event;
+    if (e.stopPropagation != undefined) e.stopPropagation();
+
     // set values 
     var contexttype;
     
@@ -800,6 +797,7 @@ function hcms_setObjectcontext (site, cat, location, page, pagename, filetype, m
     else if (page != "") contexttype = "object";
     else contexttype = "none";
     
+    // context form
     var contextmenu_form = document.forms['contextmenu_object'];
     
     // enable/disable display of context menus
@@ -831,6 +829,11 @@ function hcms_setColumncontext ()
     // hide and reset context menu
     hcms_hideContextmenu();
 
+    // stop propagation
+    if (!e) var e = window.event;
+    if (e.stopPropagation != undefined) e.stopPropagation();
+
+    // context form
     var contextmenu_form = document.forms['contextmenu_column'];
     
     // enable/disable display of context menus
@@ -847,7 +850,12 @@ function hcms_setUsercontext (site, login, token)
   {
     // hide and reset context menu
     hcms_hideContextmenu();
+
+    // stop propagation
+    if (!e) var e = window.event;
+    if (e.stopPropagation != undefined) e.stopPropagation();
     
+    // context form
     var contextmenu_form = document.forms['contextmenu_user'];
   
     // set values   
@@ -867,6 +875,10 @@ function hcms_setQueuecontext (site, cat, location, page, pagename, filetype, qu
   {
     // hide and reset context menu
     hcms_hideContextmenu();
+
+    // stop propagation
+    if (!e) var e = window.event;
+    if (e.stopPropagation != undefined) e.stopPropagation();
   
     var contextmenu_form = document.forms['contextmenu_queue'];
     
@@ -893,7 +905,12 @@ function hcms_setMessagecontext (messageuser, message_id, token)
   {
     // hide and reset context menu
     hcms_hideContextmenu();
+
+    // stop propagation
+    if (!e) var e = window.event;
+    if (e.stopPropagation != undefined) e.stopPropagation();
   
+    // context form
     var contextmenu_form = document.forms['contextmenu_message'];
     
     // set values   
@@ -1331,12 +1348,21 @@ function hcms_Contextmenu (e)
 {
   if (!e) var e = window.event;
 
-  // if alt-key is pressed
-  if (activatelinks == true) return true;
-  else return false;
+  // show standard context menu if the download links have been activated (alt-key)
+  if (activatelinks == true)
+  {
+    return true;
+  }
+  // do not show the standard context menu
+  else
+  {
+    if (e.preventDefault != undefined) e.preventDefault();
+    if (e.stopPropagation != undefined) e.stopPropagation();
+    return false;
+  }
 }
 
-// right mouse click
+// right mouse click (triggered by mousedown event)
 function hcms_rightClick (e) 
 {
   if (!e) var e = window.event;
@@ -1357,10 +1383,10 @@ function hcms_rightClick (e)
     hcms_startSelectArea(e);
   }
 
-  return true;
+  return false;
 }
 
-// left mouse clicks
+// left mouse click (triggered by click event)
 function hcms_leftClick (e) 
 {
   if (!e) var e = window.event;
@@ -1368,6 +1394,9 @@ function hcms_leftClick (e)
   var object;
   var multiobject;
   var objectcount = 0;
+
+  // minimize navigation for Mobile Edition
+  if (is_mobile && hcms_permission['minnavframe'] == true && typeof top.minNavFrame === 'function') top.minNavFrame();
 
   // remove selection marks of browser
   hcms_clearSelection();
@@ -1402,48 +1431,11 @@ function hcms_leftClick (e)
     hcms_hideContextmenu();
 
     // if no key is pressed and multiobject stores at least 1 object
-    if (hcms_keyPressed('', e) == false && object == "" && objectcount >= 1)
+    if (hcms_keyPressed('', e) == false && object == "" && objectcount >= 1 && is_selectarea == false)
     {
       hcms_unselectAll();
       hcms_resetContext();
     }
-  }
-
-  return true;
-} 
-
-// verify if key is pressed
-function hcms_keyPressed (key, e)
-{
-  var ctrlPressed = 0;
-  var altPressed = 0;
-  var shiftPressed = 0;
-
-  if (parseInt(navigator.appVersion) > 3 && e != null && e != 'selectarea')
-  {
-    var evt = navigator.appName == "Netscape" ? e:event;
-
-    if (navigator.appName == "Netscape" && parseInt(navigator.appVersion) == 4)
-    {
-      // NETSCAPE 4 CODE
-      var mString = (e.modifiers+32).toString(2).substring(3,6);
-      shiftPressed = (mString.charAt(0) == "1");
-      ctrlPressed = (mString.charAt(1) == "1");
-      altPressed = (mString.charAt(2) == "1");
-    }
-    else
-    {
-      // NEWER BROWSERS [CROSS-PLATFORM]
-      shiftPressed = evt.shiftKey;
-      altPressed = evt.altKey;
-      ctrlPressed = evt.ctrlKey;
-    }
-
-    if (key == 'ctrl' && ctrlPressed) return true;
-    else if (key == 'shift' && shiftPressed) return true;
-    else if (key == 'alt' && altPressed) return true;
-    else if (key == '' && (altPressed || shiftPressed || ctrlPressed)) return true;
-    else return false;
   }
 
   return false;
@@ -1481,7 +1473,7 @@ function hcms_activateLinks (e)
 
   // if Alt keyx is pressed
   // activate or deactivate links for all objects (only supports contextmenu_object)
-  if (dragndrop == false && hcms_keyPressed('alt', e) && document.forms['contextmenu_object'])
+  if (is_dragndrop == false && hcms_keyPressed('alt', e) && document.forms['contextmenu_object'])
   {
     var links = document.getElementsByTagName('A');
     var hashlink = false;
@@ -1569,7 +1561,7 @@ function hcms_startSelectArea (e)
   {
     x1 = e.clientX;
     y1 = e.clientY;
-    dragndrop = false;
+    is_dragndrop = false;
     return true;
   }
 
@@ -1579,8 +1571,9 @@ function hcms_startSelectArea (e)
 function hcms_drawSelectArea ()
 {
   // if alt-key is not pressed
-  if (dragndrop == false && activatelinks == false && selectarea && x1 > 0 && y1 > 0)
+  if (is_dragndrop == false && activatelinks == false && selectarea && x1 > 0 && y1 > 0)
   {
+    is_selectarea = true;
     x3 = Math.min(x1,x2);
     x4 = Math.max(x1,x2);
     y3 = Math.min(y1,y2);
@@ -1590,12 +1583,12 @@ function hcms_drawSelectArea ()
     hcms_clearSelection();
 
     // enable select area if width and height are larger than 5 pixels
-    if (selectarea.style.display == 'none' && (x4 - x3) > 5 && (y4 - y3) > 5)
+    if ((selectarea.style.display == '' || selectarea.style.display == 'none') && (x4 - x3) > 5 && (y4 - y3) > 5)
     {
       selectarea.style.display = 'inline';
     }
     
-    // size select area
+    // resize select area
     if (selectarea.style.display != 'none')
     {
       selectarea.style.left = x3 + 'px';
@@ -1615,7 +1608,7 @@ function hcms_endSelectArea ()
 
   // if alt-key is not pressed and
   // if select area is used
-  if (dragndrop == false && activatelinks == false && selectarea && selectarea.style.display != 'none' && x1 > 0 && y1 > 0 && x3 != 0 && y3 != 0 && x4 != 0 && y4 != 0 && (x4-x3) > 5 && (y4-y3) > 5)
+  if (is_dragndrop == false && activatelinks == false && selectarea && selectarea.style.display != 'none' && x1 > 0 && y1 > 0 && x3 != 0 && y3 != 0 && x4 != 0 && y4 != 0 && (x4-x3) > 5 && (y4-y3) > 5)
   {    
     // unselect all
     hcms_unselectAll ();
@@ -1676,7 +1669,12 @@ function hcms_endSelectArea ()
   y4 = 0;
 
   // hide select area
-  if (selectarea) selectarea.style.display = 'none';
+  if (selectarea)
+  {
+    // required delay since click event (leftclick) will fire after the mousup event 
+    setTimeout (function() { is_selectarea = false; }, 300);
+    selectarea.style.display = 'none';
+  }
 
   if (selected) return true;
   else return false;
@@ -1726,7 +1724,7 @@ function hcms_findElementByTagName (element, tag)
 // set the image for drag and drop
 function hcms_setDragImage (e)
 {
-  if (dragndrop == true && hcms_getBrowserName() != "ie" && e.dataTransfer && typeof e.dataTransfer.setDragImage === "function")
+  if (is_dragndrop == true && hcms_getBrowserName() != "ie" && e.dataTransfer && typeof e.dataTransfer.setDragImage === "function")
   {
     // set custom drag image
     var dragimage = document.createElement('img');
@@ -1741,7 +1739,7 @@ function hcms_drag (e)
   if (!is_mobile && hcms_getBrowserName() != "ie" && e.dataTransfer && typeof e.dataTransfer.setData === "function" && document.forms['contextmenu_object'])
   {
     // to hide the select area
-    dragndrop = true;
+    is_dragndrop = true;
 
     // set custom drag image
     hcms_setDragImage(e)
@@ -1820,13 +1818,14 @@ function hcms_allowDrop (e)
 }
 
 // key events
-document.addEventListener('keydown', e => {
-  if (permission['shortcuts'] == true)
+hcms_addEvent ('keydown', document, function(e) {
+  // if shortcuts are enabled
+  if (hcms_permission['shortcuts'] == true)
   {
     // activate download links on Alt key
     hcms_activateLinks(e);
 
-    // select all objects on Ctrl+A key
+    // select all objects on Ctrl/Cmd+A key
     if (hcms_keyPressed('ctrl', e) && (e.key === 'a' || e.key == 'A'))
     {
       // prevent the default
@@ -1834,7 +1833,7 @@ document.addEventListener('keydown', e => {
       hcms_selectAll();
     }
 
-    // cut objects if Ctrl+X key is pressed
+    // cut objects if Ctrl/Cmd+X key is pressed
     if (hcms_keyPressed('ctrl', e) && (e.key == 'x' || e.key == 'X'))
     {
       // prevent the default
@@ -1842,7 +1841,7 @@ document.addEventListener('keydown', e => {
       hcms_createContextmenuItem('cut');
     }
 
-    // copy objects if Ctrl+C key is pressed
+    // copy objects if Ctrl/Cmd+C key is pressed
     if (hcms_keyPressed('ctrl', e) && (e.key == 'c' || e.key == 'C'))
     {
       // prevent the default
@@ -1850,7 +1849,7 @@ document.addEventListener('keydown', e => {
       hcms_createContextmenuItem('copy');
     }
 
-    // linked copy objects if Ctrl+Y key is pressed
+    // linked copy objects if Ctrl/Cmd+Y key is pressed
     if (hcms_keyPressed('ctrl', e) && (e.key == 'y' || e.key == 'Y'))
     {
       // prevent the default
@@ -1858,7 +1857,7 @@ document.addEventListener('keydown', e => {
       hcms_createContextmenuItem('linkcopy');
     }
 
-    // paste objects if Ctrl+V key is pressed
+    // paste objects if Ctrl/Cmd+V key is pressed
     if (hcms_keyPressed('ctrl', e) && (e.key == 'v' || e.key == 'V'))
     {
       // prevent the default
@@ -1866,17 +1865,35 @@ document.addEventListener('keydown', e => {
       hcms_createContextmenuItem('paste');
     }
 
-    // delete objects if Ctrl+V key is pressed
-    if (e.key == "Delete") hcms_createContextmenuItem('delete');
+    // delete objects if Delete or Backspace (MacOS) key is pressed
+    if (e.key == "Delete" || e.keyCode == 8 || e.keyCode == 46)
+    {
+      // prevent the default
+      e.preventDefault();
+      hcms_createContextmenuItem('delete');
+    }
   }
 });
 
-// other events
-document.onmousemove = hcms_getMouseXY;
-document.oncontextmenu = hcms_Contextmenu;
-document.onmousedown = hcms_rightClick;
-document.onmouseup = hcms_endSelectArea;
-document.onclick = hcms_leftClick;
+hcms_addEvent ('mousemove', document, function(e) {
+  hcms_getMouseXY(e);
+});
+
+hcms_addEvent ('contextmenu', document, function(e) {
+  hcms_Contextmenu(e);
+});
+
+hcms_addEvent ('mousedown', document, function(e) {
+  hcms_rightClick(e);
+});
+
+hcms_addEvent ('mouseup', document, function(e) {
+  hcms_endSelectArea(e);
+});
+
+hcms_addEvent ('click', document, function(e) {
+  hcms_leftClick(e);
+});
 
 // for alert in iframe
 window.alert = top.alert;

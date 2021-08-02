@@ -121,14 +121,15 @@ if (!empty ($hcms_themeinvertcolors))
 }
 ?>
 <script type="text/javascript">
-function warning_delete()
+
+function warning_delete ()
 {
   check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue'][$lang]); ?>"));
   
   return check;
 }
 
-function submitTo(url, action, target, features, width, height)
+function submitTo (url, action, target, features, width, height)
 {
   if (features == undefined)
   {
@@ -231,7 +232,7 @@ function jumpTo (target)
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['publishing-queue'][$lang])." &gt; ".$pagename; ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['publishing-queue'][$lang])." &gt; ".$pagename; ?></span>
   <?php } ?>
 
 </div>
@@ -343,8 +344,8 @@ function jumpTo (target)
       </select>
     </div>
     <?php if (getsession ('hcms_temp_user') == "" && (checkrootpermission ('site') || checkrootpermission ('user'))) { ?>
-    
   </div>
+
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />

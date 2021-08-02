@@ -29,6 +29,7 @@ $services = getsession ("hcms_services");
 $siteaccess = getsession ("hcms_siteaccess");
 $pageaccess = getsession ("hcms_pageaccess");
 $compaccess = getsession ("hcms_compaccess");
+$pluginaccess = getsession ("hcms_pluginaccess");
 
 // permission parameter (array)
 $rootpermission = getsession ("hcms_rootpermission");
@@ -95,6 +96,9 @@ $objectfilter = getsession ("hcms_objectfilter");
 
 // definition of objectlist columns
 $objectlistcols = getsession ("hcms_objectlistcols");
+
+// definition of toolbar functions/icons
+$toolbarfunctions = getsession ("hcms_toolbarfunctions");
 
 // definition of labels from templates
 $labels = getsession ("hcms_labels");

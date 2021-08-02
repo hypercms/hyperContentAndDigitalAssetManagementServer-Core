@@ -76,7 +76,7 @@ function checkForm (form, field)
     // usergroup membership
     if ($site != "*Null*")
     {
-      $memberofarray = selectcontent ($userrecord[0], "<memberof>", "<publication>", "$site");
+      $memberofarray = selectcontent ($userrecord[0], "<memberof>", "<publication>", $site);
       
       if ($memberofarray != false) 
       {

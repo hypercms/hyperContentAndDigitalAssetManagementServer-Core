@@ -114,10 +114,10 @@ del
 
 hr
 {
-  height: 1px;
+  height: 2px;
   border-width :0;
-  color: #7DA5DD;
-  background-color: #7DA5DD;
+  color: #ffa339;
+  background-color: #ffa339;
 }
 
 /* Main */
@@ -212,7 +212,7 @@ a.hcmsLink
 
 .hcmsWorkplaceTop
 {
-  background-color: #59b822;
+  background-color: #ade28f;
 }
 
 .hcmsLogoTop
@@ -299,7 +299,7 @@ a.hcmsLink
 {
   margin: 0;
   padding: 0;
-  background-color: #4D90FC;
+  background-color: #74a9ff;
 }
 
 .hcmsToolbar
@@ -331,12 +331,12 @@ a.hcmsNavigator
   height: 100%;
   margin: 0;
   padding: 0;;
-  background-color: #ffb413 !important;
+  background-color: #ffbb7b !important;
 }
 
 .hcmsWorkplaceObjectlist
 {
-  background-color: #A5C9FE !important;
+  background-color: #e4edff !important;
 }
 
 .hcmsWorkplaceObjectlistLinks
@@ -346,12 +346,12 @@ a.hcmsNavigator
 
 .hcmsWorkplaceWorkflow
 {
-  background-color: #7aaaf3 !important;
+  background-color: #98c8ff !important;
 }
 
 .hcmsWorkplaceGeneric
 {
-  background-color: #86B7FD;
+  background-color: #c7daff;
   margin: 0; 
   padding: 0;
   overflow: auto;
@@ -787,11 +787,11 @@ a.hcmsNavigator
 .hcmsTabActive
 {
   float: left;
-  background-color: #86B7FD;
+  background-color: #c7daff;
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;
   border-left: 1px solid #000000;
-  border-bottom: 2px solid #86B7FD;
+  border-bottom: 2px solid #c7daff;
   width: 116px;
   height: 17px;
   padding: 2px;
@@ -804,7 +804,7 @@ a.hcmsNavigator
 .hcmsTabPassive
 {
   float: left;
-  background-color: #AEC9FE;
+  background-color: #8cb3ff;
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;
   border-left: 1px solid #000000;
@@ -960,7 +960,7 @@ table.hcmsTableNarrow th, table.hcmsTableNarrow td
 
 tr.hcmsObjectSelected
 {
-  background-color: #7BD181;
+  background-color: #a0c9ff;
 }
 
 tr.hcmsObjectUnselected
@@ -971,7 +971,7 @@ tr.hcmsObjectUnselected
 div.hcmsObjectSelected
 {
   margin: 2px;
-  background-color: #7BD181;
+  background-color: #a0c9ff;
   background-image: url("../img/button_textc.png");
   background-repeat: no-repeat !important;
   background-position: 2% 98% !important;
@@ -1049,13 +1049,13 @@ div.hcmsObjectUnselected
 
 ::-webkit-scrollbar-track
 {
-  border-radius: 8px;
+  border-radius: 0px;
 }
  
 ::-webkit-scrollbar-thumb
 {
   background: #77aef7; 
-  border-radius: 8px;
+  border-radius: 0px;
 }
 
 ::-webkit-scrollbar-thumb:hover

@@ -290,10 +290,9 @@ function plugin_generatedefinition ($arrayName, $array)
 
     foreach ($array as $key => $value) 
     {
-      if (is_string ($key)) $key = "'".$key."'";
-
       // ignore each key that is not a string, number or boolean
-      elseif (!is_numeric ($key) && !is_bool ($key)) continue; 
+      if (is_string ($key)) $key = "'".$key."'";
+      elseif (!is_numeric ($key) && !is_bool ($key)) continue;
  
       if (is_array ($value))
       {

@@ -51,7 +51,7 @@ if (empty ($is_mobile) && isset ($siteaccess) && is_array ($siteaccess))
       <input type=\"hidden\" name=\"search_dir\" value=\"\" />
       <input type=\"hidden\" name=\"action\" value=\"base_search\" />
       <input type=\"text\" id=\"search_expression\" name=\"search_expression\" onkeydown=\"if (hcms_enterKeyPressed(event)) startSearch();\" placeholder=\"".getescapedtext ($hcms_lang['search'][$lang])."\" style=\"width:30%; min-width:320px; padding:14px 30px 14px 10px; margin:0px auto;\"\" maxlength=\"2000\" />
-      <img src=\"".getthemelocation()."img/button_search_dark.png\" style=\"cursor:pointer; width:22px; height:22px; margin-left:-30px;\" onClick=\"startSearch('general');\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />
+      <img src=\"".getthemelocation()."img/button_search_dark.png\" style=\"cursor:pointer; width:22px; height:22px; margin-left:-36px;\" onClick=\"startSearch('general');\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />
   </div>\n";
 }
 ?>

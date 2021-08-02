@@ -20,7 +20,11 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $data = array();
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 
 $data['usersonline'] = getusersonline ($siteaccess);
 

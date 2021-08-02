@@ -58,7 +58,7 @@ if (valid_objectname ($contentfile))
   // get content location
   $container_root = getcontentlocation ($container_id, 'abs_path_content');
 
-  if ($container_root != "" && @file_exists ($container_root.$contentfile))
+  if ($container_root != "" && is_file ($container_root.$contentfile))
   {     
     $bytelen = filesize ($container_root.$contentfile);
     
@@ -71,7 +71,9 @@ if (valid_objectname ($contentfile))
     header("Content-Transfer-Encoding: binary");
     header("Content-Length: ".$bytelen);
     
-    echo loadcontainer ($contentfile, "version", $user);
+    $xml = loadcontainer ($contentfile, "version", $user);
+    
+    echo $xml;
   }
 }
 ?>

@@ -20,6 +20,13 @@ $site = getrequest ("site", "publicationname");
 
 // ------------------------------ permission section --------------------------------
 
+// check plugin permissions
+if (!checkpluginpermission ($site, 'logviewer'))
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang], $lang);
+  exit;
+}
+
 // check session of user
 checkusersession ($user);
 
@@ -28,6 +35,9 @@ checkusersession ($user);
 // file name of event log
 if (valid_publicationname ($site)) $logfile = $site.".publication.log";
 else $logfile = "";
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE html>
 <html>

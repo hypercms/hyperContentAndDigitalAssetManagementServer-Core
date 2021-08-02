@@ -158,7 +158,7 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
     else
     {
       $errcode = "40911";
-      $error[] = $mgmt_config['today']."|message_objectlist.php|error|".$errcode."|invalid message time prefix in message file '".$message_file."'";
+      $error[] = $mgmt_config['today']."|message_objectlist.php|error|".$errcode."|Invalid message time prefix in message file '".$message_file."'";
 
       $objects_total--;
     }

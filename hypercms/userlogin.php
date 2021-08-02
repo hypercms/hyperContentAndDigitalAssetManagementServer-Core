@@ -211,7 +211,7 @@ if ($hcms_user_token != "")
 
   // warning
   $errcode = "00111";
-  $error[] = $mgmt_config['today']."|userlogin.php|warning|".$errcode."|deprecated user token provided for access (used before version 5.6.1)";
+  $error[] = $mgmt_config['today']."|userlogin.php|warning|".$errcode."|Deprecated user token provided for access (used before version 5.6.1)";
 }
 
 // deprecated since version 5.6.1 (will not work anymore due to the embedded object code in the token):
@@ -223,7 +223,7 @@ if ($hcms_id_token != "")
   
   // warning
   $errcode = "00112";
-  $error[] = $mgmt_config['today']."|userlogin.php|warning|".$errcode."|deprecated object token provided for access (used before version 5.5.13)";
+  $error[] = $mgmt_config['today']."|userlogin.php|warning|".$errcode."|Deprecated object token provided for access (used before version 5.5.13)";
 }
 
 // deprecated since version 5.6.1 but still supported:

@@ -91,14 +91,17 @@ if (empty ($contentbot))
   
   if ($filedata != "")
   {
-    $contentarray = selectcontent ($filedata, "<text>", "<text_id>", $id);
-    $contentarray = getcontent ($contentarray[0], "<textcontent>");
-    $contentbot = $contentarray[0];
+    $temp_array = selectcontent ($filedata, "<text>", "<text_id>", $id);
+    if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>", true);
+    if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
   }
 }
 
 // set default value given eventually by tag
 if (!isset ($contentbot) && $default != "") $contentbot = $default;
+
+// encode script code
+$contentbot = scriptcode_encode ($contentbot);
 
 // size
 $style = "";

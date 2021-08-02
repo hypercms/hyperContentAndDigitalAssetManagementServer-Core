@@ -317,7 +317,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                   $date = date ("Y-m-d H:i:s", time());
 
                   // insert new date into content file
-                  $contentdata_new = setcontent ($contentdata_new, "<hyperCMS>", "<contentdate>", $date, "", "");
+                  $contentdata_new = setcontent ($contentdata_new, "<hyperCMS>", "<contentdate>", $date, "", "", true);
 
                   // set encoding
                   $charset_old = getcharset ("", $contentdata_new); 
@@ -334,7 +334,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                   if ($savefile == false)
                   {
                     $errcode = "10199";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|container  ".$contentfile." could not be saved after CSV import";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Container  ".$contentfile." could not be saved after CSV import";
                   }
                   else
                   {
@@ -363,13 +363,13 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
 
 // --------------------------------------- loadtaxonomy -------------------------------------------
 // function: loadtaxonomy ()
-// input: publication name [string], return rows starting with row number [integer] (optional), return number of rows [integer] (optional)
+// input: publication name [string], return rows starting with row number [integer] (optional), return number of rows [integer] (optional), return total number of rows [boolean] (optional), load default taxonomy [bollean] (optional)
 // output: true / false
 
 // description:
 // Generates an array from a taxonomy definition file located in data/include/ to be used for presentation or CSV export.
 
-function loadtaxonomy ($site, $start=1, $perpage=100000)
+function loadtaxonomy ($site, $start=1, $perpage=100000, $count=false, $load_default=false)
 {
   global $mgmt_config;
 
@@ -377,12 +377,12 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
   $languages = getlanguageoptions ();
 
   // load CSV source of taxonomy of publication (if available)
-  if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv"))
+  if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv") && empty ($load_default))
   {
     $csv = $mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv";
   }
   // load default taxonomy (if available)
-  elseif (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.csv"))
+  elseif (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.csv") && !empty ($load_default))
   {
     $csv = $mgmt_config['abs_path_data']."include/default.taxonomy.csv";
   }
@@ -392,12 +392,12 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
   }
 
   // deployed taxonomy of the publication (if available)
-  if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+  if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php") && empty ($load_default))
   {
     $deployed = $mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php";
   }
   // load default taxonomy (if available)
-  elseif (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+  elseif (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php") && !empty ($load_default))
   {
     $deployed = $mgmt_config['abs_path_data']."include/default.taxonomy.inc.php";
   }
@@ -417,6 +417,9 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
     {
       // collect rows from existing taxonomy
       $result = array();
+
+      // count rows
+      if (!empty ($count)) $result['count'] = sizeof ($taxonomy);
 
       reset ($taxonomy);
 
@@ -443,6 +446,9 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
     {
       // collect rows from existing taxonomy
       $result = array();
+
+      // count rows
+      if (!empty ($count)) $result['count'] = sizeof ($taxonomy);
 
       reset ($taxonomy);
       $i = 1;
@@ -478,7 +484,7 @@ function loadtaxonomy ($site, $start=1, $perpage=100000)
 
             if ($i >= $start)
             {
-              $result[$i][$langcode] = $label;
+              $result[$i][$langcode] = trim ($label);
             }
 
             $i++;
@@ -507,126 +513,138 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
   // load taxonomy
   $taxonomy_old = loadtaxonomy ($site);
 
-  // get languages from first entry of the new taxonomy
-  $lang_array = array_keys ($taxonomy[$saveindex_start]);
-
-  // get languages from same entry of the loaded taxonomy
-  $lang_old_array = array_keys ($taxonomy_old[$saveindex_start]);
-
-  // new languages have been added to the taxonomy
-  if (sizeof ($lang_old_array) < sizeof ($lang_array))
+  if (is_array ($taxonomy) && !empty ($taxonomy[$saveindex_start]))
   {
-    $lang_new_array = array_diff ($lang_array, $lang_old_array);
-  }
-  // languages have been removed from the taxonomy
-  elseif (sizeof ($lang_old_array) > sizeof ($lang_array))
-  {
-    $lang_remove_array = array_diff ($lang_old_array, $lang_array);
-  }
+    // get languages from first entry of the new taxonomy
+    $lang_array = array_keys ($taxonomy[$saveindex_start]);
 
-  // update taxonomy
-  if (valid_publicationname ($site) && is_array ($taxonomy) && $saveindex_start >= 0 && $saveindex_stop >= 0)
-  {
-    // merge old and new taxonomy definition
+    // get languages from same entry of the loaded old taxonomy
     if (is_array ($taxonomy_old))
     {
-      $id = 1;
+      $lang_old_array = array_keys ($taxonomy_old[$saveindex_start]);
 
-      foreach ($taxonomy_old as $row => $old_array)
+      // new languages have been added to the taxonomy
+      if (sizeof ($lang_old_array) < sizeof ($lang_array))
       {
-        // untouched rows (outside of saveindex)
-        if ($row < $saveindex_start || $row > $saveindex_stop)
+        $lang_new_array = array_diff ($lang_array, $lang_old_array);
+      }
+      // languages have been removed from the taxonomy
+      elseif (sizeof ($lang_old_array) > sizeof ($lang_array))
+      {
+        $lang_remove_array = array_diff ($lang_old_array, $lang_array);
+      }
+    }
+
+    // update taxonomy
+    if (valid_publicationname ($site) && $saveindex_start >= 0 && $saveindex_stop >= 0)
+    {
+      // merge old and new taxonomy definition
+      if (is_array ($taxonomy_old))
+      {
+        $id = 1;
+
+        foreach ($taxonomy_old as $row => $old_array)
         {
-          // add new languages
-          if (!empty ($lang_new_array)) foreach ($lang_new_array as $temp) $old_array[$temp] = "";
-
-          // sort by language
-          ksort ($old_array);
-
-          // move 'level' key to first psoition
-          $temp = $old_array['level'];
-          unset ($old_array['level']);
-          $old_array = array_merge (array('level'=>$temp), $old_array);
-
-          $taxonomy_new[$id] = $old_array;
-          $id++;
-        }
-        // edited/changed rows
-        elseif (is_array ($taxonomy) && empty ($updated))
-        {
-          foreach ($taxonomy as $new_array)
+          // untouched rows (outside of saveindex)
+          if ($row < $saveindex_start || $row > $saveindex_stop)
           {
-            // remove languages
-            if (!empty ($lang_remove_array)) foreach ($lang_remove_array as $temp) unset ($new_array[$temp]);
+            // add new languages
+            if (!empty ($lang_new_array)) foreach ($lang_new_array as $temp) $old_array[$temp] = "";
 
             // sort by language
-            ksort ($new_array);
+            ksort ($old_array);
 
             // move 'level' key to first psoition
-            $temp = $new_array['level'];
-            unset ($new_array['level']);
-            $new_array = array_merge (array('level'=>$temp), $new_array);
+            $temp = $old_array['level'];
+            unset ($old_array['level']);
+            $old_array = array_merge (array('level'=>$temp), $old_array);
 
-            $taxonomy_new[$id] = $new_array;
+            $taxonomy_new[$id] = $old_array;
             $id++;
           }
+          // edited/changed rows
+          elseif (is_array ($taxonomy) && empty ($updated))
+          {
+            foreach ($taxonomy as $new_array)
+            {
+              // remove languages
+              if (!empty ($lang_remove_array) && is_array ($lang_remove_array))
+              {
+                foreach ($lang_remove_array as $temp) unset ($new_array[$temp]);
+              }
 
-          $updated = true;
+              // sort by language
+              ksort ($new_array);
+
+              // move 'level' key to first psoition
+              $temp = $new_array['level'];
+              unset ($new_array['level']);
+              $new_array = array_merge (array('level'=>$temp), $new_array);
+
+              $taxonomy_new[$id] = $new_array;
+              $id++;
+            }
+
+            $updated = true;
+          }
         }
       }
-    }
-    // no old taxonomy definition
-    else
-    {
-      $taxonomy_new = $taxonomy;
-    }
-
-    // verify taxonomy languages
-    if (!empty ($taxonomy_new) && is_array ($taxonomy_new))
-    {
-      // keep language
-      $keep = array();
-
-      reset ($taxonomy_new);
-
-      foreach ($taxonomy_new as $row => $temp_array)
+      // no old taxonomy definition
+      else
       {
-        foreach ($temp_array as $langcode => $label)
-        {
-          if (trim ($label) != "" && is_activelanguage ($site, $langcode)) $keep[$langcode] = true;
-        }
+        $taxonomy_new = $taxonomy;
       }
 
-      // set English as default if no language option has been defined for the publication
-      if (sizeof ($keep) < 1) $keep['en'] = true;
-
-      // remove empty language columns
-      if (sizeof ($keep) > 0)
+      // verify taxonomy languages
+      if (!empty ($taxonomy_new) && is_array ($taxonomy_new))
       {
+        // keep language
+        $keep = array();
+
         reset ($taxonomy_new);
 
         foreach ($taxonomy_new as $row => $temp_array)
         {
           foreach ($temp_array as $langcode => $label)
           {
-            if (empty ($keep[$langcode]) && $langcode != "level") unset ($taxonomy_new[$row][$langcode]);
+            if (trim ($label) != "" && is_activelanguage ($site, $langcode)) $keep[$langcode] = true;
+
+            $taxonomy_new[$row][$langcode] = trim ($label);
           }
         }
+
+        // set English as default if no language option has been defined for the publication
+        if (sizeof ($keep) < 1) $keep['en'] = true;
+
+        // remove empty language columns
+        if (sizeof ($keep) > 0)
+        {
+          reset ($taxonomy_new);
+
+          foreach ($taxonomy_new as $row => $temp_array)
+          {
+            foreach ($temp_array as $langcode => $label)
+            {
+              if (empty ($keep[$langcode]) && $langcode != "level") unset ($taxonomy_new[$row][$langcode]);
+            }
+          }
+        }
+  
+        // save data
+        return create_csv ($taxonomy_new, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8", "utf-8", false);
       }
- 
-      // save data
-      return create_csv ($taxonomy_new, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8", "utf-8", false);
+      // nothing to update
+      else return true;
     }
-    // nothing to update
-    else return true;
+    // save new taxonomy
+    elseif (valid_publicationname ($site) && is_array ($taxonomy))
+    {
+      // save data
+      return create_csv ($taxonomy, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8", "utf-8", false);
+    }
   }
-  // save new taxonomy
-  elseif (valid_publicationname ($site) && is_array ($taxonomy))
-  {
-    // save data
-    return create_csv ($taxonomy, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8", "utf-8", false);
-  }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- createtaxonomy -------------------------------------------
@@ -635,7 +653,7 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
 // output: true / false
 
 // description:
-// Generates an array from a taxonomy defintion file (CSV) and saves the PHP file in data/include/publication-name.taxonomy.inc.php.
+// Generates an array from a taxonomy definition file (CSV) and saves the PHP file in data/include/publication-name.taxonomy.inc.php.
 // Recreates the taxonomy for all objects if the taxonomy defintion has been uodated.
 
 function createtaxonomy ($site_name="", $recreate=false)
@@ -646,6 +664,7 @@ function createtaxonomy ($site_name="", $recreate=false)
   $dir = $mgmt_config['abs_path_data']."include/";
 
   // initialize
+  $error = array();
   $file_array = array();
   $site_memory = array();
 
@@ -781,7 +800,58 @@ function createtaxonomy ($site_name="", $recreate=false)
 
     return true;
   }
-  else return false;
+  
+  return false;
+}
+
+// --------------------------------------- deletetaxonomy -------------------------------------------
+// function: deletetaxonomy ()
+// input: publication name [string]
+// output: true / false
+
+// description:
+// Deletes the taxonomy definition file (CSV) and PHP file in data/include/publication-name.taxonomy.inc.php.
+// Removes the index of the taxonomy for all objects.
+
+function deletetaxonomy ($site)
+{
+  global $mgmt_config;
+
+  // initialize
+  $error = array();
+
+  if (valid_publicationname ($site))
+  {
+    // collect and compare files
+    $dir = $mgmt_config['abs_path_data']."include/";
+
+    // delete CSV file
+    if (is_file ($dir.$site.".taxonomy.csv")) deletefile ($dir, $site.".taxonomy.csv", 0);
+
+    // delete PHP file
+    if (is_file ($dir.$site.".taxonomy.inc.php")) deletefile ($dir, $site.".taxonomy.inc.php", 0);
+
+    // remove all taxonomy entries from publication
+    $result = rdbms_deletepublicationtaxonomy ($site, true);
+
+    if ($result)
+    {
+      $errcode = "00219";
+      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|".$errcode."|Taxonomy of publication '".$site."' has been removed";
+    }
+    else
+    {
+      $errcode = "10219";
+      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Taxonomy of publication '".$site."' could not be removed";
+    }
+
+    // save log
+    savelog (@$error);
+
+    return $result;
+  }
+  
+  return false;
 }
 
 // --------------------------------------- splitkeywords -------------------------------------------
@@ -819,9 +889,9 @@ function splitkeywords ($keywords, $charset="UTF-8")
     }
 
     if (is_array ($result_array) && sizeof ($result_array) > 0) return $result_array;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- copymetadata -----------------------------
@@ -917,7 +987,7 @@ function copymetadata ($file_source, $file_dest)
         if ($errorCode)
         {
           $errcode = "20241";
-          $error[] = $mgmt_config['today']."|hypercms_meta.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) failed in copy metadata to file: ".getobject ($file_dest);
+          $error[] = $mgmt_config['today']."|hypercms_meta.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) failed in copy metadata to file: ".getobject ($file_dest);
 
           // save log
           savelog (@$error);
@@ -929,7 +999,8 @@ function copymetadata ($file_source, $file_dest)
       }
     }
 	}
-  else return false;
+  
+  return false;
 }
 
 // ------------------------- extractmetadata -----------------------------
@@ -989,7 +1060,7 @@ function extractmetadata ($file)
         if ($errorCode)
         {
           $errcode = "20247";
-          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) '".$cmd."' failed for file: ".getobject ($file);
+          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) '".$cmd."' failed for file: ".getobject ($file);
         }
         elseif (is_array ($output))
         {
@@ -1030,15 +1101,12 @@ function extractmetadata ($file)
           }
 
           if (sizeof ($result) > 0) return $result;
-          else return false;
         }
-        else return false;
       }
     }
-
-    return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ------------------------- xmlobject2array -----------------------------
@@ -1566,7 +1634,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
             if ($errorCode)
             {
               $errcode = "20242";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject ($file);
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject ($file);
             }
           }
 
@@ -1584,7 +1652,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
               if ($errorCode)
               {
                 $errcode = "20243";
-                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject ($file);
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject ($file);
               }
             }
           }
@@ -2348,7 +2416,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
             if ($errorCode)
             {
               $errcode = "20242";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|exec of EXIFTOOL (code:$errorCode) failed for clearing IPTC of file: ".getobject ($file);
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) failed for clearing IPTC of file: ".getobject ($file);
             }
           }
         }
@@ -2403,7 +2471,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
       else
       {
         $errcode = "20244";
-        $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|injection of IPTC failed for file: ".getobject($file);
+        $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Injection of IPTC failed for file: ".getobject($file);
       }
     }
 
@@ -3075,13 +3143,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   // textnodes search index in database
                   $text_array[$text_id] = $temp_str;
                             
-                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id, true);
 
                   if ($containerdata_new == false)
                   {
                     $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id, true);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id, true);
                   }
 
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
@@ -3124,7 +3192,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
           // set GPS latitude and longitude in database
           if (!empty ($mgmt_config['gps_save']) && !empty ($exif_info['exif:GPS.latitude']) && is_numeric ($exif_info['exif:GPS.latitude']) && !empty ($exif_info['exif:GPS.longitude']) && is_numeric ($exif_info['exif:GPS.longitude']))
           {
-            $sql = "UPDATE container SET latitude=".floatval($exif_info['exif:GPS.latitude']).", longitude=".floatval($exif_info['exif:GPS.longitude'])." WHERE id=".intval($container_id);                
+            $sql = "UPDATE object SET latitude=".floatval($exif_info['exif:GPS.latitude']).", longitude=".floatval($exif_info['exif:GPS.longitude'])." WHERE id=".intval($container_id);                
             $result = rdbms_externalquery ($sql);
           }
 
@@ -3167,13 +3235,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 // textnodes search index in database
                 $text_array[$text_id] = $exif_info[$key];
 
-                $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id, true);
 
                 if ($containerdata_new == false)
                 {
                   $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
-                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id, true);
+                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id, true);
                 }
 
                 if ($containerdata_new != false) $containerdata = $containerdata_new;
@@ -3248,13 +3316,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 // textnodes search index in database
                 $text_array[$text_id] = $id3str;
                           
-                $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$id3str."]]>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$id3str."]]>", "<text_id>", $text_id, true);
 
                 if ($containerdata_new == false)
                 {
                   $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$id3str."]]>", "<text_id>", $text_id);
-                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$id3str."]]>", "<text_id>", $text_id, true);
+                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id, true);
                 }
 
                 if ($containerdata_new != false) $containerdata = $containerdata_new;
@@ -3380,13 +3448,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               // textnodes search index in database
               $text_array[$text_id] = $dcstr;
         
-              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
+              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id, true);
 
               if ($containerdata_new == false)
               {
                 $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id, true);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id, true);
               }
 
               if ($containerdata_new != false) $containerdata = $containerdata_new;
@@ -3528,13 +3596,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   // textnodes for search index in database
                   $text_array[$text_id] = $iptc_info[$key];
 
-                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$iptc_info[$key]."]]>", "<text_id>", $text_id);
+                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$iptc_info[$key]."]]>", "<text_id>", $text_id, true);
 
                   if ($containerdata_new == false)
                   {
                     $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$iptc_info[$key]."]]>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$iptc_info[$key]."]]>", "<text_id>", $text_id, true);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id, true);
                   }
 
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
@@ -3680,13 +3748,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   // textnodes search index in database
                   $text_array[$text_id] = $temp_str;
                             
-                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id, true);
 
                   if ($containerdata_new == false)
                   {
                     $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id, true);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id, true);
                   }
 
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
@@ -3768,13 +3836,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               // textnodes search index in database
               $text_array[$text_id] = $faces_json;
                         
-              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
+              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id, true);
 
               if ($containerdata_new == false)
               {
                 $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id, true);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id, true);
               }
 
               if ($containerdata_new != false) $containerdata = $containerdata_new;
@@ -3832,13 +3900,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   // textnodes search index in database
                   $text_array[$text_id] = $temp_str;
                             
-                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id, true);
 
                   if ($containerdata_new == false)
                   {
                     $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
-                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id, true);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id, true);
                   }
 
                   if ($containerdata_new != false) $containerdata = $containerdata_new;
@@ -3913,13 +3981,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             // textnodes for search index in database
             $text_array[$text_id] = $quality;
 
-            $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $text_id);
+            $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $text_id, true);
 
             if ($containerdata_new == false)
             {
               $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-              $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $text_id);
-              $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+              $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $text_id, true);
+              $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id, true);
             }
 
             if ($containerdata_new != false) $containerdata = $containerdata_new;

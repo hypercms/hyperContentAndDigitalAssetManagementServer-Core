@@ -91,7 +91,7 @@ echo "<table class=\"hcmsTableStandard\" style=\"width:99%;\">
 // get connected objects
 $result_array = getconnectedobject ($container);
 
-if ($result_array != false && sizeof ($result_array) > 0)
+if (is_array ($result_array) && sizeof ($result_array) > 0)
 {
   $color = false;
   $found = false;
@@ -101,7 +101,7 @@ if ($result_array != false && sizeof ($result_array) > 0)
     // get object info
     $file_info = getfileinfo ($result['publication'], $result['object'], $result['category']);
     
-    if ($file_info != false)
+    if (valid_locationname ($result['location']) && valid_objectname ($result['object']) && is_file ($result['location'].$result['object']) && $file_info != false)
     {  
       $found = true;
     
@@ -159,7 +159,13 @@ if ($result_array != false && sizeof ($result_array) > 0)
           echo "<tr class=\"".$rowcolor."\"><td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."page_preview.php?site=".url_encode($result['publication'])."&ctrlreload=yes&cat=".url_encode($result['category'])."&location=".url_encode($result['convertedlocation'])."&page=".url_encode($result['object'])."', 'preview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$file_info['name']."</a></td><td style=\"white-space:nowrap;\">".$location_obj_short."</td><td>".$result['publication']."</td></tr>\n";
         }
       }
-    }    
+    }
+    // connected object does not exist
+    else
+    {
+      $errcode = "20101";
+      $error[] = $mgmt_config['today']."|page_info_container.php|error|".$errcode."|The connected object does not exist '".$result['convertedlocation'].$result['object']."'";    
+    }  
   }
 }
 else
@@ -169,7 +175,7 @@ openBrWindow('popup_log.php?description=<p class=hcmsHeadline>".getescapedtext (
 </script>\n";
   
   $errcode = "20102";
-  $error[] = $mgmt_config['today']."|page_info_container.php|error|".$errcode."|error in getconnectedobject for publication '".$site."'";        
+  $error[] = $mgmt_config['today']."|page_info_container.php|error|".$errcode."|Error in getconnectedobject for publication '".$site."'";        
 }  
 
 // if no items were found  

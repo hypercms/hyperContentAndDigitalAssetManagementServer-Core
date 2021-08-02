@@ -177,7 +177,7 @@ function checkForm ()
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$hcms_lang['group-management'][$lang]); ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$hcms_lang['group-management'][$lang]); ?></span>
   <?php } ?>
 </div>
 
@@ -236,8 +236,9 @@ function checkForm ()
   </div>
 </div>
 
+<!-- create group -->
 <div id="creategroupLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden">
-  <form name="group_create" action="control_group_menu.php" method="post">
+  <form name="group_create" action="control_group_menu.php" method="post" onsubmit="return checkForm();">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="action" value="group_create" />
     

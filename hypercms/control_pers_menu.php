@@ -112,7 +112,8 @@ function selectpers (selObj)
 
 function deletepers ()
 {
-  check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]); ?>"));
+  check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>\n<?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\n<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]); ?>"));
+
   if (check == true) document.forms['item_delete'].submit();
   return check;
 }
@@ -184,7 +185,7 @@ function checkForm_item_create ()
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$item_type); ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$item_type); ?></span>
   <?php } ?>
 </div>
 
@@ -266,8 +267,9 @@ function checkForm_item_create ()
   </div>
 </div>
 
+<!-- create personalization -->
 <div id="createpersLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden;">
-  <form name="item_create" action="" method="post">
+  <form name="item_create" action="" method="post" onsubmit="return checkForm_item_create();">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="action" value="item_create" />
     <input type="hidden" name="cat" value="<?php echo $cat; ?>" />

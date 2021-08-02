@@ -50,6 +50,11 @@ checkusersession ($user, false);
 <!-- face recognition -->
 <script defer src="javascript/facerecognition/face-api.min.js"></script>
 <script defer src="javascript/facerecognition/face-init.js"></script>
+<script>
+// reassign permissions for main.js and contextmenu.js
+hcms_permission['shortcuts'] = false;
+hcms_permission['minnavframe'] = false;
+</script>
 <?php } ?>
 
 <?php

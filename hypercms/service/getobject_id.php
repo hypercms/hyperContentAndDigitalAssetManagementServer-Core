@@ -32,7 +32,11 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $data = array('success' => false);
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 
 if (valid_locationname ($location) && valid_publicationname ($site) && ($cat == "page" || $cat == "comp"))
 {   

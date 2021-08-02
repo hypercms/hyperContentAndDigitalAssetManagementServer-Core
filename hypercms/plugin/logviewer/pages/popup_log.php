@@ -20,6 +20,13 @@ $description = getrequest_esc ("description");
 
 // ------------------------------ permission section --------------------------------
 
+// check plugin permissions
+if (!checkpluginpermission ($site, 'logviewer'))
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang], $lang);
+  exit;
+}
+
 // check session of user
 checkusersession ($user, false);
 

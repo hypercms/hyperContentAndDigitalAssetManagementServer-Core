@@ -35,27 +35,37 @@ if (!empty ($mediafile) && is_file ($mgmt_config['abs_path_temp'].getobject ($me
     $imageheight = $imagesize['height'];
 
     // reset screen dimension if necessary
-    if ($imagewidth + 80 < $screenwidth || $imageheight + 80 < $screenheight)
+    if (($imagewidth + 80) > $screenwidth || ($imageheight + 80) > $screenheight)
     {
-      $screenwidth = $imagewidth + 80;
-      $screenheight = $imageheight + 80;
+      $temp = mediasize2frame ($imagewidth, $imageheight, $screenwidth, $screenheight, true);
+      $screenwidth = $temp['width'];
+      $screenheight = $temp['height'];
+    }
+    else
+    {
+      $screenwidth = $imagewidth;
+      $screenheight = $imageheight;
     }
   }
 }
 
 // set default width and height
 if ($screenwidth < 1) $screenwidth = 800;
-$width = $screenwidth - 80;
-
 if ($screenheight < 1) $screenheight = 600;
+
+// set width and height for the view
+$width = $screenwidth - 80;
 $height = $screenheight - 80;
 
 // ------------------------------ permission section --------------------------------
 
 // check session of user
-//checkusersession ($user);
+checkusersession ($user);
   
 // --------------------------------- logic section ----------------------------------
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -99,5 +109,6 @@ $(function()
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

@@ -84,7 +84,6 @@ $media_dir = getmedialocation ($site, $media, "abs_path_media");
 $file_info = getfileinfo ($site, $media, "comp");
 $audio = false;
 
-
 // IMPORTANT: do not change the priority order!
 if ($media_dir != "")
 {

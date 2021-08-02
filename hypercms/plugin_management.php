@@ -34,21 +34,21 @@ checkusersession ($user);
 $show = "";
 
 // load plugin file
+$mgmt_plugin = array();
+
 if (is_file ($mgmt_config['abs_path_data']."config/plugin.global.php"))
 {
   require ($mgmt_config['abs_path_data']."config/plugin.global.php");
 }
-else $mgmt_plugin = array();
 
 // reparse plugins
 if ($action == "reparse" && checktoken ($token, $user))
 {
   $mgmt_plugin = plugin_parse ($mgmt_plugin);
-  plugin_saveconfig ($mgmt_plugin);
-  avoidfilecollision ("temp", true);
+  $plugin_save = plugin_saveconfig ($mgmt_plugin);
+  $plugin_save = plugin_saveconfig ($mgmt_plugin);
   
-  // reload
-  require ($mgmt_config['abs_path_data']."config/plugin.global.php");
+  if ($plugin_save == false) $show = getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang]);
 }
 // activate plugins
 elseif ($action == "change" && checktoken ($token, $user))
@@ -57,14 +57,13 @@ elseif ($action == "change" && checktoken ($token, $user))
 
   foreach ($mgmt_plugin as $key => &$data)
   {
-    $data['active'] = (is_array ($active) && array_key_exists ($key, $active) && $active[$key] == "1"); 
+    if (!empty ($active[$key])) $data['active'] = true;
+    else $data['active'] = false;
   }
 
-  plugin_saveconfig ($mgmt_plugin);
-  avoidfilecollision ("temp", true);
+  $plugin_save = plugin_saveconfig ($mgmt_plugin);
 
-  // reload
-  require ($mgmt_config['abs_path_data']."config/plugin.global.php");
+  if ($plugin_save == false) $show = getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang]);
 }
 ?>
 <!DOCTYPE html>
@@ -82,12 +81,14 @@ elseif ($action == "change" && checktoken ($token, $user))
 
   <!-- top bar -->
   <?php
+  // do not invert design theme icon
+  $hcms_themeinvertcolors = "";
   $help = showhelpbutton ("pluginguide", true, $lang, "");
 
   echo showtopbar ($hcms_lang['plugin-management'][$lang], $lang, "", "", $help);
   echo showmessage ($show, 500, 50, $lang, "position:fixed; left:10px; top:40px;");
   ?>
-    
+
   <!-- content -->
   <div style="width:100%; height:calc(100% - 42px); overflow:auto;">
     <div class="hcmsWorkplaceFrame">
@@ -146,6 +147,7 @@ elseif ($action == "change" && checktoken ($token, $user))
     </div>
   </div>
 
-  <?php includefooter(); ?>   
+  <?php includefooter(); ?>
+  
 </body>
 </html>

@@ -70,7 +70,8 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
       $queue_id = $queue['queue_id'];
       $queue_action = $queue['action'];
       $queue_user = $queue['user'];
-      $queue_date = date ("Y-m-d H:i", strtotime($queue['date']));
+      if (is_date ($queue['date'])) $queue_date = date ("Y-m-d H:i", strtotime($queue['date']));
+      else $queue_date = "";
 
       // object
       if ($queue['objectpath'] != "")

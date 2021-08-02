@@ -191,7 +191,7 @@ function submitTo (url, action, target, features, width, height)
     </tr>  
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['messages'][$lang]); ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($hcms_lang['messages'][$lang]); ?></span>
   <?php } ?>
 
 </div>

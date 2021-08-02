@@ -137,7 +137,7 @@ if ($pagestore != false)
 
       if (!empty ($mgmt_config['db_connect_rdbms']))
       {
-        $media_info = rdbms_getmedia ($container_id, true);
+        $media_info = rdbms_getmedia ($container_id);
         $date_modified = $media_info['date'];
         // don't use saved MD5 hash since it is not updated in order to support the search for duplicates
         // $fileMD5 = $media_info['md5_hash'];
@@ -176,19 +176,16 @@ if ($pagestore != false)
     {
       $filesize = filesize ($location.$page) / 1024;
     }
-   
-    if (!empty ($owner)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['owner'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$owner."</td></tr>\n";
-    if (!empty ($date_created)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['date-created'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".showdate ($date_created, "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>\n";
-    if (!empty ($date_modified)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['date-modified'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".showdate ($date_modified, "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>\n";
-    if (!empty ($date_published)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['published'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".showdate ($date_published, "Y-m-d H:i", $hcms_lang_date[$lang])."</td></tr>\n"; 
- 
+
     // if object will be deleted automatically
     $queue = rdbms_getqueueentries ("delete", "", "", "", $location_esc.$page);
-
-    if (is_array ($queue) && !empty ($queue[0]['date']))
-    {
-      echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['will-be-removed'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".substr ($queue[0]['date'], 0, -3)."</td></tr>\n";
-    }
+    if (is_array ($queue) && !empty ($queue[0]['date'])) $date_delete = $queue[0]['date'];
+   
+    echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['owner'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".(!empty ($owner) ? $owner : "")."</td></tr>\n";
+    echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['date-created'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".(!empty ($date_created) && is_date ($date_created) ? showdate ($date_created, "Y-m-d H:i", $hcms_lang_date[$lang]) : "")."</td></tr>\n";
+    echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['date-modified'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".(!empty ($date_modified) && is_date ($date_modified) ? showdate ($date_modified, "Y-m-d H:i", $hcms_lang_date[$lang]) : "")."</td></tr>\n";
+    echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['published'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".(!empty ($date_published) && is_date ($date_published) ? showdate ($date_published, "Y-m-d H:i", $hcms_lang_date[$lang]) : "")."</td></tr>\n"; 
+    echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['will-be-removed'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".(!empty ($date_delete) && is_date ($date_delete) ? showdate ($date_delete, "Y-m-d H:i", $hcms_lang_date[$lang]) : "")."</td></tr>\n";
     
     // container
     if (!empty ($contentfile))

@@ -268,7 +268,7 @@ function insertmediacat ()
     </tr>
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$hcms_lang['template-media'][$lang]); ?></span>
+  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo getescapedtext ($site." &gt; ".$hcms_lang['template-media'][$lang]); ?></span>
   <?php } ?>
 </div>
 
@@ -324,8 +324,9 @@ function insertmediacat ()
   </div>
 </div>
 
+<!-- create media category -->
 <div id="createmediacatLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:1; left:10px; top:10px; visibility:hidden;">
-<form name="mediacat_create" action="control_media_menu.php" method="post">
+<form name="mediacat_create" action="control_media_menu.php" method="post" onsubmit="return checkForm_mediacat_create();">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="mediacat_create" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
@@ -347,8 +348,9 @@ function insertmediacat ()
 </form>
 </div>
 
+<!-- rename media category -->
 <div id="renamemediacatLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:2; left:10px; top:10px; visibility:hidden;">
-<form name="mediacat_rename" action="control_media_menu.php" method="post">
+<form name="mediacat_rename" action="control_media_menu.php" method="post" onsubmit="return checkForm_mediacat_rename();">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="mediacat_rename" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
@@ -387,8 +389,9 @@ function insertmediacat ()
 </form>
 </div>
 
+<!-- delete media category -->
 <div id="deletemediacatLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:2; left:10px; top:10px; visibility:hidden;">
-<form name="mediacat_delete" action="control_media_menu.php" method="post">
+<form name="mediacat_delete" action="control_media_menu.php" method="post" onsubmit="return deletemediacat();">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="mediacat_delete" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
@@ -426,8 +429,9 @@ function insertmediacat ()
 </form>
 </div>
 
+<!-- upload into media category -->
 <div id="uploadmediaLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:3; left:10px; top:10px; visibility:hidden;">
-<form name="mediafile_upload" method="post" action="control_media_menu.php" enctype="multipart/form-data">
+<form name="mediafile_upload" method="post" action="control_media_menu.php" enctype="multipart/form-data" onsubmit="return checkForm_mediafile_upload();">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="mediafile_upload" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />

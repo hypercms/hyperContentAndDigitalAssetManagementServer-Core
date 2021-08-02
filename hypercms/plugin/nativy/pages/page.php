@@ -31,6 +31,13 @@ $token = getrequest ("token");
 
 // ------------------------------ permission section --------------------------------
 
+// check plugin permissions
+if (!checkpluginpermission ($site, 'nativy'))
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang], $lang);
+  exit;
+}
+
 // check session of user
 checkusersession ($user, false);
 
@@ -432,7 +439,7 @@ if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php"))
 }
 
 // =============== define company/billing information if undefined ===============
-if (!is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php") && checkrootpermission ('desktop'))
+if (!is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php"))
 {
 ?>
 <!DOCTYPE html>

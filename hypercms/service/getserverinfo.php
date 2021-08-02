@@ -23,6 +23,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
+
 $data = getserverload ();
 
 header ('Content-Type: application/json; charset=utf-8');

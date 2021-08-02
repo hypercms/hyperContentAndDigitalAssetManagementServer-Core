@@ -311,6 +311,16 @@ function closeselectors ()
     selector[i].style.visibility = 'hidden';
   }
 }
+
+function hcms_leftArrowEvent ()
+{
+  previousObject ('<?php echo $location_esc.$page; ?>');
+}
+
+function hcms_rightArrowEvent ()
+{
+  nextObject ('<?php echo $location_esc.$page; ?>');
+}
 </script>
 <style>
 hr
