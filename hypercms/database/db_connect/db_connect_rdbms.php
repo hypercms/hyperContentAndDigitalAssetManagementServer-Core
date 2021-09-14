@@ -1883,29 +1883,31 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       if (is_array ($sql_puffer) && sizeof ($sql_puffer) > 0) $sql_where['excludepath'] = '('.implode (" AND ", $sql_puffer).')';
     }
 
-    // add file name search if expression array is of size 1
+    // add file name search if expression array is of size 1 and is not a taxonomy, keyword or hierarchy path
     if (empty ($expression_filename) && is_array ($expression_array) && sizeof ($expression_array) == 1 && !empty ($expression_array[0]) && strpos ("_".$expression_array[0], "%taxonomy%/") < 1 && strpos ("_".$expression_array[0], "%keyword%/") < 1 && strpos ("_".$expression_array[0], "%hierarchy%/") < 1) 
     {
-      $expression_filename = $expression_array[0];
+      $expression_string = $expression_array[0];
     }
+    // use file name expression for search
+    else $expression_string = $expression_filename;
 
-    // query file name (transform special characters)
-    if (!empty ($expression_filename))
+    // prepare search expression (transform special characters)
+    if (!empty ($expression_string))
     {
       $temp_array = array();
       $sql_where['filename'] = "";
       
-      if (substr_count ($expression_filename, " AND ") > 0)
+      if (substr_count ($expression_string, " AND ") > 0)
       {
-        $temp_array[' AND '] = explode (" AND ", $expression_filename);
+        $temp_array[' AND '] = explode (" AND ", $expression_string);
       }
       
-      if (substr_count ($expression_filename, " OR ") > 0)
+      if (substr_count ($expression_string, " OR ") > 0)
       {
-        $temp_array[' OR '] = explode (" OR ", $expression_filename);
+        $temp_array[' OR '] = explode (" OR ", $expression_string);
       }
       
-      if (empty ($temp_array[' AND ']) && empty ($temp_array[' OR '])) $temp_array['none'][0] = $expression_filename;
+      if (empty ($temp_array[' AND ']) && empty ($temp_array[' OR '])) $temp_array['none'][0] = $expression_string;
       
       foreach ($temp_array as $temp_operator => $temp2_array)
       {
@@ -1952,9 +1954,13 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           // operator
           if ($temp_operator != "none" && $sql_where['filename'] != "") $sql_where['filename'] .= $temp_operator;
           
-          // must be case insensitive
-          if (!empty ($temp_expression_2)) $sql_where['filename'] .= '(obj.objectpath LIKE "'.$temp_expression.'" OR obj.objectpath LIKE "'.$temp_expression_2.'")';
-          else $sql_where['filename'] .= 'obj.objectpath LIKE "'.$temp_expression.'"';
+          // search in location and object name
+          if ($expression_filename != "*Null*")
+          {
+            // must be case insensitive
+            if (!empty ($temp_expression_2)) $sql_where['filename'] .= '(obj.objectpath LIKE "'.$temp_expression.'" OR obj.objectpath LIKE "'.$temp_expression_2.'")';
+            else $sql_where['filename'] .= 'obj.objectpath LIKE "'.$temp_expression.'"';
+          }
         }
       }
     }   
@@ -2932,7 +2938,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 // description:
 // Queries all objects of a user.
 
-function rdbms_searchuser ($site, $user, $maxhits=300, $return_text_id=array(), $count=false)
+function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=array(), $count=false)
 {
   global $mgmt_config;
 
@@ -3001,7 +3007,8 @@ function rdbms_searchuser ($site, $user, $maxhits=300, $return_text_id=array(), 
 
     $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
-    if ($site != "" && $site != "*Null*") $sql .= 'WHERE obj.user="'.$user.'" AND (obj.objectpath LIKE BINARY "*page*/'.$site.'/%" OR obj.objectpath LIKE BINARY "*comp*/'.$site.'/%") ';
+    $sql .= 'WHERE obj.objectpath!="" AND obj.user="'.$user.'" ';
+    if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE BINARY "*page*/'.$site.'/%" OR obj.objectpath LIKE BINARY "*comp*/'.$site.'/%") ';
     $sql .= 'ORDER BY obj.date DESC ';
     if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
 
@@ -3036,7 +3043,8 @@ function rdbms_searchuser ($site, $user, $maxhits=300, $return_text_id=array(), 
     {
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as rowcount FROM object AS obj ';
       if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
-      if ($site != "" && $site != "*Null*") $sql .= ' WHERE obj.user="'.$user.'" AND (obj.objectpath LIKE BINARY "*page*/'.$site.'/%" OR obj.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
+      $sql .= 'WHERE obj.objectpath!="" AND obj.user="'.$user.'" ';
+      if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE BINARY "*page*/'.$site.'/%" OR obj.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
 
       $errcode = "50021";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -4278,7 +4286,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             $new_abs = $object_abs.".recycle";
 
             // remove previously deleted objects
-            if (is_dir ($new_abs)) processobjects ("delete", $site, getlocation ($new_abs), getobject ($new_abs), "0", $user);
+            if (is_dir ($new_abs)) $deletebin = processobjects ("delete", $site, getlocation ($new_abs), getobject ($new_abs), false, $user);
 
             // if the same folder does not exist
             if (is_dir ($object_abs) && !is_dir ($new_abs))

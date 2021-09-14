@@ -48,7 +48,7 @@ $error = array();
 $fileinfo = getfileinfo ($site, $page, $cat);
 $pagename = $fileinfo['name'];
 
-// check and correct file
+// check and correct file name
 $page = correctfile ($location, $page, $user);
   
 // load page and read actual file info (to get associated template and content)
@@ -97,7 +97,10 @@ if (is_array ($result_array) && sizeof ($result_array) > 0)
   $found = false;
     
   foreach ($result_array as $result)
-  { 
+  {
+    // correct file name
+    $result['object'] = correctfile ($result['location'], $result['object'], $user);
+
     // get object info
     $file_info = getfileinfo ($result['publication'], $result['object'], $result['category']);
     

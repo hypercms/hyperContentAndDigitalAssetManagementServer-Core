@@ -521,7 +521,7 @@ function showmessage ($show, $width="580px", $height="80px", $lang="en", $style=
     <table style=\"table-layout:fixed; width:100% !important; min-height:calc(".$height." -  10px); padding:0; margin:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
         <td style=\"text-align:left; vertical-align:top; padding:0;\">
-          <div id=\"message_text\" style=\"overflow:hidden;\">".$show."</div>
+          <div id=\"message_text\" style=\"display:block; width:100%; height:".(intval ($height) - 10)."px; overflow:auto;\">".$show."</div>
         </td>
         <td style=\"width:36px; text-align:right; vertical-align:top; padding:0;\">
           <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"hcms_switchFormLayer('".$id."');\" />
@@ -2438,7 +2438,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if (!empty ($video_file)) $preview_video = createviewlink ($site, $video_file, $video_file, true);
 
         // style for 360 view
-        $width_diff = 500 - intval($mediawidth);
+        $width_diff = 500 - intval ($mediawidth);
         if ($width_diff <= 0) $width_diff = 0;
 
         if (is_facerecognition ("sys") && $viewtype == "preview") $style360 = "left:0px; top:0px; width:".intval($mediawidth + $width_diff + 4)."px; height:".intval($mediaheight)."px;";
@@ -4758,6 +4758,9 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
   // default size
   if (intval ($width) < 0) $width = 854;
   if (intval ($height) < 0) $height = 480;
+
+  // min video width in pixel for the display of the gallery
+  $gallery_min_width = 420;
   
   // link to flash player (fallback player)
   $flashplayer = $mgmt_config['url_path_cms']."javascript/video/jarisplayer.swf";
@@ -4906,12 +4909,12 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
       }
     }
 
-    // video overlay for gallery (requires controls to be)
+    // video overlay for gallery (requires controls and a min width)
     $overlay_height = 144;
     $overlay = "";
     $thumb_items = array();
 
-    if (!empty ($controls) && is_file ($media_dir.$site."/".$container_id."/faces.json"))
+    if (!empty ($controls) && intval ($width) >= $gallery_min_width && is_file ($media_dir.$site."/".$container_id."/faces.json"))
     {
       // load JSON file with face definitions
       $faces_json = loadfile ($media_dir.$site."/".$container_id."/", "faces.json");

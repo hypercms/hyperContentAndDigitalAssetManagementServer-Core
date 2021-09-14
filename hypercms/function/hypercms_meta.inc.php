@@ -977,7 +977,8 @@ function copymetadata ($file_source, $file_dest)
         // copy meta data without orientation since the image will be autorotated by function createmedia
         $cmd = $executable." -overwrite_original -TagsFromFile \"".shellcmd_encode ($file_source)."\" \"-all:all>all:all\" --Orientation --Rotation --ImageWidth --ImageHeight ".$exif_widthheight." \"".shellcmd_encode ($file_dest)."\"";
 
-        @exec ($cmd, $output, $errorCode);
+        // execute and redirect stderr (2) to stdout (1)
+        @exec ($cmdv." 2>&1", $output, $errorCode);
 
         // delete temp files
         if (!empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty($temp_source['tempfile'])) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
@@ -987,7 +988,7 @@ function copymetadata ($file_source, $file_dest)
         if ($errorCode)
         {
           $errcode = "20241";
-          $error[] = $mgmt_config['today']."|hypercms_meta.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) failed in copy metadata to file: ".getobject ($file_dest);
+          $error[] = $mgmt_config['today']."|hypercms_meta.php|error|".$errcode."|Execution of EXIFTOOL (code:".$errorCode.", command:".$cmd.") failed in copy metadata to file '".getobject ($file_dest)."' \t".implode ("\t", $output);
 
           // save log
           savelog (@$error);
@@ -1051,7 +1052,9 @@ function extractmetadata ($file)
 
         // get image information using EXIFTOOL
         $cmd = $executable." -G \"".shellcmd_encode ($file)."\"";
-        @exec ($cmd, $output, $errorCode);
+
+        // execute and redirect stderr (2) to stdout (1)
+        @exec ($cmd." 2>&1", $output, $errorCode);
 
         // delete temp file
         if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
@@ -1060,7 +1063,7 @@ function extractmetadata ($file)
         if ($errorCode)
         {
           $errcode = "20247";
-          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) '".$cmd."' failed for file: ".getobject ($file);
+          $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:".$errorCode.", command:".$cmd.") failed for file '".getobject ($file)."' \t".implode ("\t", $output);
         }
         elseif (is_array ($output))
         {
@@ -1419,7 +1422,7 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
         	if (!empty ($tagwriter->warnings))
           {
             $errcode = "20280";
-            $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|warning|".$errcode."|There were warnings when writing ID3 tags to file: ".getobject($file)."<br />".implode("<br />", $tagwriter->warnings);
+            $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|warning|".$errcode."|There were warnings when writing ID3 tags to file: ".getobject($file)."\t".implode("\t", $tagwriter->warnings);
         	}
 
           // save media stats and move temp file
@@ -1628,13 +1631,15 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
           if ($keep_data == false || $keep_data == 0)
           {
             $cmd = $executable." -overwrite_original -r -XMP-crss:all= \"".shellcmd_encode ($file)."\"";
-            @exec ($cmd, $output, $errorCode);
+
+            // execute and redirect stderr (2) to stdout (1)
+            @exec ($cmd." 2>&1", $output, $errorCode);
 
             // on error
             if ($errorCode)
             {
               $errcode = "20242";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject ($file);
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:".$errorCode.", command:".$cmd.") failed for XMP injection into file '".getobject ($file)."' \t".implode ("\t", $output);
             }
           }
 
@@ -1646,13 +1651,15 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
             if ($tag != "" && ($namespace == "dc" || $namespace == "photoshop"))
             {
               $cmd = $executable." -overwrite_original -xmp:".$tag."=\"".shellcmd_encode (html_decode ($value, "UTF-8"))."\" \"".shellcmd_encode ($file)."\"";
-              @exec ($cmd, $output, $errorCode);
+
+              // execute and redirect stderr (2) to stdout (1)
+              @exec ($cmd." 2>&1", $output, $errorCode);
 
               // on error
               if ($errorCode)
               {
                 $errcode = "20243";
-                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject ($file);
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:".$errorCode.", command:".$cmd.") failed for XMP injection into file '".getobject ($file)."' \t".implode ("\t", $output);
               }
             }
           }
@@ -2410,13 +2417,15 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
           {
             // remove all IPTC tags from file
             $cmd = $executable." -overwrite_original -r -IPTC:all= \"".shellcmd_encode ($file)."\"";
-            @exec ($cmd, $output, $errorCode);
+
+            // execute and redirect stderr (2) to stdout (1)
+            @exec ($cmd." 2>&1", $output, $errorCode);
 
             // on error
             if ($errorCode)
             {
               $errcode = "20242";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) failed for clearing IPTC of file: ".getobject ($file);
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of EXIFTOOL (code:".$errorCode.", command:".$cmd.") failed clearing IPTC of file '".getobject ($file)."' \t".implode ("\t", $output);
             }
           }
         }

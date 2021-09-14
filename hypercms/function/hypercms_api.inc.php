@@ -177,7 +177,7 @@ if (defined ("SESSION") && constant ("SESSION") == "create" && is_file ($mgmt_co
   require_once ($mgmt_config['abs_path_cms']."include/session.inc.php");
 
   // if instances are used, load the main configuration file of the given instance
-  if (!empty ($mgmt_config['instances']) && !empty ($instance) && valid_publicationname ($instance) && is_file ($mgmt_config['instances'].$instance.".inc.php"))
+  if (!empty ($mgmt_config['instances']) && !empty ($instance) && valid_objectname ($instance) && is_file ($mgmt_config['instances'].$instance.".inc.php"))
   {
     // in case a distributed system is used
     require_once ($mgmt_config['instances'].$instance.".inc.php");

@@ -63,6 +63,10 @@ if (checktoken ($token, $user)) loadbalancer ("uploadfile");
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
+$error = array();
+$result = array();
+
 // convert location
 $location = deconvertpath ($location, "file");
 $location_esc = convertpath ($site, $location, $cat);
@@ -125,7 +129,7 @@ if ($token != "" && checktoken ($token, $user))
     }
   }
   
-  // make new entry in queue to delete object
+  // make new entry in queue in order to delete object
   if (is_date ($deletedate, "Y-m-d H:i") && !empty ($result['object']))
   {
     createqueueentry ("delete", $location_esc.$result['object'], $deletedate, 0, "", $user);
@@ -134,7 +138,12 @@ if ($token != "" && checktoken ($token, $user))
 // invalid token
 else
 {
-  $header = "HTTP/1.1 500 Internal Server Error";
+  $errcode = "20101";
+  $error[] = $mgmt_config['today']."|uploadfile.php|error|".$errcode."|The security token provided by user '".$user."' it not valid: ".$token;
+
+  savelog (@$error);
+
+  $result['header'] = "HTTP/1.1 500 Internal Server Error";
   $result['message'] = "Invalid token";
 }
 

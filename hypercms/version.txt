@@ -4813,7 +4813,7 @@ Release 02/2021
 - Modifications in PHPMailer class.pop3.php and class.smtp.php in order to migrate while each to foreach
 - Design modifications in explorer_objectlist, log_objectlist, message_objectlist, queue_objectlist, search_objectlist, and user_objectlist
 - Implementation of face recognition based on tensorflow.js
-- Implementation of service users that do not exist like standard user accounts. These service users are only used for services (non-blocking face recognition service) and can be identified by their unique user name "sys:service-name:16-digit-servicehash" that is registered in the session.
+- Implementation of service-users that do not exist like standard user accounts. These service users are only used for services (non-blocking face recognition service) and can be identified by their unique user name "sys:service-name:16-digit-servicehash" that is registered in the session.
 - Implementation of the new JS function hcms_remoteFileExists in main.js
 - Implementation of resizable (manual) face markers besides the markers provided by the face detection 
 - Implementation of the new main configuration parameter $mgmt_config['facerecognition'] for the new face recognition feature
@@ -5307,7 +5307,6 @@ Release 08/2021
 - Modifications in createtables.sql in order to set the max. characters of attribute objectpath to 16,000 of table object
 - Modifications in createtables.sql in order to set the max. characters of attribute to_user to 500 of table recipient
 - Modification in user_sendlink in order to restricte the max. length of the input field for recipients to 500 digits
-- Modification in function createfolder and createobject in Main API in order to verify an restrict the max. characters for the location path (due to the database attribute objectpath)
 - Changed all case-sensitive SQL queries from utf8_bin collation to binary comparison
 - Implementation of the new function update_database_v1000 in the Update API in order to merge the attributes and contents of table container and media with table object
 - Modifications in function rdbms_getmedia in DB Connect in order to remove the extended input parameter
@@ -5318,11 +5317,15 @@ Release 08/2021
 - Modifications in function contentcount in Main API in order to remove table container and media from all queries
 - Modifications in function zipfiles in Media API in order to remove table container and media from all queries
 - Modifications in function setmetadata in Meta API in order to remove table container and media from all queries
+- Modifications in the face management plugin in order to remove table container and media from all queries
+- Modifications in the recognizefaces service in order to remove table container and media from all queries
 - Modifications in the savecontent service in order to remove table container and media from all queries
+- Modifications in the Report Management module in order to remove table container and media from all queries
 - Modifications in function rdbms_createobject in DB Connect in order to support the copy of media data for connected copies and the new input parameter for the copy of the media data
 - Modifications in function manipulateobject in Main API in order to support the new input parameter of function rdbms_createobject for the connected copy
 - Modifications in function rdbms_getobject_id in DB Connect in order to accept the *page* and *comp* path variables besides %page% and %comp%
 - Modifications in setting $mgmt_config['report_tables'] in the main configuration in order to exclude table container and media from the Report Management module
+- Modifications in the Report Management module in order to display the different foreign keys of the tables in different colors
 - Modifications in the simplestats plugin in order to remove table container and media from all queries
 - Design modification in user_sendlink
 - Implementation of the toolbar customization in control_objectlist_menu
@@ -5344,6 +5347,7 @@ Release 08/2021
 - Implementation of the new XML node plugins in user groups (xmlschema/usergroup.scheam.xml.php and xmlsubschema/usergroup.scheam.xml.php)
 - Modifications in group_edit_form and group_edit_script in order to support access permissions for plugins
 - Modifications in function editgroup in Main API in order to support plugins and the new input parameter for plugins
+- Modifications in function group_edit in the SOAP API in order to set the new input parameter for the plugins
 - Design modifications in group_edit_form and implementation of labels for the checkboxes
 - Modifications in function userlogin in Security API in order to support the new plugin access permissions
 - Modifications in function registeruser in Security API in order to support the new plugin access permissions
@@ -5383,6 +5387,7 @@ Release 08/2021
 - Modifications in function indexcontent in Media API in order to save cleaned text in the XML Container
 - Modifications in function indexcontent in Media API in order to compare encoding for MS Office files and convert the content to UTF-8 if required
 - Implementation of the new main configuration setting $mgmt_config['webdav_lifetime'] in order to define the WebDAV session lifetime
+- Modifications in the Workplace Integration in order to support the new main configuration setting $mgmt_config['webdav_lifetime']
 - Modifications in function rdbms_searchcontent in DB Connect in order to exclude search expressions that are longer than 800 digits and numbers and to replace | with space
 - Modifications in function getsearchhistory in Get API in order to support the new clean input parameter for cleaning the search log
 - Modifications in explorer in order to support the new input parameter of function getsearchhistory
@@ -5394,6 +5399,7 @@ Release 08/2021
 - Modifications in various functions in Main API in order to apply the new input parameter of function getcontent and setcontent
 - Modifications in various functions in Set API in order to apply the new input parameter of function getcontent and setcontent
 - Modifications in various functions in UI API in order to apply the new input parameter of function getcontent and setcontent
+- Modifications in various functions in Import/Export API in order to apply the new input parameter of function getcontent and setcontent
 - Modifications in various functions in template engine in order to apply the new input parameter of function getcontent and setcontent
 - Modifications in various functions in event system in order to apply the new input parameter of function getcontent and setcontent
 - Modifications in page_multiedit, text_edit_format, and text_edit_signature in order to apply the new input parameter of function getcontent and setcontent
@@ -5402,7 +5408,7 @@ Release 08/2021
 - Implementation of the new function escape_xmltags in XML API in order to replace XML tag names used in the XML schema of containers and templates (this function is however not used since the contents are escaped)
 - Implementation of the new local JS function initializeSearch in explorer in order to initialize the search form and the search parameters
 - Modifications in explorer in order to uncheck all file types in the search form by default
-- Modifications in local JS function startSearch in explorer in order to verify if at least one file-type is checked and to display a message if no file-type hs been selected
+- Modifications in local JS function startSearch in explorer in order to verify if at least one file-type is checked and to display a message if no file-type has been selected
 - Modifications in explorer in order to implement labels for the color checkboxes
 - Design modifications in the search field of the Mobile Edition (frameset_mobile)
 - Modifications in template engine in order to apply function scriptcode_encode on text content
@@ -5416,6 +5422,27 @@ Release 08/2021
 - Implementation of the support of the command key in main.js and contextmenu.js in order to support keyboard shortcuts for MacOS
 - Implementation of the support of the MacOS Delete and Backspace key in contextmenu.js in order to support keyboard shortcuts for MacOS
 - Moved JS function hcms_keyPressed from contextmenu.js to main.js
+- Modifications in function rdbms_getmediastat in DB Connect in order to replace LEFT by INNER JOIN for the query excluding the filesize attribute
+- Modifications in function createmedia in Media API in order to write and close the session before the media rendering and restart the session after the rendering for non-blocking media creation
+- Modifications in various interfaces of the system in order to write and close the session for improved loading times by using non-blocking execution
+- Modifications in function valid_locationname in Security API in order to verify and restrict the max. characters for the location path (due to the database attribute objectpath)
+- Minor modifications in function correctfile and renamefolder in Main API
+- Modifications in explorer_imageview in order to correct the size of the preview
+- Modifications in function createfilename in Main API in order to return "noname" as file name if the encoded file name is empty
+- Modifications in various functions in the Main API in order to call function createfilename before the verification of the object name
+- Modifications in Import/Export API in order to provide error messages from the used functions from Main API
+- Modifications in function update_software in Update API in order to provide additional log events
+- Modifications in function getconnectedobjects in Link API in order to use database with fallback to the XML container
+- Modifications in page_info_container in order to implement a new log event in case the connected object does not exist
+- Modifications in function publishobject and unpublishobject in Main API in order to exclude objects that are in the recycle bin (verify location path instead in order to include folders in the recycle bin)
+- Modifications in function createobject, createfolder, deletefolder, manipulateobject, renameobject, and renamefolder in Main API in order to replace the .recylce extension by _recylce since the .recycle extension is reserved for objects in the recylce bin
+- Modifications in function createobject, createfolder, renameobject, and renamefolder in Main API in order to remove verification of the .recycle substring in the folder or object name (since it will be replaced)
+- Modifications in function createmediaobject in Main API in order to exclude .recylce substring rename since it will be performed by function createobject
+- Modifications in function clonefolder and zipfiles in Media API in order to verify the .recycle extension instead of the search for the .recycle substring in the object path
+- Modifications in function createfilename in Main API in order to exclude objects in the recylce bin
+- Modifications in function createobject, manipulateobject, and renameobject in Main API in order to replace the _hcm identifier in file/object names
+- Modifications in function is_config, is_preview, and is_thumbnail in Main API in order to include underline for the _hcms identifier for media files
+- Implementation of the crontab file in the install directory
 - Changes in the text of most event log entries
 - Design modifications in all control menus
 - Redesign of the colorful design theme
@@ -5427,5 +5454,123 @@ Release 08/2021
 - Bug fix: The local JS function setSaveType of the template engine did not verify if the local JS function collectFaces and initFaceOnVideo is available (MS IE does not support the face recognition service and still called function collectFaces)
 - Bug fix: JS function createFaceOnImage in function showmedia in UI API has not been verified (MS IE does not support the face recognition service and still called function collectFaces)
 - Bug fix: The implementation of the folder button in the Mobile Edition was in the list view instead of the gallery view of folders in search_objectlist
-- Bug fix: The task management view selector of the toolbar did not use the proper inverse colors of the design theme 
+- Bug fix: The task management view selector of the toolbar did not use the proper inverse colors of the design theme
+- Bug fix: control_objectlist_menu used wrong JS function for the verification of the new object name (checkForm_page_rename)
+- Bug fix: control_objectlist_menu did not use the local JS function checkForm_zip for the verification of the ZIP file name if the return key has been used for the submit
+- Bug fix: control_group_menu did not use the local JS function checkForm for the verification of the group name if the return key has been used for the submit
+- Bug fix: control_media_menu did not use the local JS functions for the verification if the return key has been used for the submit
+- Bug fix: control_pers_menu did not use the local JS function checkForm_item_create for the verification of the personalization name if the return key has been used for the submit
+- Bug fix: control_portal_menu did not use the local JS function checkForm_tpl_create for the verification of the portal template name if the return key has been used for the submit
+- Bug fix: control_site_menu did not use the local JS function checkForm for the verification of the publication name if the return key has been used for the submit
+- Bug fix: control_template_menu did not use the local JS function checkForm_tpl_create for the verification of the template name if the return key has been used for the submit
+- Bug fix: The local JS function checkForm_import in control_template_menu did not focus on the file input field on error
+- Bug fix: control_user_menu did not use the local JS function checkForm for the verification of the user name if the return key has been used for the submit
+- Bug fix: control_workflow_menu did not use the local JS function checkForm_item_create for the verification of the workflow name if the return key has been used for the submit
+- Bug fix: instance_create did not use the local JS function createInstance for the verification of the instance form if the return key has been used for the submit
+- Bug fix: control_report_menu did not use the local JS function checkForm_item_create for the verification of the report name if the return key has been used for the submit
+- Bug fix: Recycled object references have not been removed from the XML content container. Modifications in function manipulateobject in Main API in order to remove the .recycle from the objectpath before replacing it in contentobjects node of the XML container for action "page_delete", "page_rename", and "page_paste"
+- Bug fix: search_objectlist used deprecated layer and iframe for the objectview which caused issues with user_sendlink
+- Bug fix: Function createmediaobject in Main API used to original file name for the queue instead of the one returned by function createobject
+- Bug fix: Function getobjectinfo in Get API accessed wrong variable for the connected objects
 
+Version 10.0.1
+Release 09/2021
+- Implementation of the group edit feature in user_edit in order to open and edit the selected group
+- Implementation of the disable attribute for link tags in the template engine in order to disable the links in the edit mode
+- Modifications in template_help in order to include the new disable link attribute
+- Modifications in function setcontent, seticontent, getcontent, and geticontent in XML API in order to encode and decode < and > but not &
+- Modifications in function setpagelink in Set API in order to exclude & from encoding of linkhref parameter
+- Modifications in function setmedia in Set API in order to exclude & from encoding of mediafile parameter
+- Modifications in template_source in order to exclude & from encoding
+- Modifications in function edittemplate in Main API in order to encode < and > and exclude &
+- Modifications in workflow_script_form in order to exclude & from encoding of the loaded workflow script content
+- Implementation of a new error log event in service uploadfile in case the provided security token of a user is not valid
+- Modifications in function checktoken in Security API in order to verify that the variable timetoken and token_user exists
+- Minor design modifications in user_sendlink
+- Modifications in user_sendlink in order to initialize the send mail date field and to automatically activate the send mail date checkbox if the datepicker is used
+- Modifications in control_objectlist_menu in order to enable the customization feature of the toolbar for the search
+- Modifications in function rdbms_searchcontent in DB Connect in order to support the *Null* value for the input parameter $expression_filename
+- Modifications in search_objectlist in order to support the *Null* value for the file name search expression
+- Modifications in search_objectlist in order to support the search category "text" for text-based search without including the location and object name in the search
+- Modifications in search form of explorer in order to support the search category "text" for text-based search without including the location and object name in the search
+- Minor modifications in the installation routine
+- Minor modifications in popup_status
+- Modifications in function link_db_insert in Link API in order to add new error events if the container exists already of the container could not be added to the link management database
+- Modifications in function createobject in Main API in order to revert modifications in workflow, link management database and content containers if the new object could not be saved in the file system
+- Modifications in various home boxes in order to verify that the user has been provided
+- Modifications in function ocr_extractcontent in Media API in order to log the tesseract error code
+- Removed the support of gunzip from the main configuration ($mgmt_uncompress['.gz']), installation routine, instance_create and function createinstance in Main API
+- Modifications in various functions in the Main API in order to include the output of the executed shell command in the error log entry
+- Modifications in various functions in the Media API in order to include the output of the executed shell command in the error log entry
+- Modifications in various functions in the Meta API in order to include the output of the executed shell command in the error log entry
+- Modifications in log_list in order to strip html tags from the description
+- Design modifications in frameset_main in order to remove the CSS class from the upload window maximize, minimize, and close button
+- Design modifications in popup_upload_html in order to avoid text-overflow with the window buttons in the top bar
+- Modifications in the log viewer plugin in order to update the functionality to the systems standards
+- Modifications in function ocr_extractcontent in Media API in order to use the option --psm instead of -psm
+- Modifications in function createmedia in Media API in order to use the FFmpeg encoder aac instead of the deprecated libfdk_aac audio codec
+- Modifications in function buildbarchart in template engine in order to allow up to 2 comma digits for the y-axis values
+- Modifications in popup_ftp in order to remove the protocol from the server name
+- Update of MiniPaint image editor to version 4.9.1 (dropped support of MS IE)
+- Modifications in MiniPaint bundle.js in order to modify the graphical user interface and the save features
+- Modifications in image_minipaint in order to support the new MiniPaint version 4.9.1
+- Modifications in image_minipaint in order to support the JSON image data provided by MiniPaint
+- Modifications in image_minipaint in order to support the TIFF image format
+- Modifications in service savemedia in order to support the JSON image data provided by MiniPaint
+- Modifications in service savecontent for savetype "imagerendering_so" in order to verify the browser version and force the use of the standard image editor instead of MiniPaint since the new version does not support MS IE
+- Modifications in service savecontent in order to exclude the MiniPaint image editor for mobile devices due to performance issues
+- Modifications in function deletemediafiles in Main API in order to include the JSON image editor file
+- Modifications in function uploadfile in Main API in order to remove the JSON image editor file
+- Added missing mime-type for BMP images to include/format_mime.inc.php
+- Modifications in function deletemediafiles in Main API in order to support a new input parameter for the JSON image editor file
+- Modifications in user_sendlink in order to suppress the autocomplete feature of browsers ignoring the autocomplete attribute
+- Modifications in user_sendlink in order to suppress the X icon in search fields
+- Design modifications in popup_ftp
+- Modifications of comments in the main configuration file in the installation directory
+- Modifications in the function createinstance in Main API in order to implement the settings for the executables
+- Modifications in the instance_create in the Connector module in order to add new fields for the executables and to verify mandatory inputs
+- Modifications in function showmessage in UI API in order to avoid overflow of the text
+- Modifications in function gettemplates in Get API in order to verify the inheritance setting of a publication
+- Modifications in explorer in order to verify that a location exists before calling scandir
+- Minor design modifications in Report Management and Workflow Management module
+- Implementation of the main configuration setting $mgmt_imagepreview['rawimage'] in order to support dcraw and ufraw for the support of RAW image formats
+- Modifications in function createmedia in Media API in order to evaluate dcraw and support RAW images using the package dcraw instead of ImageMagicks convert and package ufraw (since Debian 11 does not provide the package ufraw-patch)
+- Modifications in function indexcontent in Media API in order to support RAW images using the package dcraw instead of ImageMagicks convert and package ufraw (since Debian 11 does not provide the package ufraw-patch)
+- Update of the rich text editior to CKEditor version 4.16.2
+- Implementation of the new CKEditor plugin for the resizing of table columns
+- Removed deprecated WebSpellChecker plugin of CKEditor
+- Modifications in function getimagecolors in Get API in order to initialize the result array and return it
+- Modifications in explorer and the search home box in order to set the type of the search field to search and disable autocomplete
+- Modifications in the home boxes in order to set the width of the box for mobile devices to 320px and hide expressions in the home box title for mobile devices
+- Modifications in the home boxes in order to enable scrolling in the content of the home boxes on iOS devices
+- Modifications in the homebox template in order to set the width of a box for mobile devices to 320px
+- Modifications in service accessstats in order to set a new height for the chart
+- Modifications in all design themes (main.css) in order to add new styles for search input fields
+- Design modifications in the Import and Export Connector module 
+- Design modifications in the Report Management module
+- Modifications in function createmultiaccesslink in Main API in order to improve the information in the log event if the access link could not be created
+- Modifications in function showvideoplayer in UI API in order to display the thumbnail gallery only if the requested video width is at least 420px
+- Modifications in function getlocation and getobject in Get API in order to trim provided object path
+- Modifications in function manipulateallobjects in Main API in order to set maxitems to 40
+- Modifications in function manipulateallobjects in Main API in order to add a report to the result array and avoid breaking the process in case of an error except for cut & paste
+- Modifications in function getlocation and getobject in Get API in order to trim provided object path
+- Modifications in popup_status in order to display errors provided by function manipulateallobjects
+- Modifications in function copyfolders in Main API in order to support the new input parameter for not creating a copy of the folder if it exist already in the target location
+- Modifications in function manipulateobject in Main API in order to avoid creating a copy of the folder file
+- Updates in the Installation, Template Designers, and Users Guide
+- Updates in all language files
+- Bug fix: template_edit encoded & which could lead to an issue with &gt; and &lt;
+- Bug fix: Function checktoken in Security API did not extract the full security token if @ has been used in the user name
+- Bug fix: Local function generateTaxonomyTree in explorer did not verify if the taxonomy keyword exists
+- Bug fix: page_info_container did not correct the file name provided by function getconnectedobject
+- Bug fix: Set style to overflow:auto for NavContainer in order to fix display issue with mobile Safari
+- Bug fix: Modifications in function uploadfile in Main API in order to use deletemediafiles to delete all media derivates of the media object (has not been done if the versioning was disabled)
+- Bug fix: Function rdbms_searchuser in DB Connect did not query the user if the publication name has not been provided as input
+- Bug fix: user_sendlink did not verify that the input field with id 'email_ondate' exists when initializing the fields
+- Bug fix: Function createinstance in Main API used valid_publicationname instead of valid_objectname to verify the instance name
+- Bug fix: The API loader used valid_publicationname instead of valid_objectname to verify the instance name
+- Bug fix: instance_edit in the Connector module used publication specific character set instead of funtion getcodepage
+- Bug fix: The search home box did not close the form tag
+- Bug fix: Job minutely extracted wrong location if the queue object was a folder
+- Bug fix: Function deletefolder in Main API renamed .recycle extension if used in the folder name
+- Bug fix: Function manipulateobject in Main API did not correctly remove the recycle extension from the search in the content container node "contentobjects"

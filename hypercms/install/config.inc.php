@@ -269,7 +269,7 @@ $mgmt_config['wallpaper'] = "";
 // Show (true) or hide (false) information boxes to provide additional information to the user
 $mgmt_config['showinfobox'] = true;
 
-// Define home boxes to show for each user if no indiviual selection has been made (use ; as separator)
+// Define home boxes to show for each user if no individual selection has been made (use ; as separator)
 // Home boxes are located in directory hypercms/box/
 $mgmt_config['homeboxes'] = "search;news;tasks;recent_objects;up_and_downloads;recent_downloads;recent_uploads";
 
@@ -753,7 +753,6 @@ $mgmt_config['cleandomain'] = true;
 // Antiword - Word Parser http://www.winfield.demon.nl
 // XPDF - PDF Parser http://www.foolabs.com/xpdf
 // ZIP/UNZIP - ZIP Compression http://www.info-zip.org
-// GZIP/GUNZIP - GZIP Compression http://www.gzip.org
 // ImageMagick - Image Converter http://www.imagemagick.org
 // Ghost Script - PostScript language and PDF interpreter http://www.ghostscript.com
 // FFMPEG - Video/Audio Converter http://www.ffmpeg.org
@@ -779,13 +778,6 @@ $mgmt_parser['.doc'] = "%antiword%";
 // You need to install the Tesseract language pack in order to use the language.
 // Install tesseract-ocr-all for all languages, or install seperately, e.g. -deu, -eng, -fra, -ita, -ndl, -por, -spa, -vie.
 $mgmt_parser['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%tesseract%";
-
-// Define Uncompression (Extension: gz)
-// To uncompress files you have to define the path to the UNZIP executable.
-// It is recommended tu use GUNZIP (on Linux OS) to decompress files. GUNZIP can currently 
-// decompress files created by gzip, zip, compress, compress -H or pack.
-// The path to the executable is usually /usr/bin/gunzip.
-$mgmt_uncompress['.gz'] = "%gunzip%";
 
 // Define ZIP-Uncompression (Extension: zip)
 // If a ZIP-file has several members UNZIP should be used to uncompress the ZIP-file.
@@ -854,6 +846,11 @@ $mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
 // The GD Library only supports jpg, png and gif images as output, set value to "GD" to use it.
 // $mgmt_imagepreview['.gif.jpg.jpeg.png'] = "GD";
 
+// Use "dcraw" or use use "ufraw" to convert RAW images to JPEG images
+// Package dcraw replaces ufraw that is no longer maintained in newer Linux distributions
+// Please make sure that the package dcraw or ufraw is installed
+$mgmt_imagepreview['rawimage'] = "ufraw";
+
 // Define image preview using ImageMagick and GhostScript (thumbnail generation)
 // The path to the executable is usually /usr/bin/convert
 $mgmt_imagepreview['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
@@ -881,7 +878,7 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -q 95 -f jpg';
 // -an ... disable audio
 // -ar ... audio sampling frequency (default = 44100 Hz)
 // -b:a ... audio bitrate (default = 64k)
-// -c:a ... audio codec (e.g. libmp3lame, libfdk_aac, libvorbis)
+// -c:a ... audio codec (e.g. aac, libmp3lame, libvorbis)
 // Video Options:
 // -b:v ... video bitrate in bit/s (default = 200 kb/s)
 // -c:v ... video codec (e.g. libx264)
@@ -902,7 +899,7 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -q 95 -f jpg';
 $mgmt_mediapreview['.3g2.3gp.4xm.a64.aac.ac3.act.adf.adts.adx.aea.aiff.alaw.alsa.amr.anm.apc.ape.apr.asf.asf_stream.ass.au.audio.avi.avm2.avs.bethsoftvid.bfi.bin.bink.bit.bmv.c93.caf.cavsvideo.cdg.cdxl.crc.daud.dfa.dirac.dnxhd.dsicin.dts.dv.dv1394.dvd.dxa.dwd.ea.ea_cdata.eac3.f32be.f32le.f4v.f64be.f64le.fbdev.ffm.ffmetadata.film_cpk.filmstrip.flac.flic.flv.framecrc.framemd5.g722.g723_1.g729.gsm.gxf.h261.h263.h264.hls.ico.idcin.idf.iff.ilbc.image2.image2pipe.ingenient.ipmovie.ipod.ismv.iss.iv8.ivf.jack.jacosub.jv.la.latm.lavfi.libcdio.libdc1394.lmlm4.loas.lxf.m4a.m4b.m4p.m4r.m4v.matroska.md5.mgsts.microdvd.mid.mj2.mjpeg.mkv.mlp.mm.mmf.mov.mp2.mp3.mp4.mp4v.mpc.mpc8.mpeg.mpg.mpeg1video.mpeg2video.mpegts.mpegtsraw.mpegvideo.mpjpeg.msnwctcp.mts.mtv.mulaw.mvi.mxf.mxf_d10.mxg.nc.nsv.null.nut.nuv.oga.ogg.ogm.ogv.oma.oss.ots.pac.paf.pmp.psp.psxstr.pva.qcp.r3d.ra.rawvideo.rcv.realtext.rka.rl2.rm.roq.rpl.rso.rtp.rtsp.s16be.s16le.s24be.s24le.s32be.s32le.s8.sami.sap.sbg.sdl.sdp.segment.shn.siff.smjpeg.smk.smush.sol.sox.spdif.subviewer.svcd.swa.swf.thp.tiertexseq.tmv.truehd.tta.tty.txd.u16be.u16le.u24be.u24le.u32be.u32le.u8.vc1.vc1test.vcd.vmd.vob.voc.vox.vqf.w64.wav.wc3movie.webm.webvtt.wma.wmv.wsaud.wsvqa.wtv.wv.x11grab.xa.xbin.xmv.xwma.yop.yuv4mpegpipe'] = "%ffmpeg%";
 
 // If a video or audio file was uploaded, the system will try to create a thumbnail video/audio file for the preview
-$mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 854x480 -f mp4 -c:a libfdk_aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
+$mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 854x480 -f mp4 -c:a aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
 $mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k";
 
 // Auto rotate video if a rotation has been detected (true) or leave video in it's original state (false)
@@ -913,7 +910,7 @@ $mgmt_mediaoptions['autorotate-video'] = true;
 // Video formats:
 $mgmt_mediaoptions['.flv'] = "-b:v %videobitrate% -s:v %width%x%height% -f flv -c:a libmp3lame -b:a %audiobitrate% -ac 2 -ar 22050";
 $mgmt_mediaoptions['.mov'] = "-b:v %videobitrate% -s:v %width%x%height% -f mov";
-$mgmt_mediaoptions['.mp4'] = "-b:v %videobitrate% -s:v %width%x%height% -f mp4 -c:a libfdk_aac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+$mgmt_mediaoptions['.mp4'] = "-b:v %videobitrate% -s:v %width%x%height% -f mp4 -c:a aac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
 $mgmt_mediaoptions['.mpeg'] = "-b:v %videobitrate% -s:v %width%x%height% -f mpeg -c:a aac -b:a %audiobitrate% -ac 2";
 $mgmt_mediaoptions['.ogv'] = "-b:v %videobitrate% -s:v %width%x%height% -f ogg -c:a libvorbis -b:a %audiobitrate% -ac 2";
 $mgmt_mediaoptions['.webm'] = "-b:v %videobitrate% -s:v %width%x%height% -f webm -c:a libvorbis -b:a %audiobitrate% -ac 2";
@@ -999,22 +996,27 @@ $mgmt_config['restore_exported_media'] = true;
 // --------------------------------------- App Keys --------------------------------------------
 
 // YouTube integration (requires Connector module)
-// Please provide Google API credentials in order to upload videos to YouTube
+// Please provide the Google API credentials in order to upload videos to YouTube
+// Visit: https://developers.google.com/youtube/registering_an_application
 $mgmt_config['youtube_oauth2_client_id'] = "";
 $mgmt_config['youtube_oauth2_client_secret'] = "";
 $mgmt_config['youtube_appname'] = "";
 
 // DropBox integration
+// Please provide a valid Dropbox app-name and app-key
 // Keep in mind that the domain needs to be added to your Dropbox developer account in order to use the app-key
-// or you create your own Dropbox app-key and set it here
+// Visit: https://www.dropbox.com/developers/apps/create
 $mgmt_config['dropbox_appname'] = "";
 $mgmt_config['dropbox_appkey'] = "";
 
 // Google Maps integration
+// Provide a valid key for Google Maps
+// Visit: https://developers.google.com/maps/documentation/embed/get-api-key
 $mgmt_config['googlemaps_appkey'] = "";
 
 // Google Analytics integration
 // Provide a valid key in order to track the users behaviour with Google Analytics
+// Visit: https://support.google.com/analytics/answer/7476135
 $mgmt_config['googleanalytics_key'] = "";
 
 // --------------------------------- Authentication Connectivity -------------------------------------

@@ -47,8 +47,12 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 $add_onload = "";
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 
 // read actual file info (to get associated content)
 $pagestore = loadfile ($location, $page);

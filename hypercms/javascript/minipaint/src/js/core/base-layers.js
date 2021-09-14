@@ -3,11 +3,12 @@
  * author: Vilius L.
  */
 
+import app from './../app.js';
 import config from './../config.js';
 import Base_gui_class from './base-gui.js';
 import Base_selection_class from './base-selection.js';
-import Base_state_class from './base-state.js';
 import Image_trim_class from './../modules/image/trim.js';
+import View_ruler_class from './../modules/view/ruler.js';
 import zoomView from './../libs/zoomView.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
@@ -29,6 +30,7 @@ var instance = null;
  * - height_original (int)
  * - visible (bool)
  * - is_vector (bool)
+ * - hide_selection_if_active (bool)
  * - opacity (0-100)
  * - order (int)
  * - composition (string)
@@ -52,16 +54,17 @@ class Base_layers_class {
 		this.Base_gui = new Base_gui_class();
 		this.Helper = new Helper_class();
 		this.Image_trim = new Image_trim_class();
-		this.Base_state = new Base_state_class();
+		this.View_ruler = new View_ruler_class();
 
 		this.canvas = document.getElementById('canvas_minipaint');
 		this.ctx = document.getElementById('canvas_minipaint').getContext("2d");
 		this.ctx_preview = document.getElementById('canvas_preview').getContext("2d");
 		this.last_zoom = 1;
-		this.zoomView = zoomView;
 		this.auto_increment = 1;
 		this.stable_dimensions = [];
-		this.tempCanvas = document.createElement('canvas');
+		this.debug_rendering = false;
+		this.render_success = null;
+		this.disabled_filter_id = null;
 	}
 
 	/**
@@ -69,12 +72,15 @@ class Base_layers_class {
 	 */
 	init() {
 		this.init_zoom_lib();
-		this.insert({});
+
+		new app.Actions.Insert_layer_action({}).do();
 
 		var sel_config = {
 			enable_background: false,
 			enable_borders: true,
 			enable_controls: false,
+			enable_rotation: false,
+			enable_move: false,
 			data_function: function () {
 				return config.layer;
 			},
@@ -101,6 +107,7 @@ class Base_layers_class {
 
 	after_render() {
 		config.need_render = false;
+		config.need_render_changed_params = false;
 		this.ctx.restore();
 		zoomView.canvasDefault();
 	}
@@ -124,6 +131,11 @@ class Base_layers_class {
 		}
 
 		if (config.need_render == true) {
+			this.render_success = null;
+
+			if(this.debug_rendering === true){
+				console.log('Rendering...');
+			}
 
 			if (this.last_zoom != config.ZOOM) {
 				//change zoom
@@ -131,7 +143,7 @@ class Base_layers_class {
 					this.Base_gui.GUI_preview.zoom_data.x,
 					this.Base_gui.GUI_preview.zoom_data.y,
 					config.ZOOM / this.last_zoom
-					);
+				);
 			}
 			else if (this.Base_gui.GUI_preview.zoom_data.move_pos != null) {
 				//move visible window
@@ -161,8 +173,14 @@ class Base_layers_class {
 			//grid
 			this.Base_gui.draw_grid(this.ctx);
 
+			//guides
+			this.Base_gui.draw_guides(this.ctx);
+
 			//render selected object controls
 			this.Base_selection.draw_selection();
+
+			//active tool overlay
+			this.render_overlay();
 
 			//render preview
 			this.render_preview(layers_sorted);
@@ -172,11 +190,25 @@ class Base_layers_class {
 			this.last_zoom = config.ZOOM;
 
 			this.Base_gui.GUI_details.render_details();
+			this.View_ruler.render_ruler();
+
+			if(this.render_success === false){
+				alertify.error('Rendered with errors.');
+			}
 		}
 
 		requestAnimationFrame(function () {
 			_this.render(force);
 		});
+	}
+
+	render_overlay(){
+		var render_class = config.TOOL.name;
+		var render_function = 'render_overlay';
+
+		if(typeof this.Base_gui.GUI_tools.tools_modules[render_class].object[render_function] != "undefined") {
+			this.Base_gui.GUI_tools.tools_modules[render_class].object[render_function](this.ctx);
+		}
 	}
 
 	render_preview(layers) {
@@ -212,35 +244,51 @@ class Base_layers_class {
 	}
 
 	/**
-	 * export current 1ayers to given canvas
+	 * export current layers to given canvas
 	 *
 	 * @param {canvas.context} ctx
 	 * @param {object} object
+	 * @param {boolean} is_preview
 	 */
-	render_object(ctx, object) {
+	render_object(ctx, object, is_preview) {
 		if (object.visible == false || object.type == null)
 			return;
 
-		//apply filters
-		var filter_code = '';
+		//apply pre-filters
 		for (var i in object.filters) {
 			var filter = object.filters[i];
+			if(filter.id == this.disabled_filter_id){
+				continue;
+			}
 
-			if (filter_code != '')
-				filter_code += ' ';
-			filter_code += filter.name + "(" + filter.params.value + ")";
+			filter.name = filter.name.replace('drop-shadow', 'shadow');
+
+			//find filter
+			var found = false;
+			for (var i in this.Base_gui.modules) {
+				if (i.indexOf("effects") == -1 || i.indexOf("abstract") > -1)
+					continue;
+
+				var filter_class = this.Base_gui.modules[i];
+				var module_name = i.split("/").pop();
+				if(module_name == filter.name){
+					//found it
+					found = true;
+					filter_class.render_pre(ctx, filter, object);
+				}
+			}
+			if(found == false){
+				this.render_success = false;
+				console.log('Error: can not find filter: ' + filter.name);
+			}
 		}
-		if (filter_code != '')
-			ctx.filter = filter_code;
-		else
-			ctx.filter = 'none';
 
 		//example with canvas object - other types should overwrite this method
 		if (object.type == 'image') {
 			//image - default behavior
 			var rotateSupport = true;
 			if (rotateSupport == false) {
-				if (object.link_canvas != undefined && object.link_canvas != null) {
+				if (object.link_canvas != null) {
 					//we have draft canvas - use it
 					ctx.drawImage(object.link_canvas, object.x, object.y, object.width, object.height);
 				}
@@ -253,7 +301,7 @@ class Base_layers_class {
 
 				ctx.translate(object.x + object.width / 2, object.y + object.height / 2);
 				ctx.rotate(object.rotate * Math.PI / 180);
-				if (object.link_canvas != undefined && object.link_canvas != null) {
+				if (object.link_canvas != null) {
 					//we have draft canvas - use it
 					ctx.drawImage(object.link_canvas, -object.width / 2, -object.height / 2,
 						object.width, object.height);
@@ -271,9 +319,42 @@ class Base_layers_class {
 			var render_class = object.render_function[0];
 			var render_function = object.render_function[1];
 
-			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](ctx, object);
+			if(typeof this.Base_gui.GUI_tools.tools_modules[render_class] != "undefined") {
+				this.Base_gui.GUI_tools.tools_modules[render_class].object[render_function](ctx, object, is_preview);
+			}
+			else{
+				this.render_success = false;
+				console.log('Error: unknown layer type: ' + object.type);
+			}
 		}
-		ctx.filter = 'none';
+
+		//apply post-filters
+		for (var i in object.filters) {
+			var filter = object.filters[i];
+			if(filter.id == this.disabled_filter_id){
+				continue;
+			}
+			filter.name = filter.name.replace('drop-shadow', 'shadow');
+
+			//find filter
+			var found = false;
+			for (var i in this.Base_gui.modules) {
+				if (i.indexOf("effects") == -1 || i.indexOf("abstract") > -1)
+					continue;
+
+				var filter_class = this.Base_gui.modules[i];
+				var module_name = i.split("/").pop();
+				if(module_name == filter.name){
+					//found it
+					found = true;
+					filter_class.render_post(ctx, filter, object);
+				}
+			}
+			if(found == false){
+				this.render_success = false;
+				console.log('Error: can not find filter: ' + filter.name);
+			}
+		}
 	}
 
 	/**
@@ -283,146 +364,9 @@ class Base_layers_class {
 	 * @param {boolean} can_automate
 	 */
 	async insert(settings, can_automate = true) {
-		var _this = this;
-
-		return new Promise(function(resolve, reject) {
-			var resolvable = false;
-			var need_autoresize = false;
-
-			//default data
-			var layer = {
-				id: _this.auto_increment,
-				parent_id: 0,
-				name: _this.Helper.ucfirst(config.TOOL.name) + ' #' + _this.auto_increment,
-				type: null,
-				link: null,
-				x: 0,
-				y: 0,
-				width: 0,
-				width_original: null,
-				height: 0,
-				height_original: null,
-				visible: true,
-				is_vector: false,
-				opacity: 100,
-				order: _this.auto_increment,
-				composition: 'source-over',
-				rotate: 0,
-				data: null,
-				params: {},
-				status: null,
-				color: config.COLOR,
-				filters: [],
-				render_function: null,
-			};
-
-			//build data
-			for (var i in settings) {
-				if (typeof layer[i] == "undefined") {
-					alertify.error('Error: wrong key: ' + i);
-					continue;
-				}
-				layer[i] = settings[i];
-			}
-
-			//prepare image
-			if (layer.type == 'image') {
-				
-				if(layer.name.toLowerCase().indexOf('.svg') == layer.name.length - 4){
-					//we have svg
-					layer.is_vector = true;
-				}
-
-				if (config.layers.length == 1 && config.layer.width == 0
-					&& config.layer.height == 0 && config.layer.data == null) {
-					//remove first empty layer?
-					_this.delete(config.layer.id, true);
-				}
-
-				if (layer.link == null) {
-					if (typeof layer.data == 'object') {
-						//load actual image
-						if (layer.width == 0)
-							layer.width = layer.data.width;
-						if (layer.height == 0)
-							layer.height = layer.data.height;
-						layer.link = layer.data.cloneNode(true);
-						layer.link.onload = function () {
-							config.need_render = true;
-						};
-						layer.data = null;
-						need_autoresize = true;
-					}
-					else if (typeof layer.data == 'string') {
-						//try loading as imageData
-						resolvable = true;
-						layer.link = new Image();
-						layer.link.onload = function () {
-							//update dimensions
-							if (layer.width == 0)
-								layer.width = layer.link.width;
-							if (layer.height == 0)
-								layer.height = layer.link.height;
-							if (layer.width_original == null)
-								layer.width_original = layer.width;
-							if (layer.height_original == null)
-								layer.height_original = layer.height;
-							//free data
-
-							layer.data = null;
-							_this.autoresize(layer.width, layer.height, layer.id, can_automate);
-							_this.render();
-							layer.link.onload = function () {
-								config.need_render = true;
-							};
-							resolve(true);
-						};
-						layer.link.src = layer.data;
-					}
-					else {
-						alertify.error('Error: can not load image.');
-					}
-				}
-			}
-
-			if (settings != undefined && config.layers.length > 0
-				&& config.layer.width == 0 && config.layer.height == 0
-				&& config.layer.data == null && layer.type != 'image' && can_automate !== false) {
-				//update existing layer, because its empty
-				for (var i in layer) {
-					if (i == 'id')
-						continue;
-					if (i == 'name')
-						continue;
-					if (i == 'order')
-						continue;
-					config.layer[i] = layer[i];
-				}
-			}
-			else {
-				//create new layer
-				config.layers.push(layer);
-				config.layer = _this.get_layer(layer.id);
-				_this.auto_increment++;
-
-				if (config.layer == null) {
-					config.layer = config.layers[0];
-				}
-			}
-
-			if (layer.id >= _this.auto_increment)
-				_this.auto_increment = layer.id + 1;
-
-			if (need_autoresize == true) {
-				_this.autoresize(config.layer.width, config.layer.height);
-			}
-
-			_this.render();
-			_this.Base_gui.GUI_layers.render_layers();
-			if(resolvable == false){
-				resolve(true);
-			}
-		});
+		return app.State.do_action(
+			new app.Actions.Insert_layer_action(settings, can_automate)
+		);
 	}
 
 	/**
@@ -433,47 +377,10 @@ class Base_layers_class {
 	 * @param {int} layer_id
 	 * @param {boolean} can_automate
 	 */
-	autoresize(width, height, layer_id, can_automate = true) {
-		var _this = this;
-		var need_fit = false;
-
-		if (layer_id == undefined)
-			layer_id = config.layer;
-
-		//resize up
-		if (width > config.WIDTH || height > config.HEIGHT) {
-
-			var wrapper = document.getElementById('main_wrapper');
-			var page_w = wrapper.clientWidth;
-			var page_h = wrapper.clientHeight;
-
-			if (width > page_w || height > page_h) {
-				need_fit = true;
-			}
-			if (width > config.WIDTH)
-				config.WIDTH = parseInt(width);
-			if (height > config.HEIGHT)
-				config.HEIGHT = parseInt(height);
-		}
-
-		//resize down
-		if (config.layers.length == 1 && can_automate !== false) {
-			if (width < config.WIDTH)
-				config.WIDTH = parseInt(width);
-			if (height < config.HEIGHT)
-				config.HEIGHT = parseInt(height);
-		}
-
-		this.Base_gui.prepare_canvas();
-
-		//fit zoom when after short pause
-		//@todo - remove setTimeout
-		if (need_fit == true) {
-			var internal = window.setTimeout(myCallback, 100);
-			function myCallback() {
-				_this.Base_gui.GUI_preview.zoom_auto();
-			}
-		}
+	async autoresize(width, height, layer_id, can_automate = true) {
+		return app.State.do_action(
+			new app.Actions.Autoresize_canvas_action(width, height, layer_id, can_automate)
+		);
 	}
 
 	/**
@@ -501,60 +408,19 @@ class Base_layers_class {
 	 * @param {int} id
 	 * @param {boolean} force - Force to delete first layer?
 	 */
-	delete(id, force) {
-		id = parseInt(id);
-		if (config.layers.length == 1 && (force == undefined || force == false)) {
-			//only 1 layer left
-			if (config.layer.type == null) {
-				//STOP
-				return;
-			}
-			else {
-				//delete it, but before that - create new empty layer
-				this.insert();
-			}
-		}
-
-		if (config.layer.id == id) {
-			//select previous layer
-			config.layer = this.find_next(id);
-			if (config.layer == null)
-				config.layer = this.find_previous(id);
-		}
-
-		for (var i in config.layers) {
-			if (config.layers[i].id == id) {
-				//delete
-
-				if (config.layers[i].type == 'image') {
-					//clean image
-					config.layers[i].link = null;
-				}
-
-				config.layers.splice(i, 1);
-			}
-		}
-
-		this.render();
-		this.Base_gui.GUI_layers.render_layers();
+	async delete(id, force) {
+		return app.State.do_action(
+			new app.Actions.Delete_layer_action(id, force)
+		);
 	}
 
 	/*
 	 * removes all layers
 	 */
-	reset_layers(auto_insert) {
-		for (var i = config.layers.length - 1; i >= 0; i--) {
-			this.delete(config.layers[i].id, true);
-		}
-		this.auto_increment = 1;
-
-		if (auto_insert != undefined && auto_insert === true) {
-			var settings = {};
-			this.insert(settings);
-		}
-
-		this.render();
-		this.Base_gui.GUI_layers.render_layers();
+	async reset_layers(auto_insert) {
+		return app.State.do_action(
+			new app.Actions.Reset_layers_action(auto_insert)
+		);
 	}
 
 	/**
@@ -562,17 +428,10 @@ class Base_layers_class {
 	 *
 	 * @param {int} id
 	 */
-	toggle_visibility(id) {
-		id = parseInt(id);
-		var link = this.get_layer(id);
-
-		if (link.visible == false)
-			link.visible = true;
-		else
-			link.visible = false;
-
-		this.render();
-		this.Base_gui.GUI_layers.render_layers();
+	async toggle_visibility(id) {
+		return app.State.do_action(
+			new app.Actions.Toggle_layer_visibility_action(id)
+		);
 	}
 
 	/*
@@ -587,13 +446,10 @@ class Base_layers_class {
 	 *
 	 * @param {int} id
 	 */
-	select(id) {
-		id = parseInt(id);
-		config.layer = this.get_layer(id);
-		this.Base_selection.reset_selection();
-
-		this.render();
-		this.Base_gui.GUI_layers.render_layers();
+	async select(id) {
+		return app.State.do_action(
+			new app.Actions.Select_layer_action(id)
+		);
 	}
 
 	/**
@@ -602,16 +458,15 @@ class Base_layers_class {
 	 * @param {int} id
 	 * @param {int} value 0-100
 	 */
-	set_opacity(id, value) {
-		id = parseInt(id);
+	async set_opacity(id, value) {
 		value = parseInt(value);
 		if (value < 0 || value > 100) {
 			//reset
 			value = 100;
 		}
-		var link = this.get_layer(id);
-
-		link.opacity = value;
+		return app.State.do_action(
+			new app.Actions.Update_layer_action(id, { opacity: value })
+		);
 	}
 
 	/**
@@ -619,15 +474,10 @@ class Base_layers_class {
 	 *
 	 * @param {int} id
 	 */
-	layer_clear(id) {
-		id = parseInt(id);
-		var link = this.get_layer(id);
-
-		link.data = null;
-		link.x = 0;
-		link.y = 0;
-		link.width = 0;
-		link.height = 0;
+	async layer_clear(id) {
+		return app.State.do_action(
+			new app.Actions.Clear_layer_action(id)
+		);
 	}
 
 	/**
@@ -636,24 +486,10 @@ class Base_layers_class {
 	 * @param {int} id
 	 * @param {int} direction
 	 */
-	move(id, direction) {
-		id = parseInt(id);
-		var link = this.get_layer(id);
-
-		if (direction < 0) {
-			var target = this.find_previous(id);
-		}
-		else {
-			var target = this.find_next(id);
-		}
-		if (target != null) {
-			var current_order = link.order;
-			link.order = target.order;
-			target.order = current_order;
-		}
-
-		this.render();
-		this.Base_gui.GUI_layers.render_layers();
+	async move(id, direction) {
+		return app.State.do_action(
+			new app.Actions.Reorder_layer_action(id, direction)
+		);
 	}
 
 	/**
@@ -675,7 +511,7 @@ class Base_layers_class {
 	is_layer_empty(id) {
 		var link = this.get_layer(id);
 
-		if (link.width == 0 && link.height == 0 && link.data == null) {
+		if ((link.width == 0 || link.width === null) && (link.height == 0 || link.height === null) && link.data == null) {
 			return true;
 		}
 
@@ -749,18 +585,9 @@ class Base_layers_class {
 	 * @param {object} params
 	 */
 	add_filter(layer_id, name, params) {
-		if (layer_id == null)
-			layer_id = config.layer.id;
-		var link = this.get_layer(layer_id);
-		var filter = {
-			id: this.Helper.getRandomInt(1, 999999999),
-			name: name,
-			params: params,
-		};
-		link.filters.push(filter);
-
-		config.need_render = true;
-		this.Base_gui.GUI_layers.render_layers();
+		return app.State.do_action(
+			new app.Actions.Add_layer_filter_action(layer_id, name, params)
+		);
 	}
 
 	/**
@@ -770,18 +597,9 @@ class Base_layers_class {
 	 * @param {string} filter_id
 	 */
 	delete_filter(layer_id, filter_id) {
-		if (layer_id == null)
-			layer_id = config.layer.id;
-		var link = this.get_layer(layer_id);
-
-		for (var i in link.filters) {
-			if (link.filters[i].id == filter_id) {
-				link.filters.splice(i, 1);
-			}
-		}
-
-		config.need_render = true;
-		this.Base_gui.GUI_layers.render_layers();
+		return app.State.do_action(
+			new app.Actions.Delete_layer_filter_action(layer_id, filter_id)
+		);
 	}
 
 	/**
@@ -789,8 +607,9 @@ class Base_layers_class {
 	 *
 	 * @param {canvas.context} ctx
 	 * @param {int} layer_id Optional
+	 * @param {boolean} is_preview Optional
 	 */
-	convert_layers_to_canvas(ctx, layer_id) {
+	convert_layers_to_canvas(ctx, layer_id = null, is_preview = true) {
 		var layers_sorted = this.get_sorted_layers();
 		for (var i = layers_sorted.length - 1; i >= 0; i--) {
 			var value = layers_sorted[i];
@@ -798,14 +617,14 @@ class Base_layers_class {
 			if (value.visible == false || value.type == null) {
 				continue;
 			}
-			if (layer_id != undefined && value.id != layer_id) {
+			if (layer_id != null && value.id != layer_id) {
 				continue;
 			}
 
 			ctx.globalAlpha = value.opacity / 100;
 			ctx.globalCompositeOperation = value.composition;
 
-			this.render_object(ctx, value);
+			this.render_object(ctx, value, is_preview);
 		}
 	}
 	/**
@@ -873,28 +692,9 @@ class Base_layers_class {
 	 * @param {int} layer_id (optional)
 	 */
 	update_layer_image(canvas, layer_id) {
-		if (layer_id == null)
-			layer_id = config.layer.id;
-		var link = this.get_layer(layer_id);
-
-		if (link.type != 'image'){
-			alertify.error('Error: layer must be image.');
-			return null;
-		}
-
-		if(this.Helper.is_edge_or_ie() == false){
-			//update image using blob (faster)
-			canvas.toBlob(function (blob) {
-				link.link.src = window.URL.createObjectURL(blob);
-				config.need_render = true;
-			}, 'image/png');
-		}
-		else{
-			//slow way for IE, Edge
-			link.link.src = canvas.toDataURL();
-		}
-
-		config.need_render = true;
+		return app.State.do_action(
+			new app.Actions.Update_layer_image_action(canvas, layer_id)
+		);
 	}
 
 	/**
@@ -907,6 +707,50 @@ class Base_layers_class {
 			width: config.WIDTH,
 			height: config.HEIGHT,
 		};
+	}
+
+	/**
+	 * returns all layers
+	 *
+	 * @returns {array}
+	 */
+	get_layers() {
+		return config.layers;
+	}
+
+	/**
+	 * disabled filter by id
+	 *
+	 * @param filter_id
+	 */
+	disable_filter(filter_id) {
+		this.disabled_filter_id = filter_id;
+	}
+
+	/**
+	 * finds layer filter by filter ID
+	 *
+	 * @param filter_id
+	 * @param filter_name
+	 * @param layer_id
+	 * @returns {object}
+	 */
+	find_filter_by_id(filter_id, filter_name, layer_id) {
+		if(typeof layer_id == 'undefined'){
+			var layer = config.layer;
+		}
+		else{
+			var layer = this.get_layer(layer_id);
+		}
+
+		var filter = {};
+		for(var i in layer.filters){
+			if(layer.filters[i].name == filter_name && layer.filters[i].id == filter_id) {
+				return layer.filters[i].params;
+			}
+		}
+
+		return filter;
 	}
 
 }

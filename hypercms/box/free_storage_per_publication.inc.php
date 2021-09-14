@@ -1,5 +1,5 @@
 <?php
-// ---------------------- STORAGE ---------------------
+// ---------------------- FREE STORAGE PER PUBLICATION ---------------------
 function usedstorage ($publication)
 {
   global $mgmt_config;
@@ -47,11 +47,12 @@ function maxstorage ($site)
   else return false;
 }
 
-if (!empty ($is_mobile)) $width = "92%";
-else $width = "320px";
-
 if (is_array ($siteaccess))
 {
+  // box width
+  if (!empty ($is_mobile)) $width = "320px";
+  else $width = "320px";
+
   sort ($siteaccess);
   
   foreach ($siteaccess as $site)

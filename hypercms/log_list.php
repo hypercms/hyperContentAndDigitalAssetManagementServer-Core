@@ -34,6 +34,9 @@ $objects_counted = 0;
 $objects_total = 0;
 $items_row = 0;
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
+
 // default value for inital max items in list
 if (empty ($mgmt_config['explorer_list_maxitems'])) $mgmt_config['explorer_list_maxitems'] = 100; 
 
@@ -179,14 +182,15 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
 
         // extract data from log record
         list ($date, $source, $type, $errorcode, $description) = explode ("|", trim ($event));
-        
+
+        // remove html tags
+        $description = strip_tags ($description);
+
+        // transform
         $description = str_replace ("\\", "/", $description);
         $description = str_replace ("'", "`", $description);
         $description = str_replace ("\"", "`", $description);
-        
-        // escape special characters
-        $description = html_encode (specialchr_decode ($description));
-        
+
         if (strlen ($description) > 150) 
         {
           $description_short = substr ($description, 0, 150)."...";
@@ -214,7 +218,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
         }
 
         echo "
-  <tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top; cursor:pointer;\" onClick=\"submitToWindow ('".$date."', '".$source."', '".$type."', '".$errorcode."', '".$description."');\">
+  <tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top; cursor:pointer;\" onClick=\"submitToWindow ('".html_encode($date)."', '".html_encode($source)."', '".html_encode($type)."', '".html_encode($errorcode)."', '".html_encode($description)."');\">
     <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px;\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</td>";
 
         if (!$is_mobile) echo "

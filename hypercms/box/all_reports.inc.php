@@ -2,10 +2,8 @@
 // ---------------------- REPORTS ---------------------
 if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mgmt_config['abs_path_cms']."report/index.php"))
 {
-  // language file
-  require_once ("language/".getlanguagefile ($lang));
-
-  if (!empty ($is_mobile)) $width = "92%";
+  // box width
+  if (!empty ($is_mobile)) $width = "320px";
   else $width = "670px";
 
   $button = uniqid();
@@ -13,7 +11,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
   echo "
   <div id=\"reportviewer\" class=\"hcmsHomeBox\" style=\"width:".$width."; height:400px; margin:10px; overflow:hidden; float:left;\">
     <div style=\"display:block; padding:0; margin:0;\">
-      <div class=\"hcmsHeadline\" style=\"float:left; margin:6px;\">".getescapedtext ($hcms_lang['report'][$lang])." </div>
+      <div class=\"hcmsHeadline\" style=\"float:left; margin:6px; white-space:nowrap;\">".getescapedtext ($hcms_lang['report'][$lang])." </div>
       <div style=\"float:left; margin:0px 10px 0px 2px;\">
         <select id=\"reportfile\" style=\"width:240px;\">
           <option value=\"".cleandomain ($mgmt_config['url_path_cms'])."empty.php\">".getescapedtext ($hcms_lang['select'][$lang])."</option>

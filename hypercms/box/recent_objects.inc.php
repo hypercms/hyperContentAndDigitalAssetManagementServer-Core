@@ -1,10 +1,13 @@
 <?php
 // ---------------------- RECENT OBJECTS ---------------------
-
-$objectinfo_array = rdbms_searchuser ("", $user);
+if (!empty ($user)) $objectinfo_array = rdbms_searchuser ("", $user);
 
 if (!empty ($objectinfo_array) && is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
 {
+  // box width
+  if (!empty ($is_mobile)) $width = "320px";
+  else $width = "320px";
+
   // prepare array
   $object_array = array();
 
@@ -18,9 +21,6 @@ if (!empty ($objectinfo_array) && is_array ($objectinfo_array) && sizeof ($objec
   {
     $object_array = array_unique ($object_array);
   
-    if (!empty ($is_mobile)) $width = "92%";
-    else $width = "320px";
-
     echo "
     <div id=\"recent\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
       <div class=\"hcmsHeadline\" style=\"margin:6px;\">".getescapedtext ($hcms_lang['my-recent-objects'][$lang])."</div>";

@@ -44,6 +44,7 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 $conn_id = false;
 $ftp_connection = false;
@@ -54,7 +55,7 @@ if ($action == "logout")
   setsession ("hcms_temp_ftp_connection", "", true);
 }
 
-// get existing FTP connection
+// get existing FTP connection (server name)
 $ftp_connection = getsession ("hcms_temp_ftp_connection");
 
 // check for existing FTP connection
@@ -75,6 +76,9 @@ if ((($action == "logon" && checktoken ($token, $user)) || !empty ($ftp_connecti
 {
   if (!empty ($ssl)) $ssl = true;
   else $ssl = false;
+
+  // get server name
+  if (strpos ($sentserver, "://") > 0) list ($protocoll, $sentserver) = explode ("://", $sentserver);
   
   $conn_id = ftp_userlogon ($sentserver, $sentuser, $sentpasswd, $ssl);
 
@@ -91,6 +95,7 @@ if ((($action == "logon" && checktoken ($token, $user)) || !empty ($ftp_connecti
     
     // save current server name as FTP connection
     setsession ("hcms_temp_ftp_connection", $sentserver);
+
     // save FTP logon data 
     setsession ($sentserver, $ftp_array, true);
   }
@@ -205,7 +210,7 @@ else
   // show messages
   echo showmessage ($show, 360, 70, $lang, "position:fixed; left:10px; top:10px;");
 ?>
-<div class="hcmsWorkplaceObjectlist" style="width:100%; height:100%;">
+<div style="width:100%; height:100%;">
   <form name="publish" method="post" action="">
     <input type="hidden" name="action" value="<?php echo $action; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" /> 
@@ -321,5 +326,6 @@ ftp_userlogout ($conn_id);
 ?>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

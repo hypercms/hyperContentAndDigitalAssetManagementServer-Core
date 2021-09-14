@@ -31,6 +31,8 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -283,7 +285,7 @@ function openUpload (site, cat, location, id)
       div.id = id;
       div.className = "hcmsContextMenu";
       div.style.cssText = "position:fixed; right:20px; bottom:0px; width:300px; height:36px; transition:height 0.3s;";
-      div.innerHTML = '<div class="hcmsWorkplaceGeneric" style="position:absolute; right:0px; top:0px; width:106px; height:35px; margin:0; padding:2px 0px 1px 2px; z-index:91;">' + 
+      div.innerHTML = '<div style="position:absolute; right:0px; top:0px; width:106px; height:35px; margin:0; padding:2px 0px 1px 2px; z-index:91;">' + 
       '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" onclick="maxUpload(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" />' + 
       '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" onclick="minUpload(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" />' + 
       '  <img src="<?php echo getthemelocation(); ?>img/button_close.png" name="close' + id + '" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage(\'close' + id + '\',\'\',\'<?php echo getthemelocation(); ?>img/button_close_over.png\',1);" onClick="closeUpload(\'' + id + '\');" />' + 

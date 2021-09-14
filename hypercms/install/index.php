@@ -140,9 +140,9 @@ $smtp_port = getrequest_esc ("smtp_port");
 $smtp_sender = getrequest_esc ("smtp_sender");
 
 $os_cms = getrequest_esc ("os_cms");
+
 $pdftotext = getrequest_esc ("pdftotext");
 $antiword = getrequest_esc ("antiword");
-$gunzip = getrequest_esc ("gunzip");
 $unzip = getrequest_esc ("unzip");
 $zip = getrequest_esc ("zip");
 $unoconv = getrequest_esc ("unoconv");
@@ -324,7 +324,6 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
         
         $config = str_replace ("%pdftotext%", $pdftotext, $config);
         $config = str_replace ("%antiword%", $antiword, $config);
-        $config = str_replace ("%gunzip%", $gunzip, $config);
         $config = str_replace ("%unzip%", $unzip, $config);
         $config = str_replace ("%zip%", $zip, $config);
         $config = str_replace ("%unoconv%", $unoconv, $config);
@@ -857,10 +856,10 @@ Otherwise just provide the information below and install the most powerful Conte
     
     <!-- Database -->
     <tr>
-      <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextOrange">MySQL Database</td>
+      <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextOrange">MariaDB/MySQL Database</td>
     </tr>
     <tr>
-      <td colspan="2">Please make sure that a database with the same name does not already exist.</td>
+      <td colspan="2">Please make sure that a database with the same name does not exist.</td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Database host </td>
@@ -980,12 +979,6 @@ Otherwise just provide the information below and install the most powerful Conte
       </td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;">Define path to GUNZIP (gunzip) </td>
-      <td>
-        <input type="text" id="gunzip" name="gunzip" placeholder="autodetection failed for /usr/bin/gunzip" value="<?php if ($gunzip != "") echo $gunzip; elseif (@is_executable ("/usr/bin/gunzip")) echo "/usr/bin/gunzip" ?>" style="width:300px;" />
-      </td>
-    </tr>
-    <tr>
       <td style="white-space:nowrap;">Define path to UNZIP (unzip) </td>
       <td>
         <input type="text" id="unzip" name="unzip" placeholder="autodetection failed for /usr/bin/unzip" value="<?php if ($unzip != "") echo $unzip; elseif (@is_executable ("/usr/bin/unzip")) echo "/usr/bin/unzip" ?>" style="width:300px;" />
@@ -1040,9 +1033,9 @@ Otherwise just provide the information below and install the most powerful Conte
       </td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;">Define path to X11-Server (xvfb) </td>
+      <td style="white-space:nowrap;">Define path to X11-Server (xvfb-run) </td>
       <td>
-        <input type="text" id="x11" name="x11" placeholder="autodetection failed for /usr/bin/xvfb" value="<?php if ($x11 != "") echo $x11; elseif (@is_executable ("/usr/bin/xvfb")) echo "/usr/bin/xvfb" ?>" style="width:300px;" />
+        <input type="text" id="x11" name="x11" placeholder="autodetection failed for /usr/bin/xvfb-run" value="<?php if ($x11 != "") echo $x11; elseif (@is_executable ("/usr/bin/xvfb-run")) echo "/usr/bin/xvfb-run" ?>" style="width:300px;" />
       </td>
     </tr>
     <tr>

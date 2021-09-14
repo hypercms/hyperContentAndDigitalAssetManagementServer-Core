@@ -26,6 +26,9 @@ checkusersession ($user, false);
 // --------------------------------- logic section ----------------------------------
 
 toggleview ($view);
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE html> 
 <html> 
@@ -236,8 +239,8 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
   <?php if (linking_valid() == false) { ?>
   <!-- navigator panel -->
-  <div id="navLayer" class="hcmsWorkplaceExplorer hcmsBoxShadow" style="position:fixed; top:36px; bottom:0; left:-280px; width:260px; margin:0; padding:0; z-index:50;">
-    <div style="width:100%; height:50px;">
+  <div id="navLayer" class="hcmsWorkplaceExplorer hcmsBoxShadow" style="position:fixed; top:36px; bottom:0; left:-280px; width:260px !important; margin:0; padding:0; z-index:50; overflow:hidden;">
+    <div style="width:100%; height:50px; overflow:hidden;">
       <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
         <input type="hidden" name="action" value="base_search" />
         <input type="hidden" name="search_dir" value="" />
@@ -245,8 +248,8 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
         <img src="<?php echo getthemelocation("day"); ?>img/button_search.png" <?php if (!empty ($mgmt_config['db_connect_rdbms']) && linking_valid() == false) echo "onclick=\"if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();\""; ?> class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px; margin-left:-40px;" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
       </form>
     </div>
-    <div id="navContainer" style="width:100%; height:calc(100% - 76px); margin:0; padding:0; overflow:visible; -webkit-overflow-scrolling:touch;">
-      <iframe id="navFrame" src="explorer.php" frameborder="0" style="margin:0; padding:0; border:0; width:100%; height:100%;"></iframe>
+    <div id="navContainer" style="width:100%; height:calc(100% - 82px); margin:0; padding:0; <?php if ($is_iphone) echo "overflow:auto; -webkit-overflow-scrolling:touch;"; else echo "overflow:hidden;"; ?>">
+      <iframe id="navFrame" src="explorer.php" frameborder="0" style="margin:0; padding:0; border:0; width:100%; height:100%; <?php if (!$is_iphone) echo "overflow:auto;"; ?>"></iframe>
     </div>
   </div>
   <?php } ?>
@@ -270,8 +273,8 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   
   <!-- chat panel -->
   <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
-  <div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:36px; right:-320px; bottom:0; width:300px; z-index:100; overflow:visible; -webkit-overflow-scrolling:touch;">
-    <iframe id="chatFrame" src="chat.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
+  <div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:36px; right:-320px; bottom:0; width:300px; z-index:100; overflow:hidden;">
+    <iframe id="chatFrame" src="chat.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
   </div>  
   <?php } ?>
 

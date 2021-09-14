@@ -969,9 +969,9 @@ function is_thumbnail ($media, $images_only=true)
 
     if ($container_id != "")
     {
-      if ($images_only == true && substr_count ($media, "hcm".$container_id.".thumb.jpg") > 0) return true;
-      elseif ($images_only == false && substr_count ($media, "hcm".$container_id.".thumb.") > 0) return true;
-      elseif ($images_only == false && substr_count($media, "hcm".$container_id.".orig.") > 0) return true;
+      if ($images_only == true && substr_count ($media, "_hcm".$container_id.".thumb.jpg") > 0) return true;
+      elseif ($images_only == false && substr_count ($media, "_hcm".$container_id.".thumb.") > 0) return true;
+      elseif ($images_only == false && substr_count($media, "_hcm".$container_id.".orig.") > 0) return true;
       else return false;
     }
     else return false;
@@ -995,7 +995,7 @@ function is_preview ($media)
 
     if ($container_id != "")
     {
-      if (substr_count ($media, "hcm".$container_id.".preview.") > 0) return true;
+      if (substr_count ($media, "_hcm".$container_id.".preview.") > 0) return true;
       else return false;
     }
     else return false;
@@ -1019,7 +1019,7 @@ function is_config ($media)
 
     if ($container_id != "")
     {
-      if (substr_count($media, "hcm".$container_id.".config.") > 0) return true;
+      if (substr_count($media, "_hcm".$container_id.".config.") > 0) return true;
       else return false;
     }
     else return false;
@@ -1568,29 +1568,29 @@ function createfilename ($filename)
   // initialize
   $error = array();
 
-  // multimedia file name
-  if (strpos ($filename, "_hcm") > 0)
+  // trim
+  $filename_new = trim ($filename);
+
+  // exclude multimedia file names
+  if (strpos ($filename_new, "_hcm") > 0)
   {
-    return $filename;
+    return $filename_new;
   }
   // object name
-  elseif (valid_objectname ($filename))
+  elseif (valid_objectname ($filename_new))
   {
     // default value
     if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
 
     // check if filename includes special characters
-    if (specialchr ($filename, ".-_") == true)
+    if (specialchr ($filename_new, ".-_") == true)
     {
-      $filename_new = specialchr_encode (trim ($filename), "no");
-    }
-    else
-    {
-      $filename_new = trim ($filename);
+      $filename_new = specialchr_encode ($filename_new, "no");
     }
 
-    // escaped or input file name is too long (11 digits for the hcms identifier)
-    if ((strlen ($filename_new) + 11) > $mgmt_config['max_digits_filename'])
+    // escaped or input file name is too long (plus 11 digits for the hcms media object identifier or the file extension identifiers like .off and .recycle)
+    // exclude objects in recycle bin
+    if ((strlen ($filename_new) + 11) > $mgmt_config['max_digits_filename'] && substr ($filename_new, -8) != ".recycle")
     {
       if (substr_count ($filename_new, ".") > 0)
       {
@@ -1616,13 +1616,13 @@ function createfilename ($filename)
       if (strpos ("_".specialchr_decode ($filename), specialchr_decode ($filename_new)) < 1) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
 
       // use "noname"
-      if (trim ($filename_newn) == "") $filename_new = "noname";
+      if (trim ($filename_new) == "") $filename_new = "noname";
 
       // add file extension
       $filename_new = $filename_new.$file_ext;
 
       $errcode = "00911";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|Object name '".specialchr_decode ($filename)."' has been truncated to '".specialchr_decode ($filename_new)."'";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Object name '".specialchr_decode ($filename)."' has been truncated to '".specialchr_decode ($filename_new)."'";
 
       savelog (@$error);
 
@@ -2704,7 +2704,7 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
       else
       {
         $errcode = "20914";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmultiaccesslink failed to create access link for hash=".$hash.", multiobject=".$multiobject.", type=".$type.", login=".$login.", lifetime=".$lifetime.", formats=".$formats;
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmultiaccesslink failed to create access link for hash=".$hash.", multiobject=".implode("|", $multiobject).", type=".$type.", login=".$login.", lifetime=".$lifetime.", formats=".$formats;
   
         savelog (@$error);
 
@@ -2953,8 +2953,9 @@ function createversion ($site, $file, $user="sys")
         // copy in cloud storage
         if (function_exists ("copycloudobject")) copycloudobject ($site, $thumb_root, $file, $file_v, $user);
 
-        // delete all other media file derivatives (individual or videplayer thumbnail files)
-        deletemediafiles ($site, $file, false);
+        // delete all other media file derivates (individual or videoplayer thumbnail files)
+        // except the original media file
+        deletemediafiles ($site, $file, false, false);
 
         // create new version of container and keep source container file as well
         $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
@@ -3045,7 +3046,14 @@ function createversion ($site, $file, $user="sys")
       else return false;
     }
     // versioning is disabled
-    else return true;
+    else
+    {
+      // delete all other media file derivates (individual or videoplayer thumbnail files)
+      // except the original media file
+      deletemediafiles ($site, $file, false, false);
+      
+      return true;
+    }
   }
   else return false;
 }
@@ -3056,7 +3064,7 @@ function createversion ($site, $file, $user="sys")
 // output: result_array
 
 // description:
-// Makes an older object version to the current version
+// Makes an older object version the current version.
 
 function rollbackversion ($site, $location, $page, $container_version, $user="sys")
 {
@@ -3126,8 +3134,8 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
           // create version of current container and media file
           $createversion = createversion ($site, $mediafile, $user);
 
-          // remove original files (that will be kept by function createversion for image editing)
-          if (!empty ($createversion)) deletefile ($thumbdir, $mediafile, false);
+          // remove all original files (that will be kept by function createversion for image editing)
+          if (!empty ($createversion)) deletemediafiles ($site, $mediafile, true, true);
         }
         else
         {
@@ -4535,13 +4543,13 @@ function deleteannotationimages ($site, $mediafile)
 
 // ------------------------------------------ deletemediafiles --------------------------------------------
 // function: deletemediafiles()
-// input: publication name [string], mediafile name [string], delete original media file [boolean] (optional)
+// input: publication name [string], mediafile name [string], delete original media file [boolean] (optional), delete JSON image editor file [boolean] (optional)
 // output: true/false
 
 // description:
-// Deletes all derivates (thumbnails, config files, converted versions of the file) of a specific media file resource. Deletes the original media file optionally .
+// Deletes all derivates (thumbnails, config files, converted versions of the file) of a specific media file resource. Deletes the original media file optionally.
 
-function deletemediafiles ($site, $mediafile, $delete_original=false)
+function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_json_image=false)
 {
   global $user, $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext, $hcms_lang, $lang;
 
@@ -4578,11 +4586,22 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
       if (is_file ($mgmt_config['abs_path_view'].$mediafile)) deletefile ($mgmt_config['abs_path_view'], $mediafile, 0);
     }
 
+    // delete JSON image editor file
+    if ($delete_json_image == true)
+    {
+      $mediafile_json = substr ($mediafile, 0, strrpos ($mediafile, ".")).".json";
+      // local media file
+      deletefile ($medialocation.$site."/", $mediafile_json, 0);
+      // cloud storage
+      if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_json, $user);
+      // remote client
+      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_json, "");
+    }
+
     // image thumbnail file
     $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb.jpg";
     // local media file
     deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
-
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
     // remote client
@@ -5401,7 +5420,7 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
               else $folder = $object_id;
 
               // remove .folder from folder location
-              if (substr (trim ($folder), -8) == "/.folder") $folder = substr (trim ($folder), 0, strlen(trim ($folder)) - 7);
+              if (substr (trim ($folder), -8) == "/.folder") $folder = substr (trim ($folder), 0, -7);
 
               // compare workflow folder with current location
               if (@substr_count ($folder_current, $folder) == 1) $wf_apply_array[] = $wf_folder;
@@ -6067,18 +6086,18 @@ function createinstance ($instance_name, $settings, $user="sys")
   // check if input data is available
   if (
        empty ($mgmt_config['instances']) || 
+       !valid_objectname ($instance_name) || strlen ($instance_name) > 100 || specialchr ($instance_name, "-_") || trim ($instance_name) == "config" || 
        empty ($mgmt_config['abs_path_cms']) || !is_dir ($mgmt_config['abs_path_cms']) ||
-       !valid_publicationname ($instance_name) || strlen ($instance_name) > 100 || specialchr ($instance_name, "-_") || 
        empty ($settings['abs_path_data']) || empty ($settings['abs_path_rep']) || 
        empty ($settings['password']) || empty ($settings['confirm_password']) || 
        !isset ($settings['realname']) || empty ($settings['language']) || empty ($settings['email']) || 
        empty ($settings['db_host']) || empty ($settings['db_username']) || empty ($settings['db_password']) || empty ($settings['db_name']) || 
        empty ($settings['smtp_host']) || empty ($settings['smtp_username']) || empty ($settings['smtp_password']) || empty ($settings['smtp_port']) || empty ($settings['smtp_sender']) ||
-       !valid_objectname ($user) || trim ($instance_name) == "config"
+       !valid_objectname ($user) 
      )
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
   }
   // test if input data includes special characters incl. white spaces
   elseif (
@@ -6089,19 +6108,19 @@ function createinstance ($instance_name, $settings, $user="sys")
          )
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   // check write permissions in CMS
   elseif (!is_writeable ($mgmt_config['instances']) || !is_writeable ($mgmt_config['abs_path_temp']) || !is_writeable ($mgmt_config['abs_path_view']))
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions'][$lang]."</span>\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-write-permissions'][$lang]."</span>\n";
   }
   // check if instance name exists already
   elseif (is_file ($mgmt_config['instances'].trim ($instance_name).".inc.php"))
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-instance-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   else
   {
@@ -6188,7 +6207,7 @@ function createinstance ($instance_name, $settings, $user="sys")
           $sql = "CREATE DATABASE ".$settings['db_name'];
 
           if (!$mysqli->query ($sql)) $show = "<span class=\"hcmsHeadline\">DB error (".$mysqli->errno."): ".$mysqli->error."</span><br />\n";
-          elseif (!$mysqli->select_db ($settings['db_name'])) $show = "<span class=hcmsHeadline>DB error (".$mysqli->errno."): ".$mysqli->error."</span><br />\n";
+          elseif (!$mysqli->select_db ($settings['db_name'])) $show = "<span class=\"hcmsHeadline\">DB error (".$mysqli->errno."): ".$mysqli->error."</span><br />\n";
         }
 
         // create tables
@@ -6214,6 +6233,7 @@ function createinstance ($instance_name, $settings, $user="sys")
 
       if ($config != "")
       {
+        // Pathes
         $config = str_replace ("%url_path_cms%", substr ($mgmt_config['url_path_cms'], strpos ($mgmt_config['url_path_cms'], "://")+3), $config);
         $config = str_replace ("%abs_path_cms%", $mgmt_config['abs_path_cms'], $config);
         $config = str_replace ("%url_path_rep%", $url_path_rep, $config);
@@ -6225,22 +6245,53 @@ function createinstance ($instance_name, $settings, $user="sys")
 
         $config = str_replace ("%instances%", $mgmt_config['instances'], $config);
 
-        $config = str_replace ("%pdftotext%", $mgmt_parser['.pdf'], $config);
-        $config = str_replace ("%antiword%", $mgmt_parser['.doc'], $config);
-        $config = str_replace ("%gunzip%", $mgmt_uncompress['.gz'], $config);
-        $config = str_replace ("%unzip%", $mgmt_uncompress['.zip'], $config);
-        $config = str_replace ("%zip%", $mgmt_compress['.zip'], $config);
-        $config = str_replace ("%unoconv%", getconfigvalue ($mgmt_docpreview), $config);
-        $config = str_replace ("%convert%", getconfigvalue ($mgmt_imagepreview), $config);
-        $config = str_replace ("%ffmpeg%", getconfigvalue ($mgmt_mediapreview), $config);
-        $config = str_replace ("%yamdi%", $mgmt_mediametadata['.flv'], $config);
-        $config = str_replace ("%exiftool%", getconfigvalue ($mgmt_mediametadata, '.jpg'), $config);
+        // Executables
+        if (!empty ($settings['pdftotext'])) $config = str_replace ("%pdftotext%", $settings['pdftotext'], $config);
+        else $config = str_replace ("%pdftotext%", $mgmt_parser['.pdf'], $config);
 
+        if (!empty ($settings['antiword'])) $config = str_replace ("%antiword%", $settings['antiword'], $config);
+        else $config = str_replace ("%antiword%", $mgmt_parser['.doc'], $config);
+
+        if (!empty ($settings['unzip'])) $config = str_replace ("%unzip%", $settings['unzip'], $config);
+        else $config = str_replace ("%unzip%", $mgmt_uncompress['.zip'], $config);
+
+        if (!empty ($settings['zip'])) $config = str_replace ("%zip%", $settings['zip'], $config);
+        else $config = str_replace ("%zip%", $mgmt_compress['.zip'], $config);
+
+        if (!empty ($settings['unoconv'])) $config = str_replace ("%unoconv%", $settings['unoconv'], $config);
+        else $config = str_replace ("%unoconv%", getconfigvalue ($mgmt_docpreview), $config);
+
+        if (!empty ($settings['convert'])) $config = str_replace ("%convert%", $settings['convert'], $config);
+        else $config = str_replace ("%convert%", getconfigvalue ($mgmt_imagepreview), $config);
+
+        if (!empty ($settings['ffmpeg'])) $config = str_replace ("%ffmpeg%", $settings['ffmpeg'], $config);
+        else $config = str_replace ("%ffmpeg%", getconfigvalue ($mgmt_mediapreview), $config);
+
+        if (!empty ($settings['yamdi'])) $config = str_replace ("%yamdi%", $settings['yamdi'], $config);
+        else $config = str_replace ("%yamdi%", $mgmt_mediametadata['.flv'], $config);
+
+        if (!empty ($settings['exiftool'])) $config = str_replace ("%exiftool%", $settings['exiftool'], $config);
+        else $config = str_replace ("%exiftool%", getconfigvalue ($mgmt_mediametadata, '.jpg'), $config);
+
+        if (!empty ($settings['tesseract'])) $config = str_replace ("%tesseract%", $settings['tesseract'], $config);
+        else $config = str_replace ("%tesseract%", getconfigvalue ($mgmt_parser, ".jpg"), $config);
+
+        if (!empty ($settings['html2pdf'])) $config = str_replace ("%html2pdf%", $settings['html2pdf'], $config);
+        else $config = str_replace ("%html2pdf%", $mgmt_config['html2pdf'], $config);
+
+        if (!empty ($settings['x11'])) $config = str_replace ("%x11%", $settings['x11'], $config);
+        else $config = str_replace ("%x11%", $mgmt_config['x11'], $config);
+
+        if (!empty ($settings['mergepdf'])) $config = str_replace ("%mergepdf%", $settings['mergepdf'], $config);
+        else $config = str_replace ("%mergepdf%", $mgmt_config['mergepdf'], $config);
+
+        // Database
         $config = str_replace ("%dbhost%", $settings['db_host'], $config);
         $config = str_replace ("%dbuser%", $settings['db_username'], $config);
         $config = str_replace ("%dbpasswd%", $settings['db_password'], $config);
         $config = str_replace ("%dbname%", $settings['db_name'], $config);
 
+        // SMTP
         $config = str_replace ("%smtp_host%", $settings['smtp_host'], $config);
         $config = str_replace ("%smtp_username%", $settings['smtp_username'], $config);
         $config = str_replace ("%smtp_password%", $settings['smtp_password'], $config);
@@ -6292,13 +6343,16 @@ function createinstance ($instance_name, $settings, $user="sys")
       else $username = "admin";
 
       // create admin user
-      $result = createuser ("*Null*", $username, $settings['password'], $settings['confirm_password'], $user);
-      if (empty ($result['result'])) $show = "<span class=\"hcmsHeadline\">".$result['message']."</span><br />\n";
+      if ($username != "admin")
+      {
+        $result = createuser ("*Null*", $username, trim ($settings['password']), trim ($settings['confirm_password']), $user);
+        if (empty ($result['result'])) $show = "<span class=\"hcmsHeadline\">".$result['message']."</span><br />\n";
+      }
 
       // edit admin user
       if ($show == "")
       {
-        $result = edituser ("*Null*", $username, "", $settings['password'], $settings['confirm_password'], "1", $settings['realname'], $settings['language'], "standard", $settings['email'], "", "", "", "", "", "", "", $user);
+        $result = edituser ("*Null*", $username, "", trim ($settings['password']), trim ($settings['confirm_password']), "1", $settings['realname'], $settings['language'], "*Leave*", "standard", trim ($settings['email']), "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", $user);
         if (empty ($result['result'])) $show = "<span class=\"hcmsHeadline\">".$result['message']."</span><br />\n";
       }
     }
@@ -8676,12 +8730,11 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
   { 
     $contentfield_save = $content;
 
-    // unescape special characters (transform all special chararcters into their html/xml equivalents)
+    // escape special characters
     if ($contentfield_save != "")
     {
-      $contentfield_save = str_replace ("&amp;", "&", $contentfield_save);
-      // $contentfield_save = str_replace ("&lt;", "<", $contentfield_save);
-      // $contentfield_save = str_replace ("&gt;", ">", $contentfield_save);
+      $contentfield_save = str_replace ("<", "&lt;", $contentfield_save);
+      $contentfield_save = str_replace (">", "&gt;", $contentfield_save);
       $contentfield_save = str_replace ("<![CDATA[", "&lt;![CDATA[", $contentfield_save); 
       $contentfield_save = str_replace ("]]>", "]]&gt;", $contentfield_save);
     }
@@ -11806,13 +11859,13 @@ function collectfolders ($site, $location, $folder)
 
 // ---------------------------------------- copyfolders --------------------------------------------
 // function: copyfolders ()
-// input: publication name [string], location (source) [string], new location (destination) [string], folder name [string], user name [string]
+// input: publication name [string], location (source) [string], new location (destination) [string], folder name [string], user name [string], do not create a copy of the folder if it exist already [boolean] (optional)
 // output: result array equal to createfolder
 
 // description:
 // This function copies/creates all folders of the source location using mkdir (only directories will be created!). Used by pasteobject function.
 
-function copyfolders ($site, $location, $locationnew, $folder, $user)
+function copyfolders ($site, $location, $locationnew, $folder, $user, $no_duplicates=true)
 { 
   global $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
@@ -11851,30 +11904,49 @@ function copyfolders ($site, $location, $locationnew, $folder, $user)
             $rootlocationold = $location;
             $rootlocationnew = $locationnew;
 
-            // rename root folder to "copy of" if it exsits already
+            // define root folder
+            $rootfolderold = $rootfoldernew = $thisfolder;
+
+            // if folder exists already
             if (is_dir ($rootlocationnew.$thisfolder))
             {
-              $rootfolderold = $thisfolder;
-              $rootfoldernew = $thisfolder."-Copy";
+              // rename root folder and add "-Copy" if it exists already
+              if ($no_duplicates == false)
+              {
+                // reset rootfoldernew name
+                $rootfoldernew = $thisfolder."-Copy";
 
-              $c = 2;
-
-              while ($c < 50)
-              { 
-                if (is_dir ($rootlocationnew.$rootfoldernew))
-                {
-                  $rootfoldernew = $thisfolder."-Copy".$c;
-                  $c++;
+                for ($c=2; $c<=100; $c++)
+                { 
+                  if (is_dir ($rootlocationnew.$rootfoldernew))
+                  {
+                    // reset rootfoldernew name
+                    $rootfoldernew = $thisfolder."-Copy".$c;
+                  }
+                  else break;
                 }
-                else break;
-              } 
-            } 
-            else $rootfolderold = $rootfoldernew = $thisfolder;
 
-            $result['result'] = @mkdir ($rootlocationnew.$rootfoldernew, $mgmt_config['fspermission']);
+                // create folder
+                $result['result'] = @mkdir ($rootlocationnew.$rootfoldernew, $mgmt_config['fspermission']);
 
-            // remote client
-            remoteclient ("save", "abs_path_".$cat, $site, $rootlocationnew, "", $rootfoldernew, ""); 
+                // remote client
+                remoteclient ("save", "abs_path_".$cat, $site, $rootlocationnew, "", $rootfoldernew, "");
+              }
+              // nothing to do since the folder exists already
+              else
+              {
+                $result['result'] = true;
+              }
+            }
+            // the folder does not exist in the new location and need to be created
+            else
+            {
+              // create folder
+              $result['result'] = @mkdir ($rootlocationnew.$rootfoldernew, $mgmt_config['fspermission']);
+
+              // remote client
+              remoteclient ("save", "abs_path_".$cat, $site, $rootlocationnew, "", $rootfoldernew, "");
+            }
           }
           // create all subfolders inside the root folder
           else 
@@ -11882,6 +11954,7 @@ function copyfolders ($site, $location, $locationnew, $folder, $user)
             // define new location
             $thislocation = str_replace ($rootlocationold.$rootfolderold, $rootlocationnew.$rootfoldernew, $thislocation);
 
+            // create folder
             $result['result'] = @mkdir ($thislocation.$thisfolder, $mgmt_config['fspermission']);
 
             // remote client
@@ -11928,12 +12001,10 @@ function deletefolder ($site, $location, $folder, $user)
   // set default language
   if (empty ($lang)) $lang = "en";
 
-  // replace .recycle extension since it is used to mark objects in the recycle bin
   $folder = trim ($folder);
-  if (substr ($folder, -8) == ".recycle") $folder = str_replace (".recycle", "_recycle", $folder);
 
   // folder name
-  $folder = createfilename ($folder);
+  if (specialchr ($folder, ".-_~") == true) $folder = createfilename ($folder);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
   {
@@ -11983,7 +12054,7 @@ function deletefolder ($site, $location, $folder, $user)
       ondeletefolder_pre ($site, $cat, $location, $folder, $user);
 
     // folder exists
-    if (!empty ($folder) && is_dir ($location.$folder) && is_file ($location.$folder."/.folder"))
+    if (!empty ($folder) && is_dir ($location.$folder))
     {
       // check folder for objects
       $is_empty = is_emptyfolder ($location.$folder);
@@ -11991,10 +12062,10 @@ function deletefolder ($site, $location, $folder, $user)
       if ($is_empty == true)
       {
         // delete folder object
-        $result_delete = deleteobject ($site, $location.$folder, ".folder", $user);
+        if (is_file ($location.$folder."/.folder")) $result_delete = deleteobject ($site, $location.$folder, ".folder", $user);
 
         // delete directory
-        if ($result_delete['result']) $result_delete['result'] = deletefile ($location, $folder, false); 
+        $result_delete['result'] = deletefile ($location, $folder, false); 
   
         if (!empty ($result_delete['result']))
         {
@@ -12018,7 +12089,7 @@ function deletefolder ($site, $location, $folder, $user)
         else
         {
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-doesnt-exist'][$lang]."</span><br />".$hcms_lang['or-you-have-no-write-permission'][$lang]."\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-removed'][$lang]."</span><br />".$hcms_lang['the-folder-doesnt-exist'][$lang]." ".$hcms_lang['or-you-have-no-write-permission'][$lang]."\n";
         }
       }
       else
@@ -12027,11 +12098,11 @@ function deletefolder ($site, $location, $folder, $user)
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-removed'][$lang]."</span><br />".$hcms_lang['the-folder-still-holds-items-please-delete-these-items'][$lang]."\n";
       }
     }
-    // folder doesn't exist and/or write permission is missing
+    // folder doesn't exist
     else
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-doesnt-exist'][$lang]."</span><br />".$hcms_lang['or-you-have-no-write-permission'][$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-doesnt-exist'][$lang]."</span>\n";
     }
 
     // eventsystem
@@ -12489,9 +12560,14 @@ function createobject ($site, $location, $page, $template, $user)
   // include hypermailer class
   if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
 
-  // replace .recycle extension since it is used to mark objects in the recycle bin
+  // trim
   $page = trim ($page);
+
+  // replace .recycle extension since it is used to mark objects in the recycle bin
   if (substr ($page, -8) == ".recycle") $page = str_replace (".recycle", "_recycle", $page);
+
+  // replace _hcm identifier since it is used to for media files
+  if (strpos ($page, "_hcm") > 0) $page = str_replace ("_hcm", "hcm", $page);
 
   // create valid object file name
   $page_orig = $page;
@@ -12758,7 +12834,7 @@ function createobject ($site, $location, $page, $template, $user)
 
             $link_db_record = "\n".$contentfile.":|".$object.":|";
 
-            // append new record into link management file
+            // append new record into link management file (faster than function link_db_insert)
             $link_db_append = appendfile ($mgmt_config['abs_path_data']."link/", $site.".link.dat", $link_db_record);
 
             // user file could not be loaded (might be locked by a user)
@@ -12863,12 +12939,33 @@ function createobject ($site, $location, $page, $template, $user)
               // if object file could not be saved
               if ($savefile == false)
               {
+                // revert modifications
+                // remove workflow
+                if (is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile))
+                {
+                  deletefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile, false);
+                }
+                
+                // remove container from link management database
+                if (!empty ($link_db_append))
+                {
+                   $link_db = link_db_load ($site, $user);
+                   $link_db = link_db_delete ($site, $link_db, $contentfile);
+                   link_db_save ($site, $link_db, $user);
+                }
+
+                // remove content containers
+                if (is_dir ($container_location))
+                {
+                  deletefile (getlocation ($container_location), getobject ($container_location), true);
+                }
+
                 $add_onload = "parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
                 $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
 
                 // log entry
                 $errcode = "10101";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object '".$pagefile."'could not be created by user '$user' ($site, $location_esc, $page) due to missing write permissions for the object file";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object '".$pagefile."' with container ID '".$container_id."' could not be created by user '$user' ($site, $location_esc, $page) due to missing write permissions for the object file";
               }
               // on success
               else
@@ -13410,11 +13507,11 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           // errors during compressions of files
           if ($errorCode && is_array ($output))
           {
-            $error_message = implode ("<br />", $output);
+            $error_message = implode ("\t", $output);
             $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
 
             $errcode = "10645";
-            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|zipfiles failed for '".$filename."' with error code ".$errorCode.": ".$error_message;
+            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of zip (code:".$errorCode.", command:".$cmd.") failed for '".$filename."' \t".$error_message;
 
             // save log
             savelog (@$error);
@@ -13590,7 +13687,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $media_root = getmedialocation ($site, $media_update, "abs_path_media").$site."/";
           $thumb_root = getmedialocation ($site, ".hcms.".$media_update, "abs_path_media").$site."/";
 
-          // force a restore if media file has been exported (on any chnage of the media file it should be restored)
+          // force a restore if media file has been exported (on any change of the media file it should be restored)
           $mgmt_config['restore_exported_media'] = true;
 
           // prepare media file (in case it has been exported)
@@ -13604,6 +13701,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           }
 
           // create version of previous content and media file
+          // createversion removes all media derivative files as well
           if (!empty ($versioning)) $createversion = createversion ($site, $media_update);
           else $createversion = true;
 
@@ -13623,10 +13721,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
           if ($createversion && !empty ($media_root))
           {
-            // delete old file and symbolic link
-            deletefile (getlocation ($symlinktarget_path), getobject ($symlinktarget_path), 0);
-            if (is_file ($media_root.$media_update)) deletefile ($media_root, $media_update, 0);
-            if (is_file ($thumb_root.$media_update)) deletefile ($thumb_root, $media_update, 0);
+            // delete all existing media files of the current version
+            deletemediafiles ($site, $media_update, true, true);
 
             // remember original file name
             $media_orig = $media_update;
@@ -14273,9 +14369,11 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
     $page_nameonly = strrev (substr (strstr (strrev ($pagefile_info['name']), "."), 1));
 
     // create new version of the media file
+    // deletes all media derivates as well, except the original media file and JSON image editor file
     $createversion = createversion ($site, $mediafile_orig);
 
     // write provided base64 encoded media file
+    // used by MiniPaint client image editor to save the modified image
     if ($createversion && !empty ($mediafile_orig) && !empty ($mediadata))
     {
       // if symbolic link
@@ -14290,7 +14388,13 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
       $file_ext_new = getbase64fileextension ($mediadata);
 
       // new media file name
-      if ($file_ext_old != $file_ext_new) $mediafile_new = $mediafile_nameonly.$file_ext_new;
+      if ($file_ext_old != $file_ext_new)
+      {
+        $mediafile_new = $mediafile_nameonly.$file_ext_new;
+
+        // delete all existing media files of the current version if the image editor MiniPaint is in use (input parameter mediadata is not empty)
+        deletemediafiles ($site, $mediafile_orig, true, false);
+      }
       else $mediafile_new = $mediafile_orig;
 
       // write media data to file
@@ -14308,6 +14412,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
     // render media file of the object
     elseif ($createversion)
     {
+      // createmedia save the media file in the cloud object and with the remote client as well
       $mediafile_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_orig, $format, $type, false, true);
     }
     else $mediafile_new = false;
@@ -14328,7 +14433,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
 
         // write new media reference in object file
         $filedata = $filedata_orig = loadfile ($location, $page);
-        if ($filedata != false) $filedata = setfilename ($filedata, "media", getobject ($mediafile_nameonly).$file_ext_new); 
+        if ($filedata != false) $filedata = setfilename ($filedata, "media", getobject ($mediafile_nameonly).$file_ext_new);
 
         if ($filedata != false)
         {
@@ -14664,16 +14769,23 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
         if ($pagenew != "")
         {
-          // replace .recycle extension since it is used to mark objects in the recycle bin
+          // trim
           $pagenew = trim ($pagenew);
+
+          // replace .recycle extension since it is used to mark objects in the recycle bin
           if (substr ($pagenew, -8) == ".recycle") $pagenew = str_replace (".recycle", "_recycle", $pagenew);
+                  
+          // replace _hcm identifier since it is used to for media files
+          if (strpos ($pagenew, "_hcm") > 0) $pagenew = str_replace ("_hcm", "hcm", $pagenew);
           
           // remember new object name
           $pagenew_orig = $pagenew;
           $page_orig = $page;
 
-          // create valid file names
-          $page = createfilename ($page);
+          // create valid file names for
+          // existing object name
+          if (specialchr ($page, ".-_~") == true) $page = createfilename ($page);
+          // new object name
           $pagenew = createfilename ($pagenew);
 
           // if pagenew holds only the name
@@ -14739,7 +14851,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-name-must-not-be-empty'][$lang]."</span><br />\n";
         }
       }
-      elseif ($action == "page_paste" && ($method == "copy" || $method == "linkcopy"))
+      elseif ($action == "page_paste" && ($method == "copy" || $method == "linkcopy" || $method == "cut"))
       {
         // check if user has access to paste file in current location
         if (!empty ($access) && accesspermission ($site, $location, $cat) == false)
@@ -14764,60 +14876,37 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           if (empty ($page_sec_info['published'])) $add_ext = ".off";
           else $add_ext = "";
 
-          // define file name after pasting
-          if (is_file ($location.$page_sec) && !is_file ($location.$page_sec_info['filename']."-Copy".$page_sec_info['ext']))
+          // if source location = destination location
+          if ($location_source == $location && $method == "cut")
+          {
+            $add_onload = "";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-cannot-cut-and-paste-an-item-in-the-same-location'][$lang]."</span><br />\n";
+          }
+          // define file name after pasting if the file exists already
+          elseif ((is_file ($location.$page_sec) || is_file ($location.$page_sec.$add_ext)) && $page_sec != ".folder")
           {
             // define new file name with copy suffix
             $page_sec = $page_sec_info['filename']."-Copy".$page_sec_info['ext'].$add_ext;
             $pagename_sec = $pagename_sec_info['filename']."-Copy".$pagename_sec_info['ext'];
-          }
-          elseif (is_file ($location.$page_sec_info['filename']."-Copy".$page_sec_info['ext']))
-          {
+
             for ($c=2; $c<=100; $c++)
             {
-              // define new file name with copy suffix
-              $page_sec = $page_sec_info['filename']."-Copy".$c.$page_sec_info['ext'].$add_ext;
-              $pagename_sec = $pagename_sec_info['filename']."-Copy".$c.$pagename_sec_info['ext'];
+              if (is_file ($location.$page_sec) || is_file ($location.$page_sec.$add_ext))
+              {
+                // define new file name with copy suffix
+                $page_sec = $page_sec_info['filename']."-Copy".$c.$page_sec_info['ext'].$add_ext;
+                $pagename_sec = $pagename_sec_info['filename']."-Copy".$c.$pagename_sec_info['ext'];
 
-              if (!is_file ($location.$page_sec))
+                $add_onload = "";
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
+              }
+              else
               {
                 $add_onload = "";
                 $show = "";
                 break;
               }
-              else
-              {
-                $add_onload = "";
-                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
-              }
             }
-          }
-        }
-      }
-      elseif ($action == "page_paste" && $method == "cut")
-      {
-        // check if user has access to paste file in current location
-        if (!empty ($access) && accesspermission ($site, $location, $cat) == false)
-        {
-          // no access permission
-          $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-permissions-to-paste-items-in-the-current-location'][$lang]."</span><br />\n";
-        }
-        else
-        {
-          if (is_writable ($location_source.$page)) $file_writeable = true;
-          else $file_writeable = false;
-
-          // if source location = destination location
-          if ($location_source == $location)
-          {
-            $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-cannot-cut-and-paste-an-item-in-the-same-location'][$lang]."</span><br />\n";
-          }
-          elseif (is_file ($location.$page))
-          {
-            $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
           }
         }
       }
@@ -15094,14 +15183,14 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             if (!empty ($objects[0]) && substr_count ($objects[0], "|") > 0)
             {
               // remove .recycle directory or file extension from the path since it is not saved in the XML container
-              $temp_search = str_replace (".recycle/", "", $location_esc.$pagename."/");
+              $temp_search = str_replace (".recycle/", "/", $location_esc.$pagename."/");
               $temp_search = substr ($temp_search, 0, -1);
 
               $objects_str = str_replace ($temp_search."|", "", $objects[0]);
               $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects_str, "", "");
 
               // check for connected objects and reset allow_delete
-              if (substr_count ($objects_str, "|") > 0) $allow_delete = false; 
+              if (substr_count ($objects_str, "|") > 0) $allow_delete = false;
             } 
 
             if ($allow_delete == true)
@@ -15113,9 +15202,9 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           elseif ($action == "page_rename" || $action == "file_rename") 
           {
             // remove .recycle directory or file extension from the path since it is not saved in the XML container
-            $temp_search = str_replace (".recycle/", "", $location_esc.$pagename."/");
+            $temp_search = str_replace (".recycle/", "/", $location_esc.$pagename."/");
             $temp_search = substr ($temp_search, 0, -1);
-            $temp_replace = str_replace (".recycle/", "", $location_esc.$pagenewname."/");
+            $temp_replace = str_replace (".recycle/", "/", $location_esc.$pagenewname."/");
             $temp_replace = substr ($temp_replace, 0, -1);
             
             $objects = getcontent ($bufferdata, "<contentobjects>");
@@ -15130,9 +15219,9 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           elseif ($action == "page_paste" && $method == "cut") 
           {
             // remove .recycle directory or file extension from the path since it is not saved in the XML container
-            $temp_search = str_replace (".recycle/", "", $location_source_esc.$pagename."/");
+            $temp_search = str_replace (".recycle/", "/", $location_source_esc.$pagename."/");
             $temp_search = substr ($temp_search, 0, -1);
-            $temp_replace = str_replace (".recycle/", "", $location_esc.$pagename."/");
+            $temp_replace = str_replace (".recycle/", "/", $location_esc.$pagename."/");
             $temp_replace = substr ($temp_replace, 0, -1);
 
             $objects = getcontent ($bufferdata, "<contentobjects>");
@@ -15185,7 +15274,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           if ($test != false)
           {
             // relational DB connectivity
-            if ($mgmt_config['db_connect_rdbms'] != "")
+            if (!empty ($mgmt_config['db_connect_rdbms']))
             { 
               rdbms_deleteobject (convertpath ($site, $location.$page, $cat)); 
             }
@@ -15194,7 +15283,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $page, "");
 
             // delete media file derivates
-            if (!empty ($mediafile_self)) deletemediafiles ($site, $mediafile_self, true);
+            if (!empty ($mediafile_self)) deletemediafiles ($site, $mediafile_self, true, true);
 
             // delete thumbnail file (for versions before 5.0)
             $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));
@@ -15319,7 +15408,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         elseif ($filetype != "Page" && $filetype != "Component")
         {
           // relational DB connectivity
-          if ($mgmt_config['db_connect_rdbms'] != "")
+          if (!empty ($mgmt_config['db_connect_rdbms']))
           {
             rdbms_deleteobject (convertpath ($site, $location.$page, $cat)); 
           } 
@@ -15493,24 +15582,30 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       elseif ($show == "" && $action == "page_paste" && $method == "cut")
       {
         // relational DB connectivity
-        if ($mgmt_config['db_connect_rdbms'] != "")
+        if (!empty ($mgmt_config['db_connect_rdbms']))
         {
           rdbms_renameobject (convertpath ($site, $location_source.$page, $cat), convertpath ($site, $location.$page, $cat)); 
         }
 
         // copy object file (foler must have been created by function copyfolders before)
-        $test = copy ($location_source.$page, $location.$page);
+        // folder files might exist already and should not be copied
+        // all other files will be renamed with the -Copy suffix if they exist in the same location
+        if (!is_file ($location.$page))
+        {
+          $test = copy ($location_source.$page, $location.$page);
 
-        if ($test == true)
-        {
-          // remote client
-          remoteclient ("copy", "abs_path_".$cat, $site, $location_source, $location, $page, $page);
+          if ($test == true)
+          {
+            // remote client
+            remoteclient ("copy", "abs_path_".$cat, $site, $location_source, $location, $page, $page);
+          }
+          else
+          {
+            $errcode = "10203";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Copy failed for ".$location_esc.$page; 
+          }
         }
-        else
-        {
-          $errcode = "10203";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Copy failed for ".$location_esc.$page; 
-        }
+        else $test = true;
 
         if ($test == true)
         {
@@ -15734,7 +15829,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $link_db = link_db_load ($site, $user);
 
           if (is_array ($link_db) && sizeof ($link_db) > 0)
-          { 
+          {
             $link_db = link_db_insert ($site, $link_db, $contentfile_new, $cat, $location.$pagename_sec); 
 
             if ($link_db != false) $link_db[$contentfile_new]['link'] = $link_db[$contentfile_self]['link'];
@@ -16191,9 +16286,14 @@ function renameobject ($site, $location, $page, $pagenew, $user)
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
 
-  // remove .recycle from object name since it is used for the recycle bin
+  // trim
   $pagenew = trim ($pagenew);
+
+  // remove .recycle from object name since it is used for the recycle bin
   if (substr ($pagenew, -8) == ".recycle") $pagenew = str_replace (".recycle", "_recycle", $pagenew);
+
+  // replace _hcm identifier since it is used to for media files
+  if (strpos ($pagenew, "_hcm") > 0) $pagenew = str_replace ("_hcm", "hcm", $pagenew);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   { 
@@ -17053,7 +17153,7 @@ function publishobject ($site, $location, $page, $user)
   if (empty ($lang)) $lang = "en";
 
   // create file name
-  $page = createfilename ($page);
+  if (specialchr ($page, ".-_~") == true) $page = createfilename ($page);
 
   // exclude objects in the recycle bin
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && strpos ($location.$page."/", ".recycle/") < 1 && valid_objectname ($user))
@@ -17722,7 +17822,7 @@ function unpublishobject ($site, $location, $page, $user)
   if (empty ($lang)) $lang = "en";
 
   // create file name
-  $page = createfilename ($page);
+  if (specialchr ($page, ".-_~") == true) $page = createfilename ($page);
 
   // exclude objects in the recycle bin
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && strpos ($location.$page."/", ".recycle/") < 1 && valid_objectname ($user))
@@ -18275,7 +18375,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
 // This function is used to perform actions on multiple objects and is mainly used by popup_status.php.
 // This function should only be used in connection with the GUI of the system.
 
-function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $tempfile="", $maxitems=10)
+function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $tempfile="", $maxitems=40)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
 
@@ -18289,6 +18389,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
   $result['message'] = "";
   $result['tempfile'] = "";
   $result['method'] = "";
+  $result['report'] = array();
 
   // set default language
   if (empty ($lang)) $lang = "en";
@@ -18473,7 +18574,10 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
                           // on success
                           else
                           {
-                            $result = copyfolders ($site, $location_source, $location_dest, $object_source, $user);
+                            if ($method == "cut") $no_duplicates = true;
+                            else $no_duplicates = false;
+
+                            $result = copyfolders ($site, $location_source, $location_dest, $object_source, $user, $no_duplicates);
 
                             if (empty ($result['result']))
                             {
@@ -18598,7 +18702,10 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               {
                 $errcode = "20108";
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|publishobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
-                break;
+                // deprecated: break;
+                // avoid break of process
+                $test['result'] = true;
+                $result['report'][] = $test['message']." Error: publishobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
               } 
             }
             elseif ($action == "unpublish")
@@ -18610,7 +18717,10 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               {
                 $errcode = "20109";
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|unpublishobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
-                break;
+                // deprecated: break;
+                // avoid break of process
+                $test['result'] = true;
+                $result['report'][] = $test['message']." Error: unpublishobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
               }
             } 
             elseif ($action == "delete")
@@ -18622,7 +18732,10 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               {
                 $errcode = "20109";
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
-                break;
+                // deprecated: break;
+                // avoid break of process
+                $test['result'] = true;
+                $result['report'][] = $test['message']." Error: deleteobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
               }
             }
             elseif ($action == "paste")
@@ -18656,7 +18769,11 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
                 // paste object using the result clipboard entries as input without touching the session clipboard
                 $test = pasteobject ($site_dest, $location_dest, $user, $result['clipboard']);
               }
-              else $test['result'] = false;
+              else
+              {
+                $test['result'] = false;
+                $test['message'] = $result['message'];
+              }
 
               if (!empty ($test['result']))
               {
@@ -18666,7 +18783,15 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               {
                 $errcode = "20110";
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|pasteobject failed for ".$location_source_esc.$object_source;
-                break;
+                
+                // break if method is cut since the source object will be deleted
+                if ($method == "cut") break;
+                // avoid break of process
+                else
+                {
+                  $test['result'] = true;
+                  $result['report'][] = $test['message']." Error: pasteobject failed for ".$location_source_esc.$object_source;
+                }
               } 
             }
           }  
@@ -19504,7 +19629,8 @@ function loadbalancer ($type)
 // description:
 // Adds new entries to a log file.
 // A log entry must be formed like:
-// date [YYYY-MM-DD hh:mm]|name of script file [string]|type ["error", "warning" or "information"]|unique error code in script file [integer]|error message [string]
+// date [YYYY-MM-DD hh:mm]|name of script file [string]|type ["error", "warning" or "information"]|unique code in script file [integer]|description [string]
+// Use a tabspace /t for a line break in the description for the full view using popup_log.
 
 function savelog ($error, $logfile="event")
 {
@@ -19806,7 +19932,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   $location = deconvertpath ($location, "file"); 
 
   // create file name
-  $object = createfilename ($object);
+  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
 
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");

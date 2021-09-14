@@ -4310,11 +4310,11 @@ function checktoken ($token, $user="sys", $secret=4)
     // decrypt token
     $token = hcms_decrypt ($token);
 
-    // extract user name and timestamp
-    if ($token != false) list ($timetoken, $token_user) = explode ("@", $token);
+    // extract user name and timestamp (only first @ is the seperator)
+    if (!empty ($token)) list ($timetoken, $token_user) = explode ("@", $token, 2);
 
     // check if token is valid
-    if ($timetoken != "" && $token_user != "")
+    if (!empty ($timetoken) && !empty ($token_user))
     {
       if (checktimetoken ($timetoken, $secret) && $user == $token_user) return true;
       else return false;

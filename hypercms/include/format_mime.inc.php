@@ -12,6 +12,7 @@ $mimetype['.au'] = "audio/basic";
 $mimetype['.avi'] = "video/avi";
 $mimetype['.bcpio'] = "application/x-bcpio";
 $mimetype['.bin'] = "application/octet-stream";
+$mimetype['.bmp'] = "image/bmp";
 $mimetype['.c'] = "text/plain";
 $mimetype['.cc'] = "text/plain";
 $mimetype['.ccad'] = "application/clariscad";

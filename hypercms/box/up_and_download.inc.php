@@ -5,19 +5,20 @@ if (isset ($siteaccess) && is_array ($siteaccess))
   // title
   $title = getescapedtext ($hcms_lang['access-statistics-for'][$lang]);
 
+  // box width
+  if (!empty ($is_mobile)) $width = "320px";
+  else $width = "670px";
+
   foreach ($siteaccess as $item_site)
   {
     // publication management config
     if (valid_publicationname ($item_site)) require ($mgmt_config['abs_path_data']."config/".$item_site.".conf.php");
 
     if (isset ($mgmt_config[$item_site]['dam']) && $mgmt_config[$item_site]['dam'] == true)
-    {
-      if (!empty ($is_mobile)) $width = "92%";
-      else $width = "670px";
-      
+    {      
       echo "
-      <div id=\"stats_".$item_site."\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
-        <div class=\"hcmsHeadline\" style=\"margin:6px; white-space:nowrap;\"><img src=\"".getthemelocation("night")."img/site.png\" class=\"hcmsIconList\" /> ".$title." ".$item_site."</div>";
+      <div id=\"stats_".$item_site."\" class=\"hcmsHomeBox\" style=\"cursor:pointer; margin:10px; width:".$width."; height:400px; float:left; overflow:auto; ".($is_iphone ? "-webkit-overflow-scrolling:touch;" : "")."\">
+        <div class=\"hcmsHeadline\" style=\"margin:6px; white-space:nowrap;\"><img src=\"".getthemelocation("night")."img/site.png\" class=\"hcmsIconList\" /> ".(empty ($is_mobile) ? $title : "")." ".$item_site."</div>";
         
       $rootlocation_esc = "%comp%/".$item_site."/.folder";
 

@@ -11,14 +11,14 @@ var instance = null;
 var template = `
 	<div class="canvas_preview_wrapper">
 		<div class="transparent-grid" id="canvas_preview_background"></div>
-		<canvas width="188" height="100" class="transparent" id="canvas_preview"></canvas>
+		<canvas width="176" height="100" class="transparent" id="canvas_preview"></canvas>
 	</div>
 	<div class="canvas_preview_details">
 		<div class="details">
-			<input title="Zoom out" class="layer_add" id="zoom_less" type="button" value="-" />
-			<input title="Reset zoom level" class="layer_add" id="zoom_100" type="button" value="100%" />
-			<input title="Zoom in" class="layer_add" id="zoom_more" type="button" value="+" />
-			<input class="layer_add" id="zoom_fit" type="button" value="Fit" />
+			<button title="Zoom out" class="layer_add trn" id="zoom_less"">-</button>
+			<button title="Reset zoom level"  class="layer_add trn" id="zoom_100"">100%</button>
+			<button title="Zoom in" class="layer_add trn" id="zoom_more"">+</button>
+			<button class="layer_add trn" id="zoom_fit">Fit</button>
 		</div>
 		<input id="zoom_range" type="range" value="100" min="50" max="1000" step="50" />
 	</div>
@@ -38,7 +38,9 @@ class GUI_preview_class {
 		document.getElementById('toggle_preview').innerHTML = template;
 
 		// preview mini window size on right sidebar
-		this.PREVIEW_SIZE = {w: 188, h: 100};
+		this.PREVIEW_SIZE = {w: 176, h: 100};
+
+		this.canvas_offset = {x: 0, y: 0};
 
 		this.zoom_data = {
 			x: 0,
@@ -65,11 +67,18 @@ class GUI_preview_class {
 
 	set_events() {
 		var _this = this;
+		var is_touch = false;
 
 		document.addEventListener('mousedown', function (e) {
 			_this.mouse_pressed = true;
 		}, false);
 		document.addEventListener('mouseup', function (e) {
+			_this.mouse_pressed = false;
+		}, false);
+		document.addEventListener('touchstart', function (e) {
+			_this.mouse_pressed = true;
+		}, false);
+		document.addEventListener('touchend', function (e) {
 			_this.mouse_pressed = false;
 		}, false);
 		document.getElementById('zoom_range').addEventListener('input', function (e) {
@@ -113,15 +122,36 @@ class GUI_preview_class {
 			config.need_render = true;
 		}, false);
 		document.getElementById("canvas_preview").addEventListener('mousedown', function (e) {
-			//change zoom offset
+			if(is_touch)
+				return;
 			_this.set_zoom_position(e);
 		}, false);
 		document.getElementById("canvas_preview").addEventListener('mousemove', function (e) {
-			//change zoom offset
+			if(is_touch)
+				return;
 			if (_this.mouse_pressed == false)
 				return;
 			_this.set_zoom_position(e);
 		}, false);
+
+		document.getElementById("canvas_preview").addEventListener('touchstart', function (e) {
+			is_touch = true;
+
+			//calc canvas position offset
+			var bodyRect = document.body.getBoundingClientRect();
+			var canvas_el = document.getElementById("canvas_preview").getBoundingClientRect();
+			_this.canvas_offset.x = canvas_el.left - bodyRect.left;
+			_this.canvas_offset.y = canvas_el.top - bodyRect.top;
+
+			//change zoom offset
+			_this.set_zoom_position(e);
+		});
+		document.getElementById("canvas_preview").addEventListener('touchmove', function (e) {
+			//change zoom offset
+			if (_this.mouse_pressed == false)
+				return;
+			_this.set_zoom_position(e);
+		});
 	}
 
 	prepare_canvas() {
@@ -240,7 +270,7 @@ class GUI_preview_class {
 			config.ZOOM = Math.min(config.ZOOM, 500);
 		}
 
-		document.getElementById("zoom_100").value = Math.round(config.ZOOM * 100) + '%';
+		document.getElementById("zoom_100").innerHTML = Math.round(config.ZOOM * 100) + '%';
 		document.getElementById("zoom_range").value = (config.ZOOM * 100);
 
 		config.need_render = true;
@@ -271,14 +301,24 @@ class GUI_preview_class {
 		this.zoom_data.y = config.visible_height / 2;
 	}
 
-	set_zoom_position(e) {
+	set_zoom_position(event) {
+		var mouse_x = event.offsetX;
+		var mouse_y = event.offsetY;
+		if (event.changedTouches) {
+			//touch events
+			event = event.changedTouches[0];
+
+			mouse_x = event.pageX - this.canvas_offset.x;
+			mouse_y = event.pageY - this.canvas_offset.y;
+		}
+
 		var visible_w = config.visible_width / config.ZOOM;
 		var visible_h = config.visible_height / config.ZOOM;
 		var mini_w = this.PREVIEW_SIZE.w * visible_w / config.WIDTH;
 		var mini_h = this.PREVIEW_SIZE.h * visible_h / config.HEIGHT;
 
-		var change_x = (e.offsetX - mini_w / 2) / this.PREVIEW_SIZE.w * config.WIDTH;
-		var change_y = (e.offsetY - mini_h / 2) / this.PREVIEW_SIZE.h * config.HEIGHT;
+		var change_x = (mouse_x - mini_w / 2) / this.PREVIEW_SIZE.w * config.WIDTH;
+		var change_y = (mouse_y - mini_h / 2) / this.PREVIEW_SIZE.h * config.HEIGHT;
 
 		var zoom_data = this.zoom_data;
 		zoom_data.move_pos = {};

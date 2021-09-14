@@ -343,12 +343,12 @@ elseif ($action == "base_search" || $search_dir != "")
   {
     $search_textnode = array();
     $search_textnode[0] = $search_expression;
-    
-    if (strpos ("_".$search_expression, "%taxonomy%/") > 0 || strpos ("_".$search_expression, "%keyword%/") > 0 || strpos ("_".$search_expression, "%hierarchy%/") > 0)
+
+    // do not search in the location and object name if a text based search is requested
+    if ($search_cat == "text")
     {
-      $search_filename = "";
+      $search_filename = "*Null*";
     }
-    else $search_filename = $search_expression;
   }
 
   // search for certain object types/formats

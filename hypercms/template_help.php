@@ -27,6 +27,9 @@ if (!checkglobalpermission ($site, 'template') || !checkglobalpermission ($site,
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -325,6 +328,10 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     <tr> 
       <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['read-only-content'][$lang]); ?></td>
       <td class="hcmsRowData1">readonly='readonly'</td>
+    </tr>
+    <tr> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['disable-link-in-edit-mode'][$lang]); ?></td>
+      <td class="hcmsRowData1">disable='disable'</td>
     </tr>
     <tr> 
       <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['meta-information-type-optional'][$lang]); ?></td>

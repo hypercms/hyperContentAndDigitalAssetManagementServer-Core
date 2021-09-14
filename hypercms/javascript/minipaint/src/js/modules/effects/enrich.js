@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Base_layers_class from './../../core/base-layers.js';
@@ -15,7 +16,7 @@ class Effects_enrich_class {
 		var _this = this;
 
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 
@@ -30,7 +31,6 @@ class Effects_enrich_class {
 				canvas_preview.putImageData(data, 0, 0);
 			},
 			on_finish: function (params) {
-				window.State.save();
 				_this.save(params);
 			},
 		};
@@ -48,13 +48,27 @@ class Effects_enrich_class {
 		ctx.putImageData(data, 0, 0);
 
 		//save
-		this.Base_layers.update_layer_image(canvas);
+		return app.State.do_action(
+			new app.Actions.Update_layer_image_action(canvas)
+		);
 	}
 
 	change(data, params) {
 		var filtered = ImageFilters.Enrich(data);
 
 		return filtered;
+	}
+
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(canvas_thumb, 0, 0);
+
+		//now update
+		var img = ctx.getImageData(0, 0, canvas_thumb.width, canvas_thumb.height);
+		var params = {}
+		var data = this.change(img, params);
+		ctx.putImageData(data, 0, 0);
 	}
 
 }

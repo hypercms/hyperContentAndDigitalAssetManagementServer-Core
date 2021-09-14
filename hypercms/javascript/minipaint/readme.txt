@@ -1,40 +1,164 @@
-When miniPaint will be updated, the following changes need to be done:
+When miniPaint will be updated, the following changes need to be done (based on Version 4.9.1):
 
 1. Change the menu in dist/bundle.js:
-Remove certain "File" menu items and add id="save_as" to "Save as" menu item:
-t.default='\n\t<ul>\n\t\t<li>\n\t\t\t<a class="trn" id="save_button" href="#">Quick save</a>\n\t\t\t<ul>\n\t\t\t\t<li><a class="trn" id="save_png" href="#">PNG</a></li>\n\t\t\t\t<li><a class="trn" id="save_jpg" href="#">JPEG</a></li>\n\t\t\t\t</ul>\n\t\t\t\t\t</li>\n<li>\n\t\t\t<a class="trn" href="#">File</a>\n\t\t\t<ul>\n\t\t\t\t<li><a class="trn" data-target="file/new.new" href="#">New</a></li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li class="more">\n\t\t\t\t\t<a class="trn" href="#">Open</a>\n\t\t\t\t\t<ul>\n\t\t\t\t\t<li><a class="trn dots" data-target="file/open.open_file" data-key="Drag&Drop" href="#">Open File</a></li>\n\t\t\t\t\t<li><a class="trn dots" data-target="file/open.open_dir" href="#">Open Directory</a></li>\n\t\t\t\t\t<li><a class="trn dots" data-target="file/open.open_webcam" href="#">Open from Webcam</a></li>\n\t\t\t\t\t<li><a class="trn dots" data-target="file/open.open_url" href="#">Open URL</a></li>\n\t\t\t\t\t<li><a class="trn dots" data-target="file/open.open_data_url" href="#">Open Data URL</a></li>\n\t\t\t\t\t<li><a class="trn dots" data-target="file/open.open_template_test" href="#">Open test template</a></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a id="save_as" class="trn dots" data-target="file/save.save" data-key="S" href="#">Save as</a></li>\n\t\t\t\t</ul>\n\t\t</li>\n\t\t<li>\n\t\t\t<a class="trn" href="#">Edit</a>\n\t\t\t<ul>\n\t\t\t\t<li><a class="trn" data-target="edit/undo.undo" href="#">Undo</a></li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn" data-target="edit/selection.delete" data-key="Del" href="#">Delete selection</a></li>\n\t\t\t\t<li><a class="trn" data-target="layer/new.new_selection" href="#">Copy selection</a></li>\n\t\t\t\t<li><a class="trn" data-target="edit/paste.paste" data-key="Ctrl+V" href="#">Paste</a></li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn" data-target="edit/selection.select_all" href="#">Select all</a></li>\n\t\t\t</ul>\n\t\t</li>\n\t\t<li>\n\t\t\t<a class="trn" href="#">Image</a>\n\t\t\t<ul>\n\t\t\t\t<li><a class="trn dots" data-target="image/information.information" href="#">Information</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="image/size.size" href="#">Size</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="image/trim.trim" data-key="T" href="#">Trim</a>\n\t\t\t\t<li class="more">\n\t\t\t\t\t<a class="trn" href="#">Zoom</a>\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li><a class="trn" data-target="image/zoom.in" href="#">Zoom In</a></li>\n\t\t\t\t\t\t<li><a class="trn" data-target="image/zoom.out" href="#">Zoom Out</a></li>\n\t\t\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t\t\t<li><a class="trn" data-target="image/zoom.original" href="#">Original size</a></li>\n\t\t\t\t\t\t<li><a class="trn" data-target="image/zoom.auto" href="#">Fit window</a></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn dots" data-target="image/resize.resize" href="#">Resize</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="image/rotate.rotate" href="#">Rotate</a></li>\n\t\t\t\t<li class="more">\n\t\t\t\t\t<a class="trn" href="#">Flip</a>\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li><a class="trn" data-target="image/flip.vertical" href="#">Vertical</a></li>\n\t\t\t\t\t\t<li><a class="trn" data-target="image/flip.horizontal" href="#">Horizontal</a></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t\t<li><a class="trn dots" data-target="image/translate.translate" href="#">Translate</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="image/opacity.opacity" href="#">Opacity</a></li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn dots" data-target="image/color_corrections.color_corrections" href="#">Color corrections</a></li>\n\t\t\t\t<li><a class="trn" data-target="image/auto_adjust.auto_adjust" href="#">Auto adjust colors</a></li>\n\t\t\t\t<li><a class="trn" data-target="image/decrease_colors.decrease_colors" href="#">Decrease color depth</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="image/palette.palette" href="#">Color palette</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="image/grid.grid" data-key="G" href="#">Grid</a></li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn dots" data-target="image/histogram.histogram" data-key="H" href="#">Histogram</a></li>\n\t\t\t</ul>\n\t\t</li>\n\t\t<li>\n\t\t\t<a class="trn" href="#">Layers</a>\n\t\t\t<ul>\n\t\t\t\t<li><a class="trn" data-target="layer/new.new" data-key="N" href="#">New</a></li>\n\t\t\t\t<li><a class="trn" data-target="layer/new.new_selection" href="#">New from selection</a></li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn" data-target="layer/duplicate.duplicate" href="#">Duplicate</a></li>\n\t\t\t\t<li><a class="trn" data-target="layer/visibility.toggle" href="#">Show / Hide</a></li>\n\t\t\t\t<li><a class="trn" data-target="layer/delete.delete" href="#">Delete</a></li>\n\t\t\t\t<li><a class="trn" data-target="layer/raster.raster" href="#">Convert to raster</a></li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li class="more">\n\t\t\t\t\t<a class="trn" href="#">Move</a>\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li><a class="trn" data-target="layer/move.up" href="#">Up</a></li>\n\t\t\t\t\t\t<li><a class="trn" data-target="layer/move.down" href="#">Down</a></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t\t<li><a class="trn dots" data-target="layer/composition.composition" href="#">Composition</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="layer/rename.rename" href="#">Rename</a></li>\n\t\t\t\t<li><a class="trn" data-target="layer/clear.clear" href="#">Clear</a></li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn" data-target="layer/differences.differences" href="#">Differences Down</a></li>\n\t\t\t\t<li><a class="trn" data-target="layer/merge.merge" href="#">Merge Down</a></li>\n\t\t\t\t<li><a class="trn" data-target="layer/flatten.flatten" href="#">Flatten Image</a></li>\n\t\t\t</ul>\n\t\t</li>\n\t\t<li>\n\t\t\t<a class="trn" href="#">Effects</a>\n\t\t\t<ul id="effects_list">\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li class="more">\n\t\t\t\t\t<a class="trn" href="#">CSS filters</a>\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li><a class="trn dots" data-target="effects/blur.blur" href="#">Gaussian Blur</a>\n\t\t\t\t\t\t<li><a class="trn dots" data-target="effects/brightness.brightness" href="#">Brightness</a>\n\t\t\t\t\t\t<li><a class="trn dots" data-target="effects/contrast.contrast" href="#">Contrast</a>\n\t\t\t\t\t\t<li><a class="trn dots" data-target="effects/grayscale.grayscale" href="#">Grayscale</a>\n\t\t\t\t\t\t<li><a class="trn dots" data-target="effects/hue_rotate.hue_rotate" href="#">Hue Rotate</a>\n\t\t\t\t\t\t<li><a class="trn dots" data-target="effects/negative.negative" href="#">Negative</a>\n\t\t\t\t\t\t<li><a class="trn dots" data-target="effects/saturate.saturate" href="#">Saturate</a>\n\t\t\t\t\t\t<li><a class="trn dots" data-target="effects/sepia.sepia" href="#">Sepia</a>\n\t\t\t\t\t\t<li><a class="trn dots" data-target="effects/shadow.shadow" href="#">Shadow</a>\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t\t<li><a class="trn dots" data-target="effects/black_and_white.black_and_white" href="#">Black and White</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/blueprint.blueprint" href="#">Blueprint</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/box_blur.box_blur" href="#">Box Blur</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/denoise.denoise" href="#">Denoise</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/dither.dither" href="#">Dither</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/dot_screen.dot_screen" href="#">Dot Screen</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/edge.edge" href="#">Edge</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/emboss.emboss" href="#">Emboss</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/enrich.enrich" href="#">Enrich</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/grains.grains" href="#">Grains</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/heatmap.heatmap" href="#">Heatmap</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/mosaic.mosaic" href="#">Mosaic</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/night_vision.night_vision" href="#">Night Vision</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/oil.oil" href="#">Oil</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/pencil.pencil" href="#">Pencil</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/sharpen.sharpen" href="#">Sharpen</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/solarize.solarize" href="#">Solarize</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/tilt_shift.tilt_shift" href="#">Tilt Shift</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/vignette.vignette" href="#">Vignette</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/vibrance.vibrance" href="#">Vibrance</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/vintage.vintage" href="#">Vintage</a>\n\t\t\t\t<li><a class="trn dots" data-target="effects/zoom_blur.zoom_blur" href="#">Zoom Blur</a>\n\t\t\t</ul>\n\t\t</li>\n\t\t<li>\n\t\t\t<a class="trn" href="#">Tools</a>\n\t\t\t<ul>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn dots" data-target="tools/borders.borders" href="#">Borders</a></li>\n\t\t\t\t<li><a class="trn" data-target="tools/sprites.sprites" href="#">Sprites</a></li>\n\t\t\t\t<li><a class="trn" data-target="tools/keypoints.keypoints" href="#">Key-points</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="tools/content_fill.content_fill" href="#">Content fill</a></li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn dots" data-target="tools/color_to_alpha.color_to_alpha" href="#">Color to alpha</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="tools/color_zoom.color_zoom" href="#">Color Zoom</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="tools/replace_color.replace_color" href="#">Replace Color</a></li>\n\t\t\t\t<li><a class="trn dots" data-target="tools/restore_alpha.restore_alpha" href="#">Restore alpha</a></li>\n\t\t\t\t<li class="more">\n\t\t\t\t\t<a class="trn" href="#">External</a>\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li><a class="trn external" target="_blank" href="https://tinypng.com/">Compress PNG and JPEG</a>\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn dots" data-target="tools/settings.settings" href="#">Settings</a></li>\t\n\t\t\t</ul>\n\t\t</li>\n\t\t<li>\n\t\t\t<a class="trn" href="#">Help</a>\n\t\t\t<ul>\n\t\t\t\t<li><a class="trn dots" data-target="help/shortcuts.shortcuts" href="#">Keyboard Shortcuts</a></li>\n\t\t\t\t<li><a class="trn external" target="_blank" href="https://github.com/viliusle/miniPaint/issues">Report issues</a></li>\n\t\t\t\t<li class="more">\n\t\t\t\t\t<a class="trn" href="#">Language</a>\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.en" href="#">English</a>\n\t\t\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.zh" href="#">ç®€ä½“ä¸­æ–‡ï¼‰</a>\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.es" href="#">EspaÃ±ol</a>\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.fr" href="#">French</a>\t\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.de" href="#">German</a>\t\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.it" href="#">Italiano</a>\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.ja" href="#">Japanese</a>\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.ko" href="#">Korean</a>\t\t\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.lt" href="#">LietuviÅ³</a>\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.pt" href="#">Portuguese</a>\t\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.ru" href="#">Russian</a>\t\n\t\t\t\t\t\t<li><a data-target="help/translate.translate.tr" href="#">Turkish</a>\t\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t\t<li><div class="mid-line"></div></li>\n\t\t\t\t<li><a class="trn dots" data-target="help/about.about" href="#">About</a></li>\n\t\t\t</ul>\n\t\t</li>\n\t</ul>\n'
+Add new "Quick Save" menu item:
+                    w = [{
+                        name: "Quick Save",
+                        children: [{
+                            name: "Full layers data",
+                            target: "file/quicksave.quicksave"
+                        }, {
+                            name: "PNG",
+                            target: "file/quicksave.png"
+                        }, {
+                            name: "JPEG",
+                            target: "file/quicksave.jpeg"
+                        }]
+
+Remove File menu according to old version:
+  Remove Search Images
+  Rename Export to Save as
+  Remove Save As (save JSON)
+  Remove Save As Data URL
+  Remove Quick Save and Quick Load
+
+Remove External:
+                        }, {
+                            name: "External",
+                            children: [{
+                                name: "TINYPNG - Compress PNG and JPEG",
+                                href: "https://tinypng.com"
+                            }, {
+                                name: "REMOVE.BG - Remove Image Background",
+                                href: "https://www.remove.bg"
+                            }, {
+                                name: "PNGTOSVG - Convert Image to SVG",
+                                href: "https://www.pngtosvg.com"
+                            }, {
+                                name: "SQUOOSH - Compress and Compare Images",
+                                href: "https://squoosh.app"
+                            }]
 
 2. Change colors of theme-dark in dist/bundle.js:
 Other browsers:
-background: #CCCCCC;
-background-color-area: #CCCCCC;
-background-color-section: #CCCCCC;
+background: #666d6f -> #7d7d7d;
+background-color-area: #7d7d7d;
+background-color-section: #7d7d7d;
 background-color-menu: #2D2D2D -> #424242;
-background-color-active: #419147 -> #FF8411;
-
-IE < 10:
-body background-color: #808080 -> #CCCCCC;
-ddsmoothmenu background: #2D2D2D -> #424242;
-.submenu background-color: rgba(255, 255, 255, 0.2) -> #CCCCCC;
-.block background-color: rgba(255, 255, 255, 0.2) -> #CCCCCC;
-.sidebar_left .item background-color: rgba(255, 255, 255, 0.2) -> #CCCCCC;
-.sidebar_left .item.active background-color: #419147 -> #FF8411;
-.sidebar_right background-color: #424F5A -> #CCCCCC;
+background-color-active: #adecab -> #FF8411;
+area-background-color: #464d4f -> transparent;
 
 3. Change mobile menu button in dist/bundle.js:
 right_mobile_menu{\n\tposition:absolute;\n\twidth:32px;\n\theight:32px;\n\tbackground: url("images/sprites.png") no-repeat 2px -96px;\n\tfilter: invert(1);\n\tdisplay:block;\n\ttop:50px;\n\tright:2px;\n\tz-index:200;\n\tborder:0;\n\toutline:0;\n\tcursor: pointer;\n}
 REMOVE obsolete entry: right_mobile_menu{right:0;}
 
-4. Remove "JSON - Full layers data" from this.SAVE_TYPES in dist/bundel.js since we don't want JSON as output format
+4. Change logic in dist/bundle.js
 
-5. In order to support the hyperCMS save function savemediacontent:
+Replace Quickload:
+                        key: "quickload",
+                        value: function() {
+                            var e = localStorage.getItem("quicksave_data");
+                            if ("" == e || null == e) return !1;
+                            this.File_open.load_json(e)
+                        }
+
+By:
+                        key: "quickload",
+                        value: function() {
+                            var e = document.forms['mediaconfig'].elements['jsondata'].value;
+                            if ("" == e || null == e) return !1;
+                            this.File_open.load_json(e)
+                        }
+
+Replace Quicksave:
+  key: "quicksave"
+    ...
+    if (e.length > 5e6) return l().error("Sorry, image is too big, max 5 MB."), !1;
+  localStorage.setItem("quicksave_data", e)
+    ...
+By: 
+  key: "quicksave"
+    ...
+    window.savejsoncontent(e, '')
+    ...
+
+Replace for save JSON data:
+                            else if ("JSON" == l) {
+                                0 == this.Helper.strpos(r, ".json") && (r += ".json");
+                                var h = this.export_as_json(),
+                                    f = new Blob ([h], {
+                                    mime-type: text
+                                });
+                                p().saveAs(f, r)
+                            }
+By:
+                            else if ("JSON" == l) {
+                                0 == this.Helper.strpos(r, ".json") && (r += ".json");
+                                var h = this.export_as_json(),
+                                    f = [h];
+                                window.savejsoncontent(f, r)
+                            }
+
+Replace for readonly of ile name:
+                                        else {
+                                            var d = "text";
+                                            "" == n.placeholder || isNaN(n.placeholder) || (d = "number"), null != n.value && "number" == typeof n.value && (d = "number");
+                                            var h = "";
+                                            void 0 !== n.comment && (h = '<span class="field_comment trn">' + n.comment + "</span>"), e += '<td colspan="2"><input type="' + d + '" id="pop_data_' + n.name + '" onchange="POP.onChangeEvent();" value="' + n.value + '" placeholder="' + n.placeholder + '" ' + (n.prevent_submission ? 'data-prevent-submission=""' : "") + " />" + h + "</td>"
+                                        }
+By:
+                                        else {
+                                            var d = "text";
+                                            var readonly = "";
+                                            if (n.name == "name") readonly = "readonly";
+                                            "" == n.placeholder || isNaN(n.placeholder) || (d = "number"), null != n.value && "number" == typeof n.value && (d = "number");
+                                            var h = "";
+                                            void 0 !== n.comment && (h = '<span class="field_comment trn">' + n.comment + "</span>"), e += '<td colspan="2"><input type="' + d + '" id="pop_data_' + n.name + '" onchange="POP.onChangeEvent();" value="' + n.value + '" '+ readonly + ' placeholder="' + n.placeholder + '" ' + (n.prevent_submission ? 'data-prevent-submission=""' : "") + " />" + h + "</td>"
+                                        }
+
+Relpace parameters for Save as:
+Replace:
+                            var p = {
+                                title: t,
+                                ...
+                                }, {
+                                    name: "layers",
+                                    title: "Save layers:",
+                                    values: ["All", "Selected", "Separated", "Separated (original types)"]
+
+By:
+                            var p = {
+                                title: t,
+                                ...
+                                }, {
+                                    name: "layers",
+                                    title: "Save layers:",
+                                    values: ["All", "Selected"]
+
+5. Replace Quickload in dist/bundle.js:
+Replace:
+                        key: "quickload",
+                        value: function() {
+                            var e = localStorage.getItem("quicksave_data");
+                            if ("" == e || null == e) return !1;
+                            this.File_open.load_json(e)
+                        }
+By:
+                        key: "quickload",
+                        value: function() {
+                            var e = localStorage.getItem("quicksave_data");
+                            if ("" == e || null == e) return !1;
+                            this.File_open.load_json(e)
+                        }
+
+6. In order to support the hyperCMS save function savemediacontent:
 Replace navigator.msSaveOrOpenBlob with window.savemediacontent in minipaint/dist/bundle.js for IE10+.
 Replace u.default.saveAs with window.savemediacontent in minipaint/dist/bundle.js for other browsers.
 
-6. Create/update the file image_minipaint.php:
+7. Create/update the file image_minipaint.php:
 Add PHP code according to the existing file.
 
-7. Prepare HTML head and add main.css, main.js and JQuery library:
+8. Prepare HTML head and add main.css, main.js and JQuery library:
 <head>
   <title>hyperCMS - miniPaint</title>
   <meta charset="utf-8" />

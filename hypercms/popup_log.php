@@ -60,6 +60,7 @@ popupfocus ();
 <?php
 echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" />&nbsp;".getescapedtext ($hcms_lang['system-events'][$lang]), $lang);
 ?>
+
 <div class="hcmsWorkplaceFrame">
   <div class="hcmsHeadline" style="margin-bottom:10px;">
   <?php
@@ -110,5 +111,6 @@ echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsBu
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

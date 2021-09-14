@@ -34,7 +34,7 @@ if (session_id() != "") session_write_close();
 if (!empty ($is_mobile))
 {
   $chart_width = 300;
-  $chart_height = 190;
+  $chart_height = 180;
 }
 else
 {

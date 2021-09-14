@@ -258,7 +258,7 @@ if (checktoken ($token, $user))
     create_csv ($assoc_array, "export.csv", "php://output", ";", '"', "utf-8", "utf-8", true);
   }
   // save toolbar settings
-  elseif ($action == "toolbar" && $setlocalpermission['root'] == 1)
+  elseif ($action == "toolbar")
   {
     $settoolbar = settoolbarfunctions ($toolbar, $user);
 
@@ -802,7 +802,7 @@ function sendtochat (text)
 <?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <!-- toolbar settings -->
-<?php if ($from_page == "" && !empty ($mgmt_config['toolbar_functions'])) { ?>
+<?php if (!empty ($mgmt_config['toolbar_functions'])) { ?>
 <div style="position:fixed; <?php if ($is_mobile) echo "top:-1px; right:2px;"; else echo "top:4px; right:6px;"; ?>">
   <?php echo "<img src=\"".getthemelocation()."img/admin.png\" class=\"hcmsButtonTiny hcmsIconList\" onclick=\"switchToolbar();\" title=\"".getescapedtext ($hcms_lang['customize-toolbar'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['customize-toolbar'][$lang])."\" />"; ?>
 </div>
@@ -814,6 +814,7 @@ function sendtochat (text)
     <input type="hidden" name="page" value="<?php echo $page; ?>" />
     <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
     <input type="hidden" name="multiobject" value="<?php echo $multiobject ?>" />
+    <input type="hidden" name="from_page" value="<?php echo $from_page; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     <!-- required for function settoolbarfunctions -->
     <input type="hidden" name="toolbar[toolbar]" value="1" />

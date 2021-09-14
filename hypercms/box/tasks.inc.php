@@ -2,12 +2,14 @@
 // ---------------------- RECENT TASKS ---------------------
 if (checkrootpermission ('desktoptaskmgmt'))
 {
-  if (!empty ($is_mobile)) $width = "92%";
+  // box width
+  if (!empty ($is_mobile)) $width = "320px";
   else $width = "320px";
 
-  $task_array = rdbms_gettask ("", "", "", "", $user);
+  // get tasks of user
+  if (!empty ($user)) $task_array = rdbms_gettask ("", "", "", "", $user);
 
-  if (is_array ($task_array) && sizeof ($task_array) > 0)
+  if (!empty ($task_array) && is_array ($task_array) && sizeof ($task_array) > 0)
   {
     echo "
   <div id=\"task\" onclick=\"document.location.href='task/task_list.php';\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left; cursor:pointer;\">";

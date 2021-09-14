@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
@@ -21,11 +22,9 @@ class Tools_sprites_class {
 			title: 'Sprites',
 			params: [
 				{name: "gap", title: "Gap:", value: "50", values: ["0", "10", "50", "100"]},
-				{name: "width", title: "Width:", value: config.WIDTH},
 			],
 			on_finish: function (params) {
-				window.State.save();
-				_this.generate_sprites(params.gap, params.width);
+				_this.generate_sprites(params.gap);
 			},
 		};
 		this.POP.show(settings);
@@ -33,26 +32,18 @@ class Tools_sprites_class {
 
 	generate_sprites(gap, sprite_width) {
 		gap = parseInt(gap);
-		sprite_width = parseInt(sprite_width);
 
 		if (config.layers.length == 1) {
 			alertify.error('There is only 1 layer.');
-			return false;
-		}
-		if (sprite_width < config.WIDTH) {
-			alertify.error('New width can not be smaller then current width');
 			return false;
 		}
 
 		var xx = 0;
 		var yy = 0;
 		var max_height = 0;
-		var W = sprite_width;
-		var H = config.HEIGHT;
-
-		//prepare width
-		config.WIDTH = parseInt(sprite_width);
-		this.Base_gui.prepare_canvas();
+		let actions = [];
+		let new_height = config.HEIGHT;
+		let new_width = config.WIDTH;
 
 		//collect trim info
 		var trim_details_array = [];
@@ -71,14 +62,14 @@ class Tools_sprites_class {
 				continue;
 
 			var trim_details = trim_details_array[layer.id];
-			if (config.WIDTH == trim_details.left) {
+			if (new_width == trim_details.left) {
 				//empty layer
 				continue;
 			}
-			var width = W - trim_details.left - trim_details.right;
-			var height = H - trim_details.top - trim_details.bottom;
+			var width = new_width - trim_details.left - trim_details.right;
+			var height = config.HEIGHT - trim_details.top - trim_details.bottom;
 
-			if (xx + width > sprite_width) {
+			if (xx + width > new_width) {
 				xx = 0;
 				yy += max_height;
 				max_height = 0;
@@ -86,13 +77,17 @@ class Tools_sprites_class {
 			if (yy % gap > 0 && gap > 0) {
 				yy = yy - yy % gap + gap;
 			}
-			if (yy + height > config.HEIGHT) {
-				config.HEIGHT = parseInt(yy + height);
+			if (yy + height > new_height) {
+				new_height = parseInt(yy + height);
 				this.Base_gui.prepare_canvas();
 			}
 
-			layer.x = layer.x + xx - trim_details.left;
-			layer.y = layer.y + yy - trim_details.top;
+			actions.push(
+				new app.Actions.Update_layer_action(layer.id, {
+					x: layer.x + xx - trim_details.left,
+					y: layer.y + yy - trim_details.top
+				})
+			);
 
 			xx += width;
 			if (gap > 0) {
@@ -102,14 +97,25 @@ class Tools_sprites_class {
 			if (height > max_height) {
 				max_height = height;
 			}
-			if (xx > sprite_width) {
+			if (xx > new_width) {
 				xx = 0;
 				yy += max_height;
 				max_height = 0;
 			}
 		}
+		actions.push(
+			new app.Actions.Prepare_canvas_action('undo'),
+			new app.Actions.Update_config_action({
+				WIDTH: new_width,
+				HEIGHT: new_height
+			}),
+			new app.Actions.Prepare_canvas_action('do')
+		);
 
-		config.need_render = true;
+		app.State.do_action(
+			new app.Actions.Bundle_action('sprites', 'Sprites', actions)
+		);
+
 	}
 
 }

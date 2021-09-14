@@ -1,0 +1,3 @@
+* * * * * cd /var/www/html/hypercms/job; /usr/bin/php -f minutely.php 
+0 4 * * * cd /var/www/html/hypercms/job; /usr/bin/php -f daily.php
+0 2 * * * cd /var/www/html/hypercms/job; /usr/bin/php -f update.php

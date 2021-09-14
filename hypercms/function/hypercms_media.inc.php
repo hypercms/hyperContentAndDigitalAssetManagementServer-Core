@@ -41,12 +41,13 @@ function valid_jpeg ($filepath)
 
 // description:
 // This function extracts the text content of multimedia objects using OCR and returns the text.
-// It is a helper function for function indexcontent.
+// It is a helper function for function indexcontent. Do not use function ocr_extractcontent directly since it will not support encrypted media files or media files in cloud storages.
 
 function ocr_extractcontent ($site, $location, $file)
 {
   global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && !empty ($mgmt_parser) && is_array ($mgmt_parser) && is_supported ($mgmt_parser, $file))
@@ -89,13 +90,14 @@ function ocr_extractcontent ($site, $location, $file)
 
       if (!empty ($cmd))
       {
-        @exec ($cmd, $output, $errorCode);
+        // execute and redirect stderr (2) to stdout (1)
+        @exec ($cmd." 2>&1", $output, $errorCode);
 
         // on error
         if ($errorCode || !is_file ($temp_dir.$temp_name.".temp-0.tiff"))
         {
           $errcode = "20531";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed in indexcontent for file: ".$file;
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
         }
         // on success
         else
@@ -195,15 +197,16 @@ function ocr_extractcontent ($site, $location, $file)
               {
                 // create temp text file from TIFF image (file extension for text file will be added by Tesseract)
                 // using Orientation and script detection (OSD)
-                $cmd = $parser." \"".shellcmd_encode ($temp_dir.$temp_file)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"  ".$lang_options." -psm 1";
+                $cmd = $parser." \"".shellcmd_encode ($temp_dir.$temp_file)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"  ".$lang_options." --psm 1";
 
-                @exec ($cmd);
+                // execute and redirect stderr (2) to stdout (1)
+                @exec ($cmd." 2>&1", $output, $errorCode);
 
                 // on error
-                if (!is_file ($temp_dir.$temp_name.".txt"))
+                if ($errorCode || !is_file ($temp_dir.$temp_name.".txt"))
                 {
                   $errcode = "20532";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of tesseract (command:".$cmd.") failed in indexcontent for file: ".$file;
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of tesseract (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
                 }
                 // on success
                 else
@@ -224,15 +227,16 @@ function ocr_extractcontent ($site, $location, $file)
           {
             // create temp text file from TIFF image (file extension for text file will be added by Tesseract)
             // using Orientation and script detection (OSD)
-            $cmd = $parser." \"".shellcmd_encode ($location_source.$file_source)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"  ".$lang_options." -psm 1";
+            $cmd = $parser." \"".shellcmd_encode ($location_source.$file_source)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"  ".$lang_options." --psm 1";
 
-            @exec ($cmd);
+            // execute and redirect stderr (2) to stdout (1)
+            @exec ($cmd." 2>&1", $output, $errorCode);
 
             // on error
-            if (!is_file ($temp_dir.$temp_name.".txt"))
+            if ($errorCode || !is_file ($temp_dir.$temp_name.".txt"))
             {
               $errcode = "20532";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of tesseract (command:".$cmd.") failed in indexcontent for file: ".$file;
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of tesseract (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
             }
             // on success
             else
@@ -282,6 +286,14 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
+
+    // if RAW image (use the converted JPEG as source file)
+    if (is_rawimage ($file))
+    {
+      // get file name without extension
+      $file_name = strrev (substr (strstr (strrev ($file), "."), 1));
+      $file = $file_name.".jpg";
+    }
 
     // get file extension
     $file_ext = strtolower (strrchr ($file, "."));
@@ -384,12 +396,13 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         // .odt is a ZIP-file with the content placed in the file content.xml
         $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" content.xml -d \"".shellcmd_encode ($temp_dir)."\"";
 
-        @exec ($cmd, $output, $errorCode);
+        // execute and redirect stderr (2) to stdout (1)
+        @exec ($cmd." 2>&1", $output, $errorCode);
 
         if ($errorCode && is_array ($output))
         {
           $errcode = "20133";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$location.$file."' \t".implode ("\t", $output); 
         } 
         else
         {
@@ -415,7 +428,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       // get file content from MS Word before 2007 (doc) in UTF-8
       elseif (($file_ext == ".doc") && !empty ($mgmt_parser['.doc']))
       {
-        @exec ($mgmt_parser['.doc']." -t -i 1 -m UTF-8.txt \"".shellcmd_encode ($location.$file)."\"", $file_content, $errorCode); 
+        $cmd = $mgmt_parser['.doc']." -t -i 1 -m UTF-8.txt \"".shellcmd_encode ($location.$file)."\"";
+
+        // execute and redirect stderr (2) to stdout (1)
+        @exec ($cmd." 2>&1", $file_content, $errorCode); 
 
         if ($errorCode)
         {
@@ -443,12 +459,13 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         // docx is a ZIP-file with the content placed in the file word/document.xml
         $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" word/document.xml -d \"".shellcmd_encode ($temp_dir)."\"";
 
-        @exec ($cmd, $output, $errorCode);
+        // execute and redirect stderr (2) to stdout (1)
+        @exec ($cmd." 2>&1", $output, $errorCode);
 
         if ($errorCode && is_array ($output))
         {
           $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$location.$file."' \t".implode ("\t", $output); 
         } 
         else
         {
@@ -494,12 +511,13 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         // xlsx is a ZIP-file with the content placed in the file xl/sharedStrings.xml
         $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" xl/sharedStrings.xml -d \"".shellcmd_encode ($temp_dir)."\"";
 
-        @exec ($cmd, $output, $errorCode);
+        // execute and redirect stderr (2) to stdout (1)
+        @exec ($cmd." 2>&1", $output, $errorCode);
 
         if ($errorCode && is_array ($output))
         {
           $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$location.$file."' \t".implode ("\t", $output);
         } 
         else
         {
@@ -596,12 +614,13 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         // pptx is a ZIP-file with the content placed in the file ppt/slides/slide#.xml (# ... number of the slide)
         $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" ppt/slides/slide* -d \"".shellcmd_encode ($temp_dir)."\"";
 
-        @exec ($cmd, $output, $errorCode);
+        // execute and redirect stderr (2) to stdout (1)
+        @exec ($cmd." 2>&1", $output, $errorCode);
 
         if ($errorCode && is_array ($output))
         {
           $errcode = "20136";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip failed for '".$location.$file."' with error code ".$errorCode.": ".implode ("<br />", $output); 
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$location.$file."' \t".implode ("\t", $output); 
         } 
         else
         {
@@ -1094,13 +1113,14 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
           // extract thumbnail
           $cmd = $executable." -r -b -PageImage \"".shellcmd_encode ($location_source.$file)."\" > \"".shellcmd_encode ($location_dest.$newfile)."\"";
 
-          @exec ($cmd, $output, $errorCode);
+          // execute and redirect stderr (2) to stdout (1)
+          @exec ($cmd." 2>&1", $output, $errorCode);
 
           // on error
           if ($errorCode)
           {
             $errcode = "20141";
-            $error[] = $mgmt_config['today']."|hypercms_media.php|error|".$errcode."|Execution of EXIFTOOL (code:$errorCode) failed to extract thumbnail from INDD file '".$file."'";
+            $error[] = $mgmt_config['today']."|hypercms_media.php|error|".$errcode."|Execution of EXIFTOOL (code:".$errorCode.", command:".$cmd.") failed to extract thumbnail from INDD file '".$file."' \t".implode("\t", $output);
   
             // save log
             savelog (@$error);
@@ -1255,6 +1275,9 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 {
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $user;
 
+  // initialize
+  $error = array();
+
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && is_video ($file) && $frame != "")
   {
     // add slash if not present at the end of the location string
@@ -1347,8 +1370,8 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
           // -f is the format of the input/output and image2 is the demuxer. See ffmpeg documenation for more info: http://www.ffmpeg.org/ffmpeg-formats.html#Demuxers
           $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($location_source.$file)."\" ".$correct." -ss ".shellcmd_encode ($frame)." -vframes 1 ".$size." \"".shellcmd_encode ($location_dest.$newfile)."\"";
 
-          // execute 
-          exec ($cmd, $output, $errorCode);
+          // execute and redirect stderr (2) to stdout (1) 
+          exec ($cmd." 2>&1", $output, $errorCode);
 
           $executed = true;
         }
@@ -1364,7 +1387,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
       if (!is_file ($location_dest.$newfile) || $errorCode) 
       {
         $errcode = "20241";
-        $error = array($mgmt_config['today'].'|hypercms_media.inc.php|error|'.$errcode.'|exec of ffmpeg (code:'.$errorCode.') (command:'.$cmd.') failed in createthumbnail_video for file '.$file.' and frame '.$frame);
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' and frame ".$frame." \t".implode ("\t", $output);
 
         // save log
         savelog (@$error);
@@ -1400,6 +1423,9 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 function createimages_video ($site, $location_source, $location_dest, $file, $name="", $fs=1, $format="jpg", $width=0, $height=0)
 {
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $user;
+
+  // initialize
+  $error = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && is_video ($file) && $fs > 0)
   {
@@ -1497,8 +1523,8 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
           // -r option sets framerate per second
           $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($location_source.$file)."\" ".$correct."  -r ".shellcmd_encode ($fs)." ".$size." \"".shellcmd_encode ($location_dest.$newfile)."-%05d.".$format."\"";
 
-          // execute 
-          exec ($cmd, $output, $errorCode);
+          // execute and redirect stderr (2) to stdout (1)
+          exec ($cmd." 2>&1", $output, $errorCode);
 
           $executed = true;
         }
@@ -1514,7 +1540,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
       if (!is_file ($location_dest.$newfile."-00001.".$format) || $errorCode) 
       {
         $errcode = "20341";
-        $error = array ($mgmt_config['today'].'|hypercms_media.inc.php|error|'.$errcode.'|exec of ffmpeg (code:'.$errorCode.') (command:'.$cmd.') failed in createimages_video for file '.$file);
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
 
         // save log
         savelog (@$error);
@@ -1712,18 +1738,28 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             // check file extension
             if (!empty ($file_ext) && substr_count (strtolower ($imagepreview_ext).".", $file_ext.".") > 0 && trim ($imagepreview) != "")
             {
-              $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($path_source)."\" \"".shellcmd_encode ($location_dest.$file_name).".jpg\"";
-              
+              // using dcraw package and ImageMagick (Debian 11 does not provide package ufraw-patch anymore since it is not maintained since 2016)
+              // don ot use is_executable since the path /usr/bin/dcraw might be outside the allowed pathes and will result in errors in the php error log
+              if (!empty ($mgmt_imagepreview['rawimage']) && strtolower ($mgmt_imagepreview['rawimage']) == "dcraw")
+              {
+                $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."dcraw -c -w \"".shellcmd_encode ($path_source)."\" | ".$mgmt_imagepreview[$imagepreview_ext]." - \"".shellcmd_encode ($location_dest.$file_name).".jpg\"";
+              }
+              // using ImageMagick with ufraw-batch package
+              else
+              {
+                $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($path_source)."\" \"".shellcmd_encode ($location_dest.$file_name).".jpg\"";
+              }
+ 
               // asynchronous shell exec
               if (!empty ($exec_in_background)) exec_in_background ($cmd);
               // synchronous shell exec
-              else @exec ($cmd, $output, $errorCode);
+              else @exec ($cmd." 2>&1", $output, $errorCode);
 
               // on error
               if ($errorCode)
               {
                 $errcode = "20259";
-                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file."<br />".implode ("<br />", $output); 
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".str_replace ("|", "->", $cmd).") failed for file '".$file."' \t".implode ("\t", $output); 
               }
               else
               {
@@ -2406,13 +2442,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // asynchronous shell exec
                     if (!empty ($exec_in_background)) exec_in_background ($cmd);
                     // synchronous shell exec
-                    else @exec ($cmd, $output, $errorCode);
+                    else @exec ($cmd." 2>&1", $output, $errorCode);
 
                     // on error
                     if ($errorCode)
                     {
                       $errcode = "20231";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
                     }
                     // on success
                     else $converted = true;
@@ -2461,13 +2497,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // asynchronous shell exec
                     if (!empty ($exec_in_background)) exec_in_background ($cmd);
                     // synchronous shell exec
-                    else @exec ($cmd, $output, $errorCode);
+                    else @exec ($cmd." 2>&1", $output, $errorCode);
 
                     // on error
                     if ($errorCode || !is_file ($location_dest.$newfile))
                     {
                       $errcode = "20232";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file; 
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output); 
                     }
                     // on success
                     else $converted = true;
@@ -2512,13 +2548,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
                     }
 
-                    @exec ($cmd, $output, $errorCode);
+                    // execute and redirect stderr (2) to stdout (1)
+                    @exec ($cmd." 2>&1", $output, $errorCode);
 
                     // on error
                     if ($errorCode || !is_file ($location_dest.$newfile))
                     {
                       $errcode = "20234";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file." (".implode (", ", $output).")"; 
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \tE".implode ("\t", $output); 
                     }
                     // on success
                     else $converted = true;
@@ -2535,7 +2572,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       // asynchronous shell exec
                       if (!empty ($exec_in_background)) exec_in_background ($cmd);
                       // synchronous shell exec
-                      else @exec ($cmd, $output, $errorCode);
+                      else @exec ($cmd." 2>&1", $output, $errorCode);
 
                       // on error
                       if ($errorCode)
@@ -2544,7 +2581,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         if (is_file ($location_temp."watermark.".$newfile)) unlink ($location_temp."watermark.".$newfile);
 
                         $errcode = "20262";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile." (".implode (", ", $output).")";
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed in watermark file '".$newfile."' \t".implode ("\t", $output);
                       }
                       // on success
                       elseif (is_file ($location_temp."watermark.".$newfile))
@@ -2862,7 +2899,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         // -an ... disable audio
         // -ar ... audio sampling frequency (default = 44100 Hz)
         // -b:a ... audio bitrate (default = 64k)
-        // -c:a ... audio codec (e.g. libmp3lame, libfdk_aac, libvorbis)
+        // -c:a ... audio codec (e.g. aac, libmp3lame, libvorbis)
         // Video Options:
         // -b:v ... video bitrate in bit/s (default = 200 kb/s)
         // -c:v ... video codec (e.g. libx264)
@@ -2881,7 +2918,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
         // define default option for support of versions before 5.3.4
         // note: audio codec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
-        if (empty ($mgmt_mediaoptions['thumbnail-video'])) $mgmt_mediaoptions_video = "-b:v 768k -s:v 576x432 -f mp4 -c:a libfdk_aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+        if (empty ($mgmt_mediaoptions['thumbnail-video'])) $mgmt_mediaoptions_video = "-b:v 768k -s:v 576x432 -f mp4 -c:a aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
         else $mgmt_mediaoptions_video = $mgmt_mediaoptions['thumbnail-video'];
 
         if (empty ($mgmt_mediaoptions['thumbnail-audio'])) $mgmt_mediaoptions_audio = "-f mp3 -c:a libmp3lame -b:a 64k";
@@ -3226,13 +3263,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           // slice video
                           $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($path_source)."\" -ss ".$segment_starttime." -t ".$segment_duration." -q:v 4 -f mpegts -target ntsc-vcd \"".$location_temp.shellcmd_encode ($file_name)."-".$i.".ts\"";
 
-                          @exec ($cmd, $output, $errorCode);
+                          // execute and redirect stderr (2) to stdout (1)
+                          @exec ($cmd." 2>&1", $output, $errorCode);
 
                           // on error
                           if ($errorCode || !is_file ($location_temp.shellcmd_encode ($file_name)."-1.ts"))
                           {
                             $errcode = "20239";
-                            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file; 
+                            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$location_source.$file."' \t".implode("\t", $output); 
                           }
                           //
                           else
@@ -3252,7 +3290,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     {
                       $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"concat:".implode ("|", $temp_files)."\" -q:v 4 \"".$location_temp.shellcmd_encode ($file_orig)."\"";
 
-                      @exec ($cmd, $output, $errorCode);
+                      // execute and redirect stderr (2) to stdout (1)
+                      @exec ($cmd." 2>&1", $output, $errorCode);
 
                       // remove file slices
                       foreach ($temp_files as $temp_file)
@@ -3264,7 +3303,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       if ($errorCode || !is_file ($location_temp.shellcmd_encode ($file_orig)))
                       {
                         $errcode = "20240";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file_orig; 
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$location_source.$file_orig."' \t".implode("\t", $output); 
                       }
                       // reset media file source
                       else
@@ -3324,7 +3363,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // render video before watermarking
                 $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($path_source)."\" ".$mgmt_mediaoptions[$mediaoptions_ext]." \"".shellcmd_encode ($location_temp.$tmpfile)."\"";
 
-                @exec ($cmd, $output, $errorCode);
+                // execute and redirect stderr (2) to stdout (1)
+                @exec ($cmd." 2>&1", $output, $errorCode);
 
                 // delete joined slice temp file
                 if (is_file ($location_temp.$file_orig))
@@ -3339,7 +3379,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $newfile = $file;
 
                   $errcode = "20277";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|ffmpeg failed to create original thumbnail file, using orginal file name: ".$file;
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution ffmpeg (code:".$errorCode.", command:".$cmd.") failed to create original thumbnail file using orginal file '".$file."' \t".implode("\t>", $output);
                 }
                 // correct rotation metadata if necessary 
                 elseif (is_video (".hcms.".$format_set) && is_file ($location_temp.$tmpfile) && !empty ($videoinfo['rotate']) && $videoinfo['rotate'] != "0")
@@ -3352,13 +3392,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   {
                     $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($location_temp.$tmpfile)."\" -c copy -metadata:s:v:0 rotate=0 \"".shellcmd_encode ($location_temp."meta.".$tmpfile)."\"";
 
-                    @exec ($cmd, $output, $errorCode);
+                    // execute and redirect stderr (2) to stdout (1)
+                    @exec ($cmd." 2>&1", $output, $errorCode);
 
                     // on error
                     if ($errorCode)
                     {
                       $errcode = "10338";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Metadata update (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Metadata update (code:".$errorCode.", command:".$cmd.") failed for file '".$location_source.$file."' \t".implode ("\t", $output);
                     }
                     // replace video file
                     else
@@ -3412,7 +3453,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // render video with watermark
                     $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($location_temp.$tmpfile)."\" -vf \"".$vfilter_wm."\" \"".shellcmd_encode ($location_temp.$tmpfile2)."\"";
 
-                    @exec ($cmd, $output, $errorCode);
+                    // execute and redirect stderr (2) to stdout (1)
+                    @exec ($cmd." 2>&1", $output, $errorCode);
 
                     // replace file
                     if (is_file ($location_temp.$tmpfile2)) rename ($location_temp.$tmpfile2, $location_temp.$tmpfile);
@@ -3425,7 +3467,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   @unlink ($location_temp.$tmpfile);
 
                   $errcode = "20236";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$location_source.$file."' \t".implode("\t", $output);
                 } 
                 elseif (is_file ($location_temp.$tmpfile))
                 {
@@ -3439,7 +3481,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // inject meta data
                     $cmd = $mgmt_mediametadata['.flv']." -i \"".shellcmd_encode ($location_temp.$tmpfile)."\" -o \"".shellcmd_encode ($location_temp.$tmpfile2)."\"";
 
-                    @exec ($cmd, $output, $errorCode);
+                    // execute and redirect stderr (2) to stdout (1)
+                    @exec ($cmd." 2>&1", $output, $errorCode);
 
                     @unlink ($location_temp.$tmpfile);
 
@@ -3447,7 +3490,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode)
                     {
                       $errcode = "20237";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of yamdi (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$newfile;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of yamdi (code:".$errorCode.", command:".$cmd.") failed for file '".$location_source.$newfile."' \t".implode("\t", $output);
                     }
                     // on success
                     else
@@ -3793,14 +3836,15 @@ function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $f
             // render
             $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($path_source)."\" -segment_time ".shellcmd_encode ($sec)." -map 0 -c copy -f segment -reset_timestamps 1 \"".shellcmd_encode ($location_dest.$splitfile)."\"";
 
-            @exec ($cmd, $output, $errorCode);
+            // execute and redirect stderr (2) to stdout (1)
+            @exec ($cmd." 2>&1", $output, $errorCode);
 
             // on error for original thumbnail files only in order to save correct file name in config file
             if ($errorCode || !is_file ($location_dest.$file_name."-0".$file_ext))
             {
               // use original file name if rendering failed
               $errcode = "20288";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|ffmpeg failed to split media file: ".$file." (".$cmd.")";
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ffmpeg (code:".$errorCode.", command:".$cmd.") failed to split media file '".$file."' \t".implode("\t", $output);
             }
           }
         }
@@ -3950,7 +3994,8 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
             else $cmd = "cd \"".shellcmd_encode ($temp_dir)."\" ; ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($location_dest.$newname)."\" *";
 
             // compress files to ZIP format
-            @exec ($cmd, $output, $errorCode);
+            // execute and redirect stderr (2) to stdout (1)
+            @exec ($cmd." 2>&1", $output, $errorCode);
 
             // remove temp files
             deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
@@ -3958,11 +4003,11 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
             // errors during compressions of files
             if ($errorCode && is_array ($output))
             {
-              $error_message = implode (", ", $output);
+              $error_message = implode ("\t", $output);
               $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
 
               $errcode = "10445";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|zipfiles failed for '".$newname."' with error code ".$errorCode.": ".$error_message;
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of zip (code:".$errorCode.", command:".$cmd.") failed for '".$newname."' \t".$error_message;
             }
 
             // on success
@@ -4993,13 +5038,14 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                     putenv ("HOME=/tmp");
                   }
 
+                  // execute and redirect stderr (2) to stdout (1)
                   @exec ($cmd." 2>&1", $output, $errorCode);
 
                   // error if conversion failed
                   if (!empty ($errorCode) || !is_file ($location_source.$file_name.".".$docformat))
                   {
                     $errcode = "20276";
-                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of libreoffice/unoconv (".$cmd.") to '".$format."' failed in createdocument for file '".$location_source.$file."' with message (Error code:".$errorCode."): ".implode(", ", $output);
+                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of libreoffice/unoconv (code:".$errorCode.", command:".$cmd.") to '".$format."' failed for file '".$location_source.$file."' \t".implode("\t", $output);
 
                     // save log
                     savelog (@$error);
@@ -5144,14 +5190,15 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
           // this will overwrite existing page files!
           $cmd = $execpath." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($location)."\"";
 
-          @exec ($cmd, $output, $errorCode);
+          // execute and redirect stderr (2) to stdout (1)
+          @exec ($cmd." 2>&1", $output, $errorCode);
 
           if ($errorCode && is_array ($output))
           {
-            $error_message = implode (", ", $output);
+            $error_message = implode ("\t", $output);
 
             $errcode = "10639";
-            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzipfile failed for '".$filename."' with error code ".$errorCode.": ".$error_message;
+            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$filename."' \t".$error_message;
 
             // save log
             savelog (@$error); 
@@ -5184,15 +5231,16 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
             // extract files to temporary location for media assets 
             $cmd = $execpath." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($unzippath_temp)."\"";
 
-            @exec ($cmd, $output, $errorCode);
+            // execute and redirect stderr (2) to stdout (1)
+            @exec ($cmd." 2>&1", $output, $errorCode);
 
             if ($errorCode && is_array ($output))
             {
-              $error_message = implode ("<br />", $output);
+              $error_message = implode ("\t", $output);
               $error_message = str_replace ($unzippath_temp, "/".$site."/", $error_message);
 
               $errcode = "10640";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|unzipfile failed for '".$filename."' with error code ".$errorCode.": ". $error_message;
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$filename."' \t". $error_message;
 
               // save log
               savelog (@$error); 
@@ -5357,7 +5405,8 @@ function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
     else $cmd = "cd \"".shellcmd_encode ($source)."\" ; ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
 
     // compress files to ZIP format
-    @exec ($cmd, $output, $errorCode);
+    // execute and redirect stderr (2) to stdout (1)
+    @exec ($cmd." 2>&1", $output, $errorCode);
 
     // remove temp files
     if ($remove == true) deletefile (getlocation ($source), getobject ($source), 1);
@@ -5365,11 +5414,11 @@ function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
     // errors during compressions of files
     if ($errorCode && is_array ($output))
     {
-      $error_message = implode (", ", $output);
+      $error_message = implode ("\t", $output);
       $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
 
       $errcode = "10545";
-      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|zipfiles_helper failed for '".$filename."' with error code ".$errorCode.": ".$error_message;
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of zip (code:".$errorCode.", command".$cmd.") failed for '".$filename."' \t".$error_message;
 
       // save log
       savelog (@$error);
@@ -5630,7 +5679,8 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
     }
 
     // compress files to ZIP format
-    @exec ($cmd, $output, $errorCode);
+    // execute and redirect stderr (2) to stdout (1)
+    @exec ($cmd." 2>&1", $output, $errorCode);
 
     // remove temp files
     deletefile ($tempDir, $tempFolderName, 1);
@@ -5638,11 +5688,11 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
     // errors during compressions of files
     if ($errorCode && is_array ($output))
     {
-      $error_message = implode (", ", $output);
+      $error_message = implode ("\t", $output);
       $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
 
       $errcode = "10645";
-      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|zipfiles failed for '".$filename."' with error code ".$errorCode.": ".$error_message;
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of zip (code:".$errorCode.", command".$cmd.") failed for '".$filename."' \t".$error_message;
 
       // save log
       savelog (@$error);
@@ -5952,13 +6002,13 @@ function html2pdf ($source, $dest, $cover="", $toc=false, $page_orientation="Por
     // command (use print CSS via option --print-media-type)
     $cmd = $x11." ".$mgmt_config['html2pdf']." --image-dpi ".intval($image_dpi)." --image-quality ".intval($image_quality)." --print-media-type --page-size ".shellcmd_encode($page_size)." ".$page_margin." ".$smart_shrinking." ".$page_orientation." ".$options." ".$cover_page." ".$toc." ".$source_pages." ".$dest_page;
     
-    // execute
-    exec ($cmd, $output, $errorCode);
+    // execute and redirect stderr (2) to stdout (1)
+    exec ($cmd." 2>&1", $output, $errorCode);
 
     if ($errorCode)
     {
       $errcode = "10674";
-      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|PDF file could not be created. HTML2PDF error:$errorCode, Command:$cmd, Error:".implode (" ", $output);
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of html2pdf failed to create the PDF file (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
     }
 
     // remove temp files
@@ -5992,6 +6042,7 @@ function mergepdf ($source, $dest)
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   // correct source
@@ -6002,13 +6053,13 @@ function mergepdf ($source, $dest)
     // command
     $cmd = $mgmt_config['mergepdf']." '".str_replace ("\~", "~", shellcmd_encode (implode ("' '", $source)))."' cat output '".str_replace ("\~", "~", shellcmd_encode ($dest))."'";
     
-    // execute
-    exec ($cmd, $output, $errorCode);
+    // execute and redirect stderr (2) to stdout (1)
+    exec ($cmd." 2>&1", $output, $errorCode);
 
     if ($errorCode)
     {
       $errcode = "10675";
-      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|PDF files could not be merged. PDFTK error:$errorCode, Command:$cmd, Error:".implode (" ", $output);
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of pdftk failed to merge PDF files (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
 
       // save log
       savelog (@$error);

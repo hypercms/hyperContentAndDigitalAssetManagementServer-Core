@@ -1,3 +1,5 @@
+import config from "../config";
+
 /**
  * various helpers
  * 
@@ -55,7 +57,7 @@ class Helper_class {
 	 * @param {int} offset
 	 * @returns {Boolean|String}
 	 */
-	strpos(haystack, needle, offset) {
+	strpos(haystack, needle, offset = 0) {
 		var i = (haystack + '').indexOf(needle, (offset || 0));
 		return i === -1 ? false : i;
 	}
@@ -82,9 +84,8 @@ class Helper_class {
 	/**
 	 * sets cookie value to global cookie
 	 * 
-	 * @param {type} name
-	 * @param {type} value
-	 * @returns {undefined}
+	 * @param {string} name
+	 * @param {string|number} value
 	 */
 	setCookie(name, value) {
 		var cookie = this._getCookie('config');
@@ -137,6 +138,26 @@ class Helper_class {
 		return Math.round(px * 0.75);
 	}
 
+	hex(x) {
+		x = parseInt(x);
+		return ("0" + x.toString(16)).slice(-2);
+	}
+
+	hex_set_hsl(hex, newHsl) {
+		const rgb = this.hexToRgb(hex);
+		const hsl = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
+		if ('h' in newHsl) {
+			hsl.h = newHsl.h;
+		}
+		if ('s' in newHsl) {
+			hsl.s = newHsl.s;
+		}
+		if ('l' in newHsl) {
+			hsl.l = newHsl.l;
+		}
+		return this.hslToHex(hsl.h, hsl.s, hsl.l);
+	}
+
 	rgbToHex(r, g, b) {
 		if (r > 255 || g > 255 || b > 255)
 			throw "Invalid color component";
@@ -145,17 +166,7 @@ class Helper_class {
 		return "#" + ("000000" + tmp).slice(-6);
 	}
 
-	rgb2hex_all(rgb) {
-		rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-		return "#" + this.hex(rgb[1]) + this.hex(rgb[2]) + this.hex(rgb[3]);
-	}
-
-	hex(x) {
-		x = parseInt(x);
-		return ("0" + x.toString(16)).slice(-2);
-	}
-
-	hex2rgb(hex) {
+	hexToRgb(hex) {
 		if (hex[0] == "#")
 			hex = hex.substr(1);
 		if (hex.length == 3) {
@@ -165,12 +176,207 @@ class Helper_class {
 			for (var i = 0; i < 3; i++)
 				hex += temp[i] + temp[i];
 		}
-		var triplets = /^([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$/i.exec(hex).slice(1);
+		var triplets = /^([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})/i.exec(hex).slice(1);
 		return {
 			r: parseInt(triplets[0], 16),
 			g: parseInt(triplets[1], 16),
 			b: parseInt(triplets[2], 16),
 			a: 255
+		};
+	}
+
+	hslToHex(h, s, l) {
+		const rgb = this.hslToRgb(h, s, l);
+		return this.rgbToHex(rgb.r, rgb.g, rgb.b);
+	}
+
+	hsvToHex(h, s, v) {
+		const rgb = this.hsvToRgb(h, s, v);
+		return this.rgbToHex(rgb.r, rgb.g, rgb.b);
+	}
+
+	hueToRgb(p, q, t) {
+		if (t < 0)
+			t += 1;
+		if (t > 1)
+			t -= 1;
+		if (t < 1 / 6)
+			return p + (q - p) * 6 * t;
+		if (t < 1 / 2)
+			return q;
+		if (t < 2 / 3)
+			return p + (q - p) * (2 / 3 - t) * 6;
+		return p;
+	}
+
+	/**
+	 * Converts an HSL color value to RGB. 
+	 * Assumes h, s, and l are contained in the set [0, 1]
+	 * Returns r, g, and b in the set [0, 255].
+	 * 
+	 * Credit: https://gist.github.com/mjackson/5311256
+	 *
+	 * @param {number} h The hue
+	 * @param {number} s The saturation
+	 * @param {number} l The lightness
+	 * @return {Object} The RGB representation, r,g,b as keys.
+	 */
+	hslToRgb(h, s, l) {
+		var r, g, b;
+
+		if (s == 0) {
+			r = g = b = l; // achromatic
+		}
+		else {
+			var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+			var p = 2 * l - q;
+			r = this.hueToRgb(p, q, h + 1 / 3);
+			g = this.hueToRgb(p, q, h);
+			b = this.hueToRgb(p, q, h - 1 / 3);
+		}
+
+		return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
+	}
+
+	/**
+	 * Converts an RGB color value to HSL. Values are in range 0-1. 
+	 * But real ranges are 0-360, 0-100%, 0-100%
+	 * 
+	 * Credit: https://gist.github.com/mjackson/5311256
+	 * 
+	 * @param {number} r red color value
+	 * @param {number} g green color value
+	 * @param {number} b blue color value
+	 * @return {object} The HSL representation
+	 */
+	rgbToHsl(r, g, b) {
+		r /= 255;
+		g /= 255;
+		b /= 255;
+		var max = Math.max(r, g, b), min = Math.min(r, g, b);
+		var h, s, l = (max + min) / 2;
+
+		if (max == min) {
+			h = s = 0; // achromatic
+		}
+		else {
+			var d = max - min;
+			s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+			switch (max) {
+				case r:
+					h = (g - b) / d + (g < b ? 6 : 0);
+					break;
+				case g:
+					h = (b - r) / d + 2;
+					break;
+				case b:
+					h = (r - g) / d + 4;
+					break;
+			}
+			h /= 6;
+		}
+		
+		return { h, s, l };
+	}
+
+	/**
+	 * Converts an RGB color value to HSV.
+	 * Assumes r, g, and b are contained in the set [0, 255] and
+	 * returns h, s, and v in the set [0, 1].
+	 * 
+	 * Credit: https://gist.github.com/mjackson/5311256
+	 *
+	 * @param Number r The red color value
+	 * @param Number g The green color value
+	 * @param Number b The blue color value
+	 * @return {object} The HSL representation
+	 */
+	rgbToHsv(r, g, b) {
+		r /= 255, g /= 255, b /= 255;
+		var max = Math.max(r, g, b), min = Math.min(r, g, b);
+		var h, s, v = max;
+		var d = max - min;
+		s = max == 0 ? 0 : d / max;
+		if (max == min) {
+			h = 0; // achromatic
+		} else {
+			switch (max) {
+				case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+				case g: h = (b - r) / d + 2; break;
+				case b: h = (r - g) / d + 4; break;
+			}
+			h /= 6;
+		}
+		return { h, s, v };
+	}
+
+	/**
+	 * Converts an HSV color value to RGB.
+	 * Assumes h, s, and v are contained in the set [0, 1] and
+	 * returns r, g, and b in the set [0, 255].
+	 *
+	 * Credit: https://gist.github.com/mjackson/5311256
+	 *
+	 * @param Number h The hue
+	 * @param Number s The saturation
+	 * @param Number v The value
+	 * @return {object} The RGB representation
+	 */
+	hsvToRgb(h, s, v) {
+		var r, g, b;
+	
+		var i = Math.floor(h * 6);
+		var f = h * 6 - i;
+		var p = v * (1 - s);
+		var q = v * (1 - f * s);
+		var t = v * (1 - (1 - f) * s);
+	
+		switch (i % 6) {
+		case 0: r = v, g = t, b = p; break;
+		case 1: r = q, g = v, b = p; break;
+		case 2: r = p, g = v, b = t; break;
+		case 3: r = p, g = q, b = v; break;
+		case 4: r = t, g = p, b = v; break;
+		case 5: r = v, g = p, b = q; break;
+		}
+	
+		return { r: r * 255, g: g * 255, b: b * 255 };
+	}
+
+	/**
+	 * Converts an HSV color value to HSL.
+	 * Assumes h, s, and v are contained in the set [0, 1] and
+	 * returns h, s, and l in the set [0, 1].
+	 *
+	 * @param Number h The hue
+	 * @param Number s The saturation
+	 * @param Number v The value
+	 * @return {object} The HSL representation
+	 */
+	hsvToHsl(h, s, v) {
+		return {
+			h,
+			s: s * v / Math.max(0.00000001, ((h = (2 - s) * v) < 1 ? h : 2 - h)), 
+			l: h / 2
+		};
+	}
+
+	/**
+	 * Converts an HSL color value to HSV.
+	 * Assumes h, s, and l are contained in the set [0, 1] and
+	 * returns h, s, and v in the set [0, 1].
+	 *
+	 * @param Number h The hue
+	 * @param Number s The saturation
+	 * @param Number l The value
+	 * @return {object} The HSV representation
+	 */
+	hslToHsv(h, s, l) {
+		s *= l < .5 ? l : 1 - l;
+		return {
+			h,
+			s: 2 * s / Math.max(0.00000001, (l + s)),
+			v: l + s
 		};
 	}
 
@@ -228,7 +434,8 @@ class Helper_class {
 		var sign = n < 0 ? "-" : "";
 		var i = parseInt(n = Math.abs(+n || 0).toFixed(decPlaces)) + "";
 		var j = (j = i.length) > 3 ? j % 3 : 0;
-		return sign + (j ? i.substr(0, j) + thouSeparator : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thouSeparator) + (decPlaces ? decSeparator + Math.abs(n - i).toFixed(decPlaces).slice(2) : "");
+		var result = sign + (j ? i.substr(0, j) + thouSeparator : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thouSeparator) + (decPlaces ? decSeparator + Math.abs(n - i).toFixed(decPlaces).slice(2) : "");
+		return parseFloat(result);
 	}
 
 	check_input_color_support() {
@@ -272,86 +479,6 @@ class Helper_class {
 
 	isNumeric(n) {
 		return !isNaN(parseFloat(n)) && isFinite(n);
-	}
-
-	/**
-	 * Converts an HSL color value to RGB. 
-	 * Assumes h, s, and l are contained in the set [0, 1]
-	 * Returns r, g, and b in the set [0, 255].
-	 *
-	 * @param {number} h The hue
-	 * @param {number} s The saturation
-	 * @param {number} l The lightness
-	 * @return {Array} The RGB representation
-	 */
-	hslToRgb(h, s, l) {
-		var r, g, b;
-
-		if (s == 0) {
-			r = g = b = l; // achromatic
-		}
-		else {
-			var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-			var p = 2 * l - q;
-			r = this.hue2rgb(p, q, h + 1 / 3);
-			g = this.hue2rgb(p, q, h);
-			b = this.hue2rgb(p, q, h - 1 / 3);
-		}
-
-		return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-	}
-
-	hue2rgb(p, q, t) {
-		if (t < 0)
-			t += 1;
-		if (t > 1)
-			t -= 1;
-		if (t < 1 / 6)
-			return p + (q - p) * 6 * t;
-		if (t < 1 / 2)
-			return q;
-		if (t < 2 / 3)
-			return p + (q - p) * (2 / 3 - t) * 6;
-		return p;
-	}
-
-	/**
-	 * Converts an RGB color value to HSL. Values are in range 0-1. 
-	 * But real ranges are 0-360, 0-100%, 0-100%
-	 * 
-	 * @param {number} r red color value
-	 * @param {number} g green color value
-	 * @param {number} b blue color value
-	 * @return {object} The HSL representation
-	 */
-	rgbToHsl(r, g, b) {
-		r /= 255;
-		g /= 255;
-		b /= 255;
-		var max = Math.max(r, g, b), min = Math.min(r, g, b);
-		var h, s, l = (max + min) / 2;
-
-		if (max == min) {
-			h = s = 0; // achromatic
-		}
-		else {
-			var d = max - min;
-			s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-			switch (max) {
-				case r:
-					h = (g - b) / d + (g < b ? 6 : 0);
-					break;
-				case g:
-					h = (b - r) / d + 2;
-					break;
-				case b:
-					h = (r - g) / d + 4;
-					break;
-			}
-			h /= 6;
-		}
-		
-		return {h, s, l};
 	}
 
 	ucfirst(string) {
@@ -426,6 +553,17 @@ class Helper_class {
 		ctx.clearRect(0, 0, width, height);
 	}
 	
+	is_input(element) {
+		if (!element) {
+			return false;
+		}
+		if (element.type == 'text' || element.tagName == 'INPUT' || element.type == 'textarea') {
+			return true;
+		} else {
+			return element.closest('.ui_color_picker_gradient, .ui_number_input, .ui_range, .ui_swatches') != null;
+		}
+	}
+
 	//if IE 11 or Edge
 	is_edge_or_ie() {
 		//ie11
@@ -435,6 +573,119 @@ class Helper_class {
 		if( navigator.userAgent.indexOf('Edge/') != -1 )
 			return true;
 		return false;
+	}
+
+	// Credit: https://stackoverflow.com/questions/27078285/simple-throttle-in-js
+	throttle(func, wait, options) {
+		var context, args, result;
+		var timeout = null;
+		var previous = 0;
+		if (!options) options = {};
+		var later = function() {
+			previous = options.leading === false ? 0 : Date.now();
+			timeout = null;
+			result = func.apply(context, args);
+			if (!timeout) context = args = null;
+		};
+		return function() {
+			var now = Date.now();
+			if (!previous && options.leading === false) previous = now;
+			var remaining = wait - (now - previous);
+			context = this;
+			args = arguments;
+			if (remaining <= 0 || remaining > wait) {
+				if (timeout) {
+				clearTimeout(timeout);
+					timeout = null;
+				}
+				previous = now;
+				result = func.apply(context, args);
+				if (!timeout) context = args = null;
+			} else if (!timeout && options.trailing !== false) {
+				timeout = setTimeout(later, remaining);
+			}
+			return result;
+		};
+	};
+
+	/**
+	 * draws line that is visible on white and black backgrounds.
+	 *
+	 * @param ctx
+	 * @param start_x
+	 * @param start_y
+	 * @param end_x
+	 * @param end_y
+	 */
+	draw_special_line(ctx, start_x, start_y, end_x, end_y){
+		const wholeLineWidth = 2 / config.ZOOM;
+		const halfLineWidth = wholeLineWidth / 2;
+
+		ctx.lineWidth = wholeLineWidth;
+		ctx.strokeStyle = 'rgb(255, 255, 255)';
+		ctx.beginPath();
+		ctx.moveTo(start_x - halfLineWidth, start_y);
+		ctx.lineTo(end_x - halfLineWidth, end_y);
+		ctx.stroke();
+
+		ctx.lineWidth = halfLineWidth;
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.beginPath();
+		ctx.moveTo(start_x - halfLineWidth, start_y);
+		ctx.lineTo(end_x - halfLineWidth, end_y);
+		ctx.stroke();
+	}
+
+	/**
+	 * converts internal unit (pixel) to user defined
+	 *
+	 * @param data
+	 * @param type
+	 * @param resolution
+	 * @returns {string|number}
+	 */
+	get_user_unit(data, type, resolution){
+		data = parseFloat(data);
+
+		if(type == 'pixels'){
+			//no conversion
+			return parseInt(data);
+		}
+		else if(type == 'inches'){
+			return this.number_format(data / resolution, 3);
+		}
+		else if(type == 'centimeters'){
+			return this.number_format(data / resolution * 2.54, 3);
+		}
+		else if(type == 'millimetres'){
+			return this.number_format(data / resolution * 25.4, 3);
+		}
+	}
+
+	/**
+	 * converts user defined unit to internal (pixels)
+	 *
+	 * @param data
+	 * @param type
+	 * @param resolution
+	 * @returns {number}
+	 */
+	get_internal_unit(data, type, resolution){
+		data = parseFloat(data);
+
+		if(type == 'pixels'){
+			//no conversion
+			return parseInt(data);
+		}
+		else if(type == 'inches'){
+			return Math.ceil(data * resolution);
+		}
+		else if(type == 'centimeters'){
+			return Math.ceil(data * resolution / 2.54);
+		}
+		else if(type == 'millimetres'){
+			return Math.ceil(data * resolution / 25.4);
+		}
 	}
 
 }

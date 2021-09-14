@@ -1,11 +1,11 @@
 <?php
-// ---------------------- STORAGE ---------------------
-
-if (!empty ($is_mobile)) $width = "92%";
-else $width = "320px";
-
+// ---------------------- FREE STORAGE ---------------------
 if (function_exists ("disk_total_space") && function_exists ("disk_free_space"))
 {
+  // box width
+  if (!empty ($is_mobile)) $width = "320px";
+  else $width = "320px";
+
   echo "
   <div id=\"free_storage\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
     <div class=\"hcmsHeadline\" style=\"margin:6px;\">Server Storage Space</div>

@@ -394,7 +394,7 @@ if (checkuserip (getuserip ()) == true)
     if ($show != "") $show = "<div class=\"hcmsPriorityAlarm hcmsTextWhite\" style=\"padding:5px;\">".$show."</div>\n";
 
     if (!empty ($mgmt_config['instances']) && is_dir ($mgmt_config['instances'])) $show .= "
-        <div id=\"sentinstance_container\" ".($require == "password" ? "style=\"position:absolute; visibility:hidden;\"" :  "").">
+        <div id=\"sentinstance_container\" ".($require == "password" ? "style=\"visibility:hidden;\"" :  "").">
           <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" placeholder=\"".getescapedtext ($hcms_lang['instance'][$lang])."\" value=\"".$sentinstance."\" maxlength=\"100\" style=\"box-sizing:border-box; width:100%; margin:3px 0px; padding:8px 5px;\" tabindex=\"1\" /><br/>
         </div>";
           
@@ -498,19 +498,28 @@ video#videoScreen
 function focusform()
 {
   <?php if (!empty ($mgmt_config['instances'])) { ?>
-  // if instance parameter has been provided via GET
   if (document.getElementById('sentinstance'))
   {
+    // if instance parameter has been provided via GET
     if (hcms_getURLparameter('i') !== null)
     {
       document.getElementById('sentinstance').value = hcms_getURLparameter('i');
-      document.getElementById('sentinstance_container').style.display = "none";
     }
     // if local storage saved instance
     else if (localStorage.getItem('instance') !== null)
     {
       document.getElementById('sentinstance').value = localStorage.getItem('instance');
-      document.getElementById('sentinstance_container').style.display = "none";
+    }
+
+    // hide instance field if it holds a value
+    if (document.getElementById('sentinstance').value != "")
+    {
+      document.getElementById('sentinstance_container').style.visibility = "hidden";
+    }
+    // display instance field if it is empty
+    else 
+    {
+      document.getElementById('sentinstance_container').style.visibility = "visible";
     }
   }
   <?php } ?>

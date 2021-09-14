@@ -23,9 +23,11 @@ $token = getrequest ("token");
 $site = getrequest ("site", "publicationname");
 $location = getrequest ("location", "locationname");
 $page = getrequest ("page", "objectname");
-// base64 encoded media file
 $mediafile = getrequest ("media");
+// base64 encoded media file
 $mediadata = getrequest ("mediadata");
+// JSON encoded image data from MiniPaint
+$jsondata = getrequest ("jsondata");
 
 // get publication and category
 $site = getpublication ($location);
@@ -76,10 +78,37 @@ if (checktoken ($token, $user)) loadbalancer ("renderimage");
 $show = "";
 $add_onload = "";
 
+// save media file 
 if (checktoken ($token, $user) && !empty ($mediadata))
 {
-  // edit and save media file
   $editmediaobject = editmediaobject ($site, $location, $page, "", "", $mediadata, $user);
+}
+// save JSON file from MiniPaint
+elseif (checktoken ($token, $user) && !empty ($jsondata))
+{
+  // get thumbnail file location
+  $media_location = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
+  
+  // if symbolic link
+  if (is_link ($media_location.$mediafile))
+  {
+    $target_path = readlink ($media_location.$mediafile);
+    $target_location = getlocation ($target_path);
+  }
+  else $target_location = $media_location;
+
+  // JSON image editor file
+  $mediafile_json = substr ($mediafile, 0, strrpos ($mediafile, ".")).".json";
+  
+  $editmediaobject = array();
+  $editmediaobject['result'] = savefile ($target_location, $mediafile_json, $jsondata);
+  $editmediaobject['add_onload'] = "";
+  $editmediaobject['message'] = "";
+  $editmediaobject['object'] = $page;
+  $editmediaobject['mediafile'] = $mediafile;
+
+  // save to cloud storage
+  if (!empty ($editmediaobject['result']) && function_exists ("savecloudobject")) savecloudobject ($site, $media_location, $mediafile_json, $user);
 }
 else
 {

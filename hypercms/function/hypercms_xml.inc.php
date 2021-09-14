@@ -200,7 +200,7 @@ function getcontent ($xmldata, $starttagname, $unescape_content=false)
           $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
         }
 
-        // unescape characters & < > if no CDATA section embraces the code
+        // unescape characters & < >
         if (!empty ($unescape_content))
         {
           $content_record = str_replace ("&amp;", "&", $content_record);
@@ -294,7 +294,7 @@ function geticontent ($xmldata, $starttagname, $unescape_content=false)
           $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
         }
 
-        // unescape characters & < > if no CDATA section embraces the code
+        // unescape characters & < >
         if (!empty ($unescape_content))
         {
           $content_record = str_replace ("&amp;", "&", $content_record);
@@ -312,7 +312,6 @@ function geticontent ($xmldata, $starttagname, $unescape_content=false)
   if (isset ($result_set)) return $result_set;
   else return false;
 }
-
 
 // ------------------------------------ getxmlcontent ----------------------------------------------
 
@@ -1278,8 +1277,7 @@ function setcontent ($xmldata, $startparenttagname="", $starttagname="", $conten
             // remove CDATA
             $contentnew = substr ($contentnew, 9, (strlen($contentnew) - 12));
 
-            // escape &, < and >
-            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            // escape < and >
             $contentnew = str_replace ("<", "&lt;", $contentnew);
             $contentnew = str_replace (">", "&gt;", $contentnew);
 
@@ -1288,8 +1286,7 @@ function setcontent ($xmldata, $startparenttagname="", $starttagname="", $conten
           }
           else
           {
-            // escape &, < and >
-            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            // escape < and >
             $contentnew = str_replace ("<", "&lt;", $contentnew);
             $contentnew = str_replace (">", "&gt;", $contentnew);
           }
@@ -1395,8 +1392,7 @@ function seticontent ($xmldata, $startparenttagname="", $starttagname="", $conte
             // remove CDATA
             $contentnew = substr ($contentnew, 9, (strlen($contentnew) - 12));
 
-            // escape &, < and >
-            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            // escape < and >
             $contentnew = str_replace ("<", "&lt;", $contentnew);
             $contentnew = str_replace (">", "&gt;", $contentnew);
 
@@ -1405,8 +1401,7 @@ function seticontent ($xmldata, $startparenttagname="", $starttagname="", $conte
           }
           else
           {
-            // escape &, < and >
-            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            // escape < and >
             $contentnew = str_replace ("<", "&lt;", $contentnew);
             $contentnew = str_replace (">", "&gt;", $contentnew);
           }
@@ -1505,8 +1500,7 @@ function setcontent_fast ($xmldata, $startparenttagname="", $starttagname="", $c
             // remove CDATA
             $contentnew = substr ($contentnew, 9, (strlen($contentnew) - 12));
 
-            // escape &, < and >
-            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            // escape < and >
             $contentnew = str_replace ("<", "&lt;", $contentnew);
             $contentnew = str_replace (">", "&gt;", $contentnew);
 
@@ -1515,8 +1509,7 @@ function setcontent_fast ($xmldata, $startparenttagname="", $starttagname="", $c
           }
           else
           {
-            // escape &, < and >
-            if (strpos ("_".$contentnew, "&amp;") < 1) $contentnew = str_replace ("&", "&amp;", $contentnew);
+            // escape < and >
             $contentnew = str_replace ("<", "&lt;", $contentnew);
             $contentnew = str_replace (">", "&gt;", $contentnew);
           }

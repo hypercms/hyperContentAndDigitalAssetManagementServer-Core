@@ -130,7 +130,7 @@ if ($force == "start" && substr_count ($action, "->") == 1)
       elseif ($method == "linkcopy") $result = copyconnectedobject ($site, $location, $page, $user);
     } 
 
-    if (!empty ($result['message'])) $show = $result['message']; 
+    if (!empty ($result['message'])) $status = $result['message']; 
 
     // use target location for paste
     $location_orig = $targetlocation;
@@ -258,6 +258,11 @@ if ($authorized == true || $force == "stop")
       
       if (isset ($result['tempfile'])) $tempfile = $result['tempfile'];   
       else $tempfile = "";
+
+      if (!empty ($result['report']) && is_array ($result['report']) && sizeof ($result['report']) > 0)
+      {
+        $report = "<div><b>".getescapedtext ($hcms_lang['the-following-errors-occurred'][$lang])."</b><br/>\n".implode ("<br/>", $result['report'])."</div>";
+      }
      
       // define next process
       if ($working == true)
@@ -277,7 +282,7 @@ if ($authorized == true || $force == "stop")
       if (isset ($result['count'])) $count = $result['count']; 
       else $count =  0;
       
-      if (!empty ($result['message'])) $status = strip_tags ($result['message']);    
+      if (!empty ($result['message'])) $status = strip_tags ($result['message'], '<br>');    
       else $status = getescapedtext ($hcms_lang['error-occured'][$lang]);
       
       $working = "error";
@@ -440,6 +445,9 @@ if ($maxcount > 0)
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
     <button class="hcmsButtonBlue" type="submit"><?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?></button>
   </form>
+
+  <?php if (!empty ($report)) echo $report; ?>
+
 </div>
 
 <script type="text/javascript">
@@ -447,7 +455,7 @@ if ($maxcount > 0)
 if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'none';
 
 // set window height
-window.innerHeight = 240;
+window.innerHeight = <?php if (!empty ($report)) echo "480"; else echo "240"; ?>;
 
 // reload status window
 function refreshpopup ()
@@ -455,7 +463,7 @@ function refreshpopup ()
   <?php echo $add_javascript; ?>
 }
 
-setTimeout ('refreshpopup()', 1000);
+setTimeout ('refreshpopup()', <?php if (!empty ($report)) echo "5000"; else echo "1000"; ?>);
 
 // focus on start and finish
 <?php if ($force == "start" || $force == "finish") echo "window.focus();\n"; ?>

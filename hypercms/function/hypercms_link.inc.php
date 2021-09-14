@@ -22,6 +22,7 @@ function link_db_restore ($site="")
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   if (is_array ($mgmt_config) && isset ($mgmt_config['abs_path_cms']))
@@ -204,6 +205,7 @@ function link_db_load ($site, $user)
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
     // if link management is enabled
@@ -258,6 +260,7 @@ function link_db_read ($site)
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   // if link management is enabled
@@ -625,9 +628,13 @@ function link_db_insert ($site, $link_db, $contentfile, $cat, $object="")
 {
   global $mgmt_config;
 
+  // initialize
+  $error = array();
+
   // if link management is enabled
-  if (!empty ($mgmt_config[$site]['linkengine']) && valid_publicationname ($site))
+  if (valid_publicationname ($site) && !empty ($mgmt_config[$site]['linkengine']))
   {
+    // insert new container and object in link database
     if (is_array ($link_db) && $contentfile != "" && !isset ($link_db[$contentfile]))
     {
       if ($object != "")
@@ -639,7 +646,7 @@ function link_db_insert ($site, $link_db, $contentfile, $cat, $object="")
         // add root directory constants
         $object_array = explode ("|", $object);
 
-        if ($object_array != false && sizeof ($object_array) >= 1)
+        if (is_array ($object_array) && sizeof ($object_array) >= 1)
         {
           $object = "";
 
@@ -659,7 +666,28 @@ function link_db_insert ($site, $link_db, $contentfile, $cat, $object="")
 
       return $link_db;
     }
-    else return false;
+    // container exists already
+    elseif (is_array ($link_db) && $contentfile != "" && isset ($link_db[$contentfile]))
+    {
+      $errcode = "20111";
+      $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|Could not insert new container in link management database since the container '".$contentfile."' exists already";
+
+      // save log
+      savelog (@$error);
+
+      return false;
+    }
+    // on error
+    else
+    {
+      $errcode = "20112";
+      $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|Could not insert new container in link management database for container '".$contentfile."' and object '".$object."'";
+
+      // save log
+      savelog (@$error);
+
+      return false;
+    }
   }
   else return true;
 }
@@ -849,6 +877,7 @@ function getlinkedobject ($site, $location, $page, $cat)
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))

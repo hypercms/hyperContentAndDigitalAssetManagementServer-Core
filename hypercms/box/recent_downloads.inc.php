@@ -1,12 +1,10 @@
 <?php
 // ---------------------- RECENT DOWNLOADS ---------------------
-
 $maxcount = 20;
-
 $object_array = array();
 
 // get downloads stats of user (use higher limit since folders will not be displayed)
-$stats_array = rdbms_getmediastat ("", "", "download", "", "", $user, false, 60);
+if (!empty ($user)) $stats_array = rdbms_getmediastat ("", "", "download", "", "", $user, false, 60);
 
 // prepare array
 if (is_array ($stats_array) && sizeof ($stats_array) > 0)
@@ -36,10 +34,11 @@ if (is_array ($stats_array) && sizeof ($stats_array) > 0)
 // output
 if (is_array ($object_array) && sizeof ($object_array) > 0)
 {
-  $object_array = array_unique ($object_array);
-
-  if (!empty ($is_mobile)) $width = "92%";
+  // box width
+  if (!empty ($is_mobile)) $width = "320px";
   else $width = "320px";
+  
+  $object_array = array_unique ($object_array);
 
   echo "
   <div id=\"recent_downloads\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">

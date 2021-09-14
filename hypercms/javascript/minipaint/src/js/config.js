@@ -12,11 +12,22 @@ config.visible_height = null;
 config.COLOR = '#008000';
 config.ALPHA = 255;
 config.ZOOM = 1;
+config.SNAP = true;
 config.pixabay_key = '3ca2cd8af3fde33af218bea02-9021417';
+config.safe_search_can_be_disabled = true;
+config.google_webfonts_key = 'AIzaSyAC_Tx8RKkvN235fXCUyi_5XhSaRCzNhMg';
 config.layers = [];
 config.layer = null;
 config.need_render = false;
+config.need_render_changed_params = false; // Set specifically when param change in layer details triggered render
 config.mouse = {};
+config.swatches = {
+	default: [] // Only default used right now, object format for swatch swapping in future.
+};
+config.user_fonts = {};
+config.guides_enabled = true;
+config.guides = [];
+config.ruler_active = false;
 
 //requires styles in reset.css
 config.themes = [
@@ -24,6 +35,47 @@ config.themes = [
 	'light',
 	'green',
 ];
+
+//no-translate BEGIN
+config.FONTS = [
+	"Arial",
+	"Courier",
+	"Impact",
+	"Helvetica",
+	"Monospace",
+	"Tahoma",
+	"Times New Roman",
+	"Verdana",
+	"Amatic SC",
+	"Arimo",
+	"Codystar",
+	"Creepster",
+	"Indie Flower",
+	"Lato",
+	"Lora",
+	"Merriweather",
+	"Monoton",
+	"Montserrat",
+	"Mukta",
+	"Muli",
+	"Nosifer",
+	"Nunito",
+	"Oswald",
+	"Orbitron",
+	"Pacifico",
+	"PT Sans",
+	"PT Serif",
+	"Playfair Display",
+	"Poppins",
+	"Raleway",
+	"Roboto",
+	"Rubik",
+	"Special Elite",
+	"Tangerine",
+	"Titillium Web",
+	"Ubuntu"
+];
+//no-translate END
 
 config.TOOLS = [
 	{
@@ -35,37 +87,27 @@ config.TOOLS = [
 	},
 	{
 		name: 'selection',
-		title: 'Selection',
 		attributes: {},
 		on_leave: 'on_leave',
 	},
 	{
 		name: 'brush',
-		title: 'Brush',
 		attributes: {
 			size: 4,
-			smart_brush: true,
+			pressure: false,
 		},
 	},
 	{
 		name: 'pencil',
-		title: 'Pencil',
-		on_update: 'on_params_update',
-		attributes: {
-			antialiasing: true,
-			size: 2,
-		},
 	},
 	{
 		name: 'pick_color',
-		title: 'Pick Color',
 		attributes: {
 			global: false,
 		},
 	},
 	{
 		name: 'erase',
-		title: 'Erase',
 		on_update: 'on_params_update',
 		attributes: {
 			size: 30,
@@ -74,8 +116,8 @@ config.TOOLS = [
 		},
 	},
 	{
-		name: 'magic_wand',
-		title: 'Magic Wand Tool',
+		name: 'magic_erase',
+		title: 'Magic Eraser Tool',
 		attributes: {
 			power: 15,
 			anti_aliasing: true,
@@ -84,7 +126,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'fill',
-		title: 'Fill',
 		attributes: {
 			power: 5,
 			anti_aliasing: false,
@@ -92,51 +133,296 @@ config.TOOLS = [
 		},
 	},
 	{
-		name: 'line',
-		title: 'Line',
+		name: 'shape',
+		on_activate: 'on_activate',
+		title: 'Shapes (H)',
 		attributes: {
-			size: 1,
-			type: {
-				value: 'Simple',
-				values: ['Simple', 'Arrow'],
-			},
+			size: 3,
+			stroke: '#00aa00',
+		},
+	},
+	{
+		name: 'line',
+		visible: false,
+		attributes: {
+			size: 4,
+		},
+	},
+	{
+		name: 'arrow',
+		visible: false,
+		attributes: {
+			size: 4,
 		},
 	},
 	{
 		name: 'rectangle',
-		title: 'Rectangle',
+		visible: false,
 		attributes: {
-			size: 1,
-			radius: 0,
+			border_size: 4,
+			border: true,
 			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+			radius: {
+				value: 0,
+				min: 0,
+			},
 			square: false,
 		},
 	},
 	{
-		name: 'circle',
-		title: 'Circle',
+		name: 'ellipse',
+		visible: false,
 		attributes: {
-			size: 1,
+			border_size: 4,
+			border: true,
 			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
 			circle: false,
 		},
 	},
 	{
 		name: 'media',
-		title: 'Search images',
+		title: 'Search Images',
 		on_activate: 'on_activate',
 		attributes: {
 			size: 30,
 		},
 	},
 	{
-		name: 'text',
-		title: 'Text',
+		name: 'triangle',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'right_triangle',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'romb',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'parallelogram',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'trapezoid',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'plus',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'pentagon',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'hexagon',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'star',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'star24',
+		title: '24-Points star',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'heart',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'cylinder',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'human',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'tear',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'cog',
+		visible: false,
 		attributes: {},
 	},
 	{
+		name: 'moon',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'callout',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'text',
+		on_update: 'on_params_update',
+		attributes: {
+			font: {
+				value: 'Arial',
+				values() {
+					const user_font_names = Object.keys(config.user_fonts);
+					return ['', '[Add Font...]', ...Array.from(new Set([...config.FONTS, ...user_font_names].sort()))];
+				}
+			},
+			size: 40,
+			bold: {
+				value: false,
+				icon: `bold.svg`
+			},
+			italic: {
+				value: false,
+				icon: `italic.svg`
+			},
+			underline: {
+				value: false,
+				icon: `underline.svg`
+			},
+			strikethrough: {
+				value: false,
+				icon: `strikethrough.svg`
+			},
+			fill: '#008800',
+			stroke: '#000000',
+			stroke_size: {
+				value: 0,
+				min: 0,
+				step: 0.1
+			},
+			kerning: {
+				value: 0,
+				min: -999,
+				max: 999,
+				step: 1
+			},
+			leading: {
+				value: 0,
+				min: -999,
+				max: 999,
+				step: 1
+			}
+		},
+	},
+	{
 		name: 'gradient',
-		title: 'Gradient',
 		attributes: {
 			color_1: '#008000',
 			color_2: '#ffffff',
@@ -147,7 +433,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'clone',
-		title: 'Clone tool',
 		attributes: {
 			size: 30,
 			anti_aliasing: true,
@@ -159,7 +444,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'crop',
-		title: 'Crop',
 		on_update: 'on_params_update',
 		on_leave: 'on_leave',
 		attributes: {
@@ -168,7 +452,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'blur',
-		title: 'Blur tool',
 		attributes: {
 			size: 30,
 			strength: 1,
@@ -176,14 +459,12 @@ config.TOOLS = [
 	},
 	{
 		name: 'sharpen',
-		title: 'Sharpen tool',
 		attributes: {
 			size: 30,
 		},
 	},
 	{
 		name: 'desaturate',
-		title: 'Desaturate',
 		attributes: {
 			size: 50,
 			anti_aliasing: true,
@@ -191,7 +472,7 @@ config.TOOLS = [
 	},
 	{
 		name: 'bulge_pinch',
-		title: 'Bulge/Pinch tool',
+		title: 'Bulge/Pinch Tool',
 		attributes: {
 			radius: 80,
 			power: 50,
@@ -200,7 +481,7 @@ config.TOOLS = [
 	},
 	{
 		name: 'animation',
-		title: 'Play animation',
+		on_activate: 'on_activate',
 		on_update: 'on_params_update',
 		on_leave: 'on_leave',
 		attributes: {
@@ -212,6 +493,5 @@ config.TOOLS = [
 
 //link to active tool
 config.TOOL = config.TOOLS[2];
-
 	
 export default config;

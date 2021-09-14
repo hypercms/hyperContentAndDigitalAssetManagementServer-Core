@@ -364,9 +364,28 @@ $token_new = createtoken ($user);
   {
     hcms_hideFormLayer('objectviewLayer');
   }
+
+  function addAsRecipient()
+  {
+    if (document.getElementById('ui-id-1'))
+    {
+      var ul = document.getElementById('ui-id-1');
+      var ul_li_id = ul.firstChild;
+      var ul_li_div_id = ul_li_id.firstChild.id;
+      
+      if (ul_li_div_id != "" && document.getElementById(ul_li_div_id)) 
+      {
+        document.getElementById(ul_li_div_id).click();
+        document.getElementById('addasrecipient').style.display='none';
+      }
+    }
+  }
   
   $(document).ready(function()
   {
+    // initialize fields
+    if (document.getElementById('email_ondate')) enablefield('email_date', document.getElementById('email_ondate').checked);
+
     <?php
     // prevent reseting the checked boxes to default values
     if (empty ($format_img) && empty ($format_doc) && empty ($format_vid)) echo "initLinkType();";
@@ -392,13 +411,13 @@ $token_new = createtoken ($user);
     var userlist = [<?php echo implode (",\n", $temp_array); ?>];
     <?php
     unset ($temp_array);
-    
+
     // id for the special element
     $idspecial = "-99999999";
     ?>
 
     var noneFound = { id: "<?php echo $idspecial; ?>", label: hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['add-as-recipient'][$lang]); ?>") };
-    
+
     $("input#selector").autocomplete(
     { 
         source: function(request, response) {
@@ -408,10 +427,12 @@ $token_new = createtoken ($user);
           if (found.length)
           {
             response(found);
+            document.getElementById('addasrecipient').style.display = "none";
           }
           else
           {
             response([noneFound]);
+            document.getElementById('addasrecipient').style.display = "inline";
           }
         },
         select: function(event, ui)
@@ -420,18 +441,18 @@ $token_new = createtoken ($user);
           var fieldname = inputval.replace(/([\.\-\@])/g, "_");
           
           if (ui.item.id == "<?php echo $idspecial; ?>")
-          {								
+          {
             var mainname = 'main_'+fieldname;
             var delname = 'delete_'+fieldname;
             var inputid = 'email_to_'+fieldname;
             var divtextid = 'divtext_'+fieldname;
-            
+
             // We only add persons who aren't on the list already
             if (!$('#'+mainname).length)
             {
               // Check if e-mail address is valid
               var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-              
+
               if (emailReg.test(inputval))
               {
                 var pre = "";
@@ -486,28 +507,30 @@ $token_new = createtoken ($user);
         autoFocus: true
       }
     )
+
     // as soon as there is focus autocomplete window will be opened
     /*.focus(function()
     {
       $(this).autocomplete( "search" , this.value);
     })*/
+
     // only open autocomplete when it's not already shown
     .click(function()
     {
       var elem = $(this);
       
-      if(elem.autocomplete( "widget").is(":hidden"))
+      if (elem.autocomplete("widget").is(":hidden"))
       {
-        elem.autocomplete( "search" , elem.value);
+        elem.autocomplete("search" , elem.value);
       }
-    })
-    ;
+    });
+
     // call click function for the first tap
     $("#menu-Recipient").click();
     
     $("#mailForm").keypress(function (key) 
     {
-      if(key.keyCode === 13 &&  key.target.id != 'email_body') return false;
+      if (key.keyCode === 13 && key.target.id != 'email_body') return false;
       else return true;
     }
     );
@@ -593,7 +616,7 @@ $token_new = createtoken ($user);
   
   <!-- mail form -->
   <div style="position:absolute; left:0px; top:5px; width:100%;">
-    <form id="mailForm" name="mailForm" action="" method="post">
+    <form id="mailForm" name="mailForm" action="" method="post" autocomplete="off">
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
       <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />  
@@ -626,7 +649,8 @@ $token_new = createtoken ($user);
             </tr>
             <tr>
               <td id="selectbox">
-                <input id="selector" name="selector" type="text" value="" maxlength="500" style="width:<?php echo $css_width_field; ?>;" />
+                <input id="selector" name="selector" type="search" value="" maxlength="500" style="width:<?php echo $css_width_field; ?>;" autocomplete="false" />
+                <img id="addasrecipient" src="<?php echo getthemelocation("day"); ?>img/button_user_new.png" onclick="addAsRecipient();" style="display:none; cursor:pointer; width:22px; height:22px; padding:0; margin-left:-32px;" title="<?php echo getescapedtext ($hcms_lang['add-as-recipient'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['add-as-recipient'][$lang]); ?>" />
               </td>
             <tr>
               <td class="hcmsHeadline">
@@ -1013,8 +1037,8 @@ $token_new = createtoken ($user);
             <tr>
               <td>
                 <label><input type="checkbox" name="valid_active" id="valid_active" value="yes" onclick="if (this.checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; } else { document.getElementById('valid_days').disabled=true; document.getElementById('valid_hours').disabled=true; }" <?php if (!empty ($valid_active)) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['valid-for'][$lang]); ?></label>
-                <input type="number" min="0" max="1000" name="valid_days" id="valid_days" value="<?php if ($valid_days > 0) echo $valid_days; ?>" style="width:40px; padding:2px;" disabled="disabled" />&nbsp;<?php echo getescapedtext ($hcms_lang['days-and'][$lang]); ?>&nbsp;
-                <input type="number" min="0" max="24" name="valid_hours" id="valid_hours" value="<?php if ($valid_hours > 0) echo $valid_hours; ?>" style="width:40px; padding:2px;" disabled="disabled" />&nbsp;<?php echo getescapedtext ($hcms_lang['hours'][$lang]); ?>
+                <input type="number" min="0" max="1000" name="valid_days" id="valid_days" value="<?php if ($valid_days > 0) echo $valid_days; ?>" style="width:60px; padding:2px;" disabled="disabled" />&nbsp;<?php echo getescapedtext ($hcms_lang['days-and'][$lang]); ?>&nbsp;
+                <input type="number" min="0" max="24" name="valid_hours" id="valid_hours" value="<?php if ($valid_hours > 0) echo $valid_hours; ?>" style="width:60px; padding:2px;" disabled="disabled" />&nbsp;<?php echo getescapedtext ($hcms_lang['hours'][$lang]); ?>
               </td>
             </tr>
           </table>
@@ -1041,11 +1065,11 @@ $token_new = createtoken ($user);
                 <table class="hcmsTableStandard" style="margin:0px 0px 0px 16px;">
                   <tr>
                     <td><?php echo getescapedtext ($hcms_lang['start'][$lang]); ?> </td>
-                    <td><input type="text" name="task_startdate" id="task_startdate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_startdate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_startdate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" style="vertical-align:top;" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /></td>
+                    <td><input type="text" name="task_startdate" id="task_startdate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_startdate, "Y-m-d", "Y-m-d"); ?>" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_startdate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" style="vertical-align:top;" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /></td>
                   </tr>
                   <tr>
                     <td><?php echo getescapedtext ($hcms_lang['end'][$lang]); ?> </td>
-                    <td><input type="text" name="task_enddate" id="task_enddate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_enddate, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_enddate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" style="vertical-align:top;" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /></td>
+                    <td><input type="text" name="task_enddate" id="task_enddate" readonly="readonly" style="width:90px;" value="<?php echo showdate ($task_enddate, "Y-m-d", "Y-m-d"); ?>" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'task_enddate', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" style="vertical-align:top;" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /></td>
                     </td>
                   </tr>
               </table>
@@ -1062,11 +1086,11 @@ $token_new = createtoken ($user);
             <td>
               <?php if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?>
               <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </span><br/>
-              <label><input type="checkbox" name="email_ondate" id="email_ondate" value="yes" onclick="enablefield('email_date', this.checked);" <?php if ($email_ondate == "yes") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?></label> <input type="text" name="email_date" id="email_date" readonly="readonly" style="width:140px;" value="<?php echo showdate ($email_date, "Y-m-d H:i", "Y-m-d H:i"); ?>" /><img name="datepicker3" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'email_date', '%Y-%m-%d %H:%i', true);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" />
+              <label><input type="checkbox" name="email_ondate" id="email_ondate" value="yes" onclick="enablefield('email_date', this.checked);" <?php if ($email_ondate == "yes") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?></label> <input type="text" name="email_date" id="email_date" readonly="readonly" style="width:140px;" value="<?php echo showdate ($email_date, "Y-m-d H:i", "Y-m-d H:i"); ?>" /><img id="email_datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'email_date', '%Y-%m-%d %H:%i', true); document.getElementById('email_ondate').checked=true; enablefield('email_date', true);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
               <?php } else { ?>
               <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </span>
               <?php } ?>
-              <img name="ButtonSubmit" src="<?php echo getthemelocation(); ?>img/button_ok.png" onClick="if (checkForm()) document.forms['mailForm'].submit();" onMouseOver="hcms_swapImage('ButtonSubmit','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" onMouseOut="hcms_swapImgRestore()"  class="hcmsButtonTinyBlank hcmsButtonSizeSquare" title="OK" alt="OK" />
+              <img name="ButtonSubmit" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="if (checkForm()) document.forms['mailForm'].submit();" onMouseOver="hcms_swapImage('ButtonSubmit','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" onMouseOut="hcms_swapImgRestore()"  class="hcmsButtonTinyBlank hcmsButtonSizeSquare" title="OK" alt="OK" />
             </td>
           </tr>
         </table>

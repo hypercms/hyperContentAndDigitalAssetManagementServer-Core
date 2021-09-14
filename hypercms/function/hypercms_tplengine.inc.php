@@ -974,7 +974,7 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
           }
         }
         // file include
-        elseif (@substr_count (strtolower ($hypertag), "hypercms:fileinclude") == 1)
+        elseif (substr_count (strtolower ($hypertag), "hypercms:fileinclude") == 1)
         {
           // file include (via HTTP)
           if (substr_count ($include_file, "://") == 1)
@@ -5304,6 +5304,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $onpublish_text = array();
       $onedit_href = array();
       $label = array();
+      $disable_href = array();
       $language_info = array();
       $add_submitlink = "";
       $targetlist = array();
@@ -5439,6 +5440,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   {
                     $bufferarray = getcontent ($linkbot[$id], "<linkhref>");
                     if (!empty ($bufferarray[0])) $linkhrefbot[$id] = $bufferarray[0];
+
                     // escape special characters
                     if (!empty ($linkhrefbot[0])) $linkhrefbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linkhrefbot[$id]); 
                   }
@@ -5447,8 +5449,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   {
                     $bufferarray = getcontent ($linkbot[$id], "<linktarget>");
                     if (!empty ($bufferarray[0])) $linktargetbot[$id] = $bufferarray[0];
+
                     // get link targets defined in template
                     $targetlist[$id] = getattribute ($hypertag, "list");
+
                     // escape special characters
                     if (!empty ($linktargetbot[0])) $linktargetbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linktargetbot[$id]); 
                   }
@@ -5457,6 +5461,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   {
                     $bufferarray = getcontent ($linkbot[$id], "<linktext>");
                     if (!empty ($bufferarray[0])) $linktextbot[$id] = $bufferarray[0];
+
                     // escape special characters
                     if (!empty ($linktextbot[0])) $linktextbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linktextbot[$id]);
                   }
@@ -5468,18 +5473,25 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               {
                 $hypertag_href[$id][$tagid] = $hypertag;
                 $hypertagname_href[$id] = $hypertagname;
+
                 // get label text
                 if (empty ($label[$id])) $label[$id] = getattribute ($hypertag, "label");
+
                 // get onpublish event
                 $onpublish_href[$id][$tagid] = getattribute (strtolower ($hypertag), "onpublish");
+
                 // get onedit event
                 $onedit_href[$id][$tagid] = getattribute (strtolower ($hypertag), "onedit");
+
                 // get infotype
                 if (!isset ($infotype[$id]) || $infotype[$id] != "meta")
                 {
                   $infotype[$id] = getattribute (strtolower ($hypertag), "infotype");
                   if ($infotype[$id] == "meta") $show_meta = true;
                 }
+
+                // get disable
+                $disable_href[$id][$tagid] = getattribute (strtolower ($hypertag), "disable");
               } 
               elseif ($hypertagname == $searchtag."target")
               {
@@ -5939,6 +5951,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   {
                     $linktextbot[$id] = addslashes ($linktextbot[$id]);
                     $linktextbot[$id] = str_replace ("\$", "\\\$", $linktextbot[$id]);
+                  }
+
+                  // disable link-href click event
+                  if (($buildview == "cmsview" || $buildview == "inlineview") && !empty ($disable_href[$id][$tagid]))
+                  {
+                    $linkhrefbot_insert = "javascript:void(0);";
                   }
 
                   // ----------------------------- insert hyperreferenes ------------------------------
@@ -10963,11 +10981,11 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
 
     // y-axis values/rulers
     $result .= "  <div id=\"yval4\" style=\"position:absolute; width:40px; top:-8px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:1;\">".$bar_maxheight."</div>\n";
-    $result .= "  <div id=\"yval3\" style=\"position:absolute; width:40px; top:".(($paper_height / 4) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 4 * 3, 0)."</div>\n";
+    $result .= "  <div id=\"yval3\" style=\"position:absolute; width:40px; top:".(($paper_height / 4) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 4 * 3, 2)."</div>\n";
     $result .= "  <div id=\"yval3_rule\" style=\"position:absolute; width:".$paper_width."px; height:1px; top:".($paper_height / 4)."px; left:0; margin:0; padding:0; border-top:1px solid #666666; text-align:right; vertical-align:top; z-index:100;\"></div>\n";
-    $result .= "  <div id=\"yval2\" style=\"position:absolute; width:40px; top:".(($paper_height / 2) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 2, 0)."</div>\n";
+    $result .= "  <div id=\"yval2\" style=\"position:absolute; width:40px; top:".(($paper_height / 2) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 2, 2)."</div>\n";
     $result .= "  <div id=\"yval2_rule\" style=\"position:absolute; width:".$paper_width."px; height:1px; top:".($paper_height / 2)."px; left:0; margin:0; padding:0; border-top:1px solid #666666; text-align:right; vertical-align:top; z-index:100;\"></div>\n";
-    $result .= "  <div id=\"yval1\" style=\"position:absolute; width:40px; top:".(($paper_height / 4 * 3) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 4, 0)."</div>\n";
+    $result .= "  <div id=\"yval1\" style=\"position:absolute; width:40px; top:".(($paper_height / 4 * 3) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 4, 2)."</div>\n";
     $result .= "  <div id=\"yval1_rule\" style=\"position:absolute; width:".$paper_width."px; height:1px; top:".($paper_height / 4 * 3)."px; left:0; margin:0; padding:0; border-top:1px solid #666666; text-align:right; vertical-align:top; z-index:100;\"></div>\n";
     $result .= "  <div id=\"yval0\" style=\"position:absolute; width:40px; top:".($paper_height - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">0</div>\n";
 

@@ -39,6 +39,12 @@ class Pick_color_class extends Base_tools_class {
 		document.addEventListener('mousemove', function (event) {
 			_this.dragMove(event);
 		});
+		document.addEventListener('mouseup', function (event) {
+			var mouse = _this.get_mouse_info(event);
+			if (config.TOOL.name != _this.name || mouse.click_valid == false)
+				return;
+			_this.copy_color_to_clipboard();
+		});
 
 		// collect touch events
 		document.addEventListener('touchstart', function (event) {
@@ -51,7 +57,7 @@ class Pick_color_class extends Base_tools_class {
 
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 
@@ -60,7 +66,7 @@ class Pick_color_class extends Base_tools_class {
 
 	mousemove(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.is_drag == false || mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.is_drag == false || mouse.click_valid == false) {
 			return;
 		}
 
@@ -82,21 +88,24 @@ class Pick_color_class extends Base_tools_class {
 			var ctx = canvas.getContext("2d");
 			canvas.width = config.WIDTH;
 			canvas.height = config.HEIGHT;
-			this.Base_layers.convert_layers_to_canvas(ctx);
+			this.Base_layers.convert_layers_to_canvas(ctx, null, false);
 		}
 		//find color
 		var c = ctx.getImageData(mouse.x, mouse.y, 1, 1).data;
 		var hex = this.Helper.rgbToHex(c[0], c[1], c[2]);
-		this.Base_gui.GUI_colors.change_color(hex);
 
+		const newColorDefinition = { hex };
 		if (c[3] > 0) {
 			//set alpha
-			this.Base_gui.GUI_colors.change_alpha(c[3]);
+			newColorDefinition.a = c[3];
 		}
+		this.Base_gui.GUI_colors.set_color(newColorDefinition);
+	}
 
-		this.Base_gui.GUI_colors.render_colors();
+	copy_color_to_clipboard() {
+		navigator.clipboard.writeText(config.COLOR);
 	}
 
 }
-;
+
 export default Pick_color_class;

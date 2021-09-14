@@ -1,10 +1,14 @@
 <?php
 // ---------------------- FAVORITES ---------------------
+// get favorites of user
+if (!empty ($user)) $objectinfo_array = getfavorites ($user, "path");
 
-$objectinfo_array = getfavorites ($user, "path");
-
-if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
+if (!empty ($objectinfo_array) && is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
 {
+  // box width
+  if (!empty ($is_mobile)) $width = "320px";
+  else $width = "320px";
+
   // prepare array
   $object_array = array();
   
@@ -16,12 +20,9 @@ if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
   // output
   if (is_array ($object_array) && sizeof ($object_array) > 0)
   {
-    if (!empty ($is_mobile)) $width = "92%";
-    else $width = "320px";
-
     echo "
     <div id=\"favorites\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
-      <div class=\"hcmsHeadline\" style=\"margin:6px;\">".getescapedtext ($hcms_lang['favorites'][$lang])."</div>";
+      <div class=\"hcmsHeadline\" style=\"margin:6px; white-space:nowrap;\">".getescapedtext ($hcms_lang['favorites'][$lang])."</div>";
     
     array_reverse ($object_array);
     reset ($object_array);

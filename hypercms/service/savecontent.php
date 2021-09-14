@@ -855,7 +855,10 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
          	elseif ($savetype == "imagerendering_so")
          	{
             // define image editor
-            if (!empty ($mgmt_config['imageeditor']) && strtolower ($mgmt_config['imageeditor']) == "minipaint") $imageeditor = "image_minipaint.php";
+            // the new MiniPaint version 4.9.1 implemented in version 10.0.1 does not support MS IE
+            $user_client = getbrowserinfo ();
+
+            if (!empty ($mgmt_config['imageeditor']) && strtolower ($mgmt_config['imageeditor']) == "minipaint" && empty ($user_client['msie']) && !$is_mobile) $imageeditor = "image_minipaint.php";
             else $imageeditor = "image_rendering.php";
 
             $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms']).$imageeditor."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";

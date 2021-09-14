@@ -208,7 +208,7 @@ function hcms_saveEvent ()
 
 <?php echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
-<p class="hcmsHeadline"><?php echo $regpro; ?>: <?php echo getescapedtext ($pers_name); ?></p>
+<p class="hcmsHeadline"><?php echo $regpro; ?> <?php echo getescapedtext ($pers_name); ?></p>
 <hr />
 
 <form id="editor" name="editor" method="post" action="<?php echo $action; ?>">

@@ -81,7 +81,6 @@ if ($template != "")
   // escape special characters
   if ($contentfield != "")
   {
-    if (strpos ("_".$contentfield, "&amp;") < 1) $contentfield = str_replace ("&", "&amp;", $contentfield);
     if (strpos ("_".$contentfield, "<") > 0) $contentfield = str_replace ("<", "&lt;", $contentfield);
     if (strpos ("_".$contentfield, ">") > 0) $contentfield = str_replace (">", "&gt;", $contentfield);
   }

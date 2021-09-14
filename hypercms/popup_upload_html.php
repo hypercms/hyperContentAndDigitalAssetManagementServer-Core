@@ -99,6 +99,13 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
 <style type="text/css">
+#topbarLayer
+{
+  margin-right: 110px;
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
 #contentLayer
 {
   display: block;
@@ -106,6 +113,11 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 
 @media screen and (max-width: 320px)
 {
+  #topbarLayer
+  {
+    max-width: 190px;
+  }
+
   #contentLayer
   {
     display: none;
@@ -114,22 +126,17 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 </style>
 
 <script type="text/javascript" src="javascript/main.min.js"></script>
-
 <!-- JQuery -->
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
-
 <!-- JQuery UI -->
 <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css">
-
 <!-- JQuery File Upload -->
 <script type="text/javascript" src="javascript/jquery/plugins/jquery.fileupload.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/jquery.iframe-transport.js"></script>
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/jquery-fileupload.css" type="text/css">
-
 <!-- Dropbox dropin.js -->
 <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropins.js" id="dropboxjs" data-app-key="<?php if (!empty ($mgmt_config['dropbox_appkey'])) echo $mgmt_config['dropbox_appkey']; ?>"></script>
-
 <!-- File Upload Code -->
 <script type="text/javascript">
 
@@ -1315,7 +1322,7 @@ else
   $object_name = "<img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" title=\"".getescapedtext ($hcms_lang['object'][$lang])."\" class=\"hcmsIconList\" />&nbsp;".$fileinfo['name'];
 }
 
-echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name."</span>", $lang);
+echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><span style=\"font-weight:normal;\">".$object_name."</span></div>", $lang);
 ?>
 
 <div id="contentLayer" class="hcmsWorkplaceFrame" style="margin-top:12px;">
@@ -1416,5 +1423,6 @@ else $css_iphone = " overflow-x:hidden; overflow-y:hidden;";
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

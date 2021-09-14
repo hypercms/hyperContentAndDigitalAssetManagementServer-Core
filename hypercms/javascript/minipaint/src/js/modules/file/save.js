@@ -1,11 +1,13 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Helper_class from './../../libs/helpers.js';
 import Dialog_class from './../../libs/popup.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import canvasToBlob from './../../../../node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.min.js';
-import filesaver from './../../../../node_modules/file-saver/FileSaver.min.js';
-import GIF from './../../libs/gifjs/gif.js';
+import filesaver from './../../../../node_modules/file-saver/dist/FileSaver.min.js';
+import GIF from './../../../../node_modules/gif.js.optimized/';
+import CanvasToTIFF from './../../libs/canvastotiff.js';
 
 var instance = null;
 
@@ -30,39 +32,82 @@ class File_save_class {
 		this.set_events();
 
 		//save types config
-		this.SAVE_TYPES = [
-			"PNG - Portable Network Graphics",
-			"JPG - JPG/JPEG Format",
-			"JSON - Full layers data", //aka PSD
-			"WEBP - Weppy File Format", //chrome only
-			"GIF - Graphics Interchange Format", //animated GIF
-			"BMP - Windows Bitmap", //firefox only
-		];
+		this.SAVE_TYPES = {
+			PNG: "Portable Network Graphics",
+			JPG: "JPG/JPEG Format",
+			//AVIF: "AV1 Image File Format", //just uncomment it in future to make it work
+			JSON: "Full layers data",
+			WEBP: "Weppy File Format",
+			GIF: "Graphics Interchange Format",
+			BMP: "Windows Bitmap",
+			TIFF: "Tag Image File Format",
+		};
+
+		this.default_extension = 'PNG';
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
-			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+		document.addEventListener('keydown', (event) => {
+			var code = event.key.toLowerCase();
+			if (this.Helper.is_input(event.target))
 				return;
 
-			if (code == 83) {
-				//save
-				_this.save();
+			if (code == "s") {
+				if(event.shiftKey){
+					//export
+					this.save();
+				}
+				else{
+					//save
+					this.export();
+				}
 				event.preventDefault();
 			}
 		}, false);
 	}
 
-	save() {
+	/**
+	 * saves as non destructive mode (including layers, RAW)
+	 */
+	save(){
+		var types = JSON.parse(JSON.stringify(this.SAVE_TYPES));
+		for(var i in types){
+			if(i != 'JSON'){
+				delete types[i];
+			}
+		}
+
+		this.save_general(types, 'Save as');
+
+	}
+
+	/**
+	 * save as encoded image
+	 */
+	export(){
+		var types = JSON.parse(JSON.stringify(this.SAVE_TYPES));
+		delete types.JSON;
+
+		this.save_general(types, 'Export');
+	}
+
+	save_general(file_types, title) {
 		var _this = this;
 
 		//find default format
-		var save_default = this.SAVE_TYPES[0];	//png
-		if (this.Helper.getCookie('save_default') == 'jpg')
-			save_default = this.SAVE_TYPES[1]; //jpg
+		var save_default = null;
+		var save_default_cookie = this.Helper.getCookie('save_default');
+
+		for(var i in file_types) {
+			if(save_default_cookie == i){
+				save_default = i;
+				break;
+			}
+		}
+		if(save_default == null){
+			save_default = Object.keys(file_types)[0];
+		}
+		save_default = save_default + " - " + file_types[save_default];
 
 		var calc_size_value = false;
 		var calc_size = false;
@@ -77,32 +122,60 @@ class File_save_class {
 			file_name = parts[parts.length - 2];
 		file_name = file_name.replace(/ /g, "-");
 
+		var save_types = [];
+		for(var i in file_types) {
+			save_types.push(i + " - " + file_types[i]);
+		}
+
+		var save_layers_types = [
+			'All',
+			'Selected',
+			'Separated',
+			'Separated (original types)',
+		];
+
 		var settings = {
-			title: 'Save as',
+			title: title,
 			params: [
 				{name: "name", title: "File name:", value: file_name},
-				{name: "type", title: "Save as type:", values: this.SAVE_TYPES, value: save_default},
+				{name: "type", title: "Save as type:", values: save_types, value: save_default},
 				{name: "quality", title: "Quality:", value: 90, range: [1, 100]},
 				{title: "File size:", html: '<span id="file_size">-</span>'},
 				{name: "calc_size", title: "Show file size:", value: calc_size_value},
-				{name: "layers", title: "Save layers:", values: ['All', 'Selected', 'Separated']},
+				{name: "layers", title: "Save layers:", values: save_layers_types},
 				{name: "delay", title: "Gif delay:", value: 400},
 			],
 			on_change: function (params, canvas_preview, w, h) {
-				_this.save_dialog_onchange();
+				_this.save_dialog_onchange(true);
 			},
 			on_finish: function (params) {
-				if (params.layers == 'Separated') {
+				if (params.layers == 'Separated' || params.layers == 'Separated (original types)') {
 					var active_layer = config.layer.id;
+					var original_layer_type = params.layers;
+
+					//alter params
 					params.layers = 'Selected';
+
 					for (var i in config.layers) {
 						if (config.layers[i].visible == false)
 							continue;
+
+						//detect type
+						if (original_layer_type == 'Separated (original types)') {
+							//detect type from file name
+							params.type = _this.SAVE_TYPES[_this.default_extension];
+							for (var j in _this.SAVE_TYPES) {
+								if (_this.Helper.strpos(config.layers[i].name.toLowerCase(), '.' + j.toLowerCase()) !== false) {
+									params.type = j;
+									break;
+								}
+							}
+						}
 						
-						this.Base_layers.select(config.layers[i].id);
+						new app.Actions.Select_layer_action(config.layers[i].id, true).do();
 						_this.save_action(params, true);
 					}
-					this.Base_layers.select(active_layer);
+					new app.Actions.Select_layer_action(active_layer, true).do();
 				}
 				else {
 					_this.save_action(params);
@@ -115,7 +188,10 @@ class File_save_class {
 
 		if (calc_size == true) {
 			//calc size once
-			this.save_dialog_onchange();
+			this.save_dialog_onchange(true);
+		}
+		else{
+			this.save_dialog_onchange(false);
 		}
 	}
 
@@ -134,10 +210,10 @@ class File_save_class {
 		this.disable_canvas_smooth(ctx);
 
 		//ask data
-		this.Base_layers.convert_layers_to_canvas(ctx);
+		this.Base_layers.convert_layers_to_canvas(ctx, null, false);
 		var data_url = canvas.toDataURL();
 
-		max = 1 * 1000 * 1000;
+		max = 1000 * 1000;
 		if (data_url.length > max) {
 			alertify.error('Size is too big, max ' + this.Helper.number_format(max, 0) + ' bytes.');
 			return;
@@ -169,11 +245,11 @@ class File_save_class {
 
 	/**
 	 * /activated on save dialog parameters change - used for calculating file size
+	 *
+	 * @param {boolean} calculate_file_size
 	 */
-	save_dialog_onchange() {
+	save_dialog_onchange(calculate_file_size) {
 		var _this = this;
-		this.update_file_size('...');
-
 		var user_response = this.POP.get_params();
 
 		var quality = parseInt(user_response.quality);
@@ -206,12 +282,32 @@ class File_save_class {
 		else
 			document.getElementById('pop_data_name').disabled = false;
 
-		if (user_response.calc_size == false || user_response.layers == 'Separated') {
+		if (user_response.layers == 'Separated (original types)') {
+			if(document.getElementById('popup-group-type')) {
+				document.getElementById('popup-group-type').style.opacity = "0.5";
+			}
+			document.getElementById('popup-tr-quality').style.display = '';
+		}
+		else {
+			if(document.getElementById('popup-group-type')) {
+				document.getElementById('popup-group-type').style.opacity = "1";
+			}
+		}
+
+		if(calculate_file_size == false){
+			return;
+		}
+
+		this.update_file_size('...');
+
+		if (user_response.calc_size == false || user_response.layers == 'Separated'
+			|| user_response.layers == 'Separated (original types)') {
+
 			document.getElementById('file_size').innerHTML = '-';
 			return;
 		}
 
-		if (type != 'JSON' && type != 'GIF') {
+		if (type != 'JSON') {
 			//create temp canvas
 			var canvas = document.createElement('canvas');
 			var ctx = canvas.getContext("2d");
@@ -237,16 +333,16 @@ class File_save_class {
 					canvas.height = layer.height;
 				}
 
-				this.Base_layers.convert_layers_to_canvas(ctx, layer.id);
+				this.Base_layers.convert_layers_to_canvas(ctx, layer.id, false);
 
-				if (initial_x != null && initial_x != null) {
+				if (initial_x != null) {
 					//restore position
 					layer.x = initial_x;
 					layer.y = initial_y;
 				}
 			}
 			else {
-				this.Base_layers.convert_layers_to_canvas(ctx);
+				this.Base_layers.convert_layers_to_canvas(ctx, null, false);
 			}
 		}
 
@@ -271,8 +367,22 @@ class File_save_class {
 			}, "image/jpeg", quality);
 		}
 		else if (type == 'WEBP') {
-			//WEBP - new format for chrome only
+			//WEBP
 			var data_header = "image/webp";
+
+			//check support
+			if (this.check_format_support(canvas, data_header, false) == false) {
+				this.update_file_size('-');
+				return;
+			}
+
+			canvas.toBlob(function (blob) {
+				_this.update_file_size(blob.size);
+			}, data_header, quality);
+		}
+		else if (type == 'AVIF') {
+			//AVIF
+			var data_header = "image/avif";
 
 			//check support
 			if (this.check_format_support(canvas, data_header, false) == false) {
@@ -295,6 +405,14 @@ class File_save_class {
 			}
 
 			canvas.toBlob(function (blob) {
+				_this.update_file_size(blob.size);
+			}, data_header);
+		}
+		else if (type == 'TIFF') {
+			//tiff
+			var data_header = "image/tiff";
+
+			CanvasToTIFF.toBlob(canvas, function(blob) {
 				_this.update_file_size(blob.size);
 			}, data_header);
 		}
@@ -337,25 +455,17 @@ class File_save_class {
 		var parts = type.split(" ");
 		type = parts[0];
 
-		if (this.Helper.strpos(fname, '.png') !== false)
-			type = 'PNG';
-		else if (this.Helper.strpos(fname, '.jpg') !== false)
-			type = 'JPG';
-		else if (this.Helper.strpos(fname, '.json') !== false)
-			type = 'JSON';
-		else if (this.Helper.strpos(fname, '.bmp') !== false)
-			type = 'BMP';
-		else if (this.Helper.strpos(fname, '.webp') !== false)
-			type = 'WEBP';
+		//detect type from file name
+		for(var i in this.SAVE_TYPES) {
+			if (this.Helper.strpos(fname, '.' + i.toLowerCase()) !== false) {
+				type = i;
+			}
+		}
 
-		//save type as cookie
-		var save_default = this.SAVE_TYPES[0]; //png
-		if (this.Helper.getCookie('save_default') == 'jpg')
-			save_default = this.SAVE_TYPES[1]; //jpg
-		if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[0])
-			this.Helper.setCookie('save_default', 'png');
-		else if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[1])
-			this.Helper.setCookie('save_default', 'jpg');
+		//save default type as cookie
+		if(this.Helper.getCookie('save_default') == '' || this.Helper.getCookie('save_default') != type){
+			this.Helper.setCookie('save_default', type);
+		}
 
 		if (type != 'JSON') {
 			//temp canvas
@@ -374,7 +484,7 @@ class File_save_class {
 				canvas.height = config.HEIGHT;
 				this.disable_canvas_smooth(ctx);
 				
-				this.Base_layers.convert_layers_to_canvas(ctx);
+				this.Base_layers.convert_layers_to_canvas(ctx, null, false);
 			}
 		}
 
@@ -411,10 +521,24 @@ class File_save_class {
 			}, "image/jpeg", quality);
 		}
 		else if (type == 'WEBP') {
-			//WEBP - new format for chrome only
+			//WEBP
 			if (this.Helper.strpos(fname, '.webp') == false)
 				fname = fname + ".webp";
 			var data_header = "image/webp";
+
+			//check support
+			if (this.check_format_support(canvas, data_header) == false)
+				return false;
+
+			canvas.toBlob(function (blob) {
+				filesaver.saveAs(blob, fname);
+			}, data_header, quality);
+		}
+		else if (type == 'AVIF') {
+			//AVIF
+			if (this.Helper.strpos(fname, '.avif') == false)
+				fname = fname + ".avif";
+			var data_header = "image/avif";
 
 			//check support
 			if (this.check_format_support(canvas, data_header) == false)
@@ -435,6 +559,16 @@ class File_save_class {
 				return false;
 
 			canvas.toBlob(function (blob) {
+				filesaver.saveAs(blob, fname);
+			}, data_header);
+		}
+		else if (type == 'TIFF') {
+			//tiff
+			if (this.Helper.strpos(fname, '.tiff') == false)
+				fname = fname + ".tiff";
+			var data_header = "image/tiff";
+
+			CanvasToTIFF.toBlob(canvas, function(blob) {
 				filesaver.saveAs(blob, fname);
 			}, data_header);
 		}
@@ -475,7 +609,7 @@ class File_save_class {
 				if (config.TRANSPARENCY == false) {
 					this.fillCanvasBackground(ctx, '#ffffff');
 				}
-				this.Base_layers.convert_layers_to_canvas(ctx, config.layers[i].id);
+				this.Base_layers.convert_layers_to_canvas(ctx, config.layers[i].id, false);
 
 				gif.addFrame(ctx, {copy: true, delay: delay});
 			}
@@ -511,8 +645,6 @@ class File_save_class {
 	 * exports all layers to JSON
 	 */
 	export_as_json() {
-		var export_data = {};
-
 		//get date
 		var today = new Date();
 		var yyyy = today.getFullYear();
@@ -534,7 +666,11 @@ class File_save_class {
 			date: today,
 			version: VERSION,
 			layer_active: config.layer.id,
+			guides: config.guides,
 		};
+
+		//fonts
+		export_data.user_fonts = config.user_fonts;
 
 		//layers
 		export_data.layers = [];

@@ -47,7 +47,11 @@ if (linking_valid() == true)
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $error = array();
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 
 // delete entry from saved search log
 function searchlog_delete ($search_delete_id, $user)
@@ -326,16 +330,16 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
     $rnrid = "";
 
     // full access to the folder
-    if (accesspermission ($site, $location, $cat))
+    if (accesspermission ($site, $location, $cat) && is_dir ($location))
     {
       // get all files in dir
-      $dir = @opendir ($location);
+      $scandir = scandir ($location);
 
-      if ($dir != false)
+      if ($scandir)
       {   
-        $folder_array = array ();
+        $folder_array = array();
 
-        while ($folder = @readdir ($dir)) 
+        foreach ($scandir as $folder) 
         {
           // if directory
           if ($folder != "" && $folder != '.' && $folder != '..' && is_dir ($location.$folder)) 
@@ -414,8 +418,6 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
           }
         }
 
-        @closedir ($dir);
-
         return $result;
       }
       else 
@@ -484,7 +486,7 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
             $folderinfo = getfileinfo ($site, $path, $cat);
 
             // verify that folder has not been marked as deleted
-            if ($path != "" && $folderinfo['deleted'] == false)
+            if (trim ($path) != "" && $folderinfo['deleted'] == false)
             {
               $location_esc = convertpath ($site, $path, $cat); 
               $folderpath = getlocation ($location_esc);
@@ -552,26 +554,29 @@ function generateTaxonomyTree ($site, $tax_id, $runningNumber=1)
 
       foreach ($tax_array as $tax_id => $tax_keyword)
       {
-        $id = 'tax_'.$site.'_';
-
-        // generating the id from the running number so we don't have any ID problems
-        if (!empty ($runningNumber))
+        if (trim ($tax_keyword) != "")
         {
-          $id .= $runningNumber.'_';
-          $rnrid = $runningNumber.'_';
+          $id = 'tax_'.$site.'_';
+
+          // generating the id from the running number so we don't have any ID problems
+          if (!empty ($runningNumber))
+          {
+            $id .= $runningNumber.'_';
+            $rnrid = $runningNumber.'_';
+          }
+
+          $id .= $i;
+          $rnrid .= $i++;
+
+          // generating the menupoint object with the needed configuration
+          $point = new hcms_menupoint(showshorttext ($tax_keyword, 32), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode("%taxonomy%/".$site."/all/".$tax_id."/0"), "folder_taxonomy.png", $id);
+          $point->setOnClick('hcms_jstree_open("'.$id.'");');
+          $point->setTarget('workplFrame');
+          $point->setNodeCSSClass('jstree-closed jstree-reload');
+          $point->setOnMouseOver('hcms_resetContext();');
+          $point->setAjaxData('%taxonomy%/'.$site.'/'.$lang.'/'.$tax_id.'/0', $rnrid);
+          $result[] = $point;
         }
-
-        $id .= $i;
-        $rnrid .= $i++;
-
-        // generating the menupoint object with the needed configuration
-        $point = new hcms_menupoint(showshorttext ($tax_keyword, 32), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode("%taxonomy%/".$site."/all/".$tax_id."/0"), "folder_taxonomy.png", $id);
-        $point->setOnClick('hcms_jstree_open("'.$id.'");');
-        $point->setTarget('workplFrame');
-        $point->setNodeCSSClass('jstree-closed jstree-reload');
-        $point->setOnMouseOver('hcms_resetContext();');
-        $point->setAjaxData('%taxonomy%/'.$site.'/'.$lang.'/'.$tax_id.'/0', $rnrid);
-        $result[] = $point;
       }
     }
 
@@ -1385,7 +1390,7 @@ else
     contextymove = true;
 
     // define global variable for popup window name used in contextmenu.js
-    var session_id = '<?php session_id(); ?>';
+    var session_id = '<?php echo session_id(); ?>';
 
     $(function ()
     {
@@ -2273,7 +2278,7 @@ else
 
     <!-- search form -->
     <div id="search" style="position:absolute; top:8px; left:4px; right:4px; text-align:top; display:none;">
-      <form name="searchform_advanced" method="post" action="search_objectlist.php" target="mainFrame">
+      <form name="searchform_advanced" method="post" action="search_objectlist.php" target="mainFrame" autocomplete="off">
         <input type="hidden" name="action" value="base_search" />
         <input type="hidden" name="search_dir" value="" />
 
@@ -2313,11 +2318,13 @@ else
         <div id="fulltextLayer" style="display:none; clear:right;"> 
           <div style="padding-bottom:3px;">
             <label for="search_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
-            <input type="text" id="search_expression" name="search_expression" onkeydown="if (hcms_enterKeyPressed(event)) startSearch('post');" style="width:<?php echo $width_searchfield; ?>px; padding-right:30px;" maxlength="2000" />
+            <input type="search" id="search_expression" name="search_expression" onkeydown="if (hcms_enterKeyPressed(event)) startSearch('post');" style="width:<?php echo $width_searchfield; ?>px; padding-right:30px;" maxlength="2000" autocomplete="off" />
             <img src="<?php echo getthemelocation(); ?>img/button_search_dark.png" style="cursor:pointer; width:22px; height:22px; margin-left:-30px;" onClick="startSearch('post');" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
           </div>
           <div style="padding-bottom:3px;">
-            <label><input type="checkbox" name="search_cat" value="file" /> <?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?></label><br />
+            <?php echo getescapedtext ($hcms_lang['search-restriction'][$lang]); ?><br/>
+            <label><input type="checkbox" name="search_cat" id="search_cat_file" value="file" onclick="if (this.checked) document.getElementById('search_cat_text').checked=false;" /> <?php echo getescapedtext ($hcms_lang['location'][$lang]."/".$hcms_lang['object'][$lang]." ".$hcms_lang['name'][$lang]); ?></label><br/>
+            <label><input type="checkbox" name="search_cat" id="search_cat_text" value="text" onclick="if (this.checked) document.getElementById('search_cat_file').checked=false;" /> <?php echo getescapedtext ($hcms_lang['text'][$lang]); ?></label><br />
           </div> 
         </div>
         <hr />
@@ -2354,19 +2361,20 @@ else
 
               foreach ($site_array as $site_source)
               {
-                $dir_template = dir ($mgmt_config['abs_path_template'].$site_source."/");
-
-                if ($dir_template != false)
+                if (is_dir ($mgmt_config['abs_path_template'].$site_source."/"))
                 {
-                  while ($entry = $dir_template->read())
+                  $dir_template = scandir ($mgmt_config['abs_path_template'].$site_source."/");
+
+                  if ($dir_template)
                   {
-                    if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
+                    foreach ($dir_template as $entry)
                     {
-                      $template_array[] = $site_source."/".$entry;                
+                      if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
+                      {
+                        $template_array[] = $site_source."/".$entry;                
+                      }
                     }
                   }
-
-                  $dir_template->close();
                 }
               }
             }
@@ -2447,12 +2455,12 @@ else
         </div>
         <hr />
 
+        <!-- filetype search -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?></span>
           <img onClick="activateFiletypeSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
 
-        <!-- filetype search -->
         <div id="filetypeLayer" style="display:none; clear:right;">
           <div style="padding-bottom:3px;">
             <label><input type="checkbox" name="search_format[]" value="page" />&nbsp;<?php echo getescapedtext ($hcms_lang['page'][$lang]); ?></label><br />

@@ -4,6 +4,7 @@
  */
 
 import config from './../config.js';
+import Base_layers_class from './base-layers.js';
 import GUI_tools_class from './gui/gui-tools.js';
 import GUI_preview_class from './gui/gui-preview.js';
 import GUI_colors_class from './gui/gui-colors.js';
@@ -11,7 +12,8 @@ import GUI_layers_class from './gui/gui-layers.js';
 import GUI_information_class from './gui/gui-information.js';
 import GUI_details_class from './gui/gui-details.js';
 import GUI_menu_class from './gui/gui-menu.js';
-import Help_translate_class from './../modules/help/translate.js';
+import Tools_translate_class from './../modules/tools/translate.js';
+import Tools_settings_class from './../modules/tools/settings.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
@@ -30,6 +32,7 @@ class Base_gui_class {
 		instance = this;
 
 		this.Helper = new Helper_class();
+		this.Base_layers = new Base_layers_class();
 
 		//last used menu id
 		this.last_menu = '';
@@ -39,6 +42,8 @@ class Base_gui_class {
 
 		//if grid is visible
 		this.grid = false;
+
+		this.canvas_offset = {x: 0, y: 0};
 
 		//common image dimensions
 		this.common_dimensions = [
@@ -59,8 +64,16 @@ class Base_gui_class {
 		this.GUI_information = new GUI_information_class(this);
 		this.GUI_details = new GUI_details_class(this);
 		this.GUI_menu = new GUI_menu_class();
-		this.Help_translate = new Help_translate_class();
+		this.Tools_translate = new Tools_translate_class();
+		this.Tools_settings = new Tools_settings_class();
 		this.modules = {};
+	}
+
+	init() {
+		this.load_modules();
+		this.load_default_values();
+		this.render_main_gui();
+		this.init_service_worker();
 	}
 
 	load_modules() {
@@ -98,6 +111,26 @@ class Base_gui_class {
 		if (transparency_type) {
 			config.TRANSPARENCY_TYPE = transparency_type;
 		}
+
+		//snap
+		var snap_cookie = this.Helper.getCookie('snap');
+		if (snap_cookie === null) {
+			//default
+			config.SNAP = true;
+		}
+		else{
+			config.SNAP = Boolean(snap_cookie);
+		}
+
+		//guides
+		var guides_cookie = this.Helper.getCookie('guides');
+		if (guides_cookie === null) {
+			//default
+			config.guides_enabled = true;
+		}
+		else{
+			config.guides_enabled = Boolean(guides_cookie);
+		}
 	}
 
 	render_main_gui() {
@@ -118,37 +151,37 @@ class Base_gui_class {
 		this.load_translations();
 	}
 
+	init_service_worker() {
+		/*if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('./service-worker.js').then(function(reg) {
+				//Successfully registered service worker
+			}).catch(function(err) {
+				console.warn('Error registering service worker', err);
+			});
+		}*/
+	}
+
 	set_events() {
 		var _this = this;
+
 		//menu events
-		var targets = document.querySelectorAll('#main_menu a');
-		for (var i = 0; i < targets.length; i++) {
-			if (targets[i].dataset.target == undefined)
-				continue;
-			targets[i].addEventListener('click', function (event) {
-				var parts = this.dataset.target.split('.');
-				var module = parts[0];
-				var function_name = parts[1];
-				var param = parts[2];
+		this.GUI_menu.on('select_target', (target, object) => {
+			var parts = target.split('.');
+			var module = parts[0];
+			var function_name = parts[1];
+			var param = object.parameter ??= null;
 
-				//close menu
-				var menu = document.querySelector('#main_menu .selected');
-				if (menu != undefined) {
-					menu.click();
-				}
-
-				//call module
-				if (_this.modules[module] == undefined) {
-					alertify.error('Modules class not found: ' + module);
-					return;
-				}
-				if (_this.modules[module][function_name] == undefined) {
-					alertify.error('Module function not found. ' + module + '.' + function_name);
-					return;
-				}
-				_this.modules[module][function_name](param);
-			});
-		}
+			//call module
+			if (this.modules[module] == undefined) {
+				alertify.error('Modules class not found: ' + module);
+				return;
+			}
+			if (this.modules[module][function_name] == undefined) {
+				alertify.error('Module function not found. ' + module + '.' + function_name);
+				return;
+			}
+			this.modules[module][function_name](param);
+		});
 
 		//registerToggleAbility
 		var targets = document.querySelectorAll('.toggle');
@@ -160,13 +193,16 @@ class Base_gui_class {
 				var target = document.getElementById(this.dataset.target);
 				target.classList.toggle('hidden');
 				//save
-				if (_this.Helper.strpos(target.classList, 'hidden') === false)
+				if (target.classList.contains('hidden') == false)
 					_this.Helper.setCookie(this.dataset.target, 1);
 				else
 					_this.Helper.setCookie(this.dataset.target, 0);
 			});
 		}
 
+		document.getElementById('left_mobile_menu_button').addEventListener('click', function (event) {
+			document.querySelector('.sidebar_left').classList.toggle('active');
+		});
 		document.getElementById('mobile_menu_button').addEventListener('click', function (event) {
 			document.querySelector('.sidebar_right').classList.toggle('active');
 		});
@@ -175,6 +211,25 @@ class Base_gui_class {
 			_this.prepare_canvas();
 			config.need_render = true;
 		}, false);
+		this.check_canvas_offset();
+
+		//confirmation on exit
+		var exit_confirm = this.Tools_settings.get_setting('exit_confirm');
+		window.addEventListener('beforeunload', function (e) {
+			if(exit_confirm && (config.layers.length > 1 || _this.Base_layers.is_layer_empty(config.layer.id) == false)){
+				e.preventDefault();
+				e.returnValue = '';
+			}
+			return undefined;
+		});
+	}
+
+	check_canvas_offset() {
+		//calc canvas position offset
+		var bodyRect = document.body.getBoundingClientRect();
+		var canvas_el = document.getElementById('canvas_minipaint').getBoundingClientRect();
+		this.canvas_offset.x = canvas_el.left - bodyRect.left;
+		this.canvas_offset.y = canvas_el.top - bodyRect.top;
 	}
 
 	prepare_canvas() {
@@ -194,16 +249,20 @@ class Base_gui_class {
 		config.visible_width = w;
 		config.visible_height = h;
 
-		ctx.webkitImageSmoothingEnabled = false;
-		ctx.oImageSmoothingEnabled = false;
-		ctx.msImageSmoothingEnabled = false;
-		ctx.imageSmoothingEnabled = false;
+		if(config.ZOOM >= 1) {
+			ctx.imageSmoothingEnabled = false;
+		}
+		else{
+			ctx.imageSmoothingEnabled = true;
+		}
 
 		this.render_canvas_background('canvas_minipaint');
 
 		//change wrapper dimensions
 		document.getElementById('canvas_wrapper').style.width = w + 'px';
 		document.getElementById('canvas_wrapper').style.height = h + 'px';
+
+		this.check_canvas_offset();
 	}
 
 	load_saved_changes() {
@@ -232,7 +291,7 @@ class Base_gui_class {
 		
 		if (lang != null && lang != config.LANG) {
 			config.LANG = lang.replace(/([^a-z]+)/gi, '');
-			this.Help_translate.translate(config.LANG);
+			this.Tools_translate.translate(config.LANG);
 		}
 	}
 
@@ -242,37 +301,23 @@ class Base_gui_class {
 		var page_h = wrapper.clientHeight;
 		var auto_size = false;
 
-		var save_resolution_cookie = this.Helper.getCookie('save_resolution');
-		var last_resolution = this.Helper.getCookie('last_resolution');
-		if (save_resolution_cookie != null && save_resolution_cookie != ''
-			&& last_resolution != null && last_resolution != '') {
-			//load last saved resolution
-			last_resolution = JSON.parse(last_resolution);
-			config.WIDTH = parseInt(last_resolution[0]);
-			config.HEIGHT = parseInt(last_resolution[1]);
+		//use largest possible
+		for (var i = this.common_dimensions.length - 1; i >= 0; i--) {
+			if (this.common_dimensions[i][0] > page_w
+				|| this.common_dimensions[i][1] > page_h) {
+				//browser size is too small
+				continue;
+			}
+			config.WIDTH = parseInt(this.common_dimensions[i][0]);
+			config.HEIGHT = parseInt(this.common_dimensions[i][1]);
+			auto_size = true;
+			break;
 		}
-		else {
-			//use largest possible
-			for (var i = this.common_dimensions.length - 1; i >= 0; i--) {
-				if (this.common_dimensions[i][0] > page_w
-					|| this.common_dimensions[i][1] > page_h) {
-					//browser size is too small
-					continue;
-				}
-				config.WIDTH = parseInt(this.common_dimensions[i][0]);
-				config.HEIGHT = parseInt(this.common_dimensions[i][1]);
-				auto_size = true;
-				break;
-			}
 
-			if (auto_size == false) {
-				//screen size is smaller then 400x300
-				config.WIDTH = parseInt(page_w) - 5;
-				config.HEIGHT = parseInt(page_h) - 10;
-				if (page_w < 585) {
-					config.HEIGHT = config.HEIGHT - 15;
-				}
-			}
+		if (auto_size == false) {
+			//screen size is smaller then 400x300
+			config.WIDTH = parseInt(page_w) - 15;
+			config.HEIGHT = parseInt(page_h) - 10;
 		}
 	}
 
@@ -350,6 +395,41 @@ class Base_gui_class {
 			ctx.stroke();
 		}
 	}
+
+	draw_guides(ctx){
+		if(config.guides_enabled == false){
+			return;
+		}
+		var thick_guides = this.Tools_settings.get_setting('thick_guides');
+
+		for(var i in config.guides) {
+			var guide = config.guides[i];
+
+			if (guide.x === 0 || guide.y === 0) {
+				continue;
+			}
+
+			//set styles
+			ctx.strokeStyle = '#00b8b8';
+			if(thick_guides == false)
+				ctx.lineWidth = 1;
+			else
+				ctx.lineWidth = 3;
+
+			ctx.beginPath();
+			if (guide.y === null) {
+				//vertical
+				ctx.moveTo(guide.x, 0);
+				ctx.lineTo(guide.x, config.HEIGHT);
+			}
+			if (guide.x === null) {
+				//horizontal
+				ctx.moveTo(0, guide.y);
+				ctx.lineTo(config.WIDTH, guide.y);
+			}
+			ctx.stroke();
+		}
+	}
 	
 	/**
 	 * change draw area size
@@ -387,8 +467,8 @@ class Base_gui_class {
 	 * 
 	 * @param {string} theme_name
 	 */
-	change_theme(theme_name){
-		if(theme_name == undefined){
+	change_theme(theme_name = null){
+		if(theme_name == null){
 			//auto detect
 			var theme_cookie = this.Helper.getCookie('theme');
 			if (theme_cookie) {
@@ -400,9 +480,33 @@ class Base_gui_class {
 		}
 
 		for(var i in config.themes){
-			document.querySelector('body').classList.remove('theme-' +  config.themes[i]);
+			document.querySelector('body').classList.remove('theme-' + config.themes[i]);
 		}
 		document.querySelector('body').classList.add('theme-' + theme_name);
+	}
+
+	get_language() {
+		return config.LANG;
+	}
+
+	get_color() {
+		return config.COLOR;
+	}
+
+	get_alpha() {
+		return config.ALPHA;
+	}
+
+	get_zoom() {
+		return config.ZOOM;
+	}
+
+	get_transparency_support() {
+		return config.TRANSPARENCY;
+	}
+
+	get_active_tool() {
+		return config.TOOL;
 	}
 
 }

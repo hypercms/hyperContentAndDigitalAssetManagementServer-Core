@@ -2540,8 +2540,10 @@ function getpublication ($path)
 
 function getlocation ($path)
 {
-  if ($path != "")
+  if (trim ($path) != "")
   {
+    $path = trim ($path);
+
     // if object has no slash at the end
     if (substr ($path, -1) != "/")
     {
@@ -2551,7 +2553,7 @@ function getlocation ($path)
     else
     {
       // remove slash at the end of the objectpath string
-      $location = substr ($path, 0, strlen ($path)-1);
+      $location = substr ($path, 0, -1);
       $location = substr ($location, 0, strrpos ($location, "/") + 1);
     }
 
@@ -2570,8 +2572,10 @@ function getlocation ($path)
 
 function getobject ($path)
 {
-  if ($path != "")
+  if (trim ($path) != "")
   {
+    $path = trim ($path);
+
     // if given input is a path
     if (substr_count ($path, "/") > 0)
     {
@@ -2584,11 +2588,11 @@ function getobject ($path)
       else
       {
         // remove slash at the end of the objectpath string
-        $path = substr ($path, 0, strlen ($path) - 1);
+        $path = substr ($path, 0, -1);
         $object = substr ($path, strrpos ($path, "/") + 1);
       }
 
-      // if path holds parameters (URL)
+      // if path holds GET parameters (URL)
       if (strpos ($object, "?") > 0)
       {
         $object = substr ($object, 0, strrpos ($object, "?"));
@@ -3041,7 +3045,7 @@ function gettemplates ($site, $cat="all")
     $site_array = array();
 
     // load publication inheritance setting
-    if ($mgmt_config[$site]['inherit_tpl'] == true)
+    if (!empty ($mgmt_config[$site]['inherit_tpl']))
     {
       $inherit_db = inherit_db_read ();
       $site_array = inherit_db_getparent ($inherit_db, $site);
@@ -3077,29 +3081,32 @@ function gettemplates ($site, $cat="all")
       }
 
       // standard templates
-      $scandir = scandir ($mgmt_config['abs_path_template'].$site_source."/");
-
-      if ($scandir)
+      if (is_dir ($mgmt_config['abs_path_template'].$site_source."/"))
       {
-        foreach ($scandir as $entry)
+        $scandir = scandir ($mgmt_config['abs_path_template'].$site_source."/");
+
+        if ($scandir)
         {
-          if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
+          foreach ($scandir as $entry)
           {
-            if ($cat == "page" && strpos ($entry, ".page.tpl") > 0)
+            if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
             {
-              $template_array[] = $entry;
-            }
-            elseif ($cat == "comp" && strpos ($entry, ".comp.tpl") > 0)
-            {
-              $template_array[] = $entry;
-            }
-            elseif ($cat == "meta" && strpos ($entry, ".meta.tpl") > 0)
-            {
-              $template_array[] = $entry;
-            }
-            elseif ($cat == "all" || $cat == "")
-            {
-              $template_array[] = $entry; 
+              if ($cat == "page" && strpos ($entry, ".page.tpl") > 0)
+              {
+                $template_array[] = $entry;
+              }
+              elseif ($cat == "comp" && strpos ($entry, ".comp.tpl") > 0)
+              {
+                $template_array[] = $entry;
+              }
+              elseif ($cat == "meta" && strpos ($entry, ".meta.tpl") > 0)
+              {
+                $template_array[] = $entry;
+              }
+              elseif ($cat == "all" || $cat == "")
+              {
+                $template_array[] = $entry; 
+              }
             }
           }
         }
@@ -3644,9 +3651,9 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
           foreach ($contentobjects as $contentobject_v)
           {
             // assuming that the object is still in the same location
-            if (getlocation ($contentobject) == $location_esc)
+            if (getlocation ($contentobject_v) == $location_esc)
             {
-              $object = getobject ($contentobject);
+              $object = getobject ($contentobject_v);
               break;
             }
           }
@@ -4049,7 +4056,7 @@ function getimagecolorkey ($image)
 // ---------------------- getimagecolors -----------------------------
 // function: getimagecolors()
 // input: publication name [string], media file name [string]
-// output: result array / false on error
+// output: result array
 
 // description:
 // Uses the thumbnail image to calculate the mean color (red, green, blue), defines the colorkey (5 most commonly used colors) and the image type (landscape, portrait, square)
@@ -4057,6 +4064,14 @@ function getimagecolorkey ($image)
 function getimagecolors ($site, $file)
 {
   global $mgmt_config, $user;
+
+  // initialize
+  $result = array();
+  $result['red'] = NULL;
+  $result['green'] = NULL;
+  $result['blue'] = NULL;
+  $result['colorkey'] = "";
+  $result['imagetype'] = "";
 
   if (valid_publicationname ($site) && valid_objectname ($file))
   {
@@ -4070,7 +4085,7 @@ function getimagecolors ($site, $file)
     // use thumbnail image file
     if (is_file ($media_root.$thumbnail))
     {
-      $image = imagecreatefromjpeg ($media_root.$thumbnail);
+      $image = @imagecreatefromjpeg ($media_root.$thumbnail);
     }
     // try original image
     else
@@ -4094,9 +4109,9 @@ function getimagecolors ($site, $file)
       // verify local media file
       if (!is_file ($media_root.$file)) return false;
 
-      if ($file_info['ext'] == ".jpg") $image = imagecreatefromjpeg ($media_root.$file);
-      elseif ($file_info['ext'] == ".png") $image = imagecreatefrompng ($media_root.$file);
-      elseif ($file_info['ext'] == ".gif") $image = imagecreatefromgif ($media_root.$file);
+      if ($file_info['ext'] == ".jpg") $image = @imagecreatefromjpeg ($media_root.$file);
+      elseif ($file_info['ext'] == ".png") $image = @imagecreatefrompng ($media_root.$file);
+      elseif ($file_info['ext'] == ".gif") $image = @imagecreatefromgif ($media_root.$file);
       else $image = false;
 
       // delete temp file
@@ -4161,18 +4176,15 @@ function getimagecolors ($site, $file)
       // destroy image resource
       if (is_resource ($image)) imagedestroy ($image);
 
-      $result = array();
       $result['red'] = $totalred;
       $result['green'] = $totalgreen;
       $result['blue'] = $totalblue;
       $result['colorkey'] = $colorkey;
       $result['imagetype'] = $imagetype;
-
-      return $result;
     }
-    else return false;
   }
-  else return false;
+
+  return $result;
 }
 
 // --------------------------------------- getbrightness -------------------------------------------

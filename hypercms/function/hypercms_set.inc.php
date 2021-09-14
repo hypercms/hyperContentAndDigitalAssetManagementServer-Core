@@ -810,7 +810,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
         $mediafile[$id] = scriptcode_encode ($mediafile[$id]);
         
         // escape special characters (transform all special chararcters into their html/xml equivalents)
-        $mediafile[$id] = str_replace (array("&", "<", ">"), array("&amp;", "&lt;", "&gt;"), $mediafile[$id]);
+        $mediafile[$id] = str_replace (array("<", ">"), array("&lt;", "&gt;"), $mediafile[$id]);
         $mediaalign[$id] = str_replace (array("&", "<", ">"), array("&amp;", "&lt;", "&gt;"), $mediaalign[$id]);
         $mediawidth[$id] = str_replace (array("&", "<", ">"), array("&amp;", "&lt;", "&gt;"), $mediawidth[$id]);
         $mediaheight[$id] = str_replace (array("&", "<", ">"), array("&amp;", "&lt;", "&gt;"), $mediaheight[$id]);
@@ -1019,7 +1019,6 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
         $linkhref[$id] = scriptcode_encode ($linkhref[$id]);
 
         // escape special characters
-        $linkhref[$id] = str_replace ("&", "&amp;", $linkhref[$id]);
         $linkhref[$id] = str_replace ("<", "&lt;", $linkhref[$id]);
         $linkhref[$id] = str_replace (">", "&gt;", $linkhref[$id]);
 

@@ -11,7 +11,7 @@
 
 $size = "[hyperCMS:textl id='Size' onEdit='hidden']";
 
-if (!empty ($is_mobile)) $width = "92%";
+if (!empty ($is_mobile)) $width = "320px";
 elseif ($size == "Large") $width = "670px";
 else $width = "320px";
 ?>

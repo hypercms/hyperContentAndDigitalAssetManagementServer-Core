@@ -285,8 +285,7 @@ function selectAll ()
 
 function checkForm_chars (text, exclude_chars)
 {
-  exclude_chars = exclude_chars.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-  
+  var exclude_chars = exclude_chars.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");  
 	var expr = new RegExp ("[^a-zA-Z0-9" + exclude_chars + "]", "g");
 	var separator = ', ';
 	var found = text.match(expr); 
@@ -305,6 +304,20 @@ function checkForm_chars (text, exclude_chars)
 		return false;
 	}
   else return true;
+}
+
+function editGroup ()
+{
+  var select = document.forms['userform'].elements['list2'];
+
+  if (select.value != "") 
+  {
+    hcms_openWindow('group_edit_form.php?site=<?php echo url_encode($site); ?>&group_name=' + select.value, 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', <?php echo windowwidth("object"); ?>, <?php echo windowheight("object"); ?>);
+  }
+  else
+  {
+    alert ("<?php echo getescapedtext ($hcms_lang['please-select-an-option'][$lang]); ?>\n ");
+  }
 }
 
 function setHomeBoxes ()
@@ -705,6 +718,9 @@ if (!empty ($login))
   
               echo "</select>
             </td>
+            <td style=\"width:32px; text-align:left; vertical-align:middle;\">
+              <img onClick=\"editGroup();\" src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />
+            </td>
           </tr>
         </table>
       </div>";
@@ -847,8 +863,8 @@ if (!empty ($login))
             </select>
           </td>
           <td style="width:32px; text-align:left; vertical-align:middle;">
-            <img onClick="hcms_moveSelected(document.forms['userform'].elements['list4'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                             
-            <img onClick="hcms_moveSelected(document.forms['userform'].elements['list4'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
+            <img onClick="hcms_moveSelected(document.forms['userform'].elements['list4'], false);" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                             
+            <img onClick="hcms_moveSelected(document.forms['userform'].elements['list4'], true);" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" />
           </td>
         </tr>
       </table>
@@ -874,5 +890,6 @@ if (!empty ($login))
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

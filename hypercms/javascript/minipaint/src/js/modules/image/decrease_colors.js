@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
@@ -18,12 +19,12 @@ class Image_decreaseColors_class {
 		var _this = this;
 
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 
 		var settings = {
-			title: 'Decrease color depth',
+			title: 'Decrease Color Depth',
 			preview: true,
 			on_change: function (params, canvas_preview, w, h) {
 				var img = canvas_preview.getImageData(0, 0, w, h);
@@ -35,7 +36,6 @@ class Image_decreaseColors_class {
 				{name: "greyscale", title: "Greyscale:", value: false},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.execute(params);
 			},
 		};
@@ -53,7 +53,9 @@ class Image_decreaseColors_class {
 		ctx.putImageData(data, 0, 0);
 
 		//save
-		this.Base_layers.update_layer_image(canvas);
+		return app.State.do_action(
+			new app.Actions.Update_layer_image_action(canvas)
+		);
 	}
 
 	get_decreased_data(data, colors, greyscale) {
