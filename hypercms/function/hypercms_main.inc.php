@@ -4022,6 +4022,22 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
 
       return true;
     }
+    // if file is unlocked (same user might access the same file using different processes)    
+    elseif (is_file ($abs_path.$filename_unlocked))
+    {
+      $filehandle = fopen ($abs_path.$filename_unlocked, "wb");
+
+      if ($filehandle != false)
+      {
+        @flock ($filehandle, LOCK_EX);
+        @fwrite ($filehandle, $filedata);
+        @flock ($filehandle, LOCK_UN);
+        @fclose ($filehandle);
+      }
+      else return false;
+
+      return true;
+    }
     else return false;
   }
   else return false;

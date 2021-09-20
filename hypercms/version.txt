@@ -5557,6 +5557,8 @@ Release 09/2021
 - Modifications in popup_status in order to display errors provided by function manipulateallobjects
 - Modifications in function copyfolders in Main API in order to support the new input parameter for not creating a copy of the folder if it exist already in the target location
 - Modifications in function manipulateobject in Main API in order to avoid creating a copy of the folder file
+- Modifications in frameset_objectlist in order to hide the scrollbars of the object view layer on mobile devices
+- Modifications in function savelockfile in Main API in order to save the file if it is already unlocked
 - Updates in the Installation, Template Designers, and Users Guide
 - Updates in all language files
 - Bug fix: template_edit encoded & which could lead to an issue with &gt; and &lt;
