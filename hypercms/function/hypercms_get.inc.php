@@ -2130,8 +2130,12 @@ function getcontainername ($container)
 {
   global $mgmt_config;
 
+  // initalize
   $result = array();
   $result['result'] = false;
+
+  // correct user name for file lock
+  if (!empty ($_SESSION['hcms_user'])) $lock = createlockname ($_SESSION['hcms_user']);
 
   if (valid_objectname ($container))
   {
@@ -2162,19 +2166,19 @@ function getcontainername ($container)
     // container exists and is not locked
     if (is_file ($location.$containerwrk))
     {
-      // return result
       $result['result'] = true;
       $result['container'] = $containerwrk;
       $result['user'] = "";
+
       return $result;
     }
     // container exists and is locked by current user
-    elseif (!empty ($_SESSION) && is_file ($location.$containerwrk.".@".$_SESSION['hcms_user']))
+    elseif (!empty ($lock) && is_file ($location.$containerwrk.".@".$lock))
     {
-      // return result
       $result['result'] = true;
-      $result['container'] = $containerwrk.".@".$_SESSION['hcms_user'];
+      $result['container'] = $containerwrk.".@".$lock;
       $result['user'] = $_SESSION['hcms_user'];
+
       return $result;
     }
     // container is locked or does not exist
@@ -2195,6 +2199,7 @@ function getcontainername ($container)
             $result['result'] = true;
             $result['container'] = $containerwrk;
             $result['user'] = $user;
+
             return $result;
           } 
         }
@@ -4893,6 +4898,12 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 
   if (intval ($container_id) > 0 && ($type == "url_path_content" || $type == "abs_path_content") && is_array ($mgmt_config))
   {
+    // directory block size of 10.000
+    $limitbase = 10000;
+
+    // container block ID number
+    $block_id = floor (intval ($container_id) / $limitbase);
+
     // correct container ID (add zeros)
     if (strlen ($container_id) < 7)
     {
@@ -4900,22 +4911,20 @@ function getcontentlocation ($container_id, $type="abs_path_content")
       $container_id = str_repeat ("0", $multiplier).$container_id;
     }
 
-    // directory block size of 10.000
-    $limitbase = 10000;
-
-    // max. 32000 subdirectories
-    for ($i=0; $i<32000; $i++)
+    // max. 32000 subdirectories for the block numbers
+    if ($block_id >= 0 && $block_id <= 32000)
     {
-      $limit = $limitbase * (1 + $i);
+      // if 1st level container block directory does not exist, try to create it
+      if (!is_dir ($mgmt_config['abs_path_content'].$block_id)) mkdir ($mgmt_config['abs_path_content'].$block_id, $mgmt_config['fspermission']);
 
-      if (intval ($container_id) < $limit)
-      {
-        if (!is_dir ($mgmt_config['abs_path_content'].$i)) @mkdir ($mgmt_config['abs_path_content'].$i, $mgmt_config['fspermission']);
-        return $mgmt_config[$type].$i."/".$container_id."/";
-      }
+      // if 2nd level container directory does not exist, try to create it
+      if (!is_dir ($mgmt_config['abs_path_content'].$block_id."/".$container_id)) mkdir ($mgmt_config['abs_path_content'].$block_id."/".$container_id, $mgmt_config['fspermission']);
+
+      return $mgmt_config[$type].$block_id."/".$container_id."/";
     }
   }
-  else return false;
+  
+  return false;
 } 
 
 // ---------------------- getmedialocation -----------------------------

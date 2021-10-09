@@ -344,7 +344,7 @@ if (!empty ($container_id))
   }
 }
 ?>
-  <div style="margin:30px 0px 0px 40px;">
+  <div style="margin:50px 0px 0px 40px;">
     <div style="height:16px;"><div style="width:16px; height:16px; background:#6fae30; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['views'][$lang])." (".number_format ($view_total_count, 0, ".", " ")." Hits)"; ?></div>
     <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#108ae7; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['downloads'][$lang])." (".number_format ($download_total_count, 0, ".", " ")." Hits / ".number_format (($download_total_filesize / 1024), 0, ".", " ")." MB)"; ?></div>
     <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['uploads'][$lang])." (".number_format ($upload_total_count, 0, ".", " ")." Hits / ".number_format (($upload_total_filesize / 1024), 0, ".", " ")." MB)"; ?></div>

@@ -1305,7 +1305,7 @@ function switchthumbnail ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onbeforeunload="return showwarning();">
+<body class="hcmsWorkplaceGeneric" <?php if ($uploadmode == "multi") echo "onbeforeunload=\"return showwarning();\""; ?>>
 
 <!-- top bar -->
 <?php

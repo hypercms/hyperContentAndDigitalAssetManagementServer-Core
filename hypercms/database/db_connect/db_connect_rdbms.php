@@ -5599,7 +5599,7 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
 
       // exclude recycled files
       if ($object_info['type'] == "Folder") $sqladd .= 'WHERE objectpath LIKE "'.$objectpath.'%" AND objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"';
-      else $sqladd .= 'WHERE objectpath = "'.$objectpath.'" objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"';
+      else $sqladd .= 'WHERE objectpath="'.$objectpath.'" AND objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"';
 
       $sqlfilesize = 'SUM(filesize) AS filesize';
     }

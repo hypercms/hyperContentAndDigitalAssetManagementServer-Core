@@ -40,6 +40,7 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $show = "";
 $add_onload = "";
 
@@ -607,7 +608,7 @@ function hcms_saveEvent ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>">
+<body class="hcmsWorkplaceGeneric" onload="<?php echo $add_onload; ?>">
 
 <!-- saving --> 
 <div id="savelayer" class="hcmsLoadScreen"></div>

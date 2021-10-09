@@ -353,7 +353,7 @@ a.hcmsNavigator
 {
   margin: 0;
   padding: 0;
-  background-color: #E7EFFF;
+  background-color: #E7EFFF !important;
 }
 
 .hcmsWorkplaceObjectlist

@@ -1638,14 +1638,33 @@ function createfilename ($filename)
   else return false;
 }
 
+// ---------------------- createlockname -----------------------------
+// function: createlockname()
+// input: user name [string]
+// output: correct user name for locking / false
+
+function createlockname ($user)
+{
+  global $mgmt_config;
+
+  if (valid_objectname ($user))
+  {
+    return str_replace (".@", "@", $user);
+  }
+  else return false;
+}
+
 // ---------------------- correctfile -----------------------------
 // function: correctfile()
-// input: path to file or directory [string], file or directory name [string], user name [string]
+// input: path to file or directory [string], file or directory name [string], user name [string] (optional)
 // output: correct filename/false
 
 function correctfile ($abs_path, $filename, $user="")
 {
   global $mgmt_config, $hcms_lang, $lang;
+
+  // correct user name for file lock
+  $lock = createlockname ($user);
 
   // create valid file name if container file is not locked by a user (this would mean the correct container file name has been provided)
   if (strpos ($filename, ".@") < 1) $filename = createfilename ($filename);
@@ -1684,9 +1703,9 @@ function correctfile ($abs_path, $filename, $user="")
       else return false;
     }
     // if file is locked by the same user (only for management files, like content containers, link index files, user index file, ...)
-    elseif (substr_count ($abs_path.$filename, $mgmt_config['abs_path_data']) == 1 && valid_objectname ($user) && is_file ($abs_path.$filename.".@".$user)) 
+    elseif (substr_count ($abs_path.$filename, $mgmt_config['abs_path_data']) == 1 && valid_objectname ($user) && is_file ($abs_path.$filename.".@".$lock)) 
     {
-      $filename = $filename.".@".$user;
+      $filename = $filename.".@".$lock;
       return $filename;
     }
     // file doesn't exist
@@ -3511,7 +3530,8 @@ function loadfile_header ($abs_path, $filename)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  $filedata = false;
+  // correct user name for file lock
+  $lock = createlockname ($user);
 
   // check and correct file
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
@@ -3559,12 +3579,14 @@ function loadfile_header ($abs_path, $filename)
         {
           $filedata = @fread ($filehandle, 2048);
           @fclose ($filehandle);
+
+          return $filedata;
         }
       }
     }
   } 
 
-  return $filedata;
+  return false;
 }
 
 // ------------------------------------------- loadfile_fast -------------------------------------------
@@ -3580,7 +3602,8 @@ function loadfile_fast ($abs_path, $filename)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  $filedata = false;
+  // correct user name for file lock
+  $lock = createlockname ($user);
 
   // check and correct file
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
@@ -3623,11 +3646,13 @@ function loadfile_fast ($abs_path, $filename)
 
         @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
+
+        return $filedata;
       }
     } 
   }
 
-  return $filedata;
+  return false;
 }
 
 // ------------------------------------------- loadfile -------------------------------------------
@@ -3642,8 +3667,8 @@ function loadfile ($abs_path, $filename)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  // initialize
-  $filedata = false;
+  // correct user name for file lock
+  $lock = createlockname ($user);
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -3686,6 +3711,8 @@ function loadfile ($abs_path, $filename)
 
         @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
+
+        return $filedata;
       }
     }
     // if file is locked by other user or system, wait 3 seconds
@@ -3699,11 +3726,8 @@ function loadfile ($abs_path, $filename)
         $filename = $filename_unlocked;
         $filename = correctfile ($abs_path, $filename, $user);
 
-        if (is_file ($abs_path.$filename) || is_file ($abs_path.$filename.".off"))
+        if (is_file ($abs_path.$filename))
         {
-          // if file is offline
-          if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off";
-
           $filehandle = @fopen ($abs_path.$filename, "rb");
 
           if ($filehandle != false)
@@ -3716,7 +3740,7 @@ function loadfile ($abs_path, $filename)
             @flock ($filehandle, LOCK_UN);
             @fclose ($filehandle);
 
-            break;
+            return $filedata;
           }
         }
         // sleep for 0 - 100 milliseconds, to avoid collision and CPU load
@@ -3725,7 +3749,7 @@ function loadfile ($abs_path, $filename)
     }
   }
 
-  return $filedata;
+  return false;
 }
 
 // ---------------------------------------- loadlockfile ---------------------------------------------
@@ -3734,11 +3758,12 @@ function loadfile ($abs_path, $filename)
 // output: file content
 
 // description:
-// This function loads and locks a file for a sepecific user. It waits up to 3 seconds for locked files to be unlocked.
-// Function loadlockfile and savelockfile includes a locking mechanismen for files.
+// This function loads and locks a file for a specific user. It waits up to x seconds for locked files to be unlocked.
+// Function loadlockfile and savelockfile includes a locking mechanismn for files.
 // Every time you want to lock a file during your operations use loadlockfile.
 // It is important to use savelockfile to save and unlock the file again.
-// savelockfile requires the file to be opened by loadlockfile.
+// Function savelockfile requires the file to be opened by loadlockfile.
+// Keep in mind that the locking is based on the user. The same user can therefore read a file that has been locked for him.
 
 function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
 {
@@ -3746,10 +3771,12 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
 
   // initialize
   $error = array();
-  $filedata = false;
 
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
+    // correct user name for file lock
+    $lock = createlockname ($user);
+
     // add slash if not present at the end of the location string
     $abs_path = correctpath ($abs_path);
 
@@ -3771,28 +3798,33 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
       }
     }
 
-    // check and correct file name
-    if (substr_count ($filename, ".@".$user) == 1) $filename = str_replace (".@".$user, "", $filename);
+    // correct file name if locked or offline/unpublished
+    if (substr_count ($filename, ".@") > 0) $filename = substr ($filename, 0, strpos ($filename, ".@"));
+    if (!is_file ($abs_path.$filename) && is_file ($abs_path.$filename.".off")) $filename = $filename.".off";
+
+    // unlocked file name
     $filename_unlocked = $filename;
-    $filename = correctfile ($abs_path, $filename, $user);
 
     // if file exists
-    if ($filename != false)
+    if (!empty ($filename_unlocked) && (is_file ($abs_path.$filename_unlocked) || is_file ($abs_path.$filename_unlocked.".@".$lock)))
     {
       // if file is not locked by the user
-      if (!is_file ($abs_path.$filename_unlocked.".@".$user))
+      if (is_file ($abs_path.$filename_unlocked) && !is_file ($abs_path.$filename_unlocked.".@".$lock))
       {
         // lock file
-        $locked = rename ($abs_path.$filename, $abs_path.$filename.".@".$user);
-        $filename = $filename.".@".$user;
+        $locked = rename ($abs_path.$filename_unlocked, $abs_path.$filename_unlocked.".@".$lock);
       }
       else $locked = true;
+
+      // locked file name
+      $filename = $filename_unlocked.".@".$lock;
 
       // if file is locked
       if ($locked == true)
       {
         $filehandle = @fopen ($abs_path.$filename, "rb");
 
+        // read file data
         if ($filehandle != false)
         {
           @flock ($filehandle, LOCK_EX);
@@ -3802,10 +3834,12 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
 
           @flock ($filehandle, LOCK_UN);
           @fclose ($filehandle);
+
+          return $filedata;
         }
+        // unlock file on read error
         else
         {
-          // unlock file
           rename ($abs_path.$filename, $abs_path.$filename_unlocked);
         }
       }
@@ -3814,28 +3848,30 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
     elseif ($filename_unlocked != ".folder")
     {
       // set default end time stamp for loading (now + X sec)
-      if ($force_unlock > 0 && is_int ($force_unlock)) $timestamp = $force_unlock;
-      else $timestamp = 3;
+      if ($force_unlock > 0 && is_int ($force_unlock)) $wait = $force_unlock;
+      else $wait = 3;
 
-      $end = time() + $timestamp;
+      $end = time() + $wait;
       $found = false;
 
       // try to load file
       while (time() <= $end)
       {
         $filename = $filename_unlocked;
-        $filename = correctfile ($abs_path, $filename, $user);
 
-        if ($filename !== false)
+        // file can be accessed by user (is not locked by another user)
+        if (!empty ($filename_unlocked) && (is_file ($abs_path.$filename_unlocked) || is_file ($abs_path.$filename_unlocked.".@".$lock)))
         {
           // if file is not locked by the user
-          if (!is_file ($abs_path.$filename_unlocked.".@".$user))
+          if (is_file ($abs_path.$filename_unlocked) && !is_file ($abs_path.$filename_unlocked.".@".$lock))
           {
             // lock file
-            $locked = rename ($abs_path.$filename, $abs_path.$filename.".@".$user);
-            $filename = $filename.".@".$user;
+            $locked = rename ($abs_path.$filename_unlocked, $abs_path.$filename_unlocked.".@".$lock);
           }
           else $locked = true;
+
+          // locked file name
+          $filename = $filename_unlocked.".@".$lock;
 
           // if file is locked
           if ($locked == true)
@@ -3853,7 +3889,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
               @flock ($filehandle, LOCK_UN);
               @fclose ($filehandle);
 
-              break; 
+              return $filedata;
             }
             // file can not be loaded
             else
@@ -3863,7 +3899,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
             }
           }
         }
-        // sleep for 0 - 100 milliseconds, to avoid collision and CPU load
+        // sleep for 0 - 100 milliseconds to avoid collision and CPU load
         else usleep (round (rand (0, 100) * 1000));
       }
 
@@ -3880,21 +3916,23 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
           $errcode = "00886";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|File ".$abs_path.$filename_unlocked." was locked by user '".$file_info['user']."' and has been unlocked for user '".$user."'";
 
+          // save log
+          savelog ($error);
+
           // load file
           if ($result_rename)
           {
             // lock and load file
             $filedata = loadlockfile ($user, $abs_path, $filename_unlocked);
+
+            return $filedata; 
           }
         }
       }
     }
   }
 
-  // save log
-  savelog ($error);
-
-  return $filedata; 
+  return false; 
 }
 
 // --------------------------------------- savefile ------------------------------------------------
@@ -3908,6 +3946,9 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
 function savefile ($abs_path, $filename, $filedata)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
+
+  // correct user name for file lock
+  $lock = createlockname ($user);
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -3933,7 +3974,7 @@ function savefile ($abs_path, $filename, $filedata)
     }
 
     // if file is locked by the same user
-    if (is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user;
+    if (is_file ($abs_path.$filename.".@".$lock)) $filename = $filename.".@".$lock;
     // if file is offline
     elseif (is_file ($abs_path.$filename.".off")) $filename = $filename.".off";
 
@@ -3971,6 +4012,9 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
 
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
+    // correct user name for file lock
+    $lock = createlockname ($user);
+
     // add slash if not present at the end of the location string
     $abs_path = correctpath ($abs_path);
 
@@ -3992,16 +4036,12 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
       }
     }
 
-    // check and define unlocked file name
-    if (substr_count ($filename, ".@".$user) == 1)
-    {
-      $filename_unlocked = str_replace (".@".$user, "", $filename);
-    }
-    else
-    {
-      $filename_unlocked = $filename;
-      $filename = $filename.".@".$user;
-    }
+    // define unlocked file name
+    if (substr_count ($filename, ".@") > 0) $filename_unlocked = substr ($filename, 0, strpos ($filename, ".@"));
+    else $filename_unlocked = $filename;
+
+    // locked file name of user
+    $filename = $filename_unlocked.".@".$lock;
 
     // if locked file exists
     if (is_file ($abs_path.$filename))
@@ -4015,12 +4055,12 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
         @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
       }
-      else return false;
 
       // unlock file
       rename ($abs_path.$filename, $abs_path.$filename_unlocked);
 
-      return true;
+      if ($filehandle != false) return true;
+      else return false;
     }
     // if file is unlocked (same user might access the same file using different processes)    
     elseif (is_file ($abs_path.$filename_unlocked))
@@ -4033,10 +4073,10 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
         @fwrite ($filehandle, $filedata);
         @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
+
+        return true;
       }
       else return false;
-
-      return true;
     }
     else return false;
   }
@@ -4056,6 +4096,9 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
 function appendfile ($abs_path, $filename, $filedata)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
+
+  // correct user name for file lock
+  $lock = createlockname ($user);
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename) && $filedata != "")
   {
@@ -4150,6 +4193,9 @@ function lockfile ($user, $abs_path, $filename)
 
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
+    // correct user name for file lock
+    $lock = createlockname ($user);
+
     // add slash if not present at the end of the location string
     $abs_path = correctpath ($abs_path);
 
@@ -4175,14 +4221,14 @@ function lockfile ($user, $abs_path, $filename)
     if (strpos ($filename, ".@") > 0) $filename = substr ($filename, 0, strpos ($filename, ".@"));
 
     // file is already locked by same user
-    if (is_file ($abs_path.$filename.".@".$user))
+    if (is_file ($abs_path.$filename.".@".$lock))
     {
       return true;
     }
     // lock file
     elseif (is_file ($abs_path.$filename))
     {
-      return rename ($abs_path.$filename, $abs_path.$filename.".@".$user);
+      return rename ($abs_path.$filename, $abs_path.$filename.".@".$lock);
     }
     // file cannot be found
     else return false;
@@ -4204,6 +4250,9 @@ function unlockfile ($user, $abs_path, $filename)
 
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
+    // correct user name for file lock
+    $lock = createlockname ($user);
+
     // add slash if not present at the end of the location string
     $abs_path = correctpath ($abs_path);
 
@@ -4234,9 +4283,9 @@ function unlockfile ($user, $abs_path, $filename)
       return true;
     }
     // unlock file
-    elseif (is_file ($abs_path.$filename.".@".$user))
+    elseif (is_file ($abs_path.$filename.".@".$lock))
     {
-      return rename ($abs_path.$filename.".@".$user, $abs_path.$filename);
+      return rename ($abs_path.$filename.".@".$lock, $abs_path.$filename);
     }
     // file cannot be found
     else return false;
@@ -4256,7 +4305,11 @@ function deletefile ($abs_path, $filename, $recursive=false)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
+
+  // correct user name for file lock
+  $lock = createlockname ($user);
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -4289,13 +4342,13 @@ function deletefile ($abs_path, $filename, $recursive=false)
       }
     }
     // if selected file is a file
-    elseif (is_file ($abs_path.$filename) || is_file ($abs_path.$filename.".off") || is_file ($abs_path.$filename.".@".$user))
+    elseif (is_file ($abs_path.$filename) || is_file ($abs_path.$filename.".off") || is_file ($abs_path.$filename.".@".$lock))
     { 
       // if file is offline (for objects)
       if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off"; 
 
       // if file is locked (for containers)
-      if (is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user; 
+      if (is_file ($abs_path.$filename.".@".$lock)) $filename = $filename.".@".$lock; 
 
       // remove selected file
       $test = unlink ($abs_path.$filename);
@@ -4512,7 +4565,7 @@ function preparemediafile ($site, $medialocation, $mediafile, $user="")
 // output: true/false
 
 // description:
-// Deletes all annoation images of images and documents
+// Deletes all annoation images which have been created for the source images and documents
 
 function deleteannotationimages ($site, $mediafile)
 {
@@ -5144,6 +5197,9 @@ function loadcontainer ($container, $type="work", $user="")
   {
     $restored = false;
 
+    // correct user name for file lock
+    $lock = createlockname ($user);
+
     // use temporary cache to reduce I/O if save is disabled
     if (getsession ("hcms_temp_save", "yes") == "no")
     {
@@ -5199,9 +5255,9 @@ function loadcontainer ($container, $type="work", $user="")
         $contentdata = loadfile ($location, $container);
       }
       // load locked container for current user
-      elseif (valid_objectname ($user) && is_file ($location.$container.".@".$user))
+      elseif (valid_objectname ($user) && is_file ($location.$container.".@".$lock))
       {
-        $contentdata = loadfile ($location, $container.".@".$user);
+        $contentdata = loadfile ($location, $container.".@".$lock);
       }
       // working container is not locked and is missing -> restore container
       elseif (empty ($container_info['user']) && $type == "work" && is_file ($location.$container_id.".xml") && !is_file ($location.$container_id.".xml.wrk"))
@@ -5283,6 +5339,9 @@ function savecontainer ($container, $type="work", $data="", $user="", $init=fals
 
   if (valid_objectname ($container) && strpos ($data, "<container>") > 0 && ($type == "work" || $type == "published" || $type == "version") && valid_objectname ($user))
   {
+    // correct user name for file lock
+    $lock = createlockname ($user);
+
     // use temporary cache to reduce I/O if save is disabled
     if (getsession ("hcms_temp_save", "yes") == "no") 
     {
@@ -5330,7 +5389,7 @@ function savecontainer ($container, $type="work", $data="", $user="", $init=fals
 
       // save data in
       // locked container by user
-      if (valid_objectname ($user) && is_file ($location.$container.".@".$user)) return savefile ($location, $container.".@".$user, $data);
+      if (valid_objectname ($user) && is_file ($location.$container.".@".$lock)) return savefile ($location, $container.".@".$lock, $data);
       // unlocked container
       elseif (is_file ($location.$container)) return savefile ($location, $container, $data);
       // new container
@@ -9318,7 +9377,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
   }
   // test if login name contains special characters except ".-_@"
-  elseif (specialchr ($login, ".-_@") == true)
+  elseif (specialchr ($login, ".-_@") == true || strpos ("_".$login, ".@") > 0)
   {
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
@@ -12480,21 +12539,25 @@ function contentcount ($user)
   // initialize
   $error = array();
   $contentcount = false;
+  $lock = uniqid();
 
   // load contentcount file and add the new page
-  $filedata = loadlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
+  $filedata = loadlockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
 
-  // try to restore contentcount from table container in database
+  // try to restore contentcount from database
   if (empty ($filedata))
   {
     $temp = rdbms_externalquery ("SELECT MAX(id) AS contentcount FROM object");
 
     if (!empty ($temp[0]['contentcount']))
     {
-      $filedata = $temp[0]['contentcount'];
+      $filedata = intval ($temp[0]['contentcount']);
 
-      if (intval ($filedata) > 0)
+      if ($filedata > 0)
       {
+        // add 100 for safety reasons
+        $filedata = $filedata + 100;
+
         $errcode = "00887";
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|contentcount.dat was recreated by the database with max id='".$filedata."' for user '".$user."'";
       }
@@ -12510,7 +12573,7 @@ function contentcount ($user)
     $contentcount++;
 
     // write to file
-    $test = savelockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", $contentcount);
+    $test = savelockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat", $contentcount);
 
     // on error
     if ($test == false)
@@ -12519,7 +12582,7 @@ function contentcount ($user)
       $contentcount = false;
 
       // unlock file
-      unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
+      unlockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat");
 
       $errcode = "20885";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|contentcount failure (contentcount.dat could not be saved for user '".$user."')";
@@ -12529,7 +12592,7 @@ function contentcount ($user)
   else
   {
     // unlock file
-    unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
+    unlockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat");
 
     $errcode = "20886";
     $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|contentcount failure (contentcount.dat could not be loaded for user '".$user."')";
@@ -12838,7 +12901,7 @@ function createobject ($site, $location, $page, $template, $user)
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['could-not-create-new-content-container'][$lang]."\n";
 
             $errcode = "20887";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '$user' ($site, $location_esc, $page) because the content container could not be created"; 
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '".$user."' (".$site.", ".$location_esc.", ".$page.") since the object XML schema could not be loaded"; 
           }
 
           // ------------------------ add record in link management file --------------------------------
@@ -12893,16 +12956,21 @@ function createobject ($site, $location, $page, $template, $user)
           // save working xml content container and published container
           if ($link_db_append != false && $show == "")
           { 
+            // create container directory and get container path
             $container_location = getcontentlocation ($container_id, 'abs_path_content');
+            
+            /* deprected since function getcontentlocation created the container directory
+            $test = mkdir ($container_location, $mgmt_config['fspermission']);
+            */
 
-            // create container directory
-            $test = @mkdir ($container_location, $mgmt_config['fspermission']);
+            if (!is_dir ($container_location))
+            {
+              $errcode = "10881";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Directory for container ".$contentfile." is missing";
+            }
 
             // save container initally since savecontainer only saves data to existing containers
-            if ($test != false)
-            {
-              $test = savecontainer ($container_id, "work", $page_box_xml, $user, true);
-            }
+            $test = savecontainer ($container_id, "work", $page_box_xml, $user, true);
 
             if ($test == false)
             {
@@ -12911,15 +12979,12 @@ function createobject ($site, $location, $page, $template, $user)
             }
 
             // save container initally since savecontainer only saves data to existing containers
-            if ($test != false)
-            {
-              $test = savecontainer ($container_id, "published", $page_box_xml, $user, true);
-            }
+            $test = savecontainer ($container_id, "published", $page_box_xml, $user, true);
 
             if ($test == false)
             {
               $errcode = "10883";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Container ".$contentfile." could not be saved";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Published container ".$contentfile." could not be saved";
             } 
 
             if ($test != false)
@@ -12981,7 +13046,7 @@ function createobject ($site, $location, $page, $template, $user)
 
                 // log entry
                 $errcode = "10101";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object '".$pagefile."' with container ID '".$container_id."' could not be created by user '$user' ($site, $location_esc, $page) due to missing write permissions for the object file";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object '".$pagefile."' with container ID '".$container_id."' could not be created by user '".$user."' (".$site.", ".$location_esc.", ".$page.") due to missing write permissions for the object file";
               }
               // on success
               else
@@ -12999,7 +13064,7 @@ function createobject ($site, $location, $page, $template, $user)
 
                 // information log entry
                 $errcode = "00102";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New object created by user '$user' ($site, $location_esc, $page)"; 
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New object created by user '".$user."' (".$site.", ".$location_esc.", ".$page.")"; 
 
                 // remote client
                 remoteclient ("save", "abs_path_".$cat, $site, $location, "", $pagefile, ""); 
@@ -13021,7 +13086,7 @@ function createobject ($site, $location, $page, $template, $user)
 
               // log entry
               $errcode = "10102";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '$user' ($site, $location_esc, $page) due to missing write permissions for the container"; 
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '".$user."' (".$site.", ".$location_esc.", ".$page.") due to missing write permissions for the container"; 
             }
           }
           // if user has no access to the workflow or link management failed
@@ -13032,7 +13097,7 @@ function createobject ($site, $location, $page, $template, $user)
 
             // log entry
             $errcode = "30102";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '$user' ($site, $location_esc, $page) due to missing workflow access permissions"; 
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '".$user."' (".$site.", ".$location_esc.", ".$page.") due to missing workflow access permissions"; 
           } 
         } 
       }
@@ -13043,11 +13108,11 @@ function createobject ($site, $location, $page, $template, $user)
 
         // log entry
         $errcode = "20211";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '$user' ($site, $location_esc, $page) due to a missing template";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '".$user."' (".$site.", ".$location_esc.", ".$page.")  due to a missing template";
       }
     }
   }
-  // only report error if basic input has been provided
+  // only report error if basic input has not been provided
   elseif ($site != "" && $location != "" && $page != "" && $user != "")
   {
     $add_onload = "parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
@@ -13055,7 +13120,7 @@ function createobject ($site, $location, $page, $template, $user)
 
     // log entry
     $errcode = "20212";
-    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '$user' ($site, $location, $page) due to wrong or missing input or permissions (accessgeneral=".accessgeneral ($site, $location, "").")";
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '".$user."' (".$site.", ".$location.", ".$page.") due to wrong or missing input or permissions (accessgeneral=".accessgeneral ($site, $location, "").")";
   } 
 
   // save log
@@ -17686,7 +17751,7 @@ function publishobject ($site, $location, $page, $user)
 
           if ($test == false)
           {
-            $errcode = "10881";
+            $errcode = "10341";
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Published container $container could not be saved";
           }
         }
@@ -18037,7 +18102,7 @@ function unpublishobject ($site, $location, $page, $user)
                     // on error
                     if ($test == false)
                     {
-                      $errcode = "10881";
+                      $errcode = "10331";
                       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Published container $container could not be saved";
                     }
                   }
@@ -18711,47 +18776,56 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
           {
             if ($action == "publish") 
             { 
-              $test = publishobject ($site_source, $location_source, $object_source, $user); 
+              $test = publishobject ($site_source, $location_source, $object_source, $user);
 
-              if (!empty ($test['result'])) unset ($collection[$i]);
-              else 
+              // remove object from collection in any case
+              unset ($collection[$i]);
+
+              // on error
+              if (empty ($test['result'])) 
               {
                 $errcode = "20108";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|publishobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|publishobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
                 // deprecated: break;
                 // avoid break of process
                 $test['result'] = true;
-                $result['report'][] = $test['message']." Error: publishobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
+                $result['report'][] = $test['message']." Error: publishobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
               } 
             }
             elseif ($action == "unpublish")
             {
               $test = unpublishobject ($site_source, $location_source, $object_source, $user);
  
-              if (!empty ($test['result'])) unset ($collection[$i]);
-              else 
+              // remove object from collection in any case
+              unset ($collection[$i]);
+
+              // on error
+              if (empty ($test['result'])) 
               {
                 $errcode = "20109";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|unpublishobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|unpublishobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
                 // deprecated: break;
                 // avoid break of process
                 $test['result'] = true;
-                $result['report'][] = $test['message']." Error: unpublishobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
+                $result['report'][] = $test['message']." Error: unpublishobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
               }
             } 
             elseif ($action == "delete")
             {
               $test = deleteobject ($site_source, $location_source, $object_source, $user);
 
-              if (!empty ($test['result'])) unset ($collection[$i]);
-              else 
+              // remove object from collection in any case
+              unset ($collection[$i]);
+
+              // on error
+              if (empty ($test['result'])) 
               {
                 $errcode = "20109";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
                 // deprecated: break;
                 // avoid break of process
                 $test['result'] = true;
-                $result['report'][] = $test['message']." Error: deleteobject failed for ".convertpath ($site, $location_source, $cat).$object_source;
+                $result['report'][] = $test['message']." Error: deleteobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
               }
             }
             elseif ($action == "paste")

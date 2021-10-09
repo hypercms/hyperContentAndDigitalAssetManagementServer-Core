@@ -5576,3 +5576,28 @@ Release 09/2021
 - Bug fix: Job minutely extracted wrong location if the queue object was a folder
 - Bug fix: Function deletefolder in Main API renamed .recycle extension if used in the folder name
 - Bug fix: Function manipulateobject in Main API did not correctly remove the recycle extension from the search in the content container node "contentobjects"
+
+Version 10.0.2
+Release 10/2021
+- Modifications in function contentcount and loadlockfile in Main API in order to avoid access to contentcount.dat by the same user using different processes
+- Implementation of the new function createlockname in Main API in order to provide a valid name for fil locking
+- Modifications in various function in the Main and Get API in order to use function createlockname for the file lock name
+- Modifications in function createuser in Main API in order to verify that .@ is not part of the user name since it is used for file locking
+- Modifications in function getcontentlocation in Get API in order to create the container directory if it is missing
+- Modifications in function getcontentlocation in Get API in order to replace the for loop by the calculated block number of the container
+- Modifications in function createobject in Main API in order to add a new log event if the container directory could not be created
+- Modifications in function loadfile in Main API in order to remove deprecated verification of "off" file extension since function correctfile takes care of it
+- Modifications in function savelockfile in Main API in order to create the unlocked file name for any lock name used
+- Modifications in function savelockfile in Main API in order to return result immediately after saving and unlocking the file
+- Modifications in function savelockfile in Main API in order to unlock the file in case of a file read error
+- Modifications in function contentcount in Main API in order to add 100 to the recreated container ID by database query
+- Modifications in function loadfile_header, loadfile_fast, and loadfile in Main API in order to return result immediately after reading
+- Modifications in popup_upload_html in order to show the warning for the unload of the upload window only if the upload is for multiple files
+- Modifications in CSS class hcmsWorkplaceExplorer in main.css of all design themes
+- Design modifications in frameset_main and frameset_objectlist
+- Design modifications in page_info_stats
+- Modifications in function manipulateallobjects in Main API in order to remove failed objects from the collection
+- Modifications in version_temlpate in order to reload the template editor if a rollback to another version has been successfully executed
+- Bug fix: AND was missing in the SQL statement for the condition that is used to query files in function rdbms_getfilesize in DB Connect 
+- Bug fix: Function savelockfile did not create the unlcoked file name if the file has been locked by another user or process
+- Bug fix: Function savelockfile did not unlock the file in case of a read error of the file

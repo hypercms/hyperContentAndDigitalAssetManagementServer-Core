@@ -38,6 +38,10 @@ checkusersession ($user, false);
 
 // initialize
 $error = array();
+$add_onload = "";
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 
 // template directory
 if (valid_publicationname ($site)) $versiondir = $mgmt_config['abs_path_template'].$site."/";
@@ -84,6 +88,7 @@ if ($versiondir != "" && $actual != "" && checktoken ($token, $user))
     $rename_2 = rename ($versiondir.$actual, $versiondir.$template_recent);
 
     if ($rename_2 == false) echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
+    else $add_onload = "parent.frames['mainFrame1'].location.href='template_edit.php?site=".$site."&cat=".$cat."&save=no&template=".$template."';";
   }
   else echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
 }
@@ -201,7 +206,7 @@ function toggledelete (source)
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png')">
+<body class="hcmsWorkplaceGeneric" onload="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png'); <?php echo $add_onload; ?>">
 
 <div class="hcmsWorkplaceFrame">
 <!-- change versions -->

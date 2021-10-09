@@ -1047,7 +1047,12 @@ Otherwise just provide the information below and install the most powerful Conte
     <tr>
       <td colspan="2" style="white-space:nowrap;"><hr /></td>
     </tr>
-    
+    <tr>
+      <td colspan="2">The following information does not apply to the installation with Docker!</td>
+    </tr>
+    <tr>
+      <td colspan="2" style="white-space:nowrap;"><hr /></td>
+    </tr>
     <!-- Scheduled Tasks -->
     <tr>
       <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextOrange">Scheduled Tasks</td>
