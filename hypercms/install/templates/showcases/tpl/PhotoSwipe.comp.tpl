@@ -180,7 +180,7 @@ scriptend]
       foreach ($mediaFiles as $media)
       {
   scriptend]
-          <a class="thumbnail" href="[hyperCMS:scriptbegin echo $media['link']; scriptend]" data-size="[hyperCMS:scriptbegin echo $media['width']; scriptend]x[hyperCMS:scriptbegin echo $media['height']; scriptend]" data-author="[hyperCMS:scriptbegin echo (empty($media['title']) ? $media['name'] : $media['title']); scriptend]">
+          <a class="thumbnail" hypercms_href="[hyperCMS:scriptbegin echo $media['link']; scriptend]" data-size="[hyperCMS:scriptbegin echo $media['width']; scriptend]x[hyperCMS:scriptbegin echo $media['height']; scriptend]" data-author="[hyperCMS:scriptbegin echo (empty($media['title']) ? $media['name'] : $media['title']); scriptend]">
             <img src="[hyperCMS:scriptbegin echo $media['thumb_link']; scriptend]" style="max-height:180px;" alt="[hyperCMS:scriptbegin echo (empty($media['description']) ? $media['name'] : $media['description']); scriptend]" />
             <figure style="display:none;">[hyperCMS:scriptbegin echo (empty($media['description']) ? $media['name'] : $media['description']); scriptend]</figure>
           </a>

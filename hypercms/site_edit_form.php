@@ -104,12 +104,14 @@ function switchLDAPsync ()
     if (document.getElementById('ldap_sync').checked == true)
     {
       document.getElementById('ldap_delete_user').disabled = false;
+      document.getElementById('ldap_keep_groups').disabled = false;
       document.getElementById('ldap_user_attributes').disabled = false;
       document.getElementById('ldap_sync_groups_mapping').disabled = false;
     }
     else
     {
       document.getElementById('ldap_delete_user').disabled = true;
+      document.getElementById('ldap_keep_groups').disabled = true;
       document.getElementById('ldap_user_attributes').disabled = true;
       document.getElementById('ldap_sync_groups_mapping').disabled = true;
     }
@@ -814,6 +816,13 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       </td>
     </tr>
     <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD + System <?php echo getescapedtext ($hcms_lang['groups'][$lang]." (Merge)"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+      <label><input type="checkbox" id="ldap_keep_groups" name="setting[ldap_keep_groups]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_keep_groups'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
+      </td>
+    </tr>
+    <tr> 
       <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user attributes <br/><span class="hcmsTextSmall">'memberof', 'givenname', 'sn', 'telephonenumber', 'mail'</span></td>
       <?php
       if (is_array (@$mgmt_config[$site_name]['ldap_user_attributes']) && sizeof (@$mgmt_config[$site_name]['ldap_user_attributes']) > 0)
@@ -825,7 +834,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_user_attributes" name="setting[ldap_user_attributes]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_user_attributes']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">Mapping 'LDAP <?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>' => '<?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>' <br/><span class="hcmsTextSmall">'OU=MANAGER GROUP'=>'ChiefEditor'<br/>'OU=ALL GROUPS'=>'Editor'</span></td>
+      <td style="white-space:nowrap; vertical-align:top;">Mapping 'LDAP <?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>' => '<?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>' <br/><span class="hcmsTextSmall">'OU=MANAGER GROUP'=>'ChiefEditor,Editor'<br/>'OU=ALL GROUPS'=>'Editor'</span></td>
       <td style="white-space:nowrap; vertical-align:top;">
         <textarea type="text" id="ldap_sync_groups_mapping" name="setting[ldap_sync_groups_mapping]" style="width:350px; height:100px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>><?php
           if (is_array (@$mgmt_config[$site_name]['ldap_sync_groups_mapping']))

@@ -190,7 +190,7 @@ elseif ($view == "publish" || $view == "preview")
 
 <?php if (!empty ($mgmt_config['publicsearch']) && "[hyperCMS:textl id='filterName' onEdit='hidden']" == "") { ?>
   <div id="search">
-    <form action="">
+    <form action="<?php if ("%view%" != "publish") echo $mgmt_config['url_path_view'].$hash.$file_ext; ?>">
       <input type="text" name="search" value="<?php echo $search; ?>" placeholder="Expression" />
       <button>Search</button>
     </form>
@@ -202,6 +202,8 @@ elseif ($view == "publish" || $view == "preview")
 <script type="text/javascript">
 var data = [
 <?php
+if ("%view%" == "publish")
+{
   if (!empty ($filter) && sizeof ($filter) > 0)
   {
     $mediaFiles = searchMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions, $metaTitleId, $metaDescriptionId, $filter);
@@ -226,6 +228,7 @@ var data = [
       }
     }
   }
+}
 ?>
 ];
 

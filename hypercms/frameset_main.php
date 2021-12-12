@@ -498,7 +498,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
   <!-- workplace -->
   <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:<?php echo ($width_top + $width_navigation); ?>px; margin:0; padding:0;">
-    <iframe id="workplFrame" name="workplFrame" src="home.php" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+    <iframe id="workplFrame" name="workplFrame" src="home.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
   </div>
 
 <?php } ?>

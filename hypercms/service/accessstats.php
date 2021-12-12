@@ -30,6 +30,9 @@ checkusersession ($user);
 // write and close session (non-blocking other frames)
 if (session_id() != "") session_write_close();
 
+// define timeout for cache in seconds
+$cache_timeout = 60*60*1;
+
 // chart size in pixels
 if (!empty ($is_mobile))
 {
@@ -122,9 +125,9 @@ if (!empty ($location_esc))
 {
   $page = getobject ($location_esc);
   
-  $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc, "", false);
-  $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc, "", true);
-  $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc, "", true);
+  $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc, "", false, 0, $cache_timeout);
+  $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc, "", true, 0, $cache_timeout);
+  $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc, "", true, 0, $cache_timeout);
   
   $date_axis = array();
   $view_axis = array();

@@ -14,7 +14,7 @@ On server-side:
 Optionally required for full Digital Asset Management (DAM) support on server-side:
 - FFMPEG (for converting video and audio files)
 - YAMDI (for meta data injection into FLV files)
-- UFRAW (for raw images from digital cameras)
+- UFRAW or DCRAW (for raw images from digital cameras)
 - ImageMagick (for converting images)
 - WebP (for webp image format support)
 - XPDF (for indexing PDF-documents)

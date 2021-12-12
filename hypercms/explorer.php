@@ -1352,7 +1352,6 @@ else
     <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
     <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.cookie.js"></script>
-    <script type="text/javascript" src="javascript/jquery/plugins/jquery.hotkeys.js"></script>
     <script type="text/javascript" src="javascript/jstree/jquery.jstree.min.js"></script>
     
     <!-- main and contextmenu library -->

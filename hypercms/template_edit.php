@@ -157,7 +157,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 
 function openHelp ()
 {
-  hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help_template_edit', 'location=no,menubar=no,toolbar=no,titlebar=no,resizable=yes,scrollbars=yes', 750, 680);
+  hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help_template_edit', 'location=no,menubar=no,toolbar=no,titlebar=no,resizable=yes,scrollbars=yes', 820, 680);
 }
 
 function openmetaInfo ()

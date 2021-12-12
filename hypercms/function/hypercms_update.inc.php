@@ -560,7 +560,7 @@ function update_database_v6113 ()
             $site = $inherit_db_record['parent'];
 
             // update standard media mapping
-            if (valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
+            if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
             {
               $mapdata = loadfile ($mgmt_config['abs_path_data']."config/", $site.".media.map.php");
 
@@ -1524,7 +1524,7 @@ function update_database_v914 ()
 // output: true / false
 
 // description: 
-// Merge table contaainer and media with table object for support of version 10.0.0
+// Merge table container and media with table object for support of version 10.0.0
 
 function update_database_v1000 ()
 {
@@ -1540,115 +1540,115 @@ function update_database_v1000 ()
     // alter table taxonomy (text_id)
     $sql = "ALTER TABLE taxonomy MODIFY COLUMN text_id char(255);";
     $errcode = "50598";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
     // alter table accesslink (object_id)
     $sql = "ALTER TABLE accesslink MODIFY COLUMN object_id int(11);";
     $errcode = "50599";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
     
     // alter table object (objectpath)
     $sql = "ALTER TABLE object MODIFY COLUMN objectpath varchar(16000);";
     $errcode = "50600";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // alter table object (merge with table container)
     $sql = "ALTER TABLE object ADD COLUMN createdate datetime NOT NULL AFTER id;";
     $errcode = "50601";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN date datetime NOT NULL AFTER createdate;";
     $errcode = "50602";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN publishdate datetime DEFAULT NULL AFTER date;";
     $errcode = "50603";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN user char(100) NOT NULL default '' AFTER publishdate;";
     $errcode = "50604";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN container char(16) NOT NULL default '' AFTER objectpath;";
     $errcode = "50605";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN latitude float(10,6) DEFAULT NULL AFTER media;";
     $errcode = "50606";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN longitude float(10,6) DEFAULT NULL AFTER latitude;";
     $errcode = "50607";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // alter table object (merge with table media)
     $sql = "ALTER TABLE object ADD COLUMN filesize int(11) DEFAULT NULL AFTER longitude;";
     $errcode = "50608";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN filetype char(16) DEFAULT NULL AFTER filesize;";
     $errcode = "50609";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN width smallint(6) DEFAULT NULL AFTER filetype;";
     $errcode = "50610";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN height smallint(6) DEFAULT NULL AFTER width;";
     $errcode = "50611";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN red smallint(3) DEFAULT NULL AFTER height;";
     $errcode = "50612";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN green smallint(3) DEFAULT NULL AFTER red;";
     $errcode = "50613";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN blue smallint(3) DEFAULT NULL AFTER green;";
     $errcode = "50614";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN colorkey char(8) DEFAULT NULL AFTER blue;";
     $errcode = "50615";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN imagetype char(16) DEFAULT NULL AFTER colorkey;";
     $errcode = "50616";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN md5_hash char(32) DEFAULT NULL AFTER imagetype;";
     $errcode = "50617";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     $sql = "ALTER TABLE object ADD COLUMN analyzed tinyint(1) NOT NULL default '0' AFTER md5_hash;";
     $errcode = "50618";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // migrate/merge data from table container with table object
     $sql = 'UPDATE object INNER JOIN container ON container.id=object.id ';
     $sql .= 'SET object.createdate=container.createdate, object.date=container.date, object.publishdate=container.publishdate, object.user=container.user, object.container=container.container, ';
     $sql .= 'object.latitude=container.latitude, object.longitude=container.longitude';
     $errcode = "50620";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // migrate/merge data from table media with table object
     $sql = 'UPDATE object INNER JOIN media ON media.id=object.id ';
     $sql .= 'SET object.filesize=media.filesize, object.filetype=media.filetype, object.width=media.width, object.height=media.height, object.red=media.red, object.green=media.green, object.blue=media.blue, ';
     $sql .= 'object.colorkey=media.colorkey, object.imagetype=media.imagetype, object.md5_hash=media.md5_hash, object.analyzed=media.analyzed';
     $errcode = "50621";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // remove old index
     $sql = 'DROP INDEX object ON object';
     $errcode = "50622";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // create new index
     $sql = 'CREATE INDEX object ON object (id, date, template, latitude, longitude, filesize, filetype, width, height, colorkey, imagetype, deleteuser)';
     $errcode = "50623";
-    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
     savelog ($db->rdbms_geterror ());
@@ -1657,6 +1657,117 @@ function update_database_v1000 ()
 
     // update log
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.0|updated to version 10.0.0"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v1002 ----------------------------------------------
+// function: update_database_v1002()
+// input: %
+// output: true / false
+
+// description: 
+// Creates new fulltext column and index for table object fot the support of version 10.0.2
+
+function update_database_v1002 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.2"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table object
+    $sql = "ALTER TABLE `object` ADD COLUMN textcontent MEDIUMTEXT;";
+    $errcode = "50631";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table dailystat
+    $sql = "ALTER TABLE `dailystat` MODIFY COLUMN activity CHAR(10);";
+    $errcode = "50632";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // drop old index for table dailystat
+    $sql = "DROP INDEX `dailystat` ON `dailystat`;";
+    $errcode = "50633";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // create new index for table dailystat
+    $sql = "CREATE INDEX `dailystat_multiple` ON dailystat (`id`,`date`,`activity`,`user`);";
+    $errcode = "50634";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table textnodes
+    $sql = "ALTER TABLE `textnodes` MODIFY COLUMN textcontent MEDIUMTEXT;";
+    $errcode = "50635";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // write textcontent from table textnodes into new column of table object
+    // collect container IDs
+    $sql = 'SELECT DISTINCT `id` FROM object;';
+
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select_id');
+
+    $id_array = array();
+
+    if ($done)
+    {
+      while ($row = $db->rdbms_getresultrow ('select_id'))
+      {
+        if ($row['id'] != "") $id_array[] = intval ($row['id']);
+      }
+    }
+
+    // select and update textcontent
+    if (is_array ($id_array) && sizeof ($id_array) > 0)
+    {
+      foreach ($id_array as $id)
+      {
+        $sql = 'SELECT `textcontent` FROM `textnodes` WHERE id='.$id.';';
+
+        $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select_textcontent');
+
+        if ($done)
+        {
+          $textcontent = "";
+
+          while ($row = $db->rdbms_getresultrow ('select_textcontent'))
+          {
+            if (trim ($row['textcontent']) != "")
+            {
+              $textcontent .= $row['textcontent']." ";
+            }
+          }
+
+          if (trim ($textcontent) != "")
+          {
+            $textcontent = $db->rdbms_escape_string (trim ($textcontent));
+
+            $sql = 'UPDATE `object` SET textcontent="'.$textcontent.'" WHERE id='.$id.';';
+            $errcode = "50636";
+            $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+          }
+        }
+      }
+    }
+
+    // create new index
+    $sql = "CREATE FULLTEXT INDEX `object_textcontent` ON object(`textcontent`);";
+    $errcode = "50637";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.2|updated to version 10.0.2"), "update");
 
     return true;
   }
@@ -1701,6 +1812,7 @@ function updates_all ()
     update_plugin_v911 ();;
     update_database_v914 ();
     update_database_v1000 ();
+    update_database_v1002 ();
   }
 }
 

@@ -680,6 +680,35 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
                 $errcode = "50006";
                 $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], ++$i);
               }
+
+              // update textcontent in table object since version 10.0.2
+              if ($num_rows >= 0)
+              {
+                // select textcontent
+                $sql = 'SELECT textcontent FROM textnodes WHERE id='.$container_id;
+
+                $errcode = "50007";
+                $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select_textcontent');
+    
+                $textcontent = "";
+
+                if ($done)
+                {
+                  while ($row = $db->rdbms_getresultrow ('select_textcontent'))
+                  {
+                    if (trim ($row['textcontent']) != "") $textcontent .= $row['textcontent']." ";
+                  }
+                }            
+
+                // escape text
+                if (trim ($textcontent) != "") $textcontent = $db->rdbms_escape_string (trim ($textcontent));
+
+                // query
+                $sql = 'UPDATE object SET textcontent="'.$textcontent.'" WHERE id='.$container_id;
+
+                $errcode = "50008";
+                $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], ++$i);
+              }
             }
           }
         }
@@ -2212,7 +2241,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
               // operator
               if (!empty ($temp_operator) && $temp_operator != "none" && $sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] .= $temp_operator;
             }
-            // general search in all textnodes
+            // general search in all textnodes/textcontent in table object since version 10.0.2
             elseif (!empty ($mgmt_config['search_exact']) || !empty ($temp_expression))
             {
               $temp_array = array();
@@ -2242,8 +2271,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
                   if (is_array ($synonym_array) && sizeof ($synonym_array) > 0)
                   {
+                    // deprecated since version 10.0.2: 
                     // add textnodes table (LEFT JOIN is important!)
-                    if (strpos ($sql_table['textnodes'], "LEFT JOIN textnodes AS tng ON") < 1) $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id '.$sql_table['textnodes'];
+                    // if (strpos ($sql_table['textnodes'], "LEFT JOIN textnodes AS tng ON") < 1) $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id '.$sql_table['textnodes'];
 
                     foreach ($synonym_array as $synonym_expression)
                     {
@@ -2275,7 +2305,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                       // look for exact expression
                       if (!empty ($mgmt_config['search_exact']))
                       {
-                        $sql_where_textnodes .= 'tng.textcontent="'.$synonym_expression.'"';
+                        $sql_where_textnodes .= 'obj.textcontent="'.$synonym_expression.'"';
                       }
                       // look for expression in content
                       else
@@ -2286,8 +2316,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                         // LIKE search does not use stopwords or wildcards supported by MATCH AGAINST
                         if (strtolower ($mgmt_config['search_query_match']) == "like")
                         {
-                          if (!empty ($synonym_expression_2)) $sql_where_textnodes .= '(tng.textcontent LIKE "%'.$synonym_expression.'%" OR tng.textcontent LIKE "%'.$synonym_expression_2.'%")';
-                          else $sql_where_textnodes .= 'tng.textcontent LIKE "%'.$synonym_expression.'%"';
+                          if (!empty ($synonym_expression_2)) $sql_where_textnodes .= '(obj.textcontent LIKE "%'.$synonym_expression.'%" OR obj.textcontent LIKE "%'.$synonym_expression_2.'%")';
+                          else $sql_where_textnodes .= 'obj.textcontent LIKE "%'.$synonym_expression.'%"';
                         }
                         else
                         {
@@ -2304,7 +2334,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                           else $boolean_mode = "";
 
                           // MATCH AGAINST uses stop words (e.g. search for "hello" will not be included in the search result)
-                          $sql_where_textnodes .= 'MATCH (tng.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.')';
+                          $sql_where_textnodes .= 'MATCH (obj.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.')';
                         }
                       }
 
@@ -2574,7 +2604,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         }
       }
 
-      // add join for textnodes table
+      // add join for textnodes table (due to DISTINCT objectpath the results will only include text according to the WHERE condition)
       if (!empty ($sql_add_text_id))
       {
         $sql_attr[] = "tng.text_id";
@@ -5297,7 +5327,7 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
 
 // description:
 // Updates the daily access statistics.
-// The dailystat table contains a counter for each 'activity' (i.e. download) for each object (i.e. media file of container) per day.
+// The dailystat table contains a counter for each 'activity' (upload, download, view) for each object (i.e. media file of container) per day.
 
 function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all=false)
 {
@@ -5413,136 +5443,169 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
 // ----------------------------------------------- get statistics from dailystat -------------------------------------------------
 // function: rdbms_getmediastat()
 // input: date from [date] (optional), date to [date] (optional), activity [string] (optional), container ID [integer] (optional), object path [string] (optional), user name [string] (optional), 
-//        return file size of objects [boolean] (optional), limit returned results [integer] (optional)
+//        return file size of objects [boolean] (optional), limit returned results [integer] (optional), cache timeout in seconds using 0 for no caching [integer] (optional)
 // output: result array of objects / false on error
 
 // description:
 // Provides the data of objects based on the information of table dailystats. The results will be sorted by date in descending order (most recent first).
 
-function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $container_id="", $objectpath="", $user="", $return_filesize=true, $maxhits=0)
+function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $container_id="", $objectpath="", $user="", $return_filesize=true, $maxhits=0, $cache_timeout=0)
 {
   global $mgmt_config;
 
-  // mySQL connect
-  $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+  // define timeout for cache in seconds
+  if (empty ($cache_timeout)) $cache_timeout = 60*60*12;
 
-  // clean input
-  if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
-  if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
-  if ($activity != "") $activity = $db->rdbms_escape_string ($activity);
-  if (intval ($container_id) > 0) $container_id = intval ($container_id);
-  if ($objectpath != "") $objectpath = $db->rdbms_escape_string ($objectpath);
-  if ($user != "") $user = $db->rdbms_escape_string ($user);
+  // define file name for cache (MD5 hash identifies the input parameters)
+  $filename = md5 ($date_from.$date_to.$activity.$container_id.$objectpath.$user.$return_filesize).".stat.json";
 
-  if ($maxhits != "" && $maxhits > 0)
+  // initalize
+  $dailystat = array();
+  $cached = false;
+
+  // load and use cached results
+  if (intval ($cache_timeout) > 0 && is_file ($mgmt_config['abs_path_temp'].$filename) && filemtime ($mgmt_config['abs_path_temp'].$filename) > (time() - $cache_timeout))
   {
-    if (strpos ($maxhits, ",") > 0)
-    {
-      list ($starthits, $endhits) = explode (",", $maxhits);
-      $starthits = $db->rdbms_escape_string (trim ($starthits));
-      $endhits = $db->rdbms_escape_string (trim ($endhits));
-    }
-    else $maxhits = $db->rdbms_escape_string ($maxhits);
-  }
+    $json = loadfile ($mgmt_config['abs_path_temp'], $filename);
 
-  // get object info
-  if ($objectpath != "")
-  {
-    $site = getpublication ($objectpath);
-    $cat = getcategory ($site, $objectpath);
-    $object_info = getfileinfo ($site, $objectpath, $cat);
-    $objectpath = str_replace ('%', '*', $objectpath);
-    if (getobject ($objectpath) == ".folder") $location = getlocation ($objectpath);
-  }
-
-  $sqlfilesize = "";
-  $sqltable = "";
-  $sqlwhere = "";
-  $sqlgroup = "";
-  $limit = "";
-
-  // include media table for file size
-  if (!empty ($return_filesize))
-  {
-    // search by objectpath
-    if ($objectpath != "")
+    if ($json != "")
     {
-      $sqlfilesize = ', SUM(object.filesize) AS filesize';
-      $sqltable = "INNER JOIN object ON dailystat.id=object.id";
-      if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
-      else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
-      $sqlgroup = 'GROUP BY dailystat.date, dailystat.id, dailystat.user';
-    }
-    // search by container id
-    elseif (intval ($container_id) > 0)
-    {
-      $sqlfilesize = ', object.filesize AS filesize';
-      $sqltable = "INNER JOIN object ON dailystat.id=object.id";
-      $sqlwhere = 'AND dailystat.id='.$container_id;
-      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
-    }
-  }
-  else
-  {
-    // search by objectpath
-    if ($objectpath != "")
-    {
-      $sqlfilesize = "";
-      $sqltable = 'INNER JOIN object ON dailystat.id=object.id';
-      if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
-      else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
-      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
-    }
-    // search by container id
-    elseif (intval ($container_id) > 0)
-    { 
-      $sqlfilesize = "";
-      $sqltable = '';
-      $sqlwhere = 'AND dailystat.id='.$container_id;
-      $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
+      $dailystat = json_decode ($json, true);
+      $cached = true;
     }
   }
 
-  if ($date_from != "") $sqlwhere .= ' AND dailystat.date>="'.date("Y-m-d", strtotime($date_from)).'"';
-  if ($date_to != "") $sqlwhere .= ' AND dailystat.date<="'.date("Y-m-d", strtotime($date_to)).'"';
-  if ($activity != "") $sqlwhere .= ' AND dailystat.activity="'.$activity.'"';
-  if ($user != "") $sqlwhere .= ' AND dailystat.user="'.$user.'"';
-
-  if (empty ($sqlgroup)) $sqlgroup = 'GROUP BY dailystat.id';
-
-  if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $limit = 'LIMIT '.intval ($starthits).','.intval ($endhits);
-  elseif (isset ($maxhits) && intval ($maxhits) > 0) $limit = 'LIMIT 0,'.intval ($maxhits);
-
-  $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) AS count'.$sqlfilesize.', dailystat.user FROM dailystat '.$sqltable.' WHERE dailystat.id!="" '.$sqlwhere.' '.$sqlgroup.' ORDER BY dailystat.date DESC '.$limit;
-
-  $errcode = "50039";
-  $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
-
-  if ($done)
+  // get data from database if no cached data has been loaded
+  if (empty ($cached))
   {
-    $i = 0;
+    // mySQL connect
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 
-    // stats array
-    while ($row = $db->rdbms_getresultrow ())
+    // clean input
+    if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
+    if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
+    if ($activity != "") $activity = $db->rdbms_escape_string ($activity);
+    if (intval ($container_id) > 0) $container_id = intval ($container_id);
+    if ($objectpath != "") $objectpath = $db->rdbms_escape_string ($objectpath);
+    if ($user != "") $user = $db->rdbms_escape_string ($user);
+
+    if ($maxhits != "" && $maxhits > 0)
     {
-      if (!empty ($row['id']))
+      if (strpos ($maxhits, ",") > 0)
       {
-        $dailystat[$i]['container_id'] = sprintf ("%07d", $row['id']);
-        $dailystat[$i]['date'] = $row['date'];
-        $dailystat[$i]['activity'] = $row['activity'];
-        $dailystat[$i]['count'] = $row['count'];
-        $dailystat[$i]['filesize'] = @$row['filesize'];
-        $dailystat[$i]['totalsize'] = (@$row['filesize'] > 0 ? ($row['count'] * @$row['filesize']) : 0);
-        $dailystat[$i]['user'] = $row['user'];
-        
-        $i++;
+        list ($starthits, $endhits) = explode (",", $maxhits);
+        $starthits = $db->rdbms_escape_string (trim ($starthits));
+        $endhits = $db->rdbms_escape_string (trim ($endhits));
+      }
+      else $maxhits = $db->rdbms_escape_string ($maxhits);
+    }
+
+    // get object info
+    if ($objectpath != "")
+    {
+      $site = getpublication ($objectpath);
+      $cat = getcategory ($site, $objectpath);
+      $object_info = getfileinfo ($site, $objectpath, $cat);
+      $objectpath = str_replace ('%', '*', $objectpath);
+      if (getobject ($objectpath) == ".folder") $location = getlocation ($objectpath);
+    }
+
+    $sqlfilesize = "";
+    $sqltable = "";
+    $sqlwhere = "";
+    $sqlgroup = "";
+    $limit = "";
+
+    // include media table for file size
+    if (!empty ($return_filesize))
+    {
+      // search by objectpath
+      if ($objectpath != "")
+      {
+        $sqlfilesize = ', SUM(object.filesize) AS filesize';
+        $sqltable = "INNER JOIN object ON dailystat.id=object.id";
+        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
+        else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
+        $sqlgroup = 'GROUP BY dailystat.date, dailystat.id, dailystat.user';
+      }
+      // search by container id
+      elseif (intval ($container_id) > 0)
+      {
+        $sqlfilesize = ', object.filesize AS filesize';
+        $sqltable = "INNER JOIN object ON dailystat.id=object.id";
+        $sqlwhere = 'AND dailystat.id='.$container_id;
+        $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
       }
     }
-  }     
+    else
+    {
+      // search by objectpath
+      if ($objectpath != "")
+      {
+        $sqlfilesize = "";
+        $sqltable = 'INNER JOIN object ON dailystat.id=object.id';
+        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
+        else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
+        $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
+      }
+      // search by container id
+      elseif (intval ($container_id) > 0)
+      { 
+        $sqlfilesize = "";
+        $sqltable = '';
+        $sqlwhere = 'AND dailystat.id='.$container_id;
+        $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
+      }
+    }
 
-  // save log
-  savelog ($db->rdbms_geterror ());
-  $db->rdbms_close();
+    if ($date_from != "") $sqlwhere .= ' AND dailystat.date>="'.date("Y-m-d", strtotime($date_from)).'"';
+    if ($date_to != "") $sqlwhere .= ' AND dailystat.date<="'.date("Y-m-d", strtotime($date_to)).'"';
+    if ($activity != "") $sqlwhere .= ' AND dailystat.activity="'.$activity.'"';
+    if ($user != "") $sqlwhere .= ' AND dailystat.user="'.$user.'"';
+
+    if (empty ($sqlgroup)) $sqlgroup = 'GROUP BY dailystat.id';
+
+    if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $limit = 'LIMIT '.intval ($starthits).','.intval ($endhits);
+    elseif (isset ($maxhits) && intval ($maxhits) > 0) $limit = 'LIMIT 0,'.intval ($maxhits);
+
+    $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) AS count'.$sqlfilesize.', dailystat.user FROM dailystat '.$sqltable.' WHERE dailystat.id!="" '.$sqlwhere.' '.$sqlgroup.' ORDER BY dailystat.date DESC '.$limit;
+
+    $errcode = "50039";
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    if ($done)
+    {
+      $i = 0;
+
+      // stats array
+      while ($row = $db->rdbms_getresultrow ())
+      {
+        if (!empty ($row['id']))
+        {
+          $dailystat[$i]['container_id'] = sprintf ("%07d", $row['id']);
+          $dailystat[$i]['date'] = $row['date'];
+          $dailystat[$i]['activity'] = $row['activity'];
+          $dailystat[$i]['count'] = $row['count'];
+          $dailystat[$i]['filesize'] = @$row['filesize'];
+          $dailystat[$i]['totalsize'] = (@$row['filesize'] > 0 ? ($row['count'] * @$row['filesize']) : 0);
+          $dailystat[$i]['user'] = $row['user'];
+          
+          $i++;
+        }
+      }
+    }
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    $db->rdbms_close();
+  }
+
+  // cache results if no cached data has been loaded
+  if (intval ($cache_timeout) > 0 && empty ($cached))
+  {
+    $json = json_encode ($dailystat);
+    savefile ($mgmt_config['abs_path_temp'], $filename, $json);
+  }
 
   if (!empty ($dailystat) && is_array ($dailystat)) return $dailystat;
   else return false;

@@ -6809,11 +6809,10 @@ function createpublication ($site_name, $user="sys")
           $mapping_data = getmapping ($site_name);
 
           // creating mapping from definition
-          $mapping_data = createmapping ($site_name, $mapping_data);
+          $test = createmapping ($site_name, $mapping_data);
 
           $errcode = "10134";
-          $test = savefile ($mgmt_config['abs_path_data']."media/", $site_name.".media.map.php", $mapping_data);
-          if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savefile failed for /data/media/".$site_name.".media.map.php";
+          if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savefile failed for /data/config/".$site_name.".media.map.php";
         }
 
         // link
@@ -7144,10 +7143,11 @@ function createpublication ($site_name, $user="sys")
 // ldap_follow_referrals ... The follow referrals option is a boolean to tell active directory to follow a referral to another server on your network if the server queried knows the information you are asking for exists, but does not yet contain a copy of it locally. This option is defaulted to false. [boolean]
 // ldap_use_ssl ... If you need to be able to change user passwords on your server, then an SSL or TLS connection is required [boolean]
 // ldap_use_tls ... If you need to be able to change user passwords on your server, then an SSL or TLS connection is required [boolean]
-// ldap_sync ... Synchronize LDAP users with system user (create and edit user)
-// ldap_delete_user ... Delete user that do not exist in LDAP
-// ldap_user_filter ... Define the user filter for the search in LDAP/AD
-// ldap_user_attributes ... Define the user attributes you want so sync with LDAP/AD
+// ldap_sync ... Synchronize LDAP users with system user (create and edit user) [boolean]
+// ldap_delete_user ... Delete user that do not exist in LDAP [boolean]
+// ldap_keep_groups ... Keep existing group memberships of user [boolean]
+// ldap_user_filter ... Define the user filter for the search in LDAP/AD (sAMAccountName) [string]
+// ldap_user_attributes ... Define the user attributes you want so sync with LDAP/AD ('memberof', 'givenname', 'sn', 'telephonenumber', 'mail') [array]
 // ldap_sync_groups_mapping ... Mapping based on a search string that defines the users group membership like "OU=MANAGER GROUP"=>"ChiefEditor" [array]
 
 function editpublication ($site_name, $setting, $user="sys")
@@ -7268,6 +7268,9 @@ function editpublication ($site_name, $setting, $user="sys")
 
     if (array_key_exists ('ldap_delete_user', $setting) && $setting['ldap_delete_user'] == true) $ldap_delete_user_new = "true";
     else $ldap_delete_user_new = "false";
+
+    if (array_key_exists ('ldap_keep_groups', $setting) && $setting['ldap_keep_groups'] == true) $ldap_keep_groups_new = "true";
+    else $ldap_keep_groups_new = "false";
 
     // create htaccess and web.config files for DAM usage
     if ($dam_new == "true")
@@ -7449,41 +7452,47 @@ function editpublication ($site_name, $setting, $user="sys")
       $temp_array = splitstring ($setting['ldap_user_attributes']);
       $temp_result = array();
 
-      foreach ($temp_array as $temp)
+      if (is_array ($temp_array))
       {
-        // clean
-        $temp = trim ($temp, " '\"\t\n\r\0\x0B");
-        $temp = str_replace ("'", "\\'", $temp);
+        foreach ($temp_array as $temp)
+        {
+          // clean
+          $temp = trim ($temp, " '\"\t\n\r\0\x0B");
+          $temp = str_replace ("'", "\\'", $temp);
 
-        $temp_result[] = "'".$temp."'";
+          $temp_result[] = "'".$temp."'";
+        }
+
+        if (sizeof ($temp_result) > 0) $ldap_user_attributes_new = implode (", ", $temp_result);
       }
-
-      if (sizeof ($temp_result) > 0) $ldap_user_attributes_new = implode (", ", $temp_result);
     }
 
     // LDAP mapping for user group sync
+    $ldap_sync_groups_mapping_new = "";
+
     if (array_key_exists('ldap_sync_groups_mapping', $setting) && strpos ($setting['ldap_sync_groups_mapping'], "=>") > 0)
     {
       $temp_array = explode ("\n", $setting['ldap_sync_groups_mapping']);
       $temp_result = array();
 
-      foreach ($temp_array as $temp)
+      if (is_array ($temp_array))
       {
-        list ($key, $value) = explode ("=>", $temp);
+        foreach ($temp_array as $temp)
+        {
+          list ($key, $value) = explode ("=>", $temp);
 
-        // clean
-        $key = trim ($key, " '\"\t\n\r\0\x0B");
-        $key = str_replace ("'", "\\'", $key);
-        $value = trim ($value, " '\"\t\n\r\0\x0B");
-        $value = str_replace ("'", "\\'", $value);
+          // clean
+          $key = trim ($key, " '\"\t\n\r\0\x0B");
+          $key = str_replace ("'", "\\'", $key);
+          $value = trim ($value, " '\"\t\n\r\0\x0B");
+          $value = str_replace ("'", "\\'", $value);
 
-        $temp_result[] = "'".$key."'=>'".$value."'";
+          $temp_result[] = "'".$key."'=>'".$value."'";
+        }
+
+        if (sizeof ($temp_result) > 0) $ldap_sync_groups_mapping_new = implode (", ", $temp_result);
       }
-
-      if (sizeof ($temp_result) > 0) $ldap_sync_groups_mapping_new = implode (", ", $temp_result);
-      else $ldap_sync_groups_mapping_new = "";
     }
-    else $ldap_sync_groups_mapping_new = "";
     
     // config file of management system
     $site_mgmt_config = "<?php
@@ -7698,6 +7707,9 @@ function editpublication ($site_name, $setting, $user="sys")
 
 // Delete the user if it does not exist in the LDAP/AD directory (true) or leave user (false)
 \$mgmt_config['".$site_name."']['ldap_delete_user'] = ".$ldap_delete_user_new.";
+
+// Keep existing group memberships of user (true) or not (false)
+\$mgmt_config['".$site_name."']['ldap_keep_groups'] = ".$ldap_keep_groups_new.";
 
 // Define the user filter for the search in LDAP/AD
 \$mgmt_config['".$site_name."']['ldap_user_filter'] = \"".str_replace ("\"", "'", $ldap_user_filter_new)."\";
@@ -8252,7 +8264,7 @@ function deletepublication ($site_name, $user="sys")
         deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".ini", 0);
         deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".properties", 0);
 
-        // mapping configuration file
+        // media to meta data mapping file
         if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".media.map.php"))
         {
           deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".media.map.php", 0);
@@ -8262,6 +8274,23 @@ function deletepublication ($site_name, $user="sys")
         if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".hierarchy.dat"))
         {
           deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".hierarchy.dat", 0);
+        }
+
+        // Google Cloud key file
+        if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".google_cloud_key.json"))
+        {
+          deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json", 0);
+        }
+
+        // license notification file
+        if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".comp.msg.dat"))
+        {
+          deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".comp.msg.dat", 0);
+        }
+
+        if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".page.msg.dat"))
+        {
+          deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".page.msg.dat", 0);
         }
 
         // taxonomy configuration file
@@ -18456,7 +18485,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
 // This function is used to perform actions on multiple objects and is mainly used by popup_status.php.
 // This function should only be used in connection with the GUI of the system.
 
-function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $tempfile="", $maxitems=40)
+function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $tempfile="", $maxitems=20)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
 
@@ -20422,7 +20451,7 @@ function licensenotification ()
 
 // --------------------------------------- sendresetpassword ------------------------------------------------
 // function: sendresetpassword()
-// input: user name [string], type of password reset [multifactorauth,resetpassword] (optional), instance name [string] (optional)
+// input: user name [string], type of password reset [multifactorauth,passwordreset] (optional), instance name [string] (optional)
 // output: message as string
 
 // description:
@@ -20439,7 +20468,7 @@ function sendresetpassword ($login, $type="passwordreset", $instance="")
   if (empty ($lang)) $lang = "en";
 
   // verifications
-  if (empty ($mgmt_config['sso']) && empty ($mgmt_config['resetpassword']) && empty ($mgmt_config['multifactorauth'])) return $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
+  if (empty ($mgmt_config['sso']) && empty ($mgmt_config['passwordreset']) && empty ($mgmt_config['multifactorauth'])) return $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
   if ($login == "") return $hcms_lang['a-user-name-is-required'][$lang];
 
   // create new password
@@ -20451,7 +20480,11 @@ function sendresetpassword ($login, $type="passwordreset", $instance="")
     // define new password after timeout (due to WebDAV client)
     if (empty ($resettime) || (intval ($resettime) > 0 && intval ($resettime) < (time() - 3))) $password = "At".createpassword (8);
   }
-  elseif (strtolower ($type) == "passwordreset") $password = "At".createpassword (8);
+  // reset password with support of old an new value for the type
+  elseif (strtolower ($type) == "passwordreset" || strtolower ($type) == "resetpassword")
+  {
+    $password = "At".createpassword (8);
+  }
 
   // get e-mail and first publication of user
   $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");

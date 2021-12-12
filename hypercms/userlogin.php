@@ -285,7 +285,7 @@ if (checkuserip (getuserip ()) == true)
   // reset password without login link (forgot password)
   if ($action == "reset" && !empty ($mgmt_config['resetpassword']))
   {
-    $show = sendresetpassword ($sentuser, "resetpassword");
+    $show = sendresetpassword ($sentuser, "passwordreset");
   }
   // reset password and send login link (for 2 factor authentication)
   elseif ($action == "request" && !empty ($mgmt_config['multifactorauth']))
@@ -419,7 +419,8 @@ if (checkuserip (getuserip ()) == true)
 
         <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"padding:4px 0px; font-size:small; font-weight:normal;\">".getescapedtext ($hcms_lang['popups-must-be-allowed'][$lang])."</div>";
         
-      if (!empty ($mgmt_config['resetpassword']) && empty ($mgmt_config['multifactorauth'])) $show .= "
+      // In order to support both configuration setting $mgmt_config['resetpassword'] and $mgmt_config['passwordreset']
+      if ((!empty ($mgmt_config['passwordreset']) || !empty ($mgmt_config['resetpassword'])) && empty ($mgmt_config['multifactorauth'])) $show .= "
         <div class=\"hcmsTextWhite hcmsTextShadow\" style=\"box-sizing:border-box; padding:4px 0px; font-size:small; font-weight:normal; cursor:pointer;\" onclick=\"resetpassword()\">".getescapedtext ($hcms_lang['reset-password'][$lang])."</div>";
         
       if (!empty ($mgmt_config['userregistration'])) $show .= "

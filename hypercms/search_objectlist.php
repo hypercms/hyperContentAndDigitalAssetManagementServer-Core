@@ -188,6 +188,15 @@ if (empty ($objectlistcols_reduced))
   $objectlistcols_reduced['modifieddate'] = 1;
   $objectlistcols_reduced['owner'] = 1;
 }
+// remove text IDs from search in order to improve performance and due to limited displayof text IDs in the search result
+elseif (is_array ($objectlistcols_reduced))
+{
+  foreach ($objectlistcols_reduced as $text_id => $active)
+  {
+    // exclude text from search result
+    if (strpos ("_".$text_id, "text:") > 0) unset ($objectlistcols_reduced[$text_id]);
+  }
+}
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");

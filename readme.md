@@ -15,7 +15,7 @@ All manuals are provided as PDF documents on our website or in the directory hyp
 
 * FFMPEG (for converting video and audio files)
 * YAMDI (for meta data injection into FLV files)
-* UFRAW (for raw images from digital cameras)
+* UFRAW or DCRAW (for raw images from digital cameras)
 * ImageMagick (for converting images)
 * WebP (for webp image format support)
 * XPDF (for indexing PDF-documents)
@@ -60,7 +60,8 @@ All packages except FFMPEG are already included in Debian.
 ```
 apt-get install xpdf
 apt-get install antiword
-apt-get install ufraw-batch
+apt-get install ufraw-batch (for Debian 8,9, 10)
+apt-get install dcraw (Debian 11)
 apt-get install imagemagick
 apt-get install yamdi
 apt-get install zip

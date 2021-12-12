@@ -5597,7 +5597,48 @@ Release 10/2021
 - Design modifications in frameset_main and frameset_objectlist
 - Design modifications in page_info_stats
 - Modifications in function manipulateallobjects in Main API in order to remove failed objects from the collection
-- Modifications in version_temlpate in order to reload the template editor if a rollback to another version has been successfully executed
+- Modifications in version_template in order to reload the template editor if a rollback to another version has been successfully executed
+- Modifications in several functions of the Import/Export API in order to echo title before the free spaces of the output buffering logic
+- Modifications in several functions of the Import/Export API in order to reduce the free spaces to 1000 for the output buffering logic
+- Modifications in the installation routine
+- Modifications the LDAP connector in order to support multiple publications separated by , or ; in the mapping configuration in the main configuration file
+- Modifications the LDAP connector in order to support multiple groups separated by , or ; in the mapping configuration in the main configuration file
+- Modifications in the main configuration file in order to add new comments regarding the mapping definitions
+- Modifications in function sendresetpassword in the Main API in order to use the "passwordreset" for the input type with support of "resetpassword" as type
+- Renamed the main configuration setting $mgmt_config['resetpassword'] to $mgmt_config['passwordreset']
+- Modifications in site_edit_form in order to support the AD/LDAP setting "ldap_keep_groups"
+- Modifications in function editpublication in the Main API in order to support the AD/LDAP setting "ldap_keep_groups"
+- Modifications in the Import Export API and import/export scripts in the Connector Module in order to display the load bar during the execution of the import or export
+- Implementation of the new fulltext search (merged textcontent from table textnodes) for improved fulltext search performance (about 50% reduction of the execution time of the SQL query)
+- Modifications in createtables.sql in order to include the new column textcontent and the new index for table object
+- Modifications in createtables.sql in order to set the type to mediumtext for the textcontent in table object and textnodes
+- Implementation of the function update_database_v1002 in the Update API in order to support the new fulltext search in table object
+- Modifications in function rdbms_setcontent in DB Connect in order to support the new fulltext search in table object
+- Modifications in function searchcontent in DB Connect in order to support the new fulltext search in table object
+- Modifications in search_objectlist in order to exclude text IDs from the search query and result
+- Design modifications of the display of error messages in the installation routine
+- Modifications in the installation routine in order to define the SMTP port number as integer value with a default value of 25
+- Modifications in createtables.sql in order to rename and modify/optimize the index of various tables
+- Added new version to version history log in the installation directory
+- Modifications in function manipulateallobjects in Main API in order to set maxitems to 20 in order to reduce delays when writing data to large databases
+- Modifications in function buildbarchart in template engine in order to round values without comma digits and set the minimum y-value to 8
+- Modifications in function deletepublication in Main API in order to remove the Google Cloud key files
+- Modifications in function deletepublication in Main API in order to remove the license notification configuration files
+- Removed deprectaed jquery.hotkeys.js from explorer
+- Modifications in search box in order to remove unused JS code
+- Modifications in rdbms_getmediastat in DB Connect in order to support an new input parameter and the caching of the results for better performance with large datasets
+- Modifications in service accessstats in order to provide the new timeout value for the activation of the cache
+- Modifications in the upload template in the install directory in order to verify if the SESSION constant exists (due to issue with preview in the system)
+- Modifications in the PhotoSwipe template in the install directory in order to apply hypercms_href for the link to the full size image (due to issue with preview in the system)
+- Modifications in the GalleriaSearch template in the install directory in order to define the form action for the preview in the system (due to issue with the form submit in the preview of the system)
+- Modifications in the template editors "API Function Reference" in order to display a fixed chapter navigation
+- Modifications in the template editor in order to change the width of the help popup window
+- Updates in the Administrators Guide
+- Updates in the Developers Guide (Removed the full API Reference in the manual since it is available online and in the system)
 - Bug fix: AND was missing in the SQL statement for the condition that is used to query files in function rdbms_getfilesize in DB Connect 
-- Bug fix: Function savelockfile did not create the unlcoked file name if the file has been locked by another user or process
+- Bug fix: Function savelockfile did not create the unlocked file name if the file has been locked by another user or process
 - Bug fix: Function savelockfile did not unlock the file in case of a read error of the file
+- Bug fix: The scrolling of the workplace frame in framset_main was disabled and caused issues on smaller screens
+- Bug fix: Function deletepublication in Main API used wrong path for the media map files
+- Bug fix: Function createpublication in Main API saved the result (boolean) of function createmapping in the mapping file in data/media
+- Bug fix: The fulltext search field of the explorer did not support freespace due to a conflict with the spacebar key and the input of type search and the JQuery hotkeys (jquery.hotkeys.js)

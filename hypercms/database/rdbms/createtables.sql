@@ -40,10 +40,12 @@ CREATE TABLE `object` (
   `analyzed` tinyint(1) NOT NULL default '0',
   `deleteuser` char(100) DEFAULT '',
   `deletedate` date DEFAULT NULL,
+  `textcontent` mediumtext DEFAULT NULL,
   PRIMARY KEY  (`object_id`),
-  UNIQUE KEY `objecthash` (`hash`),
-  KEY `object` (`id`,`date`,`template`,`latitude`,`longitude`,`filesize`,`filetype`,`width`,`height`,`colorkey`,`imagetype`,`deleteuser`),
-  FULLTEXT KEY `objectpath` (`objectpath`)
+  UNIQUE KEY `object_objecthash` (`hash`),
+  KEY `object_multiple` (`id`,`date`,`template`,`latitude`,`longitude`,`filesize`,`filetype`,`width`,`height`,`colorkey`,`imagetype`,`deleteuser`),
+  FULLTEXT KEY `object_objectpath` (`objectpath`),
+  FULLTEXT KEY `object_textcontent` (`textcontent`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 DROP TABLE IF EXISTS `recipient`;
@@ -57,7 +59,7 @@ CREATE TABLE `recipient` (
   `email` char(80) NOT NULL default '',
   PRIMARY KEY  (`recipient_id`),
   KEY `recipient_object_id` (`object_id`),
-  KEY `recipient_search` (`object_id`,`date`,`from_user`,to_user(200))
+  KEY `recipient_multiple` (`object_id`,`date`,`from_user`,to_user(200))
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 DROP TABLE IF EXISTS `project`;
@@ -71,7 +73,7 @@ CREATE TABLE `project` (
   `description` varchar(3600),
   `user` char(100) NOT NULL default '',
   PRIMARY KEY  (`project_id`),
-  KEY `project` (`user`)
+  KEY `project_user` (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `task`;
@@ -92,7 +94,7 @@ CREATE TABLE `task` (
   `planned` float(6,2) DEFAULT NULL,
   `actual` float(6,2) DEFAULT NULL,
   PRIMARY KEY  (`task_id`),
-  KEY `task` (`to_user`)
+  KEY `task_to_user` (`to_user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `taxonomy`;
@@ -104,7 +106,7 @@ CREATE TABLE `taxonomy` (
   `taxonomy_id` int(11) NOT NULL default '0',
   `lang` char(6) NOT NULL default '',
   PRIMARY KEY  (`taxonomykey_id`),
-  KEY `taxonomy` (`id`,`taxonomy_id`)
+  KEY `taxonomy_multiple` (`id`,`taxonomy_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 DROP TABLE IF EXISTS `keywords`;
@@ -129,7 +131,7 @@ CREATE TABLE `textnodes` (
   `textnodes_id` int(11) NOT NULL auto_increment,
   `id` int(11) NOT NULL default '0',
   `text_id` char(255) NOT NULL default '',
-  `textcontent` text,
+  `textcontent` mediumtext DEFAULT NULL,
   `object_id` int(11) DEFAULT NULL,
   `type` char(6) NOT NULL default '',
   `user` char(100) DEFAULT NULL,
@@ -137,8 +139,8 @@ CREATE TABLE `textnodes` (
   KEY `textnodes_id` (`id`),
   KEY `textnodes_text_id` (`text_id`),
   KEY `textnodes_object_id` (`object_id`),
-  KEY `textnodes_id_type` (`id`,`type`),
-  FULLTEXT KEY `textnodes_content` (`textcontent`)
+  KEY `textnodes_multiple` (`id`,`type`),
+  FULLTEXT KEY `textnodes_textcontent` (`textcontent`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `queue`;
@@ -152,7 +154,7 @@ CREATE TABLE `queue` (
   `cmd` varchar(21000) DEFAULT NULL,
   `user` char(100) default NULL,
   PRIMARY KEY  (`queue_id`),
-  KEY `queue` (`date`,`user`)
+  KEY `queue_multiple` (`date`,`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 DROP TABLE IF EXISTS `dailystat`;
@@ -161,11 +163,11 @@ CREATE TABLE `dailystat` (
   `stats_id` int(11) NOT NULL AUTO_INCREMENT,
   `id` int(11) NOT NULL,
   `date` date NOT NULL,
-  `activity` char(20) DEFAULT NULL,
+  `activity` char(10) DEFAULT NULL,
   `user` char(100) DEFAULT NULL,
   `count` int(11) NOT NULL,
   PRIMARY KEY (`stats_id`),
-  KEY `dailystat` (`id`,`date`,`user`)
+  KEY `dailystat_multiple` (`id`,`date`,`activity`,`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 DROP TABLE IF EXISTS `notify`;
@@ -179,5 +181,5 @@ CREATE TABLE `notify` (
   `onmove` tinyint(1) NOT NULL default '0',
   `ondelete` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`notify_id`),
-  KEY `notify` (`object_id`,`user`)
+  KEY `notify_multiple` (`object_id`,`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

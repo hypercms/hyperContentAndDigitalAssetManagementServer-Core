@@ -37,10 +37,6 @@ if (empty ($is_mobile) && isset ($siteaccess) && is_array ($siteaccess))
     $('#search_expression').autocomplete({
       source: available_expressions
     });
-    
-    $('#image_expression').autocomplete({
-      source: available_expressions
-    });
   });
   </script>
 

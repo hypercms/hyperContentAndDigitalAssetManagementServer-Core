@@ -94,8 +94,8 @@ elseif ("%view%" == "publish" || "%view%" == "preview")
 scriptend]
 <?php
 
-// session
-define ("SESSION", "create");
+// create session
+if (!defined ("SESSION")) define ("SESSION", "create");
 // management configuration
 require ("%abs_hypercms%/config.inc.php");
 // hyperCMS API

@@ -247,10 +247,10 @@ $mgmt_config['facerecognition'] = false;
 // Use SSL for the service if your installation uses SSL. Do not mix HTTP and HTTPS since the browsers will block mixed content.
 $mgmt_config['facerecognition_service_url'] = "";
 
-// Run the face recognition service on the clients of the defined users (use ; as separator for the user names) in the background or leave empty for all user clients
+// Run the face recognition service on the clients of the defined users (use ";" as separator for the user names) in the background or leave empty for all user clients
 $mgmt_config['facerecognition_service_users'] = "";
 
-// Exclude assets of publications from the face recognition service (use ; as separator for the publication names) or leave empty for all publications
+// Exclude assets of publications from the face recognition service (use ";" as separator for the publication names) or leave empty for all publications
 $mgmt_config['facerecognition_service_exclude'] = "";
 
 // Define standard mail link type ("access" = access-link; "download" = download-link)
@@ -269,7 +269,7 @@ $mgmt_config['wallpaper'] = "";
 // Show (true) or hide (false) information boxes to provide additional information to the user
 $mgmt_config['showinfobox'] = true;
 
-// Define home boxes to show for each user if no individual selection has been made (use ; as separator)
+// Define home boxes to show for each user if no individual selection has been made (use ";" as separator)
 // Home boxes are located in directory hypercms/box/
 $mgmt_config['homeboxes'] = "search;news;tasks;recent_objects;up_and_downloads;recent_downloads;recent_uploads";
 
@@ -546,7 +546,7 @@ $mgmt_config['today'] = date ("Y-m-d H:i:s", time());
 // Define the unit for the duration (float value) of tasks, use "d" for days, "h" for hours
 $mgmt_config['taskunit'] = "h";
 
-// Define the database tables to be used in reports, use ; as delimiter
+// Define the database tables to be used in reports, use ";" as delimiter
 $mgmt_config['report_tables'] = "object;textnodes;dailystat;project;task;recipient;accesslink";
 
 // Supported Applications
@@ -646,7 +646,7 @@ $mgmt_config['passwordhistory'] = 0;
 $mgmt_config['passwordexpires'] = 0;
 
 // Enable (true) or disable (false) the password reset on logon screen
-$mgmt_config['resetpassword'] = true;
+$mgmt_config['passwordreset'] = true;
 
 // Enable (true) or disable (false) multi-factor authentication
 $mgmt_config['multifactorauth'] = false;
@@ -682,7 +682,7 @@ $mgmt_config['user_log'] = false;
 // Provide a list of comma separated user names for automated notification, or leave empty
 $mgmt_config['eventlog_notify'] = "";
 
-// Define users by their user name (use ; as separator) that should be excluded as senders from the automatic notifications (function notifyusers in Main API)
+// Define users by their user name (use ";" as separator) that should be excluded as senders from the automatic notifications (function notifyusers in Main API)
 $mgmt_config['notify_exclude_users'] = "sys";
 
 // Encryption
@@ -846,7 +846,7 @@ $mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
 // The GD Library only supports jpg, png and gif images as output, set value to "GD" to use it.
 // $mgmt_imagepreview['.gif.jpg.jpeg.png'] = "GD";
 
-// Use "dcraw" or use use "ufraw" to convert RAW images to JPEG images
+// Use "dcraw" or "ufraw" to convert RAW images to JPEG images
 // Package dcraw replaces ufraw that is no longer maintained in newer Linux distributions
 // Please make sure that the package dcraw or ufraw is installed
 $mgmt_imagepreview['rawimage'] = "ufraw";
@@ -1088,14 +1088,14 @@ $mgmt_config['ldap_delete_user'] = false;
 $mgmt_config['ldap_keep_groups'] = false;
 
 // Synchronize AD/LDAP groups with publications of the user
-// Define mapping based on a search string that defines the users publication membership
-// Mapping: "LDAP search string" => "Publication name"
-// Example: $mgmt_config['ldap_sync_publications_mapping'] = array("DC=domain,DC=de"=>"PublicationA", "DC=domain,DC=uk"=>"PublicationB");
+// Define mapping based on a search string that defines the users publication membership, use "," as separator for the assignment to multiple publications 
+// Mapping: "LDAP search string" => "Publication-name-A,Publication-name-B"
+// Example: $mgmt_config['ldap_sync_publications_mapping'] = array("DC=domain,DC=de"=>"Publication-name-A,Publication-name-B", "DC=domain,DC=uk"=>"Publication-name-C");
 $mgmt_config['ldap_sync_publications_mapping'] = array();
 
 // Synchronize AD/LDAP groups with user groups of the user
-// Define mapping based on a search string that defines the users group membership
-// Mapping: "LDAP search string" => "Group name"
+// Define mapping based on a search string that defines the users group membership, use "," as separator for the assignment to multiple groups 
+// Mapping: "LDAP search string" => "Publication-name-A/Group-name-A,Publication-name-B/Group-name-B"
 // Example for general groups for all publications: $mgmt_config['ldap_sync_groups_mapping'] = array("OU=MANAGER GROUP"=>"ChiefEditor", "OU=ALL GROUPS"=>"Editor");
 // Example for specific groups per publication: $mgmt_config['ldap_sync_groups_mapping'] = array("OU=MANAGER GROUP"=>"Publication/ChiefEditor", "OU=ALL GROUPS"=>"Publication/Editor");
 $mgmt_config['ldap_sync_groups_mapping'] = array();

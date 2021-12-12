@@ -46,7 +46,7 @@ if ($save == "yes" && valid_publicationname ($site) && in_array ($cat, array("pa
   
   if ($test == false)   
   {  
-    $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['notification-settings-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['write-permission-is-missing'][$lang]);
+    $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['notification-settings-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['write-permission-is-missing'][$lang]);
   }
   else $show = getescapedtext ($hcms_lang['notification-settings-were-saved-successfully'][$lang]);
 }

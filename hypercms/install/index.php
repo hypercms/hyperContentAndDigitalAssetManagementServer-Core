@@ -136,7 +136,7 @@ $db_name = getrequest_esc ("db_name");
 $smtp_host = getrequest_esc ("smtp_host");
 $smtp_username = getrequest_esc ("smtp_username");
 $smtp_password = getrequest_esc ("smtp_password");
-$smtp_port = getrequest_esc ("smtp_port");
+$smtp_port = getrequest_esc ("smtp_port", "numeric", 25);
 $smtp_sender = getrequest_esc ("smtp_sender");
 
 $os_cms = getrequest_esc ("os_cms");
@@ -344,7 +344,7 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
         $config = str_replace ("%smtp_host%", $smtp_host, $config);
         $config = str_replace ("%smtp_username%", $smtp_username, $config);
         $config = str_replace ("%smtp_password%", $smtp_password, $config);
-        $config = str_replace ("%smtp_port%", $smtp_port, $config);
+        $config = str_replace ("%smtp_port%", intval ($smtp_port), $config);
         $config = str_replace ("%smtp_sender%", $smtp_sender, $config);
         
         $config = str_replace ("%instances%", "", $config);
@@ -747,13 +747,14 @@ $(document).ready(function(){
 				input.removeClass("needsfilled");
 			}
 		}
-		// Validate the e-mail.
+
+		// validate the e-mail
 		if (!/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(email.val())) {
 			email.addClass("needsfilled");
 			email.val(emailerror);
 		}
 
-		//if any inputs on the page have the class 'needsfilled' the form will not submit
+		// if any inputs on the page have the class 'needsfilled' the form will not submit
 		if ($(":input").hasClass("needsfilled")) {
 			return false;
 		} else {
@@ -787,7 +788,7 @@ You may want to read the <a href="<?php echo $mgmt_config['url_path_cms']; ?>hel
 Otherwise just provide the information below and install the most powerful Content and Digital Asset Management System.
 </div>
 
-<?php echo showmessage ($show, 480, 300, "en", "position:fixed; top:40px; margin-left:auto; margin-right:auto;"); ?>  
+<?php if (!empty ($show)) echo showmessage ("<ul style=\"margin:10px 10px 10px -10px;\">".$show."</ul>", 580, 300, "en", "position:fixed; top:120px; margin-left:auto; margin-right:auto;"); ?>  
 
 <form id="installform" name="installform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
   <input type="hidden" name="action" value="install" />
@@ -918,7 +919,7 @@ Otherwise just provide the information below and install the most powerful Conte
     <tr>
       <td style="white-space:nowrap;">SMTP port </td>
       <td>
-        <input type="text" id="smtp_port" name="smtp_port" value="<?php if ($smtp_port != "") echo $smtp_port; else echo "25" ?>" style="width:300px;" />
+        <input type="text" id="smtp_port" name="smtp_port" value="<?php if ($smtp_port != "") echo intval ($smtp_port); else echo "25" ?>" style="width:300px;" />
       </td>
     </tr>
     <tr>
