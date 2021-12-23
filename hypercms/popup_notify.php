@@ -102,7 +102,6 @@ if ($action == "save" && checktoken ($token, $user) && valid_publicationname ($s
     }
     
     if ($result == false) $message = getescapedtext ($hcms_lang['the-notification-setting-could-not-be-saved'][$lang]);
-    else $message = "<script language=\"JavaScript\" type=\"text/javascript\"> window.close(); </script>";
   }
   else $message = getescapedtext ($hcms_lang['no-objects-found'][$lang]);
 }
@@ -124,9 +123,9 @@ elseif ($action == "delete" && checktoken ($token, $user) && is_array ($notify_i
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
 <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.min.js"></script>
@@ -156,14 +155,16 @@ function submitform ()
 
 <!-- top bar -->
 <?php
-echo showtopbar ($hcms_lang['notify-me-on-these-events'][$lang], $lang);
+echo showtopbar ($hcms_lang['notify-me'][$lang], $lang);
 ?>
 
 <?php echo showmessage ($message, 360, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
 <div class="hcmsWorkplaceFrame">
 
-  <form name="notify" method="post" action="">
+  <div><strong><?php echo getescapedtext ($hcms_lang['notify-me-on-these-events'][$lang]); ?></strong></div>
+
+  <form name="notify" method="post" action="" style="margin:10px 0px;">
     <input type="hidden" name="action" value="save" />      
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
     <input type="hidden" name="page" value="<?php echo correctfile ($location, $page, $user); ?>" />        
@@ -188,13 +189,15 @@ echo showtopbar ($hcms_lang['notify-me-on-these-events'][$lang], $lang);
     </table>
   </form>
 
+  <hr/>
+
 <?php
 $notify_array = rdbms_getnotification ("", "", $user);
 
 if (is_array ($notify_array))
 {
   echo "
-<form name=\"delete\" method=\"post\" action=\"\">
+<form name=\"delete\" method=\"post\" action=\"\" style=\"margin:10px 0px;\">
   <input type=\"hidden\" name=\"action\" value=\"delete\" />
   <input type=\"hidden\" name=\"location\" value=\"".$location_esc."\" />
   <input type=\"hidden\" name=\"page\" value=\"".correctfile ($location, $page, $user)."\" />        
@@ -227,7 +230,7 @@ if (is_array ($notify_array))
       echo "
       <tr>
         <td style=\"width:22px; text-align:center;\"><input type=\"checkbox\" id=\"notify".$notify['notify_id']."\" name=\"notify_id[]\" value=\"".$notify['notify_id']."\" /></td>
-        <td style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><div title=\"".$objectpath."\"><label for=\"notify".$notify['notify_id']."\"><img src=\"".getthemelocation()."img/".$objectinfo['icon']."\" class=\"hcmsIconList\" />&nbsp;".getobject($objectpath)."</label></div></td>
+        <td style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><div title=\"".$objectpath."\"><label for=\"notify".$notify['notify_id']."\"><img src=\"".getthemelocation()."img/".$objectinfo['icon']."\" class=\"hcmsIconList\" />&nbsp;".showshorttext (getobject($objectpath), 60)."</label></div></td>
         <td style=\"width:22px; text-align:center;\">".($notify['oncreate'] > 0 ? "<img src=\"".getthemelocation()."/img/button_textc.png\" class=\"hcmsIconList\" />" : "")."</td>
         <td style=\"width:22px; text-align:center;\">".($notify['onedit'] > 0 ? "<img src=\"".getthemelocation()."/img/button_textc.png\" class=\"hcmsIconList\" />" : "")."</td>
         <td style=\"width:22px; text-align:center;\">".($notify['onmove'] > 0 ? "<img src=\"".getthemelocation()."/img/button_textc.png\" class=\"hcmsIconList\" />" : "")."</td>

@@ -72,8 +72,8 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script>
 function previous ()
 {

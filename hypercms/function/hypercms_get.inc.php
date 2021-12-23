@@ -9,6 +9,22 @@
  
 // ======================================== SERVER PARAMETERS ===========================================
 
+// ---------------------- getbuildnumber -----------------------------
+// function: getbuildnumber()
+// input: %
+// output: Returns the versions build number of the software
+
+function getbuildnumber ()
+{
+  global $mgmt_config;
+
+  // build number defined by the UNIX timestamp of ther version text file 
+  if (is_file ($mgmt_config['abs_path_cms']."version.txt")) $build = filemtime ($mgmt_config['abs_path_cms']."version.txt");
+  else $build = "";
+
+  return url_encode ($build);
+}
+
 // ---------------------- getserverload -----------------------------
 // function: getserverload()
 // input: intervall for the average system load can be 1, 5 or 15 minutes [0,1,2] (optional)
@@ -5841,7 +5857,7 @@ function gethtmltag ($filedata, $tag)
         {
           $found = 0; // position of the start html tag
           $intag = 0; // is there a nested script tag in the html tag
-          $tags = 0; // we allow max. 2 nested script tags to appear before we break the routine
+          $tags = 0; // we allow max. 2 nested script tags to appear before we break the loop
  
           while ($pos > 0 && $tags < 3)
           {

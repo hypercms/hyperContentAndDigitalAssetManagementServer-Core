@@ -65,7 +65,7 @@ if (sizeof ($config_files) > 0)
               $queue_date = $queue['date'];
               $cmd = $queue['cmd'];
 
-              // set new exection date in order to prevent multiple exection
+              // set new execution date in order to prevent multiple executions
               $new_date = date('Y-m-d H:i:s', strtotime($queue_date . ' +1 day'));
               rdbms_setqueueentry ($queue_id, $new_date);
               
@@ -83,7 +83,7 @@ if (sizeof ($config_files) > 0)
               $mail_id = $queue['object_id'];
               $user = $queue['user'];
 
-              // set new exection date in order to prevent multiple exection
+              // set new execution date in order to prevent multiple executions
               $new_date = date('Y-m-d H:i:s', strtotime($queue_date . ' +1 day'));
               rdbms_setqueueentry ($queue_id, $new_date);
               
@@ -102,15 +102,15 @@ if (sizeof ($config_files) > 0)
               $published_only = $queue['published_only'];
               $user = $queue['user'];
 
-              // set new exection date in order to prevent multiple exection
+              // set new execution date in order to prevent multiple executions
               $new_date = date('Y-m-d H:i:s', strtotime($queue_date . ' +1 day'));
               rdbms_setqueueentry ($queue_id, $new_date);
       
               // if folder object remove .folder
               if ($file == ".folder")
               {
-                $location = getlocation ($location);
                 $file = getobject ($location);
+                $location = getlocation ($location);
               }
               
               // process objects

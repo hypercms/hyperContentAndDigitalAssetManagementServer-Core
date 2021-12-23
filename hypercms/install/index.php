@@ -102,8 +102,8 @@ if (is_file ($mgmt_config['abs_path_data']."check.dat"))
 <meta charset="UTF-8" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
-<link rel="stylesheet" href="../theme/standard/css/main.css" />
-<link rel="stylesheet" href="../theme/standard/css/<?php echo ($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="../theme/standard/css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="../theme/standard/css/<?php echo ($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 </head>
 <body class="hcmsStartScreen">
   <div style="width:420px; margin:120px auto;">
@@ -708,8 +708,8 @@ $token_new = createtoken ($user);
 <title>hyperCMS</title>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
-<link rel="stylesheet" href="../theme/standard/css/main.css">
-<link rel="stylesheet" href="../theme/standard/css/<?php echo ($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="../theme/standard/css/main.css?v=<?php echo getbuildnumber(); ?>">
+<link rel="stylesheet" href="../theme/standard/css/<?php echo ($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="../javascript/main.min.js"></script>
 
 <style type="text/css">

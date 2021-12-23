@@ -3812,7 +3812,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
       if (is_file ($abs_path.$filename_unlocked) && !is_file ($abs_path.$filename_unlocked.".@".$lock))
       {
         // lock file
-        $locked = rename ($abs_path.$filename_unlocked, $abs_path.$filename_unlocked.".@".$lock);
+        $locked = @rename ($abs_path.$filename_unlocked, $abs_path.$filename_unlocked.".@".$lock);
       }
       else $locked = true;
 
@@ -5099,7 +5099,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         $start = $c_start;
         $end = $c_end;
         $length = $end - $start + 1;
-        fseek ($stream, $start);
+        fseek ($stream, intval ($start));
         header ("HTTP/1.1 206 Partial Content");
         header ("Content-Length: ".$length);
         header ("Content-Range: bytes ".$start."-".$end."/".$size);
@@ -6568,7 +6568,7 @@ function deleteinstance ($instance_name, $user="sys")
   }
 
   // check if input data is available
-  if (!is_array ($mgmt_config) || !valid_publicationname ($instance_name) || empty ($mgmt_config['instances']) || !is_file ($mgmt_config['instances'].$instance_name.".inc.php") || !valid_objectname ($user) || trim ($instance_name) == "config")
+  if (!is_array ($mgmt_config) || !valid_objectname ($instance_name) || empty ($mgmt_config['instances']) || !is_file ($mgmt_config['instances'].$instance_name.".inc.php") || !valid_objectname ($user) || trim ($instance_name) == "config")
   {
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-an-instance'][$lang]."\n";
@@ -8837,11 +8837,14 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
     // escape special characters
     if ($contentfield_save != "")
     {
-      $contentfield_save = str_replace ("<", "&lt;", $contentfield_save);
-      $contentfield_save = str_replace (">", "&gt;", $contentfield_save);
+      $contentfield_save = str_replace ("&lt;", "<", $contentfield_save);
+      $contentfield_save = str_replace ("&gt;", ">", $contentfield_save);
       $contentfield_save = str_replace ("<![CDATA[", "&lt;![CDATA[", $contentfield_save); 
       $contentfield_save = str_replace ("]]>", "]]&gt;", $contentfield_save);
     }
+
+    // escape hyperCMS template XML tags
+    $contentfield_save = escape_xmltags ($contentfield_save, "template");
 
     // get charset before transformation of < and >
     $result_charset = getcharset ($site, $contentfield_save); 
@@ -8866,7 +8869,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
 
       if (in_array ($application, array("asp","aspx","htm","jsp","php","xml","generator","media"))) $templatedata = setcontent ($templatedata, "", "<application>", $application, "", "");
 
-      $templatedata = setcontent ($templatedata, "", "<content>", $contentfield_save, "", "", true);
+      $templatedata = setcontent ($templatedata, "", "<content>", $contentfield_save, "", "", false);
     }
     else $templatedata = false;
 
@@ -9752,7 +9755,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- super admin ----------------
-      if (!empty ($userdata) && ($superadmin == "1" || $superadmin == "0") && $superadmin != "*Leave*" && $show == "" && intval ($superadmin) != intval ($superadmin_saved[0]))
+      if ($show == "" && !empty ($userdata) && ($superadmin == "1" || $superadmin == "0") && $superadmin != "*Leave*" && intval ($superadmin) != intval ($superadmin_saved[0]))
       {
         // insert values into xml schema
         $userdata = setcontent ($userdata, "<user>", "<admin>", $superadmin, "<login>", $login);
@@ -9760,7 +9763,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       } 
 
       // ---------------- realname ----------------
-      if (!empty ($userdata) && isset ($realname) && $realname != "*Leave*" && $show == "")
+      if ($show == "" && !empty ($userdata) && isset ($realname) && $realname != "*Leave*")
       {
         // escape special characters
         $realname = strip_tags ($realname);
@@ -9775,7 +9778,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- language ----------------
-      if (!empty ($userdata) && valid_objectname ($language) && $language != "*Leave*" && $show == "")
+      if ($show == "" && !empty ($userdata) && valid_objectname ($language) && $language != "*Leave*")
       {
         // escape special characters
         $language = strip_tags ($language);
@@ -9790,7 +9793,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- timezone ----------------
-      if (!empty ($userdata) && isset ($timezone) && $timezone != "*Leave*" && $show == "")
+      if ($show == "" && !empty ($userdata) && isset ($timezone) && $timezone != "*Leave*")
       {
         // escape special characters
         $timezone = strip_tags ($timezone);
@@ -9804,7 +9807,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- design theme ----------------
-      if (!empty ($userdata) && valid_objectname ($theme) && $theme != "*Leave*" && $show == "")
+      if ($show == "" && !empty ($userdata) && valid_objectname ($theme) && $theme != "*Leave*")
       {
         // escape special characters
         $theme = strip_tags ($theme);
@@ -9819,7 +9822,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- email ----------------
-      if (!empty ($userdata) && isset ($email) && $email != "*Leave*" && $show == "")
+      if ($show == "" && !empty ($userdata) && isset ($email) && $email != "*Leave*")
       {
         // escape special characters
         $email = strip_tags ($email);
@@ -9833,7 +9836,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- phone ----------------
-      if (!empty ($userdata) && isset ($phone) && $phone != "*Leave*" && $show == "")
+      if ($show == "" && !empty ($userdata) && isset ($phone) && $phone != "*Leave*")
       {
         // escape special characters
         $phone = strip_tags ($phone);
@@ -9847,7 +9850,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- signature ----------------
-      if (!empty ($userdata) && isset ($signature) && $signature != "*Leave*" && $show == "")
+      if ($show == "" && !empty ($userdata) && isset ($signature) && $signature != "*Leave*")
       {
         // escape special characters
         $signature = strip_tags ($signature);
@@ -9861,7 +9864,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- valid date start ----------------
-      if (!empty ($userdata) && isset ($validdatefrom) && $validdatefrom != "*Leave*" && $show == "")
+      if ($show == "" && !empty ($userdata) && isset ($validdatefrom) && $validdatefrom != "*Leave*")
       {
         // escape special characters
         $validdatefrom = strip_tags ($validdatefrom);
@@ -9875,7 +9878,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- valid date end ----------------
-      if (!empty ($userdata) && isset ($validdateto) && $validdateto != "*Leave*" && $show == "")
+      if ($show == "" && !empty ($userdata) && isset ($validdateto) && $validdateto != "*Leave*")
       {
         // escape special characters
         $validdateto = strip_tags ($validdateto);
@@ -9889,7 +9892,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- user publication access ----------------
-      if (!empty ($userdata) && !empty ($usersite) && (is_array ($usersite) || $usersite != "*Leave*") && $show == "")
+      if ($show == "" && !empty ($userdata) && !empty ($usersite) && (is_array ($usersite) || $usersite != "*Leave*"))
       {
         if ($usersite == "*Null*") 
         {
@@ -9959,7 +9962,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- usergroup membership ----------------
-      if (!empty ($userdata) && isset ($usergroup) && (valid_objectname ($usergroup) || is_array ($usergroup)) && $usergroup != "*Leave*" && $show == "")
+      if ($show == "" && !empty ($userdata) && isset ($usergroup) && (valid_objectname ($usergroup) || is_array ($usergroup)) && $usergroup != "*Leave*")
       {
         if ($usergroup == "*Null*")
         {
@@ -10018,8 +10021,20 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
         }
       }
 
+      // on any error
+      if ($show != "")
+      {
+        // unlock file
+        unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
+
+        // log
+        $errcode = "20022";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|User '".$login."' could not be edited by user '".$user."' (".getuserip().") due to an error: ".strip_tags($show);
+
+        $add_onload = "";
+      }
       // save user xml file if changes have been made
-      if (!empty ($userdata) && $show == "" && $update == true)
+      elseif ($show == "" && !empty ($userdata))
       {
         // eventsystem
         if (!empty ($eventsystem['onsaveuser_pre']) && empty ($eventsystem['hide'])) 
@@ -15543,7 +15558,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
         if ($test != false)
         {
-          $add_onload = "if (opener.parent.frames['mainFrame']) {opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (opener.parent.frames['objFrame']) {opener.parent.frames['controlFrame'].location='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; opener.parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php';}";
+          $add_onload = "if (parent.frames['mainFrame']) { parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; parent.frames['mainFrame'].location.reload(); } else if (parent.frames['objFrame']) { parent.frames['controlFrame'].location='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; }";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-deleted'][$lang]."</span><br />\n";
 
           // log delete
@@ -15673,7 +15688,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $page = $pagenew;
           $pagename = $pagenewname;
 
-          $add_onload = "opener.parent.frames['controlFrame'].location.reload(); if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();";
+          $add_onload = "if (parent.frames['controlFrame'])parent.frames['controlFrame'].location.reload(); if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-unpublished'][$lang]."</span><br />\n";
 
           $success = true;
@@ -15753,7 +15768,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
         if ($test != false)
         {
-          $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); ";
+          $add_onload = "if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload(); ";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-cut-and-pasted'][$lang]."</span><br />\n";
 
           $success = true;
@@ -15842,7 +15857,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
             if ($test != false)
             {
-              $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); ";
+              $add_onload = "if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload(); ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";
               $page = $page_sec;
 
@@ -16093,7 +16108,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
             if ($test != false)
             {
-              $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); ";
+              $add_onload = "if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload(); ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";
 
               $page = $page_sec;
@@ -16122,7 +16137,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             // remote client
             remoteclient ("copy", "abs_path_".$cat, $site, $location_source, $location, $page, $page_sec); 
 
-            $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); ";
+            $add_onload = "if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload(); ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";
 
             $page = $page_sec;
@@ -16229,7 +16244,7 @@ function deletemarkobject ($site, $location, $page, $user)
     if (!empty ($marked))
     {
       $result['result'] = true;
-      $add_onload = "if (opener.parent.frames['mainFrame']) {opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (opener.parent.frames['objFrame']) {opener.parent.frames['controlFrame'].location='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; opener.parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php';}";
+      $add_onload = "if (parent.frames['mainFrame']) { parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; parent.frames['mainFrame'].location.reload(); } else if (parent.frames['objFrame']) { parent.frames['controlFrame'].location='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; }";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-deleted'][$lang]."</span><br />\n";
 
       // log delete
@@ -16301,7 +16316,7 @@ function deleteunmarkobject ($site, $location, $page, $user)
     if (!empty ($marked))
     {
       $result['result'] = true;
-      $add_onload = "if (opener.parent.frames['mainFrame']) {opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (opener.parent.frames['objFrame']) {opener.parent.frames['controlFrame'].location='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; opener.parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php';}";
+      $add_onload = "if (parent.frames['mainFrame']) { parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; parent.frames['mainFrame'].location.reload(); } else if (opener.parent.frames['objFrame']) { parent.frames['controlFrame'].location='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; }";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-created'][$lang]."</span><br />\n";
 
       // log delete
@@ -17198,9 +17213,7 @@ function unlockobject ($site, $location, $page, $user)
 
       if ($test != false)
       {
-        $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
-if (parent.frames['objFrame']) parent.frames['objFrame'].location.reload();
-if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
+        $add_onload = "if (parent.frames['objFrame']) parent.frames['objFrame'].location.reload(); if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-is-checked-in'][$lang]."</span><br />";
 
         $usedby = "";
@@ -17643,7 +17656,7 @@ function publishobject ($site, $location, $page, $user)
                   }
 
                   // show message
-                  $add_onload = "opener.parent.frames['controlFrame'].location.reload(); if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();";
+                  $add_onload = "if (parent.frames['controlFrame']) parent.frames['controlFrame'].location.reload(); if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
                   $show = "<span class=\"hcmsHeadline\">".$hcms_lang['published-item-successfully'][$lang]."</span><br />\n";
 
                   $success = true;
@@ -18080,6 +18093,7 @@ function unpublishobject ($site, $location, $page, $user)
 
                 if (is_array ($result))
                 {
+                  $viewstore = $result['view'];
                   $application = $result['application'];
                   $contentdata = $result['containerdata'];
 

@@ -23,7 +23,7 @@ $cat = getrequest ("cat", "objectname");
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
 // check permissions
-if (!checkglobalpermission ($site, 'pers') || (!checkglobalpermission ($site, 'perstrack') && !checkglobalpermission ($site, 'persprof')) || $mgmt_config[$site]['dam'] == true || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'pers') || (!checkglobalpermission ($site, 'perstrack') && !checkglobalpermission ($site, 'persprof')) || !empty ($mgmt_config[$site]['dam']) || !valid_publicationname ($site)) killsession ($user);
 // check session of user
 checkusersession ($user, false);
 ?>
@@ -32,8 +32,8 @@ checkusersession ($user, false);
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 </head>
 
 <body class="hcmsWorkplaceGeneric">

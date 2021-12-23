@@ -30,7 +30,7 @@ $virtual = getrequest ("virtual");
 $token = getrequest ("token");
 
 // set current location
-if ($action == "publish" || $action == "unpublish" || $mgmt_config[$site]['dam'] == true) $location_curr = $location.$folder."/";
+if ($action == "publish" || $action == "unpublish" || !empty ($mgmt_config[$site]['dam'])) $location_curr = $location.$folder."/";
 else $location_curr = $location;
 
 // get publication and category
@@ -116,9 +116,9 @@ if ($action != "" && valid_publicationname ($site) && $cat != "" && valid_locati
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
 <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.min.js"></script>
@@ -201,8 +201,8 @@ function submitform ()
 
 <!-- top bar -->
 <?php
-if ($action == "publish") echo $headline = getescapedtext ($hcms_lang['publish-content'][$lang]);
-elseif ($action == "unpublish") echo $headline = getescapedtext ($hcms_lang['unpublish-content'][$lang]);
+if ($action == "publish") $headline = getescapedtext ($hcms_lang['publish-content'][$lang]);
+elseif ($action == "unpublish") $headline = getescapedtext ($hcms_lang['unpublish-content'][$lang]);
 
 echo showtopbar ($headline, $lang);
 

@@ -38,7 +38,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 if (
      !valid_publicationname ($site) ||
      @$globalpermission[$site]['component'] != 1 || 
-     ($mediatype != "image" && $mgmt_config[$site]['dam'] == true)
+     ($mediatype != "image" && !empty ($mgmt_config[$site]['dam']))
    ) killsession ($user);
 
 // check session of user
@@ -138,9 +138,9 @@ if (!empty ($mediafile) && $mediafile != "Null_media.png")
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript">
 
 function checkType()

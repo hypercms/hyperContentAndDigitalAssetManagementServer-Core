@@ -170,9 +170,9 @@ if ($config && is_array ($config))
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang);?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <?php
 if ($config && is_array ($config) && intval ($config['version']) >= 2)
 {

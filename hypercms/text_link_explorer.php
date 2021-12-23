@@ -29,7 +29,7 @@ if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['
 // ------------------------------ permission section --------------------------------
 
 // check access permission
-if ($mgmt_config[$site]['dam'] == true || ($dir != "" && !accessgeneral ($site, $dir, "page"))) killsession ($user);
+if (!empty ($mgmt_config[$site]['dam']) || ($dir != "" && !accessgeneral ($site, $dir, "page"))) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -81,9 +81,9 @@ $location_name = getlocationname ($site, $dir_esc, "page", "path");
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script language="JavaScript">
 

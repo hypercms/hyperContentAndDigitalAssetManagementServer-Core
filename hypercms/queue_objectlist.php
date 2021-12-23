@@ -45,6 +45,9 @@ $listview = "";
 // create secure token
 $token = createtoken ($user);
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
+
 // default value for inital max items in list
 if (empty ($mgmt_config['explorer_list_maxitems'])) $mgmt_config['explorer_list_maxitems'] = 100; 
 
@@ -201,10 +204,10 @@ else $objects_counted = 0;
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
-<script type="text/javascript" src="javascript/contextmenu.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
+<script type="text/javascript" src="javascript/contextmenu.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
 <style type="text/css">
@@ -229,10 +232,10 @@ else $objects_counted = 0;
 var session_id = '<?php echo session_id(); ?>';
 
 // overwrite permissions from contextmenu.js
-permission['rename'] = false;
-permission['paste'] = false;
-permission['delete'] = false;
-permission['publish'] = false;
+hcms_permission['rename'] = false;
+hcms_permission['paste'] = false;
+hcms_permission['delete'] = false;
+hcms_permission['publish'] = false;
 
 function confirm_delete ()
 {

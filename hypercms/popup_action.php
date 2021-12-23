@@ -55,25 +55,7 @@ if (!valid_publicationname ($site) || !valid_locationname ($location)) killsessi
 
 // check session of user
 checkusersession ($user, false);
-?>
-<!DOCTYPE html>
-<html>
-<head>
-<title>hyperCMS</title>
-<meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="theme-color" content="#000000" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/click.min.js"></script>
-</head>
 
-<body class="hcmsWorkplaceGeneric">
-
-<!-- load screen --> 
-<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
-
-<?php
 // --------------------------------- logic section ----------------------------------
 
 // flush in order to display load screen
@@ -218,7 +200,7 @@ if ($authorized == true)
       if (!empty ($result['message'])) $show = $result['message'];   
     }
   }
-  // delete objects from favorites
+  // remove objects from favorites
   elseif (($action == "page_favorites_create" || $action == "page_favorites_delete") && $setlocalpermission['root'] == 1)
   {
     if (is_string ($multiobject) && strlen ($multiobject) > 6) $multiobject_array = link_db_getobject ($multiobject);
@@ -252,18 +234,17 @@ if ($authorized == true)
       elseif ($action == "page_favorites_delete") $result['result'] = deletefavorite ($site, $location, $page, "", $user);
     }
 
-    // check result
+    // on error
     if (empty ($result['result'])) 
     {
       $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['error-occured'][$lang])."</span>";
       $add_onload = "";
     }
+    // on success
     else 
     {
       $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
-      $add_onload = "if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
-if (opener && parent.frames['objFrame']) parent.frames['objFrame'].location.reload();
-if (opener && parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
+      $add_onload = "if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame']) window.top.frames['workplFrame'].frames['mainFrame'].location.reload();";
       $location = "";
       $page = "";
       $pagename = "";  
@@ -301,16 +282,17 @@ if (opener && parent.frames['mainFrame']) parent.frames['mainFrame'].location.re
       $result = unlockobject ($site, $location, $page, $user);
     }
 
-    // check result
+    // on error
     if (empty ($result['result'])) 
     {
       $show = $result['message'];
       $add_onload = "";
     }
+    // on success
     else 
     {
       $show = $result['message'];
-      $add_onload = $result['add_onload'];
+      $add_onload = "if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame']) window.top.frames['workplFrame'].frames['mainFrame'].location.reload();";
       $location = "";
       $page = "";
       $pagename = "";  
@@ -329,8 +311,8 @@ if (opener && parent.frames['mainFrame']) parent.frames['mainFrame'].location.re
   elseif ($action == "publish") 
   {
     $result = publishobject ($site, $location, $page, $user);
-    $add_onload = "opener.frameReload(); ".$result['add_onload'];
-    $show = $result['message'];  
+    $add_onload = $result['add_onload'];
+    $show = $result['message'];
   }
   // unpublish
   elseif ($action == "unpublish") 
@@ -349,7 +331,7 @@ else
   $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang])."</span>";
 }
 
-// show loading screen for unzip 
+// unzip
 if ($action == "unzip" && $authorized == true)
 {
   // load object file and get container and media file
@@ -375,12 +357,14 @@ if ($action == "unzip" && $authorized == true)
   }
   else $result_unzip = false;
  
+  // on success
   if (!empty ($result_unzip))
   {
     $result['result'] = true;
-    $add_onload = "document.getElementById('hcmsLoadScreen').style.display='none'; if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();\n";
+    $add_onload = "document.getElementById('hcmsLoadScreen').style.display='none'; if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame']) window.top.frames['workplFrame'].frames['mainFrame'].location.reload();";
     $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['file-extracted-succesfully'][$lang])."</span><br />\n";
   }
+  // on error
   else
   {
     $result['result'] = false;
@@ -399,28 +383,55 @@ if ($show == "")
 ?>
 
 <!-- top bar -->
-<?php echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" />&nbsp;".getescapedtext ($hcms_lang['information'][$lang]), $lang); ?>
+<?php
+if ($action == "page_favorites_create") $headline = getescapedtext ($hcms_lang['add-to-favorites'][$lang]);
+elseif ($action == "page_favorites_delete") $headline = getescapedtext ($hcms_lang['delete-favorite'][$lang]);
+elseif ($action == "page_unlock") $headline = getescapedtext ($hcms_lang['check-in'][$lang]);
+elseif ($action == "unzip") $headline = getescapedtext ($hcms_lang['uncompress-files'][$lang]);
+elseif ($action == "cut") $headline = getescapedtext ($hcms_lang['cut'][$lang]);
+elseif ($action == "copy") $headline = getescapedtext ($hcms_lang['copy'][$lang]);
+elseif ($action == "linkcopy") $headline = getescapedtext ($hcms_lang['connected-copy'][$lang]);
+elseif ($action == "paste") $headline = getescapedtext ($hcms_lang['paste'][$lang]);
+elseif ($action == "delete" || $action == "deletemark") $headline = getescapedtext ($hcms_lang['delete'][$lang]);
+elseif ($action == "emptybin") $headline = getescapedtext ($hcms_lang['empty-recycle-bin'][$lang]);
+elseif ($action == "restore" || $action == "deleteunmark") $headline = getescapedtext ($hcms_lang['restore'][$lang]);
+elseif ($action == "publish") $headline = getescapedtext ($hcms_lang['publish-content'][$lang]);
+elseif ($action == "unpublish") $headline = getescapedtext ($hcms_lang['unpublish-content'][$lang]);
 
+echo showtopbar ($headline, $lang);
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>hyperCMS</title>
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="theme-color" content="#000000" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/click.min.js"></script>
+</head>
+
+<body class="hcmsWorkplaceGeneric" style="overflow:hidden;">
+
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
+
+<!-- action -->
 <div class="hcmsWorkplaceFrame">
   <table class="hcmsTableNarrow" style="width:100%; height:140px;">
     <tr>
-      <td style="text-align:center; vertical-align:middle;"><?php echo $show; ?></td>
+      <td style="text-align:center; vertical-align:middle;">
+        <?php echo $show; ?><br/><br/>
+        <?php echo showactionicon ($action, $lang); ?>
+      </td>
     </tr>
   </table>
 </div>
 
 <script type="text/javascript">
-// load screen
+// hide load screen
 if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'none';
-
-// focus
-function popupfocus ()
-{
-  self.focus();
-  setTimeout('popupfocus()', 500);
-}
-
-popupfocus ();
 
 <?php
 echo $add_onload;
@@ -428,10 +439,16 @@ echo $add_onload;
 if (!empty ($result['result']))
 {
   echo "
-// close window
+// close popup frame
 function popupclose ()
 {
-  self.close();
+  var id = parent.document.getElementById(window.name).id;
+
+  if (id.indexOf('Frame') > 0)
+  {
+    id = id.substring(0, id.length - 5);
+    if (parent.document.getElementById(id) && typeof parent.closePopup == 'function') parent.closePopup(id);
+  }
 }
 
 setTimeout('popupclose()', 1500);";

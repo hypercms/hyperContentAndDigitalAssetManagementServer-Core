@@ -77,12 +77,14 @@ elseif (!allowuserip ($site) || !mediapublicaccess ($media))
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
+$audio = false;
+
 // get media location
 $media_dir = getmedialocation ($site, $media, "abs_path_media");
 
 // read player config
 $file_info = getfileinfo ($site, $media, "comp");
-$audio = false;
 
 // IMPORTANT: do not change the priority order!
 if ($media_dir != "")
@@ -101,9 +103,23 @@ if ($media_dir != "")
   elseif (is_file ($media_dir.$site."/".$file_info['filename'].".config.orig") || is_cloudobject ($media_dir.$site."/".$file_info['filename'].".config.orig"))
   {
     $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
-    
+  
+    // verify that the media files exist
+    if (!empty ($config['mediafiles']) && is_array ($config['mediafiles']))
+    {
+      $temp_array = $config['mediafiles'];
+      $config['mediafiles'] = array();
+
+      foreach ($temp_array as $temp)
+      {
+        if (is_file ($thumb_root.$temp)) $config['mediafiles'] = $temp;
+      }
+    }
+    // no media files
+    else $config['mediafiles'] = array();
+  
     // detect audio file
-    if (is_array ($config['mediafiles']))
+    if (is_array ($config['mediafiles']) && sizeof ($config['mediafiles']) > 0)
     {
       list ($test, $rest) = explode (";", reset($config['mediafiles']));
       $testfinfo = getfileinfo ($site, $test, 'comp');    
@@ -111,9 +127,9 @@ if ($media_dir != "")
     }
 
     // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
-    if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) < 1 || $width > 854)
+    if (empty ($config['mediafiles']) || !is_array ($config['mediafiles']) || $width > 854 || (sizeof ($config['mediafiles']) < 1 && $width <= 854))
     {
-      if (substr_count (".mp4.ogg.ogv.webm.", $file_info['ext'].".") > 0 && (is_file ($media_dir.$media) || is_cloudobject ($media_dir.$media)))
+      if (substr_count (".aac.flac.mp4.mp3.ogg.ogv.wav.webm.", $file_info['ext'].".") > 0 && (is_file ($media_dir.$media) || is_cloudobject ($media_dir.$media)))
       {
         if (!is_array ($config['mediafiles'])) $config['mediafiles'] = array();
         $temp = $media.";".getmimetype ($media);
@@ -178,8 +194,8 @@ if ($playercode != "")
   <head>
     <title>hyperCMS Videoplayer</title>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>theme/night/css/main.css" />
-    <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']."theme/night/css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+    <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>theme/night/css/main.css?v=<?php echo getbuildnumber(); ?>" />
+    <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']."theme/night/css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
     <?php
     if ($audio) echo showaudioplayer_head (false, false);
     else echo showvideoplayer_head (false, $fullscreen, false);

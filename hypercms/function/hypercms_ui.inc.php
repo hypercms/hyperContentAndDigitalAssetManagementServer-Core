@@ -552,8 +552,8 @@ function showinfopage ($show, $lang="en", $onload="")
   <head>
     <title>hyperCMS</title>
     <meta charset=\"".getcodepage ($lang)."\" />
-    <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
-    <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />
+    <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
+    <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\" onload=\"".$onload."\">
     <div style=\"padding:20px;\">
@@ -641,6 +641,41 @@ function showhelpbutton ($pdf_name, $enabled=true, $lang="en", $id="hcms_helpBut
   {
     return "<img id=\"".$id."\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
   }
+}
+
+// --------------------------------------- showactionicon -------------------------------------------
+// function: showactionicon ()
+// input: action name [$string], language code [string] (optional), CSS style [string] (optional), ID of image-layer [string] (optional)
+// output: icon as img tag / empty string on error
+
+// description:
+// Returns the icon image for an action
+
+function showactionicon ($action, $lang="en", $style="width:64px; height:64px;", $id="hcms_icon")
+{
+  global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
+
+  if (!empty ($action) && !empty ($lang))
+  {
+    if ($action == "page_favorites_create") $icon = "<img src=\"".getthemelocation()."img/button_favorites_new.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['add-to-favorites'][$lang])."\" />";
+    elseif ($action == "page_favorites_delete") $icon = "<img src=\"".getthemelocation()."img/button_favorites_delete.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['delete-favorite'][$lang])."\" />";
+    elseif ($action == "page_lock") $icon = "<img src=\"".getthemelocation()."img/button_file_lock.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['check-out'][$lang])."\" />";
+    elseif ($action == "page_unlock") $icon = "<img src=\"".getthemelocation()."img/button_file_unlock.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['check-in'][$lang])."\" />";
+    elseif ($action == "zip") $icon = "<img src=\"".getthemelocation()."img/button_zip.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['compress-files'][$lang])."\" />";
+    elseif ($action == "unzip") $icon = "<img src=\"".getthemelocation()."img/button_unzip.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['uncompress-files'][$lang])."\" />";
+    elseif ($action == "cut") $icon = "<img src=\"".getthemelocation()."img/button_file_cut.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['cut'][$lang])."\" />";
+    elseif ($action == "copy") $icon = "<img src=\"".getthemelocation()."img/button_file_copy.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" />";
+    elseif ($action == "linkcopy") $icon = "<img src=\"".getthemelocation()."img/button_file_copylinked.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['connected-copy'][$lang])."\" />";
+    elseif ($action == "paste") $icon = "<img src=\"".getthemelocation()."img/button_file_paste.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['paste'][$lang])."\" />";
+    elseif ($action == "delete" || $action == "deletemark") $icon = "<img src=\"".getthemelocation()."img/button_delete.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />";
+    elseif ($action == "emptybin") $icon = "<img src=\"".getthemelocation()."img/button_recycle_bin.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['empty-recycle-bin'][$lang])."\" />";
+    elseif ($action == "restore" || $action == "deleteunmark") $icon = "<img src=\"".getthemelocation()."img/button_recycle_bin.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['restore'][$lang])."\" />";
+    elseif ($action == "publish") $icon = "<img src=\"".getthemelocation()."img/button_file_publish.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['publish-content'][$lang])."\" />";
+    elseif ($action == "unpublish") $icon = "<img src=\"".getthemelocation()."img/button_file_unpublish.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['unpublish-content'][$lang])."\" />";
+
+    return $icon;
+  }
+  else return "";
 }
 
 // --------------------------------------- showsharelinks -------------------------------------------
@@ -2222,6 +2257,29 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if ($create_media) $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
         }
 
+        // verify that the media files exist
+        if (!empty ($config['mediafiles']) && is_array ($config['mediafiles']))
+        {
+          $temp_array = $config['mediafiles'];
+          $config['mediafiles'] = array();
+
+          foreach ($temp_array as $temp)
+          {
+            if (is_file ($thumb_root.$temp)) $config['mediafiles'] = $temp;
+          }
+        }
+        // no media files
+        else $config['mediafiles'] = array();
+
+        // add original file as well if it is an AAC, FLAC, MP3, OGG, or WAV (supported formats by most of the browsers)
+        if (empty ($config['mediafiles']) || !is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) < 1)
+        {
+          if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".aac.flac.mp3.ogg.wav.", $file_info['ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
+          {
+            $config['mediafiles'] = array ($site."/".$mediafile_orig.";".getmimetype ($mediafile_orig));
+          }
+        }
+
         // use config values
         if (!empty ($config['width']) && $config['width'] > 0 && !empty ($config['height']) && $config['height'] > 0)
         {
@@ -2250,12 +2308,6 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $mediawidth = $newsize['width'];
           $mediaheight = $newsize['height'];
-        }
-
-        // add original file if config is empty
-        if (empty ($config['mediafiles']) && strpos ($mediafile_orig, ".config.") == 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
-        {
-          $config['mediafiles'] = array ($site."/".$mediafile_orig.";".getmimetype ($mediafile_orig));
         }
 
         // generate player code
@@ -2344,12 +2396,26 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if ($create_media) $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
         }
 
+        // verify that the media files exist
+        if (!empty ($config['mediafiles']) && is_array ($config['mediafiles']))
+        {
+          $temp_array = $config['mediafiles'];
+          $config['mediafiles'] = array();
+
+          foreach ($temp_array as $temp)
+          {
+            if (is_file ($thumb_root.$temp)) $config['mediafiles'] = $temp;
+          }
+        }
+        // no media files
+        else $config['mediafiles'] = array();
+
         // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
-        if (empty ($config['mediafiles']) || !is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) < 1 || $width > 854)
+        if (empty ($config['mediafiles']) || !is_array ($config['mediafiles']) || $width > 854 || (sizeof ($config['mediafiles']) < 1 && $width <= 854))
         {
           if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
           {
-            if (empty ($config['mediafiles']) || !is_array ($config['mediafiles'])) $config['mediafiles'] = array();
+            if (!is_array ($config['mediafiles'])) $config['mediafiles'] = array();
             $temp = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
             array_unshift ($config['mediafiles'], $temp);
           }
@@ -3817,6 +3883,10 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
       $scalingfactor = 72 / $dpi; 
     }
 
+    // transform escaped < > due to issue with CKEditor unescaping these characters
+    $contentbot = str_replace('&lt;', '&amp;lt;', $contentbot);
+    $contentbot = str_replace('&gt;', '&amp;gt;', $contentbot);
+
     // define class-name for comment tags
     if (strpos ("_".$hypertagname, "comment") == 1) $classname = "class=\"is_comment\"";
     else $classname = "";
@@ -4099,8 +4169,11 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
     // building the title for the element
     $title = $labelname.": ";
 
-    // and the tag of the element containing the content
+    // the tag of the element containing the content
     $tag = "span";
+
+    // the CSS class of the element containing the content
+    $css_class = "hcms_editable";
 
     // is the contenteditable attribute set
     $contenteditable = false;
@@ -4122,6 +4195,11 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         // disable contenteditable for inline editing
         $contenteditable = true;
         break;
+      case 'arttextk':
+      case 'textk':
+        $title .= getescapedtext ($hcms_lang['keywords'][$lang], $hcms_charset, $lang);
+        $css_class = "";
+        break;
       case 'arttextl':
       case 'textl':
         $title .= getescapedtext ($hcms_lang['edit-text-options'][$lang], $hcms_charset, $lang);
@@ -4139,7 +4217,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
     $defaultText = $title;
 
     // building the display of the content
-    $return = "<".$tag." id=\"".$hypertagname."_".$id."\" title=\"".$title."\" class=\"hcms_editable\" ".($contenteditable ? 'contenteditable="true" ' : '').">".(empty($contentbot) ? $defaultText : $contentbot)."</".$tag.">";
+    $return = "<".$tag." id=\"".$hypertagname."_".$id."\" title=\"".$title."\" class=\"".$css_class."\" ".($contenteditable ? 'contenteditable="true" ' : '').">".(empty($contentbot) ? $defaultText : $contentbot)."</".$tag.">";
 
     // building of the specific editor
     $element = "";
@@ -4524,6 +4602,15 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         
         break;
 
+      // keywords
+      case 'arttextk':
+      case 'textk':
+
+        // no editor since a tag link is used
+        $element = "";
+      
+        break;
+        
       // text options/list
       case 'arttextl':
       case 'textl':
@@ -4589,17 +4676,40 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         </script>
         ";
 
-        // Building the select box
-        $list = explode ("|", getattribute ($hypertag, "list"));
-        $element = "<select title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-text-options'][$lang], $hcms_charset, $lang)."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\">\n";
+        // get list entries
+        $list = "";
 
-        foreach ($list as $elem)
+        // extract source file (file path or URL) for text list
+        $list_sourcefile = getattribute ($hypertag, "file");
+
+        if ($list_sourcefile != "")
         {
-          $element .= "  <option value=\"".$elem."\"".($elem == $contentbot ? ' selected ' : '').">".$elem."</option>\n";
+          $list .= getlistelements ($list_sourcefile);
+          // replace commas
+          $list = str_replace (",", "|", $list);
         }
 
-        $element .= "</select>\n";
-        
+        // extract text list
+        $list_add = getattribute ($hypertag, "list");
+
+        // add seperator
+        if ($list_add != "") $list = $list_add."|".$list;
+
+        // get list entries
+        if ($list != "")
+        {
+          $list_array = explode ("|", trim ($list, "|"));
+
+          $element = "<select title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-text-options'][$lang], $hcms_charset, $lang)."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\">\n";
+
+          foreach ($list_array as $elem)
+          {
+            $element .= "  <option value=\"".$elem."\"".($elem == $contentbot ? ' selected ' : '').">".$elem."</option>\n";
+          }
+
+          $element .= "</select>\n";
+        }
+          
         break;
 
       // formatted text
@@ -4617,6 +4727,10 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         {
           $scalingfactor = 72 / $dpi; 
         }
+
+        // transform escaped < > due to issue with CKEditor unescaping these characters
+        $contentbot = str_replace('&lt;', '&amp;lt;', $contentbot);
+        $contentbot = str_replace('&gt;', '&amp;gt;', $contentbot);
 
         $return .= "
           <script type=\"text/javascript\">
@@ -6450,13 +6564,14 @@ function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=fal
 // ------------------------- showtaxonomytree -----------------------------
 // function: showtaxonomytree()
 // input: publication name [string] (optional), container ID [integer][array], text ID [string], language code [string] (optional), 
-//        taxonomy ID or expression or taxonomy path in the form %taxonomy%/publication-name or 'default'/language-code/taxonomy-ID/taxonomy-child-levels [string], width in pixel [integer] (optional), height in pixel [integer] (optional)
+//        taxonomy ID or expression or taxonomy path in the form %taxonomy%/publication-name or %taxonomy%/default/language-code/taxonomy-ID/taxonomy-child-levels [string], width in pixel [integer] (optional), height in pixel [integer] (optional),
+//        character set [string] (optional)
 // output: taxonomy tree view / false
 
 // description:
 // Displays the requested taxonomy tree structure or sub branch with checkboxes for the keywords.
 
-function showtaxonomytree ($site="", $container_id=array(), $text_id="", $tagname="textk", $taxonomy_lang="en", $expression="", $width=600, $height=500)
+function showtaxonomytree ($site="", $container_id=array(), $text_id="", $tagname="textk", $taxonomy_lang="en", $expression="", $width=600, $height=500, $charset="UTF-8")
 {
   global $mgmt_config, $hcms_lang, $lang, $taxonomy;
 
@@ -6523,19 +6638,21 @@ function showtaxonomytree ($site="", $container_id=array(), $text_id="", $tagnam
       var searchExpression".$toogleid." = '';
       searchCurrent".$toogleid." = 0;
 
+      // mark or unmark all taxonomy checkboxes
       function toggle".$toogleid." (source)
       {
-        var checkboxes = document.getElementsByName('".getescapedtext ($tagname)."[".getescapedtext ($text_id)."][]');
-        
+        var checkboxes = document.querySelectorAll(\"input[name^='".getescapedtext ($tagname)."[".getescapedtext ($text_id)."][']\");
+
         for (var i=0; i<checkboxes.length; i++)
         {
           if (checkboxes[i].style.visibility != 'hidden') checkboxes[i].checked = source.checked;
         }
       }
 
+      // search taxonomy
       function search".$toogleid." (expression)
       {
-        var checkboxes = document.getElementsByName('".getescapedtext ($tagname)."[".getescapedtext ($text_id)."][]');
+        var checkboxes = document.querySelectorAll(\"input[name^='".getescapedtext ($tagname)."[".getescapedtext ($text_id)."][']\");
         var layers = document.getElementsByClassName('hcmsLayer".$toogleid."');
 
         // search
@@ -6557,6 +6674,7 @@ function showtaxonomytree ($site="", $container_id=array(), $text_id="", $tagnam
             }
             else
             {
+              checkboxes[i].parentNode.className = '';
               checkboxes[i].style.visibility = 'hidden';
             }
           }
@@ -6609,14 +6727,18 @@ function showtaxonomytree ($site="", $container_id=array(), $text_id="", $tagnam
             layers[i].style.height = '18px';
           }
         }
+
+        // do not submit form
+        event.preventDefault(); 
+        return false;
       }
     </script>
     <!-- Fix for font-size issue in Chrome for Android -->
     <div style=\"max-height:999999px;\">
       <div>
-        <input id=\"searchexpression".$toogleid."\" type=\"text\" onkeydown=\"if (hcms_enterKeyPressed(event)) search".$toogleid."(document.getElementById('searchexpression".$toogleid."').value);\" placeholder=\"".getescapedtext ($hcms_lang['search'][$lang])."\" style=\"width:280px; padding-right:30px;\" maxlength=\"100\" />
-        <img src=\"".getthemelocation()."img/button_search_dark.png\" style=\"cursor:pointer; width:22px; height:22px; margin-left:-30px;\" onClick=\"search".$toogleid."(document.getElementById('searchexpression".$toogleid."').value);\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />
-        <label style=\"margin-left:14px;\"><input type=\"checkbox\" style=\"font-size:13px !important;\" onclick=\"toggle".$toogleid."(this);\"> ".getescapedtext ($hcms_lang['select-all'][$lang])."</label>
+        <input id=\"searchexpression".$toogleid."\" type=\"text\" onkeydown=\"if (hcms_enterKeyPressed(event)) search".$toogleid."(document.getElementById('searchexpression".$toogleid."').value);\" placeholder=\"".getescapedtext ($hcms_lang['search'][$lang], $charset, $lang)."\" style=\"width:280px; padding-right:30px;\" maxlength=\"100\" />
+        <img src=\"".getthemelocation()."img/button_search_dark.png\" style=\"cursor:pointer; width:22px; height:22px; margin-left:-30px;\" onClick=\"search".$toogleid."(document.getElementById('searchexpression".$toogleid."').value);\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['search'][$lang], $charset, $lang)."\" />
+        <label style=\"margin-left:14px;\"><input type=\"checkbox\" style=\"font-size:13px !important;\" onclick=\"toggle".$toogleid."(this);\"> ".getescapedtext ($hcms_lang['select-all'][$lang], $charset, $lang)."</label>
       </div>
       <!-- needed if no checkbox is checked -->
       <input type=\"hidden\" name=\"".getescapedtext ($tagname)."[".getescapedtext ($text_id)."]\" value=\"\" />
@@ -6657,7 +6779,7 @@ function showtaxonomytree ($site="", $container_id=array(), $text_id="", $tagnam
         if (sizeof ($tax_id_selected_array) > 0 && in_array ($tax_id, $tax_id_selected_array)) $checked = "checked";
         else $checked = "";
 
-        $view .= str_repeat ("  ", $level)."  <label style=\"position:relative; z-index:20; margin-left:28px; padding:2px; font-size:13px !important;\"><input type=\"checkbox\" name=\"".getescapedtext ($tagname)."[".getescapedtext ($text_id)."][".$path."]\" value=\"".getescapedtext ($keyword)."\" ".$checked."> ".getescapedtext ($keyword)."</label><br/>\n";
+        $view .= str_repeat ("  ", $level)."  <label style=\"position:relative; z-index:20; margin-left:28px; padding:2px; font-size:13px !important;\"><input type=\"checkbox\" name=\"".getescapedtext ($tagname)."[".getescapedtext ($text_id)."][".$path."]\" value=\"".getescapedtext ($keyword, $charset, $lang)."\" ".$checked."> ".getescapedtext ($keyword, $charset, $lang)."</label><br/>\n";
 
         $pre_level = $level;
       }

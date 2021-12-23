@@ -28,8 +28,15 @@ $component = url_encode (getrequest ("component", "url"));
 $condition = url_encode (getrequest ("condition", "url"));
 $mediatype = url_encode (getrequest ("mediatype", "url")); 
 
+// ------------------------------ permission section --------------------------------
+
 // check session of user
 checkusersession ($user);
+
+// --------------------------------- logic section ----------------------------------
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -43,9 +50,9 @@ if (empty ($mgmt_config[$site]['dam'])) $mediatype = "component";
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=<?php echo windowwidth ("object"); ?>, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript">
 
 function minNavFrame ()

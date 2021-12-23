@@ -5578,7 +5578,7 @@ Release 09/2021
 - Bug fix: Function manipulateobject in Main API did not correctly remove the recycle extension from the search in the content container node "contentobjects"
 
 Version 10.0.2
-Release 10/2021
+Release 12/2021
 - Modifications in function contentcount and loadlockfile in Main API in order to avoid access to contentcount.dat by the same user using different processes
 - Implementation of the new function createlockname in Main API in order to provide a valid name for fil locking
 - Modifications in various function in the Main and Get API in order to use function createlockname for the file lock name
@@ -5633,7 +5633,87 @@ Release 10/2021
 - Modifications in the GalleriaSearch template in the install directory in order to define the form action for the preview in the system (due to issue with the form submit in the preview of the system)
 - Modifications in the template editors "API Function Reference" in order to display a fixed chapter navigation
 - Modifications in the template editor in order to change the width of the help popup window
+- Modifications in various system components in order to verify the DAM publication setting
+- Modifications in the event system in order to verify the DAM publication setting
+- Modifications in container_source in order to unescape the tags used in the content of the XML container
+- Modifications in function escape_xmltags in XML API in order to simplify the tag name definitions and add tag name of new XML schemas for user and usergroup
+- Modifications in the Workflow API in order to escape nud unescpae the content stored in the XML workflow files
+- Modifications in function settext in Set API in order to not escape the textcontent node in the XML container
+- Modifications in function settext in Set API in order to apply function escape_xmltags on the text content
+- Modifications in function edittemplate in Main API in order to not escape the < and > characters and apply function escape_xmltags on the templates content
+- Modifications in function getcontent and geticontent in XML API in order to unescape <, > and & characters only if no tags have been found in the text content
+- Modifications in text_edit_format, text_edit_unformat, page_multiedit in order to reduce the file size of the scripts
+- Modifications in Import/Export API in order to reduce the file size of the scripts
+- Modifications in function showeditor and showinlineeditor in UI API in order to escape &lt; and &gt; in order to avoid CKEditor to convert the escaped characters into < >
+- Integration of the publish dialog in the same window instead of popup windows except for the Mobile Edition
+- Modifications in control_content_menu in order to open the publish dialog in new layer instead of a popop window
+- Modifications in control_objectlist_menu in order to open the publish dialog in a new popup layer instead of a popop window
+- Modifications in control_objectlist_menu in order to open the delete, cut, copy, connected copy, paste, unzip action in a new popup layer instead of a popop window
+- Modifications in frameset_main in order to open the publish dialog in new layer instead of a popop window
+- Renamed local JS functions openUpload, minUpload, maxUpload, and closeUpload to openPopup, minPopup, maxPopup, and closePopup in frameset_main
+- Implementation of popups in the Mobile Edition with a limitation of max. 1 popup
+- Implementation of local JS function openPopup, minPopup, maxPopup, and closePopup in frameset_mobile
+- Removed main configuration setting $mgmt_config['upload_newwindow'] from the main configuration. New upload browser windows are no longer supported.
+- Modifications in local JS function openPopup in frameset_main and frameset_mobile in order to return a boolean result
+- Modifications in popup_action and popup_status in order to close the popup frame instead of the popup window using the local Js function closepopup
+- Modifications in popup_status in order to set the new target frames for the reload
+- Implementation of a top bar displaying the action in its title in popup_action and popup_status
+- Implementation of the new JS function hcms_submitToPopup in contextmenu.js in order to post the contextmenu data to a new popup in the top window
+- Implementation of the new JS function hcms_openPopup in contextmenu.js in order to open an URL in a new popup in the top window
+- Modifications in contextmenu.js in order to migrate from JS function hcms_createContextmenuItem to JS function hcms_submitToPopup
+- Modifications in various JS functions in contextmenu.js in order to optimize the JS code
+- Modifications in various function in Main API in order to migrate from JS window opener object to parent frames 
+- Implementation of the new JS function hcms_uniqid in main.js in order to create a random alphanumerical string with a lenth of 13 digits
+- Renamed JS function hcms_submitWindow to hcms_submitToWindow in contextmenu.js
+- Removed the form action "popup_action.php" for single objects in contextmenu.js
+- Modifications in JS function hcms_submitToWindow in main.js in order to replace the random number by function hcms_uniqid
+- Modifications in popup_upload_html in order to set the new target frames for the reload
+- Modifications in the JS function minPopup and maxPopup in frameset_main and frameset_mobile in order to enable and disable the scrollbars of the popups iframe
+- Modifications in popup_action in order to optimize the code
+- Modifications in control_objectlist_menu in order to relocate the edit button to the 2nd position in the tool bar
+- Design modifications in popup_action and popup_status in order to display the status in the top bar
+- Modifications in the Instance Management Connector module (control_instance_menu) in order to replace function valid_publicationname by valid_objectname
+- Modifications in function deletetinstance in Main API in order to replace function valid_publicationname by valid_objectname
+- Modifications in text_edit_format, text_edit_signature, and text_edit_unformat in order to initialize the contentbot variable in case no content is available
+- Modifications in text_edit_checkbox, text_edit_date, and text_edit_list in order to optimize the code
+- Modifications in function downloadfile in Main API in order to convert the 2nd input parameter for function fseek to an integer
+- Modifications in function exportxmlfiles, importxmlfiles, and importmediafiles in Import/Export API of the Connector module in order to support the new input parameter for PHP ini settings and HTTP headers used for output buffering
+- Modifications in function exportxmlfiles, importxmlfiles, and importmediafiles in Import/Export API of the Connector module in order to verify the ooutput buffer before calling the function ob_flush
+- Modifications in the import and export scripts of the Connector module in order to set the PHP ini settings and HTTP headers before any output
+- Implementation of the new function showactionicon in UI API
+- Modifications in popup_notify in order to remove the deprecated close action for the popup window
+- Design modifications in popup_notify
+- Modifications in the templates CarouselZoom, 360view, Galleria, and PhotoSwipe in the install directory in order to verify that the collectMedia function exists
+- Modifications in chat.js in order to create new JS Audio object for the chat sound file
+- Modifications in the local JS function openChat in chat.js in order to open the chat sidebar
+- Set default chat update interval to 1.6 seconds
+- Implementation of the new main configuration setting $mgmt_config['chat_update_interval'] for the definition of the chat update interval
+- Modifications in frameset_mobile in order to replace the local JS function openChat by the JS function hcms_openChat in main.js
+- Modifications in JS function hcms_showContextmenu in contextmenu.js in order to disable "send to chat" if multiple objects have been selected
+- Modifications in JS function hcms_createContextmenuItem in contextmenu.js in order to disable "send to chat" if multiple objects have been selected
+- Implementation of the new function getbuildnumber in Get API
+- Modifications in all system components in order to apply function getbuildnumber for loading and chaching the brandguide.css, main.css, mobile.css, desktop.css, main.min.js, and contextemnu.min.js files based on the installed software version
+- Implementation of the new MD5 hash JS function hcms_md5 in main.js
+- Implementation of the support for dropping files in explorer_objectlist by automatically opening the upload popup
+- Modifications in JS function hcms_allowDrop in contextmenu.js in order to support the dropping of files
+- Modifications in explorer_objectlist in order to support the dropping of files by automatically opening the upload popup (if a mime-type can be provided due to an issue with the kind property with Chrome and MS Edge)
+- Implementation of the new edit keywords icon for all design themes
+- Implementation of the new keywords editor text_edit_keywords in order to support the editing of keywords for pages and components besides assets
+- Modifications in the template engine in order to support the keywords tag for articles
+- Modifications in the template engine in order to apply readonly on the the edit buttons of the tags in "cmsview"
+- Modifications in function showinlineeditor in UI API in order to set the CSS class of the element containing the content for each template tag name
+- Modifications in text_edit_list in order to remove the contentbot input parameter and include the file parameter
+- Modifications in text_edit_list in order to support the file input parameter for the text options
+- Modifications in service savecontent in order to support the new savetype "editork_so"
+- Modifications in function showtaxonomytree in UI API in order to support individual character sets
+- Modifications in function showtaxonomytree in UI API in order to migrate from getElementsByName to querySelectorAll due to issues with new browsers
+- Modifications in template engine, text_edit_keywords, and page_multiedit in order to support the new charset input parameter for function showtaxonomytree
+- Modifications in function showmedia in UI API in order to add the original video file if supported and in case there is none or one video source
+- Modifications in function showmedia in UI API in order to verify that all media files (sources) for the audio/videoplayer exist
+- Modifications in videoplayer in order to add the original video file if supported and in case there is none or one video source
+- Modifications in videoplayer in order to verify that all media files (sources) for the audio/videoplayer exist
 - Updates in the Administrators Guide
+- Updates in the German language file
 - Updates in the Developers Guide (Removed the full API Reference in the manual since it is available online and in the system)
 - Bug fix: AND was missing in the SQL statement for the condition that is used to query files in function rdbms_getfilesize in DB Connect 
 - Bug fix: Function savelockfile did not create the unlocked file name if the file has been locked by another user or process
@@ -5642,3 +5722,19 @@ Release 10/2021
 - Bug fix: Function deletepublication in Main API used wrong path for the media map files
 - Bug fix: Function createpublication in Main API saved the result (boolean) of function createmapping in the mapping file in data/media
 - Bug fix: The fulltext search field of the explorer did not support freespace due to a conflict with the spacebar key and the input of type search and the JQuery hotkeys (jquery.hotkeys.js)
+- Bug fix: The Workflow Builder did not escape the task name
+- Bug fix: CKEditor is unescaping &gt; and &lt; and transforming information into tags
+- Bug fix: popup_publish outputted the title of the top bar
+- Bug fix: control_instance_menu did apply publicationname on an instance configuration file name and therefore did not accept the provided instance name (publicationname requires the publication to exist)
+- Bug fix: Function deletetinstance in Main API applied function valid_publicationname on the instance name and therefore did not accept the provided instance name (publicationname requires the publication to exist)
+- Bug fix: frameset_imexport and frameset_imexport_folder of the Import/Export Connector module used used an invalid key-value pair separator in the meta element
+- Bug fix: Function unpublishobject in Main API did not assign the value to the viewstore variable in case of an error
+- Bug fix: The chat sidebar has not been opened automatically if a new message has been loaded
+- Bug fix: queue_objectlist used wrong JS variable name for the permissions used in contextmenu.js
+- Bug fix: Function showinlineeditor in UI API did not extract the options provided by the file attribute of the template tag
+- Bug fix: Function showinlineeditor in UI API did not support the keyword template tag
+- Bug fix: The file input parameter has been missing in text_edit_list and has not been supported
+- Bug fix: The readonly template tag attribute did not disable the edit buttons in the "cmsview" and "inlineview"
+- Bug fix: Function showtaxonomytree in UI API did not select all entries and perform a search due to a deprecated query using getElementsByName
+- Bug fix: Function showtaxonomytree in UI API did not remove the CSS class from the results of a new search expression and left the previously found entries highlighted
+- Bug fix: Function edituser in Main API did not return password errors

@@ -4,7 +4,7 @@
 $eventsystem = array();
 $eventsystem['onaccess'] = 0;
 $eventsystem['onlogon_pre'] = 0;
-$eventsystem['onlogon_post'] = 1;
+$eventsystem['onlogon_post'] = 0;
 $eventsystem['onobjectlist_pre'] = 0;
 $eventsystem['onobjectlist_post'] = 0;
 $eventsystem['oncreatefolder_pre'] = 0;
@@ -260,7 +260,7 @@ function onrenamefolder_post ($site, $cat, $location, $folder, $foldernew, $user
   $eventsystem['hide'] = 0; 
 
   // insert your program code here
-  if ($cat == "page" && (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false))
+  if ($cat == "page" && empty ($mgmt_config[$site]['dam']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
     $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");  
@@ -331,7 +331,7 @@ function onfileupload_post ($site, $cat, $location, $object, $mediafile, $contai
   // get the file extension of the file
   $mediafile_ext = strtolower (strrchr ($mediafile, "."));
 
-  if ($cat == "comp" && $container != "" && $mediafile_ext == ".pdf" && (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false))
+  if ($cat == "comp" && $container != "" && $mediafile_ext == ".pdf" && empty ($mgmt_config[$site]['dam']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
 
@@ -466,7 +466,7 @@ function onrenameobject_post ($site, $cat, $location, $object, $objectnew, $user
   $eventsystem['hide'] = 0; 
   
   // insert your program code here
-  if ($cat=="page" && (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false))
+  if ($cat == "page" && empty ($mgmt_config[$site]['dam']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
     $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
@@ -494,7 +494,7 @@ function ondeleteobject_pre ($site, $cat, $location, $object, $user)
   
   // insert your program code here 
 
-  if (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false)
+  if (empty ($mgmt_config[$site]['dam']))
   {
     // get the file extension of the file
     $object_ext = strtolower (strrchr ($object, "."));
@@ -664,7 +664,7 @@ function onpasteobject_post ($site, $cat, $location, $locationnew, $object, $use
   $eventsystem['hide'] = 0; 
   
   // insert your program code here
-  if ($cat == "page" && !file_exists ($location.$object) && (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false))
+  if ($cat == "page" && !file_exists ($location.$object) && empty ($mgmt_config[$site]['dam']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
     $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");  
@@ -745,7 +745,7 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
   $eventsystem['hide'] = 0; 
 
   // insert your program code here  
-  if ($cat == "comp" && (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false))
+  if ($cat == "comp" && empty ($mgmt_config[$site]['dam']))
   {
     $objectdata = loadfile ($location, $object);
     if (!empty ($objectdata)) $mediafile = getfilename ($objectdata, "media");
@@ -799,7 +799,7 @@ function onpublishobject_post ($site, $cat, $location, $object, $container_name,
   $eventsystem['hide'] = 0; 
 
   // insert your program code here
-  if ($cat == "page" && (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false))
+  if ($cat == "page" && empty ($mgmt_config[$site]['dam']))
   {
     if (empty ($eventsystem['searchlanguage'][$site]) || !is_array ($eventsystem['searchlanguage'][$site]))
     {
@@ -854,7 +854,7 @@ function onunpublishobject_pre ($site, $cat, $location, $object, $user)
   $eventsystem['hide'] = 0; 
 
   // insert your program code here  
-  if (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false)
+  if (empty ($mgmt_config[$site]['dam']))
   {
     if ($cat == "comp")
     {

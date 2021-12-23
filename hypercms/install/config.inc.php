@@ -209,9 +209,6 @@ $mgmt_config['message_newwindow'] = false;
 // Open users in new window (true) or same window (false)
 $mgmt_config['user_newwindow'] = false;
 
-// Open uploads in new window (true) or same window (false)
-$mgmt_config['upload_newwindow'] = false;
-
 // Window size for objects in pixel (for new window)
 $mgmt_config['window_object_width'] = 1280;
 $mgmt_config['window_object_height'] = 1000;
@@ -235,6 +232,9 @@ $mgmt_config['chat_type'] = "public";
 
 // Define support user name for chat that will always be present for chat or leave empty
 $mgmt_config['chat_support'] = "";
+
+// Define chat update interval in ms
+$mgmt_config['chat_update_interval'] = 1600;
 
 // Define if markers for images and videos and annotations for images and documents should be enabled (true) or disabled (false)
 $mgmt_config['annotation'] = false;

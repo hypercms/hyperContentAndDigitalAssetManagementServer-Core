@@ -27,6 +27,185 @@ else
   var hcms_transitioneffect = false;
 }
 
+// ------------------------ random string ----------------------------
+
+function hcms_uniqid ()
+{
+  var result = '';
+  var length = 13;
+  var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  
+  for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+  return result;
+}
+
+// ------------------------ MD5 hash ----------------------------
+
+// JavaScript implementation of the RSA Data Security, Inc. MD5 Message
+// Digest Algorithm, as defined in RFC 1321
+// Copyright (C) Paul Johnston 1999 - 2000
+// Updated by Greg Holt 2000 - 2001
+// License to copy and use this software is granted provided that it is identified as the "RSA Data Security, Inc. MD4 Message-Digest Algorithm" in all material mentioning or referencing this software or this function.
+// License is also granted to make and use derivative works provided that such works are identified as "derived from the RSA Data Security, Inc. MD4 Message-Digest Algorithm" in all material mentioning or referencing the derived work.
+// RSA Data Security, Inc. makes no representations concerning either the merchantability of this software or the suitability of this software for any particular purpose. It is provided "as is" without express or implied warranty of any kind.
+// These notices must be retained in any copies of any part of this documentation and/or software.
+
+// Convert a 32-bit number to a hex string with ls-byte first
+function hcms_rhex (num)
+{
+  var hex_chr = "0123456789abcdef";
+  var str = "";
+
+  for (j = 0; j <= 3; j++)
+    str += hex_chr.charAt((num >> (j * 8 + 4)) & 0x0F) +
+           hex_chr.charAt((num >> (j * 8)) & 0x0F);
+  return str;
+}
+
+// Convert a string to a sequence of 16-word blocks, stored as an array.
+// Append padding bits and the length, as described in the MD5 standard.
+function hcms_str2blks_MD5 (str)
+{
+  nblk = ((str.length + 8) >> 6) + 1;
+  blks = new Array(nblk * 16);
+  for (i = 0; i < nblk * 16; i++) blks[i] = 0;
+  for (i = 0; i < str.length; i++)
+    blks[i >> 2] |= str.charCodeAt(i) << ((i % 4) * 8);
+  blks[i >> 2] |= 0x80 << ((i % 4) * 8);
+  blks[nblk * 16 - 2] = str.length * 8;
+  return blks;
+}
+
+// Add integers, wrapping at 2^32. This uses 16-bit operations internally 
+// to work around bugs in some JS interpreters.
+function hcms_add (x, y)
+{
+  var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+  var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+  return (msw << 16) | (lsw & 0xFFFF);
+}
+
+// Bitwise rotate a 32-bit number to the left
+function hcms_rol (num, cnt)
+{
+  return (num << cnt) | (num >>> (32 - cnt));
+}
+
+// These functions implement the basic operation for each round of the algorithm.
+function hcms_cmn (q, a, b, x, s, t)
+{
+  return hcms_add (hcms_rol (hcms_add (hcms_add (a, q), hcms_add (x, t)), s), b);
+}
+function hcms_ff (a, b, c, d, x, s, t)
+{
+  return hcms_cmn ((b & c) | ((~b) & d), a, b, x, s, t);
+}
+function hcms_gg (a, b, c, d, x, s, t)
+{
+  return hcms_cmn ((b & d) | (c & (~d)), a, b, x, s, t);
+}
+function hcms_hh (a, b, c, d, x, s, t)
+{
+  return hcms_cmn (b ^ c ^ d, a, b, x, s, t);
+}
+function hcms_ii (a, b, c, d, x, s, t)
+{
+  return hcms_cmn (c ^ (b | (~d)), a, b, x, s, t);
+}
+
+// Take a string and return the hex representation of its MD5
+function hcms_md5 (str)
+{
+  x = hcms_str2blks_MD5 (str);
+  a =  1732584193;
+  b = -271733879;
+  c = -1732584194;
+  d =  271733878;
+
+  for (i = 0; i < x.length; i += 16)
+  {
+    olda = a;
+    oldb = b;
+    oldc = c;
+    oldd = d;
+
+    a = hcms_ff (a, b, c, d, x[i+ 0], 7 , -680876936);
+    d = hcms_ff (d, a, b, c, x[i+ 1], 12, -389564586);
+    c = hcms_ff (c, d, a, b, x[i+ 2], 17,  606105819);
+    b = hcms_ff (b, c, d, a, x[i+ 3], 22, -1044525330);
+    a = hcms_ff (a, b, c, d, x[i+ 4], 7 , -176418897);
+    d = hcms_ff (d, a, b, c, x[i+ 5], 12,  1200080426);
+    c = hcms_ff (c, d, a, b, x[i+ 6], 17, -1473231341);
+    b = hcms_ff (b, c, d, a, x[i+ 7], 22, -45705983);
+    a = hcms_ff (a, b, c, d, x[i+ 8], 7 ,  1770035416);
+    d = hcms_ff (d, a, b, c, x[i+ 9], 12, -1958414417);
+    c = hcms_ff (c, d, a, b, x[i+10], 17, -42063);
+    b = hcms_ff (b, c, d, a, x[i+11], 22, -1990404162);
+    a = hcms_ff (a, b, c, d, x[i+12], 7 ,  1804603682);
+    d = hcms_ff (d, a, b, c, x[i+13], 12, -40341101);
+    c = hcms_ff (c, d, a, b, x[i+14], 17, -1502002290);
+    b = hcms_ff (b, c, d, a, x[i+15], 22,  1236535329);    
+
+    a = hcms_gg (a, b, c, d, x[i+ 1], 5 , -165796510);
+    d = hcms_gg (d, a, b, c, x[i+ 6], 9 , -1069501632);
+    c = hcms_gg (c, d, a, b, x[i+11], 14,  643717713);
+    b = hcms_gg (b, c, d, a, x[i+ 0], 20, -373897302);
+    a = hcms_gg (a, b, c, d, x[i+ 5], 5 , -701558691);
+    d = hcms_gg (d, a, b, c, x[i+10], 9 ,  38016083);
+    c = hcms_gg (c, d, a, b, x[i+15], 14, -660478335);
+    b = hcms_gg (b, c, d, a, x[i+ 4], 20, -405537848);
+    a = hcms_gg (a, b, c, d, x[i+ 9], 5 ,  568446438);
+    d = hcms_gg (d, a, b, c, x[i+14], 9 , -1019803690);
+    c = hcms_gg (c, d, a, b, x[i+ 3], 14, -187363961);
+    b = hcms_gg (b, c, d, a, x[i+ 8], 20,  1163531501);
+    a = hcms_gg (a, b, c, d, x[i+13], 5 , -1444681467);
+    d = hcms_gg (d, a, b, c, x[i+ 2], 9 , -51403784);
+    c = hcms_gg (c, d, a, b, x[i+ 7], 14,  1735328473);
+    b = hcms_gg (b, c, d, a, x[i+12], 20, -1926607734);
+    
+    a = hcms_hh (a, b, c, d, x[i+ 5], 4 , -378558);
+    d = hcms_hh (d, a, b, c, x[i+ 8], 11, -2022574463);
+    c = hcms_hh (c, d, a, b, x[i+11], 16,  1839030562);
+    b = hcms_hh (b, c, d, a, x[i+14], 23, -35309556);
+    a = hcms_hh (a, b, c, d, x[i+ 1], 4 , -1530992060);
+    d = hcms_hh (d, a, b, c, x[i+ 4], 11,  1272893353);
+    c = hcms_hh (c, d, a, b, x[i+ 7], 16, -155497632);
+    b = hcms_hh (b, c, d, a, x[i+10], 23, -1094730640);
+    a = hcms_hh (a, b, c, d, x[i+13], 4 ,  681279174);
+    d = hcms_hh (d, a, b, c, x[i+ 0], 11, -358537222);
+    c = hcms_hh (c, d, a, b, x[i+ 3], 16, -722521979);
+    b = hcms_hh (b, c, d, a, x[i+ 6], 23,  76029189);
+    a = hcms_hh (a, b, c, d, x[i+ 9], 4 , -640364487);
+    d = hcms_hh (d, a, b, c, x[i+12], 11, -421815835);
+    c = hcms_hh (c, d, a, b, x[i+15], 16,  530742520);
+    b = hcms_hh (b, c, d, a, x[i+ 2], 23, -995338651);
+
+    a = hcms_ii (a, b, c, d, x[i+ 0], 6 , -198630844);
+    d = hcms_ii (d, a, b, c, x[i+ 7], 10,  1126891415);
+    c = hcms_ii (c, d, a, b, x[i+14], 15, -1416354905);
+    b = hcms_ii (b, c, d, a, x[i+ 5], 21, -57434055);
+    a = hcms_ii (a, b, c, d, x[i+12], 6 ,  1700485571);
+    d = hcms_ii (d, a, b, c, x[i+ 3], 10, -1894986606);
+    c = hcms_ii (c, d, a, b, x[i+10], 15, -1051523);
+    b = hcms_ii (b, c, d, a, x[i+ 1], 21, -2054922799);
+    a = hcms_ii (a, b, c, d, x[i+ 8], 6 ,  1873313359);
+    d = hcms_ii (d, a, b, c, x[i+15], 10, -30611744);
+    c = hcms_ii (c, d, a, b, x[i+ 6], 15, -1560198380);
+    b = hcms_ii (b, c, d, a, x[i+13], 21,  1309151649);
+    a = hcms_ii (a, b, c, d, x[i+ 4], 6 , -145523070);
+    d = hcms_ii (d, a, b, c, x[i+11], 10, -1120210379);
+    c = hcms_ii (c, d, a, b, x[i+ 2], 15,  718787259);
+    b = hcms_ii (b, c, d, a, x[i+ 9], 21, -343485551);
+
+    a = hcms_add (a, olda);
+    b = hcms_add (b, oldb);
+    c = hcms_add (c, oldc);
+    d = hcms_add (d, oldd);
+  }
+
+  return hcms_rhex (a) + hcms_rhex (b) + hcms_rhex (c) + hcms_rhex (d);
+}
+
 // ------------------------ browser information ----------------------------
 
 function hcms_getBrowserName()
@@ -844,7 +1023,7 @@ function hcms_openWindow (theURL, winName, features, width, height)
 
 function hcms_openChat ()
 {
-  // standard browser (open/close chat)
+  // chat sidebar
   if (document.getElementById('chatLayer'))
   {
     var chatsidebar = document.getElementById('chatLayer');
@@ -855,6 +1034,7 @@ function hcms_openChat ()
   }
   else var chatsidebar = false;
 
+  // toggle chat sidebar
   if (chatsidebar)
   {
     if (hcms_transitioneffect == true) chatsidebar.style.transition = "0.3s";

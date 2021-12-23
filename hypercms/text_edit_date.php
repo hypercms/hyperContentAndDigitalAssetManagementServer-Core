@@ -70,6 +70,44 @@ else $charset = $mgmt_config[$site]['default_codepage'];
 
 header ('Content-Type: text/html; charset='.$charset);
 
+// read content using db_connect
+if ($contentbot == "")
+{
+  if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+  {
+    include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
+
+    $db_connect_data = db_read_text ($site, $contentfile, "", $id, "", $user);
+
+    if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
+    else $contentbot = false;
+  }  
+  else $contentbot = false;
+
+  // read content from content container
+  if ($contentbot == false) 
+  {
+    $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
+
+    $filedata = loadcontainer ($contentfile, "work", $user);
+
+    if ($filedata != "")
+    {
+      $temp_array = selectcontent ($filedata, "<text>", "<text_id>", $id);
+      if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>");
+      if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
+    }
+  }
+}
+
+// set default value given eventually by tag
+if (empty ($contentbot) && !empty ($default)) $contentbot = $default;
+
+// escape special characters
+$contentbot = str_replace (array("\"", "<", ">"), array("&quot;", "&lt;", "&gt;"), $contentbot);  
+
+if ($label == "") $label = $id;
+
 // create secure token
 $token = createtoken ($user);
 ?>
@@ -78,9 +116,9 @@ $token = createtoken ($user);
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo $charset; ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
 <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rich_calendar.min.js"></script>
@@ -139,45 +177,6 @@ function hcms_saveEvent ()
 </head>
 
 <body class="hcmsWorkplaceGeneric">
-<?php
-// read content using db_connect
-if ($contentbot == "")
-{
-  if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
-  {
-    include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
-    
-    $db_connect_data = db_read_text ($site, $contentfile, "", $id, "", $user);
-    
-    if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
-    else $contentbot = false;
-  }  
-  else $contentbot = false;
-  
-  // read content from content container
-  if ($contentbot == false) 
-  {
-    $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-    
-    $filedata = loadcontainer ($contentfile, "work", $user);
-    
-    if ($filedata != "")
-    {
-      $temp_array = selectcontent ($filedata, "<text>", "<text_id>", $id);
-      if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>");
-      if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
-    }
-  }
-}
-
-// set default value given eventually by tag
-if ($contentbot == "" && $default != "") $contentbot = $default;
-
-// escape special characters
-$contentbot = str_replace (array("\"", "<", ">"), array("&quot;", "&lt;", "&gt;"), $contentbot);  
-
-if ($label == "") $label = $id;
-?>
 
 <!-- top bar -->
 <?php echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame"); ?>
@@ -197,7 +196,7 @@ if ($label == "") $label = $id;
     <input type="hidden" name="savetype" value="" />
     <input type="hidden" name="<?php echo $tagname."[".$id."]"; ?>" value="" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
-    
+
     <table class="hcmsTableStandard">
       <tr>
         <td>

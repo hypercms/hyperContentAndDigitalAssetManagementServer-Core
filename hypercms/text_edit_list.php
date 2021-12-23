@@ -17,12 +17,12 @@ require ("function/hypercms_api.inc.php");
 $location = getrequest_esc ("location", "locationname");
 $page = getrequest_esc ("page", "objectname");
 $contenttype = getrequest_esc ("contenttype");
-$contentbot = getrequest_esc ("contentbot");
 $db_connect = getrequest_esc ("db_connect", "objectname");
 $id = getrequest_esc ("id", "objectname");
 $label = getrequest_esc ("label");
 $tagname = getrequest_esc ("tagname", "objectname");
 $list = getrequest_esc ("list");
+$file = getrequest ("file");
 $default = getrequest_esc ("default");
 $token = getrequest ("token");
 
@@ -67,6 +67,57 @@ else $charset = $mgmt_config[$site]['default_codepage'];
 
 header ('Content-Type: text/html; charset='.$charset);
 
+// read content using db_connect
+if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+{
+  include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
+
+  $db_connect_data = db_read_text ($site, $contentfile, "", $id, "", $user);
+
+  if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
+  else $contentbot = false;
+}  
+else $contentbot = false;
+
+// read content from content container
+if ($contentbot == false) 
+{
+  $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
+
+  $filedata = loadcontainer ($contentfile, "work", $user);
+
+  if ($filedata != "")
+  {
+    $temp_array = selectcontent ($filedata, "<text>", "<text_id>", $id);
+    if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>");
+    if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
+  }
+}
+
+// set default value given eventually by tag
+if (empty ($contentbot) && !empty ($default)) $contentbot = $default;
+
+// encode script code
+$contentbot = scriptcode_encode ($contentbot);
+
+// get list options
+$list_result = "";
+
+if (!empty ($list) || !empty ($file))
+{
+  // replace | by comma
+  $list_result .= str_replace ("|", ",", $list);
+
+  // extract source file (file path or URL) for text list
+  if ($file != "")
+  {
+    $list_result .= ",".getlistelements ($file);
+  }
+
+  // get list entries
+  $list_array = explode (",", trim ($list_result, ","));
+}
+
 // create secure token
 $token = createtoken ($user);
 
@@ -77,9 +128,9 @@ if ($label == "") $label = $id;
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo $charset; ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript">
 
 function setsavetype(type)
@@ -96,50 +147,6 @@ function hcms_saveEvent ()
 </head>
 
 <body class="hcmsWorkplaceGeneric">
-<?php
-// read content using db_connect
-if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
-{
-  include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
-  
-  $db_connect_data = db_read_text ($site, $contentfile, "", $id, "", $user);
-  
-  if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
-  else $contentbot = false;
-}  
-else $contentbot = false;
-
-// read content from content container
-if ($contentbot == false) 
-{
-  $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-  
-  $filedata = loadcontainer ($contentfile, "work", $user);
-  
-  if ($filedata != "")
-  {
-    $temp_array = selectcontent ($filedata, "<text>", "<text_id>", $id);
-    if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>");
-    if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
-  }
-}
-
-// set default value given eventually by tag
-if ($contentbot == "" && $default != "") $contentbot = $default;
-
-// encode script code
-$contentbot = scriptcode_encode ($contentbot);
-
-if (!empty ($list))
-{
-  // escape special characters
-  $list = str_replace (array("\"", "<", ">"), array("&quot;", "&lt;", "&gt;"), $list);  
-  
-  // get list entries
-  $list = rtrim ($list, "|");
-  $list_array = explode ("|", $list);
-}
-?>
 
 <!-- top bar -->
 <?php echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame"); ?>
@@ -158,7 +165,7 @@ if (!empty ($list))
     <input type="hidden" name="list" value="<?php echo $list; ?>" />
     <input type="hidden" name="savetype" value="" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
-    
+
     <table class="hcmsTableStandard">
       <tr>
         <td>
@@ -200,5 +207,6 @@ if (!empty ($list))
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

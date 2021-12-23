@@ -39,6 +39,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
+
 // load object file and get container file
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
@@ -72,7 +75,12 @@ if (valid_objectname ($contentfile))
     header("Content-Length: ".$bytelen);
     
     $xml = loadcontainer ($contentfile, "version", $user);
-    
+
+    // unescape characters & < >
+    $xml = str_replace ("&amp;", "&", $xml);
+    $xml = str_replace ("&lt;", "<", $xml);
+    $xml = str_replace ("&gt;", ">", $xml);
+
     echo $xml;
   }
 }

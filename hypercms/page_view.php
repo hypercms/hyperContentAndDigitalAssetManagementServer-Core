@@ -159,8 +159,8 @@ if (@substr_count ($follow, "://") > 0 || @substr_count (strtolower ($follow), "
   echo "<head>\n";
   echo "<title>hyperCMS</title>\n";
   echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
-  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
+  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />\n";
+  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />\n";
   echo "<script src=\"javascript/click.min.js\" type=\"text/javascript\" />\n";
   echo "</script>\n";
   echo "</head>\n";
@@ -198,8 +198,8 @@ else
         echo "<head>\n";
         echo "<title>hyperCMS</title>\n";
         echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
-        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
+        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />\n";
+        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />\n";
         echo "<script src=\"javascript/click.min.js\" type=\"text/javascript\">\n";
         echo "</script>\n";
         echo "</head>\n";
@@ -221,8 +221,8 @@ else
         echo "<head>\n";
         echo "<title>hyperCMS</title>\n";
         echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
-        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
+        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />\n";
+        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />\n";
         echo "</script>\n";
         echo "</head>\n";    
         echo "</head>\n";
@@ -244,8 +244,8 @@ else
         echo "<head>\n";
         echo "<title>hyperCMS</title>\n";
         echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
-        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
+        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />\n";
+        echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />\n";
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
         echo "<p class=\"hcmsHeadline\"><img src=\"".getthemelocation()."img/info.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['could-not-create-view-of-the-object'][$lang])."</p>\n";
@@ -286,8 +286,8 @@ else
       echo "<head>\n";
       echo "<title>hyperCMS</title>\n";
       echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
-      echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-      echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
+      echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />\n";
+      echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />\n";
       echo "</head>\n";
       echo "<body class=\"hcmsWorkplaceGeneric\">\n";
       echo "<div class=\"hcmsWorkplaceFrame\">\n";
@@ -311,8 +311,8 @@ else
     echo "<head>\n";
     echo "<title>hyperCMS</title>\n";
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
-    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
+    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />\n";
+    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
     echo "<div class=\"hcmsWorkplaceFrame\">\n";

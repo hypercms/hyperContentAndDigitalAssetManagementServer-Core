@@ -161,12 +161,12 @@ scriptend]
   }
   else
   {
-    $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions, $metaTitleId, $metaDescriptionId, $filter);
+    if (function_exists("collectMedia")) $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions, $metaTitleId, $metaDescriptionId, $filter);
 
     if (empty ($mediaFiles))
     {
 scriptend]
- <p>Folder could not be read!</p>
+ <p>Folder can't be accessed!</p>
 [hyperCMS:scriptbegin		
     }
   }

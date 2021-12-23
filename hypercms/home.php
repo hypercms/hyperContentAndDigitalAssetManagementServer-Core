@@ -19,7 +19,6 @@ require ("function/hypercms_tplengine.inc.php");
 require ("version.inc.php");
 
 
-
 // input parameters
 $action = getrequest ("action");
 $homeboxes = getrequest ("homeboxes");
@@ -56,11 +55,11 @@ $token_new = createtoken ($user);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 
 <!-- main library -->
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 
 <!-- Jquery and Jquery UI Autocomplete (used for search box) -->
@@ -393,7 +392,10 @@ function closePopup ()
 
     if (is_array ($homeboxes_path))
     {
-      foreach ($homeboxes_path as $temp) include ($temp);
+      foreach ($homeboxes_path as $temp)
+      {
+        include ($temp);
+      }
     }
   }
   ?>

@@ -452,8 +452,8 @@ savelog (@$error);
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=380, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
 
-<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation($themename)."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation($themename)."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 
 <!-- Standard icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/favicon.ico"> 
@@ -492,7 +492,7 @@ video#videoScreen
 }
 </style>
 
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
 

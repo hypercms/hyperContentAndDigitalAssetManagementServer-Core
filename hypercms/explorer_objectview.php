@@ -70,7 +70,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   // ------------------------------ permission section --------------------------------
   
   // check access permissions (DAM)
-  if ($mgmt_config[$site]['dam'] == true)
+  if (!empty ($mgmt_config[$site]['dam']))
   {
     $ownergroup = accesspermission ($site, $location, $cat);
     $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
@@ -87,6 +87,9 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   
   // --------------------------------- logic section ----------------------------------
   
+  // write and close session (non-blocking other frames)
+  if (session_id() != "") session_write_close();
+
   $file_info = getfileinfo ($site, $location.$page, $cat);
   $object_info = getobjectinfo ($site, $location, $page, $user);
   
@@ -126,9 +129,9 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false, true); ?>
 <?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false, false, true); ?>

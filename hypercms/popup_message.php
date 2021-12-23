@@ -110,9 +110,9 @@ $token_new = createtoken ($user);
   <meta charset="<?php echo getcodepage ($lang); ?>" />
   <meta name="theme-color" content="#000000" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-  <script type="text/javascript" src="javascript/main.min.js"></script>
+  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+  <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 
   <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
   <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.min.js"></script>

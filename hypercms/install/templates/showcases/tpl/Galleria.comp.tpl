@@ -144,7 +144,7 @@ var data = [
   // check if picture (folder) is choosen or if it exsists
   if (!empty ($picture) && substr_count ($picture, "Null_media.gif") != 1)
   {
-    $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions, $metaTitleId, $metaDescriptionId, $filter);
+    if (function_exists("collectMedia")) $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions, $metaTitleId, $metaDescriptionId, $filter);
 
     if (!empty ($mediaFiles))
     {

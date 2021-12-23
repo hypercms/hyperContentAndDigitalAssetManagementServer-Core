@@ -85,9 +85,9 @@ if (!empty ($mediafile_pdf)) $doc_link = createviewlink ($site, $mediafile_pdf, 
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang);?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" type="text/css" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript">
 function updateCodeSegment()
 {

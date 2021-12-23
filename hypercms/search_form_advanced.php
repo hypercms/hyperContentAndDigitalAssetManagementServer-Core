@@ -77,8 +77,8 @@ else
   echo "<head>\n";
   echo "<title>hyperCMS</title>\n";
   echo "<meta charset=\"".(!empty ($mgmt_config[$site]['default_codepage']) ? $mgmt_config[$site]['default_codepage'] : "UTF-8")."\" />\n";
-  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
+  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />\n";
+  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />\n";
   echo "</head>\n";
   echo "<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" onload=\"parent.hcms_showPage('contentFrame', 'contentLayer');\">\n";
   echo "</body>\n";

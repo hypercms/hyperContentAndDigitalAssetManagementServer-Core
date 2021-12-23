@@ -18,12 +18,19 @@ require ("function/hypercms_api.inc.php");
 // input parameters
 $queueuser = url_encode (getrequest ("queueuser", "url"));
 
+// ------------------------------ permission section --------------------------------
+
 // check session of user
 checkusersession ($user, false);
+
+// --------------------------------- logic section ----------------------------------
 
 // save selected queue user in session
 if ($queueuser != "") setsession ('hcms_temp_user', $queueuser);
 else setsession ('hcms_temp_user', Null);
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -31,9 +38,9 @@ else setsession ('hcms_temp_user', Null);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=<?php echo windowwidth ("object"); ?>, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript">
 
 function openPopup (link)

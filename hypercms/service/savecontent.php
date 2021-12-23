@@ -15,10 +15,9 @@ require ("../function/hypercms_api.inc.php");
 
 // input parameters
 $savetype = getrequest ("savetype");
+$autosave = getrequest ("autosave");
 $location = getrequest_esc ("location", "locationname");
 $page = getrequest ("page", "objectname");
-$savetype = getrequest ("savetype");
-$autosave = getrequest ("autosave");
 $appendcontent = getrequest ("appendcontent");
 $forward = getrequest ("forward");
 $view = getrequest ("view");
@@ -33,7 +32,12 @@ $id = getrequest_esc ("id", "objectname");
 $toolbar = getrequest_esc ("toolbar");
 $width = getrequest_esc ("width", "numeric");
 $height = getrequest_esc ("height", "numeric");
+$display = getrequest_esc ("display");
+$list = getrequest_esc ("list");
+$file = getrequest_esc ("file");
+$onlylist = getrequest_esc ("onlylist");
 $constraint = getrequest_esc ("constraint");
+
 // token
 $wf_token = getrequest_esc ("wf_token");
 $token = getrequest ("token");
@@ -266,8 +270,8 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
             echo "<head>\n";
             echo "<title>hyperCMS</title>\n";
             echo "<meta charset=\"".getcodepage($lang)."\" />\n";
-            echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
-            echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."\" />\n";
+            echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\">\n";
+            echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />\n";
             echo "</head>\n";
             echo "<body class=\"hcmsWorkplaceGeneric\">\n";
             echo "<p class=\"hcmsHeadline\">".$hcms_lang['the-end-date-is-before-the-start-date-of-the-article'][$lang]."</p>\n";
@@ -777,6 +781,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
         // define meta tag
         $add_onload =  "";
         
+        // define message
         if ($auto)
         {
         	$message[] = $hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang];
@@ -784,7 +789,6 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
         }
         else
         {
-  	      //define message to display
       	  $message = "<p class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang]."</p>\n".$hcms_lang['without-write-permission-the-content-cant-be-edited'][$lang]."<br />\n";
         }
       }
@@ -823,9 +827,13 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
          	{
             $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."text_edit_unformat.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&constraint=".url_encode($constraint)."&contenttype=".url_encode($contenttype)."&width=".url_encode($width)."&height=".url_encode($height)."';\n";
          	}
+          elseif ($savetype == "editork_so")
+         	{
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."text_edit_keywords.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&display=".url_encode($display)."&list=".url_encode($list)."&file=".url_encode($file)."&onlylist=".url_encode($onlylist)."&constraint=".url_encode($constraint)."&contenttype=".url_encode($contenttype)."';\n";
+         	}
           elseif ($savetype == "editorl_so")
          	{
-            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."text_editor_list.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&list=".url_encode($list)."&contenttype=".url_encode($contenttype)."';\n";
+            $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."text_edit_list.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&list=".url_encode($list)."&contenttype=".url_encode($contenttype)."';\n";
          	}
           elseif ($savetype == "editorc_so")
          	{
@@ -880,7 +888,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
             $add_onload =  "document.location='".cleandomain ($mgmt_config['url_path_cms'])."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no';\n";
          	}
 
-         	// define message to display
+         	// define message
          	$message = "<p class=hcmsHeadline>".$hcms_lang['refreshing-view-'][$lang]."</p>\n";
          	$message .= "<a href=\"page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no\">".$hcms_lang['manual-refresh'][$lang]."</a>\n";
       	}
@@ -904,7 +912,8 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
     {
       // define meta tag
       $add_onload =  "";
-      // define message to display
+
+      // define message
       if ($auto)
       {
       	$message[] = $hcms_lang['functional-error-occured'][$lang];
@@ -921,10 +930,9 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
     // define meta tag
     $add_onload =  "";
 
-    // define message to display
+    // define message
     if ($auto)
     {
-    	// define message to display
     	$message[] = $hcms_lang['content-container-is-missing'][$lang];
     	$message[] = $hcms_lang['the-content-of-this-object-is-missing'][$lang];
     	$message[] = $hcms_lang['to-create-a-new-content-container-please-delete-the-object-and-create-a-new-one'][$lang];
@@ -939,14 +947,13 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
     // define meta tag
     $add_onload = "";
 
-    // define message to display
+    // define message
     if ($auto) 
     {
   	  $message[] = $hcms_lang['content-container-is-missing'][$lang];
     }
     else
     {
-    	// define message to display
     	$message = "<p class=hcmsHeadline>".$hcms_lang['content-container-is-missing'][$lang]."</p>\n";
     }
   }
@@ -956,14 +963,13 @@ else
   // define meta tag
   $add_onload = "";
 
-  // define message to display
+  // define message
   if ($auto) 
   {
 	  $message[] = $hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang];
   }
   else
   {
-  	// define message to display
   	$message = "<p class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang]."</p>\n";
   }
 }
@@ -991,7 +997,7 @@ else
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>">
 <script type="text/javascript">
 <?php echo $add_onload; ?>
 </script>

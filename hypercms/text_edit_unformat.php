@@ -50,6 +50,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
+$contentbot = "";
+
 // load object file and get container
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
@@ -79,9 +82,9 @@ else $add_constraint = "check = true;\n";
 if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
 {
   include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
-  
+
   $db_connect_data = db_read_text ($site, $contentfile, "", $id, "", $user);
-  
+
   if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
 }  
 
@@ -95,13 +98,13 @@ if (empty ($contentbot))
   if ($filedata != "")
   {
     $temp_array = selectcontent ($filedata, "<text>", "<text_id>", $id);
-    if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>", true);
+    if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>", false);
     if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
   }
 }
 
 // set default value given eventually by tag
-if ($contentbot == "" && $default != "") $contentbot = $default;
+if (empty ($contentbot) && !empty ($default)) $contentbot = $default;
 
 // encode script code
 $contentbot = scriptcode_encode ($contentbot);
@@ -135,24 +138,24 @@ $token = createtoken ($user);
 <head>
   <title>hyperCMS</title>
   <meta charset="<?php echo $charset; ?>" />
-  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
   <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
-  <script type="text/javascript" src="javascript/main.min.js"></script>
+  <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
   <script type="text/javascript">
 
   function validateForm() 
   {
     var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
-    
+
     for (i=0; i<(args.length-2); i+=3) 
     { 
       test=args[i+2]; val=hcms_findObj(args[i]);
-      
+
       if (val) 
       { 
         nm=val.name; 
-        
+
         if ((val=val.value)!="") 
         {
           if (test.indexOf('isEmail')!=-1) 
@@ -193,11 +196,11 @@ $token = createtoken ($user);
   {
     document.forms['hcms_formview'].elements[targetname].value = document.forms['hcms_formview'].elements[selectname].value;
   }
-  
+
   function setsavetype (type)
   {
     <?php echo $add_constraint; ?>
-    
+
     if (check == true)
     { 
       document.forms['hcms_formview'].elements['savetype'].value = type;
@@ -233,7 +236,7 @@ $token = createtoken ($user);
   <!-- top bar -->
   <?php
   if ($label == "") $label = $id;
-  
+
   echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
   ?>
 
@@ -253,7 +256,7 @@ $token = createtoken ($user);
       <input type="hidden" name="height" value="<?php echo $height; ?>" />
       <input type="hidden" id="savetype" name="savetype" value="" />
       <input type="hidden" name="token" value="<?php echo $token; ?>" />
-      
+
       <table class="hcmsTableStandard">
         <tr>
           <td style="white-space:nowrap; text-align:left;">
@@ -278,22 +281,22 @@ $token = createtoken ($user);
       </table>
     </form>
   </div>
- 
+
 
   <?php if (intval ($mgmt_config['autosave']) > 0) { ?>
   <script language="JavaScript">
   function autosave ()
   {
   	var test = $("#autosave").is(":checked");
-    
+
   	if (test == true)
     {
   		hcms_showHideLayers('messageLayer','','show');
   		$("#savetype").val('auto');
       submitText ('<?php echo $tagname."_".$id ?>', '<?php echo $tagname."[".$id."]"; ?>');
-      
+
       <?php echo $add_constraint; ?>
-      
+
       if (check == true)
       {
         $.post(
@@ -315,14 +318,15 @@ $token = createtoken ($user);
         hcms_showHideLayers('messageLayer','','hide');
       }
   	}
-    
+
   	setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
   }
-  
+
   setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
   </script>
   <?php } ?>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

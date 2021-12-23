@@ -41,6 +41,13 @@ if ($location_orig == "" && is_string ($multiobject) && strlen ($multiobject) > 
   $location = $multiobject_array[0];
 }
 
+// initialize
+$result = array();
+$count = 0;
+$status_progress = "";
+$status_text = "";
+$add_javascript = "";
+
 // flush in order to display load screen
 // do not use it for action "publish" since the output will interfere with the session_start used in the template engine
 if ($force == "start" && $action != "publish")
@@ -86,9 +93,6 @@ if ($force == "start" && substr_count ($action, "->") == 1)
 
   // --------------------------------- logic section ----------------------------------
 
-  // initialize
-  $result = array();
-
   // execute action
   if ($authorized == true)
   {
@@ -130,7 +134,7 @@ if ($force == "start" && substr_count ($action, "->") == 1)
       elseif ($method == "linkcopy") $result = copyconnectedobject ($site, $location, $page, $user);
     } 
 
-    if (!empty ($result['message'])) $status = $result['message']; 
+    if (!empty ($result['message'])) $status_text = $result['message']; 
 
     // use target location for paste
     $location_orig = $targetlocation;
@@ -171,10 +175,6 @@ if ($action != "emptybin" && (!valid_publicationname ($site) || !valid_locationn
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
-
-// initialize
-$add_javascript = "window.focus();";
-$count = 0;
 
 // check authorization of requested action
 $authorized = false;
@@ -247,9 +247,12 @@ if ($authorized == true || $force == "stop")
       if (isset ($result['count'])) $count = $result['count']; 
       else $count =  0;
       
-      if (!empty ($maxcount) && !empty ($count)) $status = ($maxcount - $count)." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
-      else $status = "";
-      
+      if (!empty ($maxcount) && !empty ($count))
+      {
+        $status_progress = ($maxcount - $count)." / ".$maxcount;
+        $status_text = ($maxcount - $count)." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
+      }
+
       if (isset ($result['working'])) $working = $result['working'];
       else $working = false;
       
@@ -282,8 +285,8 @@ if ($authorized == true || $force == "stop")
       if (isset ($result['count'])) $count = $result['count']; 
       else $count =  0;
       
-      if (!empty ($result['message'])) $status = strip_tags ($result['message'], '<br>');    
-      else $status = getescapedtext ($hcms_lang['error-occured'][$lang]);
+      if (!empty ($result['message'])) $status_text = strip_tags ($result['message'], '<br>');    
+      else $status_text = getescapedtext ($hcms_lang['error-occured'][$lang]);
       
       $working = "error";
       
@@ -297,9 +300,11 @@ if ($authorized == true || $force == "stop")
     {
       // not suitable for EasyEdit
       $add_javascript = "
-    if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
+    // reload objectlist in objectlist frame
+    if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame']) window.top.frames['workplFrame'].frames['mainFrame'].location.reload();
 
-    self.close();
+    // close popup in main frame
+    popupclose();
     ";
     }
     elseif ($action == "paste" && $method == "cut")
@@ -307,14 +312,13 @@ if ($authorized == true || $force == "stop")
       // not suitable for EasyEdit
       $add_javascript = "
     // reload root node in explorer
-    if (opener && opener.document.getElementById('a_".$cat."_".$site."')) opener.document.getElementById('a_".$cat."_".$site."').click();
+    if (window.top.frames['navFrame'] && window.top.frames['navFrame'].document.getElementById('a_".$cat."_".$site."')) window.top.frames['navFrame'].document.getElementById('a_".$cat."_".$site."').click();
 
-    // reload objectlist from explorer
-    if (opener && opener.parent.frames['workplFrame'] && opener.parent.frames['workplFrame'].frames['mainFrame']) opener.parent.frames['workplFrame'].frames['mainFrame'].location.reload();
-    // reload objectlist from itself
-    else if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
+    // reload objectlist in objectlist frame
+    if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame']) window.top.frames['workplFrame'].frames['mainFrame'].location.reload();
 
-    self.close();
+    // close popup in main frame
+    popupclose();
     ";
     }  
     elseif ($action == "delete" || $action == "deletemark" || $action == "deleteunmark" || $action == "restore" || $action == "emptybin")
@@ -324,26 +328,28 @@ if ($authorized == true || $force == "stop")
       {
         // not suitable for EasyEdit
         $add_javascript = "
-    // reload control
-    if (opener && opener.parent.frames['controlFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?virtual=1&action=recyclebin';
+    // reload control in objectlist frame
+    if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['controlFrame']) window.top.frames['workplFrame'].frames['controlFrame'].location='control_objectlist_menu.php?virtual=1&action=recyclebin';
 
-    // reload objectlist
-    if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
+    // reload objectlist in objectlist frame
+    if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame']) window.top.frames['workplFrame'].frames['mainFrame'].location.reload();
 
-    self.close();
+    // close popup in main frame
+    popupclose();
     ";
       }
       else
       {
         // not suitable for EasyEdit
         $add_javascript = "
-    // reload control
-    if (opener && opener.parent.frames['controlFrame']) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+    // reload control in objectlist frame
+    if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['controlFrame']) window.top.frames['workplFrame'].frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
 
-    // reload objectlist
-    if (opener && opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
+    // reload objectlist in objectlist frame
+    if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame']) window.top.frames['workplFrame'].frames['mainFrame'].location.reload();
 
-    self.close();
+    // close popup in main frame
+    popupclose();
     ";
       }
     }
@@ -351,28 +357,35 @@ if ($authorized == true || $force == "stop")
     {
       // not suitable for EasyEdit
       $add_javascript = "
-    // called from control content, reload object view
-    if (opener && opener.parent.frames['objFrame']) opener.parent.frames['objFrame'].location.reload();
-
-    // called from objectlist or control, reload objectlist
-    if (opener && opener.parent.frames['mainFrame'])
+    // close popup opened by control content in content frame
+    if (window.parent && window.parent.frames['objFrame'])
     {
-      if (opener.parent.frames['mainFrame'].location.pathname.indexOf('explorer_objectlist.php') > -1) opener.parent.frames['mainFrame'].location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
-    }
-    // called from explorer, reload workplace (control + objectlist)
-    else if (opener && opener.parent.frames['workplFrame'] && opener.parent.frames['workplFrame'].frames['mainFrame']) opener.parent.frames['workplFrame'].frames['mainFrame'].location.reload();
+      // reload object view
+      window.parent.frames['objFrame'].location.reload();
 
-    self.close();
+      // close popup in content frame
+      if (window.parent && typeof window.parent.closePopup == 'function') window.parent.closePopup();
+    }
+    // reload objectlist called by objectlist or control objectlist
+    else if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame'] && window.top.frames['workplFrame'].frames['mainFrame'].location.pathname.indexOf('explorer_objectlist.php') > -1)
+    {
+      window.top.frames['workplFrame'].frames['mainFrame'].location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+
+      // close popup in main frame
+      popupclose();
+    }
     ";
     }       
     else
     {
       $add_javascript = "
-    self.close();
+      // close popup in main frame
+      popupclose();
     ";  
     }
   
-    $status = $maxcount." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
+    $status_progress = $maxcount." / ".$maxcount;
+    $status_text = $maxcount." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
   }
   // cancel process
   elseif ($force == "stop")
@@ -380,24 +393,25 @@ if ($authorized == true || $force == "stop")
     deletefile ($mgmt_config['abs_path_temp'], session_id().".coll.dat", 1);
   
     $add_javascript = "
-    self.close();
+    popupclose();
     ";
   
-    $status = ($maxcount - $count)." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
+    $status_progress = ($maxcount - $count)." / ".$maxcount;
+    $status_text = ($maxcount - $count)." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
   }
 }
 // permission not granted
 else
 {
   $add_javascript = "
-  self.close();
+  popupclose();
   ";
 
-  $status = getescapedtext ($hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang]);
+  $status_text = getescapedtext ($hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang]);
 }
 
 // define progress bar
-if ($maxcount > 0)
+if ($maxcount > 0 && $count >= 0)
 {
   $progress = (($maxcount - $count) / $maxcount) * 100;
 
@@ -412,21 +426,71 @@ if ($maxcount > 0)
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/click.min.js"></script>
+<script>
+// close popup frame
+function popupclose ()
+{
+  // close popup in content frame
+  if (window.top && typeof window.top.closePopup == 'function') window.top.closePopup();
+
+  // get id of popup iframe
+  var id = parent.document.getElementById(window.name).id;
+
+  // close popup in main frame
+  if (id.indexOf('Frame') > 0)
+  {
+    id = id.substring(0, id.length - 5);
+    if (parent.document.getElementById(id) && typeof parent.closePopup == 'function') parent.closePopup(id);
+  }
+}
+</script>
 </head>
 
-<body class="hcmsWorkplaceGeneric">
+<body class="hcmsWorkplaceGeneric" style="overflow:hidden;">
 
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
 
+<!-- top bar -->
+<?php
+if ($action == "page_favorites_create") $headline = getescapedtext ($hcms_lang['add-to-favorites'][$lang]);
+elseif ($action == "page_favorites_delete") $headline = getescapedtext ($hcms_lang['delete-favorite'][$lang]);
+elseif ($action == "page_unlock") $headline = getescapedtext ($hcms_lang['check-in'][$lang]);
+elseif ($action == "unzip") $headline = getescapedtext ($hcms_lang['uncompress-files'][$lang]);
+elseif ($action == "cut") $headline = getescapedtext ($hcms_lang['cut'][$lang]);
+elseif ($action == "copy") $headline = getescapedtext ($hcms_lang['copy'][$lang]);
+elseif ($action == "linkcopy") $headline = getescapedtext ($hcms_lang['connected-copy'][$lang]);
+elseif ($action == "paste") $headline = getescapedtext ($hcms_lang['paste'][$lang]);
+elseif ($action == "delete" || $action == "deletemark") $headline = getescapedtext ($hcms_lang['delete'][$lang]);
+elseif ($action == "emptybin") $headline = getescapedtext ($hcms_lang['empty-recycle-bin'][$lang]);
+elseif ($action == "restore" || $action == "deleteunmark") $headline = getescapedtext ($hcms_lang['restore'][$lang]);
+elseif ($action == "publish") $headline = getescapedtext ($hcms_lang['publish'][$lang]);
+elseif ($action == "unpublish") $headline = getescapedtext ($hcms_lang['unpublish'][$lang]);
+
+echo showtopbar ($headline." ".$status_progress, $lang);
+?>
+
 <div style="display:block; width:100%; height:100%; text-align:center; vertical-align:middle;">
-  <div class="hcmsHeadline" style="margin:10px;"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?></span> <span class="hcmsHeadlineTiny"><?php echo $status; ?></div>
+
+  <!-- title -->
+  <div class="hcmsHeadline" style="margin:10px;"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?></span></div>
+
+  <!-- status -->
+  <div style="margin:15px; 10px; 5px; 10px;"><?php echo $headline." ".$status_text; ?></div>
+
+  <!-- location -->
+  <?php if (!empty ($location)) { ?>
+  <div style="margin:5px 10px;">
+    <?php echo "<img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" /> ".showshorttext (getlocationname ($site, $location, $cat), 220, true); ?>
+  </div>
+  <?php } ?>
   
   <?php if (!empty ($progress) && intval ($progress) >= 0) { ?>
-  <div style="display:block; width:80%; height:16px; margin:20px auto; border:1px solid #000000;">
+  <!-- progress bar --> 
+  <div style="display:block; width:80%; height:22px; margin:20px auto; border:1px solid #000000;">
     <div class="hcmsRowHead1" style="width:<?php echo $progress; ?>%; height:100%;"></div>
   </div>
   <?php } ?>
@@ -454,9 +518,6 @@ if ($maxcount > 0)
 // load screen
 if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'none';
 
-// set window height
-window.innerHeight = <?php if (!empty ($report)) echo "480"; else echo "240"; ?>;
-
 // reload status window
 function refreshpopup ()
 {
@@ -464,9 +525,6 @@ function refreshpopup ()
 }
 
 setTimeout ('refreshpopup()', <?php if (!empty ($report)) echo "5000"; else echo "1000"; ?>);
-
-// focus on start and finish
-<?php if ($force == "start" || $force == "finish") echo "window.focus();\n"; ?>
 </script>
 
 </body>

@@ -96,8 +96,8 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=0.6, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <style type="text/css">
 #topbarLayer
 {
@@ -125,7 +125,7 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 }
 </style>
 
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <!-- JQuery -->
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 <!-- JQuery UI -->
@@ -1095,13 +1095,8 @@ $(document).ready(function ()
 function frameReload (objectpath, timeout)
 {
   // reload main frame (upload by control objectlist)
-  // if new upload window
-  if (opener && opener.parent.frames['mainFrame'])
-  {
-    opener.parent.frames['mainFrame'].location.reload();
-  }
   // if upload layer in main frame
-  else if (window.top && window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame'])
+  if (window.top && window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame'])
   {
     window.top.frames['workplFrame'].frames['mainFrame'].location.reload();
   }
@@ -1389,7 +1384,7 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><span style=\"font-weig
     <?php if (!$is_mobile) { ?>
     <div style="margin-top:8px;">
       <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsIconList" />
-      <?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?>
+      <strong><?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?></strong>
     </div>
     <?php } ?>
     <div style="min-height:40px; margin:5px 0px; padding:0;">

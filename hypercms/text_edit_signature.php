@@ -50,6 +50,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
+$contentbot = "";
+
 // load object file and get container
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
@@ -76,9 +79,9 @@ else $add_constraint = "check = true;\n";
 if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
 {
   include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
-  
+
   $db_connect_data = db_read_text ($site, $contentfile, "", $id, "", $user);
-  
+
   if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
 }
 
@@ -86,9 +89,9 @@ if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['a
 if (empty ($contentbot)) 
 {
   $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-  
+
   $filedata = loadcontainer ($contentfile, "work", $user);
-  
+
   if ($filedata != "")
   {
     $temp_array = selectcontent ($filedata, "<text>", "<text_id>", $id);
@@ -98,7 +101,7 @@ if (empty ($contentbot))
 }
 
 // set default value given eventually by tag
-if (!isset ($contentbot) && $default != "") $contentbot = $default;
+if (empty ($contentbot) && !empty ($default)) $contentbot = $default;
 
 // encode script code
 $contentbot = scriptcode_encode ($contentbot);
@@ -126,28 +129,28 @@ $token = createtoken ($user);
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <!-- mobile Chrome, Safari, FireFox, Opera Mobile -->
   <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no, target-densitydpi=device-dpi" />
-  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-  <script type="text/javascript" src="javascript/main.min.js"></script>
+  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+  <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
   <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
   <script type="text/javascript" src="javascript/signature/jSignature.min.js"></script>
   <!--[if lt IE 9]>
   <script type="text/javascript" src="javascript/signature/flashcanvas.js"></script>
   <![endif]-->
   <script type="text/javascript">
-  
+
   function validateForm() 
   {
     var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
-    
+
     for (i=0; i<(args.length-2); i+=3) 
     { 
       test=args[i+2]; val=hcms_findObj(args[i]);
-      
+
       if (val) 
       { 
         nm=val.name; 
-        
+
         if ((val=val.value)!="") 
         {
           if (test.indexOf('isEmail')!=-1) 
@@ -175,7 +178,7 @@ $token = createtoken ($user);
         else if (test.charAt(0) == 'R') errors += '<?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>.\n'; 
       }
     } 
-    
+
     if (errors) 
     {
       alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>:\n'+errors));
@@ -262,7 +265,7 @@ $token = createtoken ($user);
     <input type="hidden" name="height" value="<?php echo $height; ?>" />
     <input type="hidden" name="savetype" value="" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
-    
+
     <table class="hcmsTableStandard">
       <tr>
         <td>
@@ -285,11 +288,6 @@ $token = createtoken ($user);
     </table>
   </form>
 </div>
-
-<script type="text/javascript">
-
-
-</script>
 
 <?php includefooter(); ?>
 

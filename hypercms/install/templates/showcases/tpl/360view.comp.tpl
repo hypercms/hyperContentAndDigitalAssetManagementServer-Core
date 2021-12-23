@@ -140,7 +140,7 @@ scriptend]
   }
   else
   {
-    $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions);
+    if (function_exists("collectMedia")) $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions);
 
     if (empty ($mediaFiles))
     {

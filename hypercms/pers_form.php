@@ -33,7 +33,7 @@ if (
      !valid_objectname ($cat) || !checkglobalpermission ($site, 'pers') || 
      ($cat == "tracking" && !checkglobalpermission ($site, 'perstrack')) || 
      ($cat == "profile" && !checkglobalpermission ($site, 'persprof')) || 
-     $mgmt_config[$site]['dam'] == true || !valid_publicationname ($site)
+     !empty ($mgmt_config[$site]['dam']) || !valid_publicationname ($site)
    ) killsession ($user);
 
 // edit permission defines view mode
@@ -175,9 +175,9 @@ else
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo $mgmt_config[$site]['default_codepage']; ?>" />
-<link href="<?php echo getthemelocation(); ?>css/main.css" rel="stylesheet" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<link href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" rel="stylesheet" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript">
 
 function openHelp ()

@@ -20,8 +20,15 @@ $location = url_encode (getrequest ("location", "url"));
 $page = url_encode (getrequest ("page", "url"));
 $ctrlreload = url_encode (getrequest ("ctrlreload", "url"));
 
+// ------------------------------ permission section --------------------------------
+
 // check session of user
 checkusersession ($user, false);
+
+// --------------------------------- logic section ----------------------------------
+
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -30,10 +37,10 @@ checkusersession ($user, false);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=0.57, maximum-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript">
 
 var hcms_objectpath;

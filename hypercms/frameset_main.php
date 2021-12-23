@@ -41,10 +41,10 @@ if (session_id() != "") session_write_close();
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=1024, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo url_encode ($mgmt_config['version']); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo url_encode ($mgmt_config['version']); ?>" />
-<script type="text/javascript" src="javascript/main.min.js"></script>
-<script type="text/javascript" src="javascript/click.min.js"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
+<script type="text/javascript" src="javascript/click.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <!-- JQuery used for AJAX viewport set request -->
 <script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
 
@@ -236,6 +236,132 @@ function closeMainView ()
   hcms_hideFormLayer('objectviewMainLayer');
 }
 
+var popupwindows = 1;
+
+function openPopup (url, id)
+{
+  if (url != "" && id != "")
+  {
+    // popup layer for the same id exists
+    if (document.getElementById(id))
+    {
+      maxPopup (id);
+    }
+    // create new popup layer
+    else if (popupwindows <= 5)
+    {
+      var div = document.createElement("div");
+      div.id = id;
+      div.className = "hcmsContextMenu";
+      div.style.cssText = "position:fixed; right:20px; bottom:0px; width:300px; height:36px; transition:height 0.3s;";
+      div.innerHTML = '<div style="position:absolute; right:0px; top:0px; width:106px; height:35px; margin:0; padding:2px 0px 1px 2px; z-index:91;">' + 
+      '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" onclick="maxPopup(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" />' + 
+      '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" onclick="minPopup(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" />' + 
+      '  <img src="<?php echo getthemelocation(); ?>img/button_close.png" name="close' + id + '" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage(\'close' + id + '\',\'\',\'<?php echo getthemelocation(); ?>img/button_close_over.png\',1);" onClick="closePopup(\'' + id + '\');" />' + 
+      '</div>' + 
+      '<div class="hcmsWorkplaceGeneric" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> overflow:hidden; position:absolute; width:100%; height:100%; z-index:90;">' + 
+      ' <iframe name="' + id + 'Frame" id="' + id + 'Frame" src="' + url + '" frameborder="0" style="width:100%; height:100%; margin:0; padding:0; border:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;" ?>" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>' + 
+      '</div>';
+      document.getElementById('popupsLayer').appendChild(div);
+      maxPopup (id);
+      popupwindows++;
+
+      return true;
+    }
+    // max popup layers reached
+    else
+    {
+      alert ('Max 5 popups');
+
+      // stop execution
+      return false;
+    }
+  }
+}
+
+function minPopup (id)
+{
+  if (id != "" && document.getElementById(id))
+  {
+    // popup div layer
+    var div = document.getElementById(id);
+
+    if (div.style.height != "36px")
+    {
+      // minimize popup layer
+      div.style.cssText = "position:fixed; right:20px; bottom:0px; width:640px; height:36px; transition:height 0.3s;";
+
+      setTimeout(function() {
+        div.style.cssText = "position:relative; width:300px; height:36px; transition:all 0.2s; float:right; z-index:80; overflow:hidden;";
+      }, 200);
+
+      // popup iframe
+      var iframe = document.getElementById(id + 'Frame');
+
+      // disable scrolling
+      iframe.style.overflow = "hidden";
+      iframe.scrolling = "no";
+    }
+  }
+}
+
+function maxPopup (id)
+{
+  if (id != "" && document.getElementById(id))
+  {
+    // popup div layer
+    var div = document.getElementById(id);
+
+    // maximize popup layer
+    if (div.style.height == "36px") div.style.cssText = "position:fixed; right:20px; bottom:0px; width:640px; height:600px; transition:height 0.3s; z-index:90;";
+    // full screen
+    else div.style.cssText = "position:fixed; left:0; right:0; bottom:0; height:100%; transition:height 0.3s; z-index:90;";
+
+    // popup iframe
+    var iframe = document.getElementById(id + 'Frame');
+
+    // enable scrolling
+    iframe.style.overflow = "<?php if (!$is_mobile) echo "auto"; else echo "scroll" ?>";
+    iframe.scrolling = "yes";
+  }
+}
+
+function closePopup (id)
+{
+  var warning = "";
+
+  // verify if objects being edited in popup layer
+  if (document.getElementById(id+ 'Frame') && typeof document.getElementById(id+ 'Frame').contentWindow.showwarning !== "undefined")
+  {
+    var warning = document.getElementById(id+ 'Frame').contentWindow.showwarning();
+
+    if (warning != "") alert ("<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>");
+  }
+
+  // close popup layer
+  if (document.getElementById(id) && warning == "")
+  {
+    var div = document.getElementById(id); 
+    div.parentNode.removeChild(div);
+    popupwindows--;
+  }
+}
+
+function showwarning ()
+{
+  return "<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-all-events'][$lang]); ?>";
+}
+
+function setSearchLocation (location, name)
+{
+  if (document.getElementById('navFrame'))
+  {
+    search = true;
+    document.getElementById('navFrame').contentWindow.setSearchLocation (location, name);
+    maxSearchFrame();
+  }
+}
+
 function setGlobals ()
 {
   // set window width and height for contextmenu
@@ -264,111 +390,6 @@ function setGlobals ()
   {
     is_mobile = true;
     hcms_transitioneffect = false;
-  }
-}
-
-var uploadwindows = 1;
-
-function openUpload (site, cat, location, id)
-{
-  if (site != "" && cat != "" && location != "" && id != "")
-  {
-    // upload layer for location exists
-    if (document.getElementById(id))
-    {
-      maxUpload (id);
-    }
-    // create new upload layer for location
-    else if (uploadwindows <= 5)
-    {
-      var div = document.createElement("div");
-      div.id = id;
-      div.className = "hcmsContextMenu";
-      div.style.cssText = "position:fixed; right:20px; bottom:0px; width:300px; height:36px; transition:height 0.3s;";
-      div.innerHTML = '<div style="position:absolute; right:0px; top:0px; width:106px; height:35px; margin:0; padding:2px 0px 1px 2px; z-index:91;">' + 
-      '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" onclick="maxUpload(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" />' + 
-      '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" onclick="minUpload(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" />' + 
-      '  <img src="<?php echo getthemelocation(); ?>img/button_close.png" name="close' + id + '" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage(\'close' + id + '\',\'\',\'<?php echo getthemelocation(); ?>img/button_close_over.png\',1);" onClick="closeUpload(\'' + id + '\');" />' + 
-      '</div>' + 
-      '<div class="hcmsWorkplaceGeneric" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> overflow:hidden; position:absolute; width:100%; height:100%; z-index:90;">' + 
-      ' <iframe id="uploadsFrame" src="popup_upload_html.php?uploadmode=multi&site=' + encodeURIComponent(site) + '&cat=' + encodeURIComponent(cat) + '&location=' + encodeURIComponent(location) + '" frameborder="0" style="width:100%; height:100%; margin:0; padding:0; border:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;" ?>" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>' + 
-      '</div>';
-      document.getElementById('uploadsLayer').appendChild(div);
-      maxUpload (id);
-      uploadwindows++;
-    }
-    // max upload layers reached
-    else
-    {
-      alert ('<?php echo getescapedtext ($hcms_lang['uploads'][$lang]); ?>: max 5');
-    }
-  }
-}
-
-function minUpload (id)
-{
-  if (id != "" && document.getElementById(id))
-  {
-    var div = document.getElementById(id);
-
-    if (div.style.height != "36px")
-    {
-      // minimize upload layer
-      div.style.cssText = "position:fixed; right:20px; bottom:0px; width:640px; height:36px; transition:height 0.3s;";
-
-      setTimeout(function() {
-        div.style.cssText = "position:relative; width:300px; height:36px; transition:all 0.2s; float:right; z-index:80; overflow:hidden;";
-      }, 200);
-    }
-  }
-}
-
-function maxUpload (id)
-{
-  if (id != "" && document.getElementById(id))
-  {
-    var div = document.getElementById(id);
-
-    // maximize upload layer
-    if (div.style.height == "36px") div.style.cssText = "position:fixed; right:20px; bottom:0px; width:640px; height:600px; transition:height 0.3s; z-index:90;";
-    // full screen
-    else div.style.cssText = "position:fixed; left:0; right:0; bottom:0; height:100%; transition:height 0.3s; z-index:90;";
-  }
-}
-
-function closeUpload (id)
-{
-  var warning = "";
-
-  // verify if objects beeing edited in upload layer
-  if (typeof document.getElementById("uploadsFrame").contentWindow.showwarning !== "undefined")
-  {
-    var warning = document.getElementById("uploadsFrame").contentWindow.showwarning();
-
-    if (warning != "") alert ("<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>");
-  }
-
-  // close upload layer
-  if (document.getElementById(id) && warning == "")
-  {
-    var div = document.getElementById(id); 
-    div.parentNode.removeChild(div);
-    uploadwindows--;
-  }
-}
-
-function showwarning ()
-{
-  return "<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-all-events'][$lang]); ?>";
-}
-
-function setSearchLocation (location, name)
-{
-  if (document.getElementById('navFrame'))
-  {
-    search = true;
-    document.getElementById('navFrame').contentWindow.setSearchLocation (location, name);
-    maxSearchFrame();
   }
 }
 
@@ -510,8 +531,8 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 </div>
 <?php } ?>
 
-<!-- uploads -->
-<div id="uploadsLayer" style="position:fixed; bottom:0; right:0; max-width:100%; max-height:36px; margin:0; padding:0; z-index:10;"></div>
+<!-- popups -->
+<div id="popupsLayer" style="position:fixed; bottom:0; right:0; max-width:100%; max-height:36px; margin:0; padding:0; z-index:10;"></div>
 
 <?php if (is_facerecognition ($user)) {
 // Syntax: <iframe sandbox="value">

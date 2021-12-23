@@ -42,17 +42,17 @@ $token = createtoken ($user);
 function gettagdata ($tag_array)
 {
   global $mgmt_config, $site, $is_mobile;
-  
+
   $return = array();
 
   foreach ($tag_array as $tagDefinition)
   {
     // get tag id
     $id = getattribute ($tagDefinition, "id");
-    
+
     // get visibility on edit
     $onedit = getattribute (strtolower ($tagDefinition), "onedit");
-    
+
     // We only use the first occurence of each element
     if (array_key_exists($id, $return) && isset($return[$id]->onedit))
     {
@@ -67,15 +67,15 @@ function gettagdata ($tag_array)
     
     $return[$id] = new stdClass();
     $return[$id]->onedit = $onedit;
-    
+
     // get tag name
     $hypertagname = gethypertagname ($tagDefinition);
     $return[$id]->hypertagname = $hypertagname;
-    
+
     $return[$id]->type = substr ($hypertagname, strlen($hypertagname)-1);
-        
+
     $label = getattribute ($tagDefinition, "label");
-    
+
     if (substr ($return[$id]->hypertagname, 0, strlen ("arttext")) == "arttext")
     {
       $return[$id]->article = true;
@@ -83,22 +83,22 @@ function gettagdata ($tag_array)
       $artid = getartid ($id);
 
       // get element id
-      $elementid = getelementid ($id);           
+      $elementid = getelementid ($id); 
 
       // define label
       if ($label == "") $labelname = $artid." - ".$elementid;
       else $labelname = $artid." - ".$label;
-      
+
       $return[$id]->labelname = $labelname;
     }
     else
     {
       $return[$id]->article = false;
-      
+
       // define label
       if ($label == "") $labelname = $id;
       else $labelname = $label;
-      
+
       $return[$id]->labelname = $labelname;
     }
 
@@ -107,7 +107,7 @@ function gettagdata ($tag_array)
 
     // get constraint
     $constraint = getattribute ($tagDefinition, "constraint");
-    
+
     if ($constraint != "") $constraint = "'".$hypertagname."[".$id."]','".$labelname."','".$constraint."'";
 
     $return[$id]->constraint = $constraint;
@@ -122,13 +122,13 @@ function gettagdata ($tag_array)
     $return[$id]->format = getattribute ($tagDefinition, "format");  
 
     // get toolbar
-    if ($mgmt_config[$site]['dam'] == false) $toolbar = getattribute ($tagDefinition, "toolbar");
+    if (empty ($mgmt_config[$site]['dam'])) $toolbar = getattribute ($tagDefinition, "toolbar");
     else $toolbar = "DAM";
 
     if ($toolbar == false) $toolbar = "DefaultForm";
-    
+
     $return[$id]->toolbar = $toolbar;
-    
+
     // get height in pixel of text field
     $sizeheight = getattribute ($tagDefinition, "height");
 
@@ -137,34 +137,34 @@ function gettagdata ($tag_array)
     elseif ($sizeheight <= 28) $sizeheight = "30";
 
     $return[$id]->height = $sizeheight;
-    
+
     // get width in pixel of text field
     $sizewidth = getattribute ($tagDefinition, "width");
 
     if ($sizewidth == false || $sizewidth <= 0) $sizewidth = "600";
 
     $return[$id]->width = $sizewidth;
-    
+
     // get language attribute
     $return[$id]->language_info = getattribute ($tagDefinition, "language");
 
     // get group access
     $return[$id]->groupaccess = getattribute ($tagDefinition, "groups"); 
     if ($return[$id]->groupaccess == "") $return[$id]->groupaccess = "";
-    
+
     // get list entries
     $return[$id]->list = getattribute ($tagDefinition, "list");
-    
+
     // get file entry (if keywords)
     $return[$id]->file = getattribute ($tagDefinition, "file");
-    
+
     // get onlylist setting for mandatory keywords list (if keywords)
     $return[$id]->onlylist = getattribute ($tagDefinition, "onlylist");
 
     // get display entry (if keywords)
     $return[$id]->display = getattribute ($tagDefinition, "display");
   }
-  
+
   return $return;
 }
 
@@ -201,7 +201,7 @@ foreach ($multiobject_array as $object)
   $location_item= deconvertpath ($location_item_esc, "file");
   $cat_item = getcategory ($site_item, $object);
   $file_item = getobject ($object);
-  
+
   if (empty ($site))
   {
     $site = $site_item;
@@ -219,7 +219,7 @@ foreach ($multiobject_array as $object)
   $setlocalpermission = setlocalpermission ($site_item, $ownergroup, $cat_item);
   
   // check localpermissions for DAM usage only
-  if ($mgmt_config[$site]['dam'] == true && $setlocalpermission['root'] != 1)
+  if (!empty ($mgmt_config[$site]['dam']) && $setlocalpermission['root'] != 1)
   {
     killsession ($user);
     break;
@@ -259,15 +259,15 @@ foreach ($multiobject_array as $object)
     $media_info = getfileinfo ($site, $mediafile, "comp");
     $thumbnail = $media_info['filename'].".thumb.jpg";
     $mediadir = getmedialocation ($site, $objectinfo_item['media'], "abs_path_media").$site."/";
-    
+
     // check media
     if (is_image ($media_info['ext'])) $is_image = true;
     if (is_video ($media_info['ext'])) $is_video = true;
     if (is_audio ($media_info['ext'])) $is_audio = true;
-    
+
     // prepare media file
     $temp = preparemediafile ($site, $mediadir, $thumbnail, $user);
-    
+
     // if encrypted
     if (!empty ($temp['result']) && !empty ($temp['crypted']) && is_file ($temp['templocation'].$temp['tempfile']))
     {
@@ -285,7 +285,7 @@ foreach ($multiobject_array as $object)
     if (is_file ($mediadir.$thumbnail))
     {
       $imgsize = getmediasize ($mediadir.$thumbnail);
-      
+
       // calculate image ratio to define CSS for image container div-tag
       if (!empty ($imgsize['height']))
       {
@@ -298,7 +298,7 @@ foreach ($multiobject_array as $object)
       {
         $thumbnailsize_new = $thumbnailsize;
       }
-      
+
       $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo_item['name'], true)."\" class=\"hcmsImageItem\" style=\"height:".$thumbnailsize_new."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";;
     }
     // no thumbnail available
@@ -334,11 +334,11 @@ foreach ($multiobject_array as $object)
     // load template
     $tcontent = loadtemplate ($site_item, $template);
     $templatedata = $tcontent['content'];
-    
+
     // try to get DB connectivity
     $db_connect = "";
     $dbconnect_array = gethypertag ($templatedata, "dbconnect", 0);
-    
+
     if ($dbconnect_array != false)
     {
       foreach ($dbconnect_array as $hypertag)
@@ -365,11 +365,10 @@ foreach ($multiobject_array as $object)
         $jstagstart = strpos (strtolower($templatedata), "[javascript:scriptbegin");
         $jstagend = strpos (strtolower($templatedata), "scriptend]", $jstagstart + strlen ("[javascript:scriptbegin")) + strlen ("scriptend]");
         $jstag = substr ($templatedata, $jstagstart, $jstagend - $jstagstart);
-
-                  
+       
         // remove JS code
         $templatedata = str_replace ($jstag, "", $templatedata);
-          
+
         // assign code
         if (trim ($jstag))
         {
@@ -381,25 +380,25 @@ foreach ($multiobject_array as $object)
       }
     }
   }
-  
+
   $texts = getcontent ($content, "<text>");
-  
+
   // Means that there where no entries found so we make an empty array
   if (!is_array ($texts)) $texts = array();
-  
+
   $newtext = array();
-  
+
   foreach ($texts as $text)
   {
     $id = getcontent ($text, "<text_id>");
-    
+
     // read content using db_connect
     $db_connect_data = false; 
-    
+
     if (isset ($db_connect) && $db_connect != "") 
     {
       $db_connect_data = db_read_text ($site, $objectinfo_item['container_id'], $content, $id, "", $user);
-      
+
       if ($db_connect_data != false) 
       {
         $textcontent = $db_connect_data['text'];      
@@ -407,22 +406,22 @@ foreach ($multiobject_array as $object)
         $db_connect_data = true;                    
       }
     }
-    
-    // read content from content container         
+
+    // read content from content container
     if ($db_connect_data == false) $textcontent = getcontent ($text, "<textcontent>", true);
-    
+
     // stop here and continue if we didn't find anything
     if (!is_array ($id) || !is_array ($textcontent)) continue;
-    
+
     $id = $id[0];
     $textcontent = trim ($textcontent[0]);
-    
+
     // ignore comments
     if (substr ($id, 0, strlen ('comment')) == "comment") continue;
-    
+
     $newtext[$id] = $textcontent;
   }
-  
+
   $allTexts[] = $newtext;
 }
 
@@ -470,8 +469,7 @@ foreach ($tagdata_array as $id => $tagdata)
   {
     // if we don't have access through groups we will remove the field completely
     foreach ($groups as $group)
-    {
-      
+    { 
       if (!checkgroupaccess ($tagdata->groupaccess, $group))
       {
         unset ($tagdata_array[$id]);
@@ -479,15 +477,15 @@ foreach ($tagdata_array as $id => $tagdata)
       }
     }
   }
-  
+
   foreach ($allTexts as $temp_text) 
   {
     // if the current element isn't ignored we continue
     if (isset ($tagdata->ignore) && $tagdata->ignore == true) continue;
-    
+
     // set content or default value
     $value = (array_key_exists ($id, $temp_text) ? $temp_text[$id] : $tagdata->defaultvalue);
-    
+
     if (!isset ($tagdata->fieldvalue)) 
     {
       $tagdata->fieldvalue = $value;
@@ -607,7 +605,7 @@ elseif ($is_video || $is_audio)
 {
   // read supported formats
   $available_extensions = array();
-  
+
   foreach ($mgmt_mediaoptions as $ext => $options)
   {
     if ($ext != "thumbnail-video" && $ext != "thumbnail-audio" && $ext != "autorotate-video")
@@ -617,7 +615,7 @@ elseif ($is_video || $is_audio)
     	$available_extensions[$name] = strtoupper ($name);
     }
   }
-  
+
   // include media options
   require ($mgmt_config['abs_path_cms']."include/mediaoptions.inc.php");
 }
@@ -659,8 +657,8 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_de.js"></script>
 <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/domready.js"></script>
 
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 
 <style>
 #preview
@@ -745,7 +743,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 }
 </style>
 
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 
 <script type="text/javascript">
 
@@ -2574,7 +2572,7 @@ $().ready(function() {
             $temp_array = explode (",", $tagdata->fieldvalue);
             $temp_array = array_unique ($temp_array);
 
-            if ($tagdata->locked == false) echo showtaxonomytree ($site, $container_id_array, $key, $tagdata->hypertagname, $lang, $tagdata->file, ($tagdata->width - 24), ($tagdata->height - 24));
+            if ($tagdata->locked == false) echo showtaxonomytree ($site, $container_id_array, $key, $tagdata->hypertagname, $lang, $tagdata->file, ($tagdata->width - 24), ($tagdata->height - 24), $charset);
             else echo "<textarea type=\"text\" id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:99%; height:".($tagdata->height - 24)."px;\" ".$disabled.">".implode (", ",$temp_array)."</textarea>";
             ?>
           </div>

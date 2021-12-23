@@ -1344,8 +1344,8 @@ else
     <title>hyperCMS</title>
     <meta charset="<?php echo getcodepage ($lang); ?>" />
     <meta name="viewport" content="width=260, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-    <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+    <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 
     <!-- JQuery (for navigation tree and autocomplete) -->
     <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
@@ -1355,8 +1355,8 @@ else
     <script type="text/javascript" src="javascript/jstree/jquery.jstree.min.js"></script>
     
     <!-- main and contextmenu library -->
-    <script type="text/javascript" src="javascript/main.min.js?v=<?php echo url_encode ($mgmt_config['version']); ?>"></script>
-    <script type="text/javascript" src="javascript/contextmenu.min.js?v=<?php echo url_encode ($mgmt_config['version']); ?>"></script>
+    <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
+    <script type="text/javascript" src="javascript/contextmenu.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 
     <!-- Rich calendar -->
     <link  rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />

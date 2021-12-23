@@ -53,6 +53,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
+$contentbot = "";
+
 // load object file and get container
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
@@ -75,9 +78,9 @@ header ('Content-Type: text/html; charset='.$charset);
 if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect))
 {
   include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
-  
+
   $db_connect_data = db_read_text ($site, $contentfile, "", $id, "", $user);
-  
+
   if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
 }
 
@@ -97,7 +100,7 @@ if (empty ($contentbot))
 }
 
 // set default value given eventually by tag
-if ($contentbot == "" && $default != "") $contentbot = $default;
+if (empty ($contentbot) && !empty ($default)) $contentbot = $default;
 
 // encode script code
 $contentbot = scriptcode_encode ($contentbot);
@@ -132,13 +135,13 @@ $token = createtoken ($user);
   <title>hyperCMS</title>
   <meta charset="<?php echo $charset; ?>" />
   <meta name="robots" content="noindex, nofollow" />
-  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+  <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
   <script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
   <script type="text/javascript" src="javascript/ckeditor/ckeditor/ckeditor.js"></script>
-  <script type="text/javascript" src="javascript/main.min.js"></script>
+  <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
   <script type="text/javascript">
-  
+
   function setsavetype (type)
   {
     document.forms['hcms_formview'].elements['savetype'].value = type;
@@ -155,7 +158,7 @@ $token = createtoken ($user);
 </head>
 
 <body class="hcmsWorkplaceGeneric">
-  
+
   <!-- auto save -->
   <div id="messageLayer" style="position:absolute; width:300px; height:40px; z-index:999999; left:150px; top:120px; visibility:hidden;">
     <table class="hcmsMessage hcmsTableStandard" style="width:300px; height:40px;">
@@ -172,7 +175,7 @@ $token = createtoken ($user);
   <!-- top bar -->
   <?php
   if ($label == "") $label = $id;
-  
+
   echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
   ?>
 
@@ -192,7 +195,7 @@ $token = createtoken ($user);
       <input type="hidden" name="toolbar" value="<?php echo $toolbar; ?>" /> 
       <input type="hidden" id="savetype" name="savetype" value="" />
       <input type="hidden" name="token" value="<?php echo $token; ?>" />
-      
+
       <table class="hcmsTableStandard">
         <tr>
           <td style="white-space:nowrap; text-align:left;">
@@ -216,20 +219,20 @@ $token = createtoken ($user);
       </table>
     </form>
   </div>
-  
+
   <?php if (intval ($mgmt_config['autosave']) > 0) { ?>
   <script type="text/javascript">
   function autosave ()
   {
     var test = $("#autosave").is(":checked");
-    
+
     if (test == true)
     {
       for (var i in CKEDITOR.instances)
       {
         CKEDITOR.instances[i].updateElement();
       }
-      
+
       hcms_showHideLayers ('messageLayer','','show');
       $("#savetype").val('auto');
       
@@ -242,16 +245,16 @@ $token = createtoken ($user);
           {
             alert (hcms_entity_decode(data.message));
           }
-              
+ 
           setTimeout ("hcms_showHideLayers('messageLayer','','hide')", 1500);
         }, 
         "json"
       );
     }
-    
+
     setTimeout ('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
   }
-  
+
   setTimeout ('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
   </script>
   <?php } ?>

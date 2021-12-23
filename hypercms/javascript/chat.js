@@ -1,6 +1,6 @@
 var chat_instance = false;
 var chat_service = "service/chat.php";
-var chat_audio = "javascript/ding.mp3";
+var chat_audio = new Audio("javascript/ding.mp3");
 var chat_state;
 var chat_file;
 
@@ -16,32 +16,29 @@ function Chat ()
   this.open = openChat;
 }
 
-// open chat windows/layer
+// open chat window/layer
 function openChat ()
 {
-  // standard browser
+  // get chat sidebar
   if (document.getElementById('chatLayer'))
   {
     var chatsidebar = document.getElementById('chatLayer');            
-    if (chatsidebar.style.display == "none") chatsidebar.style.display = "block";
   }
   else if (parent.document.getElementById('chatLayer'))
   {
     var chatsidebar = parent.document.getElementById('chatLayer');            
-    if (chatsidebar.style.display == "none") chatsidebar.style.display = "block";
   }
-  // mobile browser
-  else if (document.getElementById('chat'))
-  {
-    $("#chat").panel("open");
-  }
-  else if (parent.document.getElementById('chat'))
-  {
-    parent.$("#chat").panel("open");
-  }
+  else var chatsidebar = false;
 
   // scroll down
   if (document.getElementById('chat-area')) document.getElementById('chat-area').scrollTop = document.getElementById('chat-area').scrollHeight;
+
+  // display chat if hidden
+  if (chatsidebar && chatsidebar.style.right != "0px")
+  {
+    chatsidebar.style.transition = "0.3s";
+    chatsidebar.style.right = "0px";
+  }
 }
 
 // get the inital state of the chat (number of lines in chat log)
@@ -117,6 +114,8 @@ function updateChat ()
           if (update == true) 
           {
             openChat();
+
+            // play sound
             chat_audio.play();
           }							  
         }
@@ -125,13 +124,15 @@ function updateChat ()
       },
     });
   }
-  else setTimeout (updateChat, 2300);
+  // wait for chat instance
+  else setTimeout (updateChat, 2000);
 }
 
 // send the message
 function sendChat (message, nickname)
 {       
   updateChat();
+
   $.ajax({
     type: "POST",
     url: chat_service,
@@ -152,6 +153,7 @@ function sendChat (message, nickname)
 function inviteUserToChat (user, by)
 {
   updateChat();
+
   $.ajax({
     type: "POST",
     url: chat_service,
@@ -172,6 +174,7 @@ function inviteUserToChat (user, by)
 function uninviteUsersOf (user)
 {
   updateChat();
+
   $.ajax({
     type: "POST",
     url: chat_service,
@@ -225,5 +228,6 @@ function checkChat ()
       },
     });
   }
-  else setTimeout (checkChat, 2400);
+  // wait for chat instance
+  else setTimeout (checkChat, 2000);
 }

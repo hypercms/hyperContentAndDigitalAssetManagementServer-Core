@@ -30,8 +30,8 @@ checkusersession ($user, false);
 <head>
 <title>hyperCMS Chat</title>
 <meta charset="utf-8" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <style type="text/css">
 #chat-area span
 {
@@ -51,7 +51,7 @@ checkusersession ($user, false);
   border-bottom: 1px solid #333333;
 }
 </style>
-<script type="text/javascript" src="javascript/main.min.js" ></script>
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>" ></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="javascript/chat.min.js"></script>
 <script type="text/javascript">
@@ -167,7 +167,7 @@ function getusersonline ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onload="setInterval('chat.update()', 2600); setInterval('getusersonline()', 12300); adjust_height();" onresize="adjust_height();">
+<body class="hcmsWorkplaceGeneric" onload="setInterval('chat.update()', <?php if (!empty ($mgmt_config['chat_update_interval']) && intval ($mgmt_config['chat_update_interval']) > 99) echo intval ($mgmt_config['chat_update_interval']); else echo "1600"; ?>); setInterval('getusersonline()', 12300); adjust_height();" onresize="adjust_height();">
 
 <!-- top bar -->
 <div class="hcmsWorkplaceBar" style="width:100%;">

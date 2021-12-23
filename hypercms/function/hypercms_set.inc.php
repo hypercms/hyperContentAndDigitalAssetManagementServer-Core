@@ -459,6 +459,9 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
 
           // correct \" of richtext editor
           $textcontent = str_replace ("\\\"", "\"", $textcontent);
+
+          // escape hyperCMS container XML tags
+          $textcontent = escape_xmltags ($textcontent, "container");
         }
         // unformatted text
         elseif ($type[$id] == "u")
@@ -472,6 +475,9 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
             // correct quotes
             $textcontent = str_replace (array ("\\'", "\\\""), array ("'", "\""), $textcontent);
           }
+
+          // escape hyperCMS container XML tags
+          $textcontent = escape_xmltags ($textcontent, "container");
         }
         // date
         elseif ($type[$id] == "d")
@@ -487,12 +493,18 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
         elseif ($type[$id] == "k")
         {
           $textcontent = trim ($textcontent);
+
+          // escape hyperCMS container XML tags
+          $textcontent = escape_xmltags ($textcontent, "container");
         }
         // signature
         elseif ($type[$id] == "s")
         {
           // base64 encoded image (image/png;base64,image-string)
           $textcontent = trim ($textcontent);
+
+          // escape hyperCMS container XML tags
+          $textcontent = escape_xmltags ($textcontent, "container");
         }
         // checkbox value, text options
         else
@@ -562,7 +574,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
               else $link_array = false;
             }
           } 
- 
+
           // exctract previous (old) links
           $temp_array = selectcontent ($contentdata, "<text>", "<text_id>", $id);
 
@@ -657,12 +669,12 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
         if ($art[$id] == "no")
         {
           // set the new content
-          $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, true);
+          $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
 
           if ($contentdatanew == false)
           {
             $contentdatanew = addcontent ($contentdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $elemid);
-            $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, true);
+            $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
           }
 
           if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid, true);
@@ -674,7 +686,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
           $artid = getartid ($id);
 
           // set the new content
-          $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, true);
+          $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
  
           if ($contentdatanew == false)
           {
@@ -686,7 +698,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
               $contentdatanew = addcontent ($contentdatanew, $text_schema_xml, "<article>", "<article_id>", $artid, "<articletextcollection>", "<text_id>", $elemid);
             }
 
-            $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, true);
+            $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
             if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid, true);
           }
         } 

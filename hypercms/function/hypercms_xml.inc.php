@@ -39,28 +39,40 @@ function valid_tagname ($tagname)
 // ------------------------------------ escape_xmltags ----------------------------------------------
 
 // function: escape_xmltags()
-// input: XML content [string], XML schema [container,template] (optional)
+// input: XML content [string], XML schema [container,template,user,usergroup] (optional)
 // output: escaped hyperCMS tags in XML content [string] / false on error
 
 // description:
-// Escapes all XML tags used in containers since they could be used in the unescaped CDATA sections of a textcontent node.
+// Escapes all XML tags used in containers, templates, user, and usergroup since they could be used in the unescaped CDATA sections.
 
 function escape_xmltags ($xmldata, $schema="container")
 {
   if ($xmldata != "")
   {
+    // definitions
     if ($schema == "container")
     {
-      $search = array("<container>", "<hyperCMS>", "<contentcontainer>", "</contentcontainer>", "<contentxmlschema>", "</contentxmlschema>", "<contentorigin>", "</contentorigin>", "<contentobjects>", "</contentobjects>", "<contentuser>", "</contentuser>", "<contentcreated>", "</contentcreated>", "<contentdate>", "</contentdate>", "<contentpublished>", "</contentpublished>", "<contentstatus>", "</contentstatus>", "<contentworkflow>", "</contentworkflow>", "</hyperCMS>", "<head>", "<pagetitle>", "</pagetitle>", "<pageauthor>", "</pageauthor>", "<pagedescription>", "</pagedescription>", "<pagekeywords>", "</pagekeywords>", "<pagecontenttype>", "</pagecontenttype>", "<pagelanguage>", "</pagelanguage>", "<pagerevisit>", "</pagerevisit>", "<pagetracking>", "</pagetracking>", "</head>", "<textcollection>", "</textcollection>", "<mediacollection>", "</mediacollection>", "<linkcollection>", "</linkcollection>", "<componentcollection>", "</componentcollection>", "<articlecollection>", "</articlecollection>", "</container>", "<text>", "<text_id>", "</text_id>", "<textuser>", "</textuser>", "<textcontent>", "</textcontent>", "</text>", "<article>", "<article_id>", "</article_id>", "<articletitle>", "</articletitle>", "<articledatefrom>", "</articledatefrom>", "<articledateto>", "</articledateto>", "<articlestatus>", "</articlestatus>", "<articleuser>", "</articleuser>", "<articletextcollection>", "</articletextcollection>", "<articlemediacollection>", "</articlemediacollection>", "<articlelinkcollection>", "</articlelinkcollection>", "<articlecomponentcollection>", "</articlecomponentcollection>", "</article>", "<component>", "<component_id>", "</component_id>", "<componentuser>", "</componentuser>", "<componentcond>", "</componentcond>", "<componentfiles>", "</componentfiles>", "</component>", "<link>", "<link_id>", "</link_id>", "<linkuser>", "</linkuser>", "<linkhref>", "</linkhref>", "<linktarget>", "</linktarget>", "<linktext>", "</linktext>", "</link>", "<media>", "<media_id>", "</media_id>", "<mediauser>", "</mediauser>", "<mediafile>", "</mediafile>", "<mediaobject>", "</mediaobject>", "<mediaalttext>", "</mediaalttext>", "<mediaalign>", "</mediaalign>", "<mediawidth>", "</mediawidth>", "<mediaheight>", "</mediaheight>", "</media>");
-      $replace = array("&lt;container&gt;", "&lt;hyperCMS&gt;", "&lt;contentcontainer&gt;", "&lt;/contentcontainer&gt;", "&lt;contentxmlschema&gt;", "&lt;/contentxmlschema&gt;", "&lt;contentorigin&gt;", "&lt;/contentorigin&gt;", "&lt;contentobjects&gt;", "&lt;/contentobjects&gt;", "&lt;contentuser&gt;", "&lt;/contentuser&gt;", "&lt;contentcreated&gt;", "&lt;/contentcreated&gt;", "&lt;contentdate&gt;", "&lt;/contentdate&gt;", "&lt;contentpublished&gt;", "&lt;/contentpublished&gt;", "&lt;contentstatus&gt;", "&lt;/contentstatus&gt;", "&lt;contentworkflow&gt;", "&lt;/contentworkflow&gt;", "&lt;/hyperCMS&gt;", "&lt;head&gt;", "&lt;pagetitle&gt;", "&lt;/pagetitle&gt;", "&lt;pageauthor&gt;", "&lt;/pageauthor&gt;", "&lt;pagedescription&gt;", "&lt;/pagedescription&gt;", "&lt;pagekeywords&gt;", "&lt;/pagekeywords&gt;", "&lt;pagecontenttype&gt;", "&lt;/pagecontenttype&gt;", "&lt;pagelanguage&gt;", "&lt;/pagelanguage&gt;", "&lt;pagerevisit&gt;", "&lt;/pagerevisit&gt;", "&lt;pagetracking&gt;", "&lt;/pagetracking&gt;", "&lt;/head&gt;", "&lt;textcollection&gt;", "&lt;/textcollection&gt;", "&lt;mediacollection&gt;", "&lt;/mediacollection&gt;", "&lt;linkcollection&gt;", "&lt;/linkcollection&gt;", "&lt;componentcollection&gt;", "&lt;/componentcollection&gt;", "&lt;articlecollection&gt;", "&lt;/articlecollection&gt;", "&lt;/container&gt;", "&lt;text&gt;", "&lt;text_id&gt;", "&lt;/text_id&gt;", "&lt;textuser&gt;", "&lt;/textuser&gt;", "&lt;textcontent&gt;", "&lt;/textcontent&gt;", "&lt;/text&gt;", "&lt;article&gt;", "&lt;article_id&gt;", "&lt;/article_id&gt;", "&lt;articletitle&gt;", "&lt;/articletitle&gt;", "&lt;articledatefrom&gt;", "&lt;/articledatefrom&gt;", "&lt;articledateto&gt;", "&lt;/articledateto&gt;", "&lt;articlestatus&gt;", "&lt;/articlestatus&gt;", "&lt;articleuser&gt;", "&lt;/articleuser&gt;", "&lt;articletextcollection&gt;", "&lt;/articletextcollection&gt;", "&lt;articlemediacollection&gt;", "&lt;/articlemediacollection&gt;", "&lt;articlelinkcollection&gt;", "&lt;/articlelinkcollection&gt;", "&lt;articlecomponentcollection&gt;", "&lt;/articlecomponentcollection&gt;", "&lt;/article&gt;", "&lt;component&gt;", "&lt;component_id&gt;", "&lt;/component_id&gt;", "&lt;componentuser&gt;", "&lt;/componentuser&gt;", "&lt;componentcond&gt;", "&lt;/componentcond&gt;", "&lt;componentfiles&gt;", "&lt;/componentfiles&gt;", "&lt;/component&gt;", "&lt;link&gt;", "&lt;link_id&gt;", "&lt;/link_id&gt;", "&lt;linkuser&gt;", "&lt;/linkuser&gt;", "&lt;linkhref&gt;", "&lt;/linkhref&gt;", "&lt;linktarget&gt;", "&lt;/linktarget&gt;", "&lt;linktext&gt;", "&lt;/linktext&gt;", "&lt;/link&gt;", "&lt;media&gt;", "&lt;media_id&gt;", "&lt;/media_id&gt;", "&lt;mediauser&gt;", "&lt;/mediauser&gt;", "&lt;mediafile&gt;", "&lt;/mediafile&gt;", "&lt;mediaobject&gt;", "&lt;/mediaobject&gt;", "&lt;mediaalttext&gt;", "&lt;/mediaalttext&gt;", "&lt;mediaalign&gt;", "&lt;/mediaalign&gt;", "&lt;mediawidth&gt;", "&lt;/mediawidth&gt;", "&lt;mediaheight&gt;", "&lt;/mediaheight&gt;", "&lt;/media&gt;");
+      $tagname = array("container", "hyperCMS", "contentcontainer", "contentxmlschema", "contentorigin", "contentobjects", "contentuser", "contentcreated", "contentdate", "contentpublished", "contentstatus", "contentworkflow", "head", "pagetitle", "pageauthor", "pagedescription", "pagekeywords", "pagecontenttype", "pagelanguage", "pagerevisit", "pagetracking", "textcollection", "mediacollection", "linkcollection", "componentcollection", "articlecollection", "text", "text_id", "textuser", "textcontent", "article", "article_id", "articletitle", "articledatefrom", "articledateto", "articlestatus", "articleuser", "articletextcollection",  "articlemediacollection", "articlelinkcollection", "articlecomponentcollection", "component", "component_id", "componentuser", "componentcond", "componentfiles", "link", "link_id", "linkuser", "linkhref", "linktarget", "linktext", "media", "media_id", "mediauser", "mediafile", "mediaobject", "mediaalttext", "mediaalign", "mediawidth", "mediaheight", "multimedia", "file", "content");
     }
     elseif ($schema == "template")
     {
-      $search = array("<template>", "<name>", "</name>", "<user>", "</user>", "<category>", "</category>", "<extension>", "</extension>", "<application>", "</application>", "<content>", "</content>", "</template>");
-      $replace = array("&lt;template&gt;", "&lt;name&gt;", "&lt;/name&gt;", "&lt;user&gt;", "&lt;/user&gt;", "&lt;category&gt;", "&lt;/category&gt;", "&lt;extension&gt;", "&lt;/extension&gt;", "&lt;application&gt;", "&lt;/application&gt;", "&lt;content&gt;", "&lt;/content&gt;", "&lt;/template&gt;");
+      $tagname = array("template", "name", "user", "category", "extension", "application", "content");
+    }
+    elseif ($schema == "user")
+    {
+      $tagname = array("userlist", "user", "login", "password", "hashcode", "admin", "userdate", "realname", "email", "phone", "signature", "language", "timezone", "theme", "validdatefrom", "validdateto", "memberof", "publication", "usergroup");
+    }
+    elseif ($schema == "usergroup")
+    {
+      $tagname = array("usergrouplist", "usergroup", "groupname", "permission", "pageaccess", "compaccess", "plugins");
     }
 
-    $xmldata = str_replace ($search, $replace, $xmldata);
+    // search and replace
+    foreach ($tagname as $temp)
+    {
+      $xmldata = str_replace ("<".$temp.">", "&lt;".$temp."&gt;", $xmldata);
+      $xmldata = str_replace ("</".$temp.">", "&lt;/".$temp."&gt;", $xmldata);
+    }
   }
 
   return $xmldata;
@@ -200,8 +212,8 @@ function getcontent ($xmldata, $starttagname, $unescape_content=false)
           $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
         }
 
-        // unescape characters & < >
-        if (!empty ($unescape_content))
+        // unescape characters & < > if not tag is used in the content
+        if (!empty ($unescape_content) && strpos ("_".$content_record, "<") < 1 && strpos ("_".$content_record, ">") < 1)
         {
           $content_record = str_replace ("&amp;", "&", $content_record);
           $content_record = str_replace ("&lt;", "<", $content_record);
@@ -294,13 +306,13 @@ function geticontent ($xmldata, $starttagname, $unescape_content=false)
           $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
         }
 
-        // unescape characters & < >
-        if (!empty ($unescape_content))
+        // unescape characters & < > if not tag is used in the content
+        if (!empty ($unescape_content) && strpos ("_".$content_record, "<") < 1 && strpos ("_".$content_record, ">") < 1)
         {
           $content_record = str_replace ("&amp;", "&", $content_record);
           $content_record = str_replace ("&lt;", "<", $content_record);
           $content_record = str_replace ("&gt;", ">", $content_record);
-        } 
+        }
 
         $result_set[$i] = $content_record;
       }

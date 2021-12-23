@@ -37,8 +37,8 @@ if (session_id() != "") session_write_close();
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0"></meta>
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?ts=<?php echo time(); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?ts=<?php echo time(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <!-- 57 x 57 Android and iPhone 3 icon -->
 <link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
 <!-- 114 x 114 iPhone 4 icon -->
@@ -46,7 +46,7 @@ if (session_id() != "") session_write_close();
 <!-- 57 x 57 Nokia icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
 <!-- main library -->
-<script type="text/javascript" src="javascript/main.min.js"></script>
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <!-- JQuery used for AJAX viewport set request -->
 <script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
 <style>
@@ -137,24 +137,112 @@ function maxNavFrame (width)
   }
 }
 
-function openChat ()
-{
-  // standard browser (open/close chat)
-  if (document.getElementById('chatLayer'))
-  {
-    var chatsidebar = document.getElementById('chatLayer');
-  }
-  else if (parent.document.getElementById('chatLayer'))
-  {
-    var chatsidebar = parent.document.getElementById('chatLayer');
-  }
-  else var chatsidebar = false;
+var popupwindows = 1;
 
-  if (chatsidebar)
+function openPopup (url, id)
+{
+  if (url != "" && id != "")
   {
-    chatsidebar.style.transition = "0.3s";
-    if (chatsidebar.style.right == "0px") chatsidebar.style.right = "-320px";
-    else chatsidebar.style.right = "0px";
+    // popup layer for same id exists
+    if (document.getElementById(id))
+    {
+      maxPopup (id);
+    }
+    // create new popup layer
+    else if (popupwindows <= 1)
+    {
+      var div = document.createElement("div");
+      div.id = id;
+      div.className = "hcmsContextMenu";
+      div.style.cssText = "position:fixed; bottom:0px; left:0px; right:0px; height:36px; transition:height 0.3s;";
+      div.innerHTML = '<div style="position:absolute; right:0px; top:0px; width:112px; height:35px; margin:0; padding:2px 0px 1px 2px; z-index:91;">' + 
+      '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" onclick="maxPopup(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" />' + 
+      '  <img src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" onclick="minPopup(\'' + id + '\');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" />' + 
+      '  <img src="<?php echo getthemelocation(); ?>img/button_close.png" name="close' + id + '" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage(\'close' + id + '\',\'\',\'<?php echo getthemelocation(); ?>img/button_close_over.png\',1);" onClick="closePopup(\'' + id + '\');" />' + 
+      '</div>' + 
+      '<div class="hcmsWorkplaceGeneric" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> overflow:hidden; position:absolute; width:100%; height:100%; z-index:90;">' + 
+      ' <iframe name="' + id + 'Frame" id="' + id + 'Frame" src="' + url + '" frameborder="0" style="width:100%; height:100%; margin:0; padding:0; border:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;" ?>" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>' + 
+      '</div>';
+      document.getElementById('popupsLayer').appendChild(div);
+      maxPopup (id);
+      popupwindows++;
+
+      return true;
+    }
+    // max popup layers reached
+    else
+    {
+      alert ('Max 1 popup');
+
+      // stop execution
+      return false;
+    }
+  }
+}
+
+function minPopup (id)
+{
+  if (id != "" && document.getElementById(id))
+  {
+    // popup div layer
+    var div = document.getElementById(id);
+
+    if (div.style.height != "36px")
+    {
+      // minimize popup layer
+      div.style.cssText = "position:fixed; right:0px; bottom:0px; width:100%; height:36px; transition:height 0.3s;";
+
+      setTimeout(function() {
+        div.style.cssText = "position:relative; width:300px; height:36px; transition:all 0.2s; float:right; z-index:80; overflow:hidden;";
+      }, 200);
+
+      // popup iframe
+      var iframe = document.getElementById(id + 'Frame');
+
+      // disable scrolling
+      iframe.style.overflow = "hidden";
+      iframe.scrolling = "no";
+    }
+  }
+}
+
+function maxPopup (id)
+{
+  if (id != "" && document.getElementById(id))
+  {
+    // popup div layer
+    var div = document.getElementById(id);
+
+    // full screen
+    div.style.cssText = "position:fixed; left:0; right:0; bottom:0; height:calc(100% - 36px); transition:height 0.3s; z-index:90;";
+
+    // popup iframe
+    var iframe = document.getElementById(id + 'Frame');
+
+    // enable scrolling
+    iframe.style.overflow = "<?php if (!$is_mobile) echo "auto"; else echo "scroll" ?>";
+    iframe.scrolling = "yes";
+  }
+}
+
+function closePopup (id)
+{
+  var warning = "";
+
+  // verify if objects being edited in popup layer
+  if (document.getElementById(id+ 'Frame') && typeof document.getElementById(id+ 'Frame').contentWindow.showwarning !== "undefined")
+  {
+    var warning = document.getElementById(id+ 'Frame').contentWindow.showwarning();
+
+    if (warning != "") alert ("<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>");
+  }
+
+  // close popup layer
+  if (document.getElementById(id) && warning == "")
+  {
+    var div = document.getElementById(id); 
+    div.parentNode.removeChild(div);
+    popupwindows--;
   }
 }
 
@@ -232,7 +320,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
     <div style="float:left; width:calc(100% - 144px); text-align:center;"><div class="hcmsHeadline" style="padding:8px;"></div></div>
     <div style="float:left; width:36px; text-align:right; margin-left:35px;"> 
     <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
-      <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_chat.png" onclick="openChat();" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
+      <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_chat.png" onclick="hcms_openChat();" class="hcmsButtonTiny hcmsButtonSizeSquare" style="float:left; padding:2px;" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
     <?php } ?>
     </div>
   </div>
@@ -277,6 +365,9 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
     <iframe id="chatFrame" src="chat.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
   </div>  
   <?php } ?>
+
+  <!-- popups -->
+  <div id="popupsLayer" style="position:fixed; bottom:0; right:0; max-width:100%; max-height:36px; margin:0; padding:0; z-index:10;"></div>
 
 </body>
 </html>
