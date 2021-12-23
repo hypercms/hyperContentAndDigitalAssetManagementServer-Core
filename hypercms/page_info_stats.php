@@ -183,20 +183,20 @@ if (!empty ($container_id))
 {
   if ($page == ".folder")
   {
-    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc.$page, "", false);
-    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc.$page, "", true);
-    $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc.$page, "", true);
+    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc.$page, "", false, 0, 0);
+    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc.$page, "", true, 0, 0);
+    $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc.$page, "", true, 0, 0);
   }
   elseif ($media != "")
   {
-    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", intval ($container_id), "", "", false);
-    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "", true);
-    $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", intval ($container_id), "", "", true);
+    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", intval ($container_id), "", "", false, 0, 0);
+    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "", true, 0, 0);
+    $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", intval ($container_id), "", "", true, 0, 0);
   }
   else
   {
-    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", intval ($container_id), "", "", false);
-    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "", false);
+    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", intval ($container_id), "", "", false, 0, 0);
+    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "", false, 0, 0);
   }
 
   $date_axis = array();

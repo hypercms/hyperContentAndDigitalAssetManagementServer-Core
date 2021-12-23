@@ -5453,13 +5453,10 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
 {
   global $mgmt_config;
 
-  // define timeout for cache in seconds
-  if (empty ($cache_timeout)) $cache_timeout = 60*60*12;
-
   // define file name for cache (MD5 hash identifies the input parameters)
   $filename = md5 ($date_from.$date_to.$activity.$container_id.$objectpath.$user.$return_filesize).".stat.json";
 
-  // initalize
+  // initialize
   $dailystat = array();
   $cached = false;
 
@@ -5489,7 +5486,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
     if ($objectpath != "") $objectpath = $db->rdbms_escape_string ($objectpath);
     if ($user != "") $user = $db->rdbms_escape_string ($user);
 
-    if ($maxhits != "" && $maxhits > 0)
+    if ($maxhits != "" || intval ($maxhits) > 0)
     {
       if (strpos ($maxhits, ",") > 0)
       {

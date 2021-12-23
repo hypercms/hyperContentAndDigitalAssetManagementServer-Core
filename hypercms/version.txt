@@ -5712,6 +5712,7 @@ Release 12/2021
 - Modifications in function showmedia in UI API in order to verify that all media files (sources) for the audio/videoplayer exist
 - Modifications in videoplayer in order to add the original video file if supported and in case there is none or one video source
 - Modifications in videoplayer in order to verify that all media files (sources) for the audio/videoplayer exist
+- Modifications in page_info_stats in order to set the input parameters for the cache timeout
 - Updates in the Administrators Guide
 - Updates in the German language file
 - Updates in the Developers Guide (Removed the full API Reference in the manual since it is available online and in the system)
@@ -5738,3 +5739,4 @@ Release 12/2021
 - Bug fix: Function showtaxonomytree in UI API did not select all entries and perform a search due to a deprecated query using getElementsByName
 - Bug fix: Function showtaxonomytree in UI API did not remove the CSS class from the results of a new search expression and left the previously found entries highlighted
 - Bug fix: Function edituser in Main API did not return password errors
+- Bug fix: Function rdbms_getmediastat in DB Connect always set the cache timeout to 12 hours if a cache timeout has not been provided as input
