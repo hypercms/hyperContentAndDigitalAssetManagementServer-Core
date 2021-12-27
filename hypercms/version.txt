@@ -5739,4 +5739,4 @@ Release 12/2021
 - Bug fix: Function showtaxonomytree in UI API did not select all entries and perform a search due to a deprecated query using getElementsByName
 - Bug fix: Function showtaxonomytree in UI API did not remove the CSS class from the results of a new search expression and left the previously found entries highlighted
 - Bug fix: Function edituser in Main API did not return password errors
-- Bug fix: Function rdbms_getmediastat in DB Connect always set the cache timeout to 12 hours if a cache timeout has not been provided as input
+- Bug fix: Function rdbms_getmediastat in DB Connect set the cache timeout to 12 hours if a cache timeout has not been provided as input

@@ -325,7 +325,7 @@ function hcms_showContextmenu ()
         if (document.getElementById("img_cmsview")) document.getElementById("img_cmsview").className = "hcmsIconOn hcmsIconList";
         if (document.getElementById("img_notify")) document.getElementById("img_notify").className = "hcmsIconOn hcmsIconList";
         if (document.getElementById("img_chat") && multiobject_count <= 1) document.getElementById("img_chat").className = "hcmsIconOn hcmsIconList";
-        else document.getElementById("img_chat").className = "hcmsIconOff hcmsIconList";
+        else if (document.getElementById("img_chat")) document.getElementById("img_chat").className = "hcmsIconOff hcmsIconList";
         if (document.getElementById("img_restore")) document.getElementById("img_restore").className = "hcmsIconOn hcmsIconList";
         if (document.getElementById("img_delete")) document.getElementById("img_delete").className = "hcmsIconOn hcmsIconList";
         if (document.getElementById("img_cut")) document.getElementById("img_cut").className = "hcmsIconOn hcmsIconList";
@@ -348,7 +348,7 @@ function hcms_showContextmenu ()
         if (document.getElementById("img_cmsview")) document.getElementById("img_cmsview").className = "hcmsIconOn hcmsIconList";
         if (document.getElementById("img_notify")) document.getElementById("img_notify").className = "hcmsIconOn hcmsIconList";
         if (document.getElementById("img_chat") && multiobject_count <= 1) document.getElementById("img_chat").className = "hcmsIconOn hcmsIconList";
-        else document.getElementById("img_chat").className = "hcmsIconOff hcmsIconList";
+        else if (document.getElementById("img_chat")) document.getElementById("img_chat").className = "hcmsIconOff hcmsIconList";
         if (document.getElementById("img_restore")) document.getElementById("img_restore").className = "hcmsIconOn hcmsIconList";
         if (document.getElementById("img_delete")) document.getElementById("img_delete").className = "hcmsIconOn hcmsIconList";   
         if (document.getElementById("img_cut")) document.getElementById("img_cut").className = "hcmsIconOn hcmsIconList";
