@@ -103,7 +103,7 @@ if ($action != "" && valid_publicationname ($site) && $cat != "" && valid_locati
       }
       
       if ($result == false) $message = getescapedtext ($hcms_lang['the-publishing-queue-could-not-be-saved'][$lang]);
-      else $message = "<script language=\"JavaScript\" type=\"text/javascript\"> window.close(); </script>";
+      else $message = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."<script language=\"JavaScript\" type=\"text/javascript\"> setTimeout('popupclose()', 1500); </script>";
     }
     else $message = getescapedtext ($hcms_lang['no-objects-to-publish'][$lang]);
   }
@@ -194,6 +194,18 @@ function submitform ()
     }
   }
 }
+
+// close popup frame
+function popupclose ()
+{
+  var id = parent.document.getElementById(window.name).id;
+
+  if (id.indexOf('Frame') > 0)
+  {
+    id = id.substring(0, id.length - 5);
+    if (parent.document.getElementById(id) && typeof parent.closePopup == 'function') parent.closePopup(id);
+  }
+}
 </script>
 </head>
 
@@ -206,7 +218,7 @@ elseif ($action == "unpublish") $headline = getescapedtext ($hcms_lang['unpublis
 
 echo showtopbar ($headline, $lang);
 
-echo showmessage ($message, 360, 70, $lang, "position:fixed; left:10px; top:10px;");
+if (!empty ($message)) echo showmessage ($message, 360, 70, $lang, "position:fixed; left:10px; top:10px;");
 ?>
 
 <div class="hcmsWorkplaceFrame">

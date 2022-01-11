@@ -962,7 +962,7 @@ $mgmt_config['mergepdf'] = "%mergepdf%";
 // The file "db_connect_rdbms.php" provides MySQL and ODBC DB Connectivity.
 // Run the installation or create a database with UTF-8 support and run the SQL script for table definitions manually.
 
-// Define Database Access:
+// Define Database Access
 $mgmt_config['db_connect_rdbms'] = "db_connect_rdbms.php";
 $mgmt_config['dbconnect'] = "mysql"; // values: mysql, odbc
 $mgmt_config['dbhost'] = "%dbhost%";
@@ -974,6 +974,11 @@ $mgmt_config['dbcharset'] = "utf8";
 // RDBMS Log
 // Log queries and their executing time in logs/sql.log
 $mgmt_config['rdbms_log'] = false;
+
+// Optimize database
+// Optimize the database automatically once per year (1st of January)
+// It is recommended to create a backup of the database before the execution of the job
+$mgmt_config['rdbms_optimize'] = false;
 
 // --------------------------------- SMTP Mail System Configuration -----------------------------------
 

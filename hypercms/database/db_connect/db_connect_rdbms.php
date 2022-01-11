@@ -6246,6 +6246,87 @@ function rdbms_gettableinfo ($table)
   else return false;
 }
 
+// ----------------------------------------------- optimize database -------------------------------------------------
+// function: rdbms_optimizedatabase()
+// input: %
+// output: true / false
+// requires: config.inc.php
+
+// description:
+// This function removes dead datasets from the database and optimizes the tables.
+// It is recommended to create a backup of the database before the execution of this function.
+
+function rdbms_optimizedatabase ()
+{
+  global $mgmt_config;
+
+  $inherit_db = inherit_db_read ();
+
+  if (!empty ($inherit_db) && sizeof ($inherit_db) > 0)
+  {
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    $exclude = array();
+
+    foreach ($inherit_db as $inherit_db_record)
+    {
+      if (!empty ($inherit_db_record['parent']))
+      {
+        $exclude[] = 'object.objectpath NOT LIKE "*page*/'.$db->rdbms_escape_string (trim ($inherit_db_record['parent'])).'/%" AND object.objectpath NOT LIKE "*comp*/'.$db->rdbms_escape_string (trim ($inherit_db_record['parent'])).'/%"';
+      }              
+    }
+
+    // remove dead datasets
+    if (sizeof ($exclude) > 0)
+    {
+      $sql = 'DELETE object, textnodes, keywords_container, accesslink, task, taxonomy, dailystat, queue, notify 
+      FROM object 
+      LEFT JOIN textnodes on object.id=textnodes.id 
+      LEFT JOIN keywords_container on object.id=keywords_container.id 
+      LEFT JOIN accesslink on object.object_id=accesslink.object_id 
+      LEFT JOIN task on object.object_id=task.object_id 
+      LEFT JOIN taxonomy on object.id=taxonomy.id 
+      LEFT JOIN dailystat on object.id=dailystat.id 
+      LEFT JOIN queue on object.object_id=queue.object_id 
+      LEFT JOIN notify on object.object_id=notify.object_id  
+      WHERE '.implode (" AND ", $exclude);
+
+      $errcode = "50911";
+      $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'delete');
+    }
+
+    // optimize database tables
+    $sql = 'OPTIMIZE TABLE object';
+
+    $errcode = "50912";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_object');
+
+    $sql = 'OPTIMIZE TABLE textnodes';
+
+    $errcode = "50913";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_textnodes');
+
+    $sql = 'OPTIMIZE TABLE keywords';
+
+    $errcode = "50914";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_keywords');
+    
+    $sql = 'OPTIMIZE TABLE taxonomy';
+
+    $errcode = "50915";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_taxonomy');
+    
+    // save log
+    savelog ($db->rdbms_geterror());    
+    $db->rdbms_close();
+
+    savelog ("database has been optimized");
+
+    return true;
+  }
+  else return false;
+}
+
 // -----------------------------------------------  external SQL query-------------------------------------------------
 // function: rdbms_gettableinfo()
 // input: SQL statement [string], cancat by column/attribute name [string] (optional)

@@ -249,6 +249,11 @@ if (sizeof ($config_files) > 0)
         }
       }
 
+      // ------------------------------------------- DATABASE OPTIMIZATION -------------------------------------------
+
+      // optimize database on 1st of January
+      if (!empty ($mgmt_config['rdbms_optimize']) && date("m-d") == "01-01") rdbms_optimizedatabase ();
+
     }
   }
 }

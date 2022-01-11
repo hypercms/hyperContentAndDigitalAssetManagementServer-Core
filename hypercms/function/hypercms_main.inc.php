@@ -10199,6 +10199,9 @@ function deleteuser ($site, $login, $user="sys")
         // remove favorites file of user
         if (is_file ($mgmt_config['abs_path_data']."checkout/".$login.".fav")) deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".fav", 0);
 
+        // remove home screen configuration file of user
+        if (is_file ($mgmt_config['abs_path_data']."checkout/".$login.".home.dat")) deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".home.dat", 0);
+
         // remove objectlist definition file of user
         if (is_file ($mgmt_config['abs_path_data']."checkout/".$login.".objectlistcols.json")) deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".objectlistcols.json", 0);
 

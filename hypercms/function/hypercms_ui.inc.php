@@ -1082,9 +1082,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     // define media file root directory for assets
     elseif (valid_publicationname ($site))
     {
-      // location of media file (can be also outside repository if exported)
+      // location of media file (can be also outside the repository if exported)
       $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
-      // thumbnail file is always in repository
+
+      // thumbnail file is always in the repository
       $thumb_root = getmedialocation ($site, ".hcms.".$mediafile, "abs_path_media").$site."/";
 
       // get container ID
@@ -2265,7 +2266,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
           foreach ($temp_array as $temp)
           {
-            if (is_file ($thumb_root.$temp)) $config['mediafiles'] = $temp;
+            // full media record
+            $temp_media = $temp;
+
+            // remove type
+            if (strpos ($temp, ";") > 0) list ($temp, $rest) = explode (";", $temp);
+
+            if (is_file ($thumb_root.getobject ($temp))) $config['mediafiles'][] = $temp_media;
           }
         }
         // no media files
@@ -2404,20 +2411,41 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
           foreach ($temp_array as $temp)
           {
-            if (is_file ($thumb_root.$temp)) $config['mediafiles'] = $temp;
+            // full media record
+            $temp_media = $temp;
+
+            // remove type
+            if (strpos ($temp, ";") > 0) list ($temp, $type) = explode (";", $temp);
+
+            // video preview file exists
+            if (is_file ($thumb_root.getobject ($temp))) $config['mediafiles'][] = $temp_media;
           }
         }
         // no media files
         else $config['mediafiles'] = array();
 
-        // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
-        if (empty ($config['mediafiles']) || !is_array ($config['mediafiles']) || $width > 854 || (sizeof ($config['mediafiles']) < 1 && $width <= 854))
+        // no valid video file has been found
+        if (empty ($config['mediafiles']) || !is_array ($config['mediafiles']))
         {
-          if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
+          // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
+          if ($width > 854 || (sizeof ($config['mediafiles']) < 1 && $width <= 854))
           {
-            if (!is_array ($config['mediafiles'])) $config['mediafiles'] = array();
-            $temp = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
-            array_unshift ($config['mediafiles'], $temp);
+            if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
+            {
+              if (!is_array ($config['mediafiles'])) $config['mediafiles'] = array();
+              $temp = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
+              array_unshift ($config['mediafiles'], $temp);
+            }
+            // try to create video thumbnail from original file
+            elseif (!empty ($mgmt_config['recreate_preview']))
+            {
+              $create_media = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, "", "origthumb", false, true);
+
+              if ($create_media)
+              {
+                $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
+              }
+            }
           }
         }
 
@@ -4921,7 +4949,7 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
         elseif (strpos ($value, ";") > 0)
         {
           list ($media, $type) = explode (";", $value);
- 
+
           $type = "type=\"".$type."\" ";
           $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($media).$ts;
         }
@@ -4953,11 +4981,14 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
     }
 
     // logo from video thumb image
-    $logo_file = getobject ($media);
-    $media_dir = getmedialocation ($site, $media, "abs_path_media");
+    if (!empty ($media)) 
+    {
+      $logo_file = getobject ($media);
+      $media_dir = getmedialocation ($site, $media, "abs_path_media");
+    }
 
     // define logo if undefined
-    if ($logo_url == "" && $media_dir != "")
+    if (empty ($logo_url) && !empty ($media_dir))
     {
       // if original video preview file (FLV)
       if (strpos ($logo_file, ".orig.") > 0)

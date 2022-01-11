@@ -179,9 +179,9 @@ if (!function_exists ("mb_detect_encoding")) $show .= "<li>The PHP mbstring exte
 if (!function_exists ("mysqli_connect")) $show .= "<li>The PHP mysqli extension is disabled or missing.</li>\n";
 
 // ldap support
-if (!function_exists ("ldap_add")) $show .= "<li>The PHP ldap extension is disabled or missing.</li>\n";
+if (is_dir ($mgmt_config['abs_path_cms']."connector/authconnect") && !function_exists ("ldap_add")) $show .= "<li>The PHP ldap extension is disabled or missing.</li>\n";
 
-// bcmath support
+// bcmath support required by TCPDF and Azure, Google Cloud libraries
 if (!function_exists ("bcadd")) $show .= "<li>The PHP bcmath extension is disabled or missing.</li>\n";
 
 // ----------------- install hyperCMS -----------------
@@ -212,8 +212,11 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
     }
 
     // create contentcount.dat file
-    if (!is_file ($mgmt_config['abs_path_data']."contentcount.dat")) $result = savefile ($mgmt_config['abs_path_data'], "contentcount.dat", "0");
-    if ($result == false) $show .= "<li>contentcount.dat file could not be created!</li>\n";
+    if (!is_file ($mgmt_config['abs_path_data']."contentcount.dat")) 
+    {
+      $result = savefile ($mgmt_config['abs_path_data'], "contentcount.dat", "0");
+      if ($result == false) $show .= "<li>contentcount.dat file could not be created!</li>\n";
+    }
   }
 
   // create database

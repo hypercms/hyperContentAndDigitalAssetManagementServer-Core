@@ -1401,7 +1401,7 @@ function hcms_Contextmenu (e)
 }
 
 // right mouse click (triggered by mousedown event)
-function hcms_rightClick (e) 
+function hcms_rightClickContext (e) 
 {
   if (!e) var e = window.event;
 
@@ -1425,7 +1425,7 @@ function hcms_rightClick (e)
 }
 
 // left mouse click (triggered by click event)
-function hcms_leftClick (e) 
+function hcms_leftClickContext (e) 
 {
   if (!e) var e = window.event;
 
@@ -1945,7 +1945,7 @@ hcms_addEvent ('contextmenu', document, function(e) {
 });
 
 hcms_addEvent ('mousedown', document, function(e) {
-  hcms_rightClick(e);
+  hcms_rightClickContext(e);
 });
 
 hcms_addEvent ('mouseup', document, function(e) {
@@ -1953,7 +1953,7 @@ hcms_addEvent ('mouseup', document, function(e) {
 });
 
 hcms_addEvent ('click', document, function(e) {
-  hcms_leftClick(e);
+  hcms_leftClickContext(e);
 });
 
 // for alert in iframe

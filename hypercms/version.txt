@@ -3543,7 +3543,7 @@ Release 09/2019
 - Modifications in explorer in order to implement the favorites navigation item for portal users
 - Modifications in function getfavorites in order to support the session based favorites of portal users
 - Modifications in functions createfavorite and deletefavorite in Main API in order to support the session based favorites of portal users
-- Modifications in control_content_menu, popop_action in order to check the root permission "desktopcheckedout" for locking and unlocking objects
+- Modifications in control_content_menu, popup_action in order to check the root permission "desktopcheckedout" for locking and unlocking objects
 - Implementation of the new search bar as home box
 - Implementation of the new main configuration setting $mgmt_config['homebox_directory'] for individual home boxes
 - Renamed the main configuration setting $mgmt_config['welcome'] to $mgmt_config['homebox_welcome']
@@ -5609,12 +5609,12 @@ Release 12/2021
 - Modifications in site_edit_form in order to support the AD/LDAP setting "ldap_keep_groups"
 - Modifications in function editpublication in the Main API in order to support the AD/LDAP setting "ldap_keep_groups"
 - Modifications in the Import Export API and import/export scripts in the Connector Module in order to display the load bar during the execution of the import or export
-- Implementation of the new fulltext search (merged textcontent from table textnodes) for improved fulltext search performance (about 50% reduction of the execution time of the SQL query)
+- Implementation of the new full text search (merged textcontent from table textnodes) for improved full text search performance (about 50% reduction of the execution time of the SQL query)
 - Modifications in createtables.sql in order to include the new column textcontent and the new index for table object
 - Modifications in createtables.sql in order to set the type to mediumtext for the textcontent in table object and textnodes
-- Implementation of the function update_database_v1002 in the Update API in order to support the new fulltext search in table object
-- Modifications in function rdbms_setcontent in DB Connect in order to support the new fulltext search in table object
-- Modifications in function searchcontent in DB Connect in order to support the new fulltext search in table object
+- Implementation of the function update_database_v1002 in the Update API in order to support the new full text search in table object
+- Modifications in function rdbms_setcontent in DB Connect in order to support the new full text search in table object
+- Modifications in function searchcontent in DB Connect in order to support the new full text search in table object
 - Modifications in search_objectlist in order to exclude text IDs from the search query and result
 - Design modifications of the display of error messages in the installation routine
 - Modifications in the installation routine in order to define the SMTP port number as integer value with a default value of 25
@@ -5624,9 +5624,9 @@ Release 12/2021
 - Modifications in function buildbarchart in template engine in order to round values without comma digits and set the minimum y-value to 8
 - Modifications in function deletepublication in Main API in order to remove the Google Cloud key files
 - Modifications in function deletepublication in Main API in order to remove the license notification configuration files
-- Removed deprectaed jquery.hotkeys.js from explorer
+- Removed deprecated jquery.hotkeys.js from explorer
 - Modifications in search box in order to remove unused JS code
-- Modifications in rdbms_getmediastat in DB Connect in order to support an new input parameter and the caching of the results for better performance with large datasets
+- Modifications in rdbms_getmediastat in DB Connect in order to support a new input parameter and the caching of the results for better performance with large datasets
 - Modifications in service accessstats in order to provide the new timeout value for the activation of the cache
 - Modifications in the upload template in the install directory in order to verify if the SESSION constant exists (due to issue with preview in the system)
 - Modifications in the PhotoSwipe template in the install directory in order to apply hypercms_href for the link to the full size image (due to issue with preview in the system)
@@ -5646,10 +5646,10 @@ Release 12/2021
 - Modifications in Import/Export API in order to reduce the file size of the scripts
 - Modifications in function showeditor and showinlineeditor in UI API in order to escape &lt; and &gt; in order to avoid CKEditor to convert the escaped characters into < >
 - Integration of the publish dialog in the same window instead of popup windows except for the Mobile Edition
-- Modifications in control_content_menu in order to open the publish dialog in new layer instead of a popop window
-- Modifications in control_objectlist_menu in order to open the publish dialog in a new popup layer instead of a popop window
-- Modifications in control_objectlist_menu in order to open the delete, cut, copy, connected copy, paste, unzip action in a new popup layer instead of a popop window
-- Modifications in frameset_main in order to open the publish dialog in new layer instead of a popop window
+- Modifications in control_content_menu in order to open the publish dialog in new layer instead of a popup window
+- Modifications in control_objectlist_menu in order to open the publish dialog in a new popup layer instead of a popup window
+- Modifications in control_objectlist_menu in order to open the delete, cut, copy, connected copy, paste, unzip action in a new popup layer instead of a popup window
+- Modifications in frameset_main in order to open the publish dialog in new layer instead of a popup window
 - Renamed local JS functions openUpload, minUpload, maxUpload, and closeUpload to openPopup, minPopup, maxPopup, and closePopup in frameset_main
 - Implementation of popups in the Mobile Edition with a limitation of max. 1 popup
 - Implementation of local JS function openPopup, minPopup, maxPopup, and closePopup in frameset_mobile
@@ -5719,16 +5719,16 @@ Release 12/2021
 - Bug fix: AND was missing in the SQL statement for the condition that is used to query files in function rdbms_getfilesize in DB Connect 
 - Bug fix: Function savelockfile did not create the unlocked file name if the file has been locked by another user or process
 - Bug fix: Function savelockfile did not unlock the file in case of a read error of the file
-- Bug fix: The scrolling of the workplace frame in framset_main was disabled and caused issues on smaller screens
+- Bug fix: The scrolling of the workplace frame in frameset_main was disabled and caused issues on smaller screens
 - Bug fix: Function deletepublication in Main API used wrong path for the media map files
 - Bug fix: Function createpublication in Main API saved the result (boolean) of function createmapping in the mapping file in data/media
-- Bug fix: The fulltext search field of the explorer did not support freespace due to a conflict with the spacebar key and the input of type search and the JQuery hotkeys (jquery.hotkeys.js)
+- Bug fix: The full text search field of the explorer did not support free space due to a conflict with the spacebar key and the input of type search and the JQuery hotkeys (jquery.hotkeys.js)
 - Bug fix: The Workflow Builder did not escape the task name
 - Bug fix: CKEditor is unescaping &gt; and &lt; and transforming information into tags
 - Bug fix: popup_publish outputted the title of the top bar
 - Bug fix: control_instance_menu did apply publicationname on an instance configuration file name and therefore did not accept the provided instance name (publicationname requires the publication to exist)
 - Bug fix: Function deletetinstance in Main API applied function valid_publicationname on the instance name and therefore did not accept the provided instance name (publicationname requires the publication to exist)
-- Bug fix: frameset_imexport and frameset_imexport_folder of the Import/Export Connector module used used an invalid key-value pair separator in the meta element
+- Bug fix: frameset_imexport and frameset_imexport_folder of the Import/Export Connector module used an invalid key-value pair separator in the meta element
 - Bug fix: Function unpublishobject in Main API did not assign the value to the viewstore variable in case of an error
 - Bug fix: The chat sidebar has not been opened automatically if a new message has been loaded
 - Bug fix: queue_objectlist used wrong JS variable name for the permissions used in contextmenu.js
@@ -5736,7 +5736,37 @@ Release 12/2021
 - Bug fix: Function showinlineeditor in UI API did not support the keyword template tag
 - Bug fix: The file input parameter has been missing in text_edit_list and has not been supported
 - Bug fix: The readonly template tag attribute did not disable the edit buttons in the "cmsview" and "inlineview"
-- Bug fix: Function showtaxonomytree in UI API did not select all entries and perform a search due to a deprecated query using getElementsByName
+- Bug fix: Function showtaxonomytree in UI API did not select all entries and did not perform a search due to a deprecated query using getElementsByName
 - Bug fix: Function showtaxonomytree in UI API did not remove the CSS class from the results of a new search expression and left the previously found entries highlighted
 - Bug fix: Function edituser in Main API did not return password errors
 - Bug fix: Function rdbms_getmediastat in DB Connect set the cache timeout to 12 hours if a cache timeout has not been provided as input
+
+Version 10.0.3
+Release 02/2022
+- Modifications in various functions in the Security API ni order to verify variable values using the empty PHP function
+- Renamed JS function hcms_leftClick and hcms_rightClick in contextmenu.js to hcms_leftClickContext and hcms_rightClickContext
+- Implementation of the new JS function hcms_isLeftClick and hcms_isRightClick in main.js
+- Modifications in JS function hcms_addEvent for the click event in order to verify that the JS function hcms_leftClickContext is not included
+- Modifications in the Workflow Management module in order to open the workflow context menu only on right mouse click
+- Modifications in JS function hcms_dragLayers in main.js ni order to enable dragging of elements on left mouse click only
+- Implementation of the new function update_database_v1003 in Update API
+- Added function call update_database_v1003 to function updates_all in Update API
+- Added new version to version history log in the installation directory
+- Modifications in popup_status in order to remove the reload of the navigation tree on cut & paste
+- Modifications in function deleteuser in Main API in order to delete the home screen configuration file of a user
+- Implementation of the new function rdbms_optimizedatabase in DB Connect in order to remove dead datasets and optimize the database
+- Implementation of the new main configuration setting $mgmt_config['rdbms_optimize'] in the main configuration file
+- Implementation of the new job for the automatic optimization of the database on 1st of January of each year
+- Modifications in user_objectlist in order to format all numbers of the user count in the footer
+- Modifications in function showvideoplayer in UI API in order to verify that the variable media exists
+- Modifications in the installation routine in order to disable the requirement for the LDAP PHP extension if the Connector module is not used
+- Modifications in the installation routine in order to verify the file contentcount.dat
+- Implementation of the new local JS function popupclose in popup_publish in order to close the popup after publishing
+- Modifications in function showmedia in order to create the thumbnail files of a video in case no valid preview video file is available. This requires the activation of the main configuration setting $mgmt_config['recreate_preview'].
+- Bug fix: The home screen configuration file of a user has not been deleted with the user account
+- Bug fix: user_objectlist did not display the proper number of users per page
+- Bug fix: popup_publish used window.close for closing the popup
+- Bug fix: Function showmedia in UI API did not remove the type from the file string before the verification of the media files (sources) for the audio/videoplayer
+- Bug fix: videoplayer did not remove the type from the file string before the verification of the media files (sources) for the audio/videoplayer
+- Bug fix: Function showmedia in UI API was not able to extract the thumbnail from the media record since the media record has been reduced
+- Bug fix: videoplayer was not able to extract the thumbnail from the media record since the media record has been reduced

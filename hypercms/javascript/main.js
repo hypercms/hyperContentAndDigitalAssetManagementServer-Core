@@ -1419,47 +1419,51 @@ function hcms_dragLayers (elem, moveelem, connection_id)
     // Prevent default action
     event.preventDefault();
 
-    // Setting the current moved element to the one for this element
-    document.hcms_move.elem = this.hcms_move.elem;
+    // Support left mouse click only
+    if (hcms_isLeftClick(event))
+    {
+      // Setting the current moved element to the one for this element
+      document.hcms_move.elem = this.hcms_move.elem;
 
-    // Calculate the starting position of the move element
-    var startx = parseInt(this.hcms_move.elem.style.left, 10);
-    var starty = parseInt(this.hcms_move.elem.style.top, 10);
+      // Calculate the starting position of the move element
+      var startx = parseInt(this.hcms_move.elem.style.left, 10);
+      var starty = parseInt(this.hcms_move.elem.style.top, 10);
 
-    if (isNaN(startx)) startx = 0;
-    if (isNaN(starty)) starty = 0;
+      if (isNaN(startx)) startx = 0;
+      if (isNaN(starty)) starty = 0;
 
-    // Calculcate the difference from current cursor to the moving element
-    document.hcms_move.diffx = event.clientX - startx;
-    document.hcms_move.diffy = event.clientY - starty;
-  
-    // Do the magic on mousemove on the document (We need document here or else the user might be able to move out of the element before the element has moved
-    document.onmousemove = function(e) {
+      // Calculcate the difference from current cursor to the moving element
+      document.hcms_move.diffx = event.clientX - startx;
+      document.hcms_move.diffy = event.clientY - starty;
+    
+      // Do the magic on mousemove on the document (We need document here or else the user might be able to move out of the element before the element has moved
+      document.onmousemove = function(e) {
 
-      // Cross Browser
-      var event = e || window.event;
+        // Cross Browser
+        var event = e || window.event;
 
-      // Moving the element to the correct position
-      document.hcms_move.elem.style.left = (event.clientX - document.hcms_move.diffx) + 'px';
-      document.hcms_move.elem.style.top = (event.clientY - document.hcms_move.diffy) + 'px';
+        // Moving the element to the correct position
+        document.hcms_move.elem.style.left = (event.clientX - document.hcms_move.diffx) + 'px';
+        document.hcms_move.elem.style.top = (event.clientY - document.hcms_move.diffy) + 'px';
 
-      // redraw connections based on the affected connection id
-      if (connection_id != '' && typeof hcms_connections_repaintConnections === 'function')
-      {
-        hcms_connections_repaintConnections (connection_id);
+        // redraw connections based on the affected connection id
+        if (connection_id != '' && typeof hcms_connections_repaintConnections === 'function')
+        {
+          hcms_connections_repaintConnections (connection_id);
+        }
       }
-    }
 
-    // Clear everything when mouse is released
-    this.onmouseup = function(e) {
+      // Clear everything when mouse is released
+      this.onmouseup = function(e) {
 
-      // Cross Browser
-      var event = e || window.event;
+        // Cross Browser
+        var event = e || window.event;
 
-      document.onmousemove = function() {}
-      document.hcms_move.diffx = 0;
-      document.hcms_move.diffy = 0;
-      document.hcms_move.elem = 'undefined';
+        document.onmousemove = function() {}
+        document.hcms_move.diffx = 0;
+        document.hcms_move.diffy = 0;
+        document.hcms_move.elem = 'undefined';
+      }
     }
   }
 }
@@ -2315,13 +2319,31 @@ function hcms_addEvent (event, elem, func)
 
 // ------------------------ mouse events ----------------------------
 
-// left mouse click
-function hcms_leftClickMain (e) 
+// right mouse click
+function hcms_isRightClick (e) 
 {
   if (!e) var e = window.event;
 
+  if (e.which && (e.which == 2 || e.which == 3)) return true;
+  else if (e.button && (e.button == 2 || e.button == 3)) return true;
+  else return false;
+}
+
+// left mouse click
+function hcms_isLeftClick (e) 
+{
+  if (!e) var e = window.event;
+
+  if (e.which && (e.which == 0 || e.which == 1)) return true;
+  else if (e.button && (e.button == 0 || e.button == 1)) return true;
+  else return false;
+}
+
+// left mouse click
+function hcms_leftClickMain (e) 
+{
   // left mouse click
-  if (e.which == 0 || e.which == 1 || e.button == 0 || e.button == 1) 
+  if (hcms_isLeftClick (e)) 
   {
     // minimize navigation for Mobile Edition
     if (is_mobile && hcms_permission['minnavframe'] == true && typeof top.minNavFrame === 'function') top.minNavFrame();
@@ -2398,9 +2420,11 @@ hcms_addEvent ('keydown', document, function(e) {
   }
 });
 
+// ------------------------ mouse events ----------------------------
+
 hcms_addEvent ('click', document, function(e) {
-  // verify that the function hcms_leftClick of contextmenu.js is not included
-  if (typeof hcms_leftClick != 'function') 
+  // verify that the function hcms_leftClickContext of contextmenu.js is not included
+  if (typeof hcms_leftClickContext != 'function') 
   {
     hcms_leftClickMain(e);
   }

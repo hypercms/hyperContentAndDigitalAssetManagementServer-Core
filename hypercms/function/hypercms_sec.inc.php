@@ -1027,7 +1027,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     $linking_auth = false;
 
     // check object reference (ID) and object code (token) in version before and after version 5.5.8
-    if ($mgmt_config['db_connect_rdbms'] != "" && ($objcode == hcms_crypt ($objref, 3, 12) || $objcode == hcms_crypt ($objref)))
+    if (!empty ($mgmt_config['db_connect_rdbms']) && ($objcode == hcms_crypt ($objref, 3, 12) || $objcode == hcms_crypt ($objref)))
     {
       if (strpos ($objref, "|") > 0)
       {
@@ -1113,7 +1113,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 
 
-      if ($charset == false || $charset == "")
+      if (empty ($charset))
       {
         // set encoding
         $charset = "utf-8";
@@ -1767,7 +1767,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       $check = loadfile ($mgmt_config['abs_path_data'], "check.dat");
 
       // initial load
-      if ($check == "")
+      if (trim ($check) == "")
       {
         // save installation date
         $checkresult = savefile ($mgmt_config['abs_path_data'], "check.dat", date ("Y-m-d", time()));
@@ -2551,7 +2551,7 @@ function createsession ($name="hyperCMS")
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $error = array();
 
   // check user session and set session ID if required
@@ -2960,7 +2960,7 @@ function loguserip ($client_ip, $user="sys")
     }
     else
     {
-      // save log file initally
+      // save log file initially
       return savefile ($loglocation, $logfile, $client_ip."|".$user."|".$now."\n");
     }
   }

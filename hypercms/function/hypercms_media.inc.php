@@ -3539,7 +3539,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if (is_audio ($file_ext)) $config_extension = ".config.audio";
                   else $config_extension = ".config.video";
                 }
-                // generate video player config code for indivdual video
+                // generate video player config code for individual video
                 else
                 {
                   // generate video file links for individual generated video formats

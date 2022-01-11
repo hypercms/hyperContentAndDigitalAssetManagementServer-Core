@@ -311,8 +311,8 @@ if ($authorized == true || $force == "stop")
     {
       // not suitable for EasyEdit
       $add_javascript = "
-    // reload root node in explorer
-    if (window.top.frames['navFrame'] && window.top.frames['navFrame'].document.getElementById('a_".$cat."_".$site."')) window.top.frames['navFrame'].document.getElementById('a_".$cat."_".$site."').click();
+    // reload root node in explorer (deprecated since Version 10.0.3)
+    // if (window.top.frames['navFrame'] && window.top.frames['navFrame'].document.getElementById('a_".$cat."_".$site."')) window.top.frames['navFrame'].document.getElementById('a_".$cat."_".$site."').click();
 
     // reload objectlist in objectlist frame
     if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame']) window.top.frames['workplFrame'].frames['mainFrame'].location.reload();

@@ -99,7 +99,7 @@ if ($media_dir != "")
     $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.audio");
     $audio = true;
   }
-  // 2nd Priority: versions from 5.6.3 (preview of original file if no HTML5 video files have been generated)
+  // 2nd Priority: versions from 5.6.3 (preview of original file if no HTML5 video files have been created)
   elseif (is_file ($media_dir.$site."/".$file_info['filename'].".config.orig") || is_cloudobject ($media_dir.$site."/".$file_info['filename'].".config.orig"))
   {
     $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
@@ -112,7 +112,16 @@ if ($media_dir != "")
 
       foreach ($temp_array as $temp)
       {
-        if (is_file ($thumb_root.$temp)) $config['mediafiles'] = $temp;
+        // full media record
+        $temp_media = $temp;
+
+        // remove type
+        if (strpos ($temp, ";") > 0) list ($temp, $rest) = explode (";", $temp);
+
+        // thumbnail file is always in the repository
+        $thumb_root = getmedialocation ($site, ".hcms.".$temp, "abs_path_media").$site."/";
+
+        if (is_file ($thumb_root.getobject ($temp)) $config['mediafiles'][] = $temp_media;
       }
     }
     // no media files
