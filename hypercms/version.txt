@@ -5743,7 +5743,7 @@ Release 12/2021
 
 Version 10.0.3
 Release 02/2022
-- Modifications in various functions in the Security API ni order to verify variable values using the empty PHP function
+- Modifications in various functions in the Security API in order to verify variable values using the PHP function empty
 - Renamed JS function hcms_leftClick and hcms_rightClick in contextmenu.js to hcms_leftClickContext and hcms_rightClickContext
 - Implementation of the new JS function hcms_isLeftClick and hcms_isRightClick in main.js
 - Modifications in JS function hcms_addEvent for the click event in order to verify that the JS function hcms_leftClickContext is not included
@@ -5763,6 +5763,11 @@ Release 02/2022
 - Modifications in the installation routine in order to verify the file contentcount.dat
 - Implementation of the new local JS function popupclose in popup_publish in order to close the popup after publishing
 - Modifications in function showmedia in order to create the thumbnail files of a video in case no valid preview video file is available. This requires the activation of the main configuration setting $mgmt_config['recreate_preview'].
+- Design modifications in the search engine in the install directory used for the search of the content of managed websites
+- Modifications in function getwallpaper in Get API in order to verify the wallpaper name before requesting a wallpaper from the wallpaper service
+- Modifications in the CSS class selectedFiles jquery-fileupload.css in all design themes
+- Design modifications in popup_upload_html
+- Modifications in popup_upload_html in order to activate the date field when the delete object checkbox is activated and vice versa
 - Bug fix: The home screen configuration file of a user has not been deleted with the user account
 - Bug fix: user_objectlist did not display the proper number of users per page
 - Bug fix: popup_publish used window.close for closing the popup
@@ -5770,3 +5775,4 @@ Release 02/2022
 - Bug fix: videoplayer did not remove the type from the file string before the verification of the media files (sources) for the audio/videoplayer
 - Bug fix: Function showmedia in UI API was not able to extract the thumbnail from the media record since the media record has been reduced
 - Bug fix: videoplayer was not able to extract the thumbnail from the media record since the media record has been reduced
+- Bug fix: The upload status bar has been ouside the viewport in the Mobile Edition

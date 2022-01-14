@@ -121,7 +121,7 @@ if ($media_dir != "")
         // thumbnail file is always in the repository
         $thumb_root = getmedialocation ($site, ".hcms.".$temp, "abs_path_media").$site."/";
 
-        if (is_file ($thumb_root.getobject ($temp)) $config['mediafiles'][] = $temp_media;
+        if (is_file ($thumb_root.getobject ($temp))) $config['mediafiles'][] = $temp_media;
       }
     }
     // no media files

@@ -1085,6 +1085,7 @@ $(document).ready(function ()
   $('#deleteobject').click(function ()
   {
     $('#deletedate').prop('disabled', !($(this).prop('checked')));
+    $('#text_field').prop('disabled', !($(this).prop('checked')));
   });
   
 });
@@ -1333,7 +1334,7 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><span style=\"font-weig
     <input type="hidden" name="zipcount" id="zipcount" value="" />
     
     <!-- selected files -->
-    <div id="selectedFiles"></div>
+    <div id="selectedFiles" <?php if ($is_mobile) echo "style=\"max-width:100%;\""; ?>></div>
     
     <!-- controls -->
     <div <?php if ($is_mobile) echo "class=\"hcmsTextSmall\""; ?>>
@@ -1365,7 +1366,7 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><span style=\"font-weig
       <?php } ?>
       <?php if ($cat == "comp" && $uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>
       <div class="row">
-        <label><input type="checkbox" name="imageresize" id="imageresize" value="percentage" /> <?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?></label> <input name="imagepercentage" id="imagepercentage" type="text" size="4" maxlength="3" value="100" disabled="disabled" /> %
+        <label><input type="checkbox" name="imageresize" id="imageresize" value="percentage" /> <?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?></label> <span style="white-space:nowrap;"><input name="imagepercentage" id="imagepercentage" type="text" size="4" maxlength="3" value="100" disabled="disabled" /> %</span>
       </div>
       <?php } ?>
       <?php if ($cat == "comp") { ?>
@@ -1377,7 +1378,7 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><span style=\"font-weig
       <div class="row">
         <label><input type="checkbox" name="deleteobject" id="deleteobject" value="1" /> <?php echo getescapedtext ($hcms_lang['remove-uploaded-files-on'][$lang]); ?></label>
         <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
-        <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" /><img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+        <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" readonly disabled="disabled" /><img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
       </div>
       <?php } ?>
     </div>
