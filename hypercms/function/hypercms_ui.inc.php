@@ -4626,7 +4626,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         ";
 
         // textarea
-        $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" onkeyup=\"hcms_adjustTextarea(this);\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
+        $element = "<textarea title=\"".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" onkeyup=\"hcms_adjustTextarea(this);\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
         
         break;
 
@@ -4771,7 +4771,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 event.stopPropagation();
               }).mouseover(function()
               { // Overwriting the title everytime the mouse moves over the element, because CKEditor does overwrite it sometimes
-                jq_inline(this).attr('title', '".$title."' );
+                jq_inline(this).attr('title', decodeURIComponent('".$title."'));
               });
 
               CKEDITOR.inline( '".$hypertagname."_".$id."',
@@ -4793,7 +4793,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                   focus: function( event ) {
                     oldtext_".$hypertagname."_".$id." = jq_inline.trim(event.editor.getData());
 
-                    if (hcms_stripTags(oldtext_".$hypertagname."_".$id.") == hcms_stripTags('".$defaultText."'))
+                    if (hcms_stripTags(oldtext_".$hypertagname."_".$id.") == hcms_stripTags(decodeURIComponent(''".$defaultText."')))
                     {
                       oldtext_".$hypertagname."_".$id." = '';
                     }
@@ -4838,7 +4838,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           </script>
         ";
 
-        $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\">".$contentbot."</textarea>";
+        $element = "<textarea title=\"".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\">".$contentbot."</textarea>";
         
         break;
 
@@ -4848,7 +4848,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 
     // Adding the form that is submitted including the element that is sent
     $return .= "
-      <form style=\"display:none;\" method=\"post\" id=\"hcms_form_".$hypertagname."_".$id."\" />
+      <form style=\"display:none;\" method=\"post\" id=\"hcms_form_".$hypertagname."_".$id."\">
         <input type=\"hidden\" name=\"contenttype\" value=\"".$contenttype."\" /> 
         <input type=\"hidden\" name=\"site\" value=\"".$site."\" /> 
         <input type=\"hidden\" name=\"cat\" value=\"".$cat."\" /> 

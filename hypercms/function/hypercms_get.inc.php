@@ -2113,7 +2113,7 @@ function getwallpaper ($theme="", $version="")
     // get wallpaper name
     $wallpaper_name = @file_get_contents ("https://cloud.hypercms.net/wallpaper/?action=name&version=".urlencode($version));
 
-    if (!empty ($wallpaper_name))
+    if (!empty ($wallpaper_name) && strlen ($wallpaper_name) < 100)
     {
       // if file does not exist in temp view directory
       if (!is_file ($mgmt_config['abs_path_view'].$wallpaper_name))

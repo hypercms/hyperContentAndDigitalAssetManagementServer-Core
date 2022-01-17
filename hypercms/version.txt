@@ -5776,3 +5776,6 @@ Release 02/2022
 - Bug fix: Function showmedia in UI API was not able to extract the thumbnail from the media record since the media record has been reduced
 - Bug fix: videoplayer was not able to extract the thumbnail from the media record since the media record has been reduced
 - Bug fix: The upload status bar has been ouside the viewport in the Mobile Edition
+- Bug fix: Function showinlineeditor in UI API provided the tag title twice for the textareas title attribute
+- Bug fix: Function showinlineeditor in UI API closed the form tag
+- Bug fix: Function showinlineeditor in UI API did not decode the special characters for the usage in the rich text editors popup text for formatted text fields
