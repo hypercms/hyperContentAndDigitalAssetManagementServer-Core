@@ -5768,6 +5768,13 @@ Release 02/2022
 - Modifications in the CSS class selectedFiles jquery-fileupload.css in all design themes
 - Design modifications in popup_upload_html
 - Modifications in popup_upload_html in order to activate the date field when the delete object checkbox is activated and vice versa
+- Implementation of the new function reimportmediafiles in Import/Export API in order to support the reimport of exported multimedia files (and remove the symbolic links)
+- Modifications in the import script in order to support the new reimport of previously exported media files
+- Modifications in the import script in order to remove the verification of the input parameters since the corresponding functions are taking care of the validations
+- Modifications in the import form in order to support the reimport of media files as a new import type
+- Modifications in the import form in order to support the publication name for the symlink import type and in the parameters of a saved job
+- Modifications in the local JS function switchimport in the import form in order to support the symlink import type
+- Modifications in function importobjects in Import/Export API in order to support the publication name
 - Bug fix: The home screen configuration file of a user has not been deleted with the user account
 - Bug fix: user_objectlist did not display the proper number of users per page
 - Bug fix: popup_publish used window.close for closing the popup
@@ -5779,3 +5786,4 @@ Release 02/2022
 - Bug fix: Function showinlineeditor in UI API provided the tag title twice for the textareas title attribute
 - Bug fix: Function showinlineeditor in UI API closed the form tag
 - Bug fix: Function showinlineeditor in UI API did not decode the special characters for the usage in the rich text editors popup text for formatted text fields
+- Bug fix: The template engine did not apply the local JS function submitText for the unformatted text field in formedit, formmeta, and formlock view which resulted into empty unformatted text content

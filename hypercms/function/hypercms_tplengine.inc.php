@@ -3588,6 +3588,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {
+                        // submitText and constraints
+                        $add_submittext .= "
+                        submitText ('".$hypertagname."_".$id."', '".$hypertagname."[".$id."]');";
+
+                        if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."', '".$labelname."', '".$constraint."'";
+
                         // unformatted text (supports preview window)
                         if (strtolower ($preview_window) == "url")
                         {
