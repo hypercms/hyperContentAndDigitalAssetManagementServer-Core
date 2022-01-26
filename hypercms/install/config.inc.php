@@ -822,25 +822,30 @@ $mgmt_docconvert['.odp'] = array('.png', '.pdf', '.ppt');
 $mgmt_docconvert['.rtf'] = array('.png', '.pdf', '.doc', '.odt');
 $mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
 
-// Define Image Preview using the GD Library or ImageMagick
+// Define Image Preview using the ImageMagick (GD Library as fallback with limited features)
 
 // Options:
-// -s ... output size in width x height in pixel (WxH)
-// -f ... output format (file extension without dot [jpg, png, gif])
-// -d ... image density (DPI) for vector graphics and EPS files, common values are 72, 96 dots per inch for screen, while printers typically support 150, 300, 600, or 1200 dots per inch
-// -q ... quality for compressed image formats like JPEG (1 to 100)
-// -c ... crop x and y coordinates (XxY)
-// -b ... image brightness
-// -k .... image contrast
-// -cs ... color space of image, e.g. RGB, CMYK, gray
-// -rotate ... rotate image
-// -fv ... flip image in the vertical direction
-// -fh ... flop image in the horizontal direction
-// -sharpen ... sharpen image, e.g. one pixel size sharpen: -sharpen 0x1.0
-// -sketch ... skecthes an image, e.g. -sketch 0x20+120
-// -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
-// -monochrome ... transform image to black and white
-// -wm ... watermark in watermark image->positioning->geometry, e.g. image.png->topleft->+30
+// -s ... output size in width x height in pixel (WxH), e.g. -s 1028x768
+// -f ... output format (file extension without dot: jpg, png, gif), e.g. -f png
+// -d ... image density (DPI) for vector graphics and EPS files, common values are 72, 96 dots per inch for screen, while printers typically support 150, 300, 600, or 1200 dots per inch, e.g. -d 300
+// -q ... quality for compressed image formats like JPEG (1 to 100), e.g. -q 95
+// -c ... crop x and y coordinates (XxY), e.g. -c 100x100
+// -g ... gravity (NorthWest, North, NorthEast, West, Center, East, SouthWest, South, SouthEast) for the placement of an image, e.g. -g west
+// -ex ... extent/enlarge image, unfilled areas are set to the background color, to position the image, use offsets in the geometry specification or precede with a gravity setting, -ex 1028x768
+// -bg ... background color, the default background color (if none is specified or found in the image) is white, e.g. -bg black
+// -b ... image brightness from -100 to 100, e.g. -b 10
+// -k .... image contrast from -100 to 100, e.g. -k 5
+// -cs ... color space of image, e.g. RGB, CMYK, gray, e.g. -cs CMYK
+// -rotate ... rotate image in positive degrees, e.g. -rotate 90
+// -fv ... flip image in the vertical direction (no value required)
+// -fh ... flip image in the horizontal direction (no value required)
+// -sh ... sharpen image, e.g. one pixel size sharpen, e.g. -sh 0x1.0
+// -bl ... blur image with a Gaussian or normal distribution using the given radius and sigma value, e.g. -bl 1x0.1
+// -pa ... apply paint effect by replacing each pixel by the most frequent color in a circular neighborhood whose width is specified with radius, e.g. -pa 2
+// -sk ... sketches an image, e.g. -sk 0x20+120
+// -sep ... apply sepia-tone on image from 0 to 99.9%, e.g. -sep 80%
+// -monochrome ... transform image to black and white (no value required)
+// -wm ... watermark image->positioning->geometry, e.g. /logo/image.png->topleft->+30
 
 // Define image preview using the GD Library and PHP (thumbnail generation)
 // The GD Library only supports jpg, png and gif images as output, set value to "GD" to use it.

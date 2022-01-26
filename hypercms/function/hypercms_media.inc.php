@@ -2026,24 +2026,31 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               if (($check1 || $check2) && $check3)
               {
                 // Options:
-                // -s ... output size in width x height in pixel (WxH)
-                // -f ... output format (file extension without dot, e.g. jpg, png, gif)
-                // -d ... image density (DPI) for vector graphics and EPS files, common values are 72, 96 dots per inch for screen, while printers typically support 150, 300, 600, or 1200 dots per inch
-                // -q ... quality for compressed image formats like JPEG  from 1 to 100
-                // -c ... crop x and y coordinates (XxY)
-                // -b ... image brightness from -100 to 100
-                // -k .... image contrast from -100 to 100
-                // -cs ... color space of image, e.g. RGB, CMYK, gray
-                // -rotate ... rotate image
+                // -s ... output size in width x height in pixel (WxH), e.g. -s 1028x768
+                // -f ... output format (file extension without dot: jpg, png, gif), e.g. -f png
+                // -d ... image density (DPI) for vector graphics and EPS files, common values are 72, 96 dots per inch for screen, while printers typically support 150, 300, 600, or 1200 dots per inch, e.g. -d 300
+                // -q ... quality for compressed image formats like JPEG (1 to 100), e.g. -q 95
+                // -c ... crop x and y coordinates (XxY), e.g. -c 100x100
+                // -g ... gravity (NorthWest, North, NorthEast, West, Center, East, SouthWest, South, SouthEast) for the placement of an image, e.g. -g west
+                // -ex ... extent/enlarge image, unfilled areas are set to the background color, to position the image, use offsets in the geometry specification or precede with a gravity setting, -ex 1028x768
+                // -bg ... background color, the default background color (if none is specified or found in the image) is white, e.g. -bg black
+                // -b ... image brightness from -100 to 100, e.g. -b 10
+                // -k .... image contrast from -100 to 100, e.g. -k 5
+                // -cs ... color space of image, e.g. RGB, CMYK, gray, e.g. -cs CMYK
+                // -rotate ... rotate image in positive degrees, e.g. -rotate 90
                 // -fv ... flip image in the vertical direction (no value required)
                 // -fh ... flip image in the horizontal direction (no value required)
-                // -sharpen ... sharpen image, e.g. one pixel size sharpen: -sharpen 0x1.0
-                // -sketch ... sketches an image, e.g. -sketch 0x20+120
-                // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
-                // -monochrome ... transform image to black and white
-                // -wm ... watermark image-path->positioning->margin, e.g. /files/image.png->topleft->+30 or use "no", "none", 0 or false in order to suppress watermarking
+                // -sh ... sharpen image, e.g. one pixel size sharpen, e.g. -sh 0x1.0
+                // -bl ... blur image with a Gaussian or normal distribution using the given radius and sigma value, e.g. -bl 1x0.1
+                // -pa ... apply paint effect by replacing each pixel by the most frequent color in a circular neighborhood whose width is specified with radius, e.g. -pa 2
+                // -sk ... sketches an image, e.g. -sk 0x20+120
+                // -sep ... apply sepia-tone on image from 0 to 99.9%, e.g. -sep 80%
+                // -monochrome ... transform image to black and white (no value required)
+                // -wm ... watermark image->positioning->geometry, e.g. /logo/image.png->topleft->+30
 
                 // image size (in pixel) definition
+                $imageresize = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-s ") > 0)
                 {
                   $imagesize = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-s");
@@ -2058,7 +2065,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // Imagemagick geometry parameter for EPS
                   $imagegeometry = "-geometry ".$imagewidth."x".$imageheight; 
                 }
-                else $imageresize = "";
 
                 // if no size parameters are provided we use the original size for the new image
                 if (empty ($imagewidth) || empty ($imageheight))
@@ -2081,30 +2087,32 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
 
                 // image format (image file extension) definition
+                $imageformat = "jpg";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-f ") > 0)
                 {
                   $imageformat = strtolower (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-f"));
-                  if (empty ($imageformat) || $imageformat == false) $imageformat = "jpg";
+                  if (empty ($imageformat)) $imageformat = "jpg";
                 }
-                else $imageformat = "jpg";
 
                 // image rotation
+                $imagerotate = "";
+                $imagerotation = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-rotate ") > 0) 
                 {
                   $imagerotation = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-rotate"));
+
                   // ImageMagick rotate parameter
                   $imagerotate = "-rotate ".$imagerotation;
 
                   // no resize if rotation is used
                   $imageresize = "";
                 }
-                else
-                {
-                  $imagerotate = "";
-                  $imagerotation = "";
-                }
 
                 // image density (DPI)
+                $imagedensity = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-d ") > 0) 
                 {
                   $imagedensity = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-d"));
@@ -2113,9 +2121,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   elseif ($imagedensity < 72) $imagedensity = "-density 72";
                   else $imagedensity = "-density ".$imagedensity;
                 }
-                else $imagedensity = "";
 
                 // image quality / compression
+                $imagequality = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-q ") > 0) 
                 {
                   $imagequality = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-q"));
@@ -2124,9 +2133,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   elseif ($imagequality < 1) $imagequality = "-quality 1";
                   else $imagequality = "-quality ".$imagequality;
                 }
-                else $imagequality = "";
 
                 // image brightness
+                $imagebrightness = 0;
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-b ") > 0) 
                 {
                   $imagebrightness = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-b"));
@@ -2134,9 +2144,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($imagebrightness > 100) $imagebrightness = 100;
                   elseif ($imagebrightness < -100) $imagebrightness = -100;
                 }
-                else $imagebrightness = 0;
 
                 // image contrast
+                $imagecontrast = 0;
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-k ") > 0) 
                 {
                   $imagecontrast = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-k"));
@@ -2144,7 +2155,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($imagecontrast > 100) $imagecontrast = 100;
                   elseif ($imagecontrast < -100) $imagecontrast = -100;
                 }
-                else $imagecontrast = 0;
 
                 // set image brightness parameters for ImageMagick
                 $imageBrightnessContrast = "";
@@ -2161,6 +2171,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
 
                 // set image color space
+                $imagecolorspace = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-cs ") > 0) 
                 {
                   $imagecolorspace = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-cs");
@@ -2169,89 +2181,121 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if (strtolower ($imagecolorspace) == "transparent") $add = "-alpha on ";
                   else $add = "";
 
-                  if ($imagecolorspace == "" || $imagecolorspace == false) $imagecolorspace = "";
-                  else $imagecolorspace = $add."-colorspace ".shellcmd_encode ($imagecolorspace);
+                  if (!empty ($imagecolorspace)) $imagecolorspace = $add."-colorspace ".shellcmd_encode ($imagecolorspace);
                 }
-                else $imagecolorspace = "";
 
-                // set image icc profile 
+                // set image icc profile
+                $iccprofile = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-p ") > 0) 
                 {
                   $iccprofile = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-p");
 
-                  if ($iccprofile == "" || $iccprofile == false) $iccprofile = "";
-                  else $iccprofile = "-profile ".shellcmd_encode ($iccprofile);
+                  if (!empty ($iccprofile)) $iccprofile = "-profile ".shellcmd_encode ($iccprofile);
                 }
-                else $iccprofile = "";
 
                 // set flip
+                $imageflipv = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-fv ") > 0) 
                 {
                   $imageflipv = "-flop";
                 }
-                else $imageflipv = "";
 
                 // set flop
+                $imagefliph = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-fh ") > 0) 
                 {
                   $imagefliph = "-flip";
                 }
-                else $imagefliph = "";
 
                 // Combine flip and flop into one
                 $imageflip = $imageflipv." ".$imagefliph;
 
+                // set gravity
+                $gravity = "";
+
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-g ") > 0) 
+                {
+                  $gravity = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-g");
+
+                  if (!empty ($gravity)) $gravity = "-gravity ".shellcmd_encode ($gravity);
+                }
+
+                // set extent
+                $extent = "";
+
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-ex ") > 0) 
+                {
+                  $extent = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-ex");
+
+                  if (!empty ($extent)) $extent = "-extent ".shellcmd_encode ($extent); 
+                }
+               
+                // set background
+                $background = "";
+
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-bg ") > 0) 
+                {
+                  $background = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-bg");
+
+                  if (!empty ($background)) $background = "-background ".shellcmd_encode ($background); 
+                }
+
                 // set sepia
+                $sepia = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sep ") > 0) 
                 {
                   $sepia = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sep");
 
-                  if ($sepia == "" || $sepia == false) $sepia = "";
-                  else $sepia = "-sepia-tone ".shellcmd_encode ($sepia);
+                  if (!empty ($sepia)) $sepia = "-sepia-tone ".shellcmd_encode ($sepia);
                 }
-                else $sepia = "";
 
                 // set sharpen
+                $sharpen = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sh ") > 0) 
                 {
                   $sharpen = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sh");
 
-                  if ($sharpen == "" || $sharpen == false) $sharpen = "";
-                  else $sharpen = "-sharpen ".shellcmd_encode ($sharpen);
+                  if (!empty ($sharpen)) $sharpen = "-sharpen ".shellcmd_encode ($sharpen);
                 }
-                else $sharpen = "";
 
                 // set blur
+                $blur = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-bl ") > 0) 
                 {
                   $blur = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-bl");
 
-                  if ($blur == "" || $blur == false) $blur = "";
-                  else $blur = "-blur ".shellcmd_encode ($blur);
+                  if (!empty ($blur)) $blur = "-blur ".shellcmd_encode ($blur);
                 }
-                else $blur = "";
 
                 // set sketch
+                $sketch = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sk ") > 0) 
                 {
                   $sketch = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sk");
 
-                  if ($sketch == "" || $sketch == false) $sketch = "";
-                  else $sketch = "-sketch ".shellcmd_encode ($sketch);
+                  if (!empty ($sketch)) $sketch = "-sketch ".shellcmd_encode ($sketch);
                 }
-                else $sketch = "";
 
                 // set paint
+                $paint = "";
+
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-pa ") > 0) 
                 {
                   $paint = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-pa");
 
-                  if ($paint == "" || $paint == false) $paint = "";
-                  else $paint = "-paint ".shellcmd_encode ($paint);
+                  if (!empty ($paint)) $paint = "-paint ".shellcmd_encode ($paint);
                 }
-                else $paint = "";
 
                 // watermarking
+                $watermark = "";
+
                 // set watermark options if defined in publication settings and not already defined
                 if (!empty ($mgmt_config[$site]['watermark_image']) && strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-wm ") == 0)
                 {
@@ -2262,63 +2306,58 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   $watermarking = strtolower (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-wm"));
 
-                  if ($watermarking == "" || $watermarking == "0" || $watermarking == "none"  || $watermarking == "no" || $watermarking == "false" || $watermarking == false)
-                  {
-                    $watermark = "";
-                  }
-                  else
+                  if (!empty ($watermarking) && $watermarking != "0" && $watermarking != "none" && strtolower ($watermarking) != "no" && strtolower ($watermarking) != "false")
                   {
                     // parameters:
-                    // watermark ... reference to watermark PNG image
-                    // -gravity ... sets where in the image the watermark should be added
-                    // -geometry ... Can be used to modify the size of the watermark being passed in, and also the positioning of the watermark (relative to the gravity placement). 
-                    //               It is specified in the form width x height +/- horizontal offset +/- vertical offset (<width>x<height>{+-}<xoffset>{+-}<yoffset>).
-                    // -composite ... parameter, which tells ImageMagick to add the watermark image we ve just specified to the image. 
-                    list ($watermark, $gravity, $geometry) = explode ("->", $watermarking);
+                    // -watermark ... reference to watermark image
+                    // -gravity ... position of the watermark image
+                    // -geometry ... Can be used to modify the size of the watermark being passed in, and also the positioning of the watermark (relative to the gravity placement)
+                    //               It is specified in the form width x height +/- horizontal offset +/- vertical offset (<width>x<height>{+-}<xoffset>{+-}<yoffset>)
+                    // -composite ... parameter, which tells ImageMagick to add the watermark image we ve just specified to the image
 
-                    if (!empty ($geometry)) $geometry = intval ($geometry);
-                    else $geometry = 0;
+                    list ($wmimage, $wmgravity, $wmgeometry) = explode ("->", $watermarking);
+
+                    if (!empty ($wmgeometry)) $wmgeometry = intval ($wmgeometry);
+                    else $wmgeometry = 0;
  
-                    if (strtolower(trim($gravity)) == "topleft")
+                    if (strtolower (trim ($wmgravity)) == "topleft")
                     {
-                      $gravity = "northwest";
-                      $geometry = "+".$geometry."+".$geometry;
+                      $wmgravity = "northwest";
+                      $wmgeometry = "+".$wmgeometry."+".$wmgeometry;
                     }
-                    elseif (strtolower(trim($gravity)) == "topright")
+                    elseif (strtolower (trim ($wmgravity)) == "topright")
                     {
-                      $gravity = "northeast";
-                      $geometry = "-".$geometry."+".$geometry;
+                      $wmgravity = "northeast";
+                      $wmgeometry = "-".$wmgeometry."+".$wmgeometry;
                     }
-                    elseif (strtolower(trim($gravity)) == "bottomleft")
+                    elseif (strtolower (trim ($wmgravity)) == "bottomleft")
                     {
-                      $gravity = "southwest";
-                      $geometry = "+".$geometry."-".$geometry;
+                      $wmgravity = "southwest";
+                      $wmgeometry = "+".$wmgeometry."-".$wmgeometry;
                     }
-                    elseif (strtolower(trim($gravity)) == "bottomright")
+                    elseif (strtolower (trim ($wmgravity)) == "bottomright")
                     {
-                      $gravity = "southeast";
-                      $geometry = "-".$geometry."-".$geometry;
+                      $wmgravity = "southeast";
+                      $wmgeometry = "-".$wmgeometry."-".$wmgeometry;
                     }
-                    elseif (strtolower(trim($gravity)) == "center")
+                    elseif (strtolower (trim ($wmgravity)) == "center")
                     {
-                      $gravity = "center";
-                      $geometry = "";
+                      $wmgravity = "center";
+                      $wmgeometry = "";
                     }
                     // not valid
                     else
                     {
-                      $gravity = "";
-                      $geometry = "";
+                      $wmgravity = "";
+                      $wmgeometry = "";
                     }
 
-                    if ($watermark != "" && $gravity != "")
+                    if ($wmimage != "" && $wmgravity != "")
                     {
-                      $watermark = "-compose multiply -gravity ".$gravity.($geometry != "" ? " -geometry ".shellcmd_encode(trim($geometry)) : "")." -background none \"".shellcmd_encode(trim($watermark))."\"";
+                      $watermark = "-compose multiply -gravity ".$wmgravity.($wmgeometry != "" ? " -geometry ".shellcmd_encode (trim ($wmgeometry)) : "")." -background none \"".shellcmd_encode (trim ($wmimage))."\"";
                     }
-                    else $watermark = "";
                   }
                 }
-                else $watermark = "";
 
                 // -------------------- convert image using ImageMagick ----------------------
                 if (!empty ($mgmt_imagepreview[$imagepreview_ext]) && $mgmt_imagepreview[$imagepreview_ext] != "GD")
@@ -2346,7 +2385,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
                   // set background properties for JPEG (thumbnail images, annotation images, preview images) 
                   if ($imageformat == "jpg") $background = "-background white -alpha remove";
-                  else $background = "";
 
                   // ---------------------- CASE: document-based formats (if converted to PDF), encapsulated post script (EPS) and vector graphics ----------------------
                   if (strpos ("_.pdf".$hcms_ext['vectorimage'].".", $file_ext.".") > 0)
@@ -2381,7 +2419,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     {
                       $newfile = $file_name.".thumb.jpg";
 
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($path_source)."[0]\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($path_source)."[0]\" ".$imageresize." ".$background." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     elseif ($type == "annotation" && is_dir ($mgmt_config['abs_path_cms']."workflow/"))
                     {
@@ -2407,7 +2445,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
 
                       // render all pages from document as images for annotations
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.jpg")."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" ".$imageresize." ".$background." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.jpg")."\"";
                     }
                     elseif ($type == "temp")
                     {
@@ -2426,7 +2464,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
 
                       // render all pages from document as images
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.".$format)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" ".$imageresize." ".$background." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.".$format)."\"";
                     }
                     else
                     {
@@ -2436,7 +2474,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       // use geometry instead of resize for EPS files
                       if ($file_ext == ".eps") $imageresize = $imagegeometry;
 
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$background." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$background." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
 
                     // asynchronous shell exec
@@ -2490,7 +2528,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         //   @exec ($cmd, $output, $errorCode);
                         // }
   
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -flatten ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -flatten ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                     }
 
@@ -2540,11 +2578,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     
                       if ($crop_mode)
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." ".$autorotate." \"".shellcmd_encode ($buffer_file)."[0]\" -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." ".$autorotate." \"".shellcmd_encode ($buffer_file)."[0]\" -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$background." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                       else
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." ".$autorotate." \"".shellcmd_encode ($buffer_file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." ".$autorotate." \"".shellcmd_encode ($buffer_file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$background." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                     }
 

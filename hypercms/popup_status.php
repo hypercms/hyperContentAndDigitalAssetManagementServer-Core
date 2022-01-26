@@ -34,8 +34,8 @@ $tempfile = getrequest_esc ("tempfile", "locationname");
 $from_page = getrequest_esc ("from_page");
 $token= getrequest_esc ("token");
 
-// no location provided
-if ($location_orig == "" && is_string ($multiobject) && strlen ($multiobject) > 6)
+// get location from multiobject
+if (is_string ($multiobject) && strlen ($multiobject) > 6)
 {
   $multiobject_array = link_db_getobject ($multiobject);
   $location = $multiobject_array[0];
@@ -484,7 +484,10 @@ echo showtopbar ($headline." ".$status_progress, $lang);
   <!-- location -->
   <?php if (!empty ($location)) { ?>
   <div style="margin:5px 10px;">
-    <?php echo "<img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" /> ".showshorttext (getlocationname ($site, $location, $cat), 220, true); ?>
+    <?php 
+    if ($from_page == "recyclebin") echo "<img src=\"".getthemelocation()."img/recycle_bin.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['recycle-bin'][$lang]);
+    else echo "<img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" /> ".showshorttext (getlocationname ($site, $location, $cat), 220, true);
+    ?>
   </div>
   <?php } ?>
   

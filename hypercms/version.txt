@@ -5775,6 +5775,11 @@ Release 02/2022
 - Modifications in the import form in order to support the publication name for the symlink import type and in the parameters of a saved job
 - Modifications in the local JS function switchimport in the import form in order to support the symlink import type
 - Modifications in function importobjects in Import/Export API in order to support the publication name
+- Modifications in function createmedia in Media API in order to support the background, gravity, and extend options for the image manipulation
+- Modifications in the main configuration file in the install directory in order to add the new options for the image manipulation as comments
+- Modifications in popup_status in order to exclude the location if the recylce bin is used and show the expression "recycle bin" instead
+- Modifications in popup_status in order to extract the location from the provided multiobject in any case
+- Updates in the Connector Guide
 - Bug fix: The home screen configuration file of a user has not been deleted with the user account
 - Bug fix: user_objectlist did not display the proper number of users per page
 - Bug fix: popup_publish used window.close for closing the popup
