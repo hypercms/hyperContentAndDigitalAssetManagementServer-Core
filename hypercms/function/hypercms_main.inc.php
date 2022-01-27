@@ -9406,7 +9406,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
   elseif (strtolower ($login) == "admin" || strtolower ($login) == "sys")
   {
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]." '".$login."'</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
   }
   // test if login name contains special characters except ".-_@"
   elseif (specialchr ($login, ".-_@") == true || strpos ("_".$login, ".@") > 0)
@@ -9449,13 +9449,13 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
       $testlogin = selectcontent ($userdata, "<user>", "<login>", $login);
 
       // if user exists or has the session_id() name used for system locking of files
-      if ($testlogin != false || $login == session_id())
+      if (!empty ($testlogin[0]) || $login == session_id())
       {
         // unlock file
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
 
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]."!</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]." '".$login."'</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
       }
 
       if ($show == "")

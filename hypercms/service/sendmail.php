@@ -376,12 +376,14 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
 
     // ------------------------------------------- create new user account ------------------------------------------
 
+    // create new users for all link types (access, download, or attachment)
     if (!empty ($email_to) && is_array ($email_to) && !empty ($user_group) && !empty ($language))
     {
+      // unique e-mails
+      $email_to = array_unique ($email_to);
+
       if (!empty ($page) || is_array ($multiobject_array))
       {
-        $email_to = array_unique ($email_to);
-
         foreach ($email_to as $temp)
         {
           // create name from e-mail
@@ -432,6 +434,7 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
     
     // ------------------------------ send mail to existing users or members of user group ---------------------------
 
+    // initialize
     $email_to_array = array();
 
     if ((!empty ($user_login_array) && is_array ($user_login_array) && sizeof ($user_login_array) > 0) || (!empty ($group_login) && is_string ($group_login)))

@@ -283,7 +283,7 @@ $token_new = createtoken ("sys");
 if (checkuserip (getuserip ()) == true)
 {
   // reset password without login link (forgot password)
-  if ($action == "reset" && !empty ($mgmt_config['resetpassword']))
+  if ($action == "reset" && (!empty ($mgmt_config['passwordreset']) || !empty ($mgmt_config['resetpassword'])))
   {
     $show = sendresetpassword ($sentuser, "passwordreset");
   }
