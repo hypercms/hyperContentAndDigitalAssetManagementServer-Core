@@ -1317,6 +1317,11 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         if (!empty ($uservaliddateto[0])) $result['validdateto'] = $uservaliddateto[0];
         else $result['validdateto'] = "";
 
+        // lo logon allowed
+        $usernologon = getcontent ($usernode[0], "<nologon>");
+        if (!empty ($usernologon[0])) $result['nologon'] = $usernologon[0];
+        else $result['nologon'] = 0;
+
         // --------------------- portal --------------------- 
 
         if (!empty ($portal))
@@ -1420,7 +1425,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       if (!empty ($result['validdateto']) && strtotime ($result['validdateto']) < time()) $validdate = false;
 
       // check logon
-      if ($validdate == true && ((!empty ($hash) && $hash == $result['userhash']) || ($user == $fileuser && (password_verify ($passwd, $filepasswd) || $filepasswd == $passwd_crypted || $ignore_password))))
+      if ($validdate == true && ((!empty ($hash) && $hash == $result['userhash']) || ($user == $fileuser && ((empty ($result['nologon']) && (password_verify ($passwd, $filepasswd) || $filepasswd == $passwd_crypted)) || $ignore_password))))
       {
         $result['user'] = $fileuser;
         $result['passwd'] = $filepasswd;

@@ -5779,8 +5779,6 @@ Release 02/2022
 - Modifications in the main configuration file in the install directory in order to add the new options for the image manipulation as comments
 - Modifications in popup_status in order to exclude the location if the recylce bin is used and show the expression "recycle bin" instead
 - Modifications in popup_status in order to extract the location from the provided multiobject in any case
-- Modifications in function createuser in Main API in order to verify that no result has been returned from selectcontent if the user exists already
-- Modifications in function createuser in Main API in order to return the user name in the message if the user exists already
 - Updates in the Connector Guide
 - Bug fix: The home screen configuration file of a user has not been deleted with the user account
 - Bug fix: user_objectlist did not display the proper number of users per page
@@ -5795,3 +5793,31 @@ Release 02/2022
 - Bug fix: Function showinlineeditor in UI API did not decode the special characters for the usage in the rich text editors popup text for formatted text fields
 - Bug fix: The template engine did not apply the local JS function submitText for the unformatted text field in formedit, formmeta, and formlock view which resulted into empty unformatted text content
 - Bug fix: userlogin did not support the new and old main configuration for the password reset feature $mgmt_config['passwordreset'] and $mgmt_config['resetpassword']
+
+Version 10.0.4
+Release 03/2022
+- Modifications in function createuser in Main API in order to verify that no result has been returned from selectcontent if the user exists already
+- Modifications in function createuser in Main API in order to return the user name in the message if the user exists already
+- Modifications in the user XML schema in order to add the new "nologon" node
+- Modifications in the user XML subschema in order to add the new "nologon" node
+- Modifications in the user XML file in the install directory in order to add the new "nologon" node
+- Modifications in function createuser in Main API in order to support the new input parameter nologon that prevents the logon users that have been created for access links
+- Modifications in service sendmail in order to create new users with enabled nologon
+- Modifications in function userlogin in security API in order to verify the nologon value of a user
+- Modifications in user_edit in order to hide the hash code from the users personal settings
+- Modifications in user_edit in order to support the display and editing of the nologon value of a user for user administrators
+- Modifications in function sendresetpassword in Main API in order to disable e-mail notifications to users with enabled nologon
+- Modifications in function edituser in Main API in order to support the editing of the nologon value of a user
+- Modifications in function edituser in Main API in order to convert the superadmin value to an integer
+- Implementation of the new function update_users_v1004 in Update API in order to add the new nologon node to the user information and set the nologon value based on the user name
+- Modifications in function getuserinformation in Get API in order to support the nologon value
+- Modifications in control_user_menu, userregister, resetpassword in order to add the new logon parameter to function createuser and edituser
+- Modifications in the SOAP API of the Connector module in order to add the new logon parameter to function createuser and edituser
+- Modifications in the LDAP/AD Connector of the Connector module in order to add the new logon parameter to function createuser and edituser
+- Modifications in service sendmail in order to add the new logon parameter to function createuser and edituser
+- Modifications in function createinstance in Main API in order to add the new logon parameter to function createuser and edituser
+- Modifications in function sendresetpassword in Main API in order to add the new logon parameter to function createuser and edituser
+- Modifications in the installation routine in order to add the new logon parameter to function edituser
+- Modifications in the search statistics plugin since the search expression does not necessarily lead to a search result with objects
+- Modifications in the main configuration file in the installation directory in order to add comments for $mgmt_config['search_query_match']
+- Modifications in function rdbms_searchcontent in DB Connect in order to combine MATCH AGAINST and LIKE in order to solve the issue with stop words restrictions with MariaDB and MySQL that lead to empty search results

@@ -64,7 +64,7 @@ if ($action == "user_save" && checktoken ($token, $user))
   if ($login == $user && checkrootpermission ('desktopsetting'))
   {
     // edit user settings
-    $result = edituser ("*Leave*", $login, $old_password, $password, $confirm_password, "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", $user);
+    $result = edituser ("*Leave*", $login, $old_password, $password, $confirm_password, "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", $user);
 
     if (!empty ($result['result'])) $add_onload = "location.href='".cleandomain ($mgmt_config['url_path_cms']).$forward."';";
     else $add_onload = "";

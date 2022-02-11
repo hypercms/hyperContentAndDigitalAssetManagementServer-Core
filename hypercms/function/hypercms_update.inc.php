@@ -9,15 +9,15 @@
  
 // ======================================== UPDATE FUNCTIONS ============================================
 
-// ------------------------------------------ update_users_546 ----------------------------------------------
-// function: update_users_546()
+// ------------------------------------------ update_users_v546 ----------------------------------------------
+// function: update_users_v546()
 // input: %
 // output: true / false
 
 // description:
 // Update to version 5.4.6 , 5.5.11 and 5.5.15 (used to be part of function creatuser in Main API)
 
-function update_users_546 ()
+function update_users_v546 ()
 {
   global $mgmt_config;
 
@@ -67,6 +67,7 @@ function update_users_546 ()
   }
   else return false;
 }
+
 // ------------------------------------------ update_usergroups_v564 ----------------------------------------------
 // function: update_usergroups_v564()
 // input: publication name [string], user group data (XML) [string]
@@ -1286,7 +1287,7 @@ function update_users_804 ()
         // update log
         if ($savefile == true) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|8.0.4|Updated to version 8.0.4"), "update");
         // sys log
-        else savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10108|Update to version 8.0.4 failed for 'user.xml.php'"));
+        else savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10109|Update to version 8.0.4 failed for 'user.xml.php'"));
 
         return $savefile;
       }
@@ -1811,6 +1812,76 @@ function update_database_v1003 ()
   else return false;
 }
 
+// ------------------------------------------ update_users_v1004 ----------------------------------------------
+// function: update_users_v1004()
+// input: %
+// output: true / false
+
+// description:
+// Update the users nodes to version 10.0.4
+
+function update_users_v1004 ()
+{
+  global $mgmt_config;
+
+  if (!checksoftwareversion ("10.0.4"))
+  {
+    // update users
+    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+
+    if (!empty ($userdata))
+    {
+      // Updates in XML nodes:
+      // before version 5.4.6 new hashcode nodes needs to be inserted
+      if (substr_count ($userdata, "<nologon>") == 0)
+      {
+        $userdata = str_replace ("</admin>", "</admin>\n<nologon>0</nologon>", $userdata);
+        $updated = true;
+      }
+
+      if (!empty ($userdata) && !empty ($updated))
+      {
+        // set the nologon value
+        $login_array = getcontent ($userdata, "<login>");
+
+        if (is_array ($login_array))
+        {
+          foreach ($login_array as $login)
+          {
+            // if user name looks like User20120904093734 it has been created for an access link
+            if (strlen ($login) == 18 && substr ($login, 0, 4) == "User" && is_numeric (substr ($login, 4)))
+            {
+              $userdata = setcontent ($userdata, "<user>", "<nologon>", "1", "<login>", $login);
+            }
+            // if user name is an e-mail address it most likely has been created for an access link
+            elseif (filter_var ($login, FILTER_VALIDATE_EMAIL))
+            {
+              $userdata = setcontent ($userdata, "<user>", "<nologon>", "1", "<login>", $login);
+            }
+          }
+        }
+
+        // save user information
+        if (!empty ($userdata))
+        {
+          $savefile = savefile ($mgmt_config['abs_path_data']."user/", "user.xml.php", $userdata);
+
+          // update log
+          if ($savefile == true) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.4|updated to version 10.0.4"), "update");
+          // sys log
+          else savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10110|update to version 10.0.4 failed for 'user.xml.php'"));
+
+          return $savefile;
+        }
+        else return false;
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -1826,7 +1897,7 @@ function updates_all ()
   // check for existing installation (using check.dat)
   if (is_file ($mgmt_config['abs_path_data']."check.dat"))
   {
-    update_users_546 ();
+    update_users_v546 ();
     update_tasks_v584 ();
     update_database_v586 ();
     update_database_v601 ();
@@ -1851,6 +1922,7 @@ function updates_all ()
     update_database_v1000 ();
     update_database_v1002 ();
     update_database_v1003 ();
+    update_users_v1004 ();
   }
 }
 

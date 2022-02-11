@@ -80,7 +80,7 @@ if ($action == "user_register" && checktoken ($token, "sys") && !empty ($mgmt_co
   $reg_info = "";
   
   // create user
-  $result = createuser ($site, $login, $password, $confirm_password, "sys");
+  $result = createuser ($site, $login, $password, $confirm_password, 0, "sys");
 
   // edit user settings
   if (!empty ($result['result']))
@@ -101,7 +101,7 @@ if ($action == "user_register" && checktoken ($token, "sys") && !empty ($mgmt_co
       $reg_info = getescapedtext ($hcms_lang['please-wait-for-the-approval'][$lang]);
     }
     
-    $result = edituser ($site, $login, "*Leave*", "*Leave*", "*Leave*", "0", $realname, $language, $timezone, $theme, $email, $phone, $signature, $usergroup, $site, "", "", "sys");
+    $result = edituser ($site, $login, "*Leave*", "*Leave*", "*Leave*", 0, 0, $realname, $language, $timezone, $theme, $email, $phone, $signature, $usergroup, $site, "", "", "sys");
     
     if (!empty ($mgmt_config[$site]['registration_notify'])) 
     {

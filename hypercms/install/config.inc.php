@@ -618,10 +618,10 @@ $mgmt_config['search_synonym'] = true;
 // Only AND or OR are allowed as possible values or leave empty for default setting
 $mgmt_config['search_operator'] = "";
 
-// Use "like" or "match" syntax for full-text search queries
-// "match" has performance advantages if no wildcard-character is used
-// Please keep in mind that "match" uses the stopword list of the database 
-// and therefore will not find search expressions that are in the list of stopwords
+// Use "like" or "match" for full-text search queries
+// "match" has performance advantages if no wildcard-character is used and permits the use of special operators
+// Please keep in mind that "match" uses the stopword list of the database and the "like" operator will be used in combination
+// in order to avoid empty search results due to stopwords restrictions of the database
 $mgmt_config['search_query_match'] = "match";
 
 // Maximum number of search results (per page/request)

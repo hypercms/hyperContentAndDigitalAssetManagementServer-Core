@@ -6420,14 +6420,14 @@ function createinstance ($instance_name, $settings, $user="sys")
       // create admin user
       if ($username != "admin")
       {
-        $result = createuser ("*Null*", $username, trim ($settings['password']), trim ($settings['confirm_password']), $user);
+        $result = createuser ("*Null*", $username, trim ($settings['password']), trim ($settings['confirm_password']), 0, $user);
         if (empty ($result['result'])) $show = "<span class=\"hcmsHeadline\">".$result['message']."</span><br />\n";
       }
 
       // edit admin user
       if ($show == "")
       {
-        $result = edituser ("*Null*", $username, "", trim ($settings['password']), trim ($settings['confirm_password']), "1", $settings['realname'], $settings['language'], "*Leave*", "standard", trim ($settings['email']), "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", $user);
+        $result = edituser ("*Null*", $username, "", trim ($settings['password']), trim ($settings['confirm_password']), 1, 0, $settings['realname'], $settings['language'], "*Leave*", "standard", trim ($settings['email']), "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", $user);
         if (empty ($result['result'])) $show = "<span class=\"hcmsHeadline\">".$result['message']."</span><br />\n";
       }
     }
@@ -9354,13 +9354,13 @@ function deleteportal ($site, $template)
 
 // ---------------------------------------- createuser --------------------------------------------
 // function: createuser()
-// input: publication name [string] (optional), user login name [string], password [string], confirmed password [string], user name [string] (optional)
+// input: publication name [string] (optional), user login name [string], password [string], confirmed password [string], no logon allowed [0,1] (optional), user name [string] (optional)
 // output: result array
 
 // description:
 // This function creates a new user. Use *Null* for publication name to remove access to all publications.
 
-function createuser ($site, $login, $password, $confirm_password, $user="sys")
+function createuser ($site, $login, $password, $confirm_password, $nologon=0, $user="sys")
 {
   global $eventsystem, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_lang, $lang;
  
@@ -9486,6 +9486,14 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
           $newuser = setcontent ($newuser, "<user>", "<language>", $mgmt_lang_shortcut_default, "", "");
           $newuser = setcontent ($newuser, "<user>", "<theme>", $theme, "", "");
 
+
+          // in order to prevent the logon users that have been created for access links
+          if (empty ($nologon)) $nologon = "0";
+          else $nologon = "1";
+
+          $newuser = setcontent ($newuser, "<user>", "<nologon>", $nologon, "", "");
+
+          // member of publication
           if (isset ($site) && valid_publicationname ($site)) 
           {
             $newuser = setcontent ($newuser, "<memberof>", "<publication>", $site, "", "");
@@ -9574,8 +9582,9 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 
 // ------------------------------------------- edituser --------------------------------------------
 // function: edituser()
-// input: publication name [string], user login name [string], new login name [string] (optional), password [string] (optional), confirmed password [string] (optional), super administrator [0,1] (optional), real name [string] (optional), language setting [en,de,...] (optional), time zone [string] (optional), 
-//        theme name (optional), email [string] (optional), phone [string] (optional), signature [string] (optional), member of usergroup string [group1|group2] or usergroup array [array] (optional), member of publications string [site1|site2] or publications array [array] (optional), valid date from [date] (optional), valid date to [date] (optional), user name [string] (optional)
+// input: publication name [string], user login name [string], new login name [string] (optional), password [string] (optional), confirmed password [string] (optional), super administrator [0,1,*Leave*] (optional), no logon allowed [0,1,*Leave*] (optional), real name [string] (optional), language setting [en,de,...] (optional), time zone [string] (optional), 
+//        theme name (optional), email [string] (optional), phone [string] (optional), signature [string] (optional), member of usergroup string [group1|group2] or usergroup array [array] (optional), member of publications string [site1|site2] or publications array [array] (optional), 
+//        valid date from [date] (optional), valid date to [date] (optional), user name [string] (optional)
 // output: result array
 
 // description:
@@ -9583,7 +9592,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 // Use *Null* for the publication membership to remove access to all publications.
 // Use *Null* for the user group membership to remove user from all user groups of the publication.
 
-function edituser ($site="*Null*", $login="", $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="*Leave*", $language="en", $timezone="*Leave*", $theme="*Leave*", $email="*Leave*", $phone="*Leave*", $signature="*Leave*", $usergroup="*Leave*", $usersite="*Leave*", $validdatefrom="*Leave*", $validdateto="*Leave*", $user="sys")
+function edituser ($site="*Null*", $login="", $old_password="", $password="", $confirm_password="", $superadmin="*Leave*", $nologon="*Leave*", $realname="*Leave*", $language="en", $timezone="*Leave*", $theme="*Leave*", $email="*Leave*", $phone="*Leave*", $signature="*Leave*", $usergroup="*Leave*", $usersite="*Leave*", $validdatefrom="*Leave*", $validdateto="*Leave*", $user="sys")
 {
   global $eventsystem, $login_cat, $group, $mgmt_config, $hcms_lang, $lang;
 
@@ -9596,6 +9605,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
   $password_saved = array();
   $hashcode_saved = array();
   $superadmin_saved = array();
+  $nologon_saved = array();
   $language_saved = array();
   $realname_saved = array();
   $timezone_saved = array();
@@ -9653,6 +9663,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
         $password_saved = getcontent ($temp[0], "<password>");
         $hashcode_saved = getcontent ($temp[0], "<hashcode>");
         $superadmin_saved = getcontent ($temp[0], "<admin>");
+        $nologon_saved = getcontent ($temp[0], "<nologon>");
         $language_saved = getcontent ($temp[0], "<language>");
         $realname_saved = getcontent ($temp[0], "<realname>", true);
         $timezone_saved = getcontent ($temp[0], "<timezone>");
@@ -9668,6 +9679,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       if (empty ($password_saved[0])) $password_saved[0] = "";
       if (empty ($hashcode_saved[0])) $hashcode_saved[0] = "";
       if (empty ($superadmin_saved[0])) $superadmin_saved[0] = "";
+      if (empty ($nologon_saved[0])) $nologon_saved[0] = "";
       if (empty ($language_saved[0])) $language_saved[0] = "";
       if (empty ($realname_saved[0])) $realname_saved[0] = "";
       if (empty ($timezone_saved[0])) $timezone_saved[0] = "";
@@ -9755,10 +9767,18 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       }
 
       // ---------------- super admin ----------------
-      if ($show == "" && !empty ($userdata) && ($superadmin == "1" || $superadmin == "0") && $superadmin != "*Leave*" && intval ($superadmin) != intval ($superadmin_saved[0]))
+      if ($show == "" && !empty ($userdata) && (intval ($superadmin) == 1 || intval ($superadmin) == 0) && $superadmin != "*Leave*" && intval ($superadmin) != intval ($superadmin_saved[0]))
       {
         // insert values into xml schema
-        $userdata = setcontent ($userdata, "<user>", "<admin>", $superadmin, "<login>", $login);
+        $userdata = setcontent ($userdata, "<user>", "<admin>", intval ($superadmin), "<login>", $login);
+        $update = true;
+      }
+
+      // ---------------- no logon ----------------
+      if ($show == "" && !empty ($userdata) && (intval ($nologon) == 1 || intval ($nologon) == 0) && $nologon != "*Leave*" && intval ($nologon) != intval ($nologon_saved[0]))
+      {
+        // insert values into xml schema
+        $userdata = setcontent ($userdata, "<user>", "<nologon>", intval ($nologon), "<login>", $login);
         $update = true;
       } 
 
@@ -20515,16 +20535,22 @@ function sendresetpassword ($login, $type="passwordreset", $instance="")
   else
   {
     $email = getcontent ($usernode[0], "<email>");
+    $nologon = getcontent ($usernode[0], "<nologon>");
   }
 
+  // no logon allowed
+  if (!empty ($nologon[0]))
+  {
+    return str_replace ("%user%", $login, $hcms_lang['you-dont-have-permissions-to-use-this-function'][$lang]);
+  }
   // e-mail and new password are available
-  if (!empty ($email[0]) && !empty ($password))
+  elseif (!empty ($email[0]) && !empty ($password))
   {
     // do not apply strong password rules for automatically created password
     $mgmt_config['strongpassword'] = false;
 
     // change password
-    $result = edituser ("*Leave*", $login, "", $password, $password, "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "sys");
+    $result = edituser ("*Leave*", $login, "", $password, $password, "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "sys");
 
     if (empty ($result['result'])) return $result['message'];
 

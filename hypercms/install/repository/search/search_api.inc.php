@@ -320,7 +320,7 @@ function searchinindex ($query, $start, $exclude_url="", $include_url="", $resul
 
             if ($config['icon_pdf'] != "" && $url_ext == ".pdf")
             {
-              $icon = "<span title='Icon'><img src=\"".$config['icon_pdf']."\" border=\"0\" align=\"absmiddle\" /></span>";
+              $icon = "<span title='Icon'><img src=\"".$config['icon_pdf']."\" style=\"height:14px; border:0;\" align=\"absmiddle\" /></span>";
             }
             else $icon = "";
 

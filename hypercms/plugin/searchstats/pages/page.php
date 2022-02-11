@@ -194,8 +194,7 @@ if (is_file ($keywordfile))
 
   <?php if (!empty ($show_rank)) { ?>
   <div style="float:left; margin-right:20px;">
-  <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['expression-frequency'][$lang]); ?></p>
-  <span style="padding-left:4px;"><?php echo getescapedtext ($hcms_lang['please-click-the-links-below-to-access-the-files'][$lang]); ?></span>
+  <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['expression-frequency'][$lang]); ?></p>
   <table class="hcmsTableStandard">
     <?php
     echo $show_rank;
@@ -206,8 +205,7 @@ if (is_file ($keywordfile))
   
   <?php if (!empty ($show_sort)) { ?>
   <div style="float:left; margin-right:20px;">
-  <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['expression-sorted-alphabetically'][$lang]); ?></p>
-  <span style="padding-left:4px;"><?php echo getescapedtext ($hcms_lang['please-click-the-links-below-to-access-the-files'][$lang]); ?></span>
+  <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['expression-sorted-alphabetically'][$lang]); ?></p>
   <table class="hcmsTableStandard">
     <?php
     echo $show_sort;
@@ -220,5 +218,6 @@ if (is_file ($keywordfile))
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

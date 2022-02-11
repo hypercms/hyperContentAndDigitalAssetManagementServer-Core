@@ -24,6 +24,7 @@ $old_password = getrequest ("old_password");
 $password = getrequest ("password");
 $confirm_password = getrequest ("confirm_password");
 $superadmin = getrequest_esc ("superadmin", "numeric", 0);
+$nologon = getrequest_esc ("nologon", "numeric", 0);
 $realname = getrequest_esc ("realname");
 $language = getrequest_esc ("language");
 $timezone = getrequest ("timezone");
@@ -169,7 +170,7 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
   }
 
   // edit user settings
-  $result = edituser ($site, $login, $old_password, $password, $confirm_password, $superadmin, $realname, $language, $timezone, $theme, $email, $phone, $signature, $usergroup, $usersite, $validdatefrom, $validdateto, $user);
+  $result = edituser ($site, $login, $old_password, $password, $confirm_password, $superadmin, $nologon, $realname, $language, $timezone, $theme, $email, $phone, $signature, $usergroup, $usersite, $validdatefrom, $validdateto, $user);
 
   // set home boxes of user
   if (!empty ($homeboxes)) setuserboxes ($homeboxes, $login);
@@ -431,6 +432,10 @@ if (!empty ($login))
     if (!empty ($superadminarray[0])) $superadmin = $superadminarray[0];
     else $superadmin = 0;
 
+    $nologonarray = getcontent ($userrecord[0], "<nologon>");
+    if (!empty ($nologonarray[0])) $nologon = $nologonarray[0];
+    else $nologon = 0;
+
     $phonearray = getcontent ($userrecord[0], "<phone>");
     if (!empty ($phonearray[0])) $phone = $phonearray[0];
     else $phone = "";
@@ -520,10 +525,12 @@ if (!empty ($login))
       <div class="hcmsFormRowContent">
         <input type="password" name="confirm_password" style="width:<?php echo $width_field; ?>px;" maxlength="100" />
       </div>
+    <?php if ($login_cat != "home" && $login != $user) { ?>
       <div class="hcmsFormRowContent"><?php echo getescapedtext ($hcms_lang['hash-for-openapi'][$lang]); ?> </div>
       <div class="hcmsFormRowContent">
         <input type="text" style="width:<?php echo $width_field; ?>px;" value="<?php echo $hashcode; ?>" readonly="readonly" />
       </div>
+    <?php } ?>
       <div class="hcmsFormRowContent"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?> </div>
       <div class="hcmsFormRowContent">
         <input type="text" name="realname" style="width:<?php echo $width_field; ?>px;" value="<?php echo $realname; ?>" maxlength="200" />
@@ -876,6 +883,14 @@ if (!empty ($login))
     <div class="hcmsFormRowContent" style="padding-top:10px;"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['administration'][$lang]); ?></span> </div>
     <div class="hcmsFormRowContent">
       <label><input type="checkbox" name="superadmin" value="1" <?php if ($superadmin == "1") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['super-administrator'][$lang]); ?></label>
+    </div>
+    <?php } ?>
+
+    <?php if ($login_cat != "home" && $login != $user) { ?>
+    <!-- no logon -->
+    <div class="hcmsFormRowContent" style="padding-top:10px;"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['sign-in'][$lang]); ?></span> </div>
+    <div class="hcmsFormRowContent">
+      <label><input type="checkbox" name="nologon" value="1" <?php if ($nologon == "1") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['user-for-access-links'][$lang]); ?></label>
     </div>
     <?php } ?>
 

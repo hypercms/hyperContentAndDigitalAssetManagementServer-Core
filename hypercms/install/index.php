@@ -295,7 +295,7 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
   {
     if (trim ($password) != "" && trim ($confirm_password) != "" && trim ($language) != "" && trim ($email) != "")
     {
-      $result = edituser ("*Null*", "admin", "", trim ($password), trim ($confirm_password), "1", $realname, $language, "*Leave*", "standard", trim ($email), "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", $user);
+      $result = edituser ("*Null*", "admin", "", trim ($password), trim ($confirm_password), 1, 0, $realname, $language, "*Leave*", "standard", trim ($email), "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", "*Leave*", $user);
       if (empty ($result['result'])) $show .= "<li>".strip_tags ($result['message'])."</li>\n";
     }
     else $show .= "<li>Please provide all information for the Administrator Account</li>\n";

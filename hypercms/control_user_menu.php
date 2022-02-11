@@ -55,7 +55,7 @@ if ($action != "" && checktoken ($token, $user))
         )
       )
   {
-    $result = createuser ($site, $login, $password, $confirm_password, $user);
+    $result = createuser ($site, $login, $password, $confirm_password, 0, $user);
     
     $add_onload .= $result['add_onload'];
     $show = $result['message'];  

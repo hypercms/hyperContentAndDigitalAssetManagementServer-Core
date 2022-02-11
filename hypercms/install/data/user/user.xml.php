@@ -5,6 +5,7 @@
 <password></password>
 <hashcode></hashcode>
 <admin>1</admin>
+<nologon>0</nologon>
 <userdate></userdate>
 <realname>Super User</realname>
 <email></email>
@@ -21,6 +22,7 @@
 <password></password>
 <hashcode></hashcode>
 <admin>0</admin>
+<nologon>0</nologon>
 <userdate></userdate>
 <realname>Download User</realname>
 <email></email>

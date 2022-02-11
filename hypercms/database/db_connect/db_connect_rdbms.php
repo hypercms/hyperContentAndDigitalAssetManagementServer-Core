@@ -1725,7 +1725,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 
 // ----------------------------------------------- search content ------------------------------------------------- 
 // function: rdbms_searchcontent()
-// input: location [string] (optional), exclude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
+// input: location [string,array] (optional), exclude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
 //        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), 
 //        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image color [array] (optional), image-type [portrait,landscape,square] (optional), 
 //        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned e.g. text:Title [array] (optional), count search result entries [boolean] (optional), 
@@ -1823,7 +1823,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   if (!empty ($folderpath) || is_array ($object_type) || !empty ($date_from) || !empty ($date_to) || !empty ($template) || is_array ($expression_array) || !empty ($expression_filename) || !empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype))
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     if (is_array ($object_type)) foreach ($object_type as &$value) $value = $db->rdbms_escape_string ($value);
     if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
     if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
@@ -1925,7 +1925,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     {
       $temp_array = array();
       $sql_where['filename'] = "";
-      
+
       if (substr_count ($expression_string, " AND ") > 0)
       {
         $temp_array[' AND '] = explode (" AND ", $expression_string);
@@ -2204,7 +2204,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   // look for expression in content
                   else
                   {
-                    // search for path in textcontent
+                    // search for path in textcontent requires LIKE
                     if (strpos ("_".$synonym_expression, "/") > 0) $mgmt_config['search_query_match'] = "like";
 
                     // LIKE search does not use stopwords or wildcards supported by MATCH AGAINST
@@ -2224,11 +2224,20 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                       // ~	The word following contributes negatively to the relevance of the row (which is different to the '-' operator, which specifically excludes the word, or the '<' operator, which still causes the word to contribute positively to the relevance of the row.
                       // *	The wildcard, indicating zero or more characters. It can only appear at the end of a word.
                       // "	Anything enclosed in the double quotes is taken as a whole (so you can match phrases, for example).
-                      if (preg_match('/["*()@~<>+-]/', $synonym_expression)) $boolean_mode = " IN BOOLEAN MODE";
-                      else $boolean_mode = "";
+                      if (preg_match('/["*()@~<>+-]/', $synonym_expression))
+                      {
+                        $search_mode = " IN BOOLEAN MODE";
+                        $search_like = "";
+                      }
+                      // Use LIKE in order to get the desired result if MATCH AGAINST fails due to stopword restrictions
+                      else
+                      {
+                        $search_mode = " IN NATURAL LANGUAGE MODE";
+                        $search_like = ' OR tn'.$i_tn.'.textcontent LIKE "%'.$synonym_expression.'%")';
+                      }
                       
                       // MATCH AGAINST uses stop words (e.g. search for "hello" will not be included in the search result)
-                      $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.'))';
+                      $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.')'.$search_like.')';
                     }
                   }
 
@@ -2330,11 +2339,20 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                           // ~	The word following contributes negatively to the relevance of the row (which is different to the '-' operator, which specifically excludes the word, or the '<' operator, which still causes the word to contribute positively to the relevance of the row.
                           // *	The wildcard, indicating zero or more characters. It can only appear at the end of a word.
                           // "	Anything enclosed in the double quotes is taken as a whole (so you can match phrases, for example).
-                          if (preg_match ('/["*()@~<>+-]/', $synonym_expression)) $boolean_mode = " IN BOOLEAN MODE";
-                          else $boolean_mode = "";
+                          if (preg_match('/["*()@~<>+-]/', $synonym_expression))
+                          {
+                            $search_mode = " IN BOOLEAN MODE";
+                            $search_like = "";
+                          }
+                          // Use LIKE in order to get the desired result if MATCH AGAINST fails due to stopword restrictions
+                          else
+                          {
+                            $search_mode = " IN NATURAL LANGUAGE MODE";
+                            $search_like = ' OR obj.textcontent LIKE "%'.$synonym_expression.'%"';
+                          }
 
                           // MATCH AGAINST uses stop words (e.g. search for "hello" will not be included in the search result)
-                          $sql_where_textnodes .= 'MATCH (obj.textcontent) AGAINST ("'.$synonym_expression.'"'.$boolean_mode.')';
+                          $sql_where_textnodes .= 'MATCH (obj.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.')'.$search_like.'';
                         }
                       }
 

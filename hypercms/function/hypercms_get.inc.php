@@ -6601,6 +6601,7 @@ function getuserinformation ($login="")
           $login = getcontent ($temp, "<login>");
           if ($user == "sys") $hashcode = getcontent ($temp, "<hashcode>");
           $admin = getcontent ($temp, "<admin>");
+          $nologon = getcontent ($temp, "<nologon>");
           $email = getcontent ($temp, "<email>");
           $realname = getcontent ($temp, "<realname>");
           $signature = getcontent ($temp, "<signature>");
@@ -6625,6 +6626,8 @@ function getuserinformation ($login="")
               {
                 $username = $login[0];
                 if (!empty ($hashcode[0])) $user_array[$pub_temp][$username]['hashcode'] = $hashcode[0];
+                if (!empty ($nologon[0])) $user_array[$pub_temp][$username]['nologon'] = $nologon[0];
+                else $user_array[$pub_temp][$username]['nologon'] = 0;
                 $user_array[$pub_temp][$username]['email'] = $email[0];
                 $user_array[$pub_temp][$username]['realname'] = $realname[0];
                 $user_array[$pub_temp][$username]['signature'] = $signature[0];
@@ -6643,6 +6646,8 @@ function getuserinformation ($login="")
               {
                 $username = $login[0];
                 if (!empty ($hashcode[0])) $user_array[$pub_temp][$username]['hashcode'] = $hashcode[0];
+                if (!empty ($nologon[0])) $user_array[$pub_temp][$username]['nologon'] = $nologon[0];
+                else $user_array[$pub_temp][$username]['nologon'] = 0;
                 $user_array[$pub_temp][$username]['email'] = $email[0];
                 $user_array[$pub_temp][$username]['realname'] = $realname[0];
                 $user_array[$pub_temp][$username]['signature'] = $signature[0];

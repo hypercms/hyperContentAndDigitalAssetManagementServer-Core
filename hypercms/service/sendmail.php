@@ -376,7 +376,7 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
 
     // ------------------------------------------- create new user account ------------------------------------------
 
-    // create new users for all link types (access, download, or attachment)
+    // create new users for all link types (access, download, or attachment) without logon for the users
     if (!empty ($email_to) && is_array ($email_to) && !empty ($user_group) && !empty ($language))
     {
       // unique e-mails
@@ -408,7 +408,8 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
           // generate password from upper case letter and session ID
           $password = $confirm_password = "P0!".createuniquetoken (7);
 
-          $result = createuser ($site, $login, $password, $confirm_password, $user);
+          // create user with no logon permission
+          $result = createuser ($site, $login, $password, $confirm_password, 1, $user);
 
           if (!empty ($result['result']))
           {
@@ -419,7 +420,7 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
             $usergroup = $user_group;
             
             // assign publication access and group membership
-            $result = edituser ($site, $login, "", "", "", "", $realname, $language, "", "", $temp, "", "", $usergroup, $usersite, "", "", $user);
+            $result = edituser ($site, $login, "", "", "", 0, "*Leave*", $realname, $language, "", "", $temp, "", "", $usergroup, $usersite, "", "", $user);
           }
           else
           {

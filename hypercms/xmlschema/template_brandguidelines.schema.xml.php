@@ -43,10 +43,10 @@ if (!empty ($html2pdf) && !empty ($mgmt_config['html2pdf']))
     <title>hyperCMS.com</title>
     <meta charset='utf-8'/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <link rel="stylesheet" hypercms_href="<?php echo getthemelocation($theme); ?>css/main.css" />
-    <link rel="stylesheet" hypercms_href="<?php echo getthemelocation($theme)."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>" />
-    <link rel="stylesheet" hypercms_href="%url_hypercms%/theme/brandguide.css" />
-    <script type="text/javascript" src="%url_hypercms%/javascript/main.min.js"></script>
+    <link rel="stylesheet" hypercms_href="<?php echo getthemelocation($theme); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+    <link rel="stylesheet" hypercms_href="<?php echo getthemelocation($theme)."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+    <link rel="stylesheet" hypercms_href="%url_hypercms%/theme/brandguide.css?v=<?php echo getbuildnumber(); ?>" />
+    <script type="text/javascript" src="%url_hypercms%/javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
     <script type="text/javascript">
 
     function minNavFrame ()

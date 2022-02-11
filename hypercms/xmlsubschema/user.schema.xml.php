@@ -3,6 +3,7 @@
 <password></password>
 <hashcode></hashcode>
 <admin>0</admin>
+<nologon>0</nologon>
 <userdate></userdate>
 <realname></realname>
 <email></email>
