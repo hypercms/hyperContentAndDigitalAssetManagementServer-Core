@@ -2233,11 +2233,11 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                       else
                       {
                         $search_mode = " IN NATURAL LANGUAGE MODE";
-                        $search_like = ' OR tn'.$i_tn.'.textcontent LIKE "%'.$synonym_expression.'%")';
+                        $search_like = ' OR tn'.$i_tn.'.textcontent LIKE "%'.$synonym_expression.'%"';
                       }
                       
                       // MATCH AGAINST uses stop words (e.g. search for "hello" will not be included in the search result)
-                      $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.')'.$search_like.')';
+                      $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.')'.$search_like.'))';
                     }
                   }
 
