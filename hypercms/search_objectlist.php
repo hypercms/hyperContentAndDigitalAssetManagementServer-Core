@@ -469,6 +469,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
       $file_modified = "";
       $file_published = "";
       $file_owner = "";
+      $file_connected_copy = "";
       $usedby = "";
       $metadata = "";
       $container_info = array();
@@ -572,6 +573,17 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     if (!empty ($container_info['publishdate']) && is_date ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
                     if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
                   }
+                }
+              }
+
+              // connected copies
+              if (!empty ($objectlistcols_reduced['connectedcopy']))
+              {
+                $temp_array = rdbms_getobjects ($container_id);
+
+                if (is_array ($temp_array) && sizeof ($temp_array) > 1) 
+                {
+                  $file_connected_copy = "<a href=\"javascript:void(0);\" onclick=\"parent.openPopup('page_info_container.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc.$folder)."&page=.folder&from_page=objectlist');\">".getescapedtext ($hcms_lang['show-where-used'][$lang])."</a>";
                 }
               }
 
@@ -691,6 +703,10 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                       {
                         $title = $file_owner;
                       }
+                      elseif ($key == 'connectedcopy')
+                      {
+                        $title = $file_connected_copy;
+                      }
                       else
                       {
                         if (!empty ($container_info[$key])) $title = $container_info[$key];
@@ -802,6 +818,17 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
                   if (!empty ($container_info['width'])) $file_width = $container_info['width'];
                   if (!empty ($container_info['height'])) $file_height = $container_info['height'];
+                }
+              }
+
+              // connected copies
+              if (!empty ($objectlistcols_reduced['connectedcopy']))
+              {
+                $temp_array = rdbms_getobjects ($container_id);
+
+                if (is_array ($temp_array) && sizeof ($temp_array) > 1) 
+                {
+                  $file_connected_copy = "<a href=\"javascript:void(0);\" onclick=\"parent.openPopup('page_info_container.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&from_page=objectlist');\">".getescapedtext ($hcms_lang['show-where-used'][$lang])."</a>";
                 }
               }
   
@@ -942,6 +969,10 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     elseif ($key == 'owner' || $key == 'user')
                     {
                       $title = $file_owner;
+                    }
+                    elseif ($key == 'connectedcopy')
+                    {
+                      $title = $file_connected_copy;
                     }
                     else
                     {
@@ -1382,7 +1413,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 </form>
 
 <!-- context menu --> 
-<div id="contextLayer" style="position:absolute; min-width:160px; max-width:280px; height:320px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
+<div id="contextLayer" style="position:absolute; min-width:160px; max-width:280px; height:320px; z-index:10; left:20px; top:20px; visibility:hidden;">
   <form name="contextmenu_object" action="" method="post" target="_blank" style="display:block;">
     <input type="hidden" name="contextmenustatus" value="" />
     <input type="hidden" name="contextmenulocked" value="false" />
@@ -1406,73 +1437,75 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
 
-    <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
-      <tr>
-        <td style="white-space:nowrap;">
-          <?php if ($action == "favorites" && linking_valid() == false) { ?>
-          <a href="javascript:void(0);" id="href_fav_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_delete');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_new.png" id="img_fav_delete" class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete-favorite'][$lang]); ?></a><br />        
-          <hr />
-          <?php } elseif ($action != "recyclebin" && checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false) { ?>
-          <a href="javascript:void(0);" id="href_fav_create" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_create');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_delete.png" id="img_fav_create" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['add-to-favorites'][$lang]); ?></a><br />
-          <hr />        
-          <?php } ?>
-          <?php if ($action == "checkedout" && linking_valid() == false) { ?>
-          <a href="javascript:void(0);" id="href_unlock" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('checkin');"><img src="<?php echo getthemelocation(); ?>img/button_file_unlock.png" id="img_unlock" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['check-in'][$lang]); ?></a><br />        
-          <hr />
-          <?php } ?>  
-          <a href="javascript:void(0);" id="href_preview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('preview');"><img src="<?php echo getthemelocation(); ?>img/button_file_preview.png" id="img_preview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></a><br />  
-          <?php if ($action != "recyclebin") { ?>
-          <a href="javascript:void(0);" id="href_cmsview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
-          <a href="javascript:void(0);" id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" class="hcmsIconOn hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />
-          <?php } ?>
-          <?php if ($action != "recyclebin" && !empty ($mgmt_config['chat'])) { ?>
-          <a href="javascript:void(0);" id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.png" id="img_chat" class="hcmsIconOn hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
-          <?php } ?>   
-          <hr />
-          <?php if ($action == "recyclebin") { ?>
-          <a href="javascript:void(0);" id="href_emptybin" onClick="hcms_emptyRecycleBin ('<?php echo $token; ?>');"><img src="<?php echo getthemelocation(); ?>img/button_recycle_bin.png" id="img_emptybin" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['empty-recycle-bin'][$lang]); ?></a><br />
-          <hr />
-          <a href="javascript:void(0);" id="href_restore" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('restore');"><img src="<?php echo getthemelocation(); ?>img/button_import.png" id="img_restore" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['restore'][$lang]); ?></a><br />        
-          <?php } ?>  
-          <a href="javascript:void(0);" id="href_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />     
-          <hr />
-          <?php if ($action != "recyclebin") { ?>
-          <a href="javascript:void(0);" id="href_cut" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="img_cut" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="href_copy" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="img_copy" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="href_copylinked" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="img_copylinked" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />   
-          <hr />
-          <a href="javascript:void(0);" id="href_publish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('publish');"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.png" id="img_publish" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="href_unpublish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('unpublish');"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png" id="img_unpublish" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />
-          <hr />
-          <?php } ?> 
-          <?php
-          // ----------------------------------------- plugins ----------------------------------------------
-          if ($action != "recyclebin" && $setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && linking_valid() == false && !empty ($mgmt_plugin))
-          { 
-            $plugin_items = "";
-            
-            foreach ($mgmt_plugin as $plugin_name => $data)
-            {
-              // Only active plugins which have the correct keys are used
-              if (is_array ($data) && !empty ($data['active']) && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('context', $data['menu']) && is_array ($data['menu']['context']))
+    <div class="hcmsContextMenu">
+      <table class="hcmsTableStandard" style="width:100%;">
+        <tr>
+          <td style="white-space:nowrap;">
+            <?php if ($action == "favorites" && linking_valid() == false) { ?>
+            <a href="javascript:void(0);" id="href_fav_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_delete');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_new.png" id="img_fav_delete" class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete-favorite'][$lang]); ?></a><br />        
+            <hr />
+            <?php } elseif ($action != "recyclebin" && checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false) { ?>
+            <a href="javascript:void(0);" id="href_fav_create" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_create');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_delete.png" id="img_fav_create" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['add-to-favorites'][$lang]); ?></a><br />
+            <hr />        
+            <?php } ?>
+            <?php if ($action == "checkedout" && linking_valid() == false) { ?>
+            <a href="javascript:void(0);" id="href_unlock" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('checkin');"><img src="<?php echo getthemelocation(); ?>img/button_file_unlock.png" id="img_unlock" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['check-in'][$lang]); ?></a><br />        
+            <hr />
+            <?php } ?>  
+            <a href="javascript:void(0);" id="href_preview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('preview');"><img src="<?php echo getthemelocation(); ?>img/button_file_preview.png" id="img_preview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></a><br />  
+            <?php if ($action != "recyclebin") { ?>
+            <a href="javascript:void(0);" id="href_cmsview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
+            <a href="javascript:void(0);" id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" class="hcmsIconOn hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />
+            <?php } ?>
+            <?php if ($action != "recyclebin" && !empty ($mgmt_config['chat'])) { ?>
+            <a href="javascript:void(0);" id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.png" id="img_chat" class="hcmsIconOn hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
+            <?php } ?>   
+            <hr />
+            <?php if ($action == "recyclebin") { ?>
+            <a href="javascript:void(0);" id="href_emptybin" onClick="hcms_emptyRecycleBin ('<?php echo $token; ?>');"><img src="<?php echo getthemelocation(); ?>img/button_recycle_bin.png" id="img_emptybin" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['empty-recycle-bin'][$lang]); ?></a><br />
+            <hr />
+            <a href="javascript:void(0);" id="href_restore" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('restore');"><img src="<?php echo getthemelocation(); ?>img/button_import.png" id="img_restore" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['restore'][$lang]); ?></a><br />        
+            <?php } ?>  
+            <a href="javascript:void(0);" id="href_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />     
+            <hr />
+            <?php if ($action != "recyclebin") { ?>
+            <a href="javascript:void(0);" id="href_cut" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="img_cut" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="href_copy" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="img_copy" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="href_copylinked" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="img_copylinked" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />   
+            <hr />
+            <a href="javascript:void(0);" id="href_publish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('publish');"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.png" id="img_publish" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="href_unpublish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('unpublish');"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png" id="img_unpublish" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />
+            <hr />
+            <?php } ?> 
+            <?php
+            // ----------------------------------------- plugins ----------------------------------------------
+            if ($action != "recyclebin" && $setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && linking_valid() == false && !empty ($mgmt_plugin))
+            { 
+              $plugin_items = "";
+              
+              foreach ($mgmt_plugin as $plugin_name => $data)
               {
-                foreach ($data['menu']['context'] as $key => $point)
+                // Only active plugins which have the correct keys are used
+                if (is_array ($data) && !empty ($data['active']) && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('context', $data['menu']) && is_array ($data['menu']['context']))
                 {
-                  if (!empty ($point['page']) && !empty ($point['name'])) $plugin_items .= "
-            <a href=\"javascript:void(0);\" id=\"href_plugin_".$key."\" onClick=\"if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('".$mgmt_config['url_path_plugin'].$plugin_name."/".$point['page']."');\"><img src=\"".$point['icon']."\" name=\"img_plugin\" class=\"hcmsIconOn hcmsIconList\" />&nbsp;".getescapedtext ($point['name'])."</a><br />";
+                  foreach ($data['menu']['context'] as $key => $point)
+                  {
+                    if (!empty ($point['page']) && !empty ($point['name'])) $plugin_items .= "
+              <a href=\"javascript:void(0);\" id=\"href_plugin_".$key."\" onClick=\"if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('".$mgmt_config['url_path_plugin'].$plugin_name."/".$point['page']."');\"><img src=\"".$point['icon']."\" name=\"img_plugin\" class=\"hcmsIconOn hcmsIconList\" />&nbsp;".getescapedtext ($point['name'])."</a><br />";
+                  }
                 }
               }
+              
+              if ($plugin_items != "") echo $plugin_items."
+            <hr />";
             }
-            
-            if ($plugin_items != "") echo $plugin_items."
-          <hr />";
-          }
-          ?>
-          <a href="javascript:void(0);" id="href_print" onClick="hcms_hideContextmenu(); window.print();"><img src="<?php echo getthemelocation(); ?>img/button_print.png" id="img_print" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['print'][$lang]); ?></a><br />     
-          <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
-        </td>
-      </tr>    
-    </table>
+            ?>
+            <a href="javascript:void(0);" id="href_print" onClick="hcms_hideContextmenu(); window.print();"><img src="<?php echo getthemelocation(); ?>img/button_print.png" id="img_print" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['print'][$lang]); ?></a><br />     
+            <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+          </td>
+        </tr>    
+      </table>
+    </div>
   </form>
 </div>
 
@@ -1524,6 +1557,10 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
             elseif ($key == 'owner')
             {
               $title = getescapedtext ($hcms_lang['owner'][$lang]);
+            }
+            elseif ($key == 'connectedcopy')
+            {
+              $title = getescapedtext ($hcms_lang['connected-copy'][$lang]);
             }
             else
             {

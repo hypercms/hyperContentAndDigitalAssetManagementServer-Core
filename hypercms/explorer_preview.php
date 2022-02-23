@@ -29,8 +29,15 @@ if ($location == "" && !empty ($hcms_assetbrowser_location) && !empty ($hcms_ass
   $page = $hcms_assetbrowser_object;
 }
 
+// add slash if not present at the end of the location string
+$location = correctpath ($location);
+
 // add folder
-if ($folder != "") $location = $location.$folder."/";
+if ($folder != "")
+{
+  $location = $location.$folder."/";
+  $page = ".folder";
+}
 
 // get publication and category
 $site = getpublication ($location);
@@ -125,7 +132,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     $mediaview = showobject ($site, $location, $page, $cat, $name);
   }
 
-  if ($mediaview != "") $mediaview = str_replace ("<td>", "<td style=\"width:20%; vertical-align:top;\">", $mediaview);
+  if ($mediaview != "") $mediaview = str_replace ("<td>", "<td style=\"width:120px; vertical-align:top;\">", $mediaview);
 
   //--------------------------------- meta data --------------------------------- 
   $metadata_array = getmetadata ($location, $page, $contentdata, "array", $site."/".$object_info['template']);
@@ -141,15 +148,33 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
       {
         $rows .= "
       <tr>
-        <td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".showshorttext ($value, 280)."</td>
+        <td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">".showshorttext ($value, 280)."</td>
       </tr>";
       }
       
       if ($rows != "") $metadata = "
       <hr />
-      <table class=\"hcmsTableStandard\">\n".$rows."</table>
+      <table class=\"hcmsTableNarrow\">
+      ".$rows."
+      </table>
       ";
     }
+  }
+
+  // --------------------------------- connected copies --------------------------------- 
+  $temp_array = rdbms_getobjects ($container_id);
+
+  if (is_array ($temp_array) && sizeof ($temp_array) > 1) 
+  {
+    $connected_copy = "<a href=\"javascript:void(0);\" onclick=\"parent.openPopup('page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&from_page=objectlist');\"><span class=\"hcmsHeadlineTiny\">&gt; ".getescapedtext ($hcms_lang['show-where-used'][$lang])."</span></a>";
+
+    $connectedview = "
+    <hr />
+    <table class=\"hcmsTableNarrow\">
+      <tr>
+        <td style=\"width:120px; vertical-align:top;\">".getescapedtext ($hcms_lang['connected-copy'][$lang])."&nbsp;</td><td style=\"vertical-align:top;\">".$connected_copy."</td>
+      </tr>
+    </table>";
   }
 
   //--------------------------------- related assets (only childs) --------------------------------- 
@@ -174,7 +199,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
       {
         $relatedview = "
       <hr />
-      <table class=\"hcmsTableStandard\">
+      <table class=\"hcmsTableNarrow\">
         <tr>
           <td>".getescapedtext ($hcms_lang['related-assets'][$lang])."</td>
         </tr>
@@ -197,7 +222,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     // download link
     if ($cat == "comp" && !empty ($setlocalpermission['download']) && $setlocalpermission['download'] == 1)
     {
-      if (!empty ($mgmt_config['db_connect_rdbms']))$filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
+      if (!empty ($mgmt_config['db_connect_rdbms'])) $filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
       elseif (!empty ($mediafile)) $filewrapperdownload = createviewlink ($site, $mediafile, $page, false, "download");
     }
     
@@ -207,17 +232,20 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
       if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config[$site]['accesslinkuser'])) $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
     }
 
-    $linksview = "
-    <hr />
-    <table class=\"hcmsTableStandard\">";
+    if (!empty ($filedirectlink) || !empty ($filewrapperlink) || !empty ($filewrapperdownload) || !empty ($fileaccesslink))
+    {
+      $linksview = "
+      <hr />
+      <table class=\"hcmsTableNarrow\">";
 
-    if (!empty ($filedirectlink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['direct-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filedirectlink."</span></td></tr>\n";
-    if (!empty ($filewrapperlink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['wrapper-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filewrapperlink."</span></td></tr>\n";
-    if (!empty ($filewrapperdownload)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['download-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filewrapperdownload."</span></td></tr>\n";
-    if (!empty ($fileaccesslink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['access-link'][$lang])." </br><span class=\"hcmsHeadlineTiny\">".$fileaccesslink."</span></td></tr>\n";
+      if (!empty ($filedirectlink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['direct-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filedirectlink."</span></td></tr>\n";
+      if (!empty ($filewrapperlink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['wrapper-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filewrapperlink."</span></td></tr>\n";
+      if (!empty ($filewrapperdownload)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['download-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filewrapperdownload."</span></td></tr>\n";
+      if (!empty ($fileaccesslink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['access-link'][$lang])." </br><span class=\"hcmsHeadlineTiny\">".$fileaccesslink."</span></td></tr>\n";
 
-    $linksview .= "
-    </table>";
+      $linksview .= "
+      </table>";
+    }
   }
 }
 ?>
@@ -244,6 +272,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   if (!empty ($mediaview)) echo $mediaview;
   if (!empty ($metadata)) echo $metadata;
   if (!empty ($linksview)) echo $linksview;
+  if (!empty ($connectedview)) echo $connectedview;
   if (!empty ($relatedview)) echo $relatedview;
   ?>
   </div>

@@ -358,7 +358,7 @@ function saveUser ()
     
   if (userform.elements['password'].value != "" || userform.elements['confirm_password'].value != "")
   {
-    if (!checkForm_chars (userform.elements['password'].value, "-_#+*[]%$�!?@"))
+    if (!checkForm_chars (userform.elements['password'].value, "-_#+*[]%$ !?@"))
     {
       userform.elements['password'].focus();
       return false;
@@ -371,7 +371,7 @@ function saveUser ()
       return false;
     } 
      
-    if (!checkForm_chars (userform.elements['confirm_password'].value, "-_#+*[]%$�!?@"))
+    if (!checkForm_chars (userform.elements['confirm_password'].value, "-_#+*[]%$ !?@"))
     {
       userform.elements['confirm_password'].focus();
       return false;
@@ -410,7 +410,7 @@ function hcms_saveEvent ()
 
 <?php
 echo showmessage ($show, 460, 70, $lang, "position:fixed; left:10px; top:10px;");
-?>  
+?>
 
 <?php
 // check if login is an attribute of a sent string

@@ -275,7 +275,7 @@ if ($pagestore != false)
     }
  
     // MD5 Checksum of media file
-    if (!empty ($fileMD5)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['md5-code-of-the-file'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$fileMD5."</td></tr>\n";
+    if (!empty ($fileMD5)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['md5-hash-of-the-file'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$fileMD5."</td></tr>\n";
     
     // symbolic link to external media file
     if (!empty ($is_link)) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['multimedia-file'][$lang]." - ".$hcms_lang['export'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".(!empty ($symlink) ? $symlink : getescapedtext ($hcms_lang['error'][$lang]))."</td></tr>\n";

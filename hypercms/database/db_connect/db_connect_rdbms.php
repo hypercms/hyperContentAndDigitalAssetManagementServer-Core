@@ -4092,6 +4092,7 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
       $sql .= 'WHERE obj.deleteuser="" ';
       if (intval ($container_id) > 0) $sql .= 'AND obj.id='.$container_id.' ';
       if ($template != "") $sql .= 'AND obj.template="'.$template.'" ';
+      $sql .= 'ORDER BY obj.objectpath';
 
       $errcode = "50040";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);

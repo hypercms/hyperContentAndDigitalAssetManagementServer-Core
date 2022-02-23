@@ -344,7 +344,7 @@ Release 08/2013
 - New variable %hcms% for the URL of hyperCMS, used for video embedding in editor
 - New function convertimage as wrapper for createmedia. useful to convert images to other color spaces for PDF-rendering
 - Sendlink setting in publication enables and disables the sendlink function as well
-- Bug fix: video player didn't play video, explorer_wrapper optimsation for the straming of videos
+- Bug fix: video player didn't play video, explorer_wrapper optimization for the streaming of videos
 - Converting images for tcpdf to greyscale, CMYK color space
 - Flip/flop images vertically and horizontally, add effects (sharpen, greyscale, sepia-tone, sketch, monochrome) to images, change colorspace (RGB, CMYK, Gray) using imagemagick
 - Bug fix: Using non UTF-8 charsets, the special characters in the form view are not properly escaped for links-texts and media-alttexts. convertchars is used in link_edit_page and medie_edit_page
@@ -5821,3 +5821,23 @@ Release 03/2022
 - Modifications in the search statistics plugin since the search expression does not necessarily lead to a search result with objects
 - Modifications in the main configuration file in the installation directory in order to add comments for $mgmt_config['search_query_match']
 - Modifications in function rdbms_searchcontent in DB Connect in order to combine MATCH AGAINST and LIKE in order to solve the issue with stop words restrictions with MariaDB and MySQL that lead to empty search results
+- Design modifications for the context menus in explorer_objectlist
+- Design modifications for the context menu in explorer, search_objectlist, message_objectlist, queue_objectlist, and user_objectlist
+- Design modifications for the context menu in the Worflow Management module
+- Implementation of the new connected copy column in explorer_objectlist and search_objectlist in order to open and display the usage of the same content container
+- Modifications in page_info_container in order to display the container ID instead of the container name
+- Modifications in page_info_container in order to remove the column for the publication name since the publication is included in the location
+- Modifications in page_info_container in order to delete the selected objects which are using the same content container
+- Modifications in page_info_container in order to mark the selected objects as deleted which are using the same content container (if the recycle bin is used)
+- Modifications in page_info_container in order to disable the opening of the same object
+- Modifications in page_info_container in order to disable the delete checkbox for folders
+- Modifications in page_info_container in order to display the same object row in a different color
+- Modifications in page_info in order to apply a replace the language key for the MD5 hash
+- Modifications in function rdbms_getobjects in DB Connect in order to sort the result by the objectpath
+- Modifications in explorer_preview in order to display a new link for the connected copies of an object
+- Design modifications in explorer_preview in order to apply the CSS class hcmsTableNarrow instead of hcmsTableStandard for some information classes
+- Modifications in all language files
+- Bug fix: The context menu for the column headers did not display the border and shadow correctly
+- Bug fix: page_info_container used the object name without the file extension for comparison regarding the edit- or preview
+- Bug fix: page_info_container did not correct the location for folders
+- Bug fix: explorer_preview displayed the tabel for links even if no link is available

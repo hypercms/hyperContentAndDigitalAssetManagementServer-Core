@@ -359,7 +359,7 @@ function initialize ()
 <div id="selectarea" class="hcmsSelectArea"></div>
 
 <!-- context menu -->
-<div id="contextLayer" style="position:absolute; min-width:160px; max-width:280px; height:80px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
+<div id="contextLayer" style="position:absolute; min-width:180px; max-width:280px; height:80px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_user" method="post" action="" target="">
     <input type="hidden" name="contextmenustatus" value="" />
     <input type="hidden" name="contextmenulocked" value="false" />
@@ -372,24 +372,26 @@ function initialize ()
     <input type="hidden" name="multiobject" value="" />
     <input type="hidden" name="token" value="" />
 
-    <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
-      <tr>
-        <td style="white-space:nowrap;">
-          <?php $tblrow = 1;  
-          if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) { 
-          ?>
-          <a href="javascript:void(0);" id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.png" id="img_edit" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
-          <hr />
-          <?php }
-          if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))) {
-          ?>
-          <a href="javascript:void(0);" id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
-          <hr />        
-          <?php } ?>   
-          <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
-        </td>
-      </tr>    
-    </table>
+    <div class="hcmsContextMenu">
+      <table class="hcmsTableStandard" style="width:100%;">
+        <tr>
+          <td style="white-space:nowrap;">
+            <?php $tblrow = 1;  
+            if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) { 
+            ?>
+            <a href="javascript:void(0);" id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.png" id="img_edit" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
+            <hr />
+            <?php }
+            if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))) {
+            ?>
+            <a href="javascript:void(0);" id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+            <hr />        
+            <?php } ?>   
+            <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+          </td>
+        </tr>    
+      </table>
+    </div>
   </form>
 </div>
 

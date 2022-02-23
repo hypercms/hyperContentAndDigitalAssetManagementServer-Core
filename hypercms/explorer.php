@@ -2226,7 +2226,7 @@ else
   </form>
 
   <!-- Context menu -->
-  <div id="contextLayer" style="position:absolute; width:150px; height:128px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
+  <div id="contextLayer" style="position:absolute; min-width:160px; max-width:260px; height:128px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
     <form name="contextmenu_object" action="" method="post" target="popup_explorer">
       <input type="hidden" name="contextmenustatus" value="" />
       <input type="hidden" name="contextmenulocked" value="false" />
@@ -2250,23 +2250,25 @@ else
       <input type="hidden" name="convert_type" value="" />
       <input type="hidden" name="convert_cfg" value="" />
 
-      <table class="hcmsContextMenu hcmsTableStandard" style="width:150px;">
-        <tr>
-          <td>
-            <a href="javascript:void(0);" onClick="parent.location='userlogout.php';"><img src="<?php echo getthemelocation(); ?>img/button_logout.png"  class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></a>
-            <hr/>
-            <a href="javascript:void(0);" id="href_cmsview" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
-            <a href="javascript:void(0);" id="href_notify" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />   
-            <hr/>
-            <a href="javascript:void(0);" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('publish');"><img id="img_publish" src="<?php echo getthemelocation(); ?>img/button_file_publish.png" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
-            <a href="javascript:void(0);" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('unpublish');"><img id="img_unpublish" src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png"  class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />        
-            <hr/>
-            <a href="javascript:void(0);" onClick="document.location='explorer.php?refresh=1';"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png"  class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
-          </td>
-        </tr>    
-      </table>
+      <div class="hcmsContextMenu">
+        <table class="hcmsTableStandard" style="width:100%;">
+          <tr>
+            <td>
+              <a href="javascript:void(0);" onClick="parent.location='userlogout.php';"><img src="<?php echo getthemelocation(); ?>img/button_logout.png"  class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></a>
+              <hr/>
+              <a href="javascript:void(0);" id="href_cmsview" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
+              <a href="javascript:void(0);" id="href_notify" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />   
+              <hr/>
+              <a href="javascript:void(0);" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('publish');"><img id="img_publish" src="<?php echo getthemelocation(); ?>img/button_file_publish.png" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
+              <a href="javascript:void(0);" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('unpublish');"><img id="img_unpublish" src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png"  class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />        
+              <hr/>
+              <a href="javascript:void(0);" onClick="document.location='explorer.php?refresh=1';"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png"  class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+            </td>
+          </tr>    
+        </table>
+      </div>
     </form>
-    </div>
+  </div>
 
     <!-- navigator -->
     <div id="menu" style="position:absolute; top:4px; left:0px; display:none;">

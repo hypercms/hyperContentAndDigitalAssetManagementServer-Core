@@ -247,6 +247,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         $file_modified = "";
         $file_published = "";
         $file_owner = "";
+        $file_connected_copy = "";
         $usedby = "";
     
         // read file
@@ -280,6 +281,17 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
               if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
             }
           }
+
+          // connected copies
+          if (!empty ($objectlistcols[$site][$cat]['connectedcopy']))
+          {
+            $temp_array = rdbms_getobjects ($container_id);
+
+            if (is_array ($temp_array) && sizeof ($temp_array) > 1) 
+            {
+              $file_connected_copy = "<a href=\"javascript:void(0);\" onclick=\"parent.openPopup('page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."&page=.folder&from_page=objectlist');\">".getescapedtext ($hcms_lang['show-where-used'][$lang])."</a>";
+            }
+          }
         }
         // create folder file if it does not exist
         else
@@ -307,13 +319,13 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         }
 
         // onclick for marking objects  
-        $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
+        $selectclick = "onclick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
 
         // open folder
-        $openFolder = "onDblClick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/';\" ";
+        $openFolder = "ondblclick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/';\" ";
         
         // set context
-        $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$site."', '".$cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
+        $hcms_setObjectcontext = "onmouseover=\"hcms_setObjectcontext('".$site."', '".$cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
         // if linking is used display download buttons
         $linking_buttons = "";
@@ -395,6 +407,10 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
                 {
                   $title = $file_owner;
                 }
+                elseif ($key == 'connectedcopy')
+                {
+                  $title = $file_connected_copy;
+                }
                 else
                 {
                   if (!empty ($container_info[$key])) $title = $container_info[$key];
@@ -465,6 +481,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       $file_modified = "";
       $file_published = "";
       $file_owner = "";
+      $file_connected_copy = "";
       $usedby = "";
     
       // eventsystem
@@ -517,6 +534,17 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
               if (!empty ($container_info['publishdate']) && is_date ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
               if (!empty ($container_info['date']) && is_date ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
               if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+            }
+          }
+
+          // connected copies
+          if (!empty ($objectlistcols[$site][$cat]['connectedcopy']))
+          {
+            $temp_array = rdbms_getobjects ($container_id);
+
+            if (is_array ($temp_array) && sizeof ($temp_array) > 1) 
+            {
+              $file_connected_copy = "<a href=\"javascript:void(0);\" onclick=\"parent.openPopup('page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&from_page=objectlist');\">".getescapedtext ($hcms_lang['show-where-used'][$lang])."</a>";
             }
           }
 
@@ -585,13 +613,13 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           onobjectlist_post ($site, $cat, $location, $object, $contentfile, $contentdata, $usedby, $user);     
 
         // open on double click
-        $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
+        $openObject = "ondblclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
 
         // onclick for marking objects      
-        $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
+        $selectclick = "onclick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
 
         // set context
-        $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$site."', '".$cat."', '".$location_esc."', '".$object."', '".$file_info['name']."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
+        $hcms_setObjectcontext = "onmouseover=\"hcms_setObjectcontext('".$site."', '".$cat."', '".$location_esc."', '".$object."', '".$file_info['name']."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
         // metadata
         $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;             
@@ -660,6 +688,10 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
                 elseif ($key == 'owner' || $key == 'user')
                 {
                   $title = $file_owner;
+                }
+                elseif ($key == 'connectedcopy')
+                {
+                  $title = $file_connected_copy;
                 }
                 else
                 {
@@ -732,7 +764,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
           {            
             $linking_buttons .= "
-            <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"openObjectView('".$location_esc."', '".$object."', 'preview');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
+            <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onclick=\"openObjectView('".$location_esc."', '".$object."', 'preview');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
             <a href=\"".cleandomain (createviewlink ($site, $mediafile, $object_name, false, "download"))."\" target=\"_blank\"><button class=\"hcmsButtonDownload\" style=\"width:94%;\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
           }
         }
@@ -741,14 +773,14 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         if ($is_mobile && $linking_buttons == "" && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
         {   
           $linking_buttons .= "
-          <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
+          <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
         }
 
         // if assetbrowser is used display edit button
         if (!empty ($hcms_assetbrowser) && $mediafile != "" && $setlocalpermission['root'] == 1)
         {   
           $linking_buttons .= "
-          <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"parent.parent.returnMedia('".$location_esc.$object."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_modified."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
+          <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onclick=\"parent.parent.returnMedia('".$location_esc.$object."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_modified."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
         }
 
         if ($linking_buttons != "")
@@ -1127,6 +1159,8 @@ function initialize ()
 
 <!-- context menu --> 
 <div id="contextLayer" style="position:absolute; min-width:180px; max-width:280px; height:320px; z-index:10; left:20px; top:20px; visibility:hidden;">
+
+  <!-- context menu for objects --> 
   <form name="contextmenu_object" action="" method="post" target="_blank" style="display:block;">
     <input type="hidden" name="contextmenustatus" value="" />
     <input type="hidden" name="contextmenulocked" value="false" />
@@ -1149,109 +1183,111 @@ function initialize ()
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
     
-    <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
-      <tr>
-        <td style="white-space:nowrap;">
-          <?php if (checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false) { ?>
-          <a href="javascript:void(0);" id="href_fav_create" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_create');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_delete.png" id="img_fav_create" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['add-to-favorites'][$lang]); ?></a><br />
-          <hr />        
-          <?php } ?>
-          <a href="javascript:void(0);" id="href_preview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('preview');"><img src="<?php echo getthemelocation(); ?>img/button_file_preview.png" id="img_preview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></a><br />  
-          <?php if ($setlocalpermission['root'] == 1 && ($setlocalpermission['create'] == 1 || $setlocalpermission['upload'] == 1)) { ?>
-          <a href="javascript:void(0);" id="href_cmsview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
-          <?php } else { ?>
-          <a href="javascript:void(0);" id="_href_cmsview" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="_img_cmsview" class="hcmsIconOff hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br /> 
-          <?php } ?>
-          <?php if ($setlocalpermission['root'] == 1) { ?>
-          <a href="javascript:void(0);" id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />
-          <?php } else { ?>
-          <a href="javascript:void(0);" id="_href_notify" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="_img_notify" class="hcmsIconOff hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br /> 
-          <?php } ?>
-          <?php if ($setlocalpermission['root'] == 1 && !empty ($mgmt_config['chat'])) { ?>
-          <a href="javascript:void(0);" id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.png" id="img_chat" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
-          <?php } ?>
-          <hr />
-          <?php if ($setlocalpermission['root'] == 1 && $setlocalpermission['delete'] == 1 && $setlocalpermission['folderdelete'] == 1) { ?>
-          <a href="javascript:void(0);" id="href_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
-          <hr />
-          <?php } elseif ($setlocalpermission['root'] == 1 && $setlocalpermission['delete'] == 1) { ?>
-          <a href="javascript:void(0);" id="href_delete" onClick="if (checktype('object')==true || checktype('media')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
-          <hr />        
-          <?php } elseif ($setlocalpermission['root'] == 1 && $setlocalpermission['folderdelete'] == 1) { ?>     
-          <a href="javascript:void(0);" id="href_delete" onClick="if (checktype('folder')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
-          <hr />
-          <?php } else { ?>
-          <a href="javascript:void(0);" id="_href_delete" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="_img_delete" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
-          <hr />
-          <?php } ?>     
-          <?php if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1 && $setlocalpermission['folderrename'] == 1) { ?>
-          <a href="javascript:void(0);" id="href_cut" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="img_cut" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="href_copy" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="img_copy" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="href_copylinked" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="img_copylinked" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />
-          <?php } elseif ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1) { ?>
-          <a href="javascript:void(0);" id="href_cut" onClick="if (checktype('object')==true || checktype('media')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="img_cut" border=0 class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="href_copy" onClick="if (checktype('object')==true || checktype('media')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="img_copy" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="href_copylinked" onClick="if (checktype('object')==true || checktype('media')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="img_copylinked" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />
-          <?php } elseif ($setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1) { ?> 
-          <a href="javascript:void(0);" id="href_cut" onClick="if (checktype('folder')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="img_cut" border=0 class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="href_copy" onClick="if (checktype('folder')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="img_copy" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="href_copylinked" onClick="if (checktype('folder')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="img_copylinked" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />        
-          <?php } else { ?>
-          <a href="javascript:void(0);" id="_href_cut" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="_img_cut" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="_href_copy" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="_img_copy" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="_href_copylinked" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="_img_copylinked" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />  
-          <?php } ?>
-          <?php if ($setlocalpermission['root'] == 1 && ($setlocalpermission['folderrename'] == 1 || $setlocalpermission['rename'] == 1)) { ?> 
-          <a href="javascript:void(0);" id="href_paste" onClick="hcms_createContextmenuItem ('paste');"><img src="<?php echo getthemelocation(); ?>img/button_file_paste.png" id="img_paste" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['paste'][$lang]); ?></a><br />  
-          <hr />
-          <?php } else { ?>
-          <a href="javascript:void(0);" id="href_paste" disabled><img src="<?php echo getthemelocation(); ?>img/button_file_paste.png" id="img_paste" class="hcmsIconOff hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['paste'][$lang]); ?></a><br />  
-          <hr />
-          <?php } ?>
-          <?php if ($virtual == 1 || ($setlocalpermission['root'] == 1 && $setlocalpermission['publish'] == 1)) { ?>
-          <a href="javascript:void(0);" id="href_publish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('publish');"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.png" id="img_publish" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="href_unpublish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('unpublish');"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png" id="img_unpublish" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />
-          <hr /> 
-          <?php } else { ?>
-          <a href="javascript:void(0);" id="_href_publish" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.png" id="_img_publish" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
-          <a href="javascript:void(0);" id="_href_unpublish" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png" id="_img_unpublish" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />
-          <hr />         
-          <?php } ?>
-          <?php
-          // ----------------------------------------- plugins ----------------------------------------------
-          if ($setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && linking_valid() == false && !empty ($mgmt_plugin))
-          { 
-            $plugin_items = "";
-            
-            foreach ($mgmt_plugin as $plugin_name => $data)
-            {
-              // Only active plugins which have the correct keys are used
-              if (is_array ($data) && !empty ($data['active']) && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('context', $data['menu']) && is_array ($data['menu']['context']))
+    <div class="hcmsContextMenu">
+      <table class="hcmsTableStandard" style="width:100%;">
+        <tr>
+          <td style="white-space:nowrap;">
+            <?php if (checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1 && linking_valid() == false) { ?>
+            <a href="javascript:void(0);" id="href_fav_create" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_create');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_delete.png" id="img_fav_create" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['add-to-favorites'][$lang]); ?></a><br />
+            <hr />        
+            <?php } ?>
+            <a href="javascript:void(0);" id="href_preview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('preview');"><img src="<?php echo getthemelocation(); ?>img/button_file_preview.png" id="img_preview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></a><br />  
+            <?php if ($setlocalpermission['root'] == 1 && ($setlocalpermission['create'] == 1 || $setlocalpermission['upload'] == 1)) { ?>
+            <a href="javascript:void(0);" id="href_cmsview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_cmsview" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
+            <?php } else { ?>
+            <a href="javascript:void(0);" id="_href_cmsview" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="_img_cmsview" class="hcmsIconOff hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br /> 
+            <?php } ?>
+            <?php if ($setlocalpermission['root'] == 1) { ?>
+            <a href="javascript:void(0);" id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="img_notify" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />
+            <?php } else { ?>
+            <a href="javascript:void(0);" id="_href_notify" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_notify.png" id="_img_notify" class="hcmsIconOff hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br /> 
+            <?php } ?>
+            <?php if ($setlocalpermission['root'] == 1 && !empty ($mgmt_config['chat'])) { ?>
+            <a href="javascript:void(0);" id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.png" id="img_chat" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
+            <?php } ?>
+            <hr />
+            <?php if ($setlocalpermission['root'] == 1 && $setlocalpermission['delete'] == 1 && $setlocalpermission['folderdelete'] == 1) { ?>
+            <a href="javascript:void(0);" id="href_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+            <hr />
+            <?php } elseif ($setlocalpermission['root'] == 1 && $setlocalpermission['delete'] == 1) { ?>
+            <a href="javascript:void(0);" id="href_delete" onClick="if (checktype('object')==true || checktype('media')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+            <hr />        
+            <?php } elseif ($setlocalpermission['root'] == 1 && $setlocalpermission['folderdelete'] == 1) { ?>     
+            <a href="javascript:void(0);" id="href_delete" onClick="if (checktype('folder')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+            <hr />
+            <?php } else { ?>
+            <a href="javascript:void(0);" id="_href_delete" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="_img_delete" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+            <hr />
+            <?php } ?>     
+            <?php if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1 && $setlocalpermission['folderrename'] == 1) { ?>
+            <a href="javascript:void(0);" id="href_cut" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="img_cut" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="href_copy" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="img_copy" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="href_copylinked" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="img_copylinked" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />
+            <?php } elseif ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1) { ?>
+            <a href="javascript:void(0);" id="href_cut" onClick="if (checktype('object')==true || checktype('media')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="img_cut" border=0 class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="href_copy" onClick="if (checktype('object')==true || checktype('media')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="img_copy" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="href_copylinked" onClick="if (checktype('object')==true || checktype('media')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="img_copylinked" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />
+            <?php } elseif ($setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1) { ?> 
+            <a href="javascript:void(0);" id="href_cut" onClick="if (checktype('folder')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="img_cut" border=0 class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="href_copy" onClick="if (checktype('folder')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="img_copy" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="href_copylinked" onClick="if (checktype('folder')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="img_copylinked" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />        
+            <?php } else { ?>
+            <a href="javascript:void(0);" id="_href_cut" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.png" id="_img_cut" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="_href_copy" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" id="_img_copy" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="_href_copylinked" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.png" id="_img_copylinked" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />  
+            <?php } ?>
+            <?php if ($setlocalpermission['root'] == 1 && ($setlocalpermission['folderrename'] == 1 || $setlocalpermission['rename'] == 1)) { ?> 
+            <a href="javascript:void(0);" id="href_paste" onClick="hcms_createContextmenuItem ('paste');"><img src="<?php echo getthemelocation(); ?>img/button_file_paste.png" id="img_paste" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['paste'][$lang]); ?></a><br />  
+            <hr />
+            <?php } else { ?>
+            <a href="javascript:void(0);" id="href_paste" disabled><img src="<?php echo getthemelocation(); ?>img/button_file_paste.png" id="img_paste" class="hcmsIconOff hcmsIconList">&nbsp;<?php echo getescapedtext ($hcms_lang['paste'][$lang]); ?></a><br />  
+            <hr />
+            <?php } ?>
+            <?php if ($virtual == 1 || ($setlocalpermission['root'] == 1 && $setlocalpermission['publish'] == 1)) { ?>
+            <a href="javascript:void(0);" id="href_publish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('publish');"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.png" id="img_publish" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="href_unpublish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('unpublish');"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png" id="img_unpublish" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />
+            <hr /> 
+            <?php } else { ?>
+            <a href="javascript:void(0);" id="_href_publish" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.png" id="_img_publish" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
+            <a href="javascript:void(0);" id="_href_unpublish" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.png" id="_img_unpublish" class="hcmsIconOff hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />
+            <hr />         
+            <?php } ?>
+            <?php
+            // ----------------------------------------- plugins ----------------------------------------------
+            if ($setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && linking_valid() == false && !empty ($mgmt_plugin))
+            { 
+              $plugin_items = "";
+              
+              foreach ($mgmt_plugin as $plugin_name => $data)
               {
-                foreach ($data['menu']['context'] as $key => $point)
+                // Only active plugins which have the correct keys are used
+                if (is_array ($data) && !empty ($data['active']) && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('context', $data['menu']) && is_array ($data['menu']['context']))
                 {
-                  if (!empty ($point['page']) && !empty ($point['name'])) $plugin_items .= "
-            <a href=\"javascript:void(0);\" id=\"href_plugin_".$key."\" onClick=\"if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('".$mgmt_config['url_path_plugin'].$plugin_name."/".$point['page']."');\"><img src=\"".$point['icon']."\" name=\"img_plugin\" class=\"hcmsIconOn hcmsIconList\" />&nbsp;".getescapedtext ($point['name'])."</a><br />";
+                  foreach ($data['menu']['context'] as $key => $point)
+                  {
+                    if (!empty ($point['page']) && !empty ($point['name'])) $plugin_items .= "
+              <a href=\"javascript:void(0);\" id=\"href_plugin_".$key."\" onClick=\"if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('".$mgmt_config['url_path_plugin'].$plugin_name."/".$point['page']."');\"><img src=\"".$point['icon']."\" name=\"img_plugin\" class=\"hcmsIconOn hcmsIconList\" />&nbsp;".getescapedtext ($point['name'])."</a><br />";
+                  }
                 }
               }
+              
+              if ($plugin_items != "") echo $plugin_items."
+            <hr />";
             }
-            
-            if ($plugin_items != "") echo $plugin_items."
-          <hr />";
-          }
-          ?>
-          <a href="javascript:void(0);" id="href_print" onClick="hcms_hideContextmenu(); window.print();"><img src="<?php echo getthemelocation(); ?>img/button_print.png" id="img_print" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['print'][$lang]); ?></a><br />     
-          <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
-        </td>
-      </tr>    
-    </table>
+            ?>
+            <a href="javascript:void(0);" id="href_print" onClick="hcms_hideContextmenu(); window.print();"><img src="<?php echo getthemelocation(); ?>img/button_print.png" id="img_print" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['print'][$lang]); ?></a><br />     
+            <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+          </td>
+        </tr>    
+      </table>
+    </div>
   </form>
   
   <!-- context menu for colum attributes -->
   <form name="contextmenu_column" action="" method="post" style="display:none;">
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
-    <div style="min-width:180px; max-width:280px; max-height:640px; overflow:auto;">
-      <table class="hcmsContextMenu hcmsTableStandard" style="width:100%;">
+    <div class="hcmsContextMenu hcmsTableStandard" style="min-width:220px; max-width:280px; max-height:640px; overflow:auto;">
+      <table style="width:100%;">
         <tr>
           <td style="white-space:nowrap;">
             <label><input onclick="setcolumns()" type="checkbox" name="column[createdate]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['createdate'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?></label><br />
@@ -1260,6 +1296,7 @@ function initialize ()
             <label><input onclick="setcolumns()" type="checkbox" name="column[filesize]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['filesize'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?></label><br />
             <label><input onclick="setcolumns()" type="checkbox" name="column[type]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['type'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['type'][$lang]); ?></label><br />
             <label><input onclick="setcolumns()" type="checkbox" name="column[owner]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['owner'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['owner'][$lang]); ?></label><br />
+            <label><input onclick="setcolumns()" type="checkbox" name="column[connectedcopy]" value="1" <?php if (!empty ($objectlistcols[$site][$cat]['connectedcopy'])) echo "checked=\"checked\""; ?>/>&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></label><br />
             <?php
             if (!empty ($labels[$site][$cat]) && is_array ($labels[$site][$cat]) && sizeof ($labels[$site][$cat]) > 0)
             {
@@ -1278,6 +1315,7 @@ function initialize ()
       </table>
     </div>
   </form>
+
 </div>
 
 <!-- Table Header -->
@@ -1325,6 +1363,10 @@ function initialize ()
             elseif ($key == 'owner')
             {
               $title = getescapedtext ($hcms_lang['owner'][$lang]);
+            }
+            elseif ($key == 'connectedcopy')
+            {
+              $title = getescapedtext ($hcms_lang['connected-copy'][$lang]);
             }
             else
             {
