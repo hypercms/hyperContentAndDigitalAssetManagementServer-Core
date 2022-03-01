@@ -603,7 +603,7 @@ function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
 // output: array holding all taxonomy IDs / false on error
 
 // description:
-// Returns the keywords based on taxonomy defintion and synonyms if expression is a keyword (multilingual support based on taxonomies and synonyms).
+// Returns the keywords based on taxonomy definition and synonyms if expression is a keyword (multilingual support based on taxonomies and synonyms).
 // The expression can be a taxonomy path in the form of %taxonomy%/site/language-code/taxonomy-ID/taxonomy-child-levels (use "all" for all languages and "0" for all taxonomy-IDs on first level).
 // The global variable $taxonomy can be used to pass the taxonomy as array.
 
@@ -1374,10 +1374,10 @@ function getlistelements ($list_sourcefile)
 // ---------------------- getmetadata -----------------------------
 // function: getmetadata()
 // input: location [string], object name (both optional if container is given) [string], container name/ID or container content [string] (optional), 
-//         seperator of meta data fields [any string,array] (optional), publication name/template name to extract label names [string] (optional)
+//         separator of meta data fields [any string,array] (optional), publication name/template name to extract label names [string] (optional)
 // output: string with all metadata from given object based on container / false
 
-function getmetadata ($location, $object, $container="", $seperator="\r\n", $template="")
+function getmetadata ($location, $object, $container="", $separator="\r\n", $template="")
 {
 	global $mgmt_config;
 
@@ -1501,7 +1501,8 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
 
 			if ($contentdata != false)
       {
-        $metadata = Null;
+        if (strtolower ($separator) != "array") $metadata = "";
+        else $metadata = array();
 
         // if no template and no labels are defined
         if (!is_array ($labels))
@@ -1510,9 +1511,6 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
 
   				if ($textnode != false)
           {
-  					if (strtolower ($seperator) != "array") $metadata = "";
-            else $metadata = array();
-
   					foreach ($textnode as $buffer)
             {
               // get info from container
@@ -1537,7 +1535,7 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
                   $text_content[0] = str_replace (",", ", ", $text_content[0]);
                 }
 
-    						if (strtolower ($seperator) != "array") $metadata[] = $label.": ".$text_content[0].$seperator;
+    						if (strtolower ($separator) != "array") $metadata[] = $label.": ".$text_content[0];
                 else $metadata[$label] = $text_content[0];
               }
   					}
@@ -1577,24 +1575,24 @@ function getmetadata ($location, $object, $container="", $seperator="\r\n", $tem
 
             if (!empty ($position[$id])) $pos = $position[$id];
 
-						if (strtolower ($seperator) != "array") $metadata[$pos] = $label.": ".$text_str;
+						if (strtolower ($separator) != "array") $metadata[$pos] = $label.": ".$text_str;
             else $metadata["<!--".$pos."-->".$label] = $text_str;
           }
+        }
 
-          if (strtolower ($seperator) != "array")
-          {
-            ksort ($metadata);
-            $metadata = implode ($seperator, $metadata);
-          }
+        // convert array to string
+        if (is_array ($metadata) && strtolower ($separator) != "array")
+        {
+          ksort ($metadata);
+          $metadata = implode ($separator, $metadata);
         }
 
 				return $metadata;
 			}
-      else return false;
 		}
-    else return false;
 	}
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- getmetadata_multiobjects -----------------------------
@@ -1741,9 +1739,9 @@ function getmetadata_multiobjects ($multiobject_array, $user, $include_subfolder
 
       return $result;
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- getmetadata_container -----------------------------
@@ -1920,33 +1918,93 @@ function getmetadata_container ($container_id, $text_id_array=array())
     }
 
     if (is_array ($result) && sizeof ($result) > 0) return $result;
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------------------------- getobjectlist ----------------------------------------
 // function: getobjectlist()
-// input: publication name [string] (optional), location [string] (optional), folder hash code [string] (optional), text IDs to be returned e.g. text:Title [array] (optional)
+// input: publication name [string] (optional), location [string] (optional), folder hash code [string] (optional), search parameters [array] (optional), information and text IDs to be returned e.g. text:Title [array] (optional)
 // output: result array / false on error
 // requires: config.inc.php
 
 // description:
 // Get all objects of a location. This is a simplified wrapper for function rdbms_searchcontent.
 
-function getobjectlist ($site="", $location="", $folderhash="", $objectlistcols=array())
+function getobjectlist ($site="", $location="", $folderhash="", $search=array(), $objectlistcols=array())
 {
   global $mgmt_config, $user;
+
+  // initialize
+  $result = array();
+  $search_dir_esc = array();
+  $setlocalpermission = array();
+
+  // define default values
+  if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height");
+
+  // search parameters
+  // query result limit
+  if (empty ($search['limit'])) $search['limit'] = 500;
+
+  // search expression
+  if (!empty ($search['expression']))
+  {
+    $search['expression_array'] = array();
+    $search['expression_array'][0] = $search['expression'];
+  }
+  else $search['expression_array'] = "";
+
+  // search for file of folder name
+  if (empty ($search['filename'])) $search['filename'] = "";
+
+  // format values: audio,binary,compressed,document,flash,image,text,video,unknown
+  $filter_names = array ("page", "comp", "image", "document", "text", "video", "audio", "flash", "compressed", "binary");
+
+  if (!empty ($search['format']) && is_array ($search['format']))
+  {
+    foreach ($search['format'] as $key=>$value)
+    {
+      if (in_array (strtolower ($value), $filter_names)) $search['format'][$key] = strtolower ($value);
+      else unset ($search['format'][$key]);
+    }
+  }
+  else $search['format'] = "";
+
+  // modified date
+  if (empty ($search['date_modified_from'])) $search['date_modified_from'] = "";
+  if (empty ($search['date_modified_to'])) $search['date_modified_to'] = "";
+
+  // image width and height in pixel
+  // parameter imagewidth can be used as general image size parameter (min-max)
+  if (empty ($search['imagewidth'])) $search['imagewidth'] = "";
+  if (empty ($search['imageheight'])) $search['imageheight'] = "";
+
+  // color code that defines a primary color: K for Black, W for White, E for Grey, R for Red, G for Green, B for Blue, C for Cyan, M for Magenta, Y for Yellow, O for Orange, P for Pink, N for Brown
+  if (empty ($search['imagecolor']) || !is_array ($search['imagecolor'])) $search['imagecolor'] = "";
+
+  // image type: portrait,landscape,square
+  if (!empty ($search['imagetype'])) $search['imagetype'] = strtolower ($search['imagetype']);
+  else $search['imagetype'] = "";
+
+  // object and container ID
+  if (empty ($search['object_id'])) $search['object_id'] = "";
+  if (empty ($search['container_id'])) $search['container_id'] = "";
+
+  // geo location
+  if (empty ($search['geo_border_sw'])) $search['geo_border_sw'] = "";
+  if (empty ($search['geo_border_ne'])) $search['geo_border_ne'] = "";
 
   // get location from hash code
   if ($folderhash != "")
   {
-    $folderpath = rdbms_getobject ($folderhash); 
+    $folderpath = rdbms_getobject ($folderhash);
     $site = getpublication ($folderpath);
     $location = getlocation ($folderpath);
   }
 
-  // location provided
+  // use provided location
   if (valid_publicationname ($site) && valid_locationname ($location))
   {
     $cat = getcategory ($site, $location);
@@ -1960,15 +2018,93 @@ function getobjectlist ($site="", $location="", $folderhash="", $objectlistcols=
       if (empty ($setlocalpermission['root'])) return false;
     }
 
-    $search_dir_esc = convertpath ($site, $location, $cat);
-  
-    // start search
-    if (!empty ($search_dir_esc))
-    {
-      return rdbms_searchcontent ($search_dir_esc, "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, $objectlistcols);
-    }
-    else return false;
+    $search_dir_esc[] = convertpath ($site, $location, $cat);
   }
+  // use comp- or pageaccess of user
+  else
+  {
+    // use compaccess (compaccess[publication][group]=[objectpath])
+    if (!empty ($compaccess) && is_array ($compaccess) && strpos ("_".$location, "%comp%/") > 0) $temp_access = $compaccess;
+    // use pageaccess (pageaccess[publication][group]=[objectpath])
+    elseif (!empty ($pageaccess) && is_array ($pageaccess) && strpos ("_".$location, "%page%/") > 0) $temp_access = $pageaccess;
+
+    if (!empty ($temp_access) && is_array ($temp_access))
+    {
+      foreach ($temp_access as $temp_site=>$temp_array)
+      {
+        foreach ($temp_array as $temp_group=>$temp_location)
+        {
+          $search_dir_esc[] = $temp_location;
+        }
+      }
+    }
+  }
+  
+  if (!empty ($search_dir_esc))
+  {
+    // only search in the provided location and exclude the subfolders
+    $mgmt_config['search_folderpath_level'] = true;
+
+    // search in all subfolders if at least one search parameter is used
+    if (is_array ($search))
+    {
+      foreach ($search as $key=>$value)
+      {
+        if (!empty ($value))
+        {
+          $mgmt_config['search_folderpath_level'] = false;
+          break;
+        }
+      }
+    }
+  }
+
+  // start search
+  if (!empty ($search_dir_esc) || is_array ($search))
+  {
+    $result = rdbms_searchcontent ($search_dir_esc, "", $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols);
+
+    // verify result
+    if (is_array ($result))
+    {
+      foreach ($result as $hash=>$temp_array)
+      {
+        if (!empty ($hash) && !empty ($temp_array['objectpath']))
+        {
+          // get publication
+          $temp_site = getpublication ($temp_array['objectpath']);
+          // get location
+          $temp_location_esc = getlocation ($temp_array['objectpath']);
+          // get location in file system
+          $temp_location = deconvertpath ($temp_location_esc, "file");               
+          // get object name
+          $temp_object = getobject ($temp_array['objectpath']);  
+          $temp_object = correctfile ($temp_location, $temp_object, $user);
+
+          // remove invalid/dead result row
+          if (!is_file ($temp_location.$temp_object))
+          {
+            unset ($result[$hash]);
+          }
+          // add permissions for valid result row
+          else
+          {
+            // add users local permissions
+            if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
+            {
+              $temp_cat = getcategory ($temp_site, $temp_location);
+              $temp_ownergroup = accesspermission ($temp_site, $temp_location, $temp_cat);
+              $setlocalpermission = setlocalpermission ($temp_site, $temp_ownergroup, $temp_cat);
+            }
+
+            $result[$hash]['permission'] = $setlocalpermission;
+          }
+        }
+      }
+    } 
+  }
+  
+  if (is_array ($result) && sizeof ($result) > 0) return $result;
   else return false;
 }
 
@@ -2030,10 +2166,10 @@ function getobjectcontainer ($site, $location, $object, $user, $type="work")
       $data = loadcontainer ($container, $type, $user);
 
       if ($data != false && $data != "") return $data;
-      else return false;
     }
   }
-  else return false;
+  
+  return false;
 }
 
 // ------------------------------------------ getcontainer --------------------------------------------
@@ -2307,11 +2443,10 @@ function getlocationname ($site, $location, $cat, $source="path")
       }
 
       if ($location_name != "") return $location_name;
-      else return false;
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // --------------------------------------- getthemes -------------------------------------------
@@ -2379,7 +2514,8 @@ function getthemes ($site_array=array())
     reset ($theme_array);
     return $theme_array;
   }
-  else return false;
+  
+  return false;
 }
 
 // --------------------------------------- getthemelocation -------------------------------------------
@@ -2548,7 +2684,8 @@ function getpublication ($path)
 
     return $site;
   }
-  else return false;
+  
+  return false;
 }
 
 // ------------------------- getlocation ---------------------------------
@@ -2580,7 +2717,8 @@ function getlocation ($path)
 
     return $location;
   }
-  else return false;
+  
+  return false;
 }
 
 // ------------------------- getobject ---------------------------------
@@ -2623,7 +2761,8 @@ function getobject ($path)
 
     return $object;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- getmediacontainername -----------------------------
@@ -2649,7 +2788,8 @@ function getmediacontainername ($file)
     if (is_int (intval ($id))) return $id.".xml";
     else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- getmediacontainerid -----------------------------
@@ -2675,7 +2815,8 @@ function getmediacontainerid ($file)
     if (is_int (intval ($id))) return $id;
     else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- getmediafileversion -----------------------------
@@ -2765,12 +2906,11 @@ function getmediafileversion ($container)
         }
 
         if (!empty ($mediafile)) return $mediafile;
-        else return false;
       }
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- getobjectid -----------------------------
@@ -2977,9 +3117,9 @@ function getcontainerversions ($container)
       ksort ($result);
       return $result;
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- getlocaltemplates -----------------------------
@@ -3038,12 +3178,11 @@ function getlocaltemplates ($site, $cat="all")
     {
       natcasesort ($template_files);
       reset ($template_files);
-
       return $template_files;
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ----------------------------------------- gettemplates ---------------------------------------------
@@ -3140,12 +3279,11 @@ function gettemplates ($site, $cat="all")
       $template_array = array_unique ($template_array);
       natcasesort ($template_array);
       reset ($template_array);
-
       return $template_array;
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- gettemplateversions -----------------------------
@@ -3190,9 +3328,9 @@ function gettemplateversions ($site, $template)
       ksort ($result);
       return $result;
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- getfileinfo -----------------------------
@@ -3704,9 +3842,9 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
 
     // return result array
     if (sizeof ($result) > 0) return $result;
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- getfilesize -----------------------------
@@ -3776,9 +3914,9 @@ function getfilesize ($file)
 
       return array('filesize'=>0, 'count'=>0);
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- getmimetype -----------------------------

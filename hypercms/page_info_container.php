@@ -165,11 +165,11 @@ echo showmessage ($show, 460, 70, $lang, "position:fixed; left:10px; top:50px;")
     </tr>
 
 <?php
+// ---------------------------- analyze links ------------------------------
 // initialize
 $color = false;
 $found = false;
 
-// ---------------------------- analyze links ------------------------------
 // get connected objects
 $object_array = getconnectedobject ($container);
 
@@ -188,7 +188,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       $found = true;
 
       // location
-      $location_obj_short = str_replace ("%comp%", "", $result['convertedlocation']);
+      $location_obj_short = str_replace (array("%comp%", "%page%"), array("", ""), $result['convertedlocation']);
         
       if ($file_info['type'] == "Folder")
       {
@@ -284,7 +284,10 @@ openBrWindow('popup_log.php?description=<p class=hcmsHeadline>".getescapedtext (
 }  
 
 // if no items were found  
-if ($found == false) echo "<tr class=\"hcmsRowData1\"><td colspan=\"4\">".getescapedtext ($hcms_lang['no-items-were-found'][$lang])."</td></tr>\n";
+if ($found == false) echo "
+  <tr class=\"hcmsRowData1\">
+    <td colspan=\"3\">".getescapedtext ($hcms_lang['no-items-were-found'][$lang])."</td>
+  </tr>";
 
 // save log
 savelog (@$error);

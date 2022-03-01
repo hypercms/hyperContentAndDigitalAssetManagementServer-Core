@@ -5059,7 +5059,7 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
     $overlay = "";
     $thumb_items = array();
 
-    if (!empty ($controls) && intval ($width) >= $gallery_min_width && is_file ($media_dir.$site."/".$container_id."/faces.json"))
+    if (!empty ($controls) && intval ($width) >= $gallery_min_width && !empty ($media_dir) && !empty ($container_id) && is_file ($media_dir.$site."/".$container_id."/faces.json"))
     {
       // load JSON file with face definitions
       $faces_json = loadfile ($media_dir.$site."/".$container_id."/", "faces.json");

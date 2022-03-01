@@ -26,6 +26,9 @@ $cat = getcategory ($site, $location);
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
+// add slash if not present at the end of the location string
+$location = correctpath ($location);
+
 // convert location
 $location = deconvertpath ($location, "file");
 $location_esc = convertpath ($site, $location, $cat);
@@ -66,22 +69,22 @@ echo showtopbar ($pagename." ".$hcms_lang['is-used-by'][$lang], $lang, $mgmt_con
 
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
-<?php
-$site_buffer = $site;
 
-echo  "<table class=\"hcmsTableStandard\" style=\"width:99%;\">
+<table class="hcmsTableStandard" style="width:99%;">
 <tr>
-  <td class=\"hcmsHeadline\" style=\"width:15%; white-space:nowrap;\">".getescapedtext ($hcms_lang['name'][$lang])."</td>
-  <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['location'][$lang])."</td>
-  <td class=\"hcmsHeadline\" style=\"width:15%; white-space:nowrap;\">".getescapedtext ($hcms_lang['publication'][$lang])."</td>
-</tr>";
-// ---------------------------- analyze links ------------------------------
-// get linked objects
-$result_array = getlinkedobject ($site, $location, $page, $cat);
+  <td class="hcmsHeadline" style="width:20%; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?></td>
+  <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['location'][$lang]); ?></td>
+</tr>
 
+<?php
+// ---------------------------- analyze links ------------------------------
+// initialize
 $found = false;
 $color = false;
 $addtext = "";
+
+// get linked objects
+$result_array = getlinkedobject ($site, $location, $page, $cat);
 
 if (is_array ($result_array) && sizeof ($result_array) > 0)
 {
@@ -93,10 +96,27 @@ if (is_array ($result_array) && sizeof ($result_array) > 0)
           
     if ($file_info != false)
     {
-      $found = true; 
+      $found = true;
+
+      // location
+      $location_obj_short = str_replace (array("%comp%", "%page%"), array("", ""), $result['convertedlocation']);
+        
+      if ($file_info['type'] == "Folder")
+      {
+        $file_info['name'] = getobject ($location_obj_short);
+        $location_obj_short = getlocation ($location_obj_short);
+      }  
+
+      // current object
+      if ($result['location'].$file_info['file'] == $location.$pagename) $current_object = true;
+      else $current_object = false;
     
       // define row color
-      if ($color == true)
+      if ($current_object)
+      {
+        $rowcolor = "hcmsRowHead2";
+      }
+      elseif ($color == true)
       {
         $rowcolor = "hcmsRowData1";
         $color = false;
@@ -108,43 +128,43 @@ if (is_array ($result_array) && sizeof ($result_array) > 0)
       }
     
       if ($result['category'] == "page")
-      {          
-        $location_obj_short = str_replace ("%page%", "", $result['convertedlocation']);
-        
-        if ($file_info['type'] == "Folder")
-        {
-          $file_info['name'] = getobject ($location_obj_short);
-          $location_obj_short = getlocation ($location_obj_short);
-        }        
-      
+      {      
         // if outside pageaccess
         if ($pageaccess != "" && accesspermission ($result['publication'], $result['location'], "page") != false)
         {
-          echo "<tr class=\"".$rowcolor."\"><td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."frameset_content.php?ctrlreload=yes&site=".url_encode($result['publication'])."&cat=".url_encode($result['category'])."&location=".url_encode($result['convertedlocation'])."&page=".url_encode($result['object'])."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$file_info['name']."</a></td><td style=\"white-space:nowrap;\">".$location_obj_short."</td><td>".$result['publication']."</td></tr>\n";
+          echo "
+          <tr class=\"".$rowcolor."\">
+            <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."frameset_content.php?ctrlreload=yes&site=".url_encode($result['publication'])."&cat=".url_encode($result['category'])."&location=".url_encode($result['convertedlocation'])."&page=".url_encode($result['object'])."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$file_info['name']."</a></td>
+            <td style=\"white-space:nowrap;\">".$location_obj_short."</td>
+          </tr>";
         }          
         else
         {
-          echo "<tr class=\"".$rowcolor."\"><td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."page_preview.php?site=".url_encode($result['publication'])."&cat=".url_encode($result['category'])."&location=".url_encode($result['convertedlocation'])."&page=".url_encode($result['object'])."', 'preview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$file_info['name']."</a></td><td style=\"white-space:nowrap;\">".$location_obj_short."</td><td>".$result['publication']."</td></tr>\n";
+          echo "
+          <tr class=\"".$rowcolor."\">
+            <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."page_preview.php?site=".url_encode($result['publication'])."&cat=".url_encode($result['category'])."&location=".url_encode($result['convertedlocation'])."&page=".url_encode($result['object'])."', 'preview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$file_info['name']."</a></td>
+            <td style=\"white-space:nowrap;\">".$location_obj_short."</td>
+          </tr>";
         }
       }
       elseif ($result['category'] == "comp")
-      {          
-        $location_obj_short = str_replace ("%comp%", "", $result['convertedlocation']);
-        
-        if ($file_info['type'] == "Folder")
-        {
-          $file_info['name'] = getobject ($location_obj_short);
-          $location_obj_short = getlocation ($location_obj_short);
-        }        
-      
+      {
         // if outside compaccess
         if ($compaccess != "" && accesspermission ($result['publication'], $result['location'], "comp")  != false)
         {
-          echo "<tr class=\"".$rowcolor."\"><td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."frameset_content.php?ctrlreload=yes&site=".url_encode($result['publication'])."&cat=".url_encode($result['category'])."&location=".url_encode($result['convertedlocation'])."&page=".url_encode($result['object'])."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$file_info['name']."</a></td><td style=\"white-space:nowrap;\">".$location_obj_short."</td><td>".$result['publication']."</td></tr>\n";
+          echo "
+          <tr class=\"".$rowcolor."\">
+            <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."frameset_content.php?ctrlreload=yes&site=".url_encode($result['publication'])."&cat=".url_encode($result['category'])."&location=".url_encode($result['convertedlocation'])."&page=".url_encode($result['object'])."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$file_info['name']."</a></td>
+            <td style=\"white-space:nowrap;\">".$location_obj_short."</td>
+          </tr>";
         }          
         else
         {
-          echo "<tr class=\"".$rowcolor."\"><td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."page_preview.php?site=".url_encode($result['publication'])."&cat=".url_encode($result['category'])."&location=".url_encode($result['convertedlocation'])."&page=".url_encode($result['object'])."', 'preview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$file_info['name']."</a></td><td style=\"white-space:nowrap;\">".$location_obj_short."</td><td>".$result['publication']."</td></tr>\n";
+          echo "
+          <tr class=\"".$rowcolor."\">
+            <td style=\"white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"hcms_openWindow('".cleandomain ($mgmt_config['url_path_cms'])."page_preview.php?site=".url_encode($result['publication'])."&cat=".url_encode($result['category'])."&location=".url_encode($result['convertedlocation'])."&page=".url_encode($result['object'])."', 'preview', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" />&nbsp; ".$file_info['name']."</a></td>
+            <td style=\"white-space:nowrap;\">".$location_obj_short."</td>
+          </tr>";
         }
       }
     }    
@@ -157,9 +177,13 @@ elseif ($result_array == true)
 } 
 
 // if no items were found  
-if ($found == false) echo "<tr class=\"hcmsRowData1\"><td colspan=\"4\">".getescapedtext ($hcms_lang['no-items-were-found'][$lang])." ".$addtext."</td></tr>\n";
+if ($found == false) echo "
+  <tr class=\"hcmsRowData1\">
+    <td colspan=\"2\">".getescapedtext ($hcms_lang['no-items-were-found'][$lang])." ".$addtext."</td>
+  </tr>";
 
-echo "</table>\n";
+echo "
+</table>";
 
 // save log
 savelog (@$error);
@@ -167,5 +191,6 @@ savelog (@$error);
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

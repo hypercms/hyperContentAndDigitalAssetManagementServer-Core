@@ -342,7 +342,7 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
 
   $error = array();
 
-  if (intval ($container_id) > 0 && $object != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) && $template != "" && $user != "")
+  if (intval ($container_id) > 0 && $object != "" && (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0) && $template != "" && $user != "")
   {
     // remove tailing slash
     $object = trim ($object);
@@ -364,7 +364,7 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
     $hash = createuniquetoken ();
     
     // correct object name
-    $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+    $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);
     if (strtolower (strrchr ($object, ".")) == ".off") $object = substr ($object, 0, -4);
 
     // create default container name
@@ -1123,14 +1123,14 @@ function rdbms_settemplate ($object, $template)
 {
   global $mgmt_config;
   
-  if ($object != "" && $template != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0))
+  if ($object != "" && $template != "" && (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0))
   {    
     // correct object name 
     if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
 
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
-    $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+    $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);
     $object = $db->rdbms_escape_string ($object);
     $template = $db->rdbms_escape_string ($template);
 
@@ -1345,7 +1345,7 @@ function rdbms_getduplicate_file ($site, $md5_hash)
       {
         if (!empty ($row['objectpath']))
         {
-          $row['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $row['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
           $media[] = $row;
         }
       }
@@ -1373,7 +1373,7 @@ function rdbms_renameobject ($object_old, $object_new)
 {
   global $mgmt_config;
 
-  if ($object_old != "" && $object_new != "" && (substr_count ($object_old, "%page%") > 0 || substr_count ($object_old, "%comp%") > 0) && (substr_count ($object_new, "%page%") > 0 || substr_count ($object_new, "%comp%") > 0))
+  if ($object_old != "" && $object_new != "" && (substr_count ($object_old, "%page%/") > 0 || substr_count ($object_old, "%comp%/") > 0) && (substr_count ($object_new, "%page%/") > 0 || substr_count ($object_new, "%comp%/") > 0))
   {
     // correct object names
     if (strtolower (strrchr ($object_old, ".")) == ".off") $object_old = substr ($object_old, 0, -4);
@@ -1389,8 +1389,8 @@ function rdbms_renameobject ($object_old, $object_new)
     $object_new = $db->rdbms_escape_string ($object_new);
 
     // replace %
-    $object_old = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object_old);
-    $object_new = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object_new);
+    $object_old = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object_old);
+    $object_new = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object_new);
 
     // query
     $sql = 'SELECT object_id, id, objectpath FROM object '; 
@@ -1448,7 +1448,7 @@ function rdbms_deleteobject ($object="", $object_id="")
   // clean input
   $object_id = intval ($object_id);  
 
-  if (($object != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0)) || $object_id > 0)
+  if (($object != "" && (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0)) || $object_id > 0)
   {
     // correct object name 
     if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
@@ -1457,7 +1457,7 @@ function rdbms_deleteobject ($object="", $object_id="")
 
     if ($object != "")
     {
-      $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+      $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);
       $object = $db->rdbms_escape_string ($object);
     }
 
@@ -1730,7 +1730,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 //        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image color [array] (optional), image-type [portrait,landscape,square] (optional), 
 //        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned e.g. text:Title [array] (optional), count search result entries [boolean] (optional), 
 //        log search expression [true/false] (optional), taxonomy level to include [integer] (optional), order by for sorting of the result [string] (optional)
-// output: result array with object paths of all found objects / false
+// output: result array with object hash as 1st key and object information as 2nd key of all found objects / false
 
 // description:
 // Searches one or more expressions in the content, objectpath or other attributes of objects which are not in the recycle bin.
@@ -1858,7 +1858,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         $folderpath = array ($folderpath);      
       }
 
-      $sql_puffer = array();
+      $sql_temp = array();
 
       foreach ($folderpath as $path)
       {
@@ -1867,13 +1867,16 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           // escape characters depending on dbtype
           $path = $db->rdbms_escape_string ($path);
           // replace %
-          $path = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $path);
+          $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);          
           // where clause for folderpath
-          $sql_puffer[] = 'obj.objectpath LIKE BINARY "'.$path.'%"';
+          // search only on the same level of the path
+          if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE BINARY "'.$path.'%" AND obj.objectpath NOT LIKE BINARY "'.$path.'%/%") OR obj.objectpath LIKE BINARY "'.$path.'%/.folder"';
+          // all objects that are located in the path
+          else $sql_temp[] = 'obj.objectpath LIKE BINARY "'.$path.'%"';
         }
       }
 
-      if (is_array ($sql_puffer) && sizeof ($sql_puffer) > 0) $sql_where['folderpath'] = '('.implode (" OR ", $sql_puffer).')';
+      if (is_array ($sql_temp) && sizeof ($sql_temp) > 0) $sql_where['folderpath'] = '('.implode (" OR ", $sql_temp).')';
     }
 
     // exclude path
@@ -1885,7 +1888,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         $excludepath = array ($excludepath);
       }
 
-      $sql_puffer = array();
+      $sql_temp = array();
 
       foreach ($excludepath as $path)
       {
@@ -1895,21 +1898,21 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if ($path == "/.folder")
           {
             // where clause for excludepath
-            $sql_puffer[] = 'obj.objectpath NOT LIKE BINARY "%'.$path.'"';
+            $sql_temp[] = 'obj.objectpath NOT LIKE BINARY "%'.$path.'"';
           }
           else
           {
             // escape characters depending on dbtype
             $path = $db->rdbms_escape_string ($path);
             // replace %
-            $path = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $path);
+            $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);
             // where clause for excludepath
-            $sql_puffer[] = 'obj.objectpath NOT LIKE BINARY "'.$path.'%"';
+            $sql_temp[] = 'obj.objectpath NOT LIKE BINARY "'.$path.'%"';
           }
         }
       }
 
-      if (is_array ($sql_puffer) && sizeof ($sql_puffer) > 0) $sql_where['excludepath'] = '('.implode (" AND ", $sql_puffer).')';
+      if (is_array ($sql_temp) && sizeof ($sql_temp) > 0) $sql_where['excludepath'] = '('.implode (" AND ", $sql_temp).')';
     }
 
     // add file name search if expression array is of size 1 and is not a taxonomy, keyword or hierarchy path
@@ -2525,8 +2528,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     {
       if (!empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || (isset ($imagecolor) && is_array ($imagecolor)) || !empty ($imagetype))
       {
-        // parameter imagewidth can be used as general image size parameter, only if height = ""
-        // search for image_size (area)
+        // parameter imagewidth can be used as general image size parameter
+        // search for image_size (defined by min-max value)
         if (!empty ($imagewidth) && substr_count ($imagewidth, "-") == 1)
         {
           list ($imagewidth_min, $imagewidth_max) = explode ("-", $imagewidth);
@@ -2664,9 +2667,10 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         {
           $hash = $row['hash'];
 
-          $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $objectpath[$hash]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
           $objectpath[$hash]['container_id'] =  sprintf ("%07d", $row['id']);
           $objectpath[$hash]['media'] =  $row['media'];
+
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
           if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
@@ -2675,6 +2679,53 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if (!empty ($row['width'])) $objectpath[$hash]['width'] = $row['width'];
           if (!empty ($row['height'])) $objectpath[$hash]['height'] = $row['height'];
           if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
+
+          // object and location name
+          if (is_array ($return_text_id) && (in_array ("object", $return_text_id) || in_array ("location", $return_text_id)))
+          {
+            $temp_site = getpublication ($objectpath[$hash]['objectpath']);
+            $temp_cat = getcategory ($temp_site, $objectpath[$hash]['objectpath']);
+
+            // folder
+            if (getobject ($objectpath[$hash]['objectpath']) == ".folder")
+            {
+              $temp_objectpath = getlocationname ($temp_site, getlocation ($objectpath[$hash]['objectpath']), $temp_cat, "path");
+            }
+            // object
+            else
+            {
+              $temp_objectpath = getlocationname ($temp_site, $objectpath[$hash]['objectpath'], $temp_cat, "path");
+            }
+
+            $objectpath[$hash]['location'] = getlocation ($temp_objectpath);
+            $objectpath[$hash]['object'] = getobject ($temp_objectpath);
+          }
+
+          if (!empty ($row['media']))
+          {
+            // links
+            if (in_array ("wrapperlink", $return_text_id)) $objectpath[$hash]['wrapperlink'] = $mgmt_config['url_path_cms']."?wl=".$hash;
+            if (in_array ("downloadlink", $return_text_id)) $objectpath[$hash]['downloadlink'] = $mgmt_config['url_path_cms']."?dl=".$hash;
+
+            // thumbnail
+            if (in_array ("thumbnail", $return_text_id))
+            {
+              $temp_site = getpublication ($objectpath[$hash]['objectpath']);
+              $mediadir = getmedialocation ($temp_site, $row['media'], "abs_path_media");
+              $media_info = getfileinfo ($temp_site, $row['media'], "comp");
+
+              // try to create the thumbnail if not available
+              if (!empty ($mgmt_config['recreate_preview']) && !file_exists ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg"))
+              {
+                createmedia ($temp_site, $mediadir.$temp_site."/", $mediadir.$temp_site."/", $media_info['file'], "", "thumbnail", false, true);
+              }
+              
+              if (is_file ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") && filesize ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") > 100)
+              {
+                $objectpath[$hash]['thumbnail'] = createviewlink ($temp_site, $media_info['filename'].".thumb.jpg");
+              }
+            }
+          }
         }
       }      
     }
@@ -2734,7 +2785,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     if ($user != "") $user = $db->rdbms_escape_string ($user);
  
     // replace %
-    $folderpath = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $folderpath);
+    $folderpath = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $folderpath);
 
     // query object type
     if (is_array ($object_type) && sizeof ($object_type) > 0)
@@ -2846,7 +2897,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
           $hash = $row['hash'];
           $id = intval ($row['id']);
 
-          $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $objectpath[$hash]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
           $objectpath[$hash]['container_id']  = sprintf ("%07d", $row['id']);
           $objectpath[$hash]['media'] =  $row['media'];
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
@@ -3073,7 +3124,7 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
         {
           $hash = $row['hash'];
 
-          $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $objectpath[$hash]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
           $objectpath[$hash]['container_id'] =  sprintf ("%07d", $row['id']);
           $objectpath[$hash]['media'] =  $row['media'];
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
@@ -3234,7 +3285,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
         {
           $hash = $row['hash'];
 
-          $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $objectpath[$hash]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
           $objectpath[$hash]['container_id'] =  sprintf ("%07d", $row['id']);
           $objectpath[$hash]['media'] =  $row['media'];
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
@@ -3595,9 +3646,9 @@ function rdbms_getobject_id ($object)
     $object = $db->rdbms_escape_string ($object);
 
     // object path
-    if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0 || substr_count ($object, "*page*") > 0 || substr_count ($object, "*comp*") > 0)
+    if (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0 || substr_count ($object, "*page*/") > 0 || substr_count ($object, "*comp*/") > 0)
     { 
-      $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+      $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);
 
       $sql = 'SELECT object_id, deleteuser FROM object WHERE BINARY objectpath="'.$object.'"';
     }
@@ -3629,7 +3680,7 @@ function rdbms_getobject_id ($object)
       // if object is a root folder (created since version 5.6.3)
       if (substr_count ($object, "/") == 2)
       {
-        $object_esc = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $object);
+        $object_esc = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $object);
         $createobject = createobject (getpublication ($object_esc), getlocation ($object_esc), ".folder", "default.meta.tpl", "sys");
 
         if (!empty ($createobject['result'])) return $object_id = rdbms_getobject_id ($object_esc);
@@ -3659,7 +3710,7 @@ function rdbms_getobject_hash ($object="", $container_id="")
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // if object path
-    if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0)
+    if (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0)
     {
       // correct object name
       // if unpublished object
@@ -3674,7 +3725,7 @@ function rdbms_getobject_hash ($object="", $container_id="")
         else $object = $object.".folder";
       }
 
-      $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+      $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);
       $object = $db->rdbms_escape_string ($object);          
 
       $sql = 'SELECT hash, deleteuser FROM object WHERE BINARY objectpath="'.$object.'" LIMIT 1';
@@ -3714,7 +3765,7 @@ function rdbms_getobject_hash ($object="", $container_id="")
         // if object is a root folder (created since version 5.6.3)
         if (substr_count ($object, "/") == 2)
         {
-          $object_esc = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $object);
+          $object_esc = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $object);
           $createobject = createobject (getpublication ($object_esc), getlocation ($object_esc), ".folder", "default.meta.tpl", "sys");
 
           if (!empty ($createobject['result'])) return $hash = rdbms_getobject_hash ($object_esc);
@@ -3763,7 +3814,7 @@ function rdbms_getobject ($object_identifier)
 
       if ($done && $row = $db->rdbms_getresultrow ())
       {
-        if ($row['objectpath'] != "") $objectpath = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);  
+        if ($row['objectpath'] != "") $objectpath = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);  
       }
     }
 
@@ -3790,9 +3841,9 @@ function rdbms_getobject ($object_identifier)
             $errcode = "50739";
             $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "delete");
           }
-          elseif ($row['objectpath'] != "") $objectpath = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          elseif ($row['objectpath'] != "") $objectpath = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
         }
-        elseif ($row['objectpath'] != "") $objectpath = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);  
+        elseif ($row['objectpath'] != "") $objectpath = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);  
       }
     }
 
@@ -3900,7 +3951,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
       {
         $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media'.$sql_add_attr.' FROM object AS obj ';
         if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
-        $sql .= 'WHERE obj.deleteuser="" AND obj.objectpath="'.str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object_identifier).'" LIMIT 1';
+        $sql .= 'WHERE obj.deleteuser="" AND obj.objectpath="'.str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object_identifier).'" LIMIT 1';
       }
       else
       {
@@ -3916,7 +3967,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
       {
         if (!empty ($row['objectpath']))
         {
-          $objectpath['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $objectpath['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
           $objectpath['container_id'] = sprintf ("%07d", $row['id']);
           $objectpath['template'] = $row['template'];
           $objectpath['hash'] = $row['hash'];
@@ -3960,7 +4011,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
           }
           elseif (!empty ($row['objectpath'])) 
           {
-            $objectpath['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+            $objectpath['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
             $objectpath['container_id'] = sprintf ("%07d", $row['id']);
             $objectpath['template'] = $row['template'];
             $objectpath['hash'] = $row['hash'];
@@ -3977,7 +4028,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
         }
         elseif (!empty ($row['objectpath']))
         {
-          $objectpath['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $objectpath['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
           $objectpath['container_id'] = sprintf ("%07d", $row['id']);
           $objectpath['template'] = $row['template'];
           $objectpath['hash'] = $row['hash'];
@@ -4105,7 +4156,7 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
           {
             $hash = $row['hash'];
 
-            $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+            $objectpath[$hash]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
             $objectpath[$hash]['container_id'] = sprintf ("%07d", $row['id']);
             $objectpath[$hash]['media'] = $row['media'];
             if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
@@ -4225,7 +4276,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
       {
         $hash = $row['hash'];
 
-        $objectpath[$hash]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+        $objectpath[$hash]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
         $objectpath[$hash]['container_id'] =  sprintf ("%07d", $row['id']);
         $objectpath[$hash]['media'] =  $row['media'];
         if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
@@ -4325,7 +4376,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
           $object_abs = deconvertpath ($object, "file");
 
           // clean input
-          $object_folder = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+          $object_folder = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);
           $object_folder = $db->rdbms_escape_string ($object_folder);
 
           // mark as deleted
@@ -4423,7 +4474,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
         else
         {
           // clean input
-          $object_file = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+          $object_file = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);
           $object_file = $db->rdbms_escape_string ($object_file);
 
           // correct file name
@@ -4675,7 +4726,7 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
     $to_user = $db->rdbms_escape_string ($to_user);
     $email = $db->rdbms_escape_string ($email);
 
-    $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);    
+    $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);    
 
     // get object ids of all objects (also all object of folders)
     if (getobject ($object) == ".folder") $sql = 'SELECT object_id FROM object WHERE objectpath LIKE BINARY "'.substr (trim($object), 0, strlen (trim($object))-7).'%"';
@@ -4727,7 +4778,7 @@ function rdbms_getrecipients ($object)
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // clean input
-    $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object); 
+    $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object); 
     $object = $db->rdbms_escape_string ($object);   
 
     // get recipients
@@ -4809,13 +4860,13 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $cmd,
 {
   global $mgmt_config;
 
-  if ($action != "" && is_date ($date, "Y-m-d H:i") && $user != "" && (($object != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0 || intval ($object) > 0)) || $cmd != ""))
+  if ($action != "" && is_date ($date, "Y-m-d H:i") && $user != "" && (($object != "" && (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0 || intval ($object) > 0)) || $cmd != ""))
   {
     // correct object name 
     if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
 
     // get object ID
-    if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) $object_id = rdbms_getobject_id ($object);
+    if (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0) $object_id = rdbms_getobject_id ($object);
     else $object_id = $object;
 
     if ($object_id != false)
@@ -4902,7 +4953,7 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 
     // check object (can be valid path or mail ID)
-    if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) $object_id = rdbms_getobject_id ($object);
+    if (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0) $object_id = rdbms_getobject_id ($object);
     elseif (is_numeric ($object)) $object_id = intval ($object); 
     elseif ($object != "") return false;  
 
@@ -4939,7 +4990,7 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
           $queue[$i]['queue_id'] = $row['queue_id'];
           $queue[$i]['action'] = $row['action'];
           $queue[$i]['object_id'] = $row['object_id'];
-          $queue[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $queue[$i]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
           $queue[$i]['date'] = $row['date'];
           $queue[$i]['published_only'] = $row['published_only'];
           $queue[$i]['cmd'] = $row['cmd'];
@@ -5032,7 +5083,7 @@ function rdbms_createnotification ($object, $events, $user)
     if (strtolower (strrchr ($object, ".")) == ".off") $object = substr ($object, 0, -4);
 
     // check object (can be path or ID)
-    if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) $object_id = rdbms_getobject_id ($object);
+    if (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0) $object_id = rdbms_getobject_id ($object);
     elseif (is_numeric ($object)) $object_id = $object;
     else $object_id = false;
 
@@ -5124,7 +5175,7 @@ function rdbms_getnotification ($event="", $object="", $user="")
       if (getobject ($object) == ".folder") $object = getlocation ($object);
 
       // clean input
-      $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+      $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);
       $object = $db->rdbms_escape_string ($object);
 
       // get connected objects
@@ -5203,7 +5254,7 @@ function rdbms_getnotification ($event="", $object="", $user="")
           $queue[$i] = array();
           $queue[$i]['notify_id'] = $row['notify_id'];
           $queue[$i]['object_id'] = $row['object_id'];
-          $queue[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+          $queue[$i]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
           $queue[$i]['user'] = $row['user']; 
           $queue[$i]['oncreate'] = $row['oncreate'];
           $queue[$i]['onedit'] = $row['onedit'];
@@ -5244,7 +5295,7 @@ function rdbms_deletenotification ($notify_id="", $object="", $user="")
     if ($object != "")
     {
       // check object (can be path or ID)
-      if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) $object_id = rdbms_getobject_id ($object);
+      if (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0) $object_id = rdbms_getobject_id ($object);
       elseif (is_numeric ($object)) $object_id = $object;
       else $object_id = false;
     }
@@ -5295,7 +5346,7 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
     $date_end = $db->rdbms_escape_string ($date_end);
     $format = $db->rdbms_escape_string ($format);
 
-    $folderpath = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $folderpath);
+    $folderpath = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $folderpath);
 
     $sql = 'SELECT DISTINCT obj.objectpath as path, tnd.textcontent as cnt FROM object AS obj, textnodes AS tnd ';
     $sql .= 'WHERE obj.id=tnd.id AND obj.objectpath LIKE BINARY "'.$folderpath.'%" AND tnd.text_id="'.$text_id.'" AND "'.$date_begin.'" <= STR_TO_DATE(tnd.textcontent, "'.$format.'") AND "'.$date_end.'" >= STR_TO_DATE(tnd.textcontent, "'.$format.'")';    
@@ -5310,7 +5361,7 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
       {
         if (!empty ($row['path'])) 
         {
-          $objectpath = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['path']);
+          $objectpath = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['path']);
           $licenseend = $row['cnt']; 
           $site = getpublication ($objectpath);
           $location = getlocation ($objectpath);    

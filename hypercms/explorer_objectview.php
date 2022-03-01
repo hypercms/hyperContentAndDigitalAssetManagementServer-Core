@@ -147,6 +147,8 @@ function initialize ()
     document.getElementById('previous').style.display = 'inline-block';
     document.getElementById('next').style.display = 'inline-block';
   }
+
+  window.focus();
 }
 
 function setscreensize (size)

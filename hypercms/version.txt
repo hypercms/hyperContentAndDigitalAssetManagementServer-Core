@@ -5837,7 +5837,35 @@ Release 03/2022
 - Modifications in explorer_preview in order to display a new link for the connected copies of an object
 - Design modifications in explorer_preview in order to apply the CSS class hcmsTableNarrow instead of hcmsTableStandard for some information classes
 - Modifications in all language files
+- Modifications in page_info_inclusions in order to remove the column for the publication name since the publication is included in the location
+- Modifications in page_info_inclusions in order to display the same object row in a different color
+- Modifications in the OpenSearch module of the Connector in order to rename function authenticate to OpenSearch_authenticate and function sendUnauthorized to OpenSearch_unauthorized
+- Modifications in the OpenSearch module of the Connector in order to correct getmetadata function call
+- Modifications in the OpenSearch module of the Connector in order to replace the separated year, month, and day entries for the modified date filter by the international date format
+- Modifications in function getmetadata in Get API in order to correct the spelling of an input variable name
+- Modifications in function getmetadata in Get API in order to initialize the return value based on the requested separator
+- Modifications in the local JS function initialize in explorer_objectview in order to focus on the window
+- Modifications in various functions in DB Connect in order to include the slash for the replacement of the page and asset/component root variable
+- Modifications in function rdbms_searchcontent in DB Connect in order to support the new global configuration parameter $mgmt_config['search_folderpath_level'] for the search for objects in the provided folder path level
+- Modifications in function rdbms_searchcontent in DB Connect in order to support the thumbnail, download, and wrapper URL in the result
+- Modifications in function authenticate in the REST OpenAPI in order to support the user name and password as input parameters besides the user hash
+- Modifications in function executeREST in the REST OpenAPI in order to support the user name and password as input parameters besides the user hash
+- Modifications in function readSession in the REST OpenAPI in order to use the users language setting and use English as fallback
+- Modifications in function authenticate and the WSDL template in the SOAP OpenAPI in order to support the user name and password as input parameters besides the user hash
+- Modifications in function getobjectlist in Get API in order to use the new configuration parameter $mgmt_config['search_folderpath_level'] for the search of objects on the same location level
+- Modifications in function getobjectlist in Get API in order to add a new permission key to the result array with all local permissions of the authenticated user
+- Modifications in function getobjectlist in Get API in order to set default values for the input parameter $objectlistcols
+- Modifications in function getobjectlist in Get API in order to support the page- and compacces of the user as result
+- Modifications in function getobjectlist in Get API in order to support search queries using a new input parameter
+- Modifications in function getobjectlist in Get API in order to support default values for the returned result keys/columns
+- Modifications in function getobjectlist in Get API in order to verify that the objects exist provided by the search result
+- Implementation of the new getobjectlist test case for the RESTful API
+- Modifications in function showvideoplayer in UI API in order to verify thet variable $media_dir and $container_id exist
+- Updates in the Connectors and Users Guide
 - Bug fix: The context menu for the column headers did not display the border and shadow correctly
 - Bug fix: page_info_container used the object name without the file extension for comparison regarding the edit- or preview
 - Bug fix: page_info_container did not correct the location for folders
 - Bug fix: explorer_preview displayed the tabel for links even if no link is available
+- Bug fix: The OpenSearch module of the Connector used the same function name authenticate as used by the REST API
+- Bug fix: Function getmetadata in Get API did return an Array if no template (labels) has been specified
+- Bug fix: Function getmetadata in Get API did add an additional separator at the end of each metadata record
