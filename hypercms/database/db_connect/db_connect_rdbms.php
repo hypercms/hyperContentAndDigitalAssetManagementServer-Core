@@ -2668,6 +2668,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           $hash = $row['hash'];
 
           $objectpath[$hash]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
+          $objectpath[$hash]['type'] = (substr ($row['objectpath'], -7) == ".folder" ? "folder" : "object");
           $objectpath[$hash]['container_id'] =  sprintf ("%07d", $row['id']);
           $objectpath[$hash]['media'] =  $row['media'];
 

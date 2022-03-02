@@ -4793,7 +4793,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                   focus: function( event ) {
                     oldtext_".$hypertagname."_".$id." = jq_inline.trim(event.editor.getData());
 
-                    if (hcms_stripTags(oldtext_".$hypertagname."_".$id.") == hcms_stripTags(decodeURIComponent(''".$defaultText."')))
+                    if (hcms_stripTags(oldtext_".$hypertagname."_".$id.") == hcms_stripTags(decodeURIComponent('".$defaultText."')))
                     {
                       oldtext_".$hypertagname."_".$id." = '';
                     }

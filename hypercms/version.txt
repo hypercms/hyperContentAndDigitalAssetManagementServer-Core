@@ -5848,6 +5848,7 @@ Release 03/2022
 - Modifications in various functions in DB Connect in order to include the slash for the replacement of the page and asset/component root variable
 - Modifications in function rdbms_searchcontent in DB Connect in order to support the new global configuration parameter $mgmt_config['search_folderpath_level'] for the search for objects in the provided folder path level
 - Modifications in function rdbms_searchcontent in DB Connect in order to support the thumbnail, download, and wrapper URL in the result
+- Modifications in function rdbms_searchcontent in DB Connect in order to support the object type in the result array
 - Modifications in function authenticate in the REST OpenAPI in order to support the user name and password as input parameters besides the user hash
 - Modifications in function executeREST in the REST OpenAPI in order to support the user name and password as input parameters besides the user hash
 - Modifications in function readSession in the REST OpenAPI in order to use the users language setting and use English as fallback
@@ -5869,3 +5870,4 @@ Release 03/2022
 - Bug fix: The OpenSearch module of the Connector used the same function name authenticate as used by the REST API
 - Bug fix: Function getmetadata in Get API did return an Array if no template (labels) has been specified
 - Bug fix: Function getmetadata in Get API did add an additional separator at the end of each metadata record
+- Bug fix: Function showinlineeditor used a single quote twice at the beginning of a text string

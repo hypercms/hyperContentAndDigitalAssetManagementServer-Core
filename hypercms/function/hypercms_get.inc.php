@@ -1944,7 +1944,6 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   // define default values
   if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height");
 
-  // search parameters
   // query result limit
   if (empty ($search['limit'])) $search['limit'] = 500;
 
@@ -2039,8 +2038,9 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       }
     }
   }
-  
-  if (!empty ($search_dir_esc))
+
+  // search for objects
+  if (!empty ($search_dir_esc) || is_array ($search))
   {
     // only search in the provided location and exclude the subfolders
     $mgmt_config['search_folderpath_level'] = true;
@@ -2050,18 +2050,16 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
     {
       foreach ($search as $key=>$value)
       {
-        if (!empty ($value))
+        // exclude limit from the search parameters
+        if ($key != "limit" && !empty (trim ($value)))
         {
           $mgmt_config['search_folderpath_level'] = false;
           break;
         }
       }
     }
-  }
 
-  // start search
-  if (!empty ($search_dir_esc) || is_array ($search))
-  {
+    // search
     $result = rdbms_searchcontent ($search_dir_esc, "", $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols);
 
     // verify result
