@@ -5862,6 +5862,8 @@ Release 03/2022
 - Modifications in function getobjectlist in Get API in order to verify that the objects exist provided by the search result
 - Implementation of the new getobjectlist test case for the RESTful API
 - Modifications in function showvideoplayer in UI API in order to verify thet variable $media_dir and $container_id exist
+- Modifications in function userlogin in Security API in order to log differnt authorization values (access-link, user-login, valid-dates, check.dat, and nologon)
+- Modifications in user_edit in order to add delete buttons for the valid dates of the user account 
 - Updates in the Connectors and Users Guide
 - Bug fix: The context menu for the column headers did not display the border and shadow correctly
 - Bug fix: page_info_container used the object name without the file extension for comparison regarding the edit- or preview
@@ -5871,3 +5873,5 @@ Release 03/2022
 - Bug fix: Function getmetadata in Get API did return an Array if no template (labels) has been specified
 - Bug fix: Function getmetadata in Get API did add an additional separator at the end of each metadata record
 - Bug fix: Function showinlineeditor used a single quote twice at the beginning of a text string
+- Bug fix: group_edit_script did not inlcude main.min.js
+- Bug fix: group_edit_script did not verify the parent main frame which caused an error if the parent frame was not present due to a call of group_edit_script from user_edit

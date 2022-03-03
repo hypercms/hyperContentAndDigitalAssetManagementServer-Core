@@ -61,7 +61,7 @@ if ($sender == "settings" && checktoken ($token, $user))
       $target_frame = "mainFrame";
     }
     
-    $add_onload = "parent.frames['mainFrame'].location='".$target_href."'; ";
+    $add_onload = "if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.href='".$target_href."'; else window.location.href='".$target_href."'";
     $show = $result['message']."<br />\n<a href=\"group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($group_name)."&preview=no\">".getescapedtext ($hcms_lang['back'][$lang])."</a><br />\n";      
   }
   else
@@ -106,6 +106,7 @@ elseif ($sender == "access" && checktoken ($token, $user))
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 </head>
 

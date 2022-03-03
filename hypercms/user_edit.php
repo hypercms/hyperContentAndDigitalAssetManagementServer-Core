@@ -84,8 +84,8 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
   // set valid dates (only if useredit permission)
   if ($login_cat != "home" && (!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, "useredit")))
   {
-    if (!is_date ($validdatefrom, "Y-m-d")) $validdatefrom = "*Leave*";
-    if (!is_date ($validdateto, "Y-m-d")) $validdateto = "*Leave*";
+    if (!is_date ($validdatefrom, "Y-m-d") && trim ($validdatefrom) != "") $validdatefrom = "*Leave*";
+    if (!is_date ($validdateto, "Y-m-d") && trim ($validdateto) != "") $validdateto = "*Leave*";
   }
   else
   {
@@ -642,10 +642,16 @@ if (!empty ($login))
         <table class="hcmsTableStandard">
           <tr>
             <td><?php echo getescapedtext ($hcms_lang['start'][$lang]); ?> </td>
-            <td stlye="white-space:nowrap;"><input type="text" name="validdatefrom" id="validdatefrom" readonly="readonly" style="width:92px;" value="<?php echo showdate ($uservaliddatefrom, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'validdatefrom', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /></td>
+            <td stlye="white-space:nowrap;">
+              <input type="text" name="validdatefrom" id="validdatefrom" readonly="readonly" style="width:92px;" value="<?php echo showdate ($uservaliddatefrom, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'validdatefrom', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+              <img onclick="document.getElementById('validdatefrom').value='';" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
+            </td>
             <td style="width:12px;"> </td>
             <td><?php echo getescapedtext ($hcms_lang['end'][$lang]); ?> </td>
-            <td stlye="white-space:nowrap;"><input type="text" name="validdateto" id="validdateto" readonly="readonly" style="width:92px;" value="<?php echo showdate ($uservaliddateto, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'validdateto', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /></td>
+            <td stlye="white-space:nowrap;">
+              <input type="text" name="validdateto" id="validdateto" readonly="readonly" style="width:92px;" value="<?php echo showdate ($uservaliddateto, "Y-m-d", "Y-m-d"); ?>" /><img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'validdateto', '%Y-%m-%d', false);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+              <img onclick="document.getElementById('validdateto').value='';" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
+            </td>
           </tr>
         </table>
       </div>
