@@ -276,7 +276,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 else
 {
   echo "<script language=\"JavaScript\">
-openBrWindow('popup_log.php?description=<p class=hcmsHeadline>".getescapedtext ($hcms_lang['functional-error-occured'][$lang])."</p>".getescapedtext ($hcms_lang['link-management-database-is-corrupt-or-you-do-not-have-read-permissions'][$lang])."', 'alert', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,status=no,width=600,height=220','600','220');
+openBrWindow('popup_log.php?description=<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['functional-error-occured'][$lang])."</p>".getescapedtext ($hcms_lang['link-management-database-is-corrupt-or-you-do-not-have-read-permissions'][$lang])."', 'alert', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,status=no,width=600,height=220','600','220');
 </script>\n";
   
   $errcode = "20102";

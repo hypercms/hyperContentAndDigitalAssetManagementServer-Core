@@ -86,8 +86,8 @@ if ($save == "yes" && valid_objectname ($mediafile) && checktoken ($token, $user
   // save file
   $savefile = savefile ($mgmt_config['abs_path_rep']."media_tpl/", $mediafile, $content);
 
-  if ($savefile == false) $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span>\n";
-  else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
+  if ($savefile == false) $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span>\n";
+  else $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
 }
 ?>
 <!DOCTYPE html>

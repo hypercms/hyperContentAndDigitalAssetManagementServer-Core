@@ -115,5 +115,6 @@ function applyconstraints ()
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

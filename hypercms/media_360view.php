@@ -102,5 +102,6 @@ viewer.add(panorama);
 </script>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

@@ -40,6 +40,7 @@ if (session_id() != "") session_write_close();
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function applylanguage ()
 {
   var language_sessionvar = document.forms['language'].elements['language_sessionvar'].value;
@@ -87,5 +88,6 @@ function applylanguage ()
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

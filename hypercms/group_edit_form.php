@@ -336,7 +336,7 @@ else
 }
 ?>
 
-<p class=hcmsHeadline><?php echo $title; ?> <?php echo $group_name; ?></p>
+<p class="hcmsHeadline"><?php echo $title; ?> <?php echo $group_name; ?></p>
 
 <form name="groupform" action="<?php echo $action; ?>" method="post">
   <input type="hidden" name="sender" value="settings">

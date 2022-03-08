@@ -61,7 +61,7 @@ $media = getfilename ($pagestore, "media");
 
 if ($contentfile == false)
 {
-  $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['item-is-not-managed-by-hypercms'][$lang])."</p>".getescapedtext ($hcms_lang['no-versions-available'][$lang])."\n";
+  $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['item-is-not-managed-by-hypercms'][$lang])."</p>".getescapedtext ($hcms_lang['no-versions-available'][$lang])."\n";
 }
 elseif (valid_objectname ($contentfile))
 {

@@ -6262,7 +6262,7 @@ function createinstance ($instance_name, $settings, $user="sys")
     if ($show == "" && is_dir ($abs_path_rep))
     {
       $result = copyrecursive ($mgmt_config['abs_path_cms']."install/repository/", $abs_path_rep);
-      if ($result == false) $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
+      if ($result == false) $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-instance-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
     }
     else $show = "<span class=\"hcmsHeadline\">".$hcms_lang['information-is-missing-or-you-do-not-have-write-permissions'][$lang]."</span><br />\n";
 
@@ -10357,13 +10357,13 @@ function creategroup ($site, $groupname, $user="sys")
   if (!valid_publicationname ($site) || !valid_objectname ($groupname) || strlen ($groupname) > 100 || !valid_objectname ($user))
   {
     $add_onload = "parent.frames['mainFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['necessary-group-name-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['necessary-group-name-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
   }
   // test if group name includes special characters
   elseif (specialchr ($groupname, "-_") == true)
   {
     $add_onload = "parent.frames['mainFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   else
   {
@@ -10387,7 +10387,7 @@ function creategroup ($site, $groupname, $user="sys")
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
 
         $add_onload = "parent.frames['mainFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-name'][$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-group-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-name'][$lang]."\n";
       }
       else
       {
@@ -10418,7 +10418,7 @@ function creategroup ($site, $groupname, $user="sys")
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New group '".$groupname."' has been created by user '".$user."' (".getuserip().")";
 
             $add_onload = "parent.frames['mainFrame'].location='group_edit_form.php?site=".url_encode($site)."&preview=no&group_name=".url_encode($groupname)."'; ";
-            $show = "<span class=hcmsHeadline>".$hcms_lang['group'][$lang]." '".$groupname."' ".$hcms_lang['was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-group'][$lang]."<br />\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['group'][$lang]." '".$groupname."' ".$hcms_lang['was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-group'][$lang]."<br />\n";
             
             $success = true;
           }
@@ -10428,7 +10428,7 @@ function creategroup ($site, $groupname, $user="sys")
             unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
 
             $add_onload = "parent.frames['mainFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
-            $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-cannot-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['group-information-cannot-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
           }
         }
         else
@@ -10441,7 +10441,7 @@ function creategroup ($site, $groupname, $user="sys")
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New group '".$groupname."' could not be created by user '".$user."' (".getuserip().")";
 
           $add_onload = "parent.frames['mainFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
-          $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-could-not-be-inserted'][$lang]."</span>\n"; 
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['group-information-could-not-be-inserted'][$lang]."</span>\n"; 
         }
       }
     }
@@ -10451,7 +10451,7 @@ function creategroup ($site, $groupname, $user="sys")
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
 
       $add_onload = "parent.frames['mainFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['group-information-is-missing-or-you-do-not-have-read-permission'][$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['group-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['group-information-is-missing-or-you-do-not-have-read-permission'][$lang]."\n";
     }
   }
 
@@ -11590,7 +11590,7 @@ function uploadtomediacat ($site, $mediacat_name, $global_files)
   else
   {
     // upload file
-    @move_uploaded_file ($global_files['file']['tmp_name'], $mediadir.$filename_new) or $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
+    @move_uploaded_file ($global_files['file']['tmp_name'], $mediadir.$filename_new) or $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
 
     if ($show == "")
     {

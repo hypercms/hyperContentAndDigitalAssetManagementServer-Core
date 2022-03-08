@@ -81,7 +81,7 @@ if ($templatefile != false || $contentfile != false)
     echo "<script src=\"javascript/click.min.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-    echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
+    echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
     echo "&nbsp;".getescapedtext ($hcms_lang['the-associated-template-holds-no-informations'][$lang])." -> '".$templatefile."'\n";
     echo "</body>\n</html>";
     exit;
@@ -99,7 +99,7 @@ if ($templatefile != false || $contentfile != false)
     echo "<script src=\"javascript/click.min.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-    echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
+    echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
     echo "&nbsp;".getescapedtext ($hcms_lang['the-content-container-holds-no-informations'][$lang])." -> '".$contentfile."'\n";
     echo "</body>\n</html>";
     exit;
@@ -118,7 +118,7 @@ if ($templatefile != false || $contentfile != false)
     echo "<script src=\"javascript/click.min.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-    echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
+    echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
     echo "&nbsp;".getescapedtext ($hcms_lang['an-error-occured-while-creating-the-view'][$lang])."\n";
     echo "</body>\n</html>";
   }
@@ -148,7 +148,7 @@ else
 
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
 
-  echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms'][$lang])."</p>\n";
+  echo "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms'][$lang])."</p>\n";
   echo "&nbsp;".getescapedtext ($hcms_lang['you-wont-be-able-to-change-the-content-of-this-item'][$lang])."\n";
 
   echo "</body>\n";

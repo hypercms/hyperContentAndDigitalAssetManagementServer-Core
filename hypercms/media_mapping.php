@@ -118,7 +118,7 @@ if (valid_publicationname ($site) && $save == "yes" && checktoken ($token, $user
     $mapping_data_save = createmapping ($site, $mapping_data);
   }
   
-  if ($mapping_data_save == false) $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['error-while-saving'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang])."\n";
+  if ($mapping_data_save == false) $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['error-while-saving'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang])."\n";
 }
 
 // load mapping

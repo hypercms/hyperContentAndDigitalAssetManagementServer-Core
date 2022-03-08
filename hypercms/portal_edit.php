@@ -649,5 +649,6 @@ function hcms_saveEvent ()
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

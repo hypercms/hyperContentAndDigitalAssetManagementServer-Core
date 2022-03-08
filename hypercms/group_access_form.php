@@ -90,6 +90,7 @@ if ($group_name != false && $group_name != "")
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript">
+
 function getobject_id (location)
 {
   if (location != "")
@@ -279,6 +280,7 @@ function hcms_saveEvent ()
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>
 

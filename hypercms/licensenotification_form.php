@@ -206,7 +206,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-<p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['apply-license-notification-on-selected-folder'][$lang]); ?></p>
+<p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['apply-license-notification-on-selected-folder'][$lang]); ?></p>
 
 <form name="notification_area" action="licensenotification_form.php" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -321,6 +321,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>
 

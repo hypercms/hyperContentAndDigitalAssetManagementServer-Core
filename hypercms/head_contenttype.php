@@ -80,5 +80,6 @@ checkusersession ($user);
 </table>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

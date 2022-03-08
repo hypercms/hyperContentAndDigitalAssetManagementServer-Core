@@ -5435,11 +5435,11 @@ Release 08/2021
 - Modifications in function getconnectedobjects in Link API in order to use database with fallback to the XML container
 - Modifications in page_info_container in order to implement a new log event in case the connected object does not exist
 - Modifications in function publishobject and unpublishobject in Main API in order to exclude objects that are in the recycle bin (verify location path instead in order to include folders in the recycle bin)
-- Modifications in function createobject, createfolder, deletefolder, manipulateobject, renameobject, and renamefolder in Main API in order to replace the .recylce extension by _recylce since the .recycle extension is reserved for objects in the recylce bin
+- Modifications in function createobject, createfolder, deletefolder, manipulateobject, renameobject, and renamefolder in Main API in order to replace the .recycle extension by _recycle since the .recycle extension is reserved for objects in the recycle bin
 - Modifications in function createobject, createfolder, renameobject, and renamefolder in Main API in order to remove verification of the .recycle substring in the folder or object name (since it will be replaced)
-- Modifications in function createmediaobject in Main API in order to exclude .recylce substring rename since it will be performed by function createobject
+- Modifications in function createmediaobject in Main API in order to exclude .recycle substring rename since it will be performed by function createobject
 - Modifications in function clonefolder and zipfiles in Media API in order to verify the .recycle extension instead of the search for the .recycle substring in the object path
-- Modifications in function createfilename in Main API in order to exclude objects in the recylce bin
+- Modifications in function createfilename in Main API in order to exclude objects in the recycle bin
 - Modifications in function createobject, manipulateobject, and renameobject in Main API in order to replace the _hcm identifier in file/object names
 - Modifications in function is_config, is_preview, and is_thumbnail in Main API in order to include underline for the _hcms identifier for media files
 - Implementation of the crontab file in the install directory
@@ -5777,7 +5777,7 @@ Release 02/2022
 - Modifications in function importobjects in Import/Export API in order to support the publication name
 - Modifications in function createmedia in Media API in order to support the background, gravity, and extend options for the image manipulation
 - Modifications in the main configuration file in the install directory in order to add the new options for the image manipulation as comments
-- Modifications in popup_status in order to exclude the location if the recylce bin is used and show the expression "recycle bin" instead
+- Modifications in popup_status in order to exclude the location if the recycle bin is used and show the expression "recycle bin" instead
 - Modifications in popup_status in order to extract the location from the provided multiobject in any case
 - Updates in the Connector Guide
 - Bug fix: The home screen configuration file of a user has not been deleted with the user account
@@ -5787,7 +5787,7 @@ Release 02/2022
 - Bug fix: videoplayer did not remove the type from the file string before the verification of the media files (sources) for the audio/videoplayer
 - Bug fix: Function showmedia in UI API was not able to extract the thumbnail from the media record since the media record has been reduced
 - Bug fix: videoplayer was not able to extract the thumbnail from the media record since the media record has been reduced
-- Bug fix: The upload status bar has been ouside the viewport in the Mobile Edition
+- Bug fix: The upload status bar has been outside the viewport in the Mobile Edition
 - Bug fix: Function showinlineeditor in UI API provided the tag title twice for the textareas title attribute
 - Bug fix: Function showinlineeditor in UI API closed the form tag
 - Bug fix: Function showinlineeditor in UI API did not decode the special characters for the usage in the rich text editors popup text for formatted text fields
@@ -5836,7 +5836,6 @@ Release 03/2022
 - Modifications in function rdbms_getobjects in DB Connect in order to sort the result by the objectpath
 - Modifications in explorer_preview in order to display a new link for the connected copies of an object
 - Design modifications in explorer_preview in order to apply the CSS class hcmsTableNarrow instead of hcmsTableStandard for some information classes
-- Modifications in all language files
 - Modifications in page_info_inclusions in order to remove the column for the publication name since the publication is included in the location
 - Modifications in page_info_inclusions in order to display the same object row in a different color
 - Modifications in the OpenSearch module of the Connector in order to rename function authenticate to OpenSearch_authenticate and function sendUnauthorized to OpenSearch_unauthorized
@@ -5856,22 +5855,25 @@ Release 03/2022
 - Modifications in function getobjectlist in Get API in order to use the new configuration parameter $mgmt_config['search_folderpath_level'] for the search of objects on the same location level
 - Modifications in function getobjectlist in Get API in order to add a new permission key to the result array with all local permissions of the authenticated user
 - Modifications in function getobjectlist in Get API in order to set default values for the input parameter $objectlistcols
-- Modifications in function getobjectlist in Get API in order to support the page- and compacces of the user as result
+- Modifications in function getobjectlist in Get API in order to support the page- and compaccess of the user as result
 - Modifications in function getobjectlist in Get API in order to support search queries using a new input parameter
 - Modifications in function getobjectlist in Get API in order to support default values for the returned result keys/columns
 - Modifications in function getobjectlist in Get API in order to verify that the objects exist provided by the search result
-- Implementation of the new getobjectlist test case for the RESTful API
+- Implementation of the new getobjectlist test case for the RESTful API of the Connector
 - Modifications in function showvideoplayer in UI API in order to verify thet variable $media_dir and $container_id exist
-- Modifications in function userlogin in Security API in order to log differnt authorization values (access-link, user-login, valid-dates, check.dat, and nologon)
-- Modifications in user_edit in order to add delete buttons for the valid dates of the user account 
+- Modifications in function userlogin in Security API in order to log different authorization values (access-link, user-login, valid-dates, check.dat, and nologon)
+- Modifications in user_edit in order to add delete buttons for the valid dates of the user account
+- Removed click.min.js from group_edit_script
+- Code sanitization and improvements in several system components, e.g. adding double quotes to some CSS class names that have been missing
+- Modifications in all language files
 - Updates in the Connectors and Users Guide
 - Bug fix: The context menu for the column headers did not display the border and shadow correctly
 - Bug fix: page_info_container used the object name without the file extension for comparison regarding the edit- or preview
 - Bug fix: page_info_container did not correct the location for folders
-- Bug fix: explorer_preview displayed the tabel for links even if no link is available
+- Bug fix: explorer_preview displayed the table for links even if no link is available
 - Bug fix: The OpenSearch module of the Connector used the same function name authenticate as used by the REST API
 - Bug fix: Function getmetadata in Get API did return an Array if no template (labels) has been specified
 - Bug fix: Function getmetadata in Get API did add an additional separator at the end of each metadata record
 - Bug fix: Function showinlineeditor used a single quote twice at the beginning of a text string
-- Bug fix: group_edit_script did not inlcude main.min.js
-- Bug fix: group_edit_script did not verify the parent main frame which caused an error if the parent frame was not present due to a call of group_edit_script from user_edit
+- Bug fix: group_edit_script did not include main.min.js which is required by most UI functions
+- Bug fix: group_edit_script did not verify the parent main frame that can cause an error if the parent frame is not present due to a call of group_edit_script from user_edit without a parent frame

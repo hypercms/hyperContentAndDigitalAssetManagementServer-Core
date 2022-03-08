@@ -2657,6 +2657,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     $errcode = "50082";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
+    // prepare result
     $objectpath = array();
 
     if ($done)

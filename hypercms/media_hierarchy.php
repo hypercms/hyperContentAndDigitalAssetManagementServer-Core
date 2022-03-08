@@ -246,7 +246,7 @@ function hcms_saveEvent ()
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-<p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang]); ?></p>
+<p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang]); ?></p>
 
 <?php
 echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:50px;");
@@ -406,5 +406,6 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:50px;")
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

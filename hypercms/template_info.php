@@ -103,5 +103,6 @@ if (session_id() != "") session_write_close();
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

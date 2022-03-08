@@ -376,5 +376,6 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

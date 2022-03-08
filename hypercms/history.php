@@ -49,6 +49,7 @@ $year_template = Null;
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript">
+
 function submitform ()
 {
   var contentdate = document.forms['history'].elements['content_year'].value + "-" + document.forms['history'].elements['content_month'].value + "-" + document.forms['history'].elements['content_day'].value;
@@ -213,5 +214,6 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

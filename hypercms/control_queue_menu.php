@@ -84,7 +84,7 @@ if ($action == "delete" && checktoken ($token, $user) && $queue_id != "")
       
       if ($result == true)
       {
-        $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-items-were-successfully-removed-from-the-queue'][$lang])."</span>";
+        $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-items-were-successfully-removed-from-the-queue'][$lang])."</span>";
         $add_onload = "parent.frames['mainFrame'].location.reload();";
         $page = "";
         $multiobject = "";
@@ -92,7 +92,7 @@ if ($action == "delete" && checktoken ($token, $user) && $queue_id != "")
       }
       else
       {
-        $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['an-error-occured-removing-the-items-from-the-queue'][$lang])."</span>";
+        $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['an-error-occured-removing-the-items-from-the-queue'][$lang])."</span>";
         $add_onload = "";
       }      
     }
