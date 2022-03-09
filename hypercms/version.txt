@@ -5866,6 +5866,7 @@ Release 03/2022
 - Removed click.min.js from group_edit_script
 - Code sanitization and improvements in several system components, e.g. adding double quotes to some CSS class names that have been missing
 - Modifications in all language files
+- Modifications in desktop.css and mobile.css of all design themes in order to add the table style definition
 - Updates in the Connectors and Users Guide
 - Bug fix: The context menu for the column headers did not display the border and shadow correctly
 - Bug fix: page_info_container used the object name without the file extension for comparison regarding the edit- or preview
@@ -5877,3 +5878,4 @@ Release 03/2022
 - Bug fix: Function showinlineeditor used a single quote twice at the beginning of a text string
 - Bug fix: group_edit_script did not include main.min.js which is required by most UI functions
 - Bug fix: group_edit_script did not verify the parent main frame that can cause an error if the parent frame is not present due to a call of group_edit_script from user_edit without a parent frame
+- Bug fix: The CSS font style for tables was missing in alle design themes (browser used default font size)
