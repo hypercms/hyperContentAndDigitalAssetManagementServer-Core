@@ -1,16 +1,16 @@
 Error Codes:
-example: 10234
+Example: 10234
 
-1.digit:
-0... no error (information or alert)
+1. digit:
+0... no error (information or warning)
 1... file access error (read/write/change mode)
 2... system error (error in execution of code)
 3... unauthorized access (due to an attempt to start scripts without the right permissions)
 4... inconsistence in data storage (due to a system error)
 5... database access error (read/write)
 
-2.digit:
+2. digit:
 0...default
 
-3-5.digit:
+3-5. digit:
 number of the location in code ($errcode)

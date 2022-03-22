@@ -3458,11 +3458,17 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_deleted = false;
         }
 
-        // E-mail
+        // System E-mail
         if ($file_ext == ".mail")
         {
           $file_icon = "button_user_sendlink.png";
           $file_type = "E-mail";
+        }
+        // Standard E-mail formats
+        elseif ($file_ext == ".eml" || $file_ext == ".mbox" || $file_ext == ".msg")
+        {
+          $file_icon = "file_mail.png";
+          $file_type = "E-Mail";
         }
         // MS Word
         elseif ($file_ext == ".doc" || $file_ext == ".docx" || $file_ext == ".docm" || $file_ext == ".dot" || $file_ext == ".dotx")

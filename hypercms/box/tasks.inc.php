@@ -9,15 +9,15 @@ if (checkrootpermission ('desktoptaskmgmt'))
   // get tasks of user
   if (!empty ($user)) $task_array = rdbms_gettask ("", "", "", "", $user);
 
-  if (!empty ($task_array) && is_array ($task_array) && sizeof ($task_array) > 0)
-  {
-    echo "
+  echo "
   <div id=\"task\" onclick=\"document.location.href='task/task_list.php';\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left; cursor:pointer;\">";
 
-    echo "
-    <div class=\"hcmsHeadline\" style=\"margin:6px;\">".getescapedtext ($hcms_lang['my-recent-tasks'][$lang])."</div>
+  echo "
+    <div class=\"hcmsHeadline\" style=\"margin:6px 2px;\"><img src=\"".getthemelocation("night")."img/task.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['my-recent-tasks'][$lang])."</div>
     <table class=\"hcmsTableStandard\" style=\"table-layout:auto; border-collapse:separate; border-spacing:2px; width:100%;\">";
 
+  if (!empty ($task_array) && is_array ($task_array) && sizeof ($task_array) > 0)
+  {
     foreach ($task_array as $task_record)
     {
       if ($task_record['status'] < 100)
@@ -42,10 +42,17 @@ if (checkrootpermission ('desktoptaskmgmt'))
       </tr>";
       }
     }
-    
+  }
+  else
+  {
     echo "
+    <tr>
+      <td colspan=\"2\" style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['your-task-queue-is-empty'][$lang])."</td>
+    </tr>";
+  }
+    
+  echo "
     </table>
   </div>";
-  }
 }
 ?>

@@ -6396,7 +6396,8 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
       // ignore empty entries 
       if (empty ($object)) continue;
 
-      $count++;
+      // initialize
+      $openobject = "";
 
       $site = getpublication ($object);
       $location_esc = getlocation ($object);
@@ -6404,24 +6405,24 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
       $cat = getcategory ($site, $object);
       $page = getobject ($object);
       $location_name = getlocationname ($site, $location_esc, $cat);
-
       $objectinfo = getobjectinfo ($site, $location, $page);
 
-      $openobject = "";
+      // check access permissions
+      $ownergroup = accesspermission ($site, $location, $cat);
+      $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
-      if (!empty ($openlink))
+      // do not display objects without the users general access permission
+      if ($setlocalpermission['root'] != 1) continue;
+      
+      $count++;
+
+      // open object
+      if (!empty ($openlink) && $setlocalpermission['root'] == 1)
       {
-        // check access permissions
-        $ownergroup = accesspermission ($site, $location, $cat);
-        $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+        $functioncall = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")";
 
-        if ($setlocalpermission['root'] == 1)
-        {
-          $functioncall = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")";
-
-          // open on click (parent must be used if function is called from iframe!)
-          $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; else ".$functioncall.";\"";
-        }
+        // open on click (parent must be used if function is called from iframe!)
+        $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; else ".$functioncall.";\"";
       }
 
       // media asset

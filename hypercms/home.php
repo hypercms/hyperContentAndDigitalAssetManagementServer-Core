@@ -60,7 +60,6 @@ $token_new = createtoken ($user);
 
 <!-- main library -->
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
-<script type="text/javascript" src="javascript/click.min.js"></script>
 
 <!-- Jquery and Jquery UI Autocomplete (used for search box) -->
 <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>

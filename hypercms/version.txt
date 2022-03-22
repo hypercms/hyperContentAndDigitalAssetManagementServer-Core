@@ -5873,9 +5873,25 @@ Release 03/2022
 - Bug fix: page_info_container did not correct the location for folders
 - Bug fix: explorer_preview displayed the table for links even if no link is available
 - Bug fix: The OpenSearch module of the Connector used the same function name authenticate as used by the REST API
-- Bug fix: Function getmetadata in Get API did return an Array if no template (labels) has been specified
+- Bug fix: Function getmetadata in Get API did return an Array if no template (with label definitions) has been specified
 - Bug fix: Function getmetadata in Get API did add an additional separator at the end of each metadata record
 - Bug fix: Function showinlineeditor used a single quote twice at the beginning of a text string
 - Bug fix: group_edit_script did not include main.min.js which is required by most UI functions
 - Bug fix: group_edit_script did not verify the parent main frame that can cause an error if the parent frame is not present due to a call of group_edit_script from user_edit without a parent frame
 - Bug fix: The CSS font style for tables was missing in alle design themes (browser used default font size)
+
+Version 10.0.5
+Release 06/2022
+- Minor code improvements in the Task Management API
+- Minor modifications in error_codes.txt
+- Modifications in function userlogin in Security API in order to initialize the variable checkresult and validdate
+- Design modifications in server_load, tasks, recent_uploads, recent_downloadlinks, recent_objects, recent_downloads, news, free_storage, free_storage_per_publication, and all_reports home box
+- Modifications in explorer_preview in order to remove click.min.js and enable to browser context menu
+- Modifications in the home screen in order to remove click.min.js and enable the standard context menu of the browser
+- Modifications in function manipulateobject in Main API in order to rename objects in the database after the object has been copied to the target location for action cut and paste
+- Modifications in function manipulateobject in Main API in order to separate the error messages for copy and delete for action cut and paste (action cut & paste uses copy & delete file operation)
+- Modifications in task management home box in order to always display the home box even if there are no tasks available for the user
+- Modifications in format_ext in order to include the eml, mbox, adn msg mail file extensions as text format
+- Modifications in function getfileinfo in order to support standrd e-mail file formats and provide the file icon and format name
+- Added the e-mail file image to all design themes
+- Modifications in function showgallery in UI API in order to hide objects without access permissions for the user

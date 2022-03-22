@@ -12,7 +12,7 @@ if (!empty ($mgmt_config['homebox_welcome']))
   echo "
   <div id=\"newsbox\" class=\"hcmsHomeBox\" style=\"width:".$width."; height:400px; margin:10px; overflow:hidden; float:left;\">
     <div style=\"display:block; padding:0; margin:0;\">
-      <div class=\"hcmsHeadline\" style=\"float:left; margin:6px;\">".getescapedtext ($hcms_lang['information'][$lang])." </div>
+      <div class=\"hcmsHeadline\" style=\"float:left; margin:6px 2px;\"><img src=\"".getthemelocation("night")."img/info.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['information'][$lang])." </div>
       <div style=\"float:right;\"><img class=\"hcmsButtonTiny\" style=\"width:43px; height:22px; margin:6px;\" onClick=\"hcms_minMaxLayer('newsbox');\" src=\"".getthemelocation()."img/button_plusminus_light.png\" alt=\"+/-\" title=\"+/-\" /></div>
     </div>
     <div style=\"display:block; width:100%; height:calc(100% - 42px); padding:0; margin:0; ".($is_iphone ? "overflow:auto; -webkit-overflow-scrolling:touch;" : "overflow:hidden;")."\">

@@ -969,6 +969,8 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   // initialize
   $linking_auth = true;
   $ldap_auth = true;
+  $validdate = true;
+  $checkresult = false;
   $auth = false;
   $site_collection = "";
   $fileuser = NULL;
@@ -1419,8 +1421,6 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       // --------------------- permissions --------------------- 
 
       // check valid dates
-      $validdate = true;
-
       if (!empty ($result['validdatefrom']) && strtotime ($result['validdatefrom']) > time()) $validdate = false;
       if (!empty ($result['validdateto']) && strtotime ($result['validdateto']) < time()) $validdate = false;
 
@@ -1758,7 +1758,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   // in case a user hash code has been provided
   if (empty ($user)) $user = $fileuser;
 
-  // --------------------- verify key --------------------- 
+  // --------------------- verify key ---------------------
 
   if (!empty ($auth))
   {

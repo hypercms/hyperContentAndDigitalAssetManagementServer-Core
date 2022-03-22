@@ -8,7 +8,7 @@ if (function_exists ("disk_total_space") && function_exists ("disk_free_space"))
 
   echo "
   <div id=\"free_storage\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
-    <div class=\"hcmsHeadline\" style=\"margin:6px;\">Server Storage Space</div>
+    <div class=\"hcmsHeadline\" style=\"margin:6px 2px;\"><img src=\"".getthemelocation("night")."img/instance.png\" class=\"hcmsIconList\" /> Server Storage Space</div>
     <hr />
     <div style=\"text-align:right; padding:20px;\">";
   
