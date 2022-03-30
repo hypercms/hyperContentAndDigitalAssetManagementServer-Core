@@ -1726,7 +1726,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // ----------------------------------------------- search content ------------------------------------------------- 
 // function: rdbms_searchcontent()
 // input: location [string,array] (optional), exclude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
-//        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), 
+//        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), file extensions without dot [array] (optional)
 //        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image color [array] (optional), image-type [portrait,landscape,square] (optional), 
 //        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned e.g. text:Title [array] (optional), count search result entries [boolean] (optional), 
 //        log search expression [true/false] (optional), taxonomy level to include [integer] (optional), order by for sorting of the result [string] (optional)
@@ -1735,7 +1735,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // description:
 // Searches one or more expressions in the content, objectpath or other attributes of objects which are not in the recycle bin.
 
-function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", $date_from="", $date_to="", $template="", $expression_array="", $expression_filename="", $filesize="", $imagewidth="", $imageheight="", $imagecolor="", $imagetype="", $geo_border_sw="", $geo_border_ne="", $maxhits=300, $return_text_id=array(), $count=false, $search_log=true, $taxonomy_level=2, $order_by="")
+function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", $date_from="", $date_to="", $template="", $expression_array="", $expression_filename="", $fileextension="", $filesize="", $imagewidth="", $imageheight="", $imagecolor="", $imagetype="", $geo_border_sw="", $geo_border_ne="", $maxhits=300, $return_text_id=array(), $count=false, $search_log=true, $taxonomy_level=2, $order_by="")
 {
   // user will be provided as global for search expression logging
   global $mgmt_config, $lang, $user;
@@ -1995,7 +1995,21 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           }
         }
       }
-    }   
+    }
+
+    // file extensions
+    if (is_array ($fileextension) && sizeof ($fileextension) > 0)
+    {
+      $sql_temp = array();
+
+      foreach ($fileextension as $temp)
+      {
+        $temp = str_replace (".", "", $temp);
+        if (trim ($temp) != "") $sql_temp[] = 'obj.objectpath LIKE "%.'.$temp.'"';
+      }
+
+      $sql_where['fileextension'] = '('.implode (" OR ", $sql_temp).')';
+    }
     
     // query dates
     if (!empty ($date_from) || !empty ($date_to))
@@ -2643,7 +2657,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     else $order_by = $db->rdbms_escape_string (trim ($order_by));
 
     // build SQL statement
-    $sql = 'SELECT DISTINCT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr .' FROM object AS obj ';
+    $sql = 'SELECT DISTINCT obj.objectpath, obj.hash, obj.id, obj.media, obj.workflowstatus'.$sql_add_attr .' FROM object AS obj ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
     $sql .= 'WHERE obj.deleteuser="" ';
     if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
@@ -2672,6 +2686,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           $objectpath[$hash]['type'] = (substr ($row['objectpath'], -7) == ".folder" ? "folder" : "object");
           $objectpath[$hash]['container_id'] =  sprintf ("%07d", $row['id']);
           $objectpath[$hash]['media'] =  $row['media'];
+          $objectpath[$hash]['workflowstatus'] =  $row['workflowstatus'];
 
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
@@ -6208,7 +6223,7 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
 
           $i++;
         }
-      }        
+      }
     }
 
     // save log
@@ -6262,6 +6277,100 @@ function rdbms_deleteproject ($project_id="", $object_id="", $user="")
 
     return true;
   }
+  else return false;
+}
+
+// ----------------------------------------------- edit workflow status -------------------------------------------------
+// function: rdbms_setworkflow()
+// input: container ID [integer], workflow date [datetime], workflow status [string], workflow user name [string]
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// This function saves the status of the workflow for an object.
+// Use *Leave* as input if a value should not be changed. 
+
+function rdbms_setworkflow ($container_id, $workflowdate, $workflowstatus, $workflowuser)
+{
+  global $mgmt_config;
+
+  if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && intval ($container_id) > 0 && $workflowdate != "" && strpos ($workflowstatus, "/") > 0 && strlen ($workflowuser) > 0)
+  {
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+
+    // clean input
+    $sql_update = array();
+
+    $sql_update[] = 'workflowdate="'.date ("Y-m-d H:i", strtotime ($workflowdate)).'"';
+    $sql_update[] = 'workflowstatus="'.$db->rdbms_escape_string ($workflowstatus).'"';
+    $sql_update[] = 'workflowuser="'.$db->rdbms_escape_string ($workflowuser).'"';
+
+    // update
+    $sql = 'UPDATE object SET ';
+    $sql .= implode (", ", $sql_update);
+    $sql .= ' WHERE id='.intval($container_id);
+
+    $errcode = "50079";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update');
+
+    // save log
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
+
+    return true;
+  } 
+  else return false;
+}
+
+// ----------------------------------------------- get workflow status -------------------------------------------------
+// function: rdbms_getworkflow()
+// input: container ID [integer], workflow date [datetime], workflow status [string], workflow user name [string]
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// This function saves the status of the workflow for an object.
+// Use *Leave* as input if a value should not be changed. 
+
+function rdbms_getworkflow ($container_id)
+{
+  global $mgmt_config;
+
+  if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && intval ($container_id) > 0)
+  {
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+
+    // select
+    $sql = 'SELECT workflowdate, workflowstatus, workflowuser FROM object WHERE id='.intval($container_id);
+
+    $errcode = "50080";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
+
+    if ($done)
+    {
+      $result = array();
+
+      // insert recipients
+      while ($row = $db->rdbms_getresultrow ('select'))
+      {
+        if (!empty ($row['workflowstatus']) && strpos ($row['workflowstatus'], "/") > 0)
+        {
+          $result['workflowdate'] = $row['workflowdate'];
+          $result['workflowstatus'] = $row['workflowstatus'];
+          $result['workflowuser'] = $row['workflowuser'];
+
+          break;
+        }
+      }
+    }
+
+    // save log
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
+
+    if (!empty ($result) && is_array ($result)) return $result;
+    else return false;
+  } 
   else return false;
 }
 

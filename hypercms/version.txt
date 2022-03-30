@@ -5867,7 +5867,7 @@ Release 03/2022
 - Code sanitization and improvements in several system components, e.g. adding double quotes to some CSS class names that have been missing
 - Modifications in all language files
 - Modifications in desktop.css and mobile.css of all design themes in order to add the table style definition
-- Updates in the Connectors and Users Guide
+- Updates in the Connector and Users Guide
 - Bug fix: The context menu for the column headers did not display the border and shadow correctly
 - Bug fix: page_info_container used the object name without the file extension for comparison regarding the edit- or preview
 - Bug fix: page_info_container did not correct the location for folders
@@ -5881,7 +5881,7 @@ Release 03/2022
 - Bug fix: The CSS font style for tables was missing in alle design themes (browser used default font size)
 
 Version 10.0.5
-Release 06/2022
+Release 05/2022
 - Minor code improvements in the Task Management API
 - Minor modifications in error_codes.txt
 - Modifications in function userlogin in Security API in order to initialize the variable checkresult and validdate
@@ -5892,6 +5892,53 @@ Release 06/2022
 - Modifications in function manipulateobject in Main API in order to separate the error messages for copy and delete for action cut and paste (action cut & paste uses copy & delete file operation)
 - Modifications in task management home box in order to always display the home box even if there are no tasks available for the user
 - Modifications in format_ext in order to include the eml, mbox, adn msg mail file extensions as text format
-- Modifications in function getfileinfo in order to support standrd e-mail file formats and provide the file icon and format name
-- Added the e-mail file image to all design themes
+- Modifications in function getfileinfo in order to support standard e-mail file formats and provide the file icon and format name
 - Modifications in function showgallery in UI API in order to hide objects without access permissions for the user
+- Modifications in function getobjectlist in Get API in order to add text IDs to the default result set
+- Modifications in function rdbms_searchcontent in DB Connect in order to support a new input parameter for the search based on file extensions
+- Modifications in link_edit_explorer, search_objectlist, and text_link_explorer in order to support the new input paramater of function rdbms_searchcontent
+- Modifications in function getobjectlist in Get API in order to support the new input parameter of function rdbms_searchcontent
+- Modifications in function rewrite_targetURI in Main API in order to support the new input parameter of function rdbms_searchcontent
+- Modifications in function showcompexplorer in UI API in order to support the new input parameter of function rdbms_searchcontent
+- Modifications in OpenSearch of the Connector module in order to support the new input parameter of function rdbms_searchcontent
+- Modifications in REST API of the Connector module in order to support the new input parameter of function rdbms_searchcontent
+- Modifications in template ServiceSearchMedia in the installation directory in order to support the new input parameter of function rdbms_searchcontent
+- Modifications in function showmedia in UI API in order to optimize the video preview size by replacing the size calculations by function mediasize2frame
+- Modifications in function showmedia in UI API in order to remove the background from portrait videos and display the original screen ratio
+- Modifications in function showmedia in UI API in order to set the max height for portrait videos to 1080px instead of 720px
+- Modifications in function getfileinfo in Get API in order to add the file extension for vector images defined in format_ext
+- Modifications in function getfileinfo in Get API in order to add support for Adobe After Effects, Adobe Premiere, and Adobe Audition file extensions
+- Modifications in function getfileinfo in Get API in order to add support for Computer Aided Design file extensions
+- Modifications in format_ext in order to add support for HEIC, HEIF, and JFIF image file extensions
+- Modifications in the main configuration file in the install directory in order to add the JFIF file extension to the image conversion
+- Modifications in page_info_ip in order to replace the embedded Google Maps solution by the Google Maps API V3 
+- Replaced Adobe Flash file icon by new version in all design themes
+- Replaced image and video file icons by new versions in all design themes
+- Replaced video player background image by new version in all design themes
+- Implementation of the new file format for Computer Aided Design files in format_ext
+- Modifications in function createmedia in Media API in order to define a default video thumbnail size for the preview images
+- Modifications in function getmediasize in Get API in order to set a default width and height of zero
+- Modifications in function userlogin in Security API in order to verify the nologon result before using it in the log entry
+- Modifications in function showworkflowstatus in UI API in order to verify that the workflow file of the objects exists and is a file
+- Implementation of new function getworkflowstatus in the Workflow API in order to read the current status of an objects workflow and return the results of the last stage of the workflow
+- Modifications in function checkworkflow in Main API in order to verify that the workflow module exists and return the proper result if it doesn't
+- Modifications in function showworkflowstatus in UI API in order to verify that the workflow module exists and return the proper result if it doesn't
+- Modifications in explorer_objectlist and search_objectlist in order to apply the new function getworkflowstatus and display the workflow accept icon for objects which are using a workflow and have been approved in the last stage of the workflow
+- Modifications in createtables.sql in order to add workflowdate, workflowstatus and workflowuser to table object
+- Implementation of the new function update_database_v1005 in Update API in order to update the database and add workflowdate, workflowstatus and workflowuser to table object
+- Modifications in function updates_all in Update API in order to add function update_database_v1005
+- Modifications in function acceptobject and rejectobject in Workflow API in order to remove the global variable contentfile and force the extraction of the container and template name from the object
+- Implementation of the new function rdbms_setworkflow in DB Connect in order to save the workflow status for a container
+- Implementation of the new function rdbms_getworkflow in DB Connect in order to read the workflow status for a container
+- Modifications in function rdbms_searchcontent in DB Connect in order to support the new return value for the workflow status
+- Moved function getworkflowitem from Get API to Workflow API
+- Modifications in function checkworkflow in Main API in order to verify that function getworkflowitem exists
+- Modifications in explorer_preview in order to display workflow information for an object
+- Modifications in the template engine in order to display workflow information for an object
+- Modifications in function showworkflowstatus in UI API in order to display the name of the applied workflow for an object
+- Added the E-mail, Computer Aided Design, Adobe After Effects, Adobe Premiere, and Adobe Audition file icons to all design themes
+- Added the new workflow accept and in progress icon to all design themes
+- Updates in the Connector Guide
+- Bug fix: The template engine did not include the local JS functions in case of formlock view which might cause JS errors if the template uses one of the local JS functions
+- Bug fix: Function showworkflowstatus in UI API did not use the passed information for the definition of the status background color
+- Bug fix: Function authenticate in REST API did not verify the message return value of function userlogin

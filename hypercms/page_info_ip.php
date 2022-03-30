@@ -44,6 +44,8 @@ if ($ip != "")
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
+<!-- Google Maps -->
+<script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php if (!empty ($mgmt_config['googlemaps_appkey'])) echo $mgmt_config['googlemaps_appkey']; ?>"></script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
@@ -56,11 +58,27 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
   <?php
-  if (!empty ($data) && is_array ($data)) 
+  if (!empty ($data['lat']) && !empty ($data['lon'])) 
   {
   ?>
-  <iframe frameborder="0" scrolling="no" style="width:620px; height:400px; margin:10px; border:0; overflow:hidden;" src="https://maps.google.de/maps?ll=<?php echo @$data['lat']; ?>,<?php echo @$data['lon']; ?>&amp;ie=UTF8&amp;om=1&amp;iwloc=near&amp;z=13&amp;iwloc=addr&amp;output=embed"></iframe>
-  
+  <div id="map" style="width:620px; height:400px; margin:10px; border:1px solid grey;"></div>
+  <script>
+  function initMap ()
+  {
+    var mapOptions = {
+        zoom: 13,
+        scrollwheel: true,
+        center: new google.maps.LatLng(<?php echo $data['lat']; ?>,<?php echo $data['lon']; ?>),
+        disableDefaultUI: false,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  }
+
+  initMap();
+  </script>
+
   <div style="margin:10px;">
   <?php
     echo "
@@ -81,5 +99,6 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

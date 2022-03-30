@@ -8202,9 +8202,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <script type=\"text/javascript\">
   // initialize
   var hcms_consolelog = true;
-  ";
 
-  if ($buildview != "formlock") $viewstore .= "
   ".$bodytag_popup."
 
   // ----- Validation -----
@@ -10509,6 +10507,39 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       <!-- form for content -->
       <div class=\"hcmsWorkplaceFrame\">";
 
+        // ----------------------------------- workflow status -----------------------------------
+        // provide the workflow status
+        $workflowstatus = "";
+
+        if (!empty ($container_id))
+        {
+          // workflow status
+          $workflow = rdbms_getworkflow ($container_id);
+
+          if (!empty ($workflow) && strpos ($workflow['workflowstatus'], "/") > 0)
+          {
+            list ($workflow_stage, $workflow_maxstage) = explode ("/", $workflow['workflowstatus']);
+
+            if (intval ($workflow_stage) == intval ($workflow_maxstage)) $workflow_status = "passed";
+            elseif (intval ($workflow_stage) < intval ($workflow_maxstage)) $workflow_status = "inprogress";
+
+            // workflow icon image
+            if ($workflow_status == "passed")
+            {
+              $workflow_icon = "<img src=\"".getthemelocation()."img/workflow_accept.png\" class=\"hcmsIconList\" alt=\"".getescapedtext ($hcms_lang['finished'][$lang], $charset, $lang)."\" /> ".getescapedtext ($hcms_lang['finished'][$lang], $charset, $lang)." ".showdate ($workflow['workflowdate'], "Y-m-d H:i", $hcms_lang_date[$lang])." ".getescapedtext ($hcms_lang['by-user'][$lang], $charset, $lang)." ".$workflow['workflowuser'];
+            }
+            elseif ($workflow_status == "inprogress")
+            {
+              $workflow_icon = "<img src=\"".getthemelocation()."img/workflow_inprogress.png\" class=\"hcmsIconList\" alt=\"".getescapedtext ($hcms_lang['in-progress'][$lang], $charset, $lang)."\" /> ".getescapedtext ($hcms_lang['in-progress'][$lang], $charset, $lang)." ".showdate ($workflow['workflowdate'], "Y-m-d H:i", $hcms_lang_date[$lang])." ".getescapedtext ($hcms_lang['by-user'][$lang], $charset, $lang)." ".$workflow['workflowuser'];
+            }
+            else $workflow_icon = "";
+
+            $workflowstatus = "
+              <img src=\"".getthemelocation()."img/workflow.png\" class=\"hcmsIconList\" title=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\" alt=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\" /> ".$workflow_icon." ";
+          }
+        }
+
+        // ----------------------------------- statistics and preview -----------------------------------
         // add preview of media file (for media view the characters set is always UTF-8)
         if ($mediafile != false && $mediafile != "")
         {
@@ -10534,10 +10565,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               &nbsp;&nbsp;<img src=\"".getthemelocation()."img/button_file_download.png\" class=\"hcmsIconList\" /> ".$downloads[0]['count']." ".getescapedtext ($hcms_lang['downloads'][$lang], $charset, $lang)."
               &nbsp;&nbsp;<img src=\"".getthemelocation()."img/button_file_upload.png\" class=\"hcmsIconList\" /> ".$uploads[0]['count']." ".getescapedtext ($hcms_lang['uploads'][$lang], $charset, $lang)."
             </span>
+            <span class=\"hcmsTextSmall\" style=\"white-space:nowrap;\">
+              &nbsp;&nbsp;".$workflowstatus."
+            </span>
           </div>
           <div class=\"hcmsFormRowContent\">
             ".showmedia ($site."/".$mediafile, convertchars ($name_orig, $hcms_lang_codepage[$lang], $charset), $mediaview, "hcms_mediaplayer_asset", $mediawidth, "", "hcmsImageItem", $recognizefaces_service)."
           </div>
+        </div>";
+        }
+        elseif (!empty ($workflowstatus))
+        {
+          $viewstore .= "
+        <div class=\"hcmsTextSmall\" style=\"white-space:nowrap;\">
+          ".$workflowstatus."
         </div>";
         }
 

@@ -1882,6 +1882,51 @@ function update_users_v1004 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v1005 ----------------------------------------------
+// function: update_database_v1005()
+// input: %
+// output: true / false
+
+// description: 
+// Modifies the database for the support of version 10.0.5
+
+function update_database_v1005 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.5"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table object
+    $sql = "ALTER TABLE `object` ADD workflowdate datetime AFTER deletedate;";
+    $errcode = "50651";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE `object` ADD workflowstatus CHAR(5) AFTER workflowdate;";
+    $errcode = "50652";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    $sql = "ALTER TABLE `object` ADD workflowuser CHAR(100) AFTER workflowstatus;";
+    $errcode = "50653";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.5|updated to version 10.0.5"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -1923,6 +1968,7 @@ function updates_all ()
     update_database_v1002 ();
     update_database_v1003 ();
     update_users_v1004 ();
+    update_database_v1005 ();
   }
 }
 

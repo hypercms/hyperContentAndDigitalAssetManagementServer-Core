@@ -775,7 +775,7 @@ function unlockFormBy (element)
 
 // ----- Field controls for form views -----
 
-// Alisa for checkFieldValue
+// Alias for checkFieldValue
 function checkValue (id, value)
 {
   return checkFieldValue (id, value);

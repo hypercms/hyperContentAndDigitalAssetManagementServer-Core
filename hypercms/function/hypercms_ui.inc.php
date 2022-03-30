@@ -2455,45 +2455,21 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediaratio = $config['width'] / $config['height'];
           $width_orig = $config['width'];
           $height_orig = $config['height'];
-        }
 
-        // use provided width and corrected height
-        if (!empty ($width) && !empty ($mediaratio)) 
-        {
-          $mediawidth = $width;
-          $mediaheight = round (($mediawidth / $mediaratio), 0);
-        }
-        // use provided height and corrected width
-        elseif (!empty ($height) && !empty ($mediaratio)) 
-        {
-          $mediaheight = $height;
-          $mediawidth = round (($mediaheight * $mediaratio), 0);
-        }
-        // use config values if no width and height has been provided
-        elseif (!empty ($config['width']) && $config['width'] > 0 && !empty ($config['height']) && $config['height'] > 0)
-        {
-          $mediawidth = $config['width'];
-          $mediaheight = $config['height'];
-        }
-        // fallback to provided width and height
-        else
-        {
-          $mediawidth = $width;
-          $mediaheight = $height;
-        }
+          // correct height for portrait videos
+          if (empty ($height) && $height_orig > $width_orig && $height_orig > 1080)
+          {
+            $height = 1080;
+          }
 
-        // correct height for portrait videos
-        if ($mediaheight > $mediawidth && $mediaheight > 720)
-        {
-          $mediaheight = 480;
-        }
+          // new size may exceed the original image size
+          $newsize = mediasize2frame ($width_orig, $height_orig, $width, $height, true);
 
-        // use default values
-        if (empty ($mediawidth) || empty ($mediaheight))
-        {
-          $mediawidth = 854;
-          $mediaheight = 480;
-          $mediaratio = $mediawidth / $mediaheight;
+          if (is_array ($newsize))
+          {
+            $mediawidth = $newsize['width'];
+            $mediaheight = $newsize['height'];
+          }
         }
 
         // set width and height of media file as file-parameter
@@ -2501,13 +2477,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <!-- hyperCMS:width file=\"".$width_orig."\" -->
         <!-- hyperCMS:height file=\"".$height_orig."\" -->";
 
-        // new size may exceed the original image size
-        $newsize = mediasize2frame ($mediawidth, $mediaheight, $width, $height, true);
-
-        if (is_array ($newsize))
+        // use default values
+        if (empty ($mediawidth) || empty ($mediaheight))
         {
-          $mediawidth = $newsize['width'];
-          $mediaheight = $newsize['height'];
+          $mediawidth = 854;
+          $mediaheight = 480;
+          $mediaratio = $mediawidth / $mediaheight;
         }
 
         // generate player code
@@ -3587,7 +3562,7 @@ $(document).ready(function()
     {
       if ($mediatype != "") $search_format = array ($mediatype);
 
-      $object_array = rdbms_searchcontent ($dir_esc, "", $search_format, "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", 100);
+      $object_array = rdbms_searchcontent ($dir_esc, "", $search_format, "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", "", 100);
 
       if (is_array ($object_array))
       {
@@ -6841,7 +6816,7 @@ function showworkflowstatus ($site, $location, $page)
 {
   global $mgmt_config, $publ_config, $hcms_charset, $hcms_lang, $lang, $user;
 
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
+  if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
   {
     // convert location
     $cat = getcategory ($site, $location);
@@ -6850,7 +6825,7 @@ function showworkflowstatus ($site, $location, $page)
 
     // check and correct file
     $page = correctfile ($location, $page, $user);
-      
+
     // load page and read actual file info (to get associated template and content)
     $pagestore = loadfile ($location, $page);
 
@@ -6869,32 +6844,36 @@ function showworkflowstatus ($site, $location, $page)
       $result = loadtemplate ($site, $template);
       
       $templatedata = $result['content'];
-      
+
       // get workflow from template
       $hypertag_array = gethypertag ($templatedata, "workflow", 0);
-      
+
       // check if workflow is definded in template or workflow on folder must be applied
-      if ($hypertag_array == false || $hypertag_array == "")
+      if (empty ($hypertag_array))
       {
         if (file_exists ($mgmt_config['abs_path_data']."workflow_master/".$site.".".$cat.".folder.dat")) $wf_exists = true;
         else $wf_exists = false;
       }
-      else $wf_exists = true;  
-      
+      // worklfow defined in template 
+      else $wf_exists = true;
+
       // collect workflow status information
-      if ($wf_exists == true && file_exists ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile))
+      if ($wf_exists == true && is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile))
       {
         // load workflow
         $workflow_data = loadfile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile);
+
+        // get workflow name
+        $wf_name = getcontent ($workflow_data, "<name>");
         
         // build workflow stages
         $item_array = buildworkflow ($workflow_data);
-        
+
         // count stages (1st dimension)
         $stage_max = sizeof ($item_array); 
-        
+
         // set start stage (stage 0 can only exist if passive items exist)
-        if (isset ($item_array[0]) && sizeof ($item_array[0]) >= 1) 
+        if (isset ($item_array[0]) && is_array ($item_array[0]) && sizeof ($item_array[0]) > 0) 
         {
           $stage_start = 1;
           $stage_max = $stage_max - 1;
@@ -6903,9 +6882,9 @@ function showworkflowstatus ($site, $location, $page)
         {
           $stage_start = 1;
         }       
-        
+
         echo "
-    <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['workflow-status'][$lang])."</p>
+    <div style=\"width:95%; padding:10px 4px;\"><span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['workflow-status'][$lang])."</span><br/>".(!empty ($wf_name[0]) ? getescapedtext ($hcms_lang['name'][$lang]).": ".$wf_name[0] : "")."</div>
     <table class=\"hcmsTableStandard\" style=\"width:95%;\">
       <tr>
         <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['member-type'][$lang])."</td>
@@ -6914,7 +6893,7 @@ function showworkflowstatus ($site, $location, $page)
         <td class=\"hcmsHeadline\" style=\"width:15%;\">".getescapedtext ($hcms_lang['status'][$lang])."</td>
         <td class=\"hcmsHeadline\" style=\"width:15%;\">".getescapedtext ($hcms_lang['date'][$lang])."</td>
       </tr>"; 
-        
+
         for ($stage=$stage_start; $stage<=$stage_max; $stage++)
         {
           if (is_array ($item_array[$stage]))
@@ -6932,7 +6911,7 @@ function showworkflowstatus ($site, $location, $page)
 
               $member_array = array();
               $type_array = getcontent ($item, "<type>");       
-             
+
               if ($type_array[0] == "user")
               {
                 $type = getescapedtext ($hcms_lang['user'][$lang]);
@@ -6948,19 +6927,24 @@ function showworkflowstatus ($site, $location, $page)
                 $type = getescapedtext ($hcms_lang['robot-script'][$lang]);
                 $member_array[0] = "-";
               }
-              
+
               if (empty ($member_array[0])) $member_array[0] = "-";
-              
+
               $passed_array = getcontent ($item, "<passed>");
-              
-              if ($passed_array[0] == 1) $passed = getescapedtext ($hcms_lang['accepted'][$lang]);
-              else $passed = getescapedtext ($hcms_lang['pendingrejected'][$lang]);
-              
+
+              if (!empty ($passed_array[0]))
+              {
+                $passed = getescapedtext ($hcms_lang['accepted'][$lang]);
+                $class = "hcmsFinished";
+              }
+              else
+              {
+                $passed = getescapedtext ($hcms_lang['pendingrejected'][$lang]);
+                $class = "hcmsToDo";
+              }
+
               $date_array = getcontent ($item, "<date>");
-              
-              if (strlen ($date_array[0]) < 6) $class = "hcmsToDo";
-              else $class = "hcmsFinished";
-            
+
               echo "
         <tr class=\"".$class."\">
           <td>".$type."</td>
@@ -6972,7 +6956,7 @@ function showworkflowstatus ($site, $location, $page)
             }
           }
         }
-        
+
         echo "
       </table>";
       }

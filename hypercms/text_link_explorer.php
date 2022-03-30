@@ -148,7 +148,7 @@ function submitLink (url)
       // search results
       if (trim ($search_expression) != "")
       {
-        $object_array = rdbms_searchcontent ($dir_esc, "", array("page"), "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", 100);
+        $object_array = rdbms_searchcontent ($dir_esc, "", array("page"), "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", "", 100);
         
         if (is_array ($object_array))
         {

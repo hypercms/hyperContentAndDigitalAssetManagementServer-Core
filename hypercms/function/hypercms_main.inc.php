@@ -5424,378 +5424,382 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
 {
   global $mgmt_config;
 
+  // initialize result values
   $checkworkflow_result = false;
   $workflow_name = "";
   $workflow_xml = "";
   $wf_id = "";
   $wf_role = 5;
-  $wf_token = "";
+  $wf_token = hcms_encrypt ("Null:".$wf_role);
 
-  // do not execute for container versions
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && ($contentfile == "" || strpos ("_".strrchr ($contentfile, "."), ".v_") == 0) && $buildview != "" && valid_objectname ($user))
+  // do not execute if no workflow module is present or for container versions
+  if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && function_exists ("getworkflowitem"))
   {
-    // check category
-    if ($cat == "") $cat = getcategory ($site, $location);
-
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location);
-
-    // check contentfile and viewstore
-    if ($contentfile == "" || $viewstore == "")
+    if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && ($contentfile == "" || strpos ("_".strrchr ($contentfile, "."), ".v_") == 0) && $buildview != "" && valid_objectname ($user))
     {
-      $objectinfo = getobjectinfo ($site, $location, $page, $user);
+      // check category
+      if ($cat == "") $cat = getcategory ($site, $location);
 
-      if (!empty ($objectinfo['container'])) $contentfile = $objectinfo['container'];
-      if (!empty ($objectinfo['template'])) $templatefile = $objectinfo['template'];
+      // add slash if not present at the end of the location string
+      $location = correctpath ($location);
 
-      if ($viewstore == "")
+      // check contentfile and viewstore
+      if ($contentfile == "" || $viewstore == "")
       {
-        $temp = loadtemplate ($site, $templatefile);
+        $objectinfo = getobjectinfo ($site, $location, $page, $user);
 
-        if (!empty ($temp['content']))
+        if (!empty ($objectinfo['container'])) $contentfile = $objectinfo['container'];
+        if (!empty ($objectinfo['template'])) $templatefile = $objectinfo['template'];
+
+        if ($viewstore == "")
         {
-          $temp = getcontent ($temp['content'], "<content>", true);
-          if (!empty ($temp[0])) $viewstore = $temp[0];
-        }
-      }
-    }
+          $temp = loadtemplate ($site, $templatefile);
 
-    // check contentdata
-    if ($contentfile != "" && $contentdata == "")
-    {
-      $contentdata = loadcontainer ($contentfile, "work", $user);
-    }
-
-    // get all hyperCMS tags
-    if ($viewstore != "") $hypertag_array = gethypertag ($viewstore, "workflow", 0);
-
-    // check view
-    if (in_array ($buildview, array("cmsview","inlineview","publish","formedit","formmeta")) && ($cat == "page" || $cat == "comp") && !empty ($contentfile) && !empty ($contentdata) && !empty ($viewstore))
-    {
-      // get applied workflows on folders
-      if (is_file ($mgmt_config['abs_path_data']."workflow_master/".$site.".".$cat.".folder.dat"))
-      {
-        $wf_data = loadfile_fast ($mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat");
-
-        if ($wf_data != false)
-        {
-          $wf_array = explode ("\n", trim ($wf_data)); 
-
-          if (is_array ($wf_array) && sizeof ($wf_array) > 0)
-          { 
-            $folder_current = convertpath ($site, $location, $cat);
-
-            // find workflows that would apply on the current folder
-            foreach ($wf_array as $wf_folder)
-            {
-              list ($workflow, $object_id) = explode ("|", $wf_folder);
-
-              // versions before 5.6.3 used folder path instead of object id
-              if (substr_count ($object_id, "/") == 0) $folder = rdbms_getobject ($object_id);
-              else $folder = $object_id;
-
-              // remove .folder from folder location
-              if (substr (trim ($folder), -8) == "/.folder") $folder = substr (trim ($folder), 0, -7);
-
-              // compare workflow folder with current location
-              if (@substr_count ($folder_current, $folder) == 1) $wf_apply_array[] = $wf_folder;
-            }
-
-            // compare workflows that matched before and find the nearest
-            if (isset ($wf_apply_array) && is_array ($wf_apply_array))
-            {
-              $compare = 0;
-
-              foreach ($wf_apply_array as $wf_folder)
-              {
-                list ($workflow, $folder) = explode ("|", $wf_folder);
-
-                if (strlen ($folder) > $compare) 
-                {
-                  $compare = strlen ($folder);
-                  $workflow_name = $workflow;
-                }
-              }
-            }
+          if (!empty ($temp['content']))
+          {
+            $temp = getcontent ($temp['content'], "<content>", true);
+            if (!empty ($temp[0])) $viewstore = $temp[0];
           }
         }
       }
 
-      // check workflow of object
-      if ($hypertag_array != false || $workflow_name != "")
+      // check contentdata
+      if ($contentfile != "" && $contentdata == "")
       {
-        // check if workflow file exists for object
-        if (is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile))
+        $contentdata = loadcontainer ($contentfile, "work", $user);
+      }
+
+      // get all hyperCMS tags
+      if ($viewstore != "") $hypertag_array = gethypertag ($viewstore, "workflow", 0);
+
+      // check view
+      if (in_array ($buildview, array("cmsview","inlineview","publish","formedit","formmeta")) && ($cat == "page" || $cat == "comp") && !empty ($contentfile) && !empty ($contentdata) && !empty ($viewstore))
+      {
+        // get applied workflows on folders
+        if (is_file ($mgmt_config['abs_path_data']."workflow_master/".$site.".".$cat.".folder.dat"))
         {
-          // get workflow
-          $stop = false;
+          $wf_data = loadfile_fast ($mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat");
 
-          if ($hypertag_array != false)
+          if ($wf_data != false)
           {
-            foreach ($hypertag_array as $hypertag)
-            {
-              $workflow_name = getattribute ($hypertag, "name");
+            $wf_array = explode ("\n", trim ($wf_data)); 
 
-              // search for a valid workflow declared in the template
-              if ($stop == false)
+            if (is_array ($wf_array) && sizeof ($wf_array) > 0)
+            { 
+              $folder_current = convertpath ($site, $location, $cat);
+
+              // find workflows that would apply on the current folder
+              foreach ($wf_array as $wf_folder)
               {
-                $workflow_xml = loadfile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile);
-       
-                // check if current workflow in use is the same workflow as set in the template
-                if ($workflow_xml != false && $workflow_xml != "") 
-                {
-                  $workflow_name_current = getcontent ($workflow_xml, "<name>");
+                list ($workflow, $object_id) = explode ("|", $wf_folder);
 
-                  if ($workflow_name_current != false && $workflow_name_current[0] == $workflow_name) 
+                // versions before 5.6.3 used folder path instead of object id
+                if (substr_count ($object_id, "/") == 0) $folder = rdbms_getobject ($object_id);
+                else $folder = $object_id;
+
+                // remove .folder from folder location
+                if (substr (trim ($folder), -8) == "/.folder") $folder = substr (trim ($folder), 0, -7);
+
+                // compare workflow folder with current location
+                if (@substr_count ($folder_current, $folder) == 1) $wf_apply_array[] = $wf_folder;
+              }
+
+              // compare workflows that matched before and find the nearest
+              if (isset ($wf_apply_array) && is_array ($wf_apply_array))
+              {
+                $compare = 0;
+
+                foreach ($wf_apply_array as $wf_folder)
+                {
+                  list ($workflow, $folder) = explode ("|", $wf_folder);
+
+                  if (strlen ($folder) > $compare) 
                   {
-                    $update_workflow = false;
+                    $compare = strlen ($folder);
+                    $workflow_name = $workflow;
                   }
-                  else $update_workflow = true;
-
-                  // set stop flag to break loop
-                  $stop = true;
                 }
               }
             }
           }
-          elseif ($workflow_name != "")
-          {
-            $workflow_xml = loadfile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile);
-
-            // check if current workflow in use is the same workflow as set in template
-            if ($workflow_xml != false && $workflow_xml != "") 
-            {
-              $workflow_name_current = getcontent ($workflow_xml, "<name>");
-
-              if ($workflow_name_current != false && $workflow_name_current[0] == $workflow_name) 
-              {
-                $update_workflow = false;
-              }
-              else $update_workflow = true;
-
-              // set stop flag to break loop
-              $stop = true;
-            }
-            else $update_workflow = true;
-          }
         }
 
-        // if workflow doesn't exist for the object or must be updated
-        if (!is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile) || $update_workflow == true)
+        // check workflow of object
+        if ($hypertag_array != false || $workflow_name != "")
         {
-          // get workflow
-          $stop = false;
-
-          if ($hypertag_array != false)
+          // check if workflow file exists for object
+          if (is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile))
           {
-            foreach ($hypertag_array as $hypertag)
+            // get workflow
+            $stop = false;
+
+            if ($hypertag_array != false)
             {
-              $workflow_name = getattribute ($hypertag, "name");
-              $workflow_file = $site.".".$workflow_name.".xml";
+              foreach ($hypertag_array as $hypertag)
+              {
+                $workflow_name = getattribute ($hypertag, "name");
 
-              if ($stop != true)
-              { 
-                if ($workflow_name != false && $workflow_name != "" && is_file ($mgmt_config['abs_path_data']."workflow_master/".$workflow_file))
-                { 
-                  // load workflow 
-                  $workflow_xml = loadfile ($mgmt_config['abs_path_data']."workflow_master/", $workflow_file);
-
-                  // if master workflow doesn't exist
-                  if ($workflow_xml != false)
-                  {
-                    // get user of start item
-                    $start_item_array = selectcontent ($workflow_xml, "<item>", "<id>", "u.1");
-
-                    if ($start_item_array != false) $start_user_array = getcontent ($start_item_array[0], "<user>");
+                // search for a valid workflow declared in the template
+                if ($stop == false)
+                {
+                  $workflow_xml = loadfile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile);
         
-                    // if start user is not set in workflow
-                    if ($start_user_array[0] == "") 
-                    {
-                      // set start user in workflow if was not set in workflow
-                      $workflow_xml = setcontent ($workflow_xml, "<item>", "<user>", $user, "<id>", "u.1");
+                  // check if current workflow in use is the same workflow as set in the template
+                  if ($workflow_xml != false && $workflow_xml != "") 
+                  {
+                    $workflow_name_current = getcontent ($workflow_xml, "<name>");
 
-                      // reset passed status in workflow
-                      $workflow_xml = setcontent ($workflow_xml, "<item>", "<passed>", 0, "", ""); 
-
-                      // save workflow
-                      $test = savefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile, $workflow_xml); 
-                    }
-                    // if start user is set but not the same logged in user
-                    elseif ($start_user_array[0] != false && $start_user_array[0] != $user)
+                    if ($workflow_name_current != false && $workflow_name_current[0] == $workflow_name) 
                     {
-                      // user has no right to create the page due to workflow
-                      $test = false;
+                      $update_workflow = false;
                     }
-                    // if start user is set and the same logged in user
-                    elseif ($start_user_array[0] != false && $start_user_array[0] == $user)
-                    {
-                      // user has no right to create the page due to workflow
-                      $test = true;
-                    }
-                    else $test = false;
-      
-                    // set workflow in content container
-                    if ($test != false) 
-                    { 
-                      $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentworkflow>", $workflow_name, "", "");
-                      savecontainer ($contentfile, "work", $contentdata, $user);
-                    }
+                    else $update_workflow = true;
 
-                    // set stop flag to break loop after first entry
+                    // set stop flag to break loop
                     $stop = true;
                   }
                 }
               }
             }
-          }
-          elseif ($workflow_name != "")
-          {
-            $workflow_file = $site.".".$workflow_name.".xml";
+            elseif ($workflow_name != "")
+            {
+              $workflow_xml = loadfile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile);
 
-            if (is_file ($mgmt_config['abs_path_data']."workflow_master/".$workflow_file))
-            { 
-              // load workflow 
-              $workflow_xml = loadfile ($mgmt_config['abs_path_data']."workflow_master/", $workflow_file);
-
-              // if master workflow doesn't exist
-              if ($workflow_xml != false)
+              // check if current workflow in use is the same workflow as set in template
+              if ($workflow_xml != false && $workflow_xml != "") 
               {
-                // get user of start item
-                $start_item_array = selectcontent ($workflow_xml, "<item>", "<id>", "u.1");
+                $workflow_name_current = getcontent ($workflow_xml, "<name>");
 
-                if ($start_item_array != false) $start_user_array = getcontent ($start_item_array[0], "<user>");
-    
-                // if start user is not set in workflow
-                if ($start_user_array[0] == "") 
+                if ($workflow_name_current != false && $workflow_name_current[0] == $workflow_name) 
                 {
-                  // set start user in workflow if was not set in workflow
-                  $workflow_xml = setcontent ($workflow_xml, "<item>", "<user>", $user, "<id>", "u.1");
+                  $update_workflow = false;
+                }
+                else $update_workflow = true;
 
-                  // reset passed status in workflow
-                  $workflow_xml = setcontent ($workflow_xml, "<item>", "<passed>", 0, "", ""); 
+                // set stop flag to break loop
+                $stop = true;
+              }
+              else $update_workflow = true;
+            }
+          }
 
-                  // save workflow
-                  $test = savefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile, $workflow_xml); 
-                }
-                // if start user is set but not the same logged in user
-                elseif ($start_user_array[0] != false && $start_user_array[0] != $user)
-                {
-                  // user has no right to create the page due to workflow
-                  $test = false;
-                }
-                // if start user is set and the same logged in user
-                elseif ($start_user_array[0] != false && $start_user_array[0] == $user)
-                {
-                  // user has no right to create the page due to workflow
-                  $test = true;
-                }
-                else $test = false;
-  
-                // set workflow in content container
-                if ($test != false) 
+          // if workflow doesn't exist for the object or must be updated
+          if (!is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile) || $update_workflow == true)
+          {
+            // get workflow
+            $stop = false;
+
+            if ($hypertag_array != false)
+            {
+              foreach ($hypertag_array as $hypertag)
+              {
+                $workflow_name = getattribute ($hypertag, "name");
+                $workflow_file = $site.".".$workflow_name.".xml";
+
+                if ($stop != true)
                 { 
-                  $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentworkflow>", $workflow_name, "", "");
-                  savecontainer ($contentfile, "work", $contentdata, $user);
+                  if ($workflow_name != false && $workflow_name != "" && is_file ($mgmt_config['abs_path_data']."workflow_master/".$workflow_file))
+                  { 
+                    // load workflow 
+                    $workflow_xml = loadfile ($mgmt_config['abs_path_data']."workflow_master/", $workflow_file);
+
+                    // if master workflow doesn't exist
+                    if ($workflow_xml != false)
+                    {
+                      // get user of start item
+                      $start_item_array = selectcontent ($workflow_xml, "<item>", "<id>", "u.1");
+
+                      if ($start_item_array != false) $start_user_array = getcontent ($start_item_array[0], "<user>");
+          
+                      // if start user is not set in workflow
+                      if ($start_user_array[0] == "") 
+                      {
+                        // set start user in workflow if was not set in workflow
+                        $workflow_xml = setcontent ($workflow_xml, "<item>", "<user>", $user, "<id>", "u.1");
+
+                        // reset passed status in workflow
+                        $workflow_xml = setcontent ($workflow_xml, "<item>", "<passed>", 0, "", ""); 
+
+                        // save workflow
+                        $test = savefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile, $workflow_xml); 
+                      }
+                      // if start user is set but not the same logged in user
+                      elseif ($start_user_array[0] != false && $start_user_array[0] != $user)
+                      {
+                        // user has no right to create the page due to workflow
+                        $test = false;
+                      }
+                      // if start user is set and the same logged in user
+                      elseif ($start_user_array[0] != false && $start_user_array[0] == $user)
+                      {
+                        // user has no right to create the page due to workflow
+                        $test = true;
+                      }
+                      else $test = false;
+        
+                      // set workflow in content container
+                      if ($test != false) 
+                      { 
+                        $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentworkflow>", $workflow_name, "", "");
+                        savecontainer ($contentfile, "work", $contentdata, $user);
+                      }
+
+                      // set stop flag to break loop after first entry
+                      $stop = true;
+                    }
+                  }
+                }
+              }
+            }
+            elseif ($workflow_name != "")
+            {
+              $workflow_file = $site.".".$workflow_name.".xml";
+
+              if (is_file ($mgmt_config['abs_path_data']."workflow_master/".$workflow_file))
+              { 
+                // load workflow 
+                $workflow_xml = loadfile ($mgmt_config['abs_path_data']."workflow_master/", $workflow_file);
+
+                // if master workflow doesn't exist
+                if ($workflow_xml != false)
+                {
+                  // get user of start item
+                  $start_item_array = selectcontent ($workflow_xml, "<item>", "<id>", "u.1");
+
+                  if ($start_item_array != false) $start_user_array = getcontent ($start_item_array[0], "<user>");
+      
+                  // if start user is not set in workflow
+                  if ($start_user_array[0] == "") 
+                  {
+                    // set start user in workflow if was not set in workflow
+                    $workflow_xml = setcontent ($workflow_xml, "<item>", "<user>", $user, "<id>", "u.1");
+
+                    // reset passed status in workflow
+                    $workflow_xml = setcontent ($workflow_xml, "<item>", "<passed>", 0, "", ""); 
+
+                    // save workflow
+                    $test = savefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile, $workflow_xml); 
+                  }
+                  // if start user is set but not the same logged in user
+                  elseif ($start_user_array[0] != false && $start_user_array[0] != $user)
+                  {
+                    // user has no right to create the page due to workflow
+                    $test = false;
+                  }
+                  // if start user is set and the same logged in user
+                  elseif ($start_user_array[0] != false && $start_user_array[0] == $user)
+                  {
+                    // user has no right to create the page due to workflow
+                    $test = true;
+                  }
+                  else $test = false;
+    
+                  // set workflow in content container
+                  if ($test != false) 
+                  { 
+                    $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentworkflow>", $workflow_name, "", "");
+                    savecontainer ($contentfile, "work", $contentdata, $user);
+                  }
                 }
               }
             }
           }
-        }
 
-        // check if user is a member of the workflow
-        if ($workflow_xml != "")
-        {
-          $wfitem = getworkflowitem ($site, $contentfile, $workflow_xml, $user);
+          // check if user is a member of the workflow
+          if ($workflow_xml != "")
+          {
+            $wfitem = getworkflowitem ($site, $contentfile, $workflow_xml, $user);
 
-          // user is a member of the workflow
-          if ($wfitem != false)
-          { 
-            $wf_id_array = getcontent ($wfitem, "<id>");
-            $wf_id = $wf_id_array[0];
+            // user is a member of the workflow
+            if (!empty ($wfitem))
+            { 
+              $wf_id_array = getcontent ($wfitem, "<id>");
+              $wf_id = $wf_id_array[0];
 
-            $role_array = getcontent ($wfitem, "<role>");
-            if ($role_array != false) $role = $role_array[0];
+              $role_array = getcontent ($wfitem, "<role>");
+              if ($role_array != false) $role = $role_array[0];
 
-            // check cases and set view and control parameters:
+              // check cases and set view and control parameters:
 
-            // user is not a member of workflow = 0 (no permissions)
-            // r = 1
-            // r + w = 2
-            // r + x = 3
-            // r + w + x = 4
-            // no workflow = 5 (users permissions apply)
+              // user is not a member of workflow = 0 (no permissions)
+              // r = 1
+              // r + w = 2
+              // r + x = 3
+              // r + w + x = 4
+              // no workflow = 5 (users permissions apply)
 
-            if ($role == "r") 
+              if ($role == "r") 
+              {
+                // correct view only if cmsview is set and set workflow permission
+                if ($buildview == "cmsview" || $buildview == "inlineview") $buildview = "preview";
+                elseif ($buildview == "formedit" || $buildview == "formmeta") $buildview = "formlock";
+                $wf_role = 1; 
+              }
+              elseif ($role == "rw") 
+              {
+                $wf_role = 2;
+              } 
+              elseif ($role == "rx" || $role == "x") 
+              {
+                if ($buildview == "cmsview") $buildview = "preview";
+                elseif ($buildview == "formedit" || $buildview == "formmeta") $buildview = "formlock";
+                $wf_role = 3;
+              }
+              elseif ($role == "rwx") 
+              { 
+                $wf_role = 4;
+              } 
+            }
+            // if user is not a member of the workflow
+            else
             {
-              // correct view only if cmsview is set and set workflow permission
               if ($buildview == "cmsview" || $buildview == "inlineview") $buildview = "preview";
               elseif ($buildview == "formedit" || $buildview == "formmeta") $buildview = "formlock";
-              $wf_role = 1; 
-            }
-            elseif ($role == "rw") 
-            {
-              $wf_role = 2;
-            } 
-            elseif ($role == "rx" || $role == "x") 
-            {
-              if ($buildview == "cmsview") $buildview = "preview";
-              elseif ($buildview == "formedit" || $buildview == "formmeta") $buildview = "formlock";
-              $wf_role = 3;
-            }
-            elseif ($role == "rwx") 
-            { 
-              $wf_role = 4;
+
+              $wf_role = 0;
             } 
           }
-          // if user is not a member of the workflow
-          else
+          // if workflow could not be loaded
+          elseif ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "formedit" || $buildview == "formmeta")
           {
             if ($buildview == "cmsview" || $buildview == "inlineview") $buildview = "preview";
             elseif ($buildview == "formedit" || $buildview == "formmeta") $buildview = "formlock";
 
             $wf_role = 0;
-          } 
+          }
         }
-        // if workflow could not be loaded
-        elseif ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "formedit" || $buildview == "formmeta")
-        {
-          if ($buildview == "cmsview" || $buildview == "inlineview") $buildview = "preview";
-          elseif ($buildview == "formedit" || $buildview == "formmeta") $buildview = "formlock";
 
-          $wf_role = 0;
-        }
+        // define workflow token
+        if ($wf_id != "" && $wf_role != "") $wf_token = hcms_encrypt ($wf_id.":".$wf_role);
+        elseif ($wf_role != "") $wf_token = hcms_encrypt ("Null:".$wf_role);
       }
 
-      // define workflow token
-      if ($wf_id != "" && $wf_role != "") $wf_token = hcms_encrypt ($wf_id.":".$wf_role);
-      elseif ($wf_role != "") $wf_token = hcms_encrypt ("Null:".$wf_role);
-    }
-
-    // replace all hyperCMS workflow tags in viewstore 
-    if ($hypertag_array != false)
-    {
-      foreach ($hypertag_array as $hypertag)
+      // replace all hyperCMS workflow tags in viewstore 
+      if ($hypertag_array != false)
       {
-        if ($buildview != "template") 
+        foreach ($hypertag_array as $hypertag)
         {
-          $viewstore = str_replace ($hypertag, "", $viewstore);
+          if ($buildview != "template") 
+          {
+            $viewstore = str_replace ($hypertag, "", $viewstore);
+          }
+          else 
+          {
+            $workflow_name = getattribute ($hypertag, "name"); 
+            $viewstore = str_replace ($hypertag, "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">\n  <tr>\n    <td>\n      <span style=\"font-family:'Verdana, Arial, Helvetica, sans-serif'; font-size:9px; color:#000000;\"><b>workflow </b>".$workflow_name."</span>\n    </td>\n  </tr>\n</table>\n", $viewstore);
+          }
         }
-        else 
-        {
-          $workflow_name = getattribute ($hypertag, "name"); 
-          $viewstore = str_replace ($hypertag, "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">\n  <tr>\n    <td>\n      <span style=\"font-family:'Verdana, Arial, Helvetica, sans-serif'; font-size:9px; color:#000000;\"><b>workflow </b>".$workflow_name."</span>\n    </td>\n  </tr>\n</table>\n", $viewstore);
-        }
-      }
-    } 
+      } 
 
-    $checkworkflow_result = true;
-  }
-  // if container is a version
-  elseif (valid_objectname ($contentfile) && strpos ("_".strrchr ($contentfile, "."), ".v_") == 0)
-  {
-    // only read
-    $wf_role = 1;
-    $checkworkflow_result = true;
+      $checkworkflow_result = true;
+    }
+    // if container is a version
+    elseif (valid_objectname ($contentfile) && strpos ("_".strrchr ($contentfile, "."), ".v_") == 0)
+    {
+      // only read
+      $wf_role = 1;
+      $checkworkflow_result = true;
+    }
   }
 
   // return result
@@ -15729,12 +15733,6 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       // ----------------------------------------- cut and paste object -------------------------------------
       elseif ($show == "" && $action == "page_paste" && $method == "cut")
       {
-        // relational DB connectivity
-        if (!empty ($mgmt_config['db_connect_rdbms']))
-        {
-          rdbms_renameobject (convertpath ($site, $location_source.$page, $cat), convertpath ($site, $location.$page, $cat)); 
-        }
-
         // copy object file (foler must have been created by function copyfolders before)
         // folder files might exist already and should not be copied
         // all other files will be renamed with the -Copy suffix if they exist in the same location
@@ -15753,19 +15751,27 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Copy failed for ".$location_esc.$page; 
           }
         }
+        // object exists already in the target location
         else $test = true;
 
+        // on success
         if ($test == true)
         {
+          // relational DB connectivity
+          if (!empty ($mgmt_config['db_connect_rdbms']))
+          {
+            rdbms_renameobject (convertpath ($site, $location_source.$page, $cat), convertpath ($site, $location.$page, $cat)); 
+          }
+
           // remove source object file
           $test = deletefile ($location_source, $page, false);
 
           // notification
           notifyusers ($site, $location, $page, "onmove", $user); 
-
-          // remote client
+          
           if ($test == true)
           {
+            // remote client
             remoteclient ("delete", "abs_path_".$cat, $site, $location_source, "", $page, "");
 
             // log info
@@ -15781,25 +15787,26 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               // remote client
               remoteclient ("delete", "abs_path_".$cat, $site, $location_source, "", $object_thumb, ""); 
             }
+
+            $add_onload = "if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload(); ";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-cut-and-pasted'][$lang]."</span><br />\n";
+  
+            $success = true; 
+          }
+          else
+          {
+            $add_onload = "";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]." (delete)</span><br />\n"; 
           }
         }
+        // on error
         else
         {
           $errcode = "10204";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Copy failed for ".$location_source.$page." to ".$location; 
-        }
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Copy failed for ".$location_source.$page." to ".$location;
 
-        if ($test != false)
-        {
-          $add_onload = "if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload(); ";
-          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-cut-and-pasted'][$lang]."</span><br />\n";
-
-          $success = true;
-        }
-        else
-        {
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n"; 
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]." (copy)</span><br />\n"; 
         }
       }
 
@@ -20855,7 +20862,7 @@ function rewrite_targetURI ($site, $text_id, $uri, $exclude_dir_esc="", $rewrite
         $mgmt_config['search_query_match'] = "like";
 
         // search for objectpath for the provided permanenent link (only first valid result will be used, disable search log)
-        $object_array = rdbms_searchcontent ("%page%/".$site."/", $exclude_dir_esc, "", "", "", "", $search_textnode, "", "", "", "", "", "", "", "", 1, false, false);
+        $object_array = rdbms_searchcontent ("%page%/".$site."/", $exclude_dir_esc, "", "", "", "", $search_textnode, "", "", "", "", "", "", "", "", "", 1, false, false);
 
         if (is_array ($object_array))
         {

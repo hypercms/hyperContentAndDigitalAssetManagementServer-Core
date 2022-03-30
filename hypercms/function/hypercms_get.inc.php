@@ -1941,8 +1941,8 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   $search_dir_esc = array();
   $setlocalpermission = array();
 
-  // define default values
-  if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height");
+  // define default values (add all text IDs)
+  if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height", "text:temp");
 
   // query result limit
   if (empty ($search['limit'])) $search['limit'] = 500;
@@ -1955,7 +1955,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   }
   else $search['expression_array'] = "";
 
-  // search for file of folder name
+  // search for file or folder name
   if (empty ($search['filename'])) $search['filename'] = "";
 
   // format values: audio,binary,compressed,document,flash,image,text,video,unknown
@@ -1970,6 +1970,9 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
     }
   }
   else $search['format'] = "";
+
+  // file extensions
+  if (empty ($search['fileextension']) || !is_array ($search['fileextension'])) $search['fileextension'] = "";
 
   // modified date
   if (empty ($search['date_modified_from'])) $search['date_modified_from'] = "";
@@ -2060,7 +2063,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
     }
 
     // search
-    $result = rdbms_searchcontent ($search_dir_esc, "", $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols);
+    $result = rdbms_searchcontent ($search_dir_esc, "", $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], $search['fileextension'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols);
 
     // verify result
     if (is_array ($result))
@@ -2069,6 +2072,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       {
         if (!empty ($hash) && !empty ($temp_array['objectpath']))
         {
+          
           // get publication
           $temp_site = getpublication ($temp_array['objectpath']);
           // get location
@@ -3495,7 +3499,7 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_type = "Adobe Acrobat";
         }
         // Adobe Illustrator
-        elseif ($file_ext == ".ai")
+        elseif ($file_ext == ".ai" || $file_ext == ".dmw")
         {
           $file_icon = "file_ai.png";
           $file_type = "Adobe Illustrator";
@@ -3511,6 +3515,24 @@ function getfileinfo ($site, $file, $cat="comp")
         {
           $file_icon = "file_psd.png";
           $file_type = "Adobe Photoshop";
+        }
+        // Adobe After Effects
+        elseif ($file_ext == ".aep")
+        {
+          $file_icon = "file_aep.png";
+          $file_type = "Adobe After Effects";
+        }
+        // Adobe Premiere
+        elseif ($file_ext == ".prproj")
+        {
+          $file_icon = "file_prproj.png";
+          $file_type = "Adobe Premiere";
+        }
+        // Adobe Audition
+        elseif ($file_ext == ".sesx")
+        {
+          $file_icon = "file_sesx.png";
+          $file_type = "Adobe Audition";
         }
         // Open Office Text
         elseif ($file_ext == ".odt" || $file_ext == ".fodt")
@@ -3561,16 +3583,22 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_type = "Text";
         } 
         // image files 
-        elseif (@substr_count (strtolower ($hcms_ext['image'].$hcms_ext['rawimage']).".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['image'].$hcms_ext['rawimage'].$hcms_ext['vectorimage']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_image.png";
           $file_type = "Image";
+        }
+        // CAD files 
+        elseif (@substr_count (strtolower ($hcms_ext['cad']).".", $file_ext.".") > 0)
+        {
+          $file_icon = "file_cad.png";
+          $file_type = "Computer Aided Design";
         }
         // Adobe Flash
         elseif (@substr_count (strtolower ($hcms_ext['flash']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_flash.png";
-          $file_type = "Macromedia Flash";
+          $file_type = "Adobe Flash";
         }
         // Audio files
         elseif (@substr_count (strtolower ($hcms_ext['audio']).".", $file_ext.".") > 0)
@@ -4382,7 +4410,10 @@ function getmediasize ($filepath)
 
   if (valid_locationname ($filepath))
   {
+    // initialize
     $result = array();
+    $result['width'] = 0;
+    $result['height'] = 0;
 
     // get publication, location and media object
     $site = getpublication ($filepath);
@@ -4488,8 +4519,7 @@ function getmediasize ($filepath)
     }
 
     // return result
-    if (!empty ($result['width']) && !empty ($result['height'])) return $result;
-    else return false;
+    return $result;
   }
   else return false;
 }
@@ -6805,167 +6835,6 @@ function getuserinformation ($login="")
   }
 
   if (!empty ($user_array) && is_array ($user_array)) return $user_array;
-  else return false;
-}
-
-// ========================================= WORKFLOW ============================================
-
-// -------------------------------------- getworkflowitem ----------------------------------------
-// function: getworkflowitem()
-// input: publication name [string], location [string], object name [string], workflow file name [string], workflow [XML-string], user name [string]
-// output: workflow item [XML-string]
-// requires: config.inc.php, editcontent
-
-function getworkflowitem ($site, $workflow_file, $workflow, $user)
-{
-  global $mgmt_config, $hcms_lang, $lang;
-
-  if (valid_publicationname ($site) && valid_objectname ($workflow_file) && $workflow != "" && valid_objectname ($user))
-  {
-    // get usergroup users
-    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-    $buffer_array = selectcontent ($userdata, "<user>", "<login>", $user);
-    $buffer_array = selectcontent ($buffer_array[0], "<memberof>", "<publication>", $site);
-    $buffer_array = getcontent ($buffer_array[0], "<usergroup>");
-    $group_str = substr ($buffer_array[0], 1, strlen ($buffer_array[0])-2);
-    $group_array = explode ("|", $group_str);
-
-    // check if user owns workflow items
-    $item_array = getxmlcontent ($workflow, "<item>");
-
-    $useritem_array = array();
-
-    foreach ($item_array as $item)
-    {
-      $type_array = getcontent ($item, "<type>");
-
-      if ($type_array[0] == "user")
-      {
-        $buffer_array = getcontent ($item, "<user>");
-
-        // empty means "automatic select" of user
-        if ($buffer_array[0] == $user || $buffer_array[0] == "") $useritem_array[] = $item;
-      }
-      elseif ($type_array[0] == "usergroup")
-      {
-        $buffer_array = getcontent ($item, "<group>");
-
-        // empty means "automatic select" of group
-        if (in_array ($buffer_array[0], $group_array) || $buffer_array[0] == "") $useritem_array[] = $item;
-      }
-    }
-
-    // if user own items and the predecessors have not passed their items
-    if (!empty ($useritem_array) && is_array ($useritem_array) && sizeof ($useritem_array) > 0)
-    { 
-      // check if predecessors are available and if they passed their item
-      foreach ($useritem_array as $useritem)
-      {
-        $id_array = getcontent ($useritem, "<id>");
-        $passed_array = getcontent ($useritem, "<passed>");
-        $pre_array = getcontent ($useritem, "<pre>");
-
-        // if item has predecessors
-        if ($pre_array != false)
-        {
-          foreach ($pre_array as $pre)
-          {
-            $buffer_array = selectcontent ($workflow, "<item>", "<id>", $pre); 
-
-            // if a predecessor was found
-            if ($buffer_array != false) 
-            {
-              $prepassed_array = getcontent ($buffer_array[0], "<passed>");
-
-              if ($prepassed_array != false)
-              {
-                // check if the predecessor has passed the workflow (this is a must)
-                if ($prepassed_array[0] == 1) 
-                {
-                  $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $id_array[0]);
-                  $sucpassed_array = getcontent ($buffer_array[0], "<passed>");
-
-                  // if item has sucessors
-                  if ($sucpassed_array != false) 
-                  {
-                    // check if the sucessor has not already passed the workflow
-                    if ($sucpassed_array[0] != 1) 
-                    {
-                      if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-                      else $passeditem_array[] = $useritem;
-                    }
-                  }
-                  // otherwise item is last instance in workflow branch
-                  else
-                  {
-                    if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-                    else $passeditem_array[] = $useritem;
-                  }
-                } 
-              } 
-            }
-          } 
-        }
-        // if item has no predecessors, this must be the user who owns start item
-        else
-        {
-          $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $id_array[0]);
-          $sucpassed_array = getcontent ($buffer_array[0], "<passed>");
-
-          // if item has successors
-          if ($sucpassed_array != false) 
-          {
-            // check if the successor has not already passed the workflow
-            if ($sucpassed_array[0] != 1) 
-            {
-              if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-              else $passeditem_array[] = $useritem; 
-            }
-            // sucessor passed his item
-            else
-            {
-              // find a last passed instance in workflow (end of workflow or a branch was reached)
-              foreach ($item_array as $item)
-              {
-                $buffer_array = getcontent ($item, "<id>");
-                $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $buffer_array[0]);
-
-                if ($buffer_array == false)
-                {
-                  $buffer_array = getcontent ($item, "<passed>");
-
-                  if ($buffer_array[0] == 1)
-                  {
-                    $passeditem_array[] = $useritem;
-                    break;
-                  }
-                } 
-              } 
-            }
-          }
-          // otherwise item is last instance in workflow branch
-          else
-          {
-            if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-            else $passeditem_array[] = $useritem; 
-          }
-        }
-      }
-    }
-    else return false;
-
-    // check for free items of the user
-    if (!empty ($freeitem_array) && is_array ($freeitem_array) && sizeof ($freeitem_array) > 0)
-    {
-      return $freeitem_array[0];
-    }
-    // check for passed items of the user
-    elseif (!empty ($passeditem_array) && is_array ($passeditem_array) && sizeof ($passeditem_array) > 0)
-    {
-      return $passeditem_array[0];
-    }
-    else return false;
-  }
   else return false;
 }
 ?>

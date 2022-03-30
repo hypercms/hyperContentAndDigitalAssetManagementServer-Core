@@ -249,6 +249,9 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         $file_owner = "";
         $file_connected_copy = "";
         $usedby = "";
+        $workflow_status = "";
+        $workflow_icon = "";
+        $workflow_class = "";
     
         // read file
         $objectdata = loadfile ($location.$folder."/", ".folder");
@@ -291,6 +294,25 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
             {
               $file_connected_copy = "<a href=\"javascript:void(0);\" onclick=\"parent.openPopup('page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."&page=.folder&from_page=objectlist');\">".getescapedtext ($hcms_lang['show-where-used'][$lang])."</a>";
             }
+          }
+
+          // workflow status
+          $workflow = rdbms_getworkflow ($container_id);
+
+          if (!empty ($workflow) && strpos ($workflow['workflowstatus'], "/") > 0)
+          {
+            list ($workflow_stage, $workflow_maxstage) = explode ("/", $workflow['workflowstatus']);
+
+            if (intval ($workflow_stage) == intval ($workflow_maxstage)) $workflow_status = "passed";
+            elseif (intval ($workflow_stage) < intval ($workflow_maxstage)) $workflow_status = "inprogress";
+
+            // workflow icon image
+            if ($workflow_status == "passed") $workflow_icon = "<img src=\"".getthemelocation()."img/workflow_accept.png\" class=\"hcmsIconList\" alt=\"".getescapedtext ($hcms_lang['finished'][$lang])."\" />";
+            elseif ($workflow_status == "inprogress") $workflow_icon = "<img src=\"".getthemelocation()."img/workflow_inprogress.png\" class=\"hcmsIconList\" alt=\"".getescapedtext ($hcms_lang['in-progress'][$lang])."\" />";
+
+            // workflow CSS class
+            if ($workflow_status == "passed") $workflow_class = "hcmsWorkflowPassed";
+            elseif ($workflow_status == "inprogress") $workflow_class = "hcmsWorkflowInprogress";
           }
         }
         // create folder file if it does not exist
@@ -363,7 +385,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
                       <tr id=\"g".$items_row."\" style=\"cursor:pointer\" ".$selectclick.">
                        <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">                
                          <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">
-                           ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end."
+                           ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end." ".$workflow_icon."
                          </div>
                        </td>";
                        
@@ -430,7 +452,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
     
         $galleryview .= "
                        <div id=\"t".$items_row."\" ".$selectclick." class=\"hcmsObjectUnselected\">
-                          <div class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
+                          <div class=\"hcmsObjectGalleryMarker ".$workflow_class."\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
                             $dlink_start."
                               <div id=\"i".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\" data-objectpath=\"".$location_esc.$folder."/\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" /></div>
                               <div class=\"hcmsItemName\">".showshorttext($folder_name, 18, true)."</div>
@@ -483,10 +505,13 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       $file_owner = "";
       $file_connected_copy = "";
       $usedby = "";
+      $workflow_status = "";
+      $workflow_icon = "";
+      $workflow_class = "";
     
       // eventsystem
       if (!empty ($eventsystem['onobjectlist_pre']) && empty ($eventsystem['hide'])) 
-        onobjectlist_pre ($site, $cat, $location, $object, $user);  
+        onobjectlist_pre ($site, $cat, $location, $object, $user);
 
       // if object exists
       if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object) && !$file_info['deleted'] && ($cat == "page" || objectfilter ($object)))       
@@ -512,14 +537,17 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         {
           // get name of content file and load content container
           $contentfile = getfilename ($objectdata, "content");
-          $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
+          $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
+
+          // get template
+          $templatefile = getfilename ($objectdata, "template");
 
           // get user of locked container
           if ($contentfile != false)
           {
             $result = getcontainername ($contentfile);
             
-            if (!empty ($result['user'])) $usedby = $result['user'];       
+            if (!empty ($result['user'])) $usedby = $result['user'];
           }
 
           // get metadata of container
@@ -546,6 +574,25 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             {
               $file_connected_copy = "<a href=\"javascript:void(0);\" onclick=\"parent.openPopup('page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&from_page=objectlist');\">".getescapedtext ($hcms_lang['show-where-used'][$lang])."</a>";
             }
+          }
+
+          // workflow status
+          $workflow = rdbms_getworkflow ($container_id);
+
+          if (!empty ($workflow) && strpos ($workflow['workflowstatus'], "/") > 0)
+          {
+            list ($workflow_stage, $workflow_maxstage) = explode ("/", $workflow['workflowstatus']);
+
+            if (intval ($workflow_stage) == intval ($workflow_maxstage)) $workflow_status = "passed";
+            elseif (intval ($workflow_stage) < intval ($workflow_maxstage)) $workflow_status = "inprogress";
+
+            // workflow icon image
+            if ($workflow_status == "passed") $workflow_icon = "<img src=\"".getthemelocation()."img/workflow_accept.png\" class=\"hcmsIconList\" alt=\"".getescapedtext ($hcms_lang['finished'][$lang])."\" />";
+            elseif ($workflow_status == "inprogress") $workflow_icon = "<img src=\"".getthemelocation()."img/workflow_inprogress.png\" class=\"hcmsIconList\" alt=\"".getescapedtext ($hcms_lang['in-progress'][$lang])."\" />";
+
+            // workflow CSS class
+            if ($workflow_status == "passed") $workflow_class = "hcmsWorkflowPassed";
+            elseif ($workflow_status == "inprogress") $workflow_class = "hcmsWorkflowInprogress";
           }
 
           // get media file
@@ -645,7 +692,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
                       <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
                         <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                           <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">
-                            ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end."  
+                            ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end."  ".$workflow_icon."
                           </div>
                         </td>";
 
@@ -790,7 +837,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
         $galleryview .= "
                         <div id=\"t".$items_row."\" ".$selectclick." class=\"hcmsObjectUnselected\">
-                          <div class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".
+                          <div class=\"hcmsObjectGalleryMarker ".$workflow_class."\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".
                             $dlink_start."
                               ".$thumbnail."
                               <div class=\"hcmsItemName\">".showshorttext($object_name, 18, true)."</div>
@@ -928,6 +975,24 @@ else $objects_counted = 0;
 {
   max-width: <?php echo $thumbnailsize_small; ?>px;
   max-height: <?php echo $thumbnailsize_small; ?>px;
+}
+
+.hcmsWorkflowPassed
+{
+  margin: 2px;
+  background-image: url("<?php echo getthemelocation(); ?>img/workflow_accept.png");
+  background-repeat: no-repeat !important;
+  background-position: 98% 98% !important;
+  background-size: 22px 22px !important;
+}
+
+.hcmsWorkflowInprogress
+{
+  margin: 2px;
+  background-image: url("<?php echo getthemelocation(); ?>img/workflow_inprogress.png");
+  background-repeat: no-repeat !important;
+  background-position: 98% 98% !important;
+  background-size: 22px 22px !important;
 }
 
 @media screen and (max-width: 360px)

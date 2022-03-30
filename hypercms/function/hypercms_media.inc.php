@@ -3609,6 +3609,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if (!is_dir ($location_dest.$container_id)) mkdir ($location_dest.$container_id);
 
                     // define thumbnail size
+                    $thumb_width = 120;
+                    $thumb_height = 120;
+
                     if (!empty ($videoinfo['width']) && !empty ($videoinfo['height'])) 
                     {
                       $ratio = $videoinfo['width'] / $videoinfo['height'];

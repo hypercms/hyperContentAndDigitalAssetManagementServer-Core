@@ -53,7 +53,7 @@ function searchMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFile
     $text_id_array = array("text:".$metaTitleId, "text:".$metaDescriptionId);
 
     // search
-    $searchcontent  = rdbms_searchcontent ($location_esc, "", array("image"), "", "", "", $filter, "", "", "", "", "", "", "", "", 100, $text_id_array, true, false);
+    $searchcontent  = rdbms_searchcontent ($location_esc, "", array("image"), "", "", "", $filter, "", "", "", "", "", "", "", "", "", 100, $text_id_array, true, false);
 
     if ($searchcontent ['count'] > 0)
     {

@@ -1848,7 +1848,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   {
     // warning
     $errcode = "00333";
-    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|Authorization failed with results for user-access-link=".$linking_auth.", user-credentials=".$auth.", valid-user-dates=".$validdate.", check.dat=".$checkresult." (all must have a value of 1) and user-nologon=".$result['nologon']." (must be 0)";
+    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|Authorization failed with results for user-access-link=".$linking_auth.", user-credentials=".$auth.", valid-user-dates=".$validdate.", check.dat=".$checkresult." (all must have a value of 1) and user-nologon=".(!empty ($result['nologon']) ? $result['nologon'] : 0)." (must be 0)";
   }
 
   // --------------------------- security ----------------------------

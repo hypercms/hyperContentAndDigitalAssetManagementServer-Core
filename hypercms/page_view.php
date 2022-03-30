@@ -293,11 +293,13 @@ else
       echo "<div class=\"hcmsWorkplaceFrame\">\n";
       echo "<p class=\"hcmsHeadline\"><img src=\"".getthemelocation()."img/info.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms-or-you-dont-have-access-to-it'][$lang])."</p>\n";
       echo showworkflowstatus ($site, $location, $page);
+
       // delete/reset workflow of the object
       if (checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocedit'))
       {
         echo "<br/><button class=\"hcmsButtonOrange\" onclick=\"location.href='?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&action=wf_reset&view=".url_encode($view)."&follow=".url_encode($follow)."&ctrlreload=".url_encode($ctrlreload)."&hcms_session=".url_encode($hcms_session)."'\">".getescapedtext ($hcms_lang['delete-workflow'][$lang])."</button>\n";
       }
+      
       echo "</div>\n";
       echo "</body>\n";
       echo "</html>\n";

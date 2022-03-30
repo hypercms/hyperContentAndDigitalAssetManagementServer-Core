@@ -98,7 +98,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   // convert object name
   $name = convertchars ($file_info['name'], "UTF-8", $charset);
 
-  // statistics
+  // --------------------------------- statistics --------------------------------- 
   $container_id = $object_info['container_id'];
 
   if (!empty ($container_id))
@@ -117,6 +117,37 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
       &nbsp;&nbsp;<img src=\"".getthemelocation()."img/button_file_download.png\" class=\"hcmsIconList\" /> ".$downloads[0]['count']." ".getescapedtext ($hcms_lang['downloads'][$lang], $charset, $lang)."
       &nbsp;&nbsp;<img src=\"".getthemelocation()."img/button_file_upload.png\" class=\"hcmsIconList\" /> ".$uploads[0]['count']." ".getescapedtext ($hcms_lang['uploads'][$lang], $charset, $lang)."
     </div>";
+  }
+
+  // ----------------------------------- workflow -----------------------------------
+  if (!empty ($container_id))
+  {
+    // workflow status
+    $workflow = rdbms_getworkflow ($container_id);
+
+    if (!empty ($workflow) && strpos ($workflow['workflowstatus'], "/") > 0)
+    {
+      list ($workflow_stage, $workflow_maxstage) = explode ("/", $workflow['workflowstatus']);
+
+      if (intval ($workflow_stage) == intval ($workflow_maxstage)) $workflow_status = "passed";
+      elseif (intval ($workflow_stage) < intval ($workflow_maxstage)) $workflow_status = "inprogress";
+
+      // workflow icon image
+      if ($workflow_status == "passed")
+      {
+        $workflow_icon = "<img src=\"".getthemelocation()."img/workflow_accept.png\" class=\"hcmsIconList\" alt=\"".getescapedtext ($hcms_lang['finished'][$lang], $charset, $lang)."\" /> ".getescapedtext ($hcms_lang['finished'][$lang], $charset, $lang)." ".showdate ($workflow['workflowdate'], "Y-m-d H:i", $hcms_lang_date[$lang])." ".getescapedtext ($hcms_lang['by-user'][$lang], $charset, $lang)." ".$workflow['workflowuser'];
+      }
+      elseif ($workflow_status == "inprogress")
+      {
+        $workflow_icon = "<img src=\"".getthemelocation()."img/workflow_inprogress.png\" class=\"hcmsIconList\" alt=\"".getescapedtext ($hcms_lang['in-progress'][$lang], $charset, $lang)."\" /> ".getescapedtext ($hcms_lang['in-progress'][$lang], $charset, $lang)." ".showdate ($workflow['workflowdate'], "Y-m-d H:i", $hcms_lang_date[$lang])." ".getescapedtext ($hcms_lang['by-user'][$lang], $charset, $lang)." ".$workflow['workflowuser'];
+      }
+      else $workflow_icon = "";
+
+      $workflow = "
+      <div class=\"hcmsTextSmall\" style=\"white-space:nowrap;\">
+        <img src=\"".getthemelocation()."img/workflow.png\" class=\"hcmsIconList\" title=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\" alt=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\" /> ".$workflow_icon."
+      </div>";
+    }
   }
 
   // --------------------------------- media preview --------------------------------- 
@@ -266,6 +297,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <!-- content -->
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
   <?php if (!empty ($stats)) echo $stats; ?>
+  <?php if (!empty ($workflow)) echo $workflow; ?>
   <div style="margin:16px auto 0px auto;">
   <?php
   if (!empty ($mediaview)) echo $mediaview;
