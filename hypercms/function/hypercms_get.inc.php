@@ -1934,7 +1934,10 @@ function getmetadata_container ($container_id, $text_id_array=array())
 
 function getobjectlist ($site="", $location="", $folderhash="", $search=array(), $objectlistcols=array())
 {
-  global $mgmt_config, $user;
+  global $mgmt_config, $user, $lang, $hcms_lang,
+  $rootpermission, $globalpermission, $localpermission,
+  $siteaccess, $pageaccess, $compaccess,
+  $adminpermission, $hiddenfolder;
 
   // initialize
   $result = array();
@@ -2026,9 +2029,20 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   else
   {
     // use compaccess (compaccess[publication][group]=[objectpath])
-    if (!empty ($compaccess) && is_array ($compaccess) && strpos ("_".$location, "%comp%/") > 0) $temp_access = $compaccess;
+    if (!empty ($compaccess) && is_array ($compaccess) && strpos ("_".$location, "%comp%/") > 0)
+    {
+      $temp_access = $compaccess;
+      $temp_cat = "comp";
+    }
     // use pageaccess (pageaccess[publication][group]=[objectpath])
-    elseif (!empty ($pageaccess) && is_array ($pageaccess) && strpos ("_".$location, "%page%/") > 0) $temp_access = $pageaccess;
+    elseif (!empty ($pageaccess) && is_array ($pageaccess) && strpos ("_".$location, "%page%/") > 0)
+    {
+      $temp_access = $pageaccess;
+      $temp_cat = "page";
+    }
+
+    // access locations/folders of the user
+    $root_dir_esc = array();
 
     if (!empty ($temp_access) && is_array ($temp_access))
     {
@@ -2036,7 +2050,11 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       {
         foreach ($temp_array as $temp_group=>$temp_location)
         {
-          $search_dir_esc[] = $temp_location;
+          $temp_location_esc = convertpath ($temp_site, $temp_location, $temp_cat);
+          $temp_hash_esc = rdbms_getobject_hash ($temp_location_esc);
+
+          $search_dir_esc[] = $temp_location_esc;
+          $root_dir_esc[$temp_hash_esc]['objectpath'] = $temp_location_esc.".folder";
         }
       }
     }
@@ -2063,7 +2081,15 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
     }
 
     // search
-    $result = rdbms_searchcontent ($search_dir_esc, "", $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], $search['fileextension'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols);
+    if (empty ($root_dir_esc))
+    {
+      $result = rdbms_searchcontent ($search_dir_esc, "", $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], $search['fileextension'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols);
+    }
+    // use root folders of user
+    else
+    {
+      $result = $root_dir_esc;
+    }
 
     // verify result
     if (is_array ($result))
@@ -2072,7 +2098,6 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       {
         if (!empty ($hash) && !empty ($temp_array['objectpath']))
         {
-          
           // get publication
           $temp_site = getpublication ($temp_array['objectpath']);
           // get location
@@ -2098,7 +2123,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
               $temp_ownergroup = accesspermission ($temp_site, $temp_location, $temp_cat);
               $setlocalpermission = setlocalpermission ($temp_site, $temp_ownergroup, $temp_cat);
             }
-
+            
             $result[$hash]['permission'] = $setlocalpermission;
           }
         }
@@ -3341,15 +3366,15 @@ function gettemplateversions ($site, $template)
 // output: result array / false on error
 
 // description:
-// defines file properties based on the file extension and returns file info as an array:
-//    $result['file']: file name without hypercms management extension
-//    $result['name']: readable file name without hypercms management extension
-//    $result['filename']: file name without file extensions
-//    $result['icon']: file name of the file icon
-//    $result['type']: file type
-//    $result['ext']: file extension incl. dot in lower case
-//    $result['published']: if page or component is published (true) or not (false), true in all other cases
-//    $result['deleted']: if file is deleted = true else = false
+// Defines file properties based on the file extension and returns the file info as an array:
+//    $result['file'] ... file name without hypercms management extension
+//    $result['name'] ... readable file name without hypercms management extension
+//    $result['filename'] ... file name without file extensions
+//    $result['icon'] ... file name of the file icon
+//    $result['type'] ... file type
+//    $result['ext'] ... file extension incl. dot in lower case
+//    $result['published'] ... if page or component is published (true) or not (false), true in all other cases
+//    $result['deleted'] ... if file is deleted = true else = false
 
 function getfileinfo ($site, $file, $cat="comp")
 {
@@ -3358,6 +3383,19 @@ function getfileinfo ($site, $file, $cat="comp")
   if ($file != "" && (valid_publicationname ($site) || ($cat == "page" || $cat == "comp")))
   {
     include ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+
+    // if file holds a path
+    if (substr_count ($file, "/") > 0) $temp = getobject ($file);
+    else $temp = $file;
+
+    // set default (if no file extension is available)
+    $file_name = $temp;
+    $file_nameonly = $temp;
+    $file_icon = "file_binary.png";
+    $file_type = "unknown";
+    $file_ext = "";
+    $file_published = true;
+    $file_deleted = false;
 
     // if file has an extension or holds a path
     if (substr_count ($file, ".") > 0 || substr_count ($file, "/") > 0)
@@ -3399,312 +3437,290 @@ function getfileinfo ($site, $file, $cat="comp")
         $file_type = "Folder";
         $file_published = true;
       }
-      // CASE: file
+      // CASE: file with extension
       else
       {
         // if file holds a path
         if (substr_count ($file, "/") > 0) $file = getobject ($file);
 
-        // object versions
-        if (substr_count ($file, ".") > 0 && substr ($file_ext, 0, 3) == ".v_")
+        if ($file_ext != "")
         {
-          $file_name = substr ($file, 0, strpos ($file, ".v_"));
-          // get file name without extensions
-          $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
-          // get file extension of file name minus version extension
-          $file_ext = strtolower (strrchr ($file_name, "."));
-
-          $file_published = false;
-          $file_deleted = false;
-        }
-        // mail files 
-        elseif ($file_ext == ".mail")
-        {
-          $file_name = "Message";
-          // get file name without extensions
-          $file_nameonly = "Message";
-
-          $file_published = false;
-          $file_deleted = false;
-        }
-        // objects in recycle bin 
-        elseif ($file_ext == ".recycle")
-        {
-          $file_name = substr ($file, 0, -8);
-          // get file name without extensions
-          $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
-          // get file extension of file name minus .recycle
-          $file_ext = strtolower (strrchr ($file_name, "."));
-
-          $file_published = false;
-          $file_deleted = true;
-        }
-        // unpublished objects 
-        elseif ($file_ext == ".off")
-        {
-          $file_name = substr ($file, 0, -4);
-          // get file name without extensions
-          $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
-          // get file extension of file name minus .off
-          $file_ext = strtolower (strrchr ($file_name, "."));
-
-          $file_published = false;
-          $file_deleted = false;
-        }
-        // published objects
-        else
-        {
-          $file_name = $file; 
-          // get file name without extension
-          $file_nameonly = strrev (substr (strstr (strrev ($file), "."), 1));
-
-          $file_published = true;
-          $file_deleted = false;
-        }
-
-        // System E-mail
-        if ($file_ext == ".mail")
-        {
-          $file_icon = "button_user_sendlink.png";
-          $file_type = "E-mail";
-        }
-        // Standard E-mail formats
-        elseif ($file_ext == ".eml" || $file_ext == ".mbox" || $file_ext == ".msg")
-        {
-          $file_icon = "file_mail.png";
-          $file_type = "E-Mail";
-        }
-        // MS Word
-        elseif ($file_ext == ".doc" || $file_ext == ".docx" || $file_ext == ".docm" || $file_ext == ".dot" || $file_ext == ".dotx")
-        {
-          $file_icon = "file_doc.png";
-          $file_type = "MS Word";
-        }
-        // MS Powerpoint
-        elseif ($file_ext == ".ppt" || $file_ext == ".pptx" || $file_ext == ".pps" || $file_ext == ".ppsx" || $file_ext == ".pot" || $file_ext == ".potm" || $file_ext == ".potx")
-        {
-          $file_icon = "file_ppt.png";
-          $file_type = "MS Powerpoint";
-        }
-        // MS Excel
-        elseif ($file_ext == ".xls" || $file_ext == ".xlsx" || $file_ext == ".xlst" || $file_ext == ".xlsm" ||$file_ext == ".csv")
-        {
-          $file_icon = "file_xls.png";
-          $file_type = "MS Excel";
-        }
-        // Adobe PDF
-        elseif ($file_ext == ".pdf")
-        {
-          $file_icon = "file_pdf.png";
-          $file_type = "Adobe Acrobat";
-        }
-        // Adobe Illustrator
-        elseif ($file_ext == ".ai" || $file_ext == ".dmw")
-        {
-          $file_icon = "file_ai.png";
-          $file_type = "Adobe Illustrator";
-        }
-        // Adobe InDesign
-        elseif ($file_ext == ".indd" || $file_ext == ".idml")
-        {
-          $file_icon = "file_indd.png";
-          $file_type = "Adobe InDesign";
-        }
-        // Adobe Photoshop
-        elseif ($file_ext == ".psd" || $file_ext == ".psb")
-        {
-          $file_icon = "file_psd.png";
-          $file_type = "Adobe Photoshop";
-        }
-        // Adobe After Effects
-        elseif ($file_ext == ".aep")
-        {
-          $file_icon = "file_aep.png";
-          $file_type = "Adobe After Effects";
-        }
-        // Adobe Premiere
-        elseif ($file_ext == ".prproj")
-        {
-          $file_icon = "file_prproj.png";
-          $file_type = "Adobe Premiere";
-        }
-        // Adobe Audition
-        elseif ($file_ext == ".sesx")
-        {
-          $file_icon = "file_sesx.png";
-          $file_type = "Adobe Audition";
-        }
-        // Open Office Text
-        elseif ($file_ext == ".odt" || $file_ext == ".fodt")
-        {
-          $file_icon = "file_odt.png";
-          $file_type = "OO Text";
-        }
-        // Open Office Spreadsheet
-        elseif ($file_ext == ".ods" || $file_ext == ".fods")
-        {
-          $file_icon = "file_ods.png";
-          $file_type = "OO Spreadsheet";
-        }
-        // Open Office Presentation
-        elseif ($file_ext == ".odp" || $file_ext == ".fodp")
-        {
-          $file_icon = "file_odp.png";
-          $file_type = "OO Presentation";
-        }
-        // HMTL
-        elseif ($file_ext == ".htm" || $file_ext == ".html")
-        {
-          $file_icon = "file_htm.png";
-          $file_type = "HTML";
-        }
-        // CSS
-        elseif ($file_ext == ".css")
-        {
-          $file_icon = "file_css.png";
-          $file_type = "CSS";
-        }
-        // JavaScript
-        elseif ($file_ext == ".js")
-        {
-          $file_icon = "file_js.png";
-          $file_type = "JavaScript";
-        }
-        // JavaScript
-        elseif ($file_ext == ".exe")
-        {
-          $file_icon = "file_exe.png";
-          $file_type = "EXE";
-        }
-        // text based documents in proprietary format or clear text 
-        elseif (@substr_count (strtolower ($hcms_ext['bintxt']).".", $file_ext.".") > 0 || @substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
-        {
-          $file_icon = "file_txt.png";
-          $file_type = "Text";
-        } 
-        // image files 
-        elseif (@substr_count (strtolower ($hcms_ext['image'].$hcms_ext['rawimage'].$hcms_ext['vectorimage']).".", $file_ext.".") > 0)
-        {
-          $file_icon = "file_image.png";
-          $file_type = "Image";
-        }
-        // CAD files 
-        elseif (@substr_count (strtolower ($hcms_ext['cad']).".", $file_ext.".") > 0)
-        {
-          $file_icon = "file_cad.png";
-          $file_type = "Computer Aided Design";
-        }
-        // Adobe Flash
-        elseif (@substr_count (strtolower ($hcms_ext['flash']).".", $file_ext.".") > 0)
-        {
-          $file_icon = "file_flash.png";
-          $file_type = "Adobe Flash";
-        }
-        // Audio files
-        elseif (@substr_count (strtolower ($hcms_ext['audio']).".", $file_ext.".") > 0)
-        {
-          $file_icon = "file_audio.png";
-          $file_type = "Audio";
-        }
-        // Apple Quicktime files
-        elseif ($file_ext == ".qt" || $file_ext == ".qtl" || $file_ext == ".mov")
-        {
-          $file_icon = "file_qt.png";
-          $file_type = "Quicktime Video";
-        }
-        // Video files
-        elseif (@substr_count (strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']).".", $file_ext.".") > 0)
-        {
-          $file_icon = "file_mpg.png";
-          $file_type = "Video";
-        }
-        // Compressed files
-        elseif (@substr_count (strtolower ($hcms_ext['compressed']).".", $file_ext.".") > 0)
-        {
-          $file_icon = "file_zip.png";
-          $file_type = "compressed";
-        }
-        // Fonts
-        elseif (@substr_count (strtolower ($hcms_ext['font']).".", $file_ext.".") > 0)
-        {
-          $file_icon = "file_font.png";
-          $file_type = "Font";
-        }
-        // CMS template files
-        elseif (@substr_count (strtolower ($hcms_ext['template']).".", $file_ext.".") > 0)
-        {
-          if (@substr_count ($file, ".page.tpl"))
+          // object versions
+          if (substr_count ($file, ".") > 0 && substr ($file_ext, 0, 3) == ".v_")
           {
-            $file_icon = "template_page.png";
-            $file_type = "Page Template";
-          }
-          elseif (@substr_count ($file, ".comp.tpl"))
-          {
-            $file_icon = "template_comp.png";
-            $file_type = "Component Template";
-          }
-          elseif (@substr_count ($file, ".meta.tpl"))
-          {
-            $file_icon = "template_media.png";
-            $file_type = "Meta Data Template";
-          }
-          elseif (@substr_count ($file, ".inc.tpl"))
-          {
-            $file_icon = "template_comp.png";
-            $file_type = "Template Component";
-          }
+            $file_name = substr ($file, 0, strpos ($file, ".v_"));
+            // get file name without extensions
+            $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
+            // get file extension of file name minus version extension
+            $file_ext = strtolower (strrchr ($file_name, "."));
 
-          $file_type = "Template";
-        }
-        // CMS files
-        elseif (@substr_count (strtolower ($hcms_ext['cms']).".", $file_ext.".") > 0)
-        {
-          if ($cat == "page")
-          {
-            $file_icon = "file_page.png";
-            $file_type = "Page";
+            $file_published = false;
+            $file_deleted = false;
           }
-          elseif ($cat == "comp")
+          // mail files 
+          elseif ($file_ext == ".mail")
           {
-            $file_icon = "file_comp.png";
-            $file_type = "Component";
+            $file_name = "Message";
+            // get file name without extensions
+            $file_nameonly = "Message";
+
+            $file_published = false;
+            $file_deleted = false;
           }
+          // objects in recycle bin 
+          elseif ($file_ext == ".recycle")
+          {
+            $file_name = substr ($file, 0, -8);
+            // get file name without extensions
+            $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
+            // get file extension of file name minus .recycle
+            $file_ext = strtolower (strrchr ($file_name, "."));
+
+            $file_published = false;
+            $file_deleted = true;
+          }
+          // unpublished objects 
+          elseif ($file_ext == ".off")
+          {
+            $file_name = substr ($file, 0, -4);
+            // get file name without extensions
+            $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
+            // get file extension of file name minus .off
+            $file_ext = strtolower (strrchr ($file_name, "."));
+
+            $file_published = false;
+            $file_deleted = false;
+          }
+          // published objects
           else
           {
-            $file_icon = "file_page.png";
-            $file_type = "Page";
+            $file_name = $file; 
+            // get file name without extension
+            $file_nameonly = strrev (substr (strstr (strrev ($file), "."), 1));
+
+            $file_published = true;
+            $file_deleted = false;
+          }
+
+          // System E-mail
+          if ($file_ext == ".mail")
+          {
+            $file_icon = "button_user_sendlink.png";
+            $file_type = "E-mail";
+          }
+          // Standard E-mail formats
+          elseif ($file_ext == ".eml" || $file_ext == ".mbox" || $file_ext == ".msg")
+          {
+            $file_icon = "file_mail.png";
+            $file_type = "E-Mail";
+          }
+          // MS Word
+          elseif ($file_ext == ".doc" || $file_ext == ".docx" || $file_ext == ".docm" || $file_ext == ".dot" || $file_ext == ".dotx")
+          {
+            $file_icon = "file_doc.png";
+            $file_type = "MS Word";
+          }
+          // MS Powerpoint
+          elseif ($file_ext == ".ppt" || $file_ext == ".pptx" || $file_ext == ".pps" || $file_ext == ".ppsx" || $file_ext == ".pot" || $file_ext == ".potm" || $file_ext == ".potx")
+          {
+            $file_icon = "file_ppt.png";
+            $file_type = "MS Powerpoint";
+          }
+          // MS Excel
+          elseif ($file_ext == ".xls" || $file_ext == ".xlsx" || $file_ext == ".xlst" || $file_ext == ".xlsm" ||$file_ext == ".csv")
+          {
+            $file_icon = "file_xls.png";
+            $file_type = "MS Excel";
+          }
+          // Adobe PDF
+          elseif ($file_ext == ".pdf")
+          {
+            $file_icon = "file_pdf.png";
+            $file_type = "Adobe Acrobat";
+          }
+          // Adobe Illustrator
+          elseif ($file_ext == ".ai" || $file_ext == ".dmw")
+          {
+            $file_icon = "file_ai.png";
+            $file_type = "Adobe Illustrator";
+          }
+          // Adobe InDesign
+          elseif ($file_ext == ".indd" || $file_ext == ".idml")
+          {
+            $file_icon = "file_indd.png";
+            $file_type = "Adobe InDesign";
+          }
+          // Adobe Photoshop
+          elseif ($file_ext == ".psd" || $file_ext == ".psb")
+          {
+            $file_icon = "file_psd.png";
+            $file_type = "Adobe Photoshop";
+          }
+          // Adobe After Effects
+          elseif ($file_ext == ".aep")
+          {
+            $file_icon = "file_aep.png";
+            $file_type = "Adobe After Effects";
+          }
+          // Adobe Premiere
+          elseif ($file_ext == ".prproj")
+          {
+            $file_icon = "file_prproj.png";
+            $file_type = "Adobe Premiere";
+          }
+          // Adobe Audition
+          elseif ($file_ext == ".sesx")
+          {
+            $file_icon = "file_sesx.png";
+            $file_type = "Adobe Audition";
+          }
+          // Open Office Text
+          elseif ($file_ext == ".odt" || $file_ext == ".fodt")
+          {
+            $file_icon = "file_odt.png";
+            $file_type = "OO Text";
+          }
+          // Open Office Spreadsheet
+          elseif ($file_ext == ".ods" || $file_ext == ".fods")
+          {
+            $file_icon = "file_ods.png";
+            $file_type = "OO Spreadsheet";
+          }
+          // Open Office Presentation
+          elseif ($file_ext == ".odp" || $file_ext == ".fodp")
+          {
+            $file_icon = "file_odp.png";
+            $file_type = "OO Presentation";
+          }
+          // HMTL
+          elseif ($file_ext == ".htm" || $file_ext == ".html")
+          {
+            $file_icon = "file_htm.png";
+            $file_type = "HTML";
+          }
+          // CSS
+          elseif ($file_ext == ".css")
+          {
+            $file_icon = "file_css.png";
+            $file_type = "CSS";
+          }
+          // JavaScript
+          elseif ($file_ext == ".js")
+          {
+            $file_icon = "file_js.png";
+            $file_type = "JavaScript";
+          }
+          // JavaScript
+          elseif ($file_ext == ".exe")
+          {
+            $file_icon = "file_exe.png";
+            $file_type = "EXE";
+          }
+          // text based documents in proprietary format or clear text 
+          elseif (@substr_count (strtolower ($hcms_ext['bintxt']).".", $file_ext.".") > 0 || @substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
+          {
+            $file_icon = "file_txt.png";
+            $file_type = "Text";
+          } 
+          // image files 
+          elseif (@substr_count (strtolower ($hcms_ext['image'].$hcms_ext['rawimage'].$hcms_ext['vectorimage']).".", $file_ext.".") > 0)
+          {
+            $file_icon = "file_image.png";
+            $file_type = "Image";
+          }
+          // CAD files 
+          elseif (@substr_count (strtolower ($hcms_ext['cad']).".", $file_ext.".") > 0)
+          {
+            $file_icon = "file_cad.png";
+            $file_type = "Computer Aided Design";
+          }
+          // Adobe Flash
+          elseif (@substr_count (strtolower ($hcms_ext['flash']).".", $file_ext.".") > 0)
+          {
+            $file_icon = "file_flash.png";
+            $file_type = "Adobe Flash";
+          }
+          // Audio files
+          elseif (@substr_count (strtolower ($hcms_ext['audio']).".", $file_ext.".") > 0)
+          {
+            $file_icon = "file_audio.png";
+            $file_type = "Audio";
+          }
+          // Apple Quicktime files
+          elseif ($file_ext == ".qt" || $file_ext == ".qtl" || $file_ext == ".mov")
+          {
+            $file_icon = "file_qt.png";
+            $file_type = "Quicktime Video";
+          }
+          // Video files
+          elseif (@substr_count (strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']).".", $file_ext.".") > 0)
+          {
+            $file_icon = "file_mpg.png";
+            $file_type = "Video";
+          }
+          // Compressed files
+          elseif (@substr_count (strtolower ($hcms_ext['compressed']).".", $file_ext.".") > 0)
+          {
+            $file_icon = "file_zip.png";
+            $file_type = "compressed";
+          }
+          // Fonts
+          elseif (@substr_count (strtolower ($hcms_ext['font']).".", $file_ext.".") > 0)
+          {
+            $file_icon = "file_font.png";
+            $file_type = "Font";
+          }
+          // CMS template files
+          elseif (@substr_count (strtolower ($hcms_ext['template']).".", $file_ext.".") > 0)
+          {
+            if (@substr_count ($file, ".page.tpl"))
+            {
+              $file_icon = "template_page.png";
+              $file_type = "Page Template";
+            }
+            elseif (@substr_count ($file, ".comp.tpl"))
+            {
+              $file_icon = "template_comp.png";
+              $file_type = "Component Template";
+            }
+            elseif (@substr_count ($file, ".meta.tpl"))
+            {
+              $file_icon = "template_media.png";
+              $file_type = "Meta Data Template";
+            }
+            elseif (@substr_count ($file, ".inc.tpl"))
+            {
+              $file_icon = "template_comp.png";
+              $file_type = "Template Component";
+            }
+
+            $file_type = "Template";
+          }
+          // CMS files
+          elseif (@substr_count (strtolower ($hcms_ext['cms']).".", $file_ext.".") > 0)
+          {
+            if ($cat == "page")
+            {
+              $file_icon = "file_page.png";
+              $file_type = "Page";
+            }
+            elseif ($cat == "comp")
+            {
+              $file_icon = "file_comp.png";
+              $file_type = "Component";
+            }
+            else
+            {
+              $file_icon = "file_page.png";
+              $file_type = "Page";
+            }
           }
         }
-        // all other files
-        elseif ($file_ext != "")
-        {
-          $file_icon = "file_binary.png";
-          $file_type = substr ($file_ext, 1);
-        }
-        // unknown
-        else
-        {
-          $file_icon = "file_binary.png";
-          $file_type = "unknown";
-        }
-      } 
+      }
     }
-    // no extension available
-    else 
-    {
-      // if file holds a path
-      if (@substr_count ($file, "/") > 0) $file = getobject ($file);
-
-      $file_name = $file;
-      $file_nameonly = $file;
-      $file_icon = "file_binary.png";
-      $file_type = "unknown";
-      $file_ext = "";
-      $file_published = true;
-      $file_deleted = false;
-    }
-
+    
     // set result array
+    $result = array();
     $result['file'] = $file_name;
     $result['name'] = specialchr_decode ($file_name);
     $result['filename'] = $file_nameonly;

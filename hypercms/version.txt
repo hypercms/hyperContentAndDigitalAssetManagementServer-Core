@@ -5936,9 +5936,17 @@ Release 05/2022
 - Modifications in explorer_preview in order to display workflow information for an object
 - Modifications in the template engine in order to display workflow information for an object
 - Modifications in function showworkflowstatus in UI API in order to display the name of the applied workflow for an object
+- Modifications in explorer_objectlist and search_objectlist in order to focus on the frame
+- Modifications in function getfileinfo in Get API in order to define a default result in case no file extension is available
+- Modifications in function getobjeclist in Get API in order to create the result based on the folder access of a user
 - Added the E-mail, Computer Aided Design, Adobe After Effects, Adobe Premiere, and Adobe Audition file icons to all design themes
-- Added the new workflow accept and in progress icon to all design themes
+- Redesigned standard file icon in all design themes
+- Added the new workflow accept and inprogress icon to all design themes
 - Updates in the Connector Guide
+- Update of the update log in the installation directory
 - Bug fix: The template engine did not include the local JS functions in case of formlock view which might cause JS errors if the template uses one of the local JS functions
 - Bug fix: Function showworkflowstatus in UI API did not use the passed information for the definition of the status background color
 - Bug fix: Function authenticate in REST API did not verify the message return value of function userlogin
+- Bug fix: The font file extension .ttf has been used twice in format_ext
+- Bug fix: Function getfileinfo in Get API did not verify an empty file extension correctly
+- Bug fix: Function getobjeclist in Get API was not abel to access the global variables for the page- and compaccess

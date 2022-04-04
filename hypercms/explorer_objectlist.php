@@ -692,7 +692,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
                       <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
                         <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                           <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">
-                            ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end."  ".$workflow_icon."
+                            ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end." ".$workflow_icon."
                           </div>
                         </td>";
 
@@ -1187,6 +1187,9 @@ function initialize ()
   
   // resize columns
   $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
+
+  // focus
+  window.focus();
 }
 </script>
 </head>

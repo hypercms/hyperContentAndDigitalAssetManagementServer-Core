@@ -1415,6 +1415,9 @@ function initialize ()
 
   // collect objects and set objects array
   hcms_collectObjectpath ();
+
+  // focus
+  window.focus();
 }
 
 // load control frame
