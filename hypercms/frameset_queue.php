@@ -60,7 +60,7 @@ function closePopup ()
 </script>
 </head>
 
-<body>
+<body class="hcmsTransBackground">
 
 <!-- popup for preview/live-view and forms (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="objectviewLayer" style="display:none;">

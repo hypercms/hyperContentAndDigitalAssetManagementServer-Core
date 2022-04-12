@@ -119,6 +119,8 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
   {
     $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['template-could-not-be-saved'][$lang])."</span>";
   }
+
+  $reload = true;
 }
 // load template file
 else
@@ -332,6 +334,17 @@ function setwallpaper ()
   <?php } else { ?>
   return false;
   <?php } ?>
+
+  // reload due to browser cache
+  <?php
+  if (!empty ($reload))
+  {
+    echo "
+  document.getElementById('wallpaper_jpg').src='".getthemelocation($portaltheme)."img/wallpaper.jpg?ts=".time()."';
+  document.getElementById('wallpaper_png').src='".getthemelocation($portaltheme)."img/wallpaper.png?ts=".time()."';
+  ";
+  }
+  ?>
 }
 
 function savetemplate ()
@@ -349,10 +362,21 @@ function hcms_saveEvent ()
 {
   savetemplate();
 }
+
+function settransparent ()
+{
+  var checked = document.getElementById('transparent').checked;
+  var collection = document.getElementsByClassName('nontransparent');
+
+  for (let i = 0; i < collection.length; i++)
+  {
+    collection[i].disabled = checked;
+  }
+}
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onload="setwallpaper(); switchLayer();">
+<body class="hcmsWorkplaceGeneric" onload="settransparent(); setwallpaper(); switchLayer();">
 
 <!-- saving --> 
 <div id="savelayer" class="hcmsLoadScreen"></div>
@@ -380,12 +404,14 @@ function hcms_saveEvent ()
       <!-- Color schema -->
       <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['color-schema'][$lang]); ?></span><br/><br/>
 
+      <label><input type="checkbox" id="transparent" name="designtheme" value="transparent" onclick="settransparent();" <?php if ($designtheme == "transparent") echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['transparent'][$lang]); ?></label><br/><br/>
+
       <?php echo getescapedtext ($hcms_lang['text-and-icons'][$lang]); ?> &nbsp;&nbsp; 
-      <label><input type="radio" name="designtheme" value="night" <?php if ($designtheme == "night" || empty ($designtheme)) echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['light'][$lang]); ?></label>&nbsp;&nbsp; 
-      <label><input type="radio" name="designtheme" value="day" <?php if ($designtheme == "day") echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['dark'][$lang]); ?></label><br/><br/>
+      <label><input type="radio" class="nontransparent" name="designtheme" value="night" <?php if ($designtheme == "night" || $designtheme == "transparent" || empty ($designtheme)) echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['light'][$lang]); ?></label>&nbsp;&nbsp; 
+      <label><input type="radio" class="nontransparent" name="designtheme" value="day" <?php if ($designtheme == "day") echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['dark'][$lang]); ?></label><br/><br/>
 
       <?php echo getescapedtext ($hcms_lang['color'][$lang]); ?><br/>
-      <input class="jscolor" name="primarycolor" value="<?php echo $primarycolor; ?>" style="width:280px;" /><br/>
+      <input class="jscolor nontransparent" name="primarycolor" value="<?php echo $primarycolor; ?>" style="width:280px;" /><br/>
       <hr/><br/>
 
       <!-- Uploads -->
@@ -611,42 +637,48 @@ function hcms_saveEvent ()
   <div id="preview" style="float:left; scrolling:auto;">
     <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></span><br/><br/>
 
-    <table class="TableNarrow hcmsImageItem">
-      <tr>
-        <td class="hcmsWorkplaceTop" style="width:36px !important;">
-          <!-- navigation items -->
-          <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
-          <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
-          <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
-          <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
-        </td>
-        <td class="hcmsWorkplaceExplorer" style="width:260px !important;">
-          <!-- explorer items -->
-          <div style="display:block; width:260px;">
-            <div style="padding:8px 0px 0px 10px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/site.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></a></div>
-            <div style="padding:4px 0px 0px 26px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['assets'][$lang]); ?></a></div>
-            <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Marketing</a></div>
-            <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Product Management</a></div>
-            <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Public Relations</a></div>
-          </div>
-        </td>
-        <td class="hcmsStartScreen" id="homeScreen" style="position:static; display:table-cell; background-attachment:scroll;">
-          <!-- logo -->
-          <div id="logo" style="margin:10px;">
-            <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_server.png?ts=<?php echo time(); ?>" style="max-width:420px; max-height:100px;" />
-          </div>
+    <div class="hcmsMainWindow">
+      <table class="TableNarrow hcmsImageItem">
+        <tr>
+          <td class="hcmsWorkplaceTop" style="width:36px !important;">
+            <!-- navigation items -->
+            <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
+            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
+            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
+            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
+          </td>
+          <td class="hcmsWorkplaceExplorer" style="width:260px !important;">
+            <!-- explorer items -->
+            <div style="display:block; width:260px;">
+              <div style="padding:8px 0px 0px 10px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/site.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></a></div>
+              <div style="padding:4px 0px 0px 26px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['assets'][$lang]); ?></a></div>
+              <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Marketing</a></div>
+              <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Product Management</a></div>
+              <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Public Relations</a></div>
+            </div>
+          </td>
+          <td class="hcmsStartScreen" id="homeScreen" style="position:static; display:table-cell; background-attachment:scroll;">
+            <!-- logo -->
+            <div id="logo" style="margin:10px;">
+              <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_server.png?ts=<?php echo time(); ?>" style="max-width:420px; max-height:100px;" />
+            </div>
 
-          <!-- home boxes -->
-          <?php
-          if (is_file ($mgmt_config['abs_path_cms']."box/news.inc.php")) include ($mgmt_config['abs_path_cms']."box/news.inc.php");
-          if (is_file ($mgmt_config['abs_path_cms']."box/recent_downloads.inc.php")) include ($mgmt_config['abs_path_cms']."box/recent_downloads.inc.php");
-          ?>
-        </td>
-      </tr>
-    </table>
+            <!-- home boxes -->
+            <?php
+            if (is_file ($mgmt_config['abs_path_cms']."box/news.inc.php")) include ($mgmt_config['abs_path_cms']."box/news.inc.php");
+            if (is_file ($mgmt_config['abs_path_cms']."box/recent_downloads.inc.php")) include ($mgmt_config['abs_path_cms']."box/recent_downloads.inc.php");
+            ?>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 
 </div>
+
+<!-- reload wallpaper -->
+<img src="" id="wallpaper_jpg" style="display:none;" />
+<img src="" id="wallpaper_png" style="display:none;" />
 
 <?php includefooter(); ?>
 

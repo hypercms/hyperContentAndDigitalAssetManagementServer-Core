@@ -1422,4 +1422,5 @@ $hcms_lang['youtube-sign-out']['sl'] = "Pred dodajanjem novega računa se morate
 $hcms_lang['overwrite-existing-files']['sl'] = "Prepiši obstoječe datoteke";
 $hcms_lang['customize-toolbar']['sl'] = "Prilagodi orodno vrstico";
 $hcms_lang['disable-link-in-edit-mode']['sl'] = "V načinu za urejanje deaktivirajte povezavo";
+$hcms_lang['transparent']['sl'] = "pregleden";
 ?>

@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['hu'] = "Új fiók hozzáadása előtt ki kell je
 $hcms_lang['overwrite-existing-files']['hu'] = "meglévő fájlok felülírása";
 $hcms_lang['customize-toolbar']['hu'] = "Az eszköztár testreszabása";
 $hcms_lang['disable-link-in-edit-mode']['hu'] = "Deaktiválja a linket szerkesztési módban";
+$hcms_lang['transparent']['hu'] = "átlátszó";
 ?>

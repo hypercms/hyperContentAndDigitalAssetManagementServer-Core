@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['ja'] = "新しいアカウントを追加する�
 $hcms_lang['overwrite-existing-files']['ja'] = "現在のファイルを上書きする";
 $hcms_lang['customize-toolbar']['ja'] = "ツールバーのカスタマイズ";
 $hcms_lang['disable-link-in-edit-mode']['ja'] = "編集モードでリンクを非アクティブ化する";
+$hcms_lang['transparent']['ja'] = "トランスペアレント";
 ?>

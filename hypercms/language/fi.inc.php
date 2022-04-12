@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['fi'] = "Sinun on kirjauduttava ulos Google/YouTu
 $hcms_lang['overwrite-existing-files']['fi'] = "Korvaa olemassa olevat tiedostot";
 $hcms_lang['customize-toolbar']['fi'] = "Mukauta työkaluriviä";
 $hcms_lang['disable-link-in-edit-mode']['fi'] = "Poista linkki käytöstä muokkaustilassa";
+$hcms_lang['transparent']['fi'] = "läpinäkyvä";
 ?>

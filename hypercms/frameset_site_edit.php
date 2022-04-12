@@ -43,7 +43,7 @@ hcms_transitioneffect = false;
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric">
+<body class="hcmsTransBackground">
 <?php
 // iPad and iPhone requires special CSS settings
 if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scrolling:touch !important;";

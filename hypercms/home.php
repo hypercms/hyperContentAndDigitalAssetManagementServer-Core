@@ -280,7 +280,7 @@ function closePopup ()
 </script>
 </head>
 
-<body onload="setlogospacer(); setwallpaper();">
+<body onload="setlogospacer(); <?php if ($hcms_themename != "transparent") echo "setwallpaper();"; ?>">
 
 <!-- popup (do not use nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="popupLayer" class="hcmsHomeBox" style="position:fixed; left:50%; bottom:0px; z-index:-1; overflow:hidden; width:0px; height:0px; visibility:hidden;">
@@ -294,7 +294,7 @@ function closePopup ()
 </div>
 
 <!-- image background -->
-<div id="startScreen" class="hcmsStartScreen" style="position:fixed; z-index:-200;"></div>
+<div id="startScreen" class="<?php if ($hcms_themename != "transparent") echo "hcmsStartScreen"; ?>" style="position:fixed; z-index:-200;"></div>
 
 <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
 <!-- video background -->

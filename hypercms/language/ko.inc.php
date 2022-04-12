@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['ko'] = "새 계정을 추가하기 전에 Google
 $hcms_lang['overwrite-existing-files']['ko'] = "기존 파일 덮어 쓰기";
 $hcms_lang['customize-toolbar']['ko'] = "도구 모음 사용자 지정";
 $hcms_lang['disable-link-in-edit-mode']['ko'] = "편집 모드에서 링크 비활성화";
+$hcms_lang['transparent']['ko'] = "투명한";
 ?>

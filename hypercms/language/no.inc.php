@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['no'] = "Du må logge av fra Google/YouTube-konto
 $hcms_lang['overwrite-existing-files']['no'] = "Overskriv eksisterende filer";
 $hcms_lang['customize-toolbar']['no'] = "Tilpass verktøylinjen";
 $hcms_lang['disable-link-in-edit-mode']['no'] = "Deaktiver lenke i redigeringsmodus";
+$hcms_lang['transparent']['no'] = "gjennomsiktig";
 ?>

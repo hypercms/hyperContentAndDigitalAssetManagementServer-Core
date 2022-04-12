@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['nl'] = "U moet zich afmelden bij uw Google/YouTu
 $hcms_lang['overwrite-existing-files']['nl'] = "bestaande bestanden overschrijven";
 $hcms_lang['customize-toolbar']['nl'] = "Werkbalk aanpassen";
 $hcms_lang['disable-link-in-edit-mode']['nl'] = "Link deactiveren in bewerkingsmodus";
+$hcms_lang['transparent']['nl'] = "transparant";
 ?>

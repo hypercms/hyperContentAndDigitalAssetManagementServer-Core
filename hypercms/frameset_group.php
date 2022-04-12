@@ -44,7 +44,7 @@ if (session_id() != "") session_write_close();
 if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scrolling:touch !important;";
 else $css_iphone = "";
 ?>
-<body>
+<body class="hcmsTransBackground">
   <iframe id="controlFrame" name="controlFrame" src="control_group_menu.php?site=<?php echo $site; ?>" frameborder="0" scrolling="no" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0; <?php echo $css_iphone; ?>">
     <iframe id="mainFrame" name="mainFrame" src="empty.php?site=<?php echo $site; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>

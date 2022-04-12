@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['ms'] = "Anda perlu log keluar dari akaun Google/
 $hcms_lang['overwrite-existing-files']['ms'] = "Timpa fail yang ada";
 $hcms_lang['customize-toolbar']['ms'] = "Peribadikan bar alat";
 $hcms_lang['disable-link-in-edit-mode']['ms'] = "Nyahaktifkan pautan dalam mod edit";
+$hcms_lang['transparent']['ms'] = "telus";
 ?>

@@ -70,7 +70,7 @@ function maxNavFrame ()
 </script>
 </head>
 
-<body>
+<body class="hcmsTransBackground">
   <div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;">
     <iframe id="navFrame2" name="navFrame2" src="<?php echo "folder_explorer.php?site=".$site."&cat=".$cat; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
   </div>

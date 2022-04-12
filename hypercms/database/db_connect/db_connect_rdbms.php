@@ -1870,7 +1870,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);          
           // where clause for folderpath
           // search only on the same level of the path
-          if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE BINARY "'.$path.'%" AND obj.objectpath NOT LIKE BINARY "'.$path.'%/%") OR obj.objectpath LIKE BINARY "'.$path.'%/.folder"';
+          if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE BINARY "'.$path.'%" AND obj.objectpath NOT LIKE BINARY "'.$path.'%/%") OR (obj.objectpath LIKE BINARY "'.$path.'%/.folder" AND obj.objectpath NOT LIKE BINARY "'.$path.'%/%/.folder")';
           // all objects that are located in the path
           else $sql_temp[] = 'obj.objectpath LIKE BINARY "'.$path.'%"';
         }
@@ -2004,11 +2004,11 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
       foreach ($fileextension as $temp)
       {
-        $temp = str_replace (".", "", $temp);
+        $temp = trim ($temp, ".");
         if (trim ($temp) != "") $sql_temp[] = 'obj.objectpath LIKE "%.'.$temp.'"';
       }
 
-      $sql_where['fileextension'] = '('.implode (" OR ", $sql_temp).')';
+      $sql_where['fileextension'] = '('.implode (" OR ", $sql_temp).' '.(!empty ($mgmt_config['search_folderpath_level']) ? ' OR obj.objectpath LIKE "%/.folder"' : "").')';
     }
     
     // query dates

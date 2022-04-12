@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['pt'] = "Você precisa sair de sua conta do Googl
 $hcms_lang['overwrite-existing-files']['pt'] = "Sobrescrever arquivos existentes";
 $hcms_lang['customize-toolbar']['pt'] = "Personalizar barra de ferramentas";
 $hcms_lang['disable-link-in-edit-mode']['pt'] = "Desative o link no modo de edição";
+$hcms_lang['transparent']['pt'] = "transparente";
 ?>

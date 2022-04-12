@@ -1424,4 +1424,5 @@ $hcms_lang['youtube-sign-out']['en'] = "You need to sign out from your Google/Yo
 $hcms_lang['overwrite-existing-files']['en'] = "Overwrite existing files";
 $hcms_lang['customize-toolbar']['en'] = "Customize toolbar";
 $hcms_lang['disable-link-in-edit-mode']['en'] = "Disable link in edit mode";
+$hcms_lang['transparent']['en'] = "transparent";
 ?>

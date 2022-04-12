@@ -1424,4 +1424,5 @@ $hcms_lang['youtube-sign-out']['zh-s'] = "您需要先从Google/YouTube帐户注
 $hcms_lang['overwrite-existing-files']['zh-s'] = "覆盖现有文件";
 $hcms_lang['customize-toolbar']['zh-s'] = "自定义工具栏";
 $hcms_lang['disable-link-in-edit-mode']['zh-s'] = "在编辑模式下停用链接";
+$hcms_lang['transparent']['zh-s'] = "透明";
 ?>

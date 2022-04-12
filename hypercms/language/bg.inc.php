@@ -1424,4 +1424,5 @@ $hcms_lang['youtube-sign-out']['bg'] = "Трябва да излезете от 
 $hcms_lang['overwrite-existing-files']['bg'] = "Презапишете съществуващи файлове";
 $hcms_lang['customize-toolbar']['bg'] = "Персонализирайте лентата с инструменти";
 $hcms_lang['disable-link-in-edit-mode']['bg'] = "Деактивирайте връзката в режим на редактиране";
+$hcms_lang['transparent']['bg'] = "прозрачен";
 ?>

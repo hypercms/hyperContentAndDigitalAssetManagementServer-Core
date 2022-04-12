@@ -1424,4 +1424,5 @@ $hcms_lang['youtube-sign-out']['he'] = "עליך לצאת מחשבון Google/Yo
 $hcms_lang['overwrite-existing-files']['he'] = "להחליף קבצים קיימים";
 $hcms_lang['customize-toolbar']['he'] = "התאם אישית את סרגל הכלים";
 $hcms_lang['disable-link-in-edit-mode']['he'] = "השבת קישור במצב עריכה";
+$hcms_lang['transparent']['he'] = "שָׁקוּף";
 ?>

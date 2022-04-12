@@ -9109,6 +9109,9 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
 
   if (valid_publicationname ($site) && valid_objectname ($template) && valid_objectname ($user) && $design != "" && is_dir ($mgmt_config['abs_path_cms']."theme/".$design))
   {
+    // copy design theme
+    copyrecursive ($mgmt_config['abs_path_cms']."theme/".$design."/", $mgmt_config['abs_path_rep']."portal/".$site."/".$tpl_name."/");
+
     // delete media file
     if (!empty ($global_files['logo_top']['delete']))
     {
@@ -9189,9 +9192,6 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
         }
       }
     }
-
-    // copy design theme
-    copyrecursive ($mgmt_config['abs_path_cms']."theme/".$design."/", $mgmt_config['abs_path_rep']."portal/".$site."/".$tpl_name."/");
 
     // set primary color in CSS
     if ($primarycolor != "")

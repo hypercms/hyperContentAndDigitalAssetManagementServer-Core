@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['ur'] = "نیا اکاؤنٹ شامل کرنے س
 $hcms_lang['overwrite-existing-files']['ur'] = "موجودہ فائلوں کو اوور رائٹ کریں";
 $hcms_lang['customize-toolbar']['ur'] = "ٹول بار کو حسب ضرورت بنائیں";
 $hcms_lang['disable-link-in-edit-mode']['ur'] = "ترمیم کے موڈ میں لنک کو غیر فعال کریں";
+$hcms_lang['transparent']['ur'] = "شفاف";
 ?>

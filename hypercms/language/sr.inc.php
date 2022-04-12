@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['sr'] = "Morate da se odjavite sa Google/YouTube 
 $hcms_lang['overwrite-existing-files']['sr'] = "Pisati preko postojećih fajlova";
 $hcms_lang['customize-toolbar']['sr'] = "Prilagodi traku sa alatkama";
 $hcms_lang['disable-link-in-edit-mode']['sr'] = "Deaktivirajte vezu u režimu uređivanja";
+$hcms_lang['transparent']['sr'] = "transparentan";
 ?>

@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['so'] = "Waxaad u baahan tahay inaad ka baxdo koo
 $hcms_lang['overwrite-existing-files']['so'] = "Dib u qor faylasha jira";
 $hcms_lang['customize-toolbar']['so'] = "Wax ka beddel aaladda";
 $hcms_lang['disable-link-in-edit-mode']['so'] = "Ka daa xiriirinta habka wax ka beddelka";
+$hcms_lang['transparent']['so'] = "hufan";
 ?>

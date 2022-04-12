@@ -93,6 +93,7 @@ function maxNavFrame ()
 if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scrolling:touch !important;";
 else $css_iphone = "";
 ?>
+
 <body>
   <div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0; <?php echo $css_iphone; ?>">
     <iframe id="navFrame2" name="navFrame2" src="<?php echo "link_edit_explorer.php?site=".$site."&cat=".$cat; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>

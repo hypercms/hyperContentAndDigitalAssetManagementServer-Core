@@ -414,7 +414,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 </script>
 </head>
 
-<body class="hcmsWorkplaceObjectlist" onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>" onbeforeunload="return showwarning();">
+<body class="hcmsMainWindow hcmsWorkplaceObjectlist" onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>" onbeforeunload="return showwarning();">
 
 <!-- popup for preview/live-view and forms (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="objectviewMainLayer" style="display:none; z-index:20;">

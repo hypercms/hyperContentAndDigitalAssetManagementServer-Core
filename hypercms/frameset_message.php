@@ -53,7 +53,7 @@ function closePopup ()
 </script>
 </head>
 
-<body>
+<body class="hcmsTransBackground">
 
   <!-- load screen --> 
   <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>

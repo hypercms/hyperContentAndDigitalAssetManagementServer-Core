@@ -1424,4 +1424,5 @@ $hcms_lang['youtube-sign-out']['id'] = "Anda harus keluar dari akun Google/YouTu
 $hcms_lang['overwrite-existing-files']['id'] = "Timpa file yang ada";
 $hcms_lang['customize-toolbar']['id'] = "Sesuaikan bilah alat";
 $hcms_lang['disable-link-in-edit-mode']['id'] = "Nonaktifkan tautan dalam mode edit";
+$hcms_lang['transparent']['id'] = "transparan";
 ?>

@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['it'] = "Devi uscire dal tuo account Google/YouTu
 $hcms_lang['overwrite-existing-files']['it'] = "Sovrascrivi i file esistenti";
 $hcms_lang['customize-toolbar']['it'] = "Personalizza la barra degli strumenti";
 $hcms_lang['disable-link-in-edit-mode']['it'] = "Disattiva il collegamento in modalità di modifica";
+$hcms_lang['transparent']['it'] = "trasparente";
 ?>

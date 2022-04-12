@@ -1037,7 +1037,8 @@ function hcms_openChat ()
   // toggle chat sidebar
   if (chatsidebar)
   {
-    if (hcms_transitioneffect == true) chatsidebar.style.transition = "0.3s";
+    chatsidebar.style.transition = "0.3s";
+
     if (chatsidebar.style.right == "0px") chatsidebar.style.right = "-320px";
     else chatsidebar.style.right = "0px";
   }

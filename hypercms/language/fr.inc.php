@@ -1424,4 +1424,5 @@ $hcms_lang['youtube-sign-out']['fr'] = "Vous devez vous déconnecter de votre co
 $hcms_lang['overwrite-existing-files']['fr'] = "écraser les fichiers existants";
 $hcms_lang['customize-toolbar']['fr'] = "Personnaliser la barre d'outils";
 $hcms_lang['disable-link-in-edit-mode']['fr'] = "Désactiver le lien en mode édition";
+$hcms_lang['transparent']['fr'] = "transparent";
 ?>

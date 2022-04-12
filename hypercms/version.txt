@@ -5939,14 +5939,34 @@ Release 05/2022
 - Modifications in explorer_objectlist and search_objectlist in order to focus on the frame
 - Modifications in function getfileinfo in Get API in order to define a default result in case no file extension is available
 - Modifications in function getobjeclist in Get API in order to create the result based on the folder access of a user
+- Changed the session lifetime of the RESTful and SOAP API of the Connector module from 10 minutes to 8 hours
+- Modifications in function executeREST in order to verify the result of function getobjectlist
+- Modifications in function getobjectlist in Get API in order to exclude locations with missing access permission of the user (required for REST function getobjectlist)
+- Modifications in function getobjectlist in Get API in order to support the new search parameter "samelocation" for the search in the same location without including objects from subfolders
+- Modifications in function getobjectlist in Get API in order to exclude locations due to access restrictions of the user
+- Modifications in function getobjectlist in Get API in order to recheck the access permissions of the user for the result
+- Modifications in function rdbms_searchcontent in DB Connect in order to include all folders on the same location in the result if the main configuration setting $mgmt_config['search_folderpath_level'] is enabled
+- Implementation of the new "transparent" design theme that supports transparency in all windows and uses a single background image
+- Modification in frameset_main, frameset_mobile, and frameset_content in order to assign new CSS class hcmsMainWindow to the body tag
+- Modifications in home in order to diable the dynamic and default wallpaper if the design theme "transparent" is used
+- Modifications in portal_edit in order to support the new transparent design theme for portal designs
+- Modifications in portal_edit in order to reload the background images (jpg and png)
+- Modifications in function editportal in order to copy the design theme before the upload o files
+- Modifications in frameset_template_edit, frameset_site_edit, and frameset_objectlist in order to remove the CSS class from the body tag
+- Modifications in frameset_mobile in order to add the CSS class hcmsWorkplaceObjectlist to the body tag
+- Modifications in JS function hcms_openChat in main.js in order to always enable the transition effect
+- Implementation of the new CSS class hcmsTransBackground and the background animation in the transparent design theme
+- Modifications in all workplace frames in all modules in order to add the new CSS class hcmsTransBackground to the body tag
 - Added the E-mail, Computer Aided Design, Adobe After Effects, Adobe Premiere, and Adobe Audition file icons to all design themes
 - Redesigned standard file icon in all design themes
 - Added the new workflow accept and inprogress icon to all design themes
-- Updates in the Connector Guide
+- Design modifications in the colorful design theme
+- Updates in the Template Designers Guide, Connector Guide and Workflow Management Guide
 - Update of the update log in the installation directory
+- Added new text to all language files for the new transparent setting in the portal designer
 - Bug fix: The template engine did not include the local JS functions in case of formlock view which might cause JS errors if the template uses one of the local JS functions
 - Bug fix: Function showworkflowstatus in UI API did not use the passed information for the definition of the status background color
 - Bug fix: Function authenticate in REST API did not verify the message return value of function userlogin
 - Bug fix: The font file extension .ttf has been used twice in format_ext
 - Bug fix: Function getfileinfo in Get API did not verify an empty file extension correctly
-- Bug fix: Function getobjeclist in Get API was not abel to access the global variables for the page- and compaccess
+- Bug fix: Function getobjeclist in Get API was not able to access the global variables for the page- and compaccess

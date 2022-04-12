@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['sk'] = "Pred pridaním nového účtu sa musíte
 $hcms_lang['overwrite-existing-files']['sk'] = "Prepísať existujúce súbory";
 $hcms_lang['customize-toolbar']['sk'] = "Prispôsobiť panel s nástrojmi";
 $hcms_lang['disable-link-in-edit-mode']['sk'] = "Deaktivujte odkaz v režime úprav";
+$hcms_lang['transparent']['sk'] = "transparentný";
 ?>

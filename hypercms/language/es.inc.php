@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['es'] = "Debe cerrar sesión en su cuenta de Goog
 $hcms_lang['overwrite-existing-files']['es'] = "Sobrescribir archivos existentes";
 $hcms_lang['customize-toolbar']['es'] = "Personalizar la barra de herramientas";
 $hcms_lang['disable-link-in-edit-mode']['es'] = "Desactivar enlace en modo de edición";
+$hcms_lang['transparent']['es'] = "transparente";
 ?>

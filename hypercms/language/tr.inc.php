@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['tr'] = "Yeni bir hesap eklemeden önce Google/Yo
 $hcms_lang['overwrite-existing-files']['tr'] = "Mevcut dosyaların üzerine yaz";
 $hcms_lang['customize-toolbar']['tr'] = "Araç çubuğunu özelleştir";
 $hcms_lang['disable-link-in-edit-mode']['tr'] = "Düzenleme modunda bağlantıyı devre dışı bırak";
+$hcms_lang['transparent']['tr'] = "şeffaf";
 ?>

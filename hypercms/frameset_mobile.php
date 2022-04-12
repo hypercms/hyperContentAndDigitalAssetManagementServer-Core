@@ -298,7 +298,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 </script>
 </head>
 
-<body onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>">
+<body class="hcmsMainWindow hcmsWorkplaceObjectlist" onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>">
 
   <!-- header -->
   <div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; width:100%; height:36px;">

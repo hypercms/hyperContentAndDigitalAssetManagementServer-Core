@@ -104,7 +104,7 @@ function setSearchLocation (location, name)
 </script>
 </head>
 
-<body class="hcmsWorkplaceObjectlist">
+<body class="hcmsTransBackground">
 
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>

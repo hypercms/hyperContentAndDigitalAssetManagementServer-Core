@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['uk'] = "Вам потрібно вийти зі 
 $hcms_lang['overwrite-existing-files']['uk'] = "Перезапишіть існуючі файли";
 $hcms_lang['customize-toolbar']['uk'] = "Налаштування панелі інструментів";
 $hcms_lang['disable-link-in-edit-mode']['uk'] = "Вимкнути посилання в режимі редагування";
+$hcms_lang['transparent']['uk'] = "прозорий";
 ?>

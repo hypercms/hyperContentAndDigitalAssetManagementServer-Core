@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['bn'] = "নতুন অ্যাকাউন্
 $hcms_lang['overwrite-existing-files']['bn'] = "বিদ্যমান ফাইলগুলি ওভাররাইট করুন";
 $hcms_lang['customize-toolbar']['bn'] = "সরঞ্জামদণ্ডটি কাস্টমাইজ করুন";
 $hcms_lang['disable-link-in-edit-mode']['bn'] = "সম্পাদনা মোডে লিঙ্ক নিষ্ক্রিয় করুন";
+$hcms_lang['transparent']['bn'] = "স্বচ্ছ";
 ?>

@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['sq'] = "Duhet të dilni nga llogaria juaj e Goog
 $hcms_lang['overwrite-existing-files']['sq'] = "Mbishkruaj skedarët ekzistues";
 $hcms_lang['customize-toolbar']['sq'] = "Personalizo shiritin e veglave";
 $hcms_lang['disable-link-in-edit-mode']['sq'] = "Çaktivizoni lidhjen në modalitetin e modifikimit";
+$hcms_lang['transparent']['sq'] = "transparente";
 ?>

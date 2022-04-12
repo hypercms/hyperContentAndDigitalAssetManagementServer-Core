@@ -1426,4 +1426,5 @@ $hcms_lang['youtube-sign-out']['el'] = "Πρέπει να αποσυνδεθεί
 $hcms_lang['overwrite-existing-files']['el'] = "Αντικαταστήσετε τα υπάρχοντα αρχεία";
 $hcms_lang['customize-toolbar']['el'] = "Προσαρμογή γραμμής εργαλείων";
 $hcms_lang['disable-link-in-edit-mode']['el'] = "Απενεργοποίηση συνδέσμου σε λειτουργία επεξεργασίας";
+$hcms_lang['transparent']['el'] = "διαφανής";
 ?>

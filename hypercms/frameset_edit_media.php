@@ -103,6 +103,7 @@ function maxNavFrame ()
 if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scrolling:touch !important;";
 else $css_iphone = "";
 ?>
+
 <body>
   <?php
   if ($mediacat != "comp")

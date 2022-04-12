@@ -1421,5 +1421,6 @@ $hcms_lang['wallpaper']['ar'] = "ورق الجدران";
 $hcms_lang['youtube-sign-out']['ar'] = "تحتاج إلى تسجيل الخروج من حساب Google/YouTube الخاص بك قبل إضافة حساب جديد";
 $hcms_lang['overwrite-existing-files']['ar'] = "الكتابة فوق الملفات الموجودة";
 $hcms_lang['customize-toolbar']['ar'] = "تخصيص شريط الأدوات";
-$hcms_lang ['disable-link-in-edit-mode']['ar'] = "قم بإلغاء تنشيط الارتباط في وضع التحرير"; 
+$hcms_lang ['disable-link-in-edit-mode']['ar'] = "قم بإلغاء تنشيط الارتباط في وضع التحرير";
+$hcms_lang['transparent']['ar'] = "شفاف";
 ?>

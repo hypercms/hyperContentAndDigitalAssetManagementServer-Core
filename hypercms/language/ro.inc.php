@@ -1423,4 +1423,5 @@ $hcms_lang['youtube-sign-out']['ro'] = "Trebuie să vă deconectați de la contu
 $hcms_lang['overwrite-existing-files']['ro'] = "suprascrie fișierele existente";
 $hcms_lang['customize-toolbar']['ro'] = "Personalizați bara de instrumente";
 $hcms_lang['disable-link-in-edit-mode']['ro'] = "Dezactivați linkul în modul de editare";
+$hcms_lang['transparent']['ro'] = "transparent";
 ?>-
