@@ -1285,7 +1285,7 @@ else
     
     $dropbox_rendering = (is_array ($mgmt_config) && array_key_exists ("dropbox_appkey", $mgmt_config) && !empty ($mgmt_config['dropbox_appkey']));
     
-    if (($multiobject_count <= 1 && !empty ($page) && !empty ($media)) && $perm_rendering && $lock_rendering && ($doc_rendering || $img_rendering || $dropbox_rendering))
+    if ($from_page != "recyclebin" && ($multiobject_count <= 1 && !empty ($page) && !empty ($media)) && $perm_rendering && $lock_rendering && ($doc_rendering || $img_rendering || $dropbox_rendering))
     {
       echo "
       <div id=\"button_obj_convert\" class=\"hcmsButton hcmsButtonSizeWide\" onclick=\"hcms_hideSelector('select_obj_view'); hcms_hideSelector('select_obj_edit'); hcms_switchSelector('select_obj_convert');\">
@@ -1357,7 +1357,7 @@ else
           <div class=\"hcmsSelectorItem\" onclick=\"vidConvert('png');\"><img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['images'][$lang])." (PNG)</div>";
       }
 			
-			//save to dropbox
+			// save to dropbox
 			if ($dropbox_rendering)
 			{
 				echo "
@@ -1369,10 +1369,12 @@ else
       </div>";
     }
     // file and folder download without options
-    elseif (
-         ($multiobject_count <= 1 && !empty ($page) && !empty ($media) && $perm_rendering && $lock_rendering) || 
-         (($multiobject_count > 1 || $page == ".folder") && ($from_page != "" || ($from_page == "" && $perm_rendering && $lock_rendering)))
-       )
+    elseif ($from_page != "recyclebin" && 
+      (
+        ($multiobject_count <= 1 && !empty ($page) && !empty ($media) && $perm_rendering && $lock_rendering) || 
+        (($multiobject_count > 1 || $page == ".folder") && ($from_page != "" || ($from_page == "" && $perm_rendering && $lock_rendering)))
+      )
+    )
     {
       echo "
       <div class=\"hcmsButton hcmsButtonSizeWide\" onclick=\"submitToSelf('download'); hcms_showHideLayers('downloadLayer','','show');\"><img class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /><img src=\"".getthemelocation($hcms_themeinvertcolors)."img/pointer_select.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /></div>";

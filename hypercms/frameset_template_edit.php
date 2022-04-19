@@ -45,7 +45,7 @@ hcms_transitioneffect = false;
 </script>
 </head>
 
-<body>
+<body class="hcmsTransBackground">
 <?php
 // iPad and iPhone requires special CSS settings
 if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scrolling:touch !important;";
@@ -65,17 +65,17 @@ else $css_iphone = "";
   </div>
 
   <!-- template editor -->
-  <div id="editLayer" style="position:fixed; top:24px; right:0; bottom:0; left:0; margin:0; padding:0; <?php echo $css_iphone; ?>">
+  <div id="editLayer" style="position:fixed; top:23px; right:0; bottom:0; left:0; margin:0; padding:0; <?php echo $css_iphone; ?>">
     <iframe name="mainFrame1" src="template_edit.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&save=no&template=<?php echo $template; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 
   <!-- template versions -->
-  <div id="versionLayer" style="position:fixed; top:24px; right:0; bottom:0; left:0; margin:0; padding:0; display:none; <?php echo $css_iphone; ?>">
-    <iframe name="mainFrame2" id="mainFrame2" src="" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
+  <div id="versionLayer" style="position:fixed; top:23px; right:0; bottom:0; left:0; margin:0; padding:0; display:none; <?php echo $css_iphone; ?>">
+    <iframe name="mainFrame2" id="mainFrame2" src="empty.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 
   <!-- template info -->
-  <div id="infoLayer" style="position:fixed; top:24px; right:0; bottom:0; left:0; margin:0; padding:0; display:none; <?php echo $css_iphone; ?>">
+  <div id="infoLayer" style="position:fixed; top:23px; right:0; bottom:0; left:0; margin:0; padding:0; display:none; <?php echo $css_iphone; ?>">
     <iframe name="mainFrame3" src="template_info.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&template=<?php echo $template; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 

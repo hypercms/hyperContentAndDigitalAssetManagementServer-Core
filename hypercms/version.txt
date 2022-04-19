@@ -5961,12 +5961,17 @@ Release 05/2022
 - Redesigned standard file icon in all design themes
 - Added the new workflow accept and inprogress icon to all design themes
 - Design modifications in the colorful design theme
-- Updates in the Template Designers Guide, Connector Guide and Workflow Management Guide
+- Update of the CKEditor rich text editor to version 4.18.0 without the deprecated Flash-plugin
+- Modifications in template_info in order to display the file size of the template in KB
+- Modifications in frameset_template_edit in order to add empty as the frame source for the version tab
+- Modifications in frameset_template_edit and frameset_site_edit in order to remove a gap of 1px between the tabs and tab layers
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
+- Updates in the Template Designers Guide, Connector Guide and Workflow Management Guide
 - Bug fix: The template engine did not include the local JS functions in case of formlock view which might cause JS errors if the template uses one of the local JS functions
 - Bug fix: Function showworkflowstatus in UI API did not use the passed information for the definition of the status background color
 - Bug fix: Function authenticate in REST API did not verify the message return value of function userlogin
 - Bug fix: The font file extension .ttf has been used twice in format_ext
 - Bug fix: Function getfileinfo in Get API did not verify an empty file extension correctly
-- Bug fix: Function getobjeclist in Get API was not able to access the global variables for the page- and compaccess
+- Bug fix: Function getobjeclist in Get API was not able to access the global variables for the page- and compaccess#
+- Bug fix: control_objectlist_menu did not disable the download icon for the recycle bin

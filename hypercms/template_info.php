@@ -90,13 +90,17 @@ if (session_id() != "") session_write_close();
     // modified date
     $date = date ("Y-m-d H:i", filemtime ($mgmt_config['abs_path_template'].$site."/".$template));
     $date = showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang]);
+
+    // file size in KB
+    $filesize = round ((filesize ($mgmt_config['abs_path_template'].$site."/".$template) / 1024), 0);
+    if ($filesize < 1) $filesize = 1;
   
     echo "
     <tr><td>".getescapedtext ($hcms_lang['template'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".$tpl_name."</td></tr>
     <tr><td>".getescapedtext ($hcms_lang['category'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".$pagecomp."</td></tr>
     <tr><td>".getescapedtext ($hcms_lang['owner'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".$tpl_user."</td></tr>
     <tr><td>".getescapedtext ($hcms_lang['last-updated'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".$date."</td></tr>
-    <tr><td>".getescapedtext ($hcms_lang['file-size'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".filesize ($mgmt_config['abs_path_template'].$site."/".$template)." bytes</td></tr>";
+    <tr><td>".getescapedtext ($hcms_lang['file-size'][$lang])." </td><td class=\"hcmsHeadlineTiny\">".$filesize." KB</td></tr>";
   }
   ?>
   </table>

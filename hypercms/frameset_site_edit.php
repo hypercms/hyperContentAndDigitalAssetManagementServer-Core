@@ -60,12 +60,12 @@ else $css_iphone = "";
   </div>
 
   <!-- publication settings -->
-  <div id="settingsLayer" style="position:fixed; top:24px; right:0; bottom:0; left:0; margin:0; padding:0; <?php echo $css_iphone; ?>">
+  <div id="settingsLayer" style="position:fixed; top:23px; right:0; bottom:0; left:0; margin:0; padding:0; <?php echo $css_iphone; ?>">
     <iframe name="mainFrame1" src="<?php echo "site_edit_form.php?site_name=".$site_name; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 
   <!-- publication inheritance -->
-  <div id="inheritanceLayer" style="position:fixed; top:24px; right:0; bottom:0; left:0; margin:0; padding:0; display:none; <?php echo $css_iphone; ?>">
+  <div id="inheritanceLayer" style="position:fixed; top:23px; right:0; bottom:0; left:0; margin:0; padding:0; display:none; <?php echo $css_iphone; ?>">
     <iframe name="mainFrame2" src="<?php echo "site_edit_inheritance.php?site_name=".$site_name; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 
