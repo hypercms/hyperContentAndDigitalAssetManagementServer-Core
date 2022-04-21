@@ -5965,6 +5965,9 @@ Release 05/2022
 - Modifications in template_info in order to display the file size of the template in KB
 - Modifications in frameset_template_edit in order to add empty as the frame source for the version tab
 - Modifications in frameset_template_edit and frameset_site_edit in order to remove a gap of 1px between the tabs and tab layers
+- Modifications in function authconnect of the LDAP Connector in order to add @ after the user name if the domain is not empty
+- Modifications in user_sendlink and service sendmail in order to provide an empty mailfile value and prevent loading of the mailfile if the mail form data is saved as a new message
+- Modifications in control_message_menu in order to hide the message on the successful removal of messages
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
 - Updates in the Template Designers Guide, Connector Guide and Workflow Management Guide
@@ -5975,3 +5978,6 @@ Release 05/2022
 - Bug fix: Function getfileinfo in Get API did not verify an empty file extension correctly
 - Bug fix: Function getobjeclist in Get API was not able to access the global variables for the page- and compaccess#
 - Bug fix: control_objectlist_menu did not disable the download icon for the recycle bin
+- Bug fix: user_sendlink used the data of the saved message that has been loaded instead of saving the new message data provided by the form
+- Bug fix: Service sendmail starts with an array key of 0 for the user arrays and user_sendlink failed to include the array element 0 due to the verficition of the array key
+- Bug fix: control_queue_menu did verify the queue_id for action "delete" which was not provided when using the key shortcut for deleting objects in the queue

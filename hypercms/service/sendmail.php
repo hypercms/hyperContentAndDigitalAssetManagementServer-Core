@@ -71,7 +71,7 @@ $email_ondate = getrequest_esc ("email_ondate");
 $email_date = getrequest_esc ("email_date");
 
 // include values from mail file if no action has been requested
-if ($mailfile != "" && valid_objectname ($mailfile))
+if (!empty ($mailfile) && valid_objectname ($mailfile))
 {
   if (is_file ($mgmt_config['abs_path_data']."queue/".$mailfile.".php")) include ($mgmt_config['abs_path_data']."queue/".$mailfile.".php");
   elseif (is_file ($mgmt_config['abs_path_data']."message/".$mailfile.".php")) include ($mgmt_config['abs_path_data']."message/".$mailfile.".php");
@@ -161,7 +161,8 @@ function getallusers ($site)
 
     if (!empty ($alluseritem_array) && is_array ($alluseritem_array))
     {
-      $i = 0;
+      // array key must not be zero in order to be accepted by user_sendmail
+      $i = 1;
       
       foreach ($alluseritem_array as $useritem)
       {

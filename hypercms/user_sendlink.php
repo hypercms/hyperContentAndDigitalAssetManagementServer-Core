@@ -626,6 +626,8 @@ $token_new = createtoken ($user);
       <input type="hidden" name="multiobject" value="<?php echo $multiobject; ?>" />
       <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
       <input type="hidden" name="action" id="action" value="sendmail" />
+      <!-- mailfile need to be empty in order to save new message data -->
+      <input type="hidden" name="mailfile" value="" />
       
       <div id="LayerMenu" class="hcmsTabContainer" style="position:absolute; z-index:10; left:0px; top:40px; min-width:380px;">
         <div id="tab1" class="hcmsTabActive">
@@ -666,13 +668,13 @@ $token_new = createtoken ($user);
                   foreach ($user_login as $temp_user)
                   {
                     // find user_id in alluser_array
-                    if (!empty ($alluser_array) && is_array ($alluser_array)) $user_id = array_search ($temp_user, $alluser_array);
-                    else $user_id = false;
+                    if (!empty ($alluser_array) && is_array ($alluser_array)) $temp_id = array_search ($temp_user, $alluser_array);
+                    else $temp_id = false;
 
-                    if ($user_id && !empty ($allrealname_array[$user_id])) $temp_realname = $allrealname_array[$user_id];
+                    if ($temp_id && !empty ($allrealname_array[$temp_id])) $temp_realname = $allrealname_array[$temp_id];
                     else $temp_realname = $temp_user;
                     
-                    if ($user_id && !empty ($allemail_array[$user_id])) $temp_email = $allemail_array[$user_id];
+                    if ($temp_id && !empty ($allemail_array[$temp_id])) $temp_email = $allemail_array[$temp_id];
                     else $temp_email = "";
                     
                     echo "

@@ -59,7 +59,7 @@ if ($action == "delete" && checktoken ($token, $user) && $message_id != "" && $m
       
       if ($result == true)
       {
-        $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
+        $show = "";
         $add_onload = "parent.frames['mainFrame'].location.reload();";
         $multiobject = "";
         $message_id = "";

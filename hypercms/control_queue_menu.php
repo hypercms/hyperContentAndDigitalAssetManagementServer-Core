@@ -63,7 +63,7 @@ $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 // delete entries from queue
-if ($action == "delete" && checktoken ($token, $user) && $queue_id != "")
+if ($action == "delete" && checktoken ($token, $user))
 {
   if ($multiobject != "" || $queue_id != "")
   {
