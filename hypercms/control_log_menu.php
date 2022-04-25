@@ -175,8 +175,8 @@ function warning_delete()
   </div>
 </div>
 
-<!-- notify users -->
-<div id="notificationLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; left:15px; top:4px; visibility:hidden;">
+<!-- notify users (overwrite z-index for tagit selectbox) -->
+<div id="notificationLayer" class="hcmsMessage" style="position:absolute; z-index:99; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; left:15px; top:4px; visibility:hidden;">
 <form name="registrationform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="notification" />

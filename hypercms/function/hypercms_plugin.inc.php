@@ -332,7 +332,13 @@ function plugin_saveconfig ($configuration)
   $save .= plugin_generatedefinition ('mgmt_plugin', $configuration);
   $save .= "?>";
 
-  return savefile ($mgmt_config['abs_path_data']."config/", $file, $save);
+  // save file
+  $result = savefile ($mgmt_config['abs_path_data']."config/", $file, $save);
+
+  // empty file cache
+  opcache_invalidate ($mgmt_config['abs_path_data']."config/".$file);
+
+  return $result;
 }
 
 // --------------------------------------- plugin_generatelink -------------------------------------------

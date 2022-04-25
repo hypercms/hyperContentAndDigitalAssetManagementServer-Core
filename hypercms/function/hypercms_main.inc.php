@@ -7150,6 +7150,7 @@ function createpublication ($site_name, $user="sys")
 // ldap_sync ... Synchronize LDAP users with system user (create and edit user) [boolean]
 // ldap_delete_user ... Delete user that do not exist in LDAP [boolean]
 // ldap_keep_groups ... Keep existing group memberships of user [boolean]
+// ldap_username_dn ... Define the user DN for the LDAP bind (required by some LDAP servers, e.g.: uid=%user%,cn=users) [string]
 // ldap_user_filter ... Define the user filter for the search in LDAP/AD (sAMAccountName) [string]
 // ldap_user_attributes ... Define the user attributes you want so sync with LDAP/AD ('memberof', 'givenname', 'sn', 'telephonenumber', 'mail') [array]
 // ldap_sync_groups_mapping ... Mapping based on a search string that defines the users group membership like "OU=MANAGER GROUP"=>"ChiefEditor" [array]
@@ -7444,6 +7445,10 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists('ldap_port', $setting)) $ldap_port_new = trim ($setting['ldap_port']);
     else $ldap_port_new = "";
 
+    // LDAP user DN
+    if (array_key_exists('ldap_username_dn', $setting)) $ldap_username_dn_new = trim ($setting['ldap_username_dn']);
+    else $ldap_username_dn_new = "";
+
     // LDAP user filter
     if (array_key_exists('ldap_user_filter', $setting)) $ldap_user_filter_new = trim ($setting['ldap_user_filter']);
     else $ldap_user_filter_new = "";
@@ -7714,6 +7719,9 @@ function editpublication ($site_name, $setting, $user="sys")
 
 // Keep existing group memberships of user (true) or not (false)
 \$mgmt_config['".$site_name."']['ldap_keep_groups'] = ".$ldap_keep_groups_new.";
+
+// Define the user DN for the LDAP bind
+\$mgmt_config['".$site_name."']['ldap_username_dn'] = \"".str_replace ("\"", "'", $ldap_username_dn_new)."\";
 
 // Define the user filter for the search in LDAP/AD
 \$mgmt_config['".$site_name."']['ldap_user_filter'] = \"".str_replace ("\"", "'", $ldap_user_filter_new)."\";
@@ -8044,6 +8052,19 @@ function editpublicationsetting ($site_name, $setting, $user="sys")
 
           $add_onload = "";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-publication-configuration-was-saved-successfully'][$lang]."</span>\n";
+
+          // reload publication management configuration after changes
+          if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
+          {
+            // empty file cache
+            opcache_invalidate ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
+
+            // reset
+            $mgmt_config[$site_name] = array();
+
+            // reload
+            include ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
+          }
 
           // success
           $result_ok = true;

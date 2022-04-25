@@ -582,7 +582,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
         <?php echo getescapedtext ($hcms_lang['tag-set'][$lang]); ?></td>
     </tr>
     <tr> 
-      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['styelsheet-optional'][$lang]); ?></td>
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['stylesheet-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">[hyperCMS:compstylesheet file='...'] </td>
     </tr>
     

@@ -82,7 +82,7 @@ video#videoScreen
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
   background: url('<?php echo getthemelocation(); ?>/img/backgrd_start.png') no-repeat;
-  background-size: cover; 
+  background-size: cover;
 }
 
 @media screen and (max-device-width: 800px)
@@ -91,6 +91,86 @@ video#videoScreen
   {
     display: none;
   }
+}
+
+.Clock
+{
+  width: 320px;
+  height: 320px;
+  background-image: url('<?php echo getthemelocation(); ?>/img/backgrd_clock.png');
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.Clock:before
+{
+  content: '';
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background: #FFF;
+  border-radius: 50%;
+  z-index: 10000;
+}
+.Clock .hour,
+.Clock .minute,
+.Clock .second
+{
+  position: absolute;
+}
+.Clock .hour, .hr
+{
+  width: 160px;
+  height: 160px;
+}
+.Clock .minute, .min
+{
+  width: 190px;
+  height: 190px;
+}
+.Clock .second, .sec
+{
+  width: 230px;
+  height: 230px;
+}
+.hr, .min, .sec
+{
+  display: flex;
+  justify-content: center;
+  /*align-items: center;*/
+  position: absolute;
+  border-radius: 50%;
+}
+.hr:before
+{
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 80px;
+  background: #FFF;
+  z-index: 10;
+  border-radius: 6px 6px 0 0;
+}
+.min:before
+{
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 90px;
+  background: #FFF;
+  z-index: 11;
+  border-radius: 6px 6px 0 0;
+}
+.sec:before
+{
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 150px;
+  background: #FFF;
+  z-index: 12;
+  border-radius: 6px 6px 0 0;
 }
 </style>
 

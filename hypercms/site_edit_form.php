@@ -752,15 +752,15 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><div style="padding:10px 0px;">LDAP / MS Active Directory</div> </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD <?php echo getescapedtext ($hcms_lang['server'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD <?php echo getescapedtext ($hcms_lang['server'][$lang]); ?> <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?></span></td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_servers" name="setting[ldap_servers]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_servers']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user domain </td>
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user domain <br/><span class="hcmsTextSmall">MS AD: <?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?></span></td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_userdomain" name="setting[ldap_userdomain]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_userdomain']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">Base Distinguished Name (DN) </td>
+      <td style="white-space:nowrap; vertical-align:top;">Base Distinguished Name (DN) <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?></span></td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_base_dn" name="setting[ldap_base_dn]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_base_dn']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
@@ -773,7 +773,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD Port </td>
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD Port <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>: 389 (TLS) or 636 (SSL)</span></td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="number" id="ldap_port" name="setting[ldap_port]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_port']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
@@ -798,7 +798,11 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user filter <br/><span class="hcmsTextSmall">sAMAccountName</span></td>
+      <td style="white-space:nowrap; vertical-align:top;">User Base Distinguished Name for the LDAP bind <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?> = %user%: uid=%user%,cn=users</span></td>
+      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_username_dn" name="setting[ldap_username_dn]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_username_dn']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user filter <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>: sAMAccountName (MS AD)</span></td>
       <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_user_filter" name="setting[ldap_user_filter]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_user_filter']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 

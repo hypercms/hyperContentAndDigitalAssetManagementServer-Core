@@ -5968,9 +5968,26 @@ Release 05/2022
 - Modifications in function authconnect of the LDAP Connector in order to add @ after the user name if the domain is not empty
 - Modifications in user_sendlink and service sendmail in order to provide an empty mailfile value and prevent loading of the mailfile if the mail form data is saved as a new message
 - Modifications in control_message_menu in order to hide the message on the successful removal of messages
+- Modifications in control_user_menu in order not to use the global REQUEST variable for the multiobject
+- Modifications in function editpublicationsetting in Main API in order to empty the file cache and reload the publication configuration after changes
+- Modifications in control_log_menu in order to set a lower z-index for the notification layer due to a display issue with the tagit select box
+- Modifications in control_user_menu in order to set a lower z-index for the registration layer due to a display issue with the tagit select box
+- Modifications in plugin_management in order to empty the file cache before loading the plugin configuration
+- Modifications in function plugin_saveconfig in Plugin API in order to empty the file cache after the plugin configuration file has been saved
+- Modifications in function authconnect of the LDAP Connector in order to define a user filter if no MS AD and domain is used
+- Modifications in function authconnect of the LDAP Connector in order to abort if TLS fails an no SSL connection is used
+- Implementation of the new main configuration parameter $mgmt_config['ldap_username_dn'] for the LDAP user DN that is required by some LDAP servers (will only be used if AD is not used and the user domain is empty)
+- Modifications in site_edit in order to add the new configuration parameter for the LDAP user DN
+- Modifications in function editpublication in Main API in order to support the new configuration parameter for the LDAP user DN
+- Modifications in template_edit in order to rename a language key
+- Implementation of the new analog watch home box in order to display and analog watch and todays date
+- Modifications in the home screen in order to add the local CSS styles for the analog watch home box
+- Added new image backgrd_clock.png for the analog watch home box to all design themes
+- Modifications in function getobjectlist in Get API in order to support multiple folder hashes as input array
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
-- Updates in the Template Designers Guide, Connector Guide and Workflow Management Guide
+- Updates in the Administrators Guide, Template Designers Guide, Connector Guide and Workflow Management Guide
+- Updates of all language files due to the change of a language key
 - Bug fix: The template engine did not include the local JS functions in case of formlock view which might cause JS errors if the template uses one of the local JS functions
 - Bug fix: Function showworkflowstatus in UI API did not use the passed information for the definition of the status background color
 - Bug fix: Function authenticate in REST API did not verify the message return value of function userlogin

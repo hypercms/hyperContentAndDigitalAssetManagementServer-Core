@@ -38,6 +38,10 @@ $mgmt_plugin = array();
 
 if (is_file ($mgmt_config['abs_path_data']."config/plugin.global.php"))
 {
+  // empty file cache
+  opcache_invalidate ($mgmt_config['abs_path_data']."config/plugin.global.php");
+
+  // load plugin configuration
   require ($mgmt_config['abs_path_data']."config/plugin.global.php");
 }
 
@@ -45,7 +49,6 @@ if (is_file ($mgmt_config['abs_path_data']."config/plugin.global.php"))
 if ($action == "reparse" && checktoken ($token, $user))
 {
   $mgmt_plugin = plugin_parse ($mgmt_plugin);
-  $plugin_save = plugin_saveconfig ($mgmt_plugin);
   $plugin_save = plugin_saveconfig ($mgmt_plugin);
   
   if ($plugin_save == false) $show = getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang]);

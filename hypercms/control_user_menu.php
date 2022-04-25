@@ -68,9 +68,9 @@ if ($action != "" && checktoken ($token, $user))
            )
          )
   {
-    if ($_REQUEST['multiobject'] != "")
+    if (!empty ($multiobject))
     {
-      $multiobject_array = explode ("|", $_REQUEST['multiobject']);
+      $multiobject_array = explode ("|", $multiobject);
       $result['result'] = true;
       
       foreach ($multiobject_array as $login)
@@ -343,7 +343,7 @@ function goToURL()
 </script>
 </head>
 
-<body class="hcmsWorkplaceControlWallpaper" onLoad="<?php echo $add_onload; ?>">
+<body class="hcmsWorkplaceControlWallpaper" onload="<?php echo $add_onload; ?>">
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
@@ -628,14 +628,14 @@ echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;")
   </form>
 </div>
 
-<!-- registration -->
-<div id="registrationLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:92px; left:10px; top:4px; visibility:hidden;">
+<!-- registration (overwrite z-index for tagit selectbox) -->
+<div id="registrationLayer" class="hcmsMessage" style="position:absolute; z-index:99; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:92px; left:10px; top:4px; visibility:hidden;">
   <form name="registrationform" action="" method="post">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="group" value="<?php echo $group; ?>" />
     <input type="hidden" name="action" value="registration" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
-    
+
     <table class="hcmsTableStandard" style="width:100%;">
       <tr>
         <td>

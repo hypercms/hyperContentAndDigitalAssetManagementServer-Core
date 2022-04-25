@@ -1057,17 +1057,27 @@ $mgmt_config['ldap_admin_password'] = "";
 // LDAP works from port 389 and when you issue the StartTLS (with ldap_start_tls()) it encrypts the connection.
 // Example: ldapserver.name
 $mgmt_config['ldap_servers'] = "ldapserver.name";
-// Example: @domain.com
+// Example: domain.com
 $mgmt_config['ldap_userdomain'] = "";
 // Example: OU=Departments,DC=MYDOMAIN,DC=COM
 $mgmt_config['ldap_base_dn'] = "";
 // Example: 2 or 3
 $mgmt_config['ldap_version'] = 3;
-// Example: 389 or 636
+// Example: 389 (for TLS) or 636 (for SSL)
 $mgmt_config['ldap_port'] = "";
 $mgmt_config['ldap_follow_referrals'] = false;
 $mgmt_config['ldap_use_ssl'] = true;
 $mgmt_config['ldap_use_tls'] = false;
+
+// Define the LDAP/AD user filter for the LDAP bind or leave empty if the LDAP server support the user name for the bind
+// This setting will not be applied if MS AD or a user domain is used.
+// Use %user% as placeholder for the user name.
+// Example: uid=%user%,cn=users
+$mgmt_config['ldap_username_dn'] = "";
+
+// Define the user filter for the search in LDAP/AD
+// For Active Directory define "sAMAccountName" 
+$mgmt_config['ldap_user_filter'] = "sAMAccountName";
 
 // Enable (true) or disable (false) the sync of LDAP users with the system users
 // The user information such as name, email, telephone is queried and synchronized.
@@ -1075,10 +1085,6 @@ $mgmt_config['ldap_use_tls'] = false;
 // this must be specified in the $mgmt_config['ldap_sync_publications_mapping'] and $mgmt_config['ldap_sync_groups_mapping']
 // otherwise the memberships are retained as stored in the system.
 $mgmt_config['ldap_sync'] = false;
-
-// Define the user filter for the search in LDAP/AD
-// For Active Directory define "sAMAccountName" 
-$mgmt_config['ldap_user_filter'] = "sAMAccountName";
 
 // Define the user attributes you want so sync with LDAP/AD
 // Supported attributes for the sync are 'memberof', 'givenname', 'sn', 'telephonenumber', and 'mail'

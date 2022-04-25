@@ -1193,7 +1193,7 @@ $hcms_lang['workflow-must-be-defined']['ar'] = "(سير العمل يجب أن �
 $hcms_lang['assign-workflow']['ar'] = "تعيين سير العمل";
 $hcms_lang['template-script']['ar'] = "القالب النصي";
 $hcms_lang['stylesheet-references-for-components']['ar'] = "صفحات الأنماط الموسعة إشارات العناصر";
-$hcms_lang['styelsheet-optional']['ar'] = "Styelsheet (اختياري)";
+$hcms_lang['stylesheet-optional']['ar'] = "Styelsheet (اختياري)";
 $hcms_lang['static-include-optional']['ar'] = "ومن الثابت (اختياري)";
 $hcms_lang['hide-icons-on-edit-optional']['ar'] = "إخفاء الرموز على تحرير (اختياري)";
 $hcms_lang['width-of-editorfield-in-pixel-optional']['ar'] = "عرض editorfield في بكسل (اختياري)";
