@@ -3524,7 +3524,7 @@ function deleteversions ($type, $report, $user="sys")
 // output: file content
 
 // description:
-// Loads the file header, represented by a defined header size.
+// Loads the file headerbased on a defined header size.
 
 function loadfile_header ($abs_path, $filename)
 {
@@ -3583,6 +3583,12 @@ function loadfile_header ($abs_path, $filename)
           return $filedata;
         }
       }
+
+      $errcode = "00883";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|File header of file ".$abs_path.$filename." can't be loaded";
+
+      // save log
+      savelog ($error);
     }
   } 
 
@@ -3649,6 +3655,12 @@ function loadfile_fast ($abs_path, $filename)
 
         return $filedata;
       }
+
+      $errcode = "00884";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|File ".$abs_path.$filename." can't be loaded";
+
+      // save log
+      savelog ($error);
     } 
   }
 
@@ -3746,6 +3758,12 @@ function loadfile ($abs_path, $filename)
         // sleep for 0 - 100 milliseconds, to avoid collision and CPU load
         else usleep (round (rand (0, 100) * 1000));
       }
+
+      $errcode = "00885";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|File ".$abs_path.$filename." can't be loaded within 3 seconds";
+
+      // save log
+      savelog ($error);
     }
   }
 
@@ -3902,6 +3920,12 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
         // sleep for 0 - 100 milliseconds to avoid collision and CPU load
         else usleep (round (rand (0, 100) * 1000));
       }
+
+      $errcode = "00888";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|File ".$abs_path.$filename." can't be loaded within 3 seconds";
+
+      // save log
+      savelog ($error);
 
       // force unlock if locked by other user
       if ($force_unlock > 0)

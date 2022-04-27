@@ -2593,7 +2593,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode || !is_file ($location_dest.$newfile))
                     {
                       $errcode = "20234";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \tE".implode ("\t", $output); 
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output); 
                     }
                     // on success
                     else $converted = true;

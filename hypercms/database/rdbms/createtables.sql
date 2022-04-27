@@ -40,7 +40,7 @@ CREATE TABLE `object` (
   `analyzed` tinyint(1) NOT NULL default '0',
   `deleteuser` char(100) DEFAULT '',
   `deletedate` date DEFAULT NULL,
-  `workflowdate` datetime NOT NULL,
+  `workflowdate` datetime DEFAULT NULL,
   `workflowstatus` char(5) DEFAULT NULL,
   `workflowuser` char(100) DEFAULT '',
   `textcontent` mediumtext DEFAULT NULL,

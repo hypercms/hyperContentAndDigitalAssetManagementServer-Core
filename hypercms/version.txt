@@ -5948,7 +5948,7 @@ Release 05/2022
 - Modifications in function rdbms_searchcontent in DB Connect in order to include all folders on the same location in the result if the main configuration setting $mgmt_config['search_folderpath_level'] is enabled
 - Implementation of the new "transparent" design theme that supports transparency in all windows and uses a single background image
 - Modification in frameset_main, frameset_mobile, and frameset_content in order to assign new CSS class hcmsMainWindow to the body tag
-- Modifications in home in order to diable the dynamic and default wallpaper if the design theme "transparent" is used
+- Modifications in home in order to disable the dynamic and default wallpaper if the design theme "transparent" is used
 - Modifications in portal_edit in order to support the new transparent design theme for portal designs
 - Modifications in portal_edit in order to reload the background images (jpg and png)
 - Modifications in function editportal in order to copy the design theme before the upload o files
@@ -5980,10 +5980,12 @@ Release 05/2022
 - Modifications in site_edit in order to add the new configuration parameter for the LDAP user DN
 - Modifications in function editpublication in Main API in order to support the new configuration parameter for the LDAP user DN
 - Modifications in template_edit in order to rename a language key
-- Implementation of the new analog watch home box in order to display and analog watch and todays date
+- Implementation of the new analog watch home box in order to display an analog watch and the date
 - Modifications in the home screen in order to add the local CSS styles for the analog watch home box
 - Added new image backgrd_clock.png for the analog watch home box to all design themes
 - Modifications in function getobjectlist in Get API in order to support multiple folder hashes as input array
+- Modifications in function loadfile and loadlockfile in Main API in order to add a new log entry if the file can't be loaded after 3 seconds of waiting
+- Modifications in function loadfile_header and loadfile_fast in Main API in order to add a new log entry if the file can't be loaded
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
 - Updates in the Administrators Guide, Template Designers Guide, Connector Guide and Workflow Management Guide
@@ -5996,5 +5998,6 @@ Release 05/2022
 - Bug fix: Function getobjeclist in Get API was not able to access the global variables for the page- and compaccess#
 - Bug fix: control_objectlist_menu did not disable the download icon for the recycle bin
 - Bug fix: user_sendlink used the data of the saved message that has been loaded instead of saving the new message data provided by the form
-- Bug fix: Service sendmail starts with an array key of 0 for the user arrays and user_sendlink failed to include the array element 0 due to the verficition of the array key
+- Bug fix: Service sendmail starts with an array key of 0 for the user arrays and user_sendlink failed to include the array element 0 due to the verification of the array key
 - Bug fix: control_queue_menu did verify the queue_id for action "delete" which was not provided when using the key shortcut for deleting objects in the queue
+
