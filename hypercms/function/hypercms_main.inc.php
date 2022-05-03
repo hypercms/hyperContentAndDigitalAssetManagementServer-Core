@@ -510,9 +510,15 @@ function object_exists ($path)
     $location = getlocation ($path);
     $file = getobject ($path);
 
-    // transform special characters 
-    if (substr ($location, 0, 7) == "%page%/" || substr ($location, 0, 7) == "%comp%/") $location = specialchr_encode ($location, "no");
-    $file = specialchr_encode ($file, "no");
+    // transform special characters
+    if (strpos ($path, "~") < 0)
+    {
+      if (substr ($location, 0, 7) == "%page%/" || substr ($location, 0, 7) == "%comp%/")
+      {
+        $location = specialchr_encode ($location, "no");
+        $file = specialchr_encode ($file, "no");
+      }
+    }
 
     // absolute path
     $location = deconvertpath ($location, "file");
@@ -13265,9 +13271,9 @@ function createobject ($site, $location, $page, $template, $user)
 
 // ---------------------------------------- uploadfile --------------------------------------------
 // function: uploadfile()
-// input: publication name [string], destination location [string], category [page,comp], uploaded file (array as defined by PHP autoglobale $_FILES) [array], unzip/zip [%,unzip,zip], object name (only for media file update of existing object) [string], 
-//        create only a new thumbnail from the media file [1,0] (optional), resize image [percentage,null] (optional), image resize percentage value [integer] (optional), user name [string] (optional), check for duplicates [boolean] (optional), 
-//        overwrite existing files [boolean] (optional), versioning of file [boolean] (optional), name of zip file [string] (optional), number of files to be compressed [integer] (optional), create media files in the background [boolean] (optional)
+// input: publication name [string], destination location [string], category [page,comp], uploaded file (array as defined by PHP autoglobale $_FILES) [array], unzip/zip [unzip,zip,NULL], object name (only for media file update of existing object) [string], 
+//        create only a new thumbnail from the uploaded image file [1,0] (optional), resize image [percentage,NULL] (optional), image resize percentage value [integer] (optional), user name [string] (optional), check for duplicates [boolean] (optional), 
+//        overwrite existing file [boolean] (optional), versioning of file [boolean] (optional), name of zip file [string] (optional), number of files to be compressed [integer] (optional), create media files in the background [boolean] (optional)
 // output: result array
 // requires: config.inc.php, $pageaccess, $compaccess, $hiddenfolder, $localpermission
  

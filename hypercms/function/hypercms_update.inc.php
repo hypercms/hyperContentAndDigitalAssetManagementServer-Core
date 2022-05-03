@@ -1623,7 +1623,7 @@ function update_database_v1000 ()
     $errcode = "50617";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-    $sql = "ALTER TABLE object ADD COLUMN analyzed tinyint(1) NOT NULL default '0' AFTER md5_hash;";
+    $sql = "ALTER TABLE object ADD COLUMN analyzed tinyint(1) NOT NULL DEFAULT '0' AFTER md5_hash;";
     $errcode = "50618";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
@@ -1902,15 +1902,15 @@ function update_database_v1005 ()
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // alter table object
-    $sql = "ALTER TABLE `object` ADD workflowdate datetime AFTER deletedate;";
+    $sql = "ALTER TABLE `object` ADD workflowdate datetime DEFAULT NULL AFTER deletedate;";
     $errcode = "50651";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-    $sql = "ALTER TABLE `object` ADD workflowstatus CHAR(5) AFTER workflowdate;";
+    $sql = "ALTER TABLE `object` ADD workflowstatus CHAR(5) DEFAULT NULL AFTER workflowdate;";
     $errcode = "50652";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-    $sql = "ALTER TABLE `object` ADD workflowuser CHAR(100) AFTER workflowstatus;";
+    $sql = "ALTER TABLE `object` ADD workflowuser CHAR(100) DEFAULT NULL AFTER workflowstatus;";
     $errcode = "50653";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 

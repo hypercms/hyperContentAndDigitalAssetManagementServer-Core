@@ -2453,22 +2453,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if (!empty ($config['width']) && !empty ($config['height']))
         {
           $mediaratio = $config['width'] / $config['height'];
-          $width_orig = $config['width'];
-          $height_orig = $config['height'];
+          $mediawidth = $width_orig = $config['width'];
+          $mediaheight = $height_orig = $config['height'];
 
           // correct height for portrait videos
           if (empty ($height) && $height_orig > $width_orig && $height_orig > 1080)
           {
             $height = 1080;
-          }
-
-          // new size may exceed the original image size
-          $newsize = mediasize2frame ($width_orig, $height_orig, $width, $height, true);
-
-          if (is_array ($newsize))
-          {
-            $mediawidth = $newsize['width'];
-            $mediaheight = $newsize['height'];
           }
         }
 
@@ -2482,7 +2473,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $mediawidth = 854;
           $mediaheight = 480;
-          $mediaratio = $mediawidth / $mediaheight;
+        }
+
+        // new size may exceed the original image size
+        $newsize = mediasize2frame ($mediawidth, $mediaheight, $width, $height, true);
+
+        if (is_array ($newsize))
+        {
+          $mediawidth = $newsize['width'];
+          $mediaheight = $newsize['height'];
         }
 
         // generate player code

@@ -19,7 +19,7 @@ CKEDITOR.editorConfig = function( config )
       { name: 'basicstyles', items : [ 'TextColor','BGColor','-','Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
       { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
       '/',
-      { name: 'insert',      items : [ 'Image','Flash','hcms_video','Youtube','Table','HorizontalRule','Smiley','SpecialChar','Iframe','PageBreak','-','Form','Checkbox','Radio','TextField','Textarea','Select','Button','ImageButton','HiddenField' ] },
+      { name: 'insert',      items : [ 'Image','hcms_video','Youtube','Table','HorizontalRule','Smiley','SpecialChar','Iframe','PageBreak','-','Form','Checkbox','Radio','TextField','Textarea','Select','Button','ImageButton','HiddenField' ] },
       { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
       '/',
       { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] }
@@ -35,7 +35,7 @@ CKEDITOR.editorConfig = function( config )
       { name: 'basicstyles', items : [ 'TextColor','BGColor','-','Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
       { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
       '/',
-      { name: 'insert',      items : [ 'Image','Flash','hcms_video','Youtube','Table','HorizontalRule','SpecialChar','Iframe','PageBreak' ] },
+      { name: 'insert',      items : [ 'Image','hcms_video','Youtube','Table','HorizontalRule','SpecialChar','Iframe','PageBreak' ] },
       { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
       '/',
       { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] }
@@ -54,7 +54,7 @@ CKEDITOR.editorConfig = function( config )
       { name: 'basicstyles', items : [ 'TextColor','BGColor','-','Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
       { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
       '/',
-      { name: 'insert',      items : [ 'Image','Flash','hcms_video','Youtube','Table','HorizontalRule','SpecialChar','Iframe','PageBreak' ] },
+      { name: 'insert',      items : [ 'Image','hcms_video','Youtube','Table','HorizontalRule','SpecialChar','Iframe','PageBreak' ] },
       { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
     ];
     

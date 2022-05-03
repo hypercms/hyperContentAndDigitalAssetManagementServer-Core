@@ -4675,7 +4675,7 @@ Release 12/2020
 - Modifications in ldap_connect in order to support the new main configuration setting $mgmt_config['ldap_delete_user'] and delete users which do not exist in the LDAP/AD directory 
 - Implementation of the new main configuration settings $mgmt_config['ldap_admin_username'] and $mgmt_config['ldap_admin_password'] for the general LDAP/AD access is SSO is used and only the user name can be provided via OAuth
 - Implementation of the new main configuration settings $mgmt_config['oauth_consumer_key'], $mgmt_config['oauth_secret'], and $mgmt_config['oauth_timezone'] for OAuth 1.0 support
-- Implementation of the new OAuth 1.0 remote client located in install/data/oauth_remoteclient.php and can be used on a remote IIS webserver with activated Integrated Windows authentication for SSO with the system (only user name will be provided using OAuth)
+- Implementation of the new OAuth 1.0 remote client located in install/data/oauth_remoteclient.php and can be used on a remote IIS web server with activated Integrated Windows authentication for SSO with the system (only user name will be provided using OAuth)
 - Implementation of the new function verifyoauthclient in the Connector module (SSO API)
 - Modifications in API loader in order to include SSO API
 - Modifications in function editpublication in Main API in order to support the new setting 'ldap_delete_user', 'ldap_user_filter', 'ldap_user_attributes', and 'ldap_sync_publications_mapping'
@@ -5986,18 +5986,35 @@ Release 05/2022
 - Modifications in function getobjectlist in Get API in order to support multiple folder hashes as input array
 - Modifications in function loadfile and loadlockfile in Main API in order to add a new log entry if the file can't be loaded after 3 seconds of waiting
 - Modifications in function loadfile_header and loadfile_fast in Main API in order to add a new log entry if the file can't be loaded
+- Modifications in createtable.sql in order to modify the default values of some table attributes
+- Modifications in function upload in the REST API of the Connector module in order to support the new input parameters objecthash, checkduplicates, overwrite, and versioning
+- Modifications in function upload in the REST API of the Connector module in order to verify the new input parameters
+- Modifications in function upload in the REST API of the Connector module in order to convert the object hash to a path
+- Modifications in function upload in the REST API of the Connector module in order to verify if mediacontent is base64 encoded and only decode the content in this case
+- Modifications in function upload in the REST API of the Connector module in order to support the media rendering in the background
+- Modifications in function executeREST in the REST API of the Connector module in order to assign the objectpath to objecthash for REST function upload 
+- Modifications in function upload in the SOAP API of the Connector module in order to support the new input parameters objecthash, checkduplicates, overwrite, and versioning
+- Modifications in function upload in the SOAP API of the Connector module in order to verify the new input parameters
+- Modifications in function upload in the SOAP API of the Connector module in order to convert the object hash to a path
+- Modifications in function upload in the SOAP API of the Connector module in order to support the media rendering in the background
+- Modifications in the WSDL template for the SOAP services of the Connector module
+- Modifications in function save_content in the SOAP API of the Connector module in order to convert the object hash to a path
+- Modifications in function object_exists in Main API inm order to encode the object path only if the identifier characters is not already included in the path
+- Modifications in function showmedia in UI API in order to verify and assign the input dimension if no configuration values are present
+- Removed the Flash plugin from the configuration files of the rich text editor
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
-- Updates in the Administrators Guide, Template Designers Guide, Connector Guide and Workflow Management Guide
+- Updates in the Administrators Guide, Installtion Guide, Template Designers Guide, Connector Guide and Workflow Management Guide
 - Updates of all language files due to the change of a language key
+- Updates in the readme files regarding the support of htaccess and web.config file support of the web server
 - Bug fix: The template engine did not include the local JS functions in case of formlock view which might cause JS errors if the template uses one of the local JS functions
 - Bug fix: Function showworkflowstatus in UI API did not use the passed information for the definition of the status background color
-- Bug fix: Function authenticate in REST API did not verify the message return value of function userlogin
+- Bug fix: Function authenticate in REST API of the Connector module did not verify the message return value of function userlogin
 - Bug fix: The font file extension .ttf has been used twice in format_ext
 - Bug fix: Function getfileinfo in Get API did not verify an empty file extension correctly
-- Bug fix: Function getobjeclist in Get API was not able to access the global variables for the page- and compaccess#
+- Bug fix: Function getobjeclist in Get API was not able to access the global variables for the page- and compaccess
 - Bug fix: control_objectlist_menu did not disable the download icon for the recycle bin
 - Bug fix: user_sendlink used the data of the saved message that has been loaded instead of saving the new message data provided by the form
 - Bug fix: Service sendmail starts with an array key of 0 for the user arrays and user_sendlink failed to include the array element 0 due to the verification of the array key
 - Bug fix: control_queue_menu did verify the queue_id for action "delete" which was not provided when using the key shortcut for deleting objects in the queue
-
+- Bug fix: Function showmedia in UI API did not apply the provided width and height if the video configuration didn't provide the video dimension
