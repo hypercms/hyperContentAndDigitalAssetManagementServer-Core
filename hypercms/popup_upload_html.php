@@ -127,10 +127,10 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <!-- JQuery -->
-<script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
 <!-- JQuery UI -->
-<script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css">
+<script type="text/javascript" src="javascript/jquery-ui/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui.css" type="text/css">
 <!-- JQuery File Upload -->
 <script type="text/javascript" src="javascript/jquery/plugins/jquery.fileupload.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/jquery.iframe-transport.js"></script>

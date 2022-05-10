@@ -197,9 +197,9 @@ else
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <!-- JQuery and JQuery UI -->
-<script type="text/javascript" src="<?php echo cleandomain ($mgmt_config['url_path_cms']); ?>javascript/jquery/jquery-3.5.1.min.js"></script>
-<script type="text/javascript" src="<?php echo cleandomain ($mgmt_config['url_path_cms']); ?>javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
-<link type="text/css" rel="stylesheet" href="<?php echo cleandomain ($mgmt_config['url_path_cms']); ?>javascript/jquery-ui/jquery-ui-1.12.1.min.css" />
+<script type="text/javascript" src="<?php echo cleandomain ($mgmt_config['url_path_cms']); ?>javascript/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="<?php echo cleandomain ($mgmt_config['url_path_cms']); ?>javascript/jquery-ui/jquery-ui.min.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo cleandomain ($mgmt_config['url_path_cms']); ?>javascript/jquery-ui/jquery-ui.min.css" />
 <!-- Tagging -->
 <script type="text/javascript" src="<?php echo cleandomain ($mgmt_config['url_path_cms']); ?>javascript/tag-it/tag-it.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo cleandomain ($mgmt_config['url_path_cms']); ?>javascript/tag-it/jquery.tagit.css" />

@@ -8159,9 +8159,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   $viewstore .= "
   <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/main.min.js\" type=\"text/javascript\"></script>
   <!-- JQuery and JQuery UI -->
-  <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery/jquery-3.5.1.min.js\" type=\"text/javascript\"></script>
-  <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
-  <link  rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery-ui/jquery-ui-1.12.1.min.css\" type=\"text/css\" />
+  <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery/jquery.min.js\"></script>
+  <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery-ui/jquery-ui.min.js\"></script>
+  <link rel=\"stylesheet\" type=\"text/css\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery-ui/jquery-ui.min.css\" />
   ";
 
   if (empty ($recognizefaces_service)) $viewstore .= "

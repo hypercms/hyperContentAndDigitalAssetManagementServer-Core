@@ -635,11 +635,11 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <meta name="viewport" content="width=580, initial-scale=0.9, maximum-scale=1.0, user-scalable=1" />
 
 <!-- JQuery and JQuery UI -->
-<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-3.5.1.min.js"></script>
-<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-migrate-3.3.0.min.js"></script>
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-migrate.min.js"></script>
 <script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/plugins/jquery.color.js"></script>
-<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
-<link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
+<script type="text/javascript" src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery-ui/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery-ui/jquery-ui.css" type="text/css" />
 
 <!-- Tag it script -->
 <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/tag-it/tag-it.min.js" type="text/javascript" charset="utf-8"></script>

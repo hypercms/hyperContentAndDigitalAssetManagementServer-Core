@@ -62,9 +62,9 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 
 <!-- Jquery and Jquery UI Autocomplete (used for search box) -->
-<script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
-<script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
+<script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="javascript/jquery-ui/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui.css" />
 
 <style>
 video#videoScreen
@@ -81,7 +81,7 @@ video#videoScreen
   -moz-transform: translateX(-50%) translateY(-50%);
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
-  background: url('<?php echo getthemelocation(); ?>/img/backgrd_start.png') no-repeat;
+  background: url('<?php echo getthemelocation(); ?>img/backgrd_start.png') no-repeat;
   background-size: cover;
 }
 
@@ -97,7 +97,7 @@ video#videoScreen
 {
   width: 320px;
   height: 320px;
-  background-image: url('<?php echo getthemelocation(); ?>/img/backgrd_clock.png');
+  background-image: url('<?php echo getthemelocation(); ?>img/backgrd_clock.png');
   background-size: cover;
   display: flex;
   justify-content: center;

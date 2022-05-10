@@ -35,18 +35,18 @@ checkusersession ($user, false);
 if (session_id() != "") session_write_close();
 ?>
 <!DOCTYPE HTML>
-<html>
+<html lang="<?php if (!empty ($lang)) echo $lang; ?>">
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#000000" />
-<meta name="viewport" content="width=1024, initial-scale=1.0, user-scalable=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <!-- JQuery used for AJAX viewport set request -->
-<script src="javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery.min.js" type="text/javascript"></script>
 
 <?php if (is_facerecognition ("sys")) { ?>
 <!-- face recognition -->

@@ -189,7 +189,7 @@ while (@ob_end_flush());
   </div>
   
   <div style="float:left; margin:10px;">
-    <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['top-uploaded-files'][$lang]); ?></p>
+    <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['top-uploaded-files'][$lang]); ?></p>
     <table class="hcmsTableStandard" style="min-width:400px;">
    	  <tr>
         <td class="hcmsHeadline hcmsRowHead1"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td>

@@ -6001,7 +6001,17 @@ Release 05/2022
 - Modifications in function save_content in the SOAP API of the Connector module in order to convert the object hash to a path
 - Modifications in function object_exists in Main API inm order to encode the object path only if the identifier characters is not already included in the path
 - Modifications in function showmedia in UI API in order to verify and assign the input dimension if no configuration values are present
+- Added the amv video file extension to format_ext
+- Added the amv video file extension to $mgmt_mediapreview in the main configuration file in the install directory
 - Removed the Flash plugin from the configuration files of the rich text editor
+- Modifications in explorer_objectview in order to enable the fullscreen video in function showvideoplayer_head
+- Modifications in chat in order to implement the new local JS function initialize
+- Modifications in frameset_main and frameset_mobile in order to include the lang attribute in the html tag
+- Modifications of the viewport in frameset_main
+- Upgrade all system components using JQuery from version 3.5.1 to 3.6.0
+- Upgrade all system components using JQuery Migrate from version 3.3.0 to 3.4.0
+- Upgrade all system components using JQuery UI from version 1.2.1 to 1.3.1
+- Modifications in all system components using JQuery and JQuery UI in order to refer to the file without the version in the file name
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
 - Updates in the Administrators Guide, Installtion Guide, Template Designers Guide, Connector Guide and Workflow Management Guide
@@ -6018,3 +6028,4 @@ Release 05/2022
 - Bug fix: Service sendmail starts with an array key of 0 for the user arrays and user_sendlink failed to include the array element 0 due to the verification of the array key
 - Bug fix: control_queue_menu did verify the queue_id for action "delete" which was not provided when using the key shortcut for deleting objects in the queue
 - Bug fix: Function showmedia in UI API did not apply the provided width and height if the video configuration didn't provide the video dimension
+- Bug fix: framset_main used a wrong width for the viewport

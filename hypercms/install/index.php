@@ -724,7 +724,7 @@ $token_new = createtoken ($user);
 
 <body class="hcmsStartScreen" style="font-size:12px; position:relative;">
 
-<script type="text/javascript" src="../javascript/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="../javascript/jquery/jquery.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	// place ID's of all required fields here.

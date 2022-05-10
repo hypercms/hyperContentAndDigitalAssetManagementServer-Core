@@ -165,9 +165,9 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <!-- JQuery and JQuery UI -->
-<script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
-<script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
+<script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="javascript/jquery-ui/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui.css" type="text/css" />
 <!-- Tagging -->
 <script type="text/javascript" src="javascript/tag-it/tag-it.min.js"></script>
 <link rel="stylesheet" type="text/css" href="javascript/tag-it/jquery.tagit.css" />

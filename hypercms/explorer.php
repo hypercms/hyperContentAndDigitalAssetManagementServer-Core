@@ -1348,9 +1348,9 @@ else
     <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 
     <!-- JQuery (for navigation tree and autocomplete) -->
-    <script type="text/javascript" src="javascript/jquery/jquery-3.5.1.min.js"></script>
-    <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
-    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
+    <script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="javascript/jquery-ui/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui.css" />
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.cookie.js"></script>
     <script type="text/javascript" src="javascript/jstree/jquery.jstree.min.js"></script>
     

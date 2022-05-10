@@ -139,7 +139,7 @@ scriptend]
 [hyperCMS:scriptbegin
   }
 scriptend]
-    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_carouselzoom/jquery.elevateZoom-2.5.5.min.js"></script>
     <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_carouselzoom/modernizr.custom.17475.js"></script>
     <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_carouselzoom/jquerypp.custom.js"></script>

@@ -155,8 +155,8 @@ elseif ($view == "publish" || $view == "preview")
   <head>
     <title>hyperCMS.com</title>
     <meta charset='utf-8'/>
-    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-3.5.1.min.js"></script>
-    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-migrate-3.3.0.min.js"></script>
+    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/jquery/jquery-migrate.min.js"></script>
     <script type="text/javascript" src="[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_galleria/galleria-1.2.9.min.js"></script>
     <style>
         body {

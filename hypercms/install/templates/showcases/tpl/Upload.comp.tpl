@@ -207,11 +207,11 @@ if (!empty ($site) && !empty ($location)) createfolder ($site, $location_esc, $n
 <script src="%url_hypercms%/javascript/main.min.js" type="text/javascript"></script>
 
 <!-- JQuery -->
-<script src="%url_hypercms%/javascript/jquery/jquery-3.5.1.min.js" type="text/javascript"></script>
+<script src="%url_hypercms%/javascript/jquery/jquery.min.js" type="text/javascript"></script>
 
 <!-- JQuery UI -->
-<script src="%url_hypercms%/javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
+<script src="%url_hypercms%/javascript/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui.css" />
 
 <!-- JQuery File Upload -->
 <script src="%url_hypercms%/javascript/jquery/plugins/jquery.fileupload.js" type="text/javascript"></script>
