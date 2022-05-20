@@ -6012,13 +6012,30 @@ Release 05/2022
 - Upgrade all system components using JQuery Migrate from version 3.3.0 to 3.4.0
 - Upgrade all system components using JQuery UI from version 1.2.1 to 1.3.1
 - Modifications in all system components using JQuery and JQuery UI in order to refer to the file without the version in the file name
+- Modifications in function upload in the REST API of the Connector Module in order to merge the media content if it is an array
+- Modifications in popup_upload_html in order to log an exceeded storage limit
+- Modifications in function manipulateallobjects in Main API in order to correct the error number for the delete event
+- Modifications in function manipulateallobjects in Main API in order to remove the global variable for the objects category
+- Modifications in function manipulateallobjects in Main API in order to provide the converted location path for the various function calls
+- Modifications in function manipulateallobject in Main API in order to remove the global variable for the objects category
+- Modifications in function copyfolders in Main API in order to remove the global variable for the objects category
+- Modifications in function deletefolder in Main API in order to remove the global variable for the objects category
+- Modifications in function renamefolder in Main API in order to remove the global variable for the objects category
+- Modifications in function cutobject in Main API in order to remove the global variable for the objects category
+- Modifications in function copyobject in Main API in order to remove the global variable for the objects category
+- Modifications in function copyconnectedobject in Main API in order to remove the global variable for the objects category
+- Modifications in function lockobject in Main API in order to remove the global variable for the objects category
+- Modifications in function unlockobject in Main API in order to remove the global variable for the objects category
+- Modifications in function unlockobject in Main API in order to remove the global variable for the objects category
+- Modifications in function publishobject in Main API in order to remove the global variable for the objects category
+- Modifications in function publishlinkedobject in Main API in order to remove the global variable for the objects category
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
-- Updates in the Administrators Guide, Installtion Guide, Template Designers Guide, Connector Guide and Workflow Management Guide
+- Updates in the Administrators Guide, Installation Guide, Template Designers Guide, Connector Guide and Workflow Management Guide
 - Updates of all language files due to the change of a language key
 - Updates in the readme files regarding the support of htaccess and web.config file support of the web server
 - Bug fix: The template engine did not include the local JS functions in case of formlock view which might cause JS errors if the template uses one of the local JS functions
-- Bug fix: Function showworkflowstatus in UI API did not use the passed information for the definition of the status background color
+- Bug fix: Function showworkflowstatus in UI API did not use the “passed” information for the definition of the status background color
 - Bug fix: Function authenticate in REST API of the Connector module did not verify the message return value of function userlogin
 - Bug fix: The font file extension .ttf has been used twice in format_ext
 - Bug fix: Function getfileinfo in Get API did not verify an empty file extension correctly
@@ -6029,3 +6046,19 @@ Release 05/2022
 - Bug fix: control_queue_menu did verify the queue_id for action "delete" which was not provided when using the key shortcut for deleting objects in the queue
 - Bug fix: Function showmedia in UI API did not apply the provided width and height if the video configuration didn't provide the video dimension
 - Bug fix: framset_main used a wrong width for the viewport
+- Bug fix: Function showmedia did not initialize the mediaratio variable
+- Bug fix: Function manipulateallobjects in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function manipulateallobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function copyfolders in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function deletefolder in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function renamefolder in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function cutobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function copyobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function copyconnectedobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function lockobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function unlockobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function unlockobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function publishobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+- Bug fix: Function publishlinkedobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
+
+

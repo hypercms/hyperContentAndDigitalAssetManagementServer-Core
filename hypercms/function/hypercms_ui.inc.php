@@ -983,6 +983,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   $width_orig = "";
   $height_orig = "";
   $mediaview = "";
+  $mediaratio = 0;
   $owner = "";
   $date_created = "";
   $date_modified = "";
@@ -1288,7 +1289,6 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       elseif (!empty ($file_info['orig_ext']) && substr_count ($doc_ext, $file_info['orig_ext'].".") > 0 && !empty ($mgmt_config['docviewer']))
       {
         $mediaview_doc = "";
-        $mediaratio = 0;
 
         // check for document PDF preview
         $mediafile_thumb = $file_info['filename'].".thumb.pdf";

@@ -85,6 +85,13 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
   if (($filesize['filesize'] * $factor) > ($mgmt_config[$site]['storage_limit'] * 1024))
   {
     echo showinfopage ($hcms_lang['storage-limit-exceeded'][$lang], $lang);
+
+    $errcode = "00100";
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|Storage limit of ".$mgmt_config[$site]['storage_limit']." MB has been exceeded by publication '".$site."'";
+
+    // save log
+    savelog ($error);
+
     exit;
   }
 }

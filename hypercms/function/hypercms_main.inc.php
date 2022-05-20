@@ -3530,7 +3530,7 @@ function deleteversions ($type, $report, $user="sys")
 // output: file content
 
 // description:
-// Loads the file headerbased on a defined header size.
+// Loads the file header based on a defined header size.
 
 function loadfile_header ($abs_path, $filename)
 {
@@ -12064,7 +12064,7 @@ function collectfolders ($site, $location, $folder)
 
 function copyfolders ($site, $location, $locationnew, $folder, $user, $no_duplicates=true)
 { 
-  global $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && $locationnew != "" && $folder != "")
   {
@@ -12079,7 +12079,7 @@ function copyfolders ($site, $location, $locationnew, $folder, $user, $no_duplic
       $locationnew = deconvertpath ($locationnew, "file"); 
 
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);
+    $cat = getcategory ($site, $location);
  
     // collect folders to copy
     $folder_array = collectfolders ($site, $location, $folder);
@@ -12187,7 +12187,7 @@ function copyfolders ($site, $location, $locationnew, $folder, $user, $no_duplic
 
 function deletefolder ($site, $location, $folder, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
  
   // initialize
   $error = array();
@@ -12219,7 +12219,7 @@ function deletefolder ($site, $location, $folder, $user)
     $location_esc = convertpath ($site, $location, $cat);
 
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);
+    $cat = getcategory ($site, $location);
 
     // check given folder name
     if ($folder == ".folder")
@@ -12331,7 +12331,7 @@ function deletefolder ($site, $location, $folder, $user)
 
 function renamefolder ($site, $location, $folder, $foldernew, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
@@ -12366,7 +12366,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
     }
 
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location); 
+    $cat = getcategory ($site, $location); 
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
@@ -14728,7 +14728,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
   global $wf_token, $eventsystem,
          $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext,
          $pageaccess, $compaccess, $hiddenfolder, $hcms_linking,
-         $cat, $hcms_lang, $lang;
+         $hcms_lang, $lang;
  
   // default values for action = paste before loading the clipboard
   $error = array();
@@ -14771,7 +14771,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     $parent_array = inherit_db_getparent ($inherit_db, $site);
 
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location); 
+    $cat = getcategory ($site, $location); 
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
@@ -16621,7 +16621,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
 
 function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipboard_session=true)
 {
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
   // initialize
   $error = array();
@@ -16652,7 +16652,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
     $location = correctpath ($location);
 
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);
+    $cat = getcategory ($site, $location);
 
     // convert location
     $location = deconvertpath ($location, "file");
@@ -16739,7 +16739,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
 
 function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clipboard_session=true)
 {
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
   // initialize
   $error = array();
@@ -16770,7 +16770,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
     $location = correctpath ($location); 
 
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);
+    $cat = getcategory ($site, $location);
 
     // convert location
     $location = deconvertpath ($location, "file");
@@ -16861,7 +16861,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
 
 function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=false, $clipboard_session=true)
 {
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
   $error = array();
@@ -16889,7 +16889,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
     } 
 
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);
+    $cat = getcategory ($site, $location);
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
@@ -17041,7 +17041,7 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
 
 function lockobject ($site, $location, $page, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
   // initialize
   $error = array();
@@ -17067,7 +17067,7 @@ function lockobject ($site, $location, $page, $user)
     } 
 
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);
+    $cat = getcategory ($site, $location);
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
@@ -17192,7 +17192,7 @@ function lockobject ($site, $location, $page, $user)
 
 function unlockobject ($site, $location, $page, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
   // initialize
   $error = array();
@@ -17218,7 +17218,7 @@ function unlockobject ($site, $location, $page, $user)
     }
 
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);
+    $cat = getcategory ($site, $location);
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
@@ -17335,7 +17335,7 @@ function unlockobject ($site, $location, $page, $user)
 
 function publishobject ($site, $location, $page, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $ctrlreload, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $ctrlreload, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
  
   // initialize
   $error = array();
@@ -17372,7 +17372,7 @@ function publishobject ($site, $location, $page, $user)
     }
 
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);
+    $cat = getcategory ($site, $location);
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
@@ -17929,7 +17929,7 @@ function publishobject ($site, $location, $page, $user)
 
 function publishlinkedobject ($site, $location, $page, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $ctrlreload, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $ctrlreload, $hcms_lang, $lang;
 
   // initialize
   $error = array();
@@ -17940,7 +17940,7 @@ function publishlinkedobject ($site, $location, $page, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);
+    $cat = getcategory ($site, $location);
 
     if ($cat != "page") 
     {
@@ -18582,7 +18582,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
 
 function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $tempfile="", $maxitems=20)
 {
-  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
 
   // initialize
   $error = array();
@@ -18728,8 +18728,8 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
  
           if (valid_publicationname ($site) && valid_locationname ($location) && $object !== false)
           {
-            // define category if undefined
-            if ($cat == "") $cat = getcategory ($site, $location);
+            // get category
+            $cat = getcategory ($site, $location);
 
             // add slash if not present at the end of the location string
             $location = correctpath ($location);
@@ -18900,7 +18900,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
           {
             if ($action == "publish") 
             { 
-              $test = publishobject ($site_source, $location_source, $object_source, $user);
+              $test = publishobject ($site_source, $location_source_esc, $object_source, $user);
 
               // remove object from collection in any case
               unset ($collection[$i]);
@@ -18918,7 +18918,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
             }
             elseif ($action == "unpublish")
             {
-              $test = unpublishobject ($site_source, $location_source, $object_source, $user);
+              $test = unpublishobject ($site_source, $location_source_esc, $object_source, $user);
  
               // remove object from collection in any case
               unset ($collection[$i]);
@@ -18936,7 +18936,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
             } 
             elseif ($action == "delete")
             {
-              $test = deleteobject ($site_source, $location_source, $object_source, $user);
+              $test = deleteobject ($site_source, $location_source_esc, $object_source, $user);
 
               // remove object from collection in any case
               unset ($collection[$i]);
@@ -18944,7 +18944,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               // on error
               if (empty ($test['result'])) 
               {
-                $errcode = "20109";
+                $errcode = "20107";
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
                 // deprecated: break;
                 // avoid break of process
@@ -18958,19 +18958,19 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               if ($method == "copy") 
               {
                 // do not overwrite clipboard
-                $result = copyobject ($site_source, $location_source, $object_source, $user, false, false);
+                $result = copyobject ($site_source, $location_source_esc, $object_source, $user, false, false);
               }
               // for action cut and paste
               elseif ($method == "cut")
               {
                 // do not overwrite clipboard
-                $result = cutobject ($site_source, $location_source, $object_source, $user, false, false);
+                $result = cutobject ($site_source, $location_source_esc, $object_source, $user, false, false);
               } 
               // for action connected copy and paste
               elseif ($method == "linkcopy")
               {
                 // do not overwrite clipboard
-                $result = copyconnectedobject ($site_source, $location_source, $object_source, $user, false, false);
+                $result = copyconnectedobject ($site_source, $location_source_esc, $object_source, $user, false, false);
               }
 
               // paste object
