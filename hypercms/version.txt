@@ -5915,7 +5915,7 @@ Release 05/2022
 - Replaced Adobe Flash file icon by new version in all design themes
 - Replaced image and video file icons by new versions in all design themes
 - Replaced video player background image by new version in all design themes
-- Implementation of the new file format for Computer Aided Design files in format_ext
+- Implementation of the new file format for Computer Aided Design (CAD) files in format_ext
 - Modifications in function createmedia in Media API in order to define a default video thumbnail size for the preview images
 - Modifications in function getmediasize in Get API in order to set a default width and height of zero
 - Modifications in function userlogin in Security API in order to verify the nologon result before using it in the log entry
@@ -5957,7 +5957,7 @@ Release 05/2022
 - Modifications in JS function hcms_openChat in main.js in order to always enable the transition effect
 - Implementation of the new CSS class hcmsTransBackground and the background animation in the transparent design theme
 - Modifications in all workplace frames in all modules in order to add the new CSS class hcmsTransBackground to the body tag
-- Added the E-mail, Computer Aided Design, Adobe After Effects, Adobe Premiere, and Adobe Audition file icons to all design themes
+- Added the E-mail, Computer Aided Design (CAD), Adobe After Effects, Adobe Premiere, and Adobe Audition file icons to all design themes
 - Redesigned standard file icon in all design themes
 - Added the new workflow accept and inprogress icon to all design themes
 - Design modifications in the colorful design theme
@@ -6029,6 +6029,8 @@ Release 05/2022
 - Modifications in function unlockobject in Main API in order to remove the global variable for the objects category
 - Modifications in function publishobject in Main API in order to remove the global variable for the objects category
 - Modifications in function publishlinkedobject in Main API in order to remove the global variable for the objects category
+- Modifications in function deleteuser in Main API in order to completely remove a user if there are no more publication memberships assigned
+- Modifications in function manipulateobject in Main API in order to remove duplicate call to function correctpath
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
 - Updates in the Administrators Guide, Installation Guide, Template Designers Guide, Connector Guide and Workflow Management Guide

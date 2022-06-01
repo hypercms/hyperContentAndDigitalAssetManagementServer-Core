@@ -10212,7 +10212,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
 
 // ---------------------------------------- deleteuser --------------------------------------------
 // function: deleteuser()
-// input: publication where the user should be removed [*Null*] for all publications [string], login name of the account that will be removed [string], user name [string]
+// input: publication frmo where the user should be removed [*Null*] for all publications [string], login name of the account that will be removed [string], user name [string]
 // output: result array
 
 // description:
@@ -10245,7 +10245,7 @@ function deleteuser ($site, $login, $user="sys")
     }
   }
 
-  // site can be *Null*, which is naot a valid publication name
+  // site can be *Null*, which is not a valid publication name
   if ($site != "" && valid_objectname ($login) && valid_objectname ($user))
   {
     // eventsystem
@@ -10255,8 +10255,23 @@ function deleteuser ($site, $login, $user="sys")
     // load user xml file
     $userdata = loadlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", 5);
 
-    if ($userdata != false)
-    { 
+    if (!empty ($userdata))
+    {
+      if (valid_publicationname ($site))
+      {
+        // remove publication membership
+        $user_node = selectcontent ($userdata, "<user>", "<login>", $login);
+        $user_node_new = deletecontent ($user_node[0], "<memberof>", "<publication>", $site);
+
+        // user still has publication memberships
+        if (!empty ($user_node_new) && strpos ($user_node_new, "<memberof>") > 0)
+        {
+          $userdata = updatecontent ($userdata, $user_node[0], $user_node_new);
+        }
+        // user has no more publication membership
+        else $site = "*Null*";
+      }
+
       if (!valid_publicationname ($site))
       {
         // delete user
@@ -10294,13 +10309,6 @@ function deleteuser ($site, $login, $user="sys")
 
         // remove password log
         deletelog ($login.".password");
-      }
-      elseif (valid_publicationname ($site))
-      {
-        // remove site membership
-        $user_node = selectcontent ($userdata, "<user>", "<login>", $login);
-        $user_node_new = deletecontent ($user_node[0], "<memberof>", "<publication>", $site);
-        $userdata = updatecontent ($userdata, $user_node[0], $user_node_new);
       }
 
       if ($userdata != false)
@@ -14756,8 +14764,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
-    // add slash if not present at the end of the location string
+    // add slash if not present at the end of the location path
     $location = correctpath ($location);
+
+    // get category
+    $cat = getcategory ($site, $location);
 
     // convert location
     $location = deconvertpath ($location, "file");
@@ -14769,12 +14780,6 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     // load publication inheritance setting
     $inherit_db = inherit_db_read ();
     $parent_array = inherit_db_getparent ($inherit_db, $site);
-
-    // define category if undefined
-    $cat = getcategory ($site, $location); 
-
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location);
 
       // eventsystem for paste
     if ($action == "page_paste" && $eventsystem['onpasteobject_pre'] == 1 && empty ($eventsystem['hide']))
