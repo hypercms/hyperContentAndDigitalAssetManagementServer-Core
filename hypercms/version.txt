@@ -5881,7 +5881,7 @@ Release 03/2022
 - Bug fix: The CSS font style for tables was missing in alle design themes (browser used default font size)
 
 Version 10.0.5
-Release 05/2022
+Release 06/2022
 - Minor code improvements in the Task Management API
 - Minor modifications in error_codes.txt
 - Modifications in function userlogin in Security API in order to initialize the variable checkresult and validdate
@@ -6031,6 +6031,11 @@ Release 05/2022
 - Modifications in function publishlinkedobject in Main API in order to remove the global variable for the objects category
 - Modifications in function deleteuser in Main API in order to completely remove a user if there are no more publication memberships assigned
 - Modifications in function manipulateobject in Main API in order to remove duplicate call to function correctpath
+- Modifications in function manipulateallobjects in Main API in order to set the number of processed objects per request/step to 10 due to freezing of the GUI for larger databases
+- Modifications in function collectobjects in Main API in order to reverse the collection array and serve the last objects first (root folder should be removed at last)
+- Modifications in popup_status in order to apply function ceil for the processed percentage of objects in the status bar
+- Modifications in search_objectlist in order to set all input parameters for call of function rdbms_getdeletedobjects
+- Modifications in function rdbms_getdeletedobjects in DB Connect in order to support the subitems in the recylce bin for a specific user
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
 - Updates in the Administrators Guide, Installation Guide, Template Designers Guide, Connector Guide and Workflow Management Guide
@@ -6062,5 +6067,4 @@ Release 05/2022
 - Bug fix: Function unlockobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
 - Bug fix: Function publishobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
 - Bug fix: Function publishlinkedobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
-
-
+- Bug fix: The daily job used a wrong variable name for the extracted location from the objectpath for the recycle bin

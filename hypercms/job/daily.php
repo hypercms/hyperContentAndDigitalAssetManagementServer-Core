@@ -118,7 +118,7 @@ if (sizeof ($config_files) > 0)
         // get date based on the maximum days objects may reside in the recycle bin
         $date = date ("Y-m-d", time() - $mgmt_config['recycledays']*24*60*60);
         
-        // remove all obecjts permanently that have been marked for deletetion before the defined date
+        // remove all objects permanently that have been marked for deletion before the defined date
         $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, "", false, false);
         
         if (is_array ($objectpath_array) && sizeof ($objectpath_array) > 0)
@@ -128,9 +128,9 @@ if (sizeof ($config_files) > 0)
             if (!empty ($objectpath['objectpath']))
             {
               // if folder object remove .folder
-              if (getobject ($objectpath['objectpath']) == ".folder") $objectpath = getlocation ($objectpath['objectpath']);
+              if (getobject ($objectpath['objectpath']) == ".folder") $objectpath['objectpath'] = getlocation ($objectpath['objectpath']);
 
-              if ($objectpath['objectpath'] != "") processobjects ("delete", getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), 0, "sys");
+              if (!empty ($objectpath['objectpath'])) processobjects ("delete", getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), 0, "sys");
             }
           }
         }
@@ -251,7 +251,7 @@ if (sizeof ($config_files) > 0)
 
       // ------------------------------------------- DATABASE OPTIMIZATION -------------------------------------------
 
-      // optimize database on 1st of January
+      // optimize database on 1st of January each year
       if (!empty ($mgmt_config['rdbms_optimize']) && date("m-d") == "01-01") rdbms_optimizedatabase ();
 
     }

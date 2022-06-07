@@ -18568,6 +18568,9 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
     // if location does not exist
     else return false;
 
+    // reverse array (serve last objects first)
+    if (is_array ($list) && sizeof ($list) > 1) $list = array_reverse ($list);
+
     // return list array
     return $list;
   }
@@ -18578,14 +18581,14 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
 // function: manipulateallobjects()
 // input: action [publish, unpublish, deletemark, deleteunmark/restore, emptypin, delete, paste], objectpath [array],
 //        method (only for paste action) [copy,linkcopy,cut], force [start,stop,continue], 
-//        collect only published objects [boolean], user name [string], temporary collection file name [string] (optional), max. number of items processed per second [integer] (optional)
+//        collect only published objects [boolean], user name [string], temporary collection file name [string] (optional), max. number of items processed per request/step [integer] (optional)
 // output: true/false
 
 // description:
 // This function is used to perform actions on multiple objects and is mainly used by popup_status.php.
 // This function should only be used in connection with the GUI of the system.
 
-function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $tempfile="", $maxitems=20)
+function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $tempfile="", $maxitems=10)
 {
   global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
 
@@ -18610,7 +18613,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
     $objectpath_array = array();
 
     // reset array of all objects based on recycle bin
-    $objectinfo_array = rdbms_getdeletedobjects ($user);
+    $objectinfo_array = rdbms_getdeletedobjects ($user, "", 10000, array(), false, false);
 
     if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
     {
@@ -18710,6 +18713,8 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       {
         // get items
         $collection = explode ("\n", trim ($collection_data));
+
+        // count objects
         $count = sizeof ($collection);
       } 
       else $count = 0;

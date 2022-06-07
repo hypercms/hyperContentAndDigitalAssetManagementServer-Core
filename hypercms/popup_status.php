@@ -416,7 +416,7 @@ if ($maxcount > 0 && $count >= 0)
   $progress = (($maxcount - $count) / $maxcount) * 100;
 
   if (empty ($progress)) $progress = 1;
-  else $progress = round ($progress);
+  else $progress = ceil ($progress);
 }
 ?>
 <!DOCTYPE html>

@@ -294,8 +294,8 @@ if ($action == "linking")
 // deleted objects of a user
 elseif ($action == "recyclebin" && $user != "")
 {
-  if (!empty ($adminpermission)) $object_array = rdbms_getdeletedobjects ("", "", $limit, @array_keys ($objectlistcols_reduced));
-  else $object_array = rdbms_getdeletedobjects ($user, "", $limit, @array_keys ($objectlistcols_reduced));
+  if (!empty ($adminpermission)) $object_array = rdbms_getdeletedobjects ("", "", $limit, @array_keys ($objectlistcols_reduced), false, false);
+  else $object_array = rdbms_getdeletedobjects ($user, "", $limit, @array_keys ($objectlistcols_reduced), false, false);
 }
 // collect all objects of given user 
 elseif ($action == "user_files" && $login != "" && $site != "" && (($site == "*Null*" && checkrootpermission ('user')) || checkglobalpermission ($site, 'user')))
