@@ -231,14 +231,14 @@ if (checktoken ($token, $user))
       elseif ($action == "page_favorite_delete") deletefavorite (getpublication ($temp), getlocation ($temp), getobject ($temp), "", $user);
     }
   }
-  // import metadata from CSV file
+  // import text content or metadata from CSV file
   elseif ($action == "import" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
   {
     $file_temp = $mgmt_config['abs_path_temp'].uniqid ("tmp").".csv";
     
     if (!empty ($_FILES["importfile"]) && move_uploaded_file ($_FILES["importfile"]["tmp_name"], $file_temp))
     {
-      $import = importmetadata ($site, $location, $file_temp, $user, "", "", "", "utf-8");
+      $import = importCSVtextcontent ($site, $location, $file_temp, $user, "", "", "", "utf-8", $createobject, $template);
       
       deletefile (getlocation ($file_temp), getobject ($file_temp), 0);
     }

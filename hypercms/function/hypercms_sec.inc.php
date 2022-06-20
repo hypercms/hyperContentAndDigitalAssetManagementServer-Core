@@ -1793,10 +1793,10 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         $mailer = new HyperMailer();
         $mailer->AddAddress ("info@hypercms.net");
         $mailer->Subject = "hyperCMS Started First Time";
-        $mailer->Body = "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".$_SERVER['SERVER_ADDR']."), License key: ".$mgmt_config['diskkey']."\n";
+        $mailer->Body = "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".(!empty ($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : "unknown IP")."), License key: ".$mgmt_config['diskkey']."\n";
         $mailer->Send();
 
-        mail ("info@hypercms.net", "hyperCMS Started First Time", "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".$_SERVER['SERVER_ADDR']."), License key: ".$mgmt_config['diskkey']."\n");
+        mail ("info@hypercms.net", "hyperCMS Started First Time", "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".(!empty ($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : "unknown IP")."), License key: ".$mgmt_config['diskkey']."\n");
       }
       // installation date has been set
       else
@@ -1809,7 +1809,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         $mailer = new HyperMailer();
         $mailer->AddAddress ("info@hypercms.net");
         $mailer->Subject = "hyperCMS License Alert";
-        $mailer->Body = "License limit exceeded by ".$mgmt_config['url_path_cms']." (".$_SERVER['SERVER_ADDR']."), Publications: ".str_replace ("|", ", ", trim ($site_collection, "|"))."\n";
+        $mailer->Body = "License limit exceeded by ".$mgmt_config['url_path_cms']." (".(!empty ($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : "unknown IP")."), Publications: ".str_replace ("|", ", ", trim ($site_collection, "|"))."\n";
         $mailer->Send();
 
         // deletefile ($mgmt_config['abs_path_data'], "check.dat", 0);
@@ -1848,7 +1848,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   {
     // warning
     $errcode = "00333";
-    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|Authorization failed with results for user-access-link=".$linking_auth.", user-credentials=".$auth.", valid-user-dates=".$validdate.", check.dat=".$checkresult." (all must have a value of 1) and user-nologon=".(!empty ($result['nologon']) ? $result['nologon'] : 0)." (must be 0)";
+    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|Authorization failed with results for user '".$user."': user-access-link=".$linking_auth.", user-credentials=".$auth.", valid-user-dates=".$validdate.", check.dat=".$checkresult." (all must have a value of 1) and user-nologon=".(!empty ($result['nologon']) ? $result['nologon'] : 0)." (must be 0)";
   }
 
   // --------------------------- security ----------------------------
@@ -2806,7 +2806,7 @@ function checkdiskkey ()
     $data['domain'] = $mgmt_config['url_path_cms'];
 
     // server IP address
-    $data['server_ip'] = $_SERVER['SERVER_ADDR'];
+    $data['server_ip'] = (!empty ($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : "unknown IP");
 
     // non-free modules
     $data['modules'] = "";
@@ -3293,7 +3293,7 @@ function valid_locationname ($variable)
       if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
       
       // if location path is too long
-      if (strlen ($variable) > (16000 - $mgmt_config['max_digits_filename'])) return false;
+      if (strlen ($variable) > (4096 - $mgmt_config['max_digits_filename'])) return false;
       
       // invalid location path
       if ($variable == ".") return false;

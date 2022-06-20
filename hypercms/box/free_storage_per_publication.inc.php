@@ -18,12 +18,12 @@ function usedstorage ($publication)
     {  
       // this function might require some time for the result in case of large databases
       $filesize = rdbms_getfilesize ("", "%comp%/".$publication."/");
-      savefile ($mgmt_config['abs_path_temp'], $publication.".filesize.dat", $filesize['filesize']);
+      if (!empty ($filesize['filesize'])) savefile ($mgmt_config['abs_path_temp'], $publication.".filesize.dat", $filesize['filesize']);
     }
     else $filesize['filesize'] = loadfile ($mgmt_config['abs_path_temp'], $publication.".filesize.dat");
 
     // file size in KB and number of files
-    if (is_array ($filesize))
+    if (!empty ($filesize['filesize']))
     {
       // file size in GB
       $filesize['filesize'] = round ((intval ($filesize['filesize']) / 1024 / 1024) * $factor, 2);
@@ -126,7 +126,7 @@ if (is_array ($siteaccess))
 
       $filesize_array = getfilesize ("%comp%/".$site."/.folder");
 
-      if (is_array ($filesize_array))
+      if (!empty ($filesize_array['filesize']) && !empty ($filesize_array['count']))
       {
         $filesize = $filesize_array['filesize'];
         $filecount = $filesize_array['count'];

@@ -5999,7 +5999,7 @@ Release 06/2022
 - Modifications in function upload in the SOAP API of the Connector module in order to support the media rendering in the background
 - Modifications in the WSDL template for the SOAP services of the Connector module
 - Modifications in function save_content in the SOAP API of the Connector module in order to convert the object hash to a path
-- Modifications in function object_exists in Main API inm order to encode the object path only if the identifier characters is not already included in the path
+- Modifications in function object_exists in Main API in order to encode the object path only if the identifier characters is not already included in the path
 - Modifications in function showmedia in UI API in order to verify and assign the input dimension if no configuration values are present
 - Added the amv video file extension to format_ext
 - Added the amv video file extension to $mgmt_mediapreview in the main configuration file in the install directory
@@ -6035,7 +6035,7 @@ Release 06/2022
 - Modifications in function collectobjects in Main API in order to reverse the collection array and serve the last objects first (root folder should be removed at last)
 - Modifications in popup_status in order to apply function ceil for the processed percentage of objects in the status bar
 - Modifications in search_objectlist in order to set all input parameters for call of function rdbms_getdeletedobjects
-- Modifications in function rdbms_getdeletedobjects in DB Connect in order to support the subitems in the recylce bin for a specific user
+- Modifications in function rdbms_getdeletedobjects in DB Connect in order to support the subitems in the recycle bin for a specific user
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
 - Updates in the Administrators Guide, Installation Guide, Template Designers Guide, Connector Guide and Workflow Management Guide
@@ -6068,3 +6068,69 @@ Release 06/2022
 - Bug fix: Function publishobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
 - Bug fix: Function publishlinkedobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
 - Bug fix: The daily job used a wrong variable name for the extracted location from the objectpath for the recycle bin
+
+Version 10.0.6
+Release 08/2022
+- Performance improvements for various select and update queries by implementation of the MD5 representation of the objectpath in table object and a new index on attribute objectpath of tbale object (index object_objectpath has not been used by queries)
+- Modifications in function valid_locationname in Security API in order to set the max location path length to 4096 characters
+- Modifications in function userlogin and checkdiskkey in Security API in order to verify that the global $_SERVER['SERVER_ADDR'] exists
+- Modifications in createtables.sql in order to set the max length for objectpath in table object to 4096 characters and define it as BINARY
+- Modifications in createtables.sql in order to add the attribute md5_objectpath to table object
+- Modifications in createtables.sql in order to add a new index for attribute md5_objectpath
+- Modifications in createtables.sql in order to replace the fulltext index object_objectpath for attribute by a standard index
+- Modifications in createtables.sql in order to set the user and hash attributes of all tables to BINARY
+- Implementation of the new function update_database_v1006 in Update API in order to update table object and create a new index for the attributes objectpath and md5_objectpath
+- Modifications in function update_all in Update API in order to add the new function update_database_v1006
+- Modifications in function rdbms_settemplate, rdbms_deleteobject, rdbms_getobject_id, rdbms_getobject_hash, rdbms_getobject_info, rdbms_setdeletedobjects, rdbms_createrecipient, rdbms_getrecipients, rdbms_getnotification, rdbms_getmediastat in DB Connect in order to migrate from objectpath to md5_objectpath for the condition
+- Modifications in function rdbms_createobject, rdbms_renameobject, rdbms_setdeletedobjects in DB Connect in order to set the md5_objectpath value
+- Modifications in function rdbms_renameobject in DB Connect in order to apply LIKE for the query only in case the objectpath is a reference to a folder
+- Modifications in function renamefolder in Main API in order to provide the .folder file for function rdbms_renameobject
+- Modifications in function update_database_v1000 in Update API in order to change the index name from "object" to "object_multiple"
+- Modifications in function rdbms_getobject_id in DB Connect in order to apply BINARY only to the condition value and not the attribute
+- Modifications in function link_db_load and link_db_read in Link API in order to apply function trim to the loaded link data
+- Modifications in function exportxmlfiles in Import/Export API of the Connector module in order to apply BINARY to the objectpath value of the SQL condition
+- Modifications in function getmetadata_multiobjects in Get API in order to apply BINARY to the objectpath value of the SQL condition
+- Modifications in function zipfiles in Media API in order to apply BINARY to the objectpath value of the SQL condition
+- Added .lst file extension to the clear text file format in format_ext
+- Modifications in function downloadfile in Main API in order to change the HTML error code from 500 to 404 in case the media file can't be loaded
+- Modifications in function downloadfile in Main API in order to add a log event in case the media file does not exist
+- Modifications in service mediadownload in order to change the HTTP error from 500 and 400 to 404
+- Modifications in function createuser in Main API in order to verify the user name case-insensitively (replaced selectcontent by selecticontent function call)
+- Modifications in function creategroup in Main API in order to verify the user name case-insensitively (replaced selectcontent by selecticontent function call)
+- Implementation of the new function file_iexists in Main API in order to support a case-insensitive alternative to PHP function file_exists
+- Implementation of the new function is_ifile in Main API in order to support a case-insensitive alternative to PHP function is_file
+- Implementation of the new function is_idir in Main API in order to support a case-insensitive alternative to PHP function is_dir
+- Modifications in function createinstance in Main API in order to verify the instance name case-insensitively (replaced is_file by is_ifile function call)
+- Modifications in function createpublication in Main API in order to verify the instance name case-insensitively
+- Modifications in function createpersonalization in Main API in order to verify the personalization name case-insensitively (replaced is_file by is_ifile function call)
+- Modifications in function createtemplate in Main API in order to verify the template name case-insensitively (replaced is_file by is_ifile function call)
+- Modifications in function createportal in Main API in order to verify the portal template name case-insensitively (replaced is_file by is_ifile function call)
+- Modifications in daily job in order to delete the object besides removing the recycle bin entries from the database (in case they could not be deleted by function processobjects)
+- Modifications in function createfolders in Main API in order to remove the global variable for the objects category
+- Renamed function importmetadata to importCSVtextcontent in Meta API
+- Modifications in function importCSVtextcontent in Meta API in order to support the new input parameters for creating missing folders, the creation of new objects based on a template, and the update of objects
+- Modifications in function importCSVtextcontent in Meta API in order to support creating missing folders, the creation of new objects based on a template, and the update of objects
+- Modifications in function importCSVtextcontent in Meta API in order to support the new input parameters for the report and output puffering headers
+- Modifications in function importCSVtextcontent in Meta API in order to support creation of the report and output puffering headers
+- Modifications in function importCSVtextcontent in Meta API in order to apply function correctfile on the object name for content updates
+- Modifications in control_objectlist_menu in order to to support the new function importCSVtextcontent for the CSV import
+- Modifications in the Import/Export Connector module in order to support the import of text content from CSV files
+- Modifications in import_form in order to add new GUI elements and controls for the CSV import
+- Modifications in import_form in order to support the new import parameters in the import file format (load and save)
+- Modifications in the import script in order to support the import of text content from CSV files
+- Modifications in imexport_explorer in order to support the navigation of assets and pages as root elements
+- Modifications in control_imexport_menu in order to remove the export of asstes and pages und provide a single export action for both
+- Modifications in function importobjects in the Import/Export API in order to supportv the new import parameters in the import file format
+- Modifications in function rdbms_getfilesize in DB Connect in order to support a new input paramater and the space used by assets in the recycle bin
+- Modifications in daily job in order to include the space used by assets in the recycle bin
+- Modifications in popup_upload_html in order to include the space used by assets in the recycle bin
+- Modifications in Home box free_storage_per_publication in order to verify the file size value before saving it to the file
+- Modifications in function importCSVtextcontent in Meta API in order to create log entry if the converted CSV file could not be saved
+- Modifications in daily job in order to call function rdbms_deleteobject before modification of the folder path
+- Design modifications in popup_status
+- Update of the update log in the installation directory
+- Updates in the Import/Export Guide and Users Guide
+- Bug fix: Function manipulateobject in Main API did not extract the objects category properly since it used a reduced object path
+- Bug fix: Function manipulateobject in Main API did not extract the objects category before the accessgeneral function call
+- Bug fix: Function deletefolder in Main API did not extract the objects category before the accessgeneral function call
+

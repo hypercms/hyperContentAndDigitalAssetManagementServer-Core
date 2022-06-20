@@ -1647,7 +1647,7 @@ function update_database_v1000 ()
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // create new index
-    $sql = 'CREATE INDEX object ON object (id, date, template, latitude, longitude, filesize, filetype, width, height, colorkey, imagetype, deleteuser)';
+    $sql = 'CREATE INDEX object_multiple ON object (id, date, template, latitude, longitude, filesize, filetype, width, height, colorkey, imagetype, deleteuser)';
     $errcode = "50623";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
@@ -1927,6 +1927,69 @@ function update_database_v1005 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v1006 ----------------------------------------------
+// function: update_database_v1006()
+// input: %
+// output: true / false
+
+// description: 
+// Update table object for support of version 10.0.6
+
+function update_database_v1006 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.6"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+   
+    // alter table object (objectpath)
+    $sql = "ALTER TABLE object MODIFY COLUMN objectpath varchar(4096) BINARY;";
+    $errcode = "50661";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table object (add new attribute)
+    $sql = "ALTER TABLE object ADD COLUMN md5_objectpath char(32) NOT NULL DEFAULT '' AFTER objectpath;";
+    $errcode = "50662";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // migrate/merge data from table container with table object
+    $sql = 'UPDATE object INNER JOIN object AS tempobject ON object.object_id=tempobject.object_id ';
+    $sql .= 'SET object.md5_objectpath=MD5(tempobject.objectpath)';
+    $errcode = "50663";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // create new index
+    $sql = 'CREATE INDEX object_md5_objectpath ON object (md5_objectpath)';
+    $errcode = "50664";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // remove old fulltext index
+    $sql = 'DROP INDEX object_objectpath ON object';
+    $errcode = "50665";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // create new index
+    $sql = 'CREATE INDEX object_objectpath ON object (objectpath)';
+    $errcode = "50666";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6|updated to version 10.0.6"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -1969,6 +2032,7 @@ function updates_all ()
     update_database_v1003 ();
     update_users_v1004 ();
     update_database_v1005 ();
+    update_database_v1006 ();
   }
 }
 

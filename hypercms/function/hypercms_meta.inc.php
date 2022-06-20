@@ -9,32 +9,74 @@
  
 // =================================== META DATA FUNCTIONS =======================================
 
-// --------------------------------------- importmetadata -------------------------------------------
-// function: importmetadata ()
-// input: publication name [string], location [string], path to CSV file [string], user name [string], type array or string [u,f,l,c,d,k] (optional), delimiter [string] (optional), enclosure [string] (optional), character set [string] (optional)
+// --------------------------------------- importCSVtextcontent -------------------------------------------
+// function: importCSVtextcontent ()
+// input: publication name [string], location [string], path to CSV file [string], user name [string], type array or string [u,f,l,c,d,k] (optional), delimiter [string] (optional), enclosure [string] (optional), character set [string] (optional),
+//        create folders if missing [boolean] (optional), create new object if the object can not be found [bollean] (optional), template name without extension to be used for the new object [string] (optional), 
+//        update content of existing objects [boolean] (optional), print report [boolean] (optional), set PHP ini and headers for output buffering [bollean] (optional)
 // output: true / false
 
 // description:
 // Imports metadata from a CSV file for various assets linked by name or conatiner ID. Empty rows or rows without a delimiter will be ignored.
 // In order to identify an asset the file name as "Name" or the container ID as "containerID" must be provided in the first row before the content rows.
 
-function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";", $enclosure='"', $charset="utf-8")
+function importCSVtextcontent ($site, $location, $file_csv, $user, $type="", $delimiter=";", $enclosure='"', $charset="utf-8", $createfolders=false, $createobject=false, $template="default", $updateobject=true, $report=false, $set_headers=false)
 {
   global $mgmt_config, $eventsystem;
 
+  // initalize
   $error = array();
+  $row = 1;
+  $header = false;
+  $id_filename = "";
+  $id_containerid = "";
+  $id_content = array();
+  $art = array ();
 
   // define delimiters and enclosures
   $delimiters_csv = array (",", ";", "\t", "|");
   $enclosures_csv = array ('"', "'");
   $delimiters_keywords = array (",", ";", "\t", "|", "º", ":");
 
-  if ($file != "" && is_file ($file))
+  // output buffering
+  if (!empty ($report))
+  {
+    if ($set_headers)
+    {
+      // turn off output buffering
+      ini_set ('output_buffering', 'off');
+      // turn off PHP output compression (must be set before any output)
+      ini_set ('zlib.output_compression', false);
+
+      // recommended to prevent caching of event data
+      header ('Cache-Control: no-cache');
+    }
+        
+    // flush (send) the output buffer and turn off output buffering
+    while (@ob_end_flush());
+        
+    // implicitly flush the buffer(s)
+    ini_set ('implicit_flush', true);
+    ob_implicit_flush (true);
+
+    // report title
+    echo "<br /><strong>Import report for ".str_replace (".folder", "", $location)." using CSV file ".$file_csv." (".date("Y-m-d H:i:s").")</strong><br />\n";
+
+    // create output and flush buffer
+    // Some browser wait for a minimum number of characters to arrive from the server before starting the actual rendering.
+    for ($i = 0; $i < 1000; $i++) echo " ";
+
+    // output 
+    if (ob_get_level() > 0) ob_flush();
+    flush();
+  }
+
+  if (valid_publicationname ($site) && valid_locationname ($location) && $file_csv != "" && is_file ($file_csv))
   {
     $cat = getcategory ($site, $location);
 
     // convert to input character set
-    $data = file_get_contents ($file);
+    $data = file_get_contents ($file_csv);
 
     if ($data != "")
     {
@@ -45,23 +87,26 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
       if ($charset_csv != "" && strtolower ($charset_csv) != strtolower ($charset))
       {
         $data = convertchars ($data, "", $charset);
-        if ($data != "") $save = file_put_contents ($file, $data);
+
+        if ($data != "")
+        {
+          $save = file_put_contents ($file_csv, $data);
+
+          if ($save == false)
+          {
+            $errcode = "10119";
+            $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|CSV file ".$file_csv." could not be saved after character set conversion (".$charset_csv." to ".$charset.")";
+          }
+        }
       }
     }
 
-    $row = 1;
-    $header = false;
-    $id_filename = "";
-    $id_containerid = "";
-    $id_content = array();
-    $art = array ();
-
-    if (($handle = fopen ($file, "r")) !== false)
+    if (($handle = fopen ($file_csv, "r")) !== false)
     {
       // analyze CSV file
       if ($delimiter == "" || $enclosure == "")
       {
-        if (filesize ($file) > 0) $filedata = @fread ($handle, filesize ($file));
+        if (filesize ($file_csv) > 0) $filedata = @fread ($handle, filesize ($file_csv));
         else $filedata = "";
 
         if ($filedata != "")
@@ -130,14 +175,14 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
               // find asset identifier and content IDs
               for ($c = 0; $c < $cols; $c++)
               {
-                // use file name
-                if (strtolower ($data[$c]) == "name")
+                // use object path or file name
+                if (strtolower ($data[$c]) == "objectpath" || strtolower ($data[$c]) == "name")
                 {
                   $id_filename = $c;
                   $header = true;
                 }
-                // but container ID is prefered
-                elseif (strtolower ($data[$c]) == "containerid")
+                // use container ID
+                elseif (strtolower ($data[$c]) == "containerid" || strtolower ($data[$c]) == "container-id" || strtolower ($data[$c]) == "container_id")
                 {
                   $id_container = $c;
                   $header = true;
@@ -183,22 +228,81 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                 {
                   $contentfile = $data[$c];
                   $contendata = loadcontainer ($contentfile, "work", $user);
+
                   if (!empty ($contendata)) $loaded = true;
                 }
 
-                // get and load container from object
+                // load container from object
                 if ($c == $id_filename && $data[$c] != "" && $loaded == false)
                 {
-                  if (is_file (deconvertpath ($location.$data[$id_filename], "file", true)))
+                  $location = deconvertpath ($location, "file", true);
+
+                  // object path has been provided
+                  if (substr_count ($data[$id_filename], "/") > 0)
                   {
-                    $location = deconvertpath ($location, "file", true);
+                    $temp_location = $location.getlocation (trim ($data[$id_filename], "/"));
+                    $object = getobject ($data[$id_filename]);
+                  }
+                  // object name has been provided
+                  else
+                  {
+                    $temp_location = $location;
+                    $object = $data[$id_filename];
+                  }
 
-                    if (specialchr ($data[$id_filename], ".-_~") == true) $object = specialchr_encode ($data[$id_filename], "no");
-                    else $object = $data[$id_filename];
+                  $temp_object = createfilename ($object);
 
-                    $object_info = getobjectinfo ($site, $location, $object, $user);
-                    $contentfile = $object_info['content'];
-                    $contentdata = loadcontainer ($contentfile, "work", $user);
+                  // update content
+                  if ($updateobject == true)
+                  {
+                    $temp_object = correctfile ($temp_location, $temp_object, "sys");
+
+                    if (is_file (deconvertpath ($temp_location.$temp_object, "file", true)))
+                    {
+                      // get and load container from object
+                      $object_info = getobjectinfo ($site, $temp_location, $temp_object, $user);
+                      $contentfile = $object_info['content'];
+                      $contentdata = loadcontainer ($contentfile, "work", $user);
+
+                      if (!empty ($report) && empty ($contentdata))
+                      {
+                        echo "<span style=\"color:red;\">The content of object '".convertpath ($site, $temp_location.$temp_object, $cat)."' can't be loaded</span><br />\n";
+                      }
+                    }
+                    else
+                    {
+                      if (!empty ($report)) echo "<span style=\"color:red;\">The object '".convertpath ($site, $temp_location.$temp_object, $cat)."' does not exist</span><br />\n";
+                    }
+                  }
+                  // create new object
+                  elseif ($createobject == true)
+                  {
+                    // create folder if missing
+                    if ($createfolders == true && substr_count ($data[$id_filename], "/") > 0 && !is_dir ($temp_location))
+                    {
+                      $temp = createfolders ($site, getlocation ($temp_location), getobject ($temp_location), $user);
+
+                      if (!empty ($report))
+                      {
+                        if (!empty ($temp['result'])) echo "<span style=\"color:green;\">Created new folder '".convertpath ($site, $temp_location, $cat)."' for the import</span><br />\n";
+                        else echo "<span style=\"color:red;\">The folder '".convertpath ($site, $temp_location, $cat)."' could not be created</span><br />\n";
+                      }
+                    }
+
+                    // create new object
+                    $temp = createobject ($site, $temp_location, $object, $template, $user);
+
+                    if (!empty ($temp['result']) && !empty ($temp['container_id']))
+                    {
+                      if (!empty ($report)) echo "<span style=\"color:green;\">Created new object '".$object."' for the import</span><br />\n";
+
+                      $contentfile = $temp['container'];
+                      $contentdata = loadcontainer ($temp['container_id'], "work", $user);
+                    }
+                    else
+                    {
+                      if (!empty ($report)) echo "<span style=\"color:red;\">The object '".$object."' could not be created. (".strip_tags ($temp['message']).")</span><br />\n";
+                    }
                   }
                 }
 
@@ -207,7 +311,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                 {
                   if ($data[$c] != "")
                   {
-                    // detect content text type if it has not already analyzed and is not "k", "d", or "f"
+                    // detect content text type if it has not already been analyzed and is not "k", "d", or "f"
                     if (empty ($type[$id_content[$c]]) || (!empty ($type[$id_content[$c]]) && $type[$id_content[$c]] != "f" && $type[$id_content[$c]] != "k" && $type[$id_content[$c]] != "d"))
                     {
                       // unformatted text
@@ -294,10 +398,12 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
               if ($contentdata != "" && $contentfile != "" && sizeof ($text) > 0 && $type != "" && $art != "" && $user != "")
               {
                 $contentdata_new = settext ($site, $contentdata, $contentfile, $text, $type, $art, $user, $user, $charset);
- 
+
                 // on error
                 if ($contentdata_new == false)
                 {
+                  if (!empty ($report)) echo "<span style=\"color:red;\">CSV content for '".$contentfile."' could not be imported into container</span><br />\n";
+                  
                   $errcode = "10198";
                   $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|CSV content for '".$contentfile."' could not be imported into container";
                 }
@@ -307,7 +413,7 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
                   // eventsystem
                   if (!empty ($eventsystem['onsaveobject_pre']) && empty ($eventsystem['hide'])) 
                   {
-                    $contentdataevent = onsaveobject_pre ($site, $cat, $location, $object, $contentfile, $contentdata_new, $user);
+                    $contentdataevent = onsaveobject_pre ($site, $cat, $temp_location, $temp_object, $contentfile, $contentdata_new, $user);
 
                     // check if event returns a string, if so, the event returns the container and not true or false 
                     if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdata_new = $contentdataevent;
@@ -333,11 +439,15 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
 
                   if ($savefile == false)
                   {
+                    if (!empty ($report)) echo "<span style=\"color:red;\">Container ".$contentfile." could not be saved after CSV import</span><br />\n";
+
                     $errcode = "10199";
-                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Container  ".$contentfile." could not be saved after CSV import";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Container ".$contentfile." could not be saved after CSV import";
                   }
                   else
                   {
+                    if (!empty ($report)) echo "<span style=\"color:green;\">CSV content for ".convertpath ($site, $temp_location.$object, $cat)." (".$contentfile.") has been successfully imported</span><br />\n";
+
                     $errcode = "00199";
                     $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|".$errcode."|CSV content for ".convertpath ($site, $location.$object, $cat)." (".$contentfile.") has been successfully imported and saved into container by user '".$user."' (".getuserip().")";
                   }
@@ -356,9 +466,17 @@ function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";
       if ($row > 1 && !empty ($savefile)) return true;
       else return false;
     }
-    else return false;
+    else
+    {
+      if (!empty ($report)) echo "<span style=\"color:red;\">CSV file '".$file_csv."' could not be loaded</span><br />\n";
+      return false;
+    }
   }
-  else return false;
+  else
+  {
+    if (!empty ($report)) echo "<span style=\"color:red;\">The location '".str_replace (".folder", "", $location)."' or the CSV file '".$file_csv."' is missing</span><br />\n";
+    return false;
+  }
 }
 
 // --------------------------------------- loadtaxonomy -------------------------------------------

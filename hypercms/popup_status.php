@@ -479,7 +479,7 @@ echo showtopbar ($headline." ".$status_progress, $lang);
   <div class="hcmsHeadline" style="margin:10px;"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?></span></div>
 
   <!-- status -->
-  <div style="margin:15px; 10px; 5px; 10px;"><?php echo $headline." ".$status_text; ?></div>
+  <div style="margin:15px; 10px; 5px; 10px;"><?php echo $status_text; ?></div>
 
   <!-- location -->
   <?php if (!empty ($location)) { ?>

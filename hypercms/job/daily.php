@@ -135,7 +135,7 @@ if (sizeof ($config_files) > 0)
           }
         }
 
-        // remove objects from database in case they could not be deleted by function processobjects
+        // remove objects from file system and database in case they could not be deleted by function processobjects
         $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, "", false, true);
 
         if (is_array ($objectpath_array) && sizeof ($objectpath_array) > 0)
@@ -144,7 +144,17 @@ if (sizeof ($config_files) > 0)
           {
             if (!empty ($objectpath['objectpath']))
             {
-              rdbms_deleteobject ($objectpath['objectpath'], "");
+              // save original path for rdbms_deleteobject
+              $temp_location = $objectpath['objectpath'];
+
+              // remove .folder for folder object 
+              if (getobject ($objectpath['objectpath']) == ".folder") $objectpath['objectpath'] = getlocation ($objectpath['objectpath']);
+
+              // delete object
+              $temp = deleteobject (getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), "sys");
+
+              // delete database entry in case deleteobject failed
+              if (empty ($temp['result'])) rdbms_deleteobject ($temp_location, "");
             }
           }
         }
@@ -191,7 +201,7 @@ if (sizeof ($config_files) > 0)
               $starttime = time();
               
               // this function might require some time for the result in case of large database
-              $filesize = rdbms_getfilesize ("", "%comp%/".$site."/");
+              $filesize = rdbms_getfilesize ("", "%comp%/".$site."/", true);
               savefile ($mgmt_config['abs_path_temp'], $site.".filesize.dat", $filesize['filesize']);
               
               $endtime = time();

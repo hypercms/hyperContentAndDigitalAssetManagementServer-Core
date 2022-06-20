@@ -539,7 +539,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
           // get value of condtag
           $currentvalue_array = getcontent ($content_record, $startcondtag);
 
-          // find all XML-object including a child that fulfils the condition
+          // find all XML-object including a child that matches the condition
           if ($currentvalue_array != false)
           { 
             foreach ($currentvalue_array as $currentvalue) 

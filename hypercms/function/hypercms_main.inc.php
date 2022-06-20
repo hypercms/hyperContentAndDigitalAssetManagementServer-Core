@@ -488,7 +488,97 @@ function offsettime ()
   $mins -= $hrs * 60;
 
   return $offset = sprintf ('%+d:%02d', $hrs*$sgn, $mins);
-} 
+}
+
+// ------------------------- file_iexists -----------------------------
+// function: file_iexists()
+// input: path to a file or directory [string]
+// output: true / false
+
+// description:
+// This function verifies if the file or directory exists in case-insensitive mode.
+// This is the case-insensitive version of the PHP function file_exists.
+
+function file_iexists ($path)
+{
+  // case-sensitive
+  if (file_exists ($path)) return true;
+
+  // case-insensitive
+	$dirname = dirname ($path);
+	$filename = basename ($path);
+	$scandir = scandir ($dirname);
+
+  if ($scandir)
+  {
+    foreach ($scandir as $file)
+    {
+      if (strtolower ($file) == strtolower ($filename)) return true;
+    }
+  }
+
+	return false;
+}
+
+// ------------------------- is_ifile -----------------------------
+// function: is_ifile()
+// input: path to a file [string]
+// output: true / false
+
+// description:
+// This function verifies if the file exists in case-insensitive mode.
+// This is the case-insensitive version of the PHP function is_file.
+
+function is_ifile ($path)
+{
+  // case-sensitive
+  if (is_file ($path)) return true;
+
+  // case-insensitive
+	$dirname = dirname ($path);
+	$filename = basename ($path);
+	$scandir = scandir ($dirname);
+
+  if ($scandir)
+  {
+    foreach ($scandir as $file)
+    {
+      if (is_file ($dirname."/".$file) && strtolower ($file) == strtolower ($filename)) return true;
+    }
+  }
+
+	return false;
+}
+
+// ------------------------- is_idir -----------------------------
+// function: is_idir()
+// input: path to a directory [string]
+// output: true / false
+
+// description:
+// This function verifies if the directory exists in case-insensitive mode.
+// This is the case-insensitive version of the PHP function is_dir.
+
+function is_idir ($path)
+{
+  // case-sensitive
+  if (is_dir ($path)) return true;
+
+  // case-insensitive
+	$dirname = dirname ($path);
+	$filename = basename ($path);
+	$scandir = scandir ($dirname);
+
+  if ($scandir)
+  {
+    foreach ($scandir as $file)
+    {
+      if (is_dir ($dirname."/".$file) && strtolower ($file) == strtolower ($filename)) return true;
+    }
+  }
+
+	return false;
+}
 
 // ------------------------- object_exists -----------------------------
 // function: object_exists()
@@ -700,14 +790,18 @@ function is_emptyfolder ($dir)
   {
     $scandir = scandir ($dir);
 
-    foreach ($scandir as $entry)
+    if ($scandir)
     {
-      if ($entry != "." && $entry != ".." && $entry != ".folder" && substr ($entry, -4) != ".off") return false;
-    }
+      foreach ($scandir as $entry)
+      {
+        if ($entry != "." && $entry != ".." && $entry != ".folder" && substr ($entry, -4) != ".off") return false;
+      }
 
-    return true;
+      return true;
+    }
   }
-  else return false;
+  
+  return false;
 }
 
 // -------------------------------- is_supported --------------------------------
@@ -5002,7 +5096,16 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     }
 
     // verify local media file
-    if (!is_file ($filepath)) return false;
+    if (!is_file ($filepath))
+    {
+      $errcode = "20601";
+      $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not find '.$filepath.')';
+
+      // write log
+      savelog (@$error);
+
+      return false;
+    }
 
     // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
     if (session_id() != "")
@@ -5033,7 +5136,8 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       if (!($stream = fopen ($filepath, 'rb')))
       {
         // can't read the file
-        header ("HTTP/1.1 500 Internal Server Error", true, 500);
+        header ("HTTP/1.1 404 Not Found", true, 404);
+
         $errcode = "20602";
         $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$filepath.')';
 
@@ -6226,7 +6330,7 @@ function createinstance ($instance_name, $settings, $user="sys")
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-write-permissions'][$lang]."</span>\n";
   }
   // check if instance name exists already
-  elseif (is_file ($mgmt_config['instances'].trim ($instance_name).".inc.php"))
+  elseif (is_ifile ($mgmt_config['instances'].trim ($instance_name).".inc.php"))
   {
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-instance-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
@@ -6786,7 +6890,7 @@ function createpublication ($site_name, $user="sys")
       {
         foreach ($inherit_db as $inherit_db_record)
         {
-          if ($site_name == $inherit_db_record['parent'])
+          if (strtolower ($site_name) == strtolower ($inherit_db_record['parent']))
           {
             $test = false;
 
@@ -8498,13 +8602,12 @@ function createpersonalization ($site, $pers_name, $cat)
     // create pers file name
     $pers_name = trim ($pers_name);
     $persfile = $pers_name.$ext;
-
+ 
     // upload template file
-    if (is_file ($mgmt_config['abs_path_data']."customer/".$site."/".$persfile))
+    if (is_ifile ($mgmt_config['abs_path_data']."customer/".$site."/".$persfile))
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span>
-      ".$hcms_lang['please-try-another-template-name'][$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br/>\n".$hcms_lang['please-try-another-template-name'][$lang]."\n";
     }
     else
     {
@@ -8514,8 +8617,7 @@ function createpersonalization ($site, $pers_name, $cat)
       if ($test == false)
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-could-not-be-created'][$lang]."</span>
-        ".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-could-not-be-created'][$lang]."</span><br/>\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }
       else
       {
@@ -8820,7 +8922,7 @@ function createtemplate ($site, $template, $cat)
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
     }
     // template file exists already
-    elseif (is_file ($mgmt_config['abs_path_template'].$site."/".$template))
+    elseif (is_ifile ($mgmt_config['abs_path_template'].$site."/".$template))
     {
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-template-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-template-name'][$lang]."\n";
@@ -9084,7 +9186,7 @@ function createportal ($site, $template)
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
     } 
     // if template file exists already
-    elseif (is_file ($mgmt_config['abs_path_template'].$site."/".$template))
+    elseif (is_ifile ($mgmt_config['abs_path_template'].$site."/".$template))
     {
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-template-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-template-name'][$lang]."\n";
@@ -9500,8 +9602,8 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
 
     if ($userdata != false)
     {
-      // check if user already exists
-      $testlogin = selectcontent ($userdata, "<user>", "<login>", $login);
+      // check if user already exists (case-insensitive)
+      $testlogin = selecticontent ($userdata, "<user>", "<login>", $login);
 
       // if user exists or has the session_id() name used for system locking of files
       if (!empty ($testlogin[0]) || $login == session_id())
@@ -10442,7 +10544,7 @@ function creategroup ($site, $groupname, $user="sys")
     if ($usergroupdata != false)
     {
       // check if usergroup exists already
-      $testlogin = selectcontent ($usergroupdata, "<usergroup>", "<groupname>", $groupname);
+      $testlogin = selecticontent ($usergroupdata, "<usergroup>", "<groupname>", $groupname);
 
       if ($testlogin != false)
       {
@@ -11984,10 +12086,16 @@ function createfolder ($site, $location, $folder, $user)
 
 function createfolders ($site, $location, $folder, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
+
+  // add slash if not present at the end of the location string
+  $location = correctpath ($location);
+
+  // define category if undefined
+  $cat = getcategory ($site, $location);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && strlen ($folder) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
@@ -12000,14 +12108,12 @@ function createfolders ($site, $location, $folder, $user)
     // deconvertpath location
     $location = deconvertpath ($location, "file");
 
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location);
-
     // folder exists
     if (is_dir ($location.$folder)) return $result['result'] = true;
 
     // folder can be created
     $result = createfolder ($site, $location, $folder, $user);
+    
     if (!empty ($result['result'])) return $result;
 
     // folder cannot be created, create parent folder
@@ -12204,11 +12310,20 @@ function deletefolder ($site, $location, $folder, $user)
   $show = "";
 
   // set default language
-  if (empty ($lang)) $lang = "en";
+  if (empty ($lang)) $lang = "en"; 
 
-  $folder = trim ($folder);
+  // add slash if not present at the end of the location string
+  $location = correctpath ($location);
+
+  // define category if undefined
+  $cat = getcategory ($site, $location);
+
+  // deconvertpath location
+  $location = deconvertpath ($location, "file");
+  $location_esc = convertpath ($site, $location, $cat);
 
   // folder name
+  $folder = trim ($folder);
   if (specialchr ($folder, ".-_~") == true) $folder = createfilename ($folder);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
@@ -12218,16 +12333,6 @@ function deletefolder ($site, $location, $folder, $user)
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
-
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location);
-
-    // deconvertpath location
-    $location = deconvertpath ($location, "file");
-    $location_esc = convertpath ($site, $location, $cat);
-
-    // define category if undefined
-    $cat = getcategory ($site, $location);
 
     // check given folder name
     if ($folder == ".folder")
@@ -12335,7 +12440,7 @@ function deletefolder ($site, $location, $folder, $user)
 // output: result array
 
 // description:
-// This function renames a folder
+// This function renames a folder.
 
 function renamefolder ($site, $location, $folder, $foldernew, $user)
 {
@@ -12580,9 +12685,9 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
             onrenamefolder_post ($site, $cat, $location, $folder, $foldernew, $user);
 
           // relational DB connectivity
-          if ($mgmt_config['db_connect_rdbms'] != "")
+          if (!empty ($mgmt_config['db_connect_rdbms']))
           {
-            rdbms_renameobject (convertpath ($site, $location.$folder, $cat), convertpath ($site, $location.$foldernew, $cat)); 
+            rdbms_renameobject (convertpath ($site, $location.$folder."/.folder", $cat), convertpath ($site, $location.$foldernew."/.folder", $cat)); 
           }
 
           $folderold = $folder;
@@ -14753,6 +14858,12 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
   // set default language as "en" if not set
   if (empty ($lang)) $lang = "en";
 
+  // add slash if not present at the end of the location path
+  $location = correctpath ($location);
+
+  // get category
+  $cat = getcategory ($site, $location);
+
   if (valid_publicationname ($site) && valid_locationname ($location) && accessgeneral ($site, $location, $cat) && valid_objectname ($user) && $action != "")
   {
     // load file extensions
@@ -14763,12 +14874,6 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
-
-    // add slash if not present at the end of the location path
-    $location = correctpath ($location);
-
-    // get category
-    $cat = getcategory ($site, $location);
 
     // convert location
     $location = deconvertpath ($location, "file");
@@ -14865,7 +14970,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             }
 
             // check if object may be pasted in the current publication
-            if ($site == $site_source || ($mgmt_config[$site]['inherit_obj'] == true && $parent_array !== false && in_array ($site_source, $parent_array)))
+            if ($site == $site_source || (!empty ($mgmt_config[$site]['inherit_obj']) && !empty ($parent_array) && in_array ($site_source, $parent_array)))
             { 
               // if the category of the object (page or component) is different for cut/copy and paste
               if ($cat_source != $cat) 
@@ -15675,7 +15780,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           if ($contentfile_self > 0)
           {
             // relational DB connectivity
-            if ($mgmt_config['db_connect_rdbms'] != "")
+            if (!empty ($mgmt_config['db_connect_rdbms']))
             {
               rdbms_renameobject (convertpath ($site, $location.$page, $cat), convertpath ($site, $location.$pagenew, $cat)); 
             }
@@ -18725,9 +18830,12 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       foreach ($objectpath_array as $objectpath)
       {
         if ($objectpath != "")
-        { 
+        {
           $site = getpublication ($objectpath);
           $location = deconvertpath ($objectpath, "file"); 
+
+          // get category
+          $cat = getcategory ($site, $objectpath);
 
           // check for .folder file and remove it, otherwise the folder is treated as a file
           if (getobject ($location) == ".folder") $location = getlocation ($location);
@@ -18738,9 +18846,6 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
  
           if (valid_publicationname ($site) && valid_locationname ($location) && $object !== false)
           {
-            // get category
-            $cat = getcategory ($site, $location);
-
             // add slash if not present at the end of the location string
             $location = correctpath ($location);
 

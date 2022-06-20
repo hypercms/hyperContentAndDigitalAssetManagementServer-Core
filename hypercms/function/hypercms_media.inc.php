@@ -5550,7 +5550,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
             // if object path
             else
             {
-              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE BINARY objectpath=\"".$multiobject."\" AND objectpath NOT LIKE BINARY \"%.recycle\" AND objectpath NOT LIKE BINARY \"%.recycle/%\" AND date>=\"".$zipfiledate."\"");
+              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE objectpath= BINARY \"".$multiobject."\" AND objectpath NOT LIKE BINARY \"%.recycle\" AND objectpath NOT LIKE BINARY \"%.recycle/%\" AND date>=\"".$zipfiledate."\"");
             }
           }
         }

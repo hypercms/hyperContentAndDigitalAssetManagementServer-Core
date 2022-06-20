@@ -1625,7 +1625,7 @@ function getmetadata_multiobjects ($multiobject_array, $user, $include_subfolder
           if (getobject ($multiobject) == ".folder") $folderpath = getlocation ($multiobject);
           else $folderpath = $multiobject; 
 
-          $temp_array = rdbms_externalquery ('SELECT objectpath FROM object WHERE objectpath LIKE BINARY "'.$folderpath.'%" AND BINARY objectpath!="'.$folderpath.'.folder"');
+          $temp_array = rdbms_externalquery ('SELECT objectpath FROM object WHERE objectpath LIKE BINARY "'.$folderpath.'%" AND objectpath!= BINARY "'.$folderpath.'.folder"');
 
           if (is_array ($temp_array) && sizeof ($temp_array) > 0)
           {

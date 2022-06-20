@@ -215,7 +215,7 @@ function link_db_load ($site, $user)
 
     if ($link_db_data != false)
     {
-      $link_db_array = explode ("\n", $link_db_data);
+      $link_db_array = explode ("\n", trim ($link_db_data));
 
       foreach ($link_db_array as $link_db_record)
       {
@@ -276,7 +276,7 @@ function link_db_read ($site)
 
       if ($link_db_data != false)
       {
-        $link_db_array = explode ("\n", $link_db_data);
+        $link_db_array = explode ("\n", trim ($link_db_data));
 
         foreach ($link_db_array as $link_db_record)
         {
@@ -293,14 +293,14 @@ function link_db_read ($site)
           else 
           {
             $errcode = "10712";
-            $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|link_db_record is corrupt (null), link_db_load failed for site '".$site."'"; 
+            $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|link_db_record is corrupt (null), link_db_load failed for site '".$site."'";
           }
         }
       }
       else 
       {
         $errcode = "10711";
-        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|loadfile failed in link_db_load for site '".$site."'"; 
+        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|loadfile failed in link_db_load for site '".$site."'";
 
         $link_db = false;
       }

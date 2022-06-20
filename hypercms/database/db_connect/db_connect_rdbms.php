@@ -421,15 +421,15 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
     {
       if ($row = $db->rdbms_getresultrow ('media'))
       {
-        $sql = 'INSERT INTO object (id, hash, objectpath, template, media, container, createdate, date, latitude, longitude, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash, user) ';
-        $sql .= 'VALUES ('.$container_id.', "'.$hash.'", "'.$object.'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', '.intval($row['filesize']).', "'.$filetype.'", '.intval($row['width']).', '.intval($row['height']).', '.intval($row['red']).', '.intval($row['green']).', '.intval($row['blue']).', "'.$db->rdbms_escape_string($row['colorkey']).'", "'.$db->rdbms_escape_string($row['imagetype']).'", "'.$db->rdbms_escape_string($row['md5_hash']).'", "'.$user.'")';
+        $sql = 'INSERT INTO object (id, hash, objectpath, md5_objectpath, template, media, container, createdate, date, latitude, longitude, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash, user) ';
+        $sql .= 'VALUES ('.$container_id.', "'.$hash.'", "'.$object.'", "'.md5 ($object).'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', '.intval($row['filesize']).', "'.$filetype.'", '.intval($row['width']).', '.intval($row['height']).', '.intval($row['red']).', '.intval($row['green']).', '.intval($row['blue']).', "'.$db->rdbms_escape_string($row['colorkey']).'", "'.$db->rdbms_escape_string($row['imagetype']).'", "'.$db->rdbms_escape_string($row['md5_hash']).'", "'.$user.'")';
       }
     }
     // insert values in table object (new object)
     elseif (!empty ($container))
     {
-      $sql = 'INSERT INTO object (id, hash, objectpath, template, media, container, createdate, date, latitude, longitude, filetype, user) ';
-      $sql .= 'VALUES ('.$container_id.', "'.$hash.'", "'.$object.'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', "'.$filetype.'", "'.$user.'")';
+      $sql = 'INSERT INTO object (id, hash, objectpath, md5_objectpath, template, media, container, createdate, date, latitude, longitude, filetype, user) ';
+      $sql .= 'VALUES ('.$container_id.', "'.$hash.'", "'.$object.'", "'.md5 ($object).'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', "'.$filetype.'", "'.$user.'")';
     }
 
     $errcode = "50001";
@@ -1135,7 +1135,7 @@ function rdbms_settemplate ($object, $template)
     $template = $db->rdbms_escape_string ($template);
 
     // update object
-    $sql = 'UPDATE object SET template="'.$template.'" WHERE BINARY objectpath="'.$object.'"'; 
+    $sql = 'UPDATE object SET template="'.$template.'" WHERE md5_objectpath="'.md5 ($object).'"'; 
 
     $errcode = "50007";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -1367,7 +1367,7 @@ function rdbms_getduplicate_file ($site, $md5_hash)
 // output: true / false
 
 // description:
-// Renames an object.
+// Renames an object or a folder (.folder file name must be provided for folder).
 
 function rdbms_renameobject ($object_old, $object_new)
 {
@@ -1375,9 +1375,21 @@ function rdbms_renameobject ($object_old, $object_new)
 
   if ($object_old != "" && $object_new != "" && (substr_count ($object_old, "%page%/") > 0 || substr_count ($object_old, "%comp%/") > 0) && (substr_count ($object_new, "%page%/") > 0 || substr_count ($object_new, "%comp%/") > 0))
   {
+    // initialize
+    $type = "object";
+
     // correct object names
     if (strtolower (strrchr ($object_old, ".")) == ".off") $object_old = substr ($object_old, 0, -4);
     if (strtolower (strrchr ($object_new, ".")) == ".off") $object_new = substr ($object_new, 0, -4);
+
+    // correct folder names
+    if (substr ($object_old, -8) == "/.folder") 
+    {
+      $object_old = substr ($object_old, 0, -8);
+      $type = "folder";
+    }
+
+    if (substr ($object_new, -8) == "/.folder") $object_new = substr ($object_new, 0, -8);
 
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -1393,8 +1405,11 @@ function rdbms_renameobject ($object_old, $object_new)
     $object_new = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object_new);
 
     // query
-    $sql = 'SELECT object_id, id, objectpath FROM object '; 
-    $sql .= 'WHERE objectpath LIKE BINARY "'.$object_old.'%" AND objectpath NOT LIKE BINARY "'.$object_old.'.recycle%"';
+    $sql = 'SELECT object_id, id, objectpath FROM object ';
+    // for folder
+    if ($type == "folder") $sql .= 'WHERE objectpath LIKE BINARY "'.$object_old.'/%"';
+    // for object
+    else $sql .= 'WHERE md5_objectpath="'.md5 ($object_old).'"';;
 
     $errcode = "50010";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
@@ -1415,8 +1430,8 @@ function rdbms_renameobject ($object_old, $object_new)
           $filetype = getfiletype ($fileext);
 
           // update object 
-          if ($filetype != "") $sql = 'UPDATE object SET objectpath="'.$object.'", filetype="'.$filetype.'" WHERE object_id='.$object_id.'';
-          else $sql = 'UPDATE object SET objectpath="'.$object.'" WHERE object_id='.$object_id.'';
+          if ($filetype != "") $sql = 'UPDATE object SET objectpath="'.$object.'", md5_objectpath="'.md5 ($object).'", filetype="'.$filetype.'" WHERE object_id='.$object_id.'';
+          else $sql = 'UPDATE object SET objectpath="'.$object.'", md5_objectpath="'.md5 ($object).'" WHERE object_id='.$object_id.'';
 
           $errcode = "50011";
           $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);
@@ -1464,8 +1479,8 @@ function rdbms_deleteobject ($object="", $object_id="")
     // query
     $sql = 'SELECT id FROM object ';
 
-    if ($object != "") $sql .= 'WHERE BINARY objectpath="'.$object.'"';
-    elseif ($object_id > 0) $sql .= 'WHERE object_id='.intval ($object_id).'';
+    if ($object != "") $sql .= 'WHERE md5_objectpath="'.md5 ($object).'"';
+    elseif (intval ($object_id) > 0) $sql .= 'WHERE object_id='.intval ($object_id).'';
   
     $errcode = "50012";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select1');
@@ -1544,7 +1559,7 @@ function rdbms_deleteobject ($object="", $object_id="")
         // delete only the object reference and queue entry
         elseif ($row_id && $num_rows > 1)
         {
-          $sql = 'DELETE FROM object WHERE BINARY objectpath="'.$object.'"';
+          $sql = 'DELETE FROM object WHERE md5_objectpath="'.md5 ($object).'"';
 
           $errcode = "50020";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete10');
@@ -3667,12 +3682,12 @@ function rdbms_getobject_id ($object)
     { 
       $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);
 
-      $sql = 'SELECT object_id, deleteuser FROM object WHERE BINARY objectpath="'.$object.'"';
+      $sql = 'SELECT object_id, deleteuser FROM object WHERE md5_objectpath="'.md5 ($object).'"';
     }
     // object hash
     else
     {
-      $sql = 'SELECT object_id FROM object WHERE BINARY hash="'.$object.'"';
+      $sql = 'SELECT object_id FROM object WHERE hash= BINARY "'.$object.'"';
     }
 
     $errcode = "50027";
@@ -3745,7 +3760,7 @@ function rdbms_getobject_hash ($object="", $container_id="")
       $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);
       $object = $db->rdbms_escape_string ($object);          
 
-      $sql = 'SELECT hash, deleteuser FROM object WHERE BINARY objectpath="'.$object.'" LIMIT 1';
+      $sql = 'SELECT hash, deleteuser FROM object WHERE md5_objectpath="'.md5 ($object).'" LIMIT 1';
     }
     // if object id
     elseif (intval ($object) > 0)
@@ -3968,7 +3983,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
       {
         $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media'.$sql_add_attr.' FROM object AS obj ';
         if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
-        $sql .= 'WHERE obj.deleteuser="" AND obj.objectpath="'.str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object_identifier).'" LIMIT 1';
+        $sql .= 'WHERE obj.deleteuser="" AND obj.md5_objectpath="'.md5 (str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object_identifier)).'" LIMIT 1';
       }
       else
       {
@@ -4273,9 +4288,14 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
 
   if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
 
-  if ($user != "") $sql .= 'WHERE obj.deleteuser="'.$user.'" ';
-  elseif ($subitems == true) $sql .= 'WHERE obj.deleteuser!="" ';
-  else $sql .= 'WHERE obj.deleteuser!="" AND obj.deleteuser NOT LIKE "[%]" ';
+  // users objects in the recycle bin without subitems
+  if ($user != "" && $subitems == false) $sql .= 'WHERE obj.deleteuser="'.$user.'" ';
+  // users objects including subitems in the recycle bin
+  elseif ($user != "" && $subitems == true) $sql .= 'WHERE (obj.deleteuser="'.$user.'" OR obj.deleteuser="['.$user.']") ';
+  // all objects in the recycle bin without subitems
+  elseif ($subitems == false) $sql .= 'WHERE obj.deleteuser!="" AND obj.deleteuser NOT LIKE "[%]" ';
+  // all objects including subitems in the recycle bin
+  else $sql .= 'WHERE obj.deleteuser!="" ';
 
   if ($date != "") $sql .= 'AND obj.deletedate<"'.$date.'" ';  
   if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
@@ -4418,7 +4438,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $result = false;
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_folder.'.recycle/.folder" WHERE BINARY objectpath="'.$object_folder.'/.folder"';
+              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_folder.'.recycle/.folder", md5_objectpath="'.md5 ($object_folder.'.recycle/.folder').'" WHERE md5_objectpath="'.md5 ($object_folder.'/.folder').'"';
             }
             else
             {
@@ -4445,7 +4465,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|".$errcode."|Restore failed (rename) for folder '".$object."' in recycle bin";
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_folder, 0, -8).'/.folder" WHERE BINARY objectpath="'.$object_folder.'/.folder"';
+              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_folder, 0, -8).'/.folder", md5_objectpath="'.md5 (substr ($object_folder, 0, -8)).'" WHERE md5_objectpath="'.md5 ($object_folder.'/.folder').'"';
             }
             else
             {
@@ -4457,34 +4477,62 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
 
           if (!empty ($sql))
           {
+            // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
+            if (session_id() != "")
+            {
+              $session_id = session_id();
+              session_write_close();
+            }
+
             $errcode = "50071";
             $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
 
             // for all subitems of the selected folder
             if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
             {
-              $sql = 'UPDATE object SET deleteuser="['.$user.']", deletedate="'.$date.'", objectpath=REPLACE(objectpath, "'.$object_folder.'/", "'.$object_folder.'.recycle/") WHERE BINARY objectpath!="'.$object_folder.'/" AND objectpath LIKE BINARY "'.$object_folder.'/%"';
+              $sql = 'SELECT object_id, objectpath FROM object WHERE objectpath!= BINARY "'.$object_folder.'/" AND objectpath LIKE BINARY "'.$object_folder.'/%"';
+
+              $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
+
+              if ($done)
+              {
+                while ($row = $db->rdbms_getresultrow ('select'))
+                {
+                  if (!empty ($row['object_id']))
+                  {
+                    $temp_objectpath = str_replace ($object_folder."/", $object_folder.".recycle/", $row['objectpath']);
+                    $sql = 'UPDATE object SET deleteuser="['.$user.']", deletedate="'.$date.'", objectpath="'.$temp_objectpath.'", md5_objectpath="'.md5 ($temp_objectpath).'" WHERE object_id='.intval($row['object_id']);
+
+                    $errcode = "50072";
+                    $update = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'update');
+                  }
+                }
+              }
             }
             elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
             {
-              $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath=REPLACE(objectpath, "'.$object_folder.'/", "'.substr ($object_folder, 0, -8).'/") WHERE objectpath LIKE BINARY "'.$object_folder.'/%"';
-            }
+              $sql = 'SELECT object_id, objectpath FROM object WHERE objectpath LIKE BINARY "'.$object_folder.'/%"';
 
-            if (!empty ($sql))
-            {
-              // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
-              if (session_id() != "")
+              $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
+
+              if ($done)
               {
-                $session_id = session_id();
-                session_write_close();
+                while ($row = $db->rdbms_getresultrow ('select'))
+                {
+                  if (!empty ($row['object_id']))
+                  {
+                    $temp_objectpath = str_replace ($object_folder."/", substr ($object_folder, 0, -8)."/", $row['objectpath']);
+                    $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.$temp_objectpath.'", md5_objectpath="'.md5 ($temp_objectpath).'" WHERE object_id='.intval($row['object_id']);
+
+                    $errcode = "50073";
+                    $update = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'update');
+                  }
+                }
               }
-
-              $errcode = "50072";
-              $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
-
-              // restart session (that has been previously closed for non-blocking procedure)
-              if (empty (session_id()) && $session_id != "") createsession();
             }
+
+            // restart session (that has been previously closed for non-blocking procedure)
+            if (empty (session_id()) && $session_id != "") createsession();
           }
         }
         // -------------------- for objects ---------------------
@@ -4517,7 +4565,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $result = false;
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_file.'.recycle" WHERE BINARY objectpath="'.$object_file.'"';
+              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_file.'.recycle", md5_objectpath="'.md5 ($object_file.'.recycle').'" WHERE md5_objectpath="'.md5 ($object_file).'"';
             }
           }
           elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
@@ -4538,7 +4586,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $result = false;
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_file, 0, -8).'" WHERE BINARY objectpath="'.$object_file.'"';
+              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_file, 0, -8).'", md5_objectpath="'.md5 (substr ($object_file, 0, -8)).'" WHERE md5_objectpath="'.md5 ($object_file).'"';
             }
             else
             {
@@ -4747,7 +4795,7 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
 
     // get object ids of all objects (also all object of folders)
     if (getobject ($object) == ".folder") $sql = 'SELECT object_id FROM object WHERE objectpath LIKE BINARY "'.substr (trim($object), 0, strlen (trim($object))-7).'%"';
-    else $sql = 'SELECT object_id FROM object WHERE BINARY objectpath="'.$object.'"';
+    else $sql = 'SELECT object_id FROM object WHERE md5_objectpath="'.md5 ($object).'"';
 
     $errcode = "50049";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
@@ -4799,7 +4847,7 @@ function rdbms_getrecipients ($object)
     $object = $db->rdbms_escape_string ($object);   
 
     // get recipients
-    $sql = 'SELECT rec.recipient_id, rec.object_id, rec.date, rec.from_user, rec.to_user, rec.email FROM recipient AS rec INNER JOIN object AS obj ON obj.object_id=rec.object_id WHERE BINARY obj.objectpath="'.$object.'"';   
+    $sql = 'SELECT rec.recipient_id, rec.object_id, rec.date, rec.from_user, rec.to_user, rec.email FROM recipient AS rec INNER JOIN object AS obj ON obj.object_id=rec.object_id WHERE obj.md5_objectpath="'.md5 ($object).'"';   
 
     $errcode = "50041";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
@@ -5196,7 +5244,7 @@ function rdbms_getnotification ($event="", $object="", $user="")
       $object = $db->rdbms_escape_string ($object);
 
       // get connected objects
-      $sql = 'SELECT DISTINCT object_id, id FROM object WHERE BINARY objectpath="'.$object.'"';
+      $sql = 'SELECT DISTINCT object_id, id FROM object WHERE md5_objectpath="'.md5 ($object).'"';
 
       $errcode = "50097";
       $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'connected');
@@ -5609,7 +5657,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
         $sqlfilesize = ', SUM(object.filesize) AS filesize';
         $sqltable = "INNER JOIN object ON dailystat.id=object.id";
         if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
-        else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
+        else $sqlwhere = 'AND object.md5_objectpath="'.md5 ($objectpath).'"';
         $sqlgroup = 'GROUP BY dailystat.date, dailystat.id, dailystat.user';
       }
       // search by container id
@@ -5629,7 +5677,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
         $sqlfilesize = "";
         $sqltable = 'INNER JOIN object ON dailystat.id=object.id';
         if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
-        else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
+        else $sqlwhere = 'AND object.md5_objectpath="'.md5 ($objectpath).'"';
         $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
       }
       // search by container id
@@ -5697,13 +5745,13 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
 
 // ----------------------------------------------- get filesize from media -------------------------------------------------
 // function: rdbms_getfilesize()
-// input: container ID [integer] (optional), object or location path [string] (optional)
+// input: container ID [integer] (optional), object or location path [string] (optional), include space used by assets in recycle bin [boolean] (optional)
 // output: result array / false on error
 
 // description:
 // Provides the filesize and count of objects for a requested object or location.
 
-function rdbms_getfilesize ($container_id="", $objectpath="")
+function rdbms_getfilesize ($container_id="", $objectpath="", $recylcebin=false)
 {
   global $mgmt_config;
 
@@ -5744,9 +5792,12 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
 
       $sqladd = '';
 
+      // query objectpath
+      if ($object_info['type'] == "Folder") $sqladd .= 'WHERE objectpath LIKE "'.$objectpath.'%"';
+      else $sqladd .= 'WHERE objectpath="'.$objectpath.'"';
+
       // exclude recycled files
-      if ($object_info['type'] == "Folder") $sqladd .= 'WHERE objectpath LIKE "'.$objectpath.'%" AND objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"';
-      else $sqladd .= 'WHERE objectpath="'.$objectpath.'" AND objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"';
+      if (empty ($recylcebin)) $sqladd .= ' AND objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"';
 
       $sqlfilesize = 'SUM(filesize) AS filesize';
     }
